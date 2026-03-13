@@ -4,8 +4,9 @@
 
 ## Single value
 
-- <=4 options: use `<EnumName>RadioGroupField`
-- &gt;4 options: use `<EnumName>SelectField`
+- <=4 options: use `<EnumName>SelectField`
+- &gt;4 options: use `<EnumName>AutocompleteField`
+- `<EnumName>RadioGroupField` only when explicitly requested
 
 ```tsx
 <ProductStatusSelectField required name="status" label={<FormattedMessage id="<entityName>.status" defaultMessage="Status" />} />

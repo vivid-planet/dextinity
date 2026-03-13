@@ -48,6 +48,7 @@ Before generating any component, verify these helpers exist. Create from helper 
 | `EnumChip`               | Search in project, typically in common/enums area | [enum-helper-enum-chip.md](references/enum-helper-enum-chip.md)                               |
 | `ChipIcon`               | Search in project (project-specific)              | [enum-helper-chip-icon.md](references/enum-helper-chip-icon.md)                               |
 | `recordToOptions`        | Search in project, typically in common/enums area | [enum-helper-record-to-options.md](references/enum-helper-record-to-options.md)               |
+| `useAutocompleteOptions` | Search in project, typically in common/enums area | [enum-helper-use-autocomplete-options.md](references/enum-helper-use-autocomplete-options.md) |
 
 ### Step 2 — Generate the translatable enum (base component)
 
@@ -91,6 +92,7 @@ Read the relevant reference file based on what the user requests:
 | `EnumChip`               | Generic chip wrapper with dropdown menu     | [enum-helper-enum-chip.md](references/enum-helper-enum-chip.md)                               |
 | `ChipIcon`               | Loading/dropdown state icon for chips       | [enum-helper-chip-icon.md](references/enum-helper-chip-icon.md)                               |
 | `recordToOptions`        | Convert record to options array             | [enum-helper-record-to-options.md](references/enum-helper-record-to-options.md)               |
+| `useAutocompleteOptions` | Hook for autocomplete field options         | [enum-helper-use-autocomplete-options.md](references/enum-helper-use-autocomplete-options.md) |
 
 ## Auto-detection
 

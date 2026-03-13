@@ -5,7 +5,7 @@ Enum selection with search/filter support. Returns `{ value, label: string }`.
 ## Prerequisites
 
 1. **Translatable enum** must exist — create using [enum-00-translatable.md](enum-00-translatable.md) if missing
-2. **`useAutocompleteOptions` hook** must exist — search for it in the project. If missing, ask the user — no reference implementation is bundled
+2. **`useAutocompleteOptions` hook** must exist — create using [enum-helper-use-autocomplete-options.md](enum-helper-use-autocomplete-options.md) if missing
 
 ## File Location
 

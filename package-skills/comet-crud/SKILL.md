@@ -124,3 +124,4 @@ Then **wait for the user to confirm** they have run it before proceeding to the 
 - If lint fails: fix the issues automatically, re-run lint, then commit
 - If tsc fails: read the errors, fix the source files, re-run tsc, then commit
 - If a skill produces unexpected output: read the generated files, compare against the skill's reference docs, and fix
+- If committing fails due to GPG signing issues: retry with `-c commit.gpgsign=false`

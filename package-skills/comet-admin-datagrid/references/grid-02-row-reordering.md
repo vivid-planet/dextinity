@@ -55,7 +55,7 @@ export function EntitiesGrid() {
     // Query uses fixed sort by position, no filter/search, loads all rows
     const { data, loading, error } = useQuery<GQLEntitiesGridQuery, GQLEntitiesGridQueryVariables>(entitiesQuery, {
         variables: {
-            sort: { field: "position", direction: "ASC" },
+            sort: [{ field: "position", direction: "ASC" }],
             offset: 0,
             limit: 100,
         },
@@ -108,7 +108,7 @@ function EntitiesGridToolbar() {
 ## Rules
 
 - All columns must have `filterable: false` and `sortable: false`
-- Query uses fixed `sort: { field: "position", direction: "ASC" }`, `offset: 0`, `limit: 100`
+- Query uses fixed `sort: [{ field: "position", direction: "ASC" }]`, `offset: 0`, `limit: 100`
 - Map rows to include `__reorder__` field (display text during drag, typically `title` or `name`)
 - Add `rowReordering` and `hideFooterPagination` props to DataGridPro
 - Toolbar omits `<GridToolbarQuickFilter />` and `<GridFilterButton />`

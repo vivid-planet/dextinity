@@ -15,18 +15,16 @@ Multi-select enum field. Form state is an array.
 
 ## Template
 
-Same shape as SelectField, swap `SelectField` → `CheckboxListField`:
-
 ```tsx
-import { CheckboxListField, type SelectFieldProps } from "@comet/admin";
+import { CheckboxListField, type CheckboxListFieldProps } from "@comet/admin";
 import { {camelCaseName}FormattedMessageMap } from "{enumImportPath}";
 import { recordToOptions } from "@src/common/components/enums/recordToOptions";
 import { type GQL{EnumName} } from "@src/graphql.generated";
 import { type FunctionComponent } from "react";
 
-export type {EnumName}FormState = GQL{EnumName};
+export type {EnumName}FormState = GQL{EnumName}[];
 
-type {EnumName}CheckboxListFieldProps = Omit<SelectFieldProps<{EnumName}FormState>, "options">;
+type {EnumName}CheckboxListFieldProps = Omit<CheckboxListFieldProps<GQL{EnumName}>, "options">;
 
 export const {EnumName}CheckboxListField: FunctionComponent<{EnumName}CheckboxListFieldProps> = ({ name, ...restProps }) => {
     return <CheckboxListField name={name} {...restProps} options={recordToOptions({camelCaseName}FormattedMessageMap)} />;
@@ -38,15 +36,15 @@ export const {EnumName}CheckboxListField: FunctionComponent<{EnumName}CheckboxLi
 ```tsx
 // File: admin/src/location/components/locationStatusCheckboxListField/LocationStatusCheckboxListField.tsx
 
-import { CheckboxListField, type SelectFieldProps } from "@comet/admin";
+import { CheckboxListField, type CheckboxListFieldProps } from "@comet/admin";
 import { locationStatusFormattedMessageMap } from "@src/common/components/enums/locationStatus/locationStatus/LocationStatus";
 import { recordToOptions } from "@src/common/components/enums/recordToOptions";
 import { type GQLLocationStatus } from "@src/graphql.generated";
 import { type FunctionComponent } from "react";
 
-export type LocationStatusFormState = GQLLocationStatus;
+export type LocationStatusFormState = GQLLocationStatus[];
 
-type LocationStatusCheckboxListFieldProps = Omit<SelectFieldProps<LocationStatusFormState>, "options">;
+type LocationStatusCheckboxListFieldProps = Omit<CheckboxListFieldProps<GQLLocationStatus>, "options">;
 
 export const LocationStatusCheckboxListField: FunctionComponent<LocationStatusCheckboxListFieldProps> = ({ name, ...restProps }) => {
     return <CheckboxListField name={name} {...restProps} options={recordToOptions(locationStatusFormattedMessageMap)} />;

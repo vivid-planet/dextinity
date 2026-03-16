@@ -15,10 +15,8 @@ All options visible at once. Best for few options (<=4).
 
 ## Template
 
-Same shape as SelectField, swap `SelectField` → `RadioGroupField`:
-
 ```tsx
-import { RadioGroupField, type SelectFieldProps } from "@comet/admin";
+import { RadioGroupField, type RadioGroupFieldProps } from "@comet/admin";
 import { {camelCaseName}FormattedMessageMap } from "{enumImportPath}";
 import { recordToOptions } from "@src/common/components/enums/recordToOptions";
 import { type GQL{EnumName} } from "@src/graphql.generated";
@@ -26,7 +24,7 @@ import { type FunctionComponent } from "react";
 
 export type {EnumName}FormState = GQL{EnumName};
 
-type {EnumName}RadioGroupFieldProps = Omit<SelectFieldProps<{EnumName}FormState>, "options">;
+type {EnumName}RadioGroupFieldProps = Omit<RadioGroupFieldProps<{EnumName}FormState>, "options">;
 
 export const {EnumName}RadioGroupField: FunctionComponent<{EnumName}RadioGroupFieldProps> = ({ name, ...restProps }) => {
     return <RadioGroupField name={name} {...restProps} options={recordToOptions({camelCaseName}FormattedMessageMap)} />;
@@ -38,7 +36,7 @@ export const {EnumName}RadioGroupField: FunctionComponent<{EnumName}RadioGroupFi
 ```tsx
 // File: admin/src/location/components/locationStatusRadioGroupField/LocationStatusRadioGroupField.tsx
 
-import { RadioGroupField, type SelectFieldProps } from "@comet/admin";
+import { RadioGroupField, type RadioGroupFieldProps } from "@comet/admin";
 import { locationStatusFormattedMessageMap } from "@src/common/components/enums/locationStatus/locationStatus/LocationStatus";
 import { recordToOptions } from "@src/common/components/enums/recordToOptions";
 import { type GQLLocationStatus } from "@src/graphql.generated";
@@ -46,7 +44,7 @@ import { type FunctionComponent } from "react";
 
 export type LocationStatusFormState = GQLLocationStatus;
 
-type LocationStatusRadioGroupFieldProps = Omit<SelectFieldProps<LocationStatusFormState>, "options">;
+type LocationStatusRadioGroupFieldProps = Omit<RadioGroupFieldProps<LocationStatusFormState>, "options">;
 
 export const LocationStatusRadioGroupField: FunctionComponent<LocationStatusRadioGroupFieldProps> = ({ name, ...restProps }) => {
     return <RadioGroupField name={name} {...restProps} options={recordToOptions(locationStatusFormattedMessageMap)} />;

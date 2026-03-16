@@ -84,8 +84,8 @@ export const {EnumName}ChipEditableFor{EntityName}: FunctionComponent<{EnumName}
         <{EnumName}Chip
             value={data.{entityQuery}.{enumFieldName}}
             loading={loading || updateLoading}
-            onSelectItem={({enumFieldName}) => {
-                updateMutation({ variables: { id: {entityId}, {enumFieldName} } });
+            onSelectItem={(value) => {
+                updateMutation({ variables: { id: {entityId}, {enumFieldName}: value } });
             }}
         />
     ) : null;

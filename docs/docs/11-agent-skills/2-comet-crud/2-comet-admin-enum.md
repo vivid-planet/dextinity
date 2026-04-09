@@ -1,9 +1,9 @@
 ---
-title: comet-admin-translatable-enum
+title: comet-admin-enum
 sidebar_position: 2
 ---
 
-The `comet-admin-translatable-enum` skill generates React components for displaying and editing GraphQL enums in the Comet admin. It covers translations, colored chips, inline-editable chips, and form field components.
+The `comet-admin-enum` skill generates React components for displaying and editing GraphQL enums in the Comet admin. It covers translations, colored chips, inline-editable chips, and form field components.
 
 ## What It Generates
 
@@ -22,7 +22,7 @@ The `comet-admin-translatable-enum` skill generates React components for display
 ## Examples
 
 :::tip
-Skills should trigger automatically based on your prompt. If a skill does not activate as expected, you can force it by prefixing your prompt with "Use the comet-admin-translatable-enum skill" (or `/comet-admin-translatable-enum`).
+Skills should trigger automatically based on your prompt. If a skill does not activate as expected, you can force it by prefixing your prompt with "Use the comet-admin-enum skill" (or `/comet-admin-enum`).
 :::
 
 ### All components at once

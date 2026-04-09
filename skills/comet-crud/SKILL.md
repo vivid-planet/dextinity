@@ -2,7 +2,7 @@
 name: comet-crud
 description: |
     Orchestrates full-stack CRUD entity generation for a Comet DXP project by composing existing skills in sequence:
-    comet-api-graphql → comet-admin-translatable-enum → comet-admin-datagrid → comet-admin-form → comet-admin-pages → MasterMenu.
+    comet-api-graphql → comet-admin-enum → comet-admin-datagrid → comet-admin-form → comet-admin-pages → MasterMenu.
     Each step includes lint/tsc validation and a git commit.
     TRIGGER when: user says "create a new entity", "generate CRUD for X", "scaffold X", "full CRUD for X",
     or any phrase requesting end-to-end entity generation (API + admin UI) in a Comet DXP project.
@@ -27,7 +27,7 @@ I'll generate full CRUD for <EntityName>:
 | #   | Phase              | What will be generated                                                        | Skill                          |
 |-----|--------------------|-------------------------------------------------------------------------------|--------------------------------|
 | 1   | API Entity         | Entity, service, resolver, DTOs, paginated response, module, migration        | comet-api-graphql              |
-| 2   | Translatable Enums | Per enum: translatable component, chip, form field                            | comet-admin-translatable-enum  |
+| 2   | Translatable Enums | Per enum: translatable component, chip, form field                            | comet-admin-enum  |
 | 3+4 | DataGrid & Form    | Grid + form components (run in parallel via subagents)                         | comet-admin-datagrid + form    |
 | 5   | Admin Page         | Page component wiring grid + form with Stack/StackSwitch navigation           | comet-admin-pages              |
 | 6   | Master Menu        | Route entry in MasterMenu, import page component                              | —                              |
@@ -51,7 +51,7 @@ Use the **comet-api-graphql** skill.
 
 Skip this phase if the entity has no enum fields.
 
-Use the **comet-admin-translatable-enum** skill.
+Use the **comet-admin-enum** skill.
 
 For **every** enum in the entity:
 

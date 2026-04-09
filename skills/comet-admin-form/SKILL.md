@@ -54,7 +54,7 @@ Generate Final Form components by reading the GraphQL schema, determining fields
 For every **enum field**:
 
 1. Search for an existing reusable field component (e.g. glob `**/<EnumName>SelectField.tsx`, `**/<EnumName>RadioGroupField.tsx`, `**/<EnumName>CheckboxListField.tsx`)
-2. If none exists — **stop and use the `comet-admin-translatable-enum` skill** to create one first
+2. If none exists — **stop and use the `comet-admin-enum` skill** to create one first
 
 For every **ManyToOne or ManyToMany relation field**:
 

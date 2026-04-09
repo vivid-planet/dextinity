@@ -155,7 +155,7 @@ export const ProductToolbar: FunctionComponent<ProductToolbarProps> = ({ id, add
 - When the entity has a status or type enum, display a chip next to the title using the entity's chip component (e.g. `<ProductStatusChip />`).
 - Render the chip in a separate `<ToolbarItem>` after the title block.
 - Only render the chip when data is available (`data?.entity.status && ...`).
-- If no chip component exists yet, use the `comet-admin-translatable-enum` skill to create one first.
+- If no chip component exists yet, use the `comet-admin-enum` skill to create one first.
 
 ## Adaptation Rules
 

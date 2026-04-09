@@ -69,7 +69,7 @@ import { cuisineMessageDescriptorMap } from "./components/cuisine/Cuisine";
 ```
 
 - The `Box` wrapper with `stopPropagation` on both `onClick` and `onMouseDown` is **required** to prevent the chip click from triggering `onRowClick` navigation
-- Use the `comet-admin-translatable-enum` skill to create the editable chip component if it doesn't exist
+- Use the `comet-admin-enum` skill to create the editable chip component if it doesn't exist
 - Keep `type: "singleSelect"` and `valueOptions` so the column remains filterable
 
 ## With Static Select (only when user explicitly requests it)
@@ -111,10 +111,10 @@ Use `renderStaticSelectCell` only when the user specifically asks for inline lab
 
 ## Rules
 
-- **Enum columns always render as chips with a filterable select by default.** For every enum field, create a chip component using the `comet-admin-translatable-enum` skill and use it in the grid. Only fall back to `renderStaticSelectCell` when the user explicitly requests it.
+- **Enum columns always render as chips with a filterable select by default.** For every enum field, create a chip component using the `comet-admin-enum` skill and use it in the grid. Only fall back to `renderStaticSelectCell` when the user explicitly requests it.
 - **Always add `type: "singleSelect"` and `valueOptions`** to enum columns so they are filterable via a select dropdown.
 - **Use `messageDescriptorMapToValueOptions`** to convert the translatable enum's `messageDescriptorMap` to `valueOptions`. Import the `messageDescriptorMap` from the translatable enum file (e.g. `productStatusMessageDescriptorMap`). If the helper does not exist in the project, create it first.
 - Search for an existing chip component (glob `**/<EnumName>Chip.tsx`) before generating a new one.
-- If no chip component exists, use the `comet-admin-translatable-enum` skill to create one first.
+- If no chip component exists, use the `comet-admin-enum` skill to create one first.
 - `valueOptions` can include `cellContent` with `GridCellContent` for rich rendering (icon, secondary text) when using `renderStaticSelectCell`.
 - `valueFormatter` is only needed when using `renderStaticSelectCell`: `(value, row) => row.type?.toString()`.

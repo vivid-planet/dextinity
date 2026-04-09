@@ -1,5 +1,5 @@
 ---
-name: comet-admin-translatable-enum
+name: comet-admin-enum
 description: |
     Creates React translatable enum components, colored chip components, editable chip components
     (with Apollo query + mutation), Final Form field components (Select, Autocomplete, RadioGroup,

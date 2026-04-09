@@ -1,6 +1,6 @@
 # Enum Fields
 
-**Always use a reusable field from the `comet-admin-translatable-enum` skill. Check first, create if missing.**
+**Always use a reusable field from the `comet-admin-enum` skill. Check first, create if missing.**
 
 ## Single value
 
@@ -26,4 +26,4 @@ Typically `<EnumName>CheckboxListField` or `<EnumName>SelectField` with `multipl
 ## Rules
 
 - Always search for an existing reusable enum field component first (glob `**/<EnumName>SelectField.tsx`, `**/<EnumName>RadioGroupField.tsx`, `**/<EnumName>CheckboxListField.tsx`)
-- If none exists, use the `comet-admin-translatable-enum` skill to create one before generating the form
+- If none exists, use the `comet-admin-enum` skill to create one before generating the form

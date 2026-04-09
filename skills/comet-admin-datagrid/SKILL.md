@@ -12,7 +12,7 @@ Generate server-side DataGrid components by reading the GraphQL schema, determin
 ## Prerequisites
 
 1. **Read the GraphQL schema** for the target entity to determine: list query signature (`filter`, `limit`, `offset`, `search`, `sort`), paginated return type, available fields, and whether a `deleteXxx` mutation exists.
-2. **Check MUI DataGrid package** in `admin/package.json` — use `DataGridPro` unless `DataGridPremium` is already used or requested.
+2. **Check MUI DataGrid package** in `admin/package.json` — use whichever variant is installed (`DataGrid`, `DataGridPro`, or `DataGridPremium`).
 3. **Confirm output path** with the user if not obvious from context.
 
 ## Core Imports

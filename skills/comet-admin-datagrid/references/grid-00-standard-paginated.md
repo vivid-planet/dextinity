@@ -221,7 +221,7 @@ Override row height density on the DataGridPro:
 - `actions` column is always last, `pinned: "right"`, `width: 84`
 - Omit `CrudContextMenu` and `delete*` imports/types if no delete mutation exists in the schema
 - Omit `onRowClick` if the entity has no edit page
-- Use `DataGridPro` by default; switch to `DataGridPremium` only if the user requests premium features
+- Use whichever DataGrid variant is installed (`DataGrid`, `DataGridPro`, or `DataGridPremium`)
 - Generated types come from `./<EntityName>sGrid.generated` — never create this file manually
 - `renderCell` can always be used for any field type when fully custom rendering is needed
 - For column type patterns, see the `grid-col-def-*.md` reference files

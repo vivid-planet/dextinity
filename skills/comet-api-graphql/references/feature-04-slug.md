@@ -13,7 +13,7 @@ async findBySlug(slug: string): Promise<ProductCategory | null> {
 }
 ```
 
-When the entity is scoped (Mode B), also accept scope:
+When the entity is scoped and uses a `scope` arg (embedded or flat scope fields), also accept scope:
 
 ```typescript
 async findBySlug(scope: NewsScope, slug: string): Promise<News | null> {

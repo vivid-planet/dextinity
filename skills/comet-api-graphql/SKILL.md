@@ -25,9 +25,7 @@ The skill accepts two starting points:
 ## Prerequisites
 
 1. **Read the entity file** (if it exists) to extract: class name, all properties with their MikroORM/GraphQL decorators, and relation types.
-2. **Determine scope mode** — Most entities in this project are scoped. If the entity file exists, read it to determine the mode from its decorators. If working from a user description and scope is not mentioned, **ask the user** before proceeding — do not assume no scope.
-    - (a) `@ScopedEntity` with callback → **preferred** — entity has flat scope fields (`domain`, `language`) and `@ScopedEntity((row) => ({ domain: row.domain, language: row.language }))`
-    - (b) no scope → use `skipScopeCheck: true`
+2. **Determine if the entity is scoped** — Most entities in this project are scoped. If the entity file exists, read it to determine this from its decorators. If working from a user description and scope is not mentioned, **ask the user** before proceeding — do not assume no scope. See [feature-05-scope.md](references/feature-05-scope.md) for the available scope options and their implementation patterns.
 3. **Identify the output directory** — ask the user or infer from project structure. DTOs go in a `dto/` subfolder.
 4. **Check the NestJS module** file to understand existing providers and entity registrations.
 
@@ -39,7 +37,7 @@ Extract from the entity file or user description:
 
 - Class name → derive name variants (see [gen-00-resolver.md](references/gen-00-resolver.md) for naming)
 - All properties: type, MikroORM decorators (`@Property`, `@ManyToOne`, `@OneToMany`, `@ManyToMany`, `@OneToOne`, `@Enum`, `@RootBlock`), nullability
-- Whether entity has: `position` field, `slug` field (unique), `@ScopedEntity` with flat scope fields
+- Whether entity has: `position` field, `slug` field (unique), scope (see [feature-05-scope.md](references/feature-05-scope.md))
 - Permission string for `@RequiredPermission`
 
 ### Step 2 — Determine API mode and which files to generate
@@ -51,17 +49,17 @@ Extract from the entity file or user description:
 
 If the user says "read-only", "no mutations", "query only", or similar, use read-only mode. If unclear, ask.
 
-| File               | Full CRUD                                | Read-only | Condition                                               |
-| ------------------ | ---------------------------------------- | --------- | ------------------------------------------------------- |
-| Service            | Yes                                      | Yes       | Read-only: only `findOneById`, `findAll` methods        |
-| Resolver           | Yes                                      | Yes       | Read-only: only queries + `@ResolveField`, no mutations |
-| Input DTO          | Yes                                      | No        | —                                                       |
-| Filter DTO         | Yes                                      | Yes       | —                                                       |
-| Sort DTO           | Yes                                      | Yes       | —                                                       |
-| Args DTO           | Yes                                      | Yes       | —                                                       |
-| Paginated Response | Yes                                      | Yes       | —                                                       |
-| Scope Input DTO    | When entity has `@ScopedEntity` (Mode A) | Same      | See feature-05-scope.md                                 |
-| Nested Input       | Per OneToMany with `orphanRemoval: true` | No        | Only when relation should be in input                   |
+| File               | Full CRUD                                | Read-only | Condition                                                 |
+| ------------------ | ---------------------------------------- | --------- | --------------------------------------------------------- |
+| Service            | Yes                                      | Yes       | Read-only: only `findOneById`, `findAll` methods          |
+| Resolver           | Yes                                      | Yes       | Read-only: only queries + `@ResolveField`, no mutations   |
+| Input DTO          | Yes                                      | No        | —                                                         |
+| Filter DTO         | Yes                                      | Yes       | —                                                         |
+| Sort DTO           | Yes                                      | Yes       | —                                                         |
+| Args DTO           | Yes                                      | Yes       | —                                                         |
+| Paginated Response | Yes                                      | Yes       | —                                                         |
+| Scope Input DTO    | Depends on scope pattern                 | Same      | See [feature-05-scope.md](references/feature-05-scope.md) |
+| Nested Input       | Per OneToMany with `orphanRemoval: true` | No        | Only when relation should be in input                     |
 
 ### Step 3 — Generate files
 
@@ -90,7 +88,7 @@ Read these when the entity has the corresponding feature. Apply changes on top o
 | **Validation**             | [feature-02-validation.md](references/feature-02-validation.md)       | Create/update operations need business logic validation                         |
 | **Dedicated resolver arg** | [feature-03-dedicated-arg.md](references/feature-03-dedicated-arg.md) | A ManyToOne relation should be a top-level resolver arg instead of in the input |
 | **Slug query**             | [feature-04-slug.md](references/feature-04-slug.md)                   | Entity has a `slug` string field with `unique: true`                            |
-| **Scoped entity**          | [feature-05-scope.md](references/feature-05-scope.md)                 | Entity has `@ScopedEntity` with flat scope fields                               |
+| **Scoped entity**          | [feature-05-scope.md](references/feature-05-scope.md)                 | Entity is scoped                                                                |
 
 #### Field Type Patterns
 

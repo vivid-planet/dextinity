@@ -231,4 +231,4 @@ export class ProductResolver {
 - **@ResolveField for relations**: Use `entity.relation.loadOrFail()` (ManyToOne) or `entity.relation.loadItems()` (ManyToMany/OneToMany).
 - **@ResolveField for blocks**: Delegate transformation to `service.transformToPlain()`.
 - **@AffectedEntity**: Add on single query, update, and delete mutations. NOT on list query (unless scoped — see feature-05-scope.md).
-- **@RequiredPermission**: Use `skipScopeCheck: true` when entity has no scope (scope mode a).
+- **@RequiredPermission**: Use `skipScopeCheck: true` when entity has no scope. See [feature-05-scope.md](feature-05-scope.md).

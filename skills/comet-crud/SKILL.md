@@ -98,7 +98,7 @@ Use the **comet-admin-pages** skill.
 
 ## Commit Strategy
 
-After each phase, create a git commit using `--no-verify` for intermediate phases (1–5), because lint tools like knip may report false positives until all phases are complete and everything is wired together. Only the final phase (Phase 6) commit should run hooks normally (without `--no-verify`).
+After each phase, create a git commit:
 
 1. Stage only the files created/modified in that phase (use `git add <file1> <file2> ...`)
 2. Create commit with a descriptive message, e.g.:
@@ -109,19 +109,8 @@ After each phase, create a git commit using `--no-verify` for intermediate phase
     - `Add WeatherStationsPage with Stack navigation`
     - `Add WeatherStations to MasterMenu`
 
-If auto-commit is blocked (e.g., by permission restrictions or hook failures), generate a shell script the user can execute:
-
-```bash
-#!/bin/bash
-git add path/to/file1 path/to/file2
-git commit -m "Commit message here"
-```
-
-Then **wait for the user to confirm** they have run it before proceeding to the next phase.
-
 ## Error Recovery
 
 - If lint fails: fix the issues automatically, re-run lint, then commit
 - If tsc fails: read the errors, fix the source files, re-run tsc, then commit
 - If a skill produces unexpected output: read the generated files, compare against the skill's reference docs, and fix
-- If committing fails due to GPG signing issues: retry with `-c commit.gpgsign=false`

@@ -25,13 +25,19 @@ export type ActionLogDialogProps = {
      * Latest name of the entity, displayed in the dialog title.
      */
     name?: string;
+    /**
+     * Scope to read the action log in. Defaults to the current content scope; pass the scope of an action log row
+     * when the dialog is opened from a list of several scopes.
+     */
+    scope?: ContentScope;
     open: boolean;
     onClose: () => void;
 };
 
-export function ActionLogDialog({ entity, entityId, name, open, onClose }: ActionLogDialogProps) {
+export function ActionLogDialog({ entity, entityId, name, scope: requestedScope, open, onClose }: ActionLogDialogProps) {
     const intl = useIntl();
-    const { scope } = useContentScope();
+    const { scope: currentScope } = useContentScope();
+    const scope = requestedScope ?? currentScope;
     const [view, setView] = useState<ActionLogDialogView>({ type: "grid" });
 
     useEffect(() => {

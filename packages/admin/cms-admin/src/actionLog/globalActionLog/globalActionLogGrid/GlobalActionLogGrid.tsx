@@ -9,19 +9,22 @@ import {
     muiGridFilterToGql,
     muiGridSortToGql,
     ToolbarItem,
+    Tooltip,
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
 } from "@dextinity/admin";
-import { Autocomplete, Chip } from "@mui/material";
+import { Time } from "@dextinity/admin-icons";
+import { Autocomplete, Chip, IconButton } from "@mui/material";
 import { type GridFilterInputValueProps, type GridFilterItem, type GridFilterOperator, useGridRootProps } from "@mui/x-data-grid";
 import { capitalCase } from "change-case";
 import isEqual from "lodash.isequal";
 import { createContext, useContext, useMemo, useState } from "react";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { type ContentScope, useContentScope } from "../../../contentScope/Provider";
 import { DataGrid } from "../../../dataGrid/DataGrid";
+import { ActionLogDialog } from "../../actionLog/actionLogDialog/ActionLogDialog";
 import { ActionLogShowVersionDialog } from "../../actionLog/actionLogShowVersionDialog/ActionLogShowVersionDialog";
 import { ActionLogTypeChip } from "../../components/actionLogTypeChip/ActionLogTypeChip";
 import { ScopeCell } from "../../components/scopeCell/ScopeCell";
@@ -142,6 +145,7 @@ export function GlobalActionLogGrid() {
     const intl = useIntl();
     const { values: scopeValues } = useContentScope();
     const [selectedRow, setSelectedRow] = useState<GQLGlobalActionLogGridFragment | null>(null);
+    const [openEntity, setOpenEntity] = useState<{ entityName: string; entityId: string; scope?: ContentScope } | null>(null);
 
     const dataGridProps = {
         ...useDataGridRemote({ initialSort: [{ field: "createdAt", sort: "desc" }] }),
@@ -218,6 +222,33 @@ export function GlobalActionLogGrid() {
                 filterable: false,
                 renderCell: ({ row }) => <UserCell id={row.user.id} name={row.user.name ?? undefined} />,
             },
+            {
+                field: "actions",
+                type: "actions",
+                headerName: "",
+                width: 100,
+                sortable: false,
+                filterable: false,
+                renderCell: ({ row }) => (
+                    <Tooltip
+                        title={
+                            <FormattedMessage
+                                id="dextinity.globalActionLog.actions.showEntityActionLog"
+                                defaultMessage="Show action log for this entity"
+                            />
+                        }
+                    >
+                        <IconButton
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                setOpenEntity({ entityName: row.entityName, entityId: row.entityId, scope: row.scope?.[0] });
+                            }}
+                        >
+                            <Time />
+                        </IconButton>
+                    </Tooltip>
+                ),
+            },
         ],
         [intl],
     );
@@ -254,6 +285,15 @@ export function GlobalActionLogGrid() {
                     showToolbar
                 />
                 <ActionLogShowVersionDialog row={selectedRow} open={selectedRow !== null} onClose={() => setSelectedRow(null)} />
+                {openEntity && (
+                    <ActionLogDialog
+                        entity={openEntity.entityName}
+                        entityId={openEntity.entityId}
+                        scope={openEntity.scope}
+                        open
+                        onClose={() => setOpenEntity(null)}
+                    />
+                )}
             </MainContent>
         </ScopeFilterOptionsContext.Provider>
     );

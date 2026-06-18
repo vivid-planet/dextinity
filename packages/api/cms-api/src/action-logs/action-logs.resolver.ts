@@ -19,6 +19,7 @@ import { AccessControlServiceInterface, Permission, SystemUser } from "../user-p
 import { ActionLogsAclService } from "./action-logs.acl.service";
 import { ActionLogsService } from "./action-logs.service";
 import { actionLogFilterToWhere } from "./action-logs-filter.utils";
+import { ActionLogsUserLoaderService } from "./action-logs-user-loader.service";
 import { containsAllScopes } from "./contains-all-scopes";
 import { ActionLogType } from "./dto/action-log-type.enum";
 import { ActionLogsArgs } from "./dto/action-logs.args";
@@ -34,6 +35,7 @@ export class ActionLogsResolver {
         private readonly entityManager: EntityManager<PostgreSqlDriver>,
         private readonly userPermissionsService: UserPermissionsService,
         private readonly previousActionLogLoader: PreviousActionLogLoaderService,
+        private readonly actionLogsUserLoader: ActionLogsUserLoaderService,
         private readonly actionLogsService: ActionLogsService,
         private readonly actionLogsAclService: ActionLogsAclService,
         @Inject(ACCESS_CONTROL_SERVICE) private readonly accessControlService: AccessControlServiceInterface,
@@ -189,10 +191,6 @@ export class ActionLogsResolver {
 
     @ResolveField(() => ActionLogsUser)
     async user(@Parent() actionLog: ActionLog): Promise<ActionLogsUser> {
-        if (this.userPermissionsService.isSystemUser(actionLog.userId)) {
-            return { id: actionLog.userId, name: actionLog.userId };
-        }
-        const user = await this.userPermissionsService.findUser(actionLog.userId);
-        return user ? { id: user.id, name: user.name } : { id: actionLog.userId };
+        return this.actionLogsUserLoader.load(actionLog.userId);
     }
 }

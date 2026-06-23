@@ -27,6 +27,7 @@ input ActionLogFilter {
   and: [ActionLogFilter!]
   createdAt: DateTimeFilter
   entityId: IdFilter
+  entityName: StringFilter
   or: [ActionLogFilter!]
   userId: StringFilter
   version: NumberFilter
@@ -1446,6 +1447,7 @@ type PaginatedWarnings {
 }
 
 enum Permission {
+  actionLog
   blockPreview
   brevoNewsletter
   brevoNewsletterConfig

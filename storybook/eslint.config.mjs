@@ -8,7 +8,6 @@ export default defineConfig([
     ...storybook.configs["flat/recommended"],
     {
         rules: {
-            "@calm/react-intl/missing-formatted-message": "off",
             "@typescript-eslint/no-empty-function": "off",
             "@typescript-eslint/no-explicit-any": "off",
             "@typescript-eslint/no-non-null-assertion": "off",

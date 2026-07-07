@@ -42,7 +42,6 @@
         "lint:prettier": "pnpm exec prettier --check '*.{ts,js,json,md,yml,yaml}'"
     },
     "dependencies": {
-        "@calm/eslint-plugin-react-intl": "^1.4.1",
         "@dextinity/eslint-plugin": "workspace:*",
         "@eslint/eslintrc": "^3.3.6",
         "@eslint/js": "^9.39.5",

@@ -12,7 +12,7 @@ import {
 import { useMemo, useState } from "react";
 import { useIntl } from "react-intl";
 
-import { type ContentScope, useContentScope } from "../../../contentScope/Provider";
+import { useContentScope } from "../../../contentScope/Provider";
 import { DataGrid } from "../../../dataGrid/DataGrid";
 import { ActionLogTypeChip } from "../../components/actionLogTypeChip/ActionLogTypeChip";
 import { ScopeCell } from "../../components/scopeCell/ScopeCell";
@@ -50,7 +50,7 @@ export function GlobalActionLogGrid() {
                 sortable: false,
                 filterable: false,
                 width: 150,
-                renderCell: ({ row }) => <ScopeCell scopes={(row.scope as ContentScope[] | null | undefined) ?? []} />,
+                renderCell: ({ row }) => <ScopeCell scopes={row.scope ?? []} />,
             },
             {
                 field: "type",
@@ -121,5 +121,3 @@ export function GlobalActionLogGrid() {
         </MainContent>
     );
 }
-
-export { globalActionLogGridFragment } from "./GlobalActionLogGrid.gql";

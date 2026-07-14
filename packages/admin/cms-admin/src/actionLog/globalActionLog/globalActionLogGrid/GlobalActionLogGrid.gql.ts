@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const globalActionLogGridFragment = gql`
+const globalActionLogGridFragment = gql`
     fragment GlobalActionLogGrid on ActionLog {
         id
         user {

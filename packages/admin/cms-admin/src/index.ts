@@ -10,7 +10,6 @@ export { ActionLogShowVersion, actionLogShowVersionFragment } from "./actionLog/
 export { ActionLogTypeChip } from "./actionLog/components/actionLogTypeChip/ActionLogTypeChip";
 export { DiffHeader, type DiffHeaderProps } from "./actionLog/components/diffHeader/DiffHeader";
 export { DiffViewer, type DiffViewerProps } from "./actionLog/components/diffViewer/DiffViewer";
-export { GlobalActionLogGrid, globalActionLogGridFragment } from "./actionLog/globalActionLog/globalActionLogGrid/GlobalActionLogGrid";
 export { GlobalActionLogPage } from "./actionLog/globalActionLog/globalActionLogPage/GlobalActionLogPage";
 export { AnchorBlock } from "./blocks/AnchorBlock";
 export { BlockAdminComponentButton } from "./blocks/common/BlockAdminComponentButton";

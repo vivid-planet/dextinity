@@ -50,7 +50,7 @@ export function GlobalActionLogGrid() {
                 sortable: false,
                 filterable: false,
                 width: 150,
-                renderCell: ({ row }) => <ScopeCell scopes={row.scope ?? []} />,
+                renderCell: ({ row }) => <ScopeCell scopes={row.scope} />,
             },
             {
                 field: "type",

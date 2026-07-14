@@ -7,7 +7,7 @@ import { useIntl } from "react-intl";
 import { type ContentScope, type ContentScopeValues, useContentScope } from "../../../contentScope/Provider";
 
 type ScopeCellProps = {
-    scopes: ContentScope[];
+    scopes: ContentScope[] | null;
 };
 
 const formatScopeLabel = (scope: ContentScope, scopeValues: ContentScopeValues): string => {
@@ -22,7 +22,7 @@ export function ScopeCell({ scopes }: ScopeCellProps) {
     const intl = useIntl();
     const { values: scopeValues } = useContentScope();
 
-    if (scopes.length === 0) {
+    if (!scopes || scopes.length === 0) {
         return <Chip label={intl.formatMessage(messages.globalContentScope)} />;
     }
 

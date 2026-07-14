@@ -4,22 +4,18 @@ import {
     DataGridToolbar,
     type GridColDef,
     MainContent,
-    messages,
     muiGridSortToGql,
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
 } from "@comet/admin";
-import { Box, Chip } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { capitalCase } from "change-case";
-import isEqual from "lodash.isequal";
 import { useMemo, useState } from "react";
 import { useIntl } from "react-intl";
 
 import { type ContentScope, useContentScope } from "../../../contentScope/Provider";
 import { DataGrid } from "../../../dataGrid/DataGrid";
 import { ActionLogTypeChip } from "../../components/actionLogTypeChip/ActionLogTypeChip";
+import { ScopeCell } from "../../components/scopeCell/ScopeCell";
 import { UserCell } from "../../components/userCell/UserCell";
 import { GlobalActionLogShowVersionDialog } from "../globalActionLogShowVersionDialog/GlobalActionLogShowVersionDialog";
 import { globalActionLogGridQuery } from "./GlobalActionLogGrid.gql";
@@ -28,11 +24,7 @@ import type {
     GQLGlobalActionLogGridQuery,
     GQLGlobalActionLogGridQueryVariables,
 } from "./GlobalActionLogGrid.gql.generated";
-
-const EntityTypeChip = styled(Chip)(({ theme }) => ({
-    backgroundColor: theme.palette.grey[100],
-    color: theme.palette.text.primary,
-}));
+import { EntityTypeChip } from "./GlobalActionLogGrid.sc";
 
 export function GlobalActionLogGrid() {
     const intl = useIntl();
@@ -43,18 +35,6 @@ export function GlobalActionLogGrid() {
         ...useDataGridRemote({ initialSort: [{ field: "createdAt", sort: "desc" }] }),
         ...usePersistentColumnState("GlobalActionLogGrid"),
     };
-
-    const formatScopeLabel = useMemo(
-        () =>
-            (scope: ContentScope): string => {
-                const matched = scopeValues.find((item) => isEqual(item.scope, scope));
-                const source = matched ?? { scope, label: undefined as Record<string, string> | undefined };
-                return Object.keys(source.scope)
-                    .map((key) => source.label?.[key] ?? capitalCase(String(source.scope[key])))
-                    .join(" / ");
-            },
-        [scopeValues],
-    );
 
     const columns = useMemo<GridColDef<GQLGlobalActionLogGridFragment>[]>(
         () => [
@@ -70,19 +50,7 @@ export function GlobalActionLogGrid() {
                 sortable: false,
                 filterable: false,
                 width: 150,
-                renderCell: ({ row }) => {
-                    const scopes = (row.scope as ContentScope[] | null | undefined) ?? [];
-                    if (scopes.length === 0) {
-                        return <Chip label={intl.formatMessage(messages.globalContentScope)} />;
-                    }
-                    return (
-                        <Box display="flex" gap={1} flexWrap="wrap">
-                            {scopes.map((scope) => (
-                                <Chip key={JSON.stringify(scope)} label={formatScopeLabel(scope)} />
-                            ))}
-                        </Box>
-                    );
-                },
+                renderCell: ({ row }) => <ScopeCell scopes={(row.scope as ContentScope[] | null | undefined) ?? []} />,
             },
             {
                 field: "type",
@@ -116,7 +84,7 @@ export function GlobalActionLogGrid() {
                 renderCell: ({ row }) => <UserCell id={row.user.id} name={row.user.name ?? undefined} />,
             },
         ],
-        [intl, formatScopeLabel],
+        [intl],
     );
 
     const scopes = useMemo(() => scopeValues.map((item) => item.scope), [scopeValues]);

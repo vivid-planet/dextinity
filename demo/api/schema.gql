@@ -28,8 +28,16 @@ input ActionLogFilter {
   createdAt: DateTimeFilter
   entityId: IdFilter
   or: [ActionLogFilter!]
+  scope: ActionLogScopeFilter
   userId: StringFilter
   version: NumberFilter
+}
+
+input ActionLogScopeFilter {
+  equal: JSONObject
+  isAnyOf: [JSONObject!]
+  isGlobal: Boolean
+  notEqual: JSONObject
 }
 
 input ActionLogSort {
@@ -40,6 +48,7 @@ input ActionLogSort {
 enum ActionLogSortField {
   createdAt
   entityName
+  scope
   version
 }
 

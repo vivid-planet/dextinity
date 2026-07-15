@@ -1,4 +1,5 @@
 import {
+    Button,
     FieldSet,
     FillSpace,
     FullHeightContent,
@@ -7,6 +8,7 @@ import {
     SaveBoundary,
     SaveBoundarySaveButton,
     Stack,
+    StackLink,
     StackMainContent,
     StackPage,
     StackSwitch,
@@ -16,9 +18,10 @@ import {
     ToolbarBackButton,
     useStackSwitch,
 } from "@dextinity/admin";
-import { ActionLogButton, ContentScopeIndicator } from "@dextinity/cms-admin";
+import { Time } from "@dextinity/admin-icons";
+import { ActionLogButton, ActionLogsGrid, ContentScopeIndicator } from "@dextinity/cms-admin";
 import type { GQLQuery } from "@src/graphql.generated";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { ProductForm } from "./ProductForm";
 import { ProductPriceForm } from "./ProductPriceForm";
@@ -47,7 +50,15 @@ const ProductsPage = () => {
         <Stack topLevelTitle={intl.formatMessage({ id: "products.products", defaultMessage: "Products" })}>
             <ProductsStackSwitch initialPage="grid">
                 <StackPage name="grid">
-                    <StackToolbar scopeIndicator={<ContentScopeIndicator global />} />
+                    <StackToolbar scopeIndicator={<ContentScopeIndicator global />}>
+                        <ToolbarAutomaticTitleItem />
+                        <FillSpace />
+                        <ToolbarActions>
+                            <Button variant="textDark" startIcon={<Time />} component={StackLink} pageName="action-log" payload="action-log">
+                                <FormattedMessage id="products.actionLog" defaultMessage="Action Log" />
+                            </Button>
+                        </ToolbarActions>
+                    </StackToolbar>
                     <StackMainContent fullHeight>
                         <ProductsGrid />
                     </StackMainContent>
@@ -151,6 +162,13 @@ const ProductsPage = () => {
                             </FieldSet>
                         </StackMainContent>
                     </SaveBoundary>
+                </StackPage>
+                <StackPage name="action-log" title={intl.formatMessage({ id: "products.actionLog", defaultMessage: "Action Log" })}>
+                    <StackToolbar scopeIndicator={<ContentScopeIndicator global />}>
+                        <ToolbarBackButton />
+                        <ToolbarAutomaticTitleItem />
+                    </StackToolbar>
+                    <ActionLogsGrid<GQLQuery> queryName="productActionLogs" />
                 </StackPage>
             </ProductsStackSwitch>
         </Stack>

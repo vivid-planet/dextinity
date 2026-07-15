@@ -1,8 +1,10 @@
 import {
+    Button,
     FillSpace,
     SaveBoundary,
     SaveBoundarySaveButton,
     Stack,
+    StackLink,
     StackMainContent,
     StackPage,
     StackSwitch,
@@ -11,11 +13,12 @@ import {
     ToolbarAutomaticTitleItem,
     ToolbarBackButton,
 } from "@dextinity/admin";
-import { ActionLogButton, ContentScopeIndicator } from "@dextinity/cms-admin";
+import { Time } from "@dextinity/admin-icons";
+import { ActionLogButton, ActionLogsGrid, ContentScopeIndicator } from "@dextinity/cms-admin";
 import type { GQLQuery } from "@src/graphql.generated";
 import { ManufacturerForm } from "@src/products/ManufacturerForm";
 import { ManufacturersGrid } from "@src/products/ManufacturersGrid";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 const FormToolbar = ({ id }: { id?: string }) => (
     <StackToolbar>
@@ -35,7 +38,15 @@ export function ManufacturersPage() {
         <Stack topLevelTitle={intl.formatMessage({ id: "products.manufacturers", defaultMessage: "Manufacturers" })}>
             <StackSwitch>
                 <StackPage name="grid">
-                    <StackToolbar scopeIndicator={<ContentScopeIndicator global />} />
+                    <StackToolbar scopeIndicator={<ContentScopeIndicator global />}>
+                        <ToolbarAutomaticTitleItem />
+                        <FillSpace />
+                        <ToolbarActions>
+                            <Button variant="textDark" startIcon={<Time />} component={StackLink} pageName="action-log" payload="action-log">
+                                <FormattedMessage id="manufacturers.actionLog" defaultMessage="Action Log" />
+                            </Button>
+                        </ToolbarActions>
+                    </StackToolbar>
                     <StackMainContent fullHeight>
                         <ManufacturersGrid />
                     </StackMainContent>
@@ -57,6 +68,13 @@ export function ManufacturersPage() {
                             <ManufacturerForm />
                         </StackMainContent>
                     </SaveBoundary>
+                </StackPage>
+                <StackPage name="action-log" title={intl.formatMessage({ id: "manufacturers.actionLog", defaultMessage: "Action Log" })}>
+                    <StackToolbar scopeIndicator={<ContentScopeIndicator global />}>
+                        <ToolbarBackButton />
+                        <ToolbarAutomaticTitleItem />
+                    </StackToolbar>
+                    <ActionLogsGrid<GQLQuery> queryName="manufacturerActionLogs" />
                 </StackPage>
             </StackSwitch>
         </Stack>

@@ -18,9 +18,10 @@ import {
     ToolbarBackButton,
     useStackSwitch,
 } from "@dextinity/admin";
-import { Add as AddIcon, Edit } from "@dextinity/admin-icons";
-import { ContentScopeIndicator } from "@dextinity/cms-admin";
+import { Add as AddIcon, Edit, Time } from "@dextinity/admin-icons";
+import { ActionLogsGrid, ContentScopeIndicator } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
+import type { GQLQuery } from "@src/graphql.generated";
 import { ProductVariantsGrid } from "@src/products/generator/generated/ProductVariantsGrid";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -49,7 +50,15 @@ export function ProductsPage() {
         <Stack topLevelTitle={intl.formatMessage({ id: "products.products", defaultMessage: "Products" })}>
             <ProductsStackSwitch>
                 <StackPage name="grid">
-                    <StackToolbar scopeIndicator={<ContentScopeIndicator global />} />
+                    <StackToolbar scopeIndicator={<ContentScopeIndicator global />}>
+                        <ToolbarAutomaticTitleItem />
+                        <FillSpace />
+                        <ToolbarActions>
+                            <Button variant="textDark" startIcon={<Time />} component={StackLink} pageName="action-log" payload="action-log">
+                                <FormattedMessage id="products.actionLog" defaultMessage="Action Log" />
+                            </Button>
+                        </ToolbarActions>
+                    </StackToolbar>
                     <StackMainContent fullHeight>
                         <ProductsGrid
                             toolbarAction={
@@ -176,6 +185,13 @@ export function ProductsPage() {
                             />
                         </MainContent>
                     </SaveBoundary>
+                </StackPage>
+                <StackPage name="action-log" title={intl.formatMessage({ id: "products.actionLog", defaultMessage: "Action Log" })}>
+                    <StackToolbar scopeIndicator={<ContentScopeIndicator global />}>
+                        <ToolbarBackButton />
+                        <ToolbarAutomaticTitleItem />
+                    </StackToolbar>
+                    <ActionLogsGrid<GQLQuery> queryName="productActionLogs" />
                 </StackPage>
             </ProductsStackSwitch>
         </Stack>

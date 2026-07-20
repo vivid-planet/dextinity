@@ -3,16 +3,16 @@ title: comet-api-graphql
 sidebar_position: 1
 ---
 
-The `comet-api-graphql` skill generates the NestJS/GraphQL API layer for a MikroORM entity. It follows the Comet convention of **thin resolvers** (GraphQL layer only) and **fat services** (all business logic).
+The `comet-api-graphql` skill generates the NestJS/GraphQL API layer for a MikroORM entity. It produces the same output style as `@comet/api-generator`: **resolvers contain the CRUD logic** (injecting `EntityManager` directly), while services are generated only when needed — position helpers for ordered entities and hand-written business-logic services for validation hooks.
 
 ## What It Generates
 
 - **Entity** — MikroORM entity with decorators, validation, and relations
-- **Service** — CRUD operations, pagination, filtering, sorting
-- **Resolver** — thin GraphQL resolver delegating to the service
+- **Resolver** — CRUD queries and mutations inline, plus `@ResolveField` for every relation and block
+- **Services** (conditional) — position helpers for entities with a `position` field; a business-logic (hooks) service for validation and side effects
 - **DTOs** — input, filter, sort, and args classes
 - **Paginated Response** — `ObjectType` for paginated list queries
-- **Module Registration** — adds the entity, service, and resolver to the NestJS module
+- **Module Registration** — adds the entity, resolver, and any services to the NestJS module
 
 ## Key Features
 
@@ -33,7 +33,7 @@ Skills should trigger automatically based on your prompt. If a skill does not ac
 
 > Create the API for a `BlogPost` entity with title, content, author (string), and publishedAt (date).
 
-The skill will create a scoped entity with a service, resolver, DTOs, and module registration using sensible defaults.
+The skill will create a scoped entity with a resolver, DTOs, and module registration using sensible defaults.
 
 ### Scoped entity with relations and slug validation
 
@@ -85,4 +85,4 @@ The skill will create a scoped entity with a service, resolver, DTOs, and module
 ### Add fields to an existing entity
 
 > Add a `description` text field and a `ManyToOne` relation to `Department` on the `Employee` entity,
-> and update the service, resolver, and DTOs.
+> and update the resolver and DTOs.

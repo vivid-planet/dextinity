@@ -1,6 +1,6 @@
-# Resolver — Thin Pattern
+# Resolver — CRUD Pattern
 
-Resolvers are **thin** — they handle GraphQL concerns (decorators, argument parsing, field resolution) and delegate all business logic to the service. Resolvers MUST NOT inject `EntityManager` directly.
+Resolvers are the **CRUD layer** — they inject `EntityManager` directly and contain the full create/update/delete logic inline, matching what `@comet/api-generator` emits. A separate service exists only in two cases: position helpers for entities with a `position` field, and a hand-written business-logic service for validation/side effects (see [gen-07-service.md](gen-07-service.md)).
 
 ## Naming Convention
 
@@ -16,7 +16,7 @@ When plural equals singular (e.g. `News`), suffix list query and args with `List
 
 **CRITICAL: Every relation (`@ManyToOne`, `@OneToMany`, `@ManyToMany`) and every block (`@RootBlock`) on the entity MUST have a `@ResolveField` method in the resolver.** This is not optional — it is a mandatory part of resolver generation.
 
-`@ResolveField` ensures GraphQL only loads relations when the client requests them. For single-entity queries this uses lazy loading (`loadOrFail()`, `loadItems()`). For list queries, the resolver extracts requested fields via `extractGraphqlFields` and passes them to the service, which conditionally populates relations to avoid N+1 queries (see [gen-07-service.md](gen-07-service.md)).
+`@ResolveField` ensures GraphQL only loads relations when the client requests them, via lazy loading (`loadOrFail()`, `loadItems()`). Never eagerly load relations via `.init()` or hardcoded `populate` in queries — rely solely on `@ResolveField` lazy loading.
 
 ### Relations — lazy load via entity property
 
@@ -48,42 +48,18 @@ async comments(@Parent() product: Product): Promise<Comment[]> {
 }
 ```
 
-### Blocks — delegate transformation to service
+### Blocks — transform via BlocksTransformerService
 
-Block fields require `BlocksTransformerService`, which lives in the service. The resolver delegates:
+Block fields require `BlocksTransformerService`, injected in the resolver constructor:
 
 ```typescript
-import { RootBlockDataScalar, DamImageBlock } from "@comet/cms-api";
+import { BlocksTransformerService, DamImageBlock, RootBlockDataScalar } from "@comet/cms-api";
 
 @ResolveField(() => RootBlockDataScalar(DamImageBlock))
 async mainImage(@Parent() product: Product): Promise<object> {
-    return this.productsService.transformToPlain(product.mainImage);
+    return this.blocksTransformer.transformToPlain(product.mainImage);
 }
 ```
-
-### List query — conditional populate for performance
-
-When the entity has relations with `@ResolveField`, add conditional populate in the list query to avoid N+1 queries. The resolver extracts the requested fields from `@Info()` and passes them to the service:
-
-```typescript
-import { extractGraphqlFields } from "@comet/cms-api";
-import { Info } from "@nestjs/graphql";
-import { GraphQLResolveInfo } from "graphql";
-
-@Query(() => PaginatedProducts)
-async products(
-    @Args()
-    args: ProductsArgs,
-    @Info() info: GraphQLResolveInfo,
-): Promise<PaginatedProducts> {
-    const fields = extractGraphqlFields(info, { root: "nodes" });
-    return this.productsService.findAll(args, fields);
-}
-```
-
-The service uses `fields` to conditionally populate — see [gen-07-service.md](gen-07-service.md).
-
-> **When no relations/blocks exist**: omit `@Info()`, `extractGraphqlFields`, `GraphQLResolveInfo`, and pass `args` directly without `fields`.
 
 ## File: `{entity-name}.resolver.ts`
 
@@ -92,21 +68,31 @@ The service uses `fields` to conditionally populate — see [gen-07-service.md](
 Full example for an entity with a ManyToMany relation (`tags`) and a block field (`mainImage`):
 
 ```typescript
-import { AffectedEntity, extractGraphqlFields, RequiredPermission, RootBlockDataScalar, DamImageBlock } from "@comet/cms-api";
-import { Args, ID, Info, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
-import { GraphQLResolveInfo } from "graphql";
+import {
+    AffectedEntity,
+    BlocksTransformerService,
+    DamImageBlock,
+    gqlArgsToMikroOrmQuery,
+    gqlSortToMikroOrmOrderBy,
+    RequiredPermission,
+    RootBlockDataScalar,
+} from "@comet/cms-api";
+import { EntityManager, FindOptions, Reference } from "@mikro-orm/postgresql";
+import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
 import { PaginatedProducts } from "./dto/paginated-products";
 import { ProductInput, ProductUpdateInput } from "./dto/product.input";
 import { ProductsArgs } from "./dto/products.args";
 import { Product } from "./entities/product.entity";
 import { Tag } from "@src/tags/entities/tag.entity";
-import { ProductsService } from "./products.service";
 
 @Resolver(() => Product)
 @RequiredPermission(["products"], { skipScopeCheck: true })
 export class ProductResolver {
-    constructor(private readonly productsService: ProductsService) {}
+    constructor(
+        protected readonly entityManager: EntityManager,
+        private readonly blocksTransformer: BlocksTransformerService,
+    ) {}
 
     @Query(() => Product)
     @AffectedEntity(Product)
@@ -114,17 +100,22 @@ export class ProductResolver {
         @Args("id", { type: () => ID })
         id: string,
     ): Promise<Product> {
-        return this.productsService.findOneById(id);
+        const product = await this.entityManager.findOneOrFail(Product, id);
+        return product;
     }
 
     @Query(() => PaginatedProducts)
     async products(
         @Args()
-        args: ProductsArgs,
-        @Info() info: GraphQLResolveInfo,
+        { search, filter, sort, offset, limit }: ProductsArgs,
     ): Promise<PaginatedProducts> {
-        const fields = extractGraphqlFields(info, { root: "nodes" });
-        return this.productsService.findAll(args, fields);
+        const where = gqlArgsToMikroOrmQuery({ search, filter }, this.entityManager.getMetadata(Product));
+        const options: FindOptions<Product> = { offset, limit };
+        if (sort) {
+            options.orderBy = gqlSortToMikroOrmOrderBy(sort);
+        }
+        const [entities, totalCount] = await this.entityManager.findAndCount(Product, where, options);
+        return new PaginatedProducts(entities, totalCount);
     }
 
     @Mutation(() => Product)
@@ -132,7 +123,19 @@ export class ProductResolver {
         @Args("input", { type: () => ProductInput })
         input: ProductInput,
     ): Promise<Product> {
-        return this.productsService.create(input);
+        const { tags: tagsInput, mainImage: mainImageInput, ...assignInput } = input;
+        const product = this.entityManager.create(Product, {
+            ...assignInput,
+            mainImage: mainImageInput.transformToBlockData(),
+        });
+        if (tagsInput) {
+            const tags = await this.entityManager.find(Tag, { id: tagsInput });
+            if (tags.length !== tagsInput.length) throw new Error("Couldn't find all tags that were passed as input");
+            await product.tags.loadItems();
+            product.tags.set(tags.map((tag) => Reference.create(tag)));
+        }
+        await this.entityManager.flush();
+        return product;
     }
 
     @Mutation(() => Product)
@@ -143,7 +146,22 @@ export class ProductResolver {
         @Args("input", { type: () => ProductUpdateInput })
         input: ProductUpdateInput,
     ): Promise<Product> {
-        return this.productsService.update(id, input);
+        const product = await this.entityManager.findOneOrFail(Product, id);
+        const { tags: tagsInput, mainImage: mainImageInput, ...assignInput } = input;
+        product.assign({
+            ...assignInput,
+        });
+        if (tagsInput) {
+            const tags = await this.entityManager.find(Tag, { id: tagsInput });
+            if (tags.length !== tagsInput.length) throw new Error("Couldn't find all tags that were passed as input");
+            await product.tags.loadItems();
+            product.tags.set(tags.map((tag) => Reference.create(tag)));
+        }
+        if (mainImageInput) {
+            product.mainImage = mainImageInput.transformToBlockData();
+        }
+        await this.entityManager.flush();
+        return product;
     }
 
     @Mutation(() => Boolean)
@@ -152,7 +170,10 @@ export class ProductResolver {
         @Args("id", { type: () => ID })
         id: string,
     ): Promise<boolean> {
-        return this.productsService.delete(id);
+        const product = await this.entityManager.findOneOrFail(Product, id);
+        this.entityManager.remove(product);
+        await this.entityManager.flush();
+        return true;
     }
 
     // --- @ResolveField: REQUIRED for every relation and block ---
@@ -164,7 +185,7 @@ export class ProductResolver {
 
     @ResolveField(() => RootBlockDataScalar(DamImageBlock))
     async mainImage(@Parent() product: Product): Promise<object> {
-        return this.productsService.transformToPlain(product.mainImage);
+        return this.blocksTransformer.transformToPlain(product.mainImage);
     }
 }
 ```
@@ -174,20 +195,30 @@ export class ProductResolver {
 When the API is read-only, the resolver only contains queries and `@ResolveField` methods. No `@Mutation` methods, no input imports.
 
 ```typescript
-import { AffectedEntity, extractGraphqlFields, RequiredPermission, RootBlockDataScalar, DamImageBlock } from "@comet/cms-api";
-import { Args, ID, Info, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
-import { GraphQLResolveInfo } from "graphql";
+import {
+    AffectedEntity,
+    BlocksTransformerService,
+    DamImageBlock,
+    gqlArgsToMikroOrmQuery,
+    gqlSortToMikroOrmOrderBy,
+    RequiredPermission,
+    RootBlockDataScalar,
+} from "@comet/cms-api";
+import { EntityManager, FindOptions } from "@mikro-orm/postgresql";
+import { Args, ID, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
 import { PaginatedProducts } from "./dto/paginated-products";
 import { ProductsArgs } from "./dto/products.args";
 import { Product } from "./entities/product.entity";
 import { Tag } from "@src/tags/entities/tag.entity";
-import { ProductsService } from "./products.service";
 
 @Resolver(() => Product)
 @RequiredPermission(["products"], { skipScopeCheck: true })
 export class ProductResolver {
-    constructor(private readonly productsService: ProductsService) {}
+    constructor(
+        protected readonly entityManager: EntityManager,
+        private readonly blocksTransformer: BlocksTransformerService,
+    ) {}
 
     @Query(() => Product)
     @AffectedEntity(Product)
@@ -195,17 +226,22 @@ export class ProductResolver {
         @Args("id", { type: () => ID })
         id: string,
     ): Promise<Product> {
-        return this.productsService.findOneById(id);
+        const product = await this.entityManager.findOneOrFail(Product, id);
+        return product;
     }
 
     @Query(() => PaginatedProducts)
     async products(
         @Args()
-        args: ProductsArgs,
-        @Info() info: GraphQLResolveInfo,
+        { search, filter, sort, offset, limit }: ProductsArgs,
     ): Promise<PaginatedProducts> {
-        const fields = extractGraphqlFields(info, { root: "nodes" });
-        return this.productsService.findAll(args, fields);
+        const where = gqlArgsToMikroOrmQuery({ search, filter }, this.entityManager.getMetadata(Product));
+        const options: FindOptions<Product> = { offset, limit };
+        if (sort) {
+            options.orderBy = gqlSortToMikroOrmOrderBy(sort);
+        }
+        const [entities, totalCount] = await this.entityManager.findAndCount(Product, where, options);
+        return new PaginatedProducts(entities, totalCount);
     }
 
     // --- @ResolveField: REQUIRED for every relation and block ---
@@ -217,18 +253,31 @@ export class ProductResolver {
 
     @ResolveField(() => RootBlockDataScalar(DamImageBlock))
     async mainImage(@Parent() product: Product): Promise<object> {
-        return this.productsService.transformToPlain(product.mainImage);
+        return this.blocksTransformer.transformToPlain(product.mainImage);
     }
 }
 ```
 
+### With position and/or business-logic services
+
+When the entity has a `position` field, additionally inject the position helpers service and call its helpers inline in create/update/delete (see [feature-01-position.md](feature-01-position.md)). When the entity needs validation/side effects, additionally inject the business-logic service and call its `validateCreateInput`/`validateUpdateInput` hooks at the start of the mutations (see [feature-02-validation.md](feature-02-validation.md)):
+
+```typescript
+constructor(
+    protected readonly entityManager: EntityManager,
+    protected readonly productVariantsService: ProductVariantsService, // position helpers
+    protected readonly productVariantService: ProductVariantService, // business-logic hooks
+) {}
+```
+
 ## Rules
 
-- **Resolvers MUST be thin** — no `EntityManager`, no business logic, no data transformation.
-- **Constructor**: Only inject the service. Never inject `EntityManager` or `BlocksTransformerService` in the resolver.
-- **All CRUD operations**: Delegate to service methods (`findOneById`, `findAll`, `create`, `update`, `delete`).
-- **EVERY relation and block MUST have a `@ResolveField`** — no exceptions. Never eagerly load relations via `.init()` or hardcoded `populate` in queries.
+- **Resolvers ARE the CRUD layer** — inject `EntityManager` directly and implement create/update/delete inline.
+- **Constructor**: Always inject `EntityManager`. Add `BlocksTransformerService` when the entity has blocks, the position helpers service when it has a `position` field, and the business-logic service when validation hooks are needed.
+- **List query**: Build `where` via `gqlArgsToMikroOrmQuery({ search, filter }, this.entityManager.getMetadata(Entity))`, apply `sort` via `gqlSortToMikroOrmOrderBy`, and return `new Paginated{EntityPlural}(entities, totalCount)`.
+- **Destructure** relation and block fields from input before spreading: `const { tags: tagsInput, ...assignInput } = input;`
+- **EVERY relation and block MUST have a `@ResolveField`** — no exceptions. Never eagerly load relations via `.init()` or hardcoded `populate` in queries — rely on `@ResolveField` lazy loading.
 - **@ResolveField for relations**: Use `entity.relation.loadOrFail()` (ManyToOne) or `entity.relation.loadItems()` (ManyToMany/OneToMany).
-- **@ResolveField for blocks**: Delegate transformation to `service.transformToPlain()`.
-- **@AffectedEntity**: Add on single query, update, and delete mutations. NOT on list query (unless scoped — see feature-05-scope.md).
+- **@ResolveField for blocks**: Use `this.blocksTransformer.transformToPlain(entity.blockField)`.
+- **@AffectedEntity**: Add on single query, update, and delete mutations. NOT on list query (unless scoped or with a dedicated parent arg — see [feature-05-scope.md](feature-05-scope.md) and [feature-03-dedicated-arg.md](feature-03-dedicated-arg.md)).
 - **@RequiredPermission**: Use `skipScopeCheck: true` when entity has no scope. See [feature-05-scope.md](feature-05-scope.md).

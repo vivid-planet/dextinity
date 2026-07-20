@@ -81,16 +81,11 @@ export class NewsListArgs extends OffsetBasedPaginationArgs {
 }
 ```
 
-### Service deltas
-
-- `findAll`: `where.scope = scope` — assign as object, **do NOT spread**
-- `create`: pass `scope` as a named field in `entityManager.create()`, **do NOT spread**
-- `findBySlug` (if applicable): `{ slug, scope }` — no spread
-
 ### Resolver deltas
 
-- `createNews` mutation takes `@Args("scope", { type: () => NewsContentScope }) scope: NewsContentScope` as first arg
-- `newsBySlug` query (if applicable) takes `@Args("scope", { type: () => NewsContentScope }) scope: NewsContentScope`
+- List query: `where.scope = scope` — assign as object, **do NOT spread**
+- `createNews` mutation takes `@Args("scope", { type: () => NewsContentScope }) scope: NewsContentScope` as first arg and passes `scope` as a named field in `entityManager.create()`, **do NOT spread**
+- `newsBySlug` query (if applicable) takes `@Args("scope", { type: () => NewsContentScope }) scope: NewsContentScope` and queries `{ slug, scope }` — no spread
 
 ---
 
@@ -161,16 +156,11 @@ export class NewsListArgs extends OffsetBasedPaginationArgs {
 }
 ```
 
-### Service deltas
-
-- `findAll`: `Object.assign(where, scope)` — spread flat scope fields into `where`
-- `create`: `...scope` spread into `entityManager.create()`
-- `findBySlug` (if applicable): `{ slug, ...scope }` — spread scope fields
-
 ### Resolver deltas
 
-- `createNews` mutation takes `@Args("scope", { type: () => NewsScope }) scope: NewsScope` as first arg
-- `newsBySlug` query (if applicable) takes `@Args("scope", { type: () => NewsScope }) scope: NewsScope`
+- List query: `Object.assign(where, scope)` — spread flat scope fields into `where`
+- `createNews` mutation takes `@Args("scope", { type: () => NewsScope }) scope: NewsScope` as first arg and spreads `...scope` into `entityManager.create()`
+- `newsBySlug` query (if applicable) takes `@Args("scope", { type: () => NewsScope }) scope: NewsScope` and queries `{ slug, ...scope }` — spread scope fields
 
 ---
 
@@ -230,16 +220,13 @@ export class NewsCommentListArgs extends OffsetBasedPaginationArgs {
 }
 ```
 
-### Service deltas
-
-- `findAll` takes `newsId: string` as first param: `where.news = newsId`
-- `create` takes `newsId: string` as first param: load the related entity, then `Reference.create(relatedEntity)`
-
 ### Resolver deltas
 
 - No `scope` arg anywhere
 - `newsCommentList` query and `createNewsComment` mutation both take `@Args("newsId", { type: () => ID }) newsId: string` as first arg
 - Both decorated with `@AffectedEntity(News, { idArg: "newsId" })`
+- List query filters by the relation: `where.news = newsId`
+- Create mutation resolves the parent inline: `news: Reference.create(await this.entityManager.findOneOrFail(News, newsId))`
 
 ---
 
@@ -251,4 +238,4 @@ Entity has no scope and no `@ScopedEntity`. Use `skipScopeCheck: true` on `@Requ
 @RequiredPermission(["products"], { skipScopeCheck: true })
 ```
 
-No further changes. Service and resolver follow the base patterns without any scope handling.
+No further changes. The resolver follows the base patterns without any scope handling.

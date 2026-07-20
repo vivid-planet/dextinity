@@ -7,7 +7,7 @@ The `comet-crud` skill orchestrates all other skills to generate a complete full
 
 ## What It Does
 
-1. **API Entity & GraphQL** — generates the MikroORM entity, service, resolver, DTOs, and module registration (via `comet-api-graphql`)
+1. **API Entity & GraphQL** — generates the MikroORM entity, resolver, DTOs, services where needed, and module registration (via `comet-api-graphql`)
 2. **Translatable Enums** — generates translation components and form fields for any enums used by the entity (via `comet-admin-enum`)
 3. **DataGrid & Form** — generates the list view and edit form in parallel (via `comet-admin-datagrid` + `comet-admin-form`)
 4. **Admin Pages** — generates the page structure with navigation, toolbars, and routing (via `comet-admin-pages`)

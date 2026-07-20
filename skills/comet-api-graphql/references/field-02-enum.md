@@ -21,17 +21,28 @@ type?: ProductType;
 
 ### Filter
 
+Each enum filter gets a **dedicated file** `dto/{enum-name}.enum-filter.ts` with a named class extending `createEnumFilter(...)`:
+
 ```typescript
+// dto/product-type.enum-filter.ts
 import { createEnumFilter } from "@comet/cms-api";
+import { InputType } from "@nestjs/graphql";
 
-const ProductTypeFilter = createEnumFilter(ProductType);
+import { ProductType } from "../entities/product.entity";
 
+@InputType()
+export class ProductTypeEnumFilter extends createEnumFilter(ProductType) {}
+```
+
+```typescript
 // In filter class:
-@Field(() => ProductTypeFilter, { nullable: true })
+import { ProductTypeEnumFilter } from "./product-type.enum-filter";
+
+@Field(() => ProductTypeEnumFilter, { nullable: true })
 @ValidateNested()
 @IsOptional()
-@Type(() => ProductTypeFilter)
-type?: typeof ProductTypeFilter;
+@Type(() => ProductTypeEnumFilter)
+type?: ProductTypeEnumFilter;
 ```
 
 ### Sort
@@ -59,16 +70,28 @@ types?: ProductType[];
 
 ### Filter
 
+Dedicated file `dto/{enum-name}.enums-filter.ts` (note the plural `enums`) using `createEnumsFilter`:
+
 ```typescript
+// dto/product-type.enums-filter.ts
 import { createEnumsFilter } from "@comet/cms-api";
+import { InputType } from "@nestjs/graphql";
 
-const ProductTypesFilter = createEnumsFilter(ProductType);
+import { ProductType } from "../entities/product.entity";
 
-@Field(() => ProductTypesFilter, { nullable: true })
+@InputType()
+export class ProductTypeEnumsFilter extends createEnumsFilter(ProductType) {}
+```
+
+```typescript
+// In filter class:
+import { ProductTypeEnumsFilter } from "./product-type.enums-filter";
+
+@Field(() => ProductTypeEnumsFilter, { nullable: true })
 @ValidateNested()
 @IsOptional()
-@Type(() => ProductTypesFilter)
-types?: typeof ProductTypesFilter;
+@Type(() => ProductTypeEnumsFilter)
+types?: ProductTypeEnumsFilter;
 ```
 
 ### Sort
@@ -79,5 +102,5 @@ Enum arrays are NOT sortable.
 
 - Import the enum from the entity file or its dedicated enum file.
 - `createEnumFilter` for single enum, `createEnumsFilter` for array enum (note the 's').
-- The filter variable must be declared OUTSIDE the filter class (top-level const).
+- **Enum filters live in dedicated files**: `dto/{enum-name}.enum-filter.ts` / `dto/{enum-name}.enums-filter.ts` with a named `@InputType()` class `{EnumName}EnumFilter` / `{EnumName}EnumsFilter` extending the factory. Never declare the filter as an inline `const` with `typeof`.
 - **Enum value convention**: Use PascalCase for both keys and values (e.g., `Published = "Published"`, `OutOfStock = "OutOfStock"`), NOT UPPER_SNAKE_CASE.

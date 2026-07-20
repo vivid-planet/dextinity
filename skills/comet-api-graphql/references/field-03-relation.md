@@ -1,6 +1,6 @@
 # Field Type: Relations
 
-> **Note**: Create/update handling for relations belongs in the **service** (not the resolver). The resolver only handles `@ResolveField` methods for field resolution. See [gen-07-service.md](gen-07-service.md) for the service patterns.
+> **Note**: Create/update handling for relations lives inline in the **resolver's mutations** (see [gen-00-resolver.md](gen-00-resolver.md)), alongside a `@ResolveField` method for every relation.
 
 ## ManyToOne
 
@@ -46,7 +46,7 @@ category?: ManyToOneFilter;
 Include relation name in sort enum: `category = "category"`.
 Nested sort: `category_title = "category_title"` (one level deep).
 
-### Service — create
+### Resolver — create mutation
 
 ```typescript
 const { category: categoryInput, ...assignInput } = input;
@@ -56,7 +56,7 @@ const entity = this.entityManager.create(Entity, {
 });
 ```
 
-### Service — update (nullable)
+### Resolver — update mutation (nullable)
 
 ```typescript
 if (categoryInput !== undefined) {
@@ -64,7 +64,7 @@ if (categoryInput !== undefined) {
 }
 ```
 
-### ResolveField (in resolver)
+### ResolveField
 
 ```typescript
 // Required
@@ -107,18 +107,18 @@ products?: ManyToManyFilter;
 
 ManyToMany is NOT sortable.
 
-### Service — create/update
+### Resolver — create/update mutation
 
 ```typescript
 if (productsInput) {
     const products = await this.entityManager.find(Product, { id: productsInput });
-    if (products.length != productsInput.length) throw new Error("Couldn't find all products that were passed as input");
+    if (products.length !== productsInput.length) throw new Error("Couldn't find all products that were passed as input");
     await entity.products.loadItems();
     entity.products.set(products.map((product) => Reference.create(product)));
 }
 ```
 
-### ResolveField (in resolver)
+### ResolveField
 
 ```typescript
 @ResolveField(() => [Product])
@@ -153,7 +153,7 @@ items?: OneToManyFilter;
 
 OneToMany is NOT sortable.
 
-### ResolveField (in resolver)
+### ResolveField
 
 ```typescript
 @ResolveField(() => [ChildEntity])
@@ -174,7 +174,7 @@ OneToOne is **NOT included** in filter.
 
 Similar to nested input pattern. Load existing or create new.
 
-### ResolveField (in resolver)
+### ResolveField
 
 ```typescript
 // Nullable
@@ -192,26 +192,6 @@ async related(@Parent() entity: Entity): Promise<RelatedEntity> {
 
 ---
 
-## Populate (in Service — findAll)
+## Loading in the list query
 
-Add conditional populate in the service's `findAll` method for each relation with a `@ResolveField` in the resolver. The resolver extracts requested fields from `@Info()` and passes them to the service:
-
-```typescript
-// In service findAll method:
-const populate: string[] = [];
-if (fields?.includes("category")) {
-    populate.push("category");
-}
-if (fields?.includes("products")) {
-    populate.push("products");
-}
-```
-
-```typescript
-// In resolver list query:
-@Query(() => PaginatedProducts)
-async products(@Args() args: ProductsArgs, @Info() info: GraphQLResolveInfo): Promise<PaginatedProducts> {
-    const fields = extractGraphqlFields(info, { root: "nodes" });
-    return this.productsService.findAll(args, fields);
-}
-```
+Do **not** populate relations in the list query — relations are loaded lazily through their `@ResolveField` methods (`loadOrFail()` / `loadItems()`) only when the client requests them. The list query stays a plain `findAndCount` without a `populate` option (see [gen-00-resolver.md](gen-00-resolver.md)).

@@ -10,8 +10,8 @@ This moves the parent ID from the input DTO to a top-level resolver argument. Us
 2. Parent becomes a **top-level `@Args`** in create mutation and list query
 3. **Args DTO** gets the parent as a required field
 4. **@AffectedEntity** uses parent entity on list query and create mutation
-5. **Service** `create` method accepts parentId as a parameter
-6. **Service** `findAll` method filters by parent (from args)
+5. **List query** filters by parent: `where.product = product`
+6. **Create mutation** resolves the parent via `Reference.create` — the parent FK is not editable in update
 
 ## Args DTO changes
 
@@ -31,51 +31,29 @@ export class ProductVariantsArgs extends OffsetBasedPaginationArgs {
 }
 ```
 
-## Service changes
-
-### findAll — filters by parent
-
-```typescript
-async findAll({ product, search, filter, sort, offset, limit }: ProductVariantsArgs, fields?: string[]): Promise<PaginatedProductVariants> {
-    const where = gqlArgsToMikroOrmQuery({ search, filter }, this.entityManager.getMetadata(ProductVariant));
-    where.product = product;  // filter by parent
-    // ... rest as usual (options, populate, findAndCount)
-}
-```
-
-### create — accepts parentId
-
-```typescript
-async create(product: string, input: ProductVariantInput): Promise<ProductVariant> {
-    // ... destructure input ...
-    const productVariant = this.entityManager.create(ProductVariant, {
-        ...assignInput,
-        product: Reference.create(await this.entityManager.findOneOrFail(Product, product)),
-    });
-    await this.entityManager.flush();
-    return productVariant;
-}
-```
-
 ## Resolver changes
 
-The resolver stays thin — it passes the dedicated arg to the service:
-
-### List Query
+### List Query — filters by parent
 
 ```typescript
 @Query(() => PaginatedProductVariants)
 @AffectedEntity(Product, { idArg: "product" })
 async productVariants(
-    @Args() args: ProductVariantsArgs,
-    @Info() info: GraphQLResolveInfo,
+    @Args()
+    { product, search, filter, sort, offset, limit }: ProductVariantsArgs,
 ): Promise<PaginatedProductVariants> {
-    const fields = extractGraphqlFields(info, { root: "nodes" });
-    return this.productVariantsService.findAll(args, fields);
+    const where = gqlArgsToMikroOrmQuery({ search, filter }, this.entityManager.getMetadata(ProductVariant));
+    where.product = product; // filter by parent
+    const options: FindOptions<ProductVariant> = { offset, limit };
+    if (sort) {
+        options.orderBy = gqlSortToMikroOrmOrderBy(sort);
+    }
+    const [entities, totalCount] = await this.entityManager.findAndCount(ProductVariant, where, options);
+    return new PaginatedProductVariants(entities, totalCount);
 }
 ```
 
-### Create Mutation
+### Create Mutation — accepts parent as top-level arg
 
 ```typescript
 @Mutation(() => ProductVariant)
@@ -86,9 +64,16 @@ async createProductVariant(
     @Args("input", { type: () => ProductVariantInput })
     input: ProductVariantInput,
 ): Promise<ProductVariant> {
-    return this.productVariantsService.create(product, input);
+    const productVariant = this.entityManager.create(ProductVariant, {
+        ...input,
+        product: Reference.create(await this.entityManager.findOneOrFail(Product, product)),
+    });
+    await this.entityManager.flush();
+    return productVariant;
 }
 ```
+
+> The update mutation does **not** get the dedicated arg — the parent FK is not editable.
 
 ## @ResolveField
 

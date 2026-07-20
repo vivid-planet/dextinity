@@ -84,4 +84,4 @@ export class ProductTagFilter {
 - **Exclude** fields that should not be filterable (e.g. block fields, JSON fields).
 - **OneToOne** relations are never in filter.
 - Every filter field is `nullable: true` and `@IsOptional()`.
-- Enum filters: Use `createEnumFilter(MyEnum)` which returns a class — use it directly as the type.
+- Enum filters: dedicated file with a named class extending `createEnumFilter(MyEnum)` / `createEnumsFilter(MyEnum)` — see [field-02-enum.md](field-02-enum.md).

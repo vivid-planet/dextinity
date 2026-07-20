@@ -40,9 +40,9 @@ export class ProductTagNestedProductToTagInput {
 productsWithStatus: ProductTagNestedProductToTagInput[];
 ```
 
-## Usage in Service (create/update)
+## Usage in Resolver (create/update mutations)
 
-Nested input handling belongs in the **service** (not the resolver):
+Nested input handling lives inline in the resolver's create/update mutations:
 
 ```typescript
 if (productsWithStatusInput) {

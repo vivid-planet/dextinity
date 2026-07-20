@@ -2,7 +2,7 @@
 
 Block fields use `@RootBlock(BlockType)` decorator and store structured content data.
 
-> **Note**: Create/update handling for blocks belongs in the **service**. The resolver delegates block field resolution to the service's `transformToPlain` method. See [gen-07-service.md](gen-07-service.md).
+> **Note**: Create/update handling for blocks lives inline in the **resolver's mutations**. The resolver injects `BlocksTransformerService` for the block `@ResolveField`. See [gen-00-resolver.md](gen-00-resolver.md).
 
 ## Input
 
@@ -30,7 +30,7 @@ The 4-decorator pattern is always the same:
 
 Block fields are **NOT included** in filter or sort.
 
-## Service — Create
+## Resolver — Create Mutation
 
 ```typescript
 const { image: imageInput, ...assignInput } = input;
@@ -40,7 +40,7 @@ const entity = this.entityManager.create(Entity, {
 });
 ```
 
-## Service — Update
+## Resolver — Update Mutation
 
 ```typescript
 const { image: imageInput, ...assignInput } = input;
@@ -50,37 +50,25 @@ if (imageInput) {
 }
 ```
 
-## Service — transformToPlain helper
+## ResolveField
 
-The service injects `BlocksTransformerService` and exposes a method for the resolver's `@ResolveField`:
+The resolver injects `BlocksTransformerService` and transforms the block field:
 
 ```typescript
-import { BlocksTransformerService } from "@comet/cms-api";
+import { BlocksTransformerService, DamImageBlock, RootBlockDataScalar } from "@comet/cms-api";
 
-// In service constructor:
+// In resolver constructor:
 private readonly blocksTransformer: BlocksTransformerService,
 
-// Service method:
-async transformToPlain(blockData: object): Promise<object> {
-    return this.blocksTransformer.transformToPlain(blockData);
-}
-```
-
-## ResolveField (in resolver)
-
-The resolver delegates block transformation to the service:
-
-```typescript
-import { RootBlockDataScalar, DamImageBlock } from "@comet/cms-api";
-
+// ResolveField:
 @ResolveField(() => RootBlockDataScalar(DamImageBlock))
 async image(@Parent() entity: Entity): Promise<object> {
-    return this.productsService.transformToPlain(entity.image);
+    return this.blocksTransformer.transformToPlain(entity.image);
 }
 ```
 
 ## Rules
 
-- Always destructure block fields from input before spreading (in the service).
-- `BlocksTransformerService` is injected in the **service**, not the resolver.
+- Always destructure block fields from input before spreading (in the resolver's mutations).
+- `BlocksTransformerService` is injected in the **resolver** constructor.
 - Common block types: `DamImageBlock`, `DamFileBlock`, custom `*Block` types from the project.

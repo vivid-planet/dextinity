@@ -12,7 +12,7 @@ Generate server-side DataGrid components by reading the GraphQL schema, determin
 ## Prerequisites
 
 1. **Read the GraphQL schema** for the target entity to determine: list query signature (`filter`, `limit`, `offset`, `search`, `sort`), paginated return type, available fields, and whether a `deleteXxx` mutation exists.
-2. **Check MUI DataGrid package** in `admin/package.json` — use whichever variant is installed (`DataGrid`, `DataGridPro`, or `DataGridPremium`).
+2. **Check MUI DataGrid package** in the admin package's `package.json` — use whichever variant is installed (`DataGrid`, `DataGridPro`, or `DataGridPremium`).
 3. **Confirm output path** with the user if not obvious from context.
 
 ## Core Imports
@@ -65,7 +65,7 @@ These can be combined — e.g. a sub-entity grid with excel export and responsiv
 ## Key Rules
 
 - Ask the user which fields to show as columns, or infer sensible defaults (e.g. `title`, `status`, `createdAt`). Keep defaults minimal.
-- **Enum columns always render as chips with a filterable select by default.** For every enum column: (1) search for an existing chip component (`**/<EnumName>Chip.tsx`) — if none exists, use the `comet-admin-enum` skill to create one first; (2) always add `type: "singleSelect"` and `valueOptions` using the `messageDescriptorMapToValueOptions` helper to make the column filterable. Import the enum's `messageDescriptorMap` from the translatable enum file. See [grid-col-def-05-enum.md](references/grid-col-def-05-enum.md) for the full pattern and helper function. Only use `renderStaticSelectCell` when the user explicitly requests it.
+- **Enum columns always render as chips with a filterable select by default.** For every enum column: (1) search for an existing chip component (`**/<EnumName>Chip.tsx`) — if none exists, use the `comet-admin-enum` skill to create one first; (2) always add `type: "singleSelect"` and `valueOptions` using the `messageDescriptorMapToValueOptions` helper to make the column filterable — this is a project-local helper, not a package export; if it doesn't exist in the project yet, create it from the reference. Import the enum's `messageDescriptorMap` from the translatable enum file. See [grid-col-def-05-enum.md](references/grid-col-def-05-enum.md) for the full pattern and helper function. Only use `renderStaticSelectCell` when the user explicitly requests it.
 - ManyToOne relation columns require a custom filter component — see [grid-col-def-13-relation-filter.md](references/grid-col-def-13-relation-filter.md).
 - Always define columns inside `useMemo` to ensure stable `GridColDef` references and prevent unnecessary re-renders.
 - Only include fields actually used in grid columns in the GQL fragment.

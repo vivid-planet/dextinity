@@ -10,31 +10,38 @@ description: |
     feature work.
 ---
 
-# Translatable Enum Skill
+# Comet Admin Enum Skill
 
 Generate translatable enum components, chips, editable chips, and form field components by reading the GraphQL schema and producing files following the patterns in `references/`.
 
 ## Prerequisites
 
-1. **Find enum values** — look up the enum in `api/schema.gql` or the generated types file.
+1. **Find enum values** — look up the enum in the API's `schema.gql` (typically `api/schema.gql` in a Comet starter) or the generated types file.
 2. **Check if file already exists** — before creating, search for an existing component. If it exists, reuse it.
 3. **Confirm output path** with the user if the domain is unclear.
 
 ## Core Imports
 
-| Import                         | Source                                                | Purpose                                                          |
-| ------------------------------ | ----------------------------------------------------- | ---------------------------------------------------------------- |
-| `createTranslatableEnum`       | `@src/common/components/enums/createTranslatableEnum` | Factory for translatable enum component                          |
-| `defineMessage`                | `react-intl`                                          | Define i18n message descriptors                                  |
-| `EnumChip`                     | `@src/common/components/enums/enumChip/EnumChip`      | Generic chip wrapper with dropdown menu                          |
-| `ChipIcon`                     | project-specific path                                 | Loading/dropdown icon for chips                                  |
-| `recordToOptions`              | `@src/common/components/enums/recordToOptions`        | Convert record to options array for Select/Radio/Checkbox fields |
-| `useAutocompleteOptions`       | `@src/common/components/enums/useAutocompleteOptions` | Hook for autocomplete field options                              |
-| `SelectField`                  | `@comet/admin`                                        | Select dropdown field                                            |
-| `AutocompleteField`            | `@comet/admin`                                        | Autocomplete with search/filter                                  |
-| `RadioGroupField`              | `@comet/admin`                                        | Radio group field                                                |
-| `CheckboxListField`            | `@comet/admin`                                        | Checkbox list multi-select field                                 |
-| `LocalErrorScopeApolloContext` | `@comet/admin`                                        | Scoped error handling for editable chips                         |
+**Package imports** (always available from `@comet/admin` and `react-intl`):
+
+| Import                         | Source         | Purpose                                  |
+| ------------------------------ | -------------- | ---------------------------------------- |
+| `defineMessage`                | `react-intl`   | Define i18n message descriptors          |
+| `SelectField`                  | `@comet/admin` | Select dropdown field                    |
+| `AutocompleteField`            | `@comet/admin` | Autocomplete with search/filter          |
+| `RadioGroupField`              | `@comet/admin` | Radio group field                        |
+| `CheckboxListField`            | `@comet/admin` | Checkbox list multi-select field         |
+| `LocalErrorScopeApolloContext` | `@comet/admin` | Scoped error handling for editable chips |
+
+**Project-local helpers** (NOT package exports — this skill bootstraps them into the project on first use, see Step 1; the paths below are the conventional location, but search the project for an existing copy before creating one):
+
+| Helper                   | Conventional path                                     | Purpose                                                          |
+| ------------------------ | ----------------------------------------------------- | ---------------------------------------------------------------- |
+| `createTranslatableEnum` | `@src/common/components/enums/createTranslatableEnum` | Factory for translatable enum component                          |
+| `EnumChip`               | `@src/common/components/enums/enumChip/EnumChip`      | Generic chip wrapper with dropdown menu                          |
+| `ChipIcon`               | project-specific path                                 | Loading/dropdown icon for chips                                  |
+| `recordToOptions`        | `@src/common/components/enums/recordToOptions`        | Convert record to options array for Select/Radio/Checkbox fields |
+| `useAutocompleteOptions` | `@src/common/components/enums/useAutocompleteOptions` | Hook for autocomplete field options                              |
 
 ## Generation Workflow
 
@@ -68,7 +75,7 @@ Only generate story files when Storybook is set up in the package (check for a `
 - Files with `.generated` suffix are auto-generated by GraphQL codegen — do not create them manually.
 - Prefer `<FormattedMessage>` over `intl.formatMessage()` wherever possible. Only use `intl.formatMessage()` when a prop requires a plain `string` type.
 - Always check if the component already exists before creating — reuse existing components.
-- For editable chips, auto-detect the query and mutation from `api/schema.gql`. Ask the user if ambiguous.
+- For editable chips, auto-detect the query and mutation from the API's `schema.gql`. Ask the user if ambiguous.
 
 ## Component Type Reference
 

@@ -58,7 +58,7 @@ import { Euro, Lock } from "@comet/admin-icons";
 
 - Import `InputAdornment` from `@mui/material`
 - Import icons from `@comet/admin-icons`
-- Supported on: `TextField`, `TextAreaField`, `NumberField`, `Future_DatePickerField`, `Future_DateTimePickerField`
+- Supported on: `TextField`, `TextAreaField`, `NumberField`, `DatePickerField`, `DateTimePickerField`
 - Use `startAdornment` for currency symbols or prefixes
 - Use `endAdornment` for units (kg, cm, %) or status icons (Lock for read-only)
 - Read-only fields should combine `readOnly`, `disabled`, and a `<Lock />` end adornment

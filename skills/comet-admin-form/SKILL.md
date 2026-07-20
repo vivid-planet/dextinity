@@ -17,35 +17,35 @@ Generate Final Form components by reading the GraphQL schema, determining fields
 
 ## Core Imports
 
-| Import                       | Source             | Purpose                                                              |
-| ---------------------------- | ------------------ | -------------------------------------------------------------------- |
-| `FinalForm`                  | `@comet/admin`     | Form wrapper component                                               |
-| `useFormApiRef`              | `@comet/admin`     | Ref to access form API imperatively                                  |
-| `FinalFormSubmitEvent`       | `@comet/admin`     | Type for submit event parameter                                      |
-| `Field`                      | `@comet/admin`     | Generic field wrapper                                                |
-| `TextField`                  | `@comet/admin`     | Text input field                                                     |
-| `TextAreaField`              | `@comet/admin`     | Multiline text field                                                 |
-| `NumberField`                | `@comet/admin`     | Number input field                                                   |
-| `CheckboxField`              | `@comet/admin`     | Checkbox boolean field                                               |
-| `SelectField`                | `@comet/admin`     | Select dropdown field                                                |
-| `SwitchField`                | `@comet/admin`     | Toggle switch boolean field                                          |
-| `AsyncAutocompleteField`     | `@comet/admin`     | Async autocomplete for relations                                     |
-| `AsyncSelectField`           | `@comet/admin`     | Async dropdown select for relations                                  |
-| `Future_DatePickerField`     | `@comet/admin`     | Date picker field                                                    |
-| `Future_DateTimePickerField` | `@comet/admin`     | DateTime picker field                                                |
-| `filterByFragment`           | `@comet/admin`     | Filter query data to match fragment shape                            |
-| `Loading`                    | `@comet/admin`     | Loading spinner component                                            |
-| `useStackSwitchApi`          | `@comet/admin`     | Stack navigation for redirect after create                           |
-| `OnChangeField`              | `@comet/admin`     | Trigger side effects on field value change                           |
-| `FieldSet`                   | `@comet/admin`     | Collapsible section to group related fields                          |
-| `BlockState`                 | `@comet/cms-admin` | Type for block field state                                           |
-| `createFinalFormBlock`       | `@comet/cms-admin` | Integrate CMS block into Final Form                                  |
-| `FileUploadField`            | `@comet/cms-admin` | File upload field (always use with downloadable fragment by default) |
-| `DamImageBlock`              | `@comet/cms-admin` | DAM image block component                                            |
-| `useContentScope`            | `@comet/cms-admin` | Access current content scope                                         |
-| `queryUpdatedAt`             | `@comet/cms-admin` | Query updatedAt for save conflict check                              |
-| `resolveHasSaveConflict`     | `@comet/cms-admin` | Resolve save conflict detection                                      |
-| `useFormSaveConflict`        | `@comet/cms-admin` | Save conflict hook                                                   |
+| Import                   | Source             | Purpose                                                              |
+| ------------------------ | ------------------ | -------------------------------------------------------------------- |
+| `FinalForm`              | `@comet/admin`     | Form wrapper component                                               |
+| `useFormApiRef`          | `@comet/admin`     | Ref to access form API imperatively                                  |
+| `FinalFormSubmitEvent`   | `@comet/admin`     | Type for submit event parameter                                      |
+| `Field`                  | `@comet/admin`     | Generic field wrapper                                                |
+| `TextField`              | `@comet/admin`     | Text input field                                                     |
+| `TextAreaField`          | `@comet/admin`     | Multiline text field                                                 |
+| `NumberField`            | `@comet/admin`     | Number input field                                                   |
+| `CheckboxField`          | `@comet/admin`     | Checkbox boolean field                                               |
+| `SelectField`            | `@comet/admin`     | Select dropdown field                                                |
+| `SwitchField`            | `@comet/admin`     | Toggle switch boolean field                                          |
+| `AsyncAutocompleteField` | `@comet/admin`     | Async autocomplete for relations                                     |
+| `AsyncSelectField`       | `@comet/admin`     | Async dropdown select for relations                                  |
+| `DatePickerField`        | `@comet/admin`     | Date picker field                                                    |
+| `DateTimePickerField`    | `@comet/admin`     | DateTime picker field                                                |
+| `filterByFragment`       | `@comet/admin`     | Filter query data to match fragment shape                            |
+| `Loading`                | `@comet/admin`     | Loading spinner component                                            |
+| `useStackSwitchApi`      | `@comet/admin`     | Stack navigation for redirect after create                           |
+| `OnChangeField`          | `@comet/admin`     | Trigger side effects on field value change                           |
+| `FieldSet`               | `@comet/admin`     | Collapsible section to group related fields                          |
+| `BlockState`             | `@comet/cms-admin` | Type for block field state                                           |
+| `createFinalFormBlock`   | `@comet/cms-admin` | Integrate CMS block into Final Form                                  |
+| `FileUploadField`        | `@comet/cms-admin` | File upload field (always use with downloadable fragment by default) |
+| `DamImageBlock`          | `@comet/cms-admin` | DAM image block component                                            |
+| `useContentScope`        | `@comet/cms-admin` | Access current content scope                                         |
+| `queryUpdatedAt`         | `@comet/cms-admin` | Query updatedAt for save conflict check                              |
+| `resolveHasSaveConflict` | `@comet/cms-admin` | Resolve save conflict detection                                      |
+| `useFormSaveConflict`    | `@comet/cms-admin` | Save conflict hook                                                   |
 
 ## Generation Workflow
 
@@ -69,7 +69,7 @@ For every **ManyToOne or ManyToMany relation field**:
 ## Key Rules
 
 - The reference files cover core patterns and common usage. For any field component props, options, or features not explicitly documented here, **read the TypeScript type definitions** of the component (e.g., `TextField`, `NumberField`, `AsyncAutocompleteField`) to discover all available props and their types from @comet/admin or the project itself. The types are the source of truth — do not guess prop names or values.
-- For every enum field, search for an existing reusable field component. If none exists, use the `translatable-enum` skill to create one first.
+- For every enum field, search for an existing reusable field component. If none exists, use the `comet-admin-enum` skill to create one first.
 - ManyToOne/ManyToMany relation fields require a reusable `AsyncAutocompleteField` component — see [form-field-07-many-to-one.md](references/form-field-07-many-to-one.md).
 - Always include `id` and `updatedAt` in the query (required for save conflict detection).
 - Use exact mutation/query names from the schema — do not guess.
@@ -125,7 +125,7 @@ Read the relevant field file based on the field type from the GraphQL schema:
 | Text (multiline)                    | `TextAreaField`                                                            | [form-field-02-text.md](references/form-field-02-text.md)                   |
 | Number / Int / Float                | `NumberField`                                                              | [form-field-03-number.md](references/form-field-03-number.md)               |
 | Boolean                             | `CheckboxField`                                                            | [form-field-04-boolean.md](references/form-field-04-boolean.md)             |
-| DateTime / LocalDate                | `Future_DatePickerField` / `Future_DateTimePickerField`                    | [form-field-05-datetime.md](references/form-field-05-datetime.md)           |
+| DateTime / LocalDate                | `DatePickerField` / `DateTimePickerField`                                  | [form-field-05-datetime.md](references/form-field-05-datetime.md)           |
 | Enum                                | Reusable `<EnumName>SelectField` / `RadioGroupField` / `CheckboxListField` | [form-field-06-enum.md](references/form-field-06-enum.md)                   |
 | ManyToOne relation (large set)      | Reusable `<RelatedEntity>AsyncAutocompleteField`                           | [form-field-07-many-to-one.md](references/form-field-07-many-to-one.md)     |
 | ManyToMany relation (large set)     | Reusable `<RelatedEntity>AsyncAutocompleteField` with `multiple`           | [form-field-08-many-to-many.md](references/form-field-08-many-to-many.md)   |
@@ -161,8 +161,8 @@ import { FieldSet } from "@comet/admin";
 </FieldSet>
 <FieldSet initiallyExpanded title={<FormattedMessage id="entity.fieldSet.details" defaultMessage="Details" />}>
     <NumberField ... name="price" label={...} />
-    <Future_DateTimePickerField ... name="validFrom" label={...} />
-    <Future_DateTimePickerField ... name="validTo" label={...} />
+    <DateTimePickerField ... name="validFrom" label={...} />
+    <DateTimePickerField ... name="validTo" label={...} />
 </FieldSet>
 <FieldSet initiallyExpanded title={<FormattedMessage id="entity.fieldSet.media" defaultMessage="Media" />}>
     <Field name="image" isEqual={isEqual} label={...} variant="horizontal" fullWidth>

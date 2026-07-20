@@ -6,7 +6,7 @@
 import { Lock } from "@comet/admin-icons";
 import { InputAdornment } from "@mui/material";
 
-<Future_DatePickerField
+<DatePickerField
     readOnly
     disabled
     endAdornment={
@@ -24,7 +24,7 @@ import { InputAdornment } from "@mui/material";
 ## Editable DateTime
 
 ```tsx
-<Future_DateTimePickerField
+<DateTimePickerField
     variant="horizontal"
     fullWidth
     name="lastCheckedAt"
@@ -37,7 +37,7 @@ Requires type transformation in `FormValues` (`Date | null`) and in `handleSubmi
 ## Editable LocalDate
 
 ```tsx
-<Future_DatePickerField
+<DatePickerField
     variant="horizontal"
     fullWidth
     name="availableSince"
@@ -47,7 +47,7 @@ Requires type transformation in `FormValues` (`Date | null`) and in `handleSubmi
 
 ## Rules
 
-- Import `Future_DatePickerField` and `Future_DateTimePickerField` from `@comet/admin`
+- Import `DatePickerField` and `DateTimePickerField` from `@comet/admin`
 - **Editable DateTime** requires transformations:
     - `FormValues` type: `Omit<..., "lastCheckedAt"> & { lastCheckedAt?: Date | null }`
     - `initialValues`: `new Date(data.<entityName>.lastCheckedAt)`

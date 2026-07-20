@@ -6,6 +6,16 @@ Agent Skills are reusable prompt-based instructions that teach AI coding assista
 
 For installation instructions, see the [Installing agent skills](../4-guides/5-installing-agent-features.md) guide.
 
+## Agent Skills vs. CRUD Generator
+
+Comet offers two complementary ways to scaffold CRUD features. Both produce code in the same style — the skills are deliberately aligned with the output of the [CRUD Generator](../1-getting-started/4-crud-generator/index.md) — so they can be mixed within one project.
+
+**Use the [CRUD Generator](../1-getting-started/4-crud-generator/index.md)** when you want deterministic, regenerable output driven by entity decorators (`@CrudGenerator`) and `*.cometGen.tsx` config files. Changes to the entity are picked up by rerunning the generator, and generator improvements arrive automatically. Files inside `generated/` folders must not be edited by hand — including by AI assistants.
+
+**Use Agent Skills** when working with an AI coding assistant, especially for code the generator cannot express: custom business logic, non-standard grid or form layouts, bespoke navigation, or one-off scaffolding you intend to own and modify by hand afterwards. The skills produce ordinary source files that you maintain like any hand-written code — they are not regenerable.
+
+If an entity is already managed by the CRUD Generator, prefer extending it through the generator's mechanisms (decorators, hooks services, config) over hand-writing parallel code with skills.
+
 ### Available Skills
 
 | Skill                                                          | Description                                                                    |

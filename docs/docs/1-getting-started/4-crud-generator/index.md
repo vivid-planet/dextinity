@@ -18,3 +18,7 @@ The generated code is used as a starting point.
 
 - :heavy_plus_sign: **Advantage**: Flexibility. Changes to the generated code are easily possible.
 - :heavy_minus_sign: **Disadvantage**: Improvements in the generator must be manually incorporated.
+
+## CRUD Generator vs. Agent Skills
+
+Besides the CRUD Generator, Comet provides [Agent Skills](../../11-agent-skills/index.md) that teach AI coding assistants how to produce CRUD code in the same style the generator emits. See [Agent Skills](../../11-agent-skills/index.md) for guidance on when to use which approach.

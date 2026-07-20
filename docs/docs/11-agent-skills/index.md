@@ -8,13 +8,11 @@ For installation instructions, see the [Installing agent skills](../4-guides/5-i
 
 ## Agent Skills vs. CRUD Generator
 
-Comet offers two complementary ways to scaffold CRUD features. Both produce code in the same style — the skills are deliberately aligned with the output of the [CRUD Generator](../1-getting-started/4-crud-generator/index.md) — so they can be mixed within one project.
+Agent Skills are the recommended way to scaffold CRUD features. The [CRUD Generator](../1-getting-started/4-crud-generator/index.md) will be deprecated in a future version — use Agent Skills instead where possible.
 
-**Use the [CRUD Generator](../1-getting-started/4-crud-generator/index.md)** when you want deterministic, regenerable output driven by entity decorators (`@CrudGenerator`) and `*.cometGen.tsx` config files. Changes to the entity are picked up by rerunning the generator, and generator improvements arrive automatically. Files inside `generated/` folders must not be edited by hand — including by AI assistants.
+The skills are deliberately aligned with the output style of the CRUD Generator, so code produced by skills fits seamlessly next to previously generated code. Unlike generator output, skill-produced files are ordinary source files that you own and maintain like any hand-written code — there is no regeneration step and no `generated/` folder.
 
-**Use Agent Skills** when working with an AI coding assistant, especially for code the generator cannot express: custom business logic, non-standard grid or form layouts, bespoke navigation, or one-off scaffolding you intend to own and modify by hand afterwards. The skills produce ordinary source files that you maintain like any hand-written code — they are not regenerable.
-
-If an entity is already managed by the CRUD Generator, prefer extending it through the generator's mechanisms (decorators, hooks services, config) over hand-writing parallel code with skills.
+For existing entities still managed by the CRUD Generator, the generator workflow keeps working: files inside `generated/` folders must not be edited by hand — including by AI assistants — and are updated by rerunning the generator. When such an entity needs changes the generator cannot express, consider migrating it to skill-maintained source files instead of extending the generator setup.
 
 ### Available Skills
 

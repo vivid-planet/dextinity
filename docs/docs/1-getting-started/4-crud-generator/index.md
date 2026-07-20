@@ -3,6 +3,12 @@ title: CRUD Generator
 sidebar_position: 4
 ---
 
+:::warning
+
+The CRUD Generator will be deprecated in a future version. Prefer [Agent Skills](../../11-agent-skills/index.md) for scaffolding CRUD features where possible — they teach AI coding assistants to produce CRUD code in the same style the generator emits, so skill-produced code fits seamlessly next to existing generated code.
+
+:::
+
 To accelerate the development of a feature, the CRUD Generator can be used to generate the usual CRUD operations (in GraphQL) for the feature. The CRUD Generator is available for the API and for the Admin. The CRUD Generator can be used in two ways:
 
 ### "True" Generation
@@ -18,7 +24,3 @@ The generated code is used as a starting point.
 
 - :heavy_plus_sign: **Advantage**: Flexibility. Changes to the generated code are easily possible.
 - :heavy_minus_sign: **Disadvantage**: Improvements in the generator must be manually incorporated.
-
-## CRUD Generator vs. Agent Skills
-
-Besides the CRUD Generator, Comet provides [Agent Skills](../../11-agent-skills/index.md) that teach AI coding assistants how to produce CRUD code in the same style the generator emits. See [Agent Skills](../../11-agent-skills/index.md) for guidance on when to use which approach.

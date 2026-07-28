@@ -19,7 +19,9 @@ import { KeyFactsBlock } from "@src/documents/pages/blocks/key-facts.block";
 import { TeaserBlock } from "@src/documents/pages/blocks/teaser.block";
 import { NewsDetailBlock } from "@src/news/blocks/news-detail.block";
 import { NewsListBlock } from "@src/news/blocks/news-list.block";
+import { ProductDetailBlock } from "@src/products/blocks/product-detail.block";
 import { ProductListBlock } from "@src/products/blocks/product-list.block";
+import { ProductTypesBlock } from "@src/products/blocks/product-types.block";
 import { UserGroup } from "@src/user-groups/user-group";
 import { IsEnum } from "class-validator";
 
@@ -52,7 +54,9 @@ const supportedBlocks = {
     table: TableBlock,
     tipTapTable: TipTapTableBlock,
     tipTapRichText: TipTapRichTextBlock,
+    productTypes: ProductTypesBlock,
     productList: ProductListBlock,
+    productDetail: ProductDetailBlock,
     pageTreeIndex: PageTreeIndexBlock,
     contactForm: ContactFormBlock,
 };

@@ -126,6 +126,8 @@ export class AppModule {
                                 label: { domain: siteConfig.name },
                             })),
                         ),
+                        // "product" is declared here so it shows up in the admin panel although it is not part of availableContentScopes
+                        availableContentScopeDimensions: [{ name: "domain" }, { name: "language" }, { name: "product" }],
                         userService,
                         accessControlService,
                         systemUsers: [SYSTEM_USER_NAME],

@@ -9,7 +9,7 @@ import getUuid from "uuid-by-string";
 
 import { AbstractAccessControlService } from "./access-control.service";
 import { DisablePermissionCheck, REQUIRED_PERMISSION_METADATA_KEY, RequiredPermissionMetadata } from "./decorators/required-permission.decorator";
-import { ContentScopeWithLabel } from "./dto/content-scope";
+import { ContentScopeDimension, ContentScopeWithLabel } from "./dto/content-scope";
 import { CurrentUser, CurrentUserPermission } from "./dto/current-user";
 import { FindUsersArgs } from "./dto/paginated-user-list";
 import { UserContentScopes } from "./entities/user-content-scopes.entity";
@@ -25,6 +25,11 @@ import {
     UserPermissionsOptions,
     UserPermissionsUserServiceInterface,
 } from "./user-permissions.types";
+
+function camelCaseToHumanReadable(s: string | number) {
+    const words = s.toString().match(/[A-Za-z0-9][a-z0-9]*/g) || [];
+    return words.map((word) => word.charAt(0).toUpperCase() + word.substring(1)).join(" ");
+}
 
 @Injectable()
 export class UserPermissionsService {
@@ -50,11 +55,6 @@ export class UserPermissionsService {
             }
         }
 
-        function camelCaseToHumanReadable(s: string | number) {
-            const words = s.toString().match(/[A-Za-z0-9][a-z0-9]*/g) || [];
-            return words.map((word) => word.charAt(0).toUpperCase() + word.substring(1)).join(" ");
-        }
-
         const contentScopesWithLabel = contentScopes
             .map((contentScope) =>
                 "scope" in contentScope
@@ -75,6 +75,23 @@ export class UserPermissionsService {
                 ),
             }));
         return contentScopesWithLabel;
+    }
+
+    async getAvailableContentScopeDimensions(): Promise<ContentScopeDimension[]> {
+        if (this.options.availableContentScopeDimensions) {
+            const dimensions =
+                typeof this.options.availableContentScopeDimensions === "function"
+                    ? await this.options.availableContentScopeDimensions()
+                    : this.options.availableContentScopeDimensions;
+            return dimensions.map((dimension) => ({
+                name: dimension.name,
+                label: dimension.label ?? camelCaseToHumanReadable(dimension.name),
+            }));
+        }
+
+        // Derive the dimensions from the keys of the available content scopes when not explicitly configured
+        const dimensionNames = new Set((await this.getAvailableContentScopes()).flatMap((contentScope) => Object.keys(contentScope.scope)));
+        return [...dimensionNames].map((name) => ({ name, label: camelCaseToHumanReadable(name) }));
     }
 
     async getAvailablePermissions(): Promise<Permission[]> {
@@ -132,12 +149,38 @@ export class UserPermissionsService {
     }
 
     async checkContentScopes(contentScopes: ContentScope[]): Promise<void> {
-        const availableContentScopes = await this.getAvailableContentScopes();
-        contentScopes.forEach((scope) => {
-            if (!availableContentScopes.some((cs) => isEqual(cs.scope, scope))) {
+        const availableContentScopes = (await this.getAvailableContentScopes()).map((cs) => cs.scope);
+        const enumerableDimensions = this.getEnumerableDimensions(availableContentScopes);
+        const allowedDimensions = new Set([
+            ...enumerableDimensions,
+            ...(await this.getAvailableContentScopeDimensions()).map((dimension) => dimension.name),
+        ]);
+        for (const scope of contentScopes) {
+            for (const dimension of Object.keys(scope)) {
+                if (!allowedDimensions.has(dimension)) {
+                    throw new Error(`ContentScope has unknown dimension "${dimension}": ${JSON.stringify(scope)}.`);
+                }
+            }
+            if (!this.matchesAvailableContentScope(scope, availableContentScopes, enumerableDimensions)) {
                 throw new Error(`ContentScope does not exist: ${JSON.stringify(scope)}.`);
             }
-        });
+        }
+    }
+
+    private getEnumerableDimensions(availableContentScopes: ContentScope[]): Set<string> {
+        return new Set(availableContentScopes.flatMap((scope) => Object.keys(scope)));
+    }
+
+    /**
+     * A content scope is valid if the part built from the enumerable dimensions (the dimensions present in the available content
+     * scopes) matches an available content scope. Dimensions that are not part of the available content scopes (e.g. an optional
+     * dimension with too many values to enumerate) may hold any value.
+     */
+    private matchesAvailableContentScope(scope: ContentScope, availableContentScopes: ContentScope[], enumerableDimensions: Set<string>): boolean {
+        const enumerableScope = Object.fromEntries(
+            Object.entries(scope as Record<string, unknown>).filter(([dimension]) => enumerableDimensions.has(dimension)),
+        );
+        return availableContentScopes.some((availableContentScope) => isEqual(availableContentScope, enumerableScope));
     }
 
     async warmupHasPermissionCache() {
@@ -220,6 +263,7 @@ export class UserPermissionsService {
         includeContentScopesManual: boolean;
         representAllContentScopesAsWildcard?: boolean;
     }): Promise<ContentScope[]> {
+        const enumerableDimensions = this.getEnumerableDimensions(availableContentScopes);
         const contentScopes: ContentScope[] = [];
 
         if (this.accessControlService.getContentScopesForUser) {
@@ -244,7 +288,9 @@ export class UserPermissionsService {
         if (includeContentScopesManual) {
             const entity = await this.contentScopeRepository.findOne({ userId: user.id });
             if (entity) {
-                contentScopes.push(...entity.contentScopes.filter((value) => availableContentScopes.some((cs) => isEqual(cs, value))));
+                contentScopes.push(
+                    ...entity.contentScopes.filter((value) => this.matchesAvailableContentScope(value, availableContentScopes, enumerableDimensions)),
+                );
             }
         }
 

@@ -101,7 +101,11 @@ export const CurrentUserProvider = ({ isAllowed, children }: PropsWithChildren<{
                 return user.permissions.some(
                     (p) =>
                         p.permission === permission &&
-                        (!contentScope || p.contentScopes.some((cs) => Object.entries(contentScope).every(([scope, value]) => cs[scope] === value))),
+                        (!contentScope ||
+                            p.contentScopes.some((cs) =>
+                                // A wildcard ("*") dimension in the user's content scopes allows any value for that dimension
+                                Object.entries(contentScope).every(([scope, value]) => cs[scope] === "*" || cs[scope] === value),
+                            )),
                 );
             }),
     };

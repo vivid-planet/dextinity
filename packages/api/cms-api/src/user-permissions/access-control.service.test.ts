@@ -143,6 +143,66 @@ describe("AbstractAccessControlService", () => {
             ).toBe(true);
         });
 
+        it("should treat a wildcard scope dimension as covering any concrete value", () => {
+            // A user with a wildcard scope can impersonate a user with a concrete value for that dimension
+            expect(
+                AbstractAccessControlService.isEqualOrMorePermissions(
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "main", language: "*" }] }],
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "main", language: "en" }] }],
+                ),
+            ).toBe(true);
+            expect(
+                AbstractAccessControlService.isEqualOrMorePermissions(
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "*", language: "*" }] }],
+                    [
+                        {
+                            permission: permissions.p1,
+                            contentScopes: [
+                                { domain: "main", language: "en" },
+                                { domain: "secondary", language: "de" },
+                            ],
+                        },
+                    ],
+                ),
+            ).toBe(true);
+
+            // A concrete value does not cover a wildcard, which grants broader access
+            expect(
+                AbstractAccessControlService.isEqualOrMorePermissions(
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "main", language: "en" }] }],
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "main", language: "*" }] }],
+                ),
+            ).toBe(false);
+
+            // The wildcard only applies to its dimension, other dimensions must still match
+            expect(
+                AbstractAccessControlService.isEqualOrMorePermissions(
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "main", language: "*" }] }],
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "secondary", language: "en" }] }],
+                ),
+            ).toBe(false);
+        });
+
+        it("should let a user with wildcards for all dimensions cover any scope", () => {
+            // A user with access to all content scopes is represented with a wildcard per dimension (see
+            // getPermissionsAndContentScopes) and can therefore impersonate any other user.
+            expect(
+                AbstractAccessControlService.isEqualOrMorePermissions(
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "*", language: "*" }] }],
+                    [
+                        {
+                            permission: permissions.p1,
+                            contentScopes: [
+                                { domain: "main", language: "en" },
+                                { domain: "main", language: "*" },
+                                { domain: "secondary", language: "de" },
+                            ],
+                        },
+                    ],
+                ),
+            ).toBe(true);
+        });
+
         it("should be true on more permissions", () => {
             expect(AbstractAccessControlService.isEqualOrMorePermissions([{ permission: permissions.p1, contentScopes: [] }], [])).toBe(true);
             expect(

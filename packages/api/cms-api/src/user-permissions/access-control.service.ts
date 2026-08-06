@@ -14,6 +14,11 @@ export abstract class AbstractAccessControlService implements AccessControlServi
             Object.entries(targetContentScope).every(([dimension, targetContentScopeValue]) => {
                 const userContentScopeValue = (userContentScope as Record<string, unknown>)[dimension];
 
+                // A wildcard dimension allows any value for it
+                if (userContentScopeValue === "*") {
+                    return true;
+                }
+
                 // Treat null and undefined the same
                 if (userContentScopeValue == null && targetContentScopeValue == null) {
                     return true;

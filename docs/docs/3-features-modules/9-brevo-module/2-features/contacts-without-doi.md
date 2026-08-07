@@ -64,7 +64,7 @@ Make sure that your project uses Brevo Module v3.1.0 or later.
             scopeParts: ["domain", "language"],
             apiUrl: config.apiUrl,
             resolvePreviewUrlForScope: (scope: ContentScope) => {
-                return `${config.campaignUrl}/block-preview/${scope.domain}/${scope.language}`;
+                return `${config.campaignUrl}/block-preview/${scope.domain}/${scope.language}/brevo-email-campaign`;
             },
 +           allowAddingContactsWithoutDoi: config.allowAddingContactsWithoutDoi,
         }}

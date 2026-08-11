@@ -1,7 +1,7 @@
 import type { DiscoveryService } from "@golevelup/nestjs-discovery";
 import { createMock } from "@golevelup/ts-vitest";
 import type { EntityRepository } from "@mikro-orm/postgresql";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import type { UserContentScopes } from "./entities/user-content-scopes.entity";
 import type { UserPermission } from "./entities/user-permission.entity";
@@ -125,6 +125,15 @@ describe("UserPermissionsService", () => {
             await expect(service.checkContentScopes([{ domain: "main", language: "en", unknown: "value" }])).rejects.toThrow(
                 'unknown dimension "unknown"',
             );
+        });
+
+        it("resolves the available content scopes only once when the dimensions are derived from them", async () => {
+            const availableContentScopes = vi.fn(async () => [{ domain: "main", language: "en" }]);
+            const service = createService({ availableContentScopes });
+
+            await service.checkContentScopes([{ domain: "main", language: "en" }]);
+
+            expect(availableContentScopes).toHaveBeenCalledTimes(1);
         });
     });
 

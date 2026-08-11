@@ -16,7 +16,7 @@ A content scope for a dimension that is not part of `availableContentScopes` may
 UserPermissionsModule.forRootAsync({
     useFactory: () => ({
         availableContentScopes: [ ... ],
-        availableContentScopeDimensions: [{ name: "domain" }, { name: "language" }, { name: "product" }],
+        availableContentScopeDimensions: [{ name: "domain", label: "Domain (Website)" }, { name: "language" }, { name: "product" }],
         // ...
     }),
     // ...

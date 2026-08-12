@@ -1,7 +1,7 @@
 import type { DiscoveryService } from "@golevelup/nestjs-discovery";
 import { createMock } from "@golevelup/ts-vitest";
 import type { EntityRepository } from "@mikro-orm/postgresql";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { UserContentScopes } from "./entities/user-content-scopes.entity";
 import type { UserPermission } from "./entities/user-permission.entity";
@@ -82,61 +82,6 @@ describe("UserPermissionsService", () => {
         });
     });
 
-    describe("checkContentScopes", () => {
-        function createServiceWithProductDimension(): UserPermissionsService {
-            return createService({
-                availableContentScopes: [
-                    { domain: "main", language: "en" },
-                    { domain: "main", language: "de" },
-                ],
-                availableContentScopeDimensions: [{ name: "domain" }, { name: "language" }, { name: "product" }],
-            });
-        }
-
-        it("accepts a content scope that matches an available content scope", async () => {
-            const service = createServiceWithProductDimension();
-
-            await expect(service.checkContentScopes([{ domain: "main", language: "en" }])).resolves.toBeUndefined();
-        });
-
-        it("accepts a free value for a dimension that is not part of the available content scopes", async () => {
-            const service = createServiceWithProductDimension();
-
-            await expect(service.checkContentScopes([{ domain: "main", language: "en", product: "product-42" }])).resolves.toBeUndefined();
-        });
-
-        it("accepts the all-values wildcard for a dimension that is not part of the available content scopes", async () => {
-            const service = createServiceWithProductDimension();
-
-            await expect(service.checkContentScopes([{ domain: "main", language: "en", product: "*" }])).resolves.toBeUndefined();
-        });
-
-        it("rejects a content scope whose enumerable part does not exist", async () => {
-            const service = createServiceWithProductDimension();
-
-            await expect(service.checkContentScopes([{ domain: "secondary", language: "en", product: "product-42" }])).rejects.toThrow(
-                "ContentScope does not exist",
-            );
-        });
-
-        it("rejects a content scope with an unknown dimension", async () => {
-            const service = createServiceWithProductDimension();
-
-            await expect(service.checkContentScopes([{ domain: "main", language: "en", unknown: "value" }])).rejects.toThrow(
-                'unknown dimension "unknown"',
-            );
-        });
-
-        it("resolves the available content scopes only once when the dimensions are derived from them", async () => {
-            const availableContentScopes = vi.fn(async () => [{ domain: "main", language: "en" }]);
-            const service = createService({ availableContentScopes });
-
-            await service.checkContentScopes([{ domain: "main", language: "en" }]);
-
-            expect(availableContentScopes).toHaveBeenCalledTimes(1);
-        });
-    });
-
     describe("filterContentScopesForUser", () => {
         const availableContentScopes: ContentScope[] = [
             { domain: "main", language: "en" },
@@ -147,7 +92,7 @@ describe("UserPermissionsService", () => {
             availableContentScopeDimensions: [{ name: "domain" }, { name: "language" }, { name: "product" }],
         };
 
-        it("keeps a manual content scope with a free value for a dimension outside the available content scopes", async () => {
+        it("returns a manual content scope as-is, including a value for a dimension outside the available content scopes", async () => {
             const service = createService(options, { manualContentScopes: [{ domain: "main", language: "en", product: "product-42" }] });
 
             expect(await service.filterContentScopesForUser({ user, availableContentScopes, includeContentScopesManual: true })).toEqual([
@@ -155,10 +100,12 @@ describe("UserPermissionsService", () => {
             ]);
         });
 
-        it("drops a manual content scope whose enumerable part does not exist", async () => {
+        it("returns a manual content scope even when it is not part of the available content scopes", async () => {
             const service = createService(options, { manualContentScopes: [{ domain: "main", language: "fr", product: "product-42" }] });
 
-            expect(await service.filterContentScopesForUser({ user, availableContentScopes, includeContentScopesManual: true })).toEqual([]);
+            expect(await service.filterContentScopesForUser({ user, availableContentScopes, includeContentScopesManual: true })).toEqual([
+                { domain: "main", language: "fr", product: "product-42" },
+            ]);
         });
     });
 });

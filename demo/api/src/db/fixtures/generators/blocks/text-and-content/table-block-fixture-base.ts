@@ -24,7 +24,7 @@ interface TableRowInput<RichTextInput> {
     cellValues: TableCellValueInput<RichTextInput>[];
 }
 
-interface TableBlockInput<RichTextInput> {
+export interface TableBlockInput<RichTextInput> {
     columns: TableColumnInput[];
     rows: TableRowInput<RichTextInput>[];
 }

@@ -62,6 +62,7 @@ import { NewsFixtureService } from "./generators/news-fixture.service";
 import { PageContentBlockFixtureService } from "./generators/page-content-block-fixture.service";
 import { ProductsFixtureService } from "./generators/products-fixture.service";
 import { RedirectsFixtureService } from "./generators/redirects-fixture.service";
+import { ResponsiveTablePageFixtureService } from "./generators/responsive-table-page-fixture.service";
 import { SeoBlockFixtureService } from "./generators/seo-block-fixture.service";
 import { StageBlockFixtureService } from "./generators/stage-block-fixture.service";
 import { SvgImageFileFixtureService } from "./generators/svg-image-file-fixture.service";
@@ -134,6 +135,7 @@ import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.s
         WelcomeEmailFixtureService,
         TestPagesFixtureService,
         ResponsiveTableBlockFixtureService,
+        ResponsiveTablePageFixtureService,
     ],
 })
 export class FixturesModule {}

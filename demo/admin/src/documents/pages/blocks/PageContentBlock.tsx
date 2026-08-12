@@ -4,6 +4,7 @@ import { ContactFormBlock } from "@src/common/blocks/ContactFormBlock";
 import { LayoutBlock } from "@src/common/blocks/LayoutBlock";
 import { MediaGalleryBlock } from "@src/common/blocks/MediaGalleryBlock";
 import { PageTreeIndexBlock } from "@src/common/blocks/PageTreeIndexBlock";
+import { ResponsiveTableBlock } from "@src/common/blocks/ResponsiveTableBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
 import { StandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCallToActionListBlock";
 import { StandaloneHeadingBlock } from "@src/common/blocks/StandaloneHeadingBlock";
@@ -53,6 +54,7 @@ export const PageContentBlock = createBlocksBlock({
         fullWidthImage: FullWidthImageBlock,
         table: TableBlock,
         tipTapTable: TipTapTableBlock,
+        responsiveTable: ResponsiveTableBlock,
         tipTapRichText: TipTapRichTextBlock,
         pageTreeIndex: PageTreeIndexBlock,
         contactForm: ContactFormBlock,

@@ -13,6 +13,7 @@ import {
 } from "@dextinity/cms-api";
 import { AccordionBlock } from "@src/common/blocks/accordion.block";
 import { MediaGalleryBlock } from "@src/common/blocks/media-gallery.block";
+import { ResponsiveTableBlock } from "@src/common/blocks/responsive-table.block";
 import { SpaceBlock } from "@src/common/blocks/space.block";
 import { StandaloneCallToActionListBlock } from "@src/common/blocks/standalone-call-to-action-list.block";
 import { StandaloneHeadingBlock } from "@src/common/blocks/standalone-heading.block";
@@ -41,6 +42,7 @@ export const ContentBlock = createBlocksBlock(
             teaser: TeaserBlock,
             table: TableBlock,
             tipTapTable: TipTapTableBlock,
+            responsiveTable: ResponsiveTableBlock,
         },
     },
     { name: "ContentGroupContent" },

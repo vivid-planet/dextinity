@@ -2,6 +2,7 @@ import { AnchorBlock, BlockCategory, createBlocksBlock, createCompositeBlock, cr
 import type { ContentGroupBlockData } from "@src/blocks.generated";
 import { AccordionBlock } from "@src/common/blocks/AccordionBlock";
 import { MediaGalleryBlock } from "@src/common/blocks/MediaGalleryBlock";
+import { ResponsiveTableBlock } from "@src/common/blocks/ResponsiveTableBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
 import { StandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCallToActionListBlock";
 import { StandaloneHeadingBlock } from "@src/common/blocks/StandaloneHeadingBlock";
@@ -37,6 +38,7 @@ const ContentGroupContentBlock = createBlocksBlock({
         mediaGallery: MediaGalleryBlock,
         table: TableBlock,
         tipTapTable: TipTapTableBlock,
+        responsiveTable: ResponsiveTableBlock,
     },
 });
 

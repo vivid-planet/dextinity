@@ -1,3 +1,6 @@
+@use "./tableCellStyles" as *;
+@include table-cell-styles;
+
 .table {
     width: 100%;
     border-collapse: collapse;
@@ -5,29 +8,6 @@
 
 .row:not(:last-child) {
     border-bottom: 1px solid var(--table-border);
-}
-
-.cell {
-    background-color: var(--table-default-bg);
-    text-align: start;
-    padding: 0;
-
-    &__content {
-        display: flex;
-        min-height: 48px;
-        align-items: center;
-        padding: var(--spacing-s200);
-        box-sizing: border-box;
-        color: var(--table-default-text);
-    }
-
-    &--highlighted {
-        background-color: var(--table-highlight-bg);
-    }
-
-    &:not(:last-child) {
-        border-right: 1px solid var(--table-border);
-    }
 }
 
 // Half of the widths the admin grid uses, which are meant for a table that spans the full page. In rem,

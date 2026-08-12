@@ -15,6 +15,9 @@ export type TableRow<CellValue> = {
     cellValues: Array<{ columnId: string; value: CellValue }>;
 };
 
+/** Which side of the table holds the labels for the other side's cells. */
+export type TableHeaderAxis = "row" | "column";
+
 /** Renders one cell. Each table block passes its own rich text block. */
 export type RenderTableCell<CellValue> = (value: CellValue) => ReactNode;
 

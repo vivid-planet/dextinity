@@ -12,9 +12,14 @@ import {
 import { TipTapTableBlock } from "@src/common/blocks/tip-tap-table.block";
 import { IsEnum } from "class-validator";
 
-/** How the table is rendered when it is wider than the page. */
+/**
+ * How the table is rendered when it is wider than the page. `headerRow` and `headerColumn` also say
+ * which side holds the header cells, which `horizontalScrolling` leaves undeclared.
+ */
 export enum ResponsiveBehavior {
     horizontalScrolling = "horizontalScrolling",
+    headerRow = "headerRow",
+    headerColumn = "headerColumn",
 }
 
 class ResponsiveTableBlockData extends BlockData {

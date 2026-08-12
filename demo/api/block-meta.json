@@ -3093,7 +3093,9 @@
                 "name": "responsiveBehavior",
                 "kind": "Enum",
                 "enum": [
-                    "horizontalScrolling"
+                    "horizontalScrolling",
+                    "headerRow",
+                    "headerColumn"
                 ],
                 "nullable": false
             }
@@ -3109,7 +3111,9 @@
                 "name": "responsiveBehavior",
                 "kind": "Enum",
                 "enum": [
-                    "horizontalScrolling"
+                    "horizontalScrolling",
+                    "headerRow",
+                    "headerColumn"
                 ],
                 "nullable": false
             }

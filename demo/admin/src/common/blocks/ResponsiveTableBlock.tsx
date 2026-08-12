@@ -10,6 +10,14 @@ const responsiveBehaviorOptions: Array<{ value: ResponsiveTableBlockData["respon
         value: "horizontalScrolling",
         label: <FormattedMessage id="responsiveTableBlock.responsiveBehavior.horizontalScrolling" defaultMessage="Horizontal Scrolling" />,
     },
+    {
+        value: "headerRow",
+        label: <FormattedMessage id="responsiveTableBlock.responsiveBehavior.headerRow" defaultMessage="First Row as Header" />,
+    },
+    {
+        value: "headerColumn",
+        label: <FormattedMessage id="responsiveTableBlock.responsiveBehavior.headerColumn" defaultMessage="First Column as Header" />,
+    },
 ];
 
 export const ResponsiveTableBlock = createCompositeBlock(

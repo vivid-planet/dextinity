@@ -1,9 +1,3 @@
-@use "@src/styles/variables" as *;
-
-.pageLayoutContent {
-    grid-column: 3 / -3;
-}
-
 .table {
     width: 100%;
     border-collapse: collapse;
@@ -15,7 +9,7 @@
 
 .cell {
     background-color: var(--table-default-bg);
-    text-align: left;
+    text-align: start;
     padding: 0;
 
     &__content {
@@ -29,11 +23,6 @@
 
     &--highlighted {
         background-color: var(--table-highlight-bg);
-
-        .cell__text {
-            font-weight: 700;
-            color: var(--table-highlight-text);
-        }
     }
 
     &:not(:last-child) {

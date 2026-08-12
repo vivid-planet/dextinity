@@ -30,6 +30,7 @@ import { ManyImagesTestPageFixtureService } from "./generators/many-images-test-
 import { NewsFixtureService } from "./generators/news-fixture.service";
 import { ProductsFixtureService } from "./generators/products-fixture.service";
 import { RedirectsFixtureService } from "./generators/redirects-fixture.service";
+import { TestPagesFixtureService } from "./generators/test-pages-fixture.service";
 import { VideoFixtureService } from "./generators/video-fixture.service";
 import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.service";
 
@@ -70,6 +71,7 @@ export class FixturesCommand extends CommandRunner {
         private readonly newsFixtureService: NewsFixtureService,
         private readonly draftJsMigrationPageFixtureService: DraftJsMigrationPageFixtureService,
         private readonly welcomeEmailFixtureService: WelcomeEmailFixtureService,
+        private readonly testPagesFixtureService: TestPagesFixtureService,
     ) {
         super();
     }
@@ -138,13 +140,11 @@ export class FixturesCommand extends CommandRunner {
             parentId: blockCategoriesPage.id,
         });
 
-        this.logger.log("Generate Many Images Test Page...");
-        await this.manyImagesTestPageFixtureService.execute();
-        this.logger.log("Many Images Test Page created");
-
-        this.logger.log("Generate DraftJS Migration Demo Page...");
-        await this.draftJsMigrationPageFixtureService.execute();
-        this.logger.log("DraftJS Migration Demo Page created");
+        this.logger.log("Generate Test Pages...");
+        const testPagesPage = await this.testPagesFixtureService.execute();
+        await this.manyImagesTestPageFixtureService.execute({ parentId: testPagesPage.id });
+        await this.draftJsMigrationPageFixtureService.execute({ parentId: testPagesPage.id });
+        this.logger.log("Test Pages created");
 
         this.logger.log("Generate Lorem Ispum Fixtures...");
         const NUMBER_OF_DOMAINS_WITH_LORUM_IPSUM_CONTENT = 0; // Increase number to generate lorum ipsum fixtures

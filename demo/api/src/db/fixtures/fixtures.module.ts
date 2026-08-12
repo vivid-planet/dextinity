@@ -64,6 +64,7 @@ import { RedirectsFixtureService } from "./generators/redirects-fixture.service"
 import { SeoBlockFixtureService } from "./generators/seo-block-fixture.service";
 import { StageBlockFixtureService } from "./generators/stage-block-fixture.service";
 import { SvgImageFileFixtureService } from "./generators/svg-image-file-fixture.service";
+import { TestPagesFixtureService } from "./generators/test-pages-fixture.service";
 import { VideoFixtureService } from "./generators/video-fixture.service";
 import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.service";
 
@@ -130,6 +131,7 @@ import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.s
         TipTapRichTextBlockFixtureService,
         TipTapTableBlockFixtureService,
         WelcomeEmailFixtureService,
+        TestPagesFixtureService,
     ],
 })
 export class FixturesModule {}

@@ -25,7 +25,7 @@ export class ManyImagesTestPageFixtureService {
         private readonly svgImageFileFixtureService: SvgImageFileFixtureService,
     ) {}
 
-    async execute(): Promise<void> {
+    async execute({ parentId }: { parentId: string }): Promise<void> {
         const uuidDocument = "c66ebddd-ecd1-430c-9ea2-8a482c62ad70";
 
         const scope: PageTreeNodeScope = {
@@ -41,6 +41,7 @@ export class ManyImagesTestPageFixtureService {
             {
                 name: "Test many images",
                 slug: "test-many-images",
+                parentId,
                 attachedDocument: {
                     id: uuidDocument,
                     type: "Page",

@@ -28,7 +28,7 @@ const markerCellNoLineBreak: CSSProperties = {
     wordBreak: "normal",
 };
 
-interface RichTextListItem {
+export interface RichTextListItem {
     key: string;
     content: ReactNode;
 }

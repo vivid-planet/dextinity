@@ -1094,6 +1094,8 @@
                             "blocks": {
                                 "text": "RichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
+                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
+                                "tipTapText": "EmailCampaignTipTapRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -1134,6 +1136,8 @@
                             "blocks": {
                                 "text": "RichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
+                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
+                                "tipTapText": "EmailCampaignTipTapRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -1152,6 +1156,25 @@
         "name": "EmailCampaignSalutation",
         "fields": [],
         "inputFields": []
+    },
+    {
+        "name": "EmailCampaignTipTapRichText",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
+            }
+        ]
     },
     {
         "name": "EmailLink",

@@ -1,7 +1,7 @@
 import { createTipTapRichTextBlock, type CreateTipTapRichTextBlockOptions } from "@dextinity/cms-api";
 import { MailLinkBlock } from "@src/mail/blocks/mail-link.block";
 
-const mailTipTapRichTextBlockOptions: CreateTipTapRichTextBlockOptions = {
+export const mailTipTapRichTextBlockOptions: CreateTipTapRichTextBlockOptions = {
     link: MailLinkBlock,
     // The mail theme has one text variant per style, so styles take the place of the editor's headings.
     textBlocks: [{ name: "paragraph", tag: "p" }],

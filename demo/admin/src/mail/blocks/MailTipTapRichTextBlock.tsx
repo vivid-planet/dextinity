@@ -4,10 +4,12 @@ import { MailLinkBlock } from "@src/mail/blocks/MailLinkBlock";
 import type { HTMLAttributes } from "react";
 import { FormattedMessage } from "react-intl";
 
-const mailTipTapRichTextBlockOptions = {
+export const mailTipTapRichTextBlockOptions = {
     link: MailLinkBlock,
     // The mail theme has one text variant per style, so styles take the place of the editor's headings.
-    textBlocks: [{ name: "paragraph", label: <FormattedMessage id="mail.tipTapRichText.textBlock.paragraph" defaultMessage="Paragraph" />, tag: "p" }],
+    textBlocks: [
+        { name: "paragraph", label: <FormattedMessage id="mail.tipTapRichText.textBlock.paragraph" defaultMessage="Paragraph" />, tag: "p" },
+    ],
     textBlockStyles: [
         {
             name: "title",

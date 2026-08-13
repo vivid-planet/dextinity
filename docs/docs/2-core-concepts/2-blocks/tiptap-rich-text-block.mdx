@@ -61,6 +61,7 @@ Most features of the Draft.js `RichTextBlock` have a direct equivalent in the Ti
 | `rte.listLevelMax`                              | `listLevelMax`                                                                                       |
 | `rte.maxBlocks`                                 | `maxTextBlocks`                                                                                      |
 | Site rendering with `redraft` + `Renderers`     | Site rendering with `renderTipTapRichText` + `nodeMapping`/`markMapping`                             |
+| Mail rendering with `createRichTextBlock`       | Mail rendering with `createTipTapRichTextBlock` (both from `@dextinity/mail-react`)                  |
 
 ### Setup
 
@@ -209,7 +210,9 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
     textBlockStyles: [{ name: "headline450", appliesTo: ["heading-2"] }],
     migrateFromDraftJs: {
         // highlight-next-line
-        textBlockStyleMap: { headline450: { textBlockType: "heading-2", textBlockStyle: "headline450" } },
+        textBlockStyleMap: {
+            headline450: { textBlockType: "heading-2", textBlockStyle: "headline450" },
+        },
     },
 });
 ```

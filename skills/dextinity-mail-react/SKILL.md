@@ -492,6 +492,26 @@ Key behaviors:
 
 → To register a custom list block type across the admin RTE and the mail block, read [`references/rich-text-list-block-types.md`](references/rich-text-list-block-types.md).
 
+### Tip-Tap rich-text blocks
+
+`createTipTapRichTextBlock` renders CMS TipTapRichText block data, the successor to the draft-js block, and is experimental as that block is. Both factories render the same markup, so everything above about calling the factory once, the `Mjml`/`Html` pair, lists, spacing and class names holds unchanged, CSS included.
+
+```tsx title="src/emails/blocks/tipTapRichText.ts"
+export const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+    blockTypes: { "heading-1": { variant: "heading1" } },
+    textBlockStyles: { intro: { variant: "intro" } },
+});
+```
+
+What differs from the draft-js factory:
+
+- **Styling has two options.** `blockTypes` maps the kind of text block (`paragraph`, `heading-1` through `heading-6`, `unordered-list`, `ordered-list`); `textBlockStyles` maps the styles the app declares in the CMS block's `textBlockStyles` option, by name. Both take the same values as draft-js `blockTypes`. A style takes precedence over the block type of the same text block, an unmapped style falls back to it.
+- **A list's style sits on the paragraph inside each item**, not on the list, and the factory reads it from the first item. Nothing to do at the call site — worth knowing when a list's styling looks ignored.
+- **`marks` replaces `inline`**, keyed by the mark type. Built in: `bold`, `italic`, `underline`, `strike`, `superscript`, `subscript`. The app's own inline styles go in `inlineStyles`, keyed by the name from the CMS block's `inlineStyles` option; that one has no built-ins, so an unmapped style renders its text unchanged.
+- **Links are marks, not entities**, but `linkTypes` is unchanged. The link block has to be one built with `createLinkBlock`; a link block holding its target directly renders as plain text.
+- **Placeholders render their literal `{{name}}` text** for whatever sends the mail to substitute. Pair this with the CMS block's `placeholders` option rather than having authors type the braces.
+- **Child blocks render nothing.** `cmsBlock` and `cmsInlineBlock` are skipped; a mail that needs them has to compose the block itself.
+
 ---
 
 ## Custom Components

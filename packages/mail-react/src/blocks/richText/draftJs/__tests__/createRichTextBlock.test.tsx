@@ -3,13 +3,13 @@ import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { MjmlMailRoot } from "../../../components/mailRoot/MjmlMailRoot.js";
-import { MjmlSection } from "../../../components/section/MjmlSection.js";
-import { renderMailHtml } from "../../../server/renderMailHtml.js";
-import { createTheme } from "../../../theme/createTheme.js";
-import { defaultTheme } from "../../../theme/defaultTheme.js";
-import { getDefaultFromResponsiveValue } from "../../../theme/responsiveValue.js";
-import { ThemeProvider } from "../../../theme/ThemeProvider.js";
+import { MjmlMailRoot } from "../../../../components/mailRoot/MjmlMailRoot.js";
+import { MjmlSection } from "../../../../components/section/MjmlSection.js";
+import { renderMailHtml } from "../../../../server/renderMailHtml.js";
+import { createTheme } from "../../../../theme/createTheme.js";
+import { defaultTheme } from "../../../../theme/defaultTheme.js";
+import { getDefaultFromResponsiveValue } from "../../../../theme/responsiveValue.js";
+import { ThemeProvider } from "../../../../theme/ThemeProvider.js";
 import type { RichTextBlockData } from "../common.js";
 import { createRichTextBlock } from "../createRichTextBlock.js";
 

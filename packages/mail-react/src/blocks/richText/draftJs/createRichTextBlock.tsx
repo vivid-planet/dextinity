@@ -1,45 +1,15 @@
-import clsx from "clsx";
 import type { ComponentType, ReactNode } from "react";
 import redraftImport from "redraft";
 
-import { HtmlText } from "../../components/text/HtmlText.js";
-import { MjmlText } from "../../components/text/MjmlText.js";
-import type {
-    CreateRichTextBlockOptions,
-    RichTextBlockProps,
-    RichTextBlockTypeProps,
-    RichTextInlineRenderer,
-    RichTextLinkHrefResolver,
-} from "./common.js";
-import { type BlockTextProps, builtInLinkTypes, createRichTextRenderers } from "./createRichTextRenderers.js";
+import { type BlockTextProps, HtmlBlockText, MjmlBlockText } from "../BlockText.js";
+import type { RichTextBlockTypeProps, RichTextInlineRenderer, RichTextLinkHrefResolver } from "../common.js";
+import { mergeLinkTypes } from "../linkTypes.js";
+import type { CreateRichTextBlockOptions, RichTextBlockProps } from "./common.js";
+import { createRichTextRenderers } from "./createRichTextRenderers.js";
 
 // redraft is CommonJS-only: under native ESM the default import is the whole
 // `module.exports` object, under bundlers it is the render function itself.
 const redraft = typeof redraftImport === "function" ? redraftImport : redraftImport.default;
-
-function MjmlBlockText({ bottomSpacing, variant, className, fontWeight, children, ...styleProps }: BlockTextProps): ReactNode {
-    return (
-        <MjmlText
-            variant={variant}
-            bottomSpacing={bottomSpacing}
-            className={clsx("richTextBlock__text", className)}
-            // Spread conditionally: MjmlText spreads explicit props after the theme-resolved variant
-            // props, so an explicit `fontWeight={undefined}` would erase the variant's value.
-            {...(fontWeight !== undefined && { fontWeight: String(fontWeight) })}
-            {...styleProps}
-        >
-            {children}
-        </MjmlText>
-    );
-}
-
-function HtmlBlockText({ bottomSpacing, variant, className, children, ...styleProps }: BlockTextProps): ReactNode {
-    return (
-        <HtmlText element="div" variant={variant} bottomSpacing={bottomSpacing} className={clsx("richTextBlock__text", className)} style={styleProps}>
-            {children}
-        </HtmlText>
-    );
-}
 
 interface DraftBlock {
     key: string;
@@ -142,13 +112,7 @@ export function createRichTextBlock<TLinkTypes extends Record<string, unknown> =
     HtmlRichTextBlock: (props: RichTextBlockProps) => ReactNode;
 } {
     const blockTypes = options.blockTypes ?? {};
-    const linkTypes: Record<string, RichTextLinkHrefResolver> = {
-        ...builtInLinkTypes,
-        // Consumers declare each resolver's props via the typed map, but at
-        // runtime they are unknown draft-js data. This one contained cast lets
-        // consumers work typed without casting in their own resolvers.
-        ...(options.linkTypes as Record<string, RichTextLinkHrefResolver>),
-    };
+    const linkTypes = mergeLinkTypes<TLinkTypes>(options.linkTypes);
     const inline = options.inline ?? {};
 
     function MjmlRichTextBlock({ data }: RichTextBlockProps): ReactNode {

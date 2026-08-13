@@ -1,65 +1,20 @@
-import type { ComponentType, PropsWithChildren, ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import type { Renderers, TextBlockRenderFn } from "redraft";
 
-import { HtmlInlineLink } from "../../components/inlineLink/HtmlInlineLink.js";
-import type { RichTextBlockTypeProps, RichTextInlineRenderer, RichTextLinkHrefResolver, RichTextListKind } from "./common.js";
-import { RichTextList } from "./RichTextList.js";
-
-type BlockTypeTextProps = Omit<RichTextBlockTypeProps, "list">;
-
-export type BlockTextProps = PropsWithChildren<
-    BlockTypeTextProps & {
-        /** Whether the theme's spacing below the text applies — set for every draft block except the last. */
-        bottomSpacing: boolean;
-    }
->;
+import { HtmlInlineLink } from "../../../components/inlineLink/HtmlInlineLink.js";
+import type { BlockTextProps, BlockTypeTextProps } from "../BlockText.js";
+import type { RichTextBlockTypeProps, RichTextInlineRenderer, RichTextLinkHrefResolver, RichTextListKind } from "../common.js";
+import { renderBoldText, renderItalicText, renderStrikethroughText, renderSubscriptText, renderSuperscriptText } from "../inlineElements.js";
+import { getLinkBlock } from "../linkTypes.js";
+import { RichTextList } from "../RichTextList.js";
 
 const inlineStyleRenderers: Renderers["inline"] = {
-    // The explicit styles back up the semantic tags in rendering engines that don't apply their default styling.
-    BOLD: (children, { key }) => (
-        <strong key={key} style={{ fontWeight: "bold" }}>
-            {children}
-        </strong>
-    ),
-    ITALIC: (children, { key }) => (
-        <em key={key} style={{ fontStyle: "italic" }}>
-            {children}
-        </em>
-    ),
-    SUB: (children, { key }) => <sub key={key}>{children}</sub>,
-    SUP: (children, { key }) => <sup key={key}>{children}</sup>,
-    STRIKETHROUGH: (children, { key }) => <s key={key}>{children}</s>,
+    BOLD: renderBoldText,
+    ITALIC: renderItalicText,
+    SUB: renderSubscriptText,
+    SUP: renderSuperscriptText,
+    STRIKETHROUGH: renderStrikethroughText,
 };
-
-function resolveExternalLinkHref(props: unknown): string | undefined {
-    if (typeof props !== "object" || props === null || !("targetUrl" in props)) {
-        return undefined;
-    }
-
-    const { targetUrl } = props;
-
-    return typeof targetUrl === "string" ? targetUrl : undefined;
-}
-
-export const builtInLinkTypes: Record<string, RichTextLinkHrefResolver> = {
-    external: resolveExternalLinkHref,
-};
-
-function getLinkBlock(entityData: unknown): { type: string; props: unknown } | undefined {
-    if (typeof entityData !== "object" || entityData === null || !("block" in entityData)) {
-        return undefined;
-    }
-
-    const { block } = entityData;
-
-    if (typeof block !== "object" || block === null || !("type" in block) || !("props" in block)) {
-        return undefined;
-    }
-
-    const { type, props } = block;
-
-    return typeof type === "string" ? { type, props } : undefined;
-}
 
 function renderWithLineBreaks(node: ReactNode): ReactNode {
     if (typeof node === "string" && node.includes("\n")) {

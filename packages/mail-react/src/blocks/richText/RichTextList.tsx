@@ -43,7 +43,7 @@ interface RichTextListProps {
     items: RichTextListItem[];
 }
 
-/** Renders one draft-js list as a table, because cell padding is the only list indent Outlook applies reliably. */
+/** Renders one rich-text list as a table, because cell padding is the only list indent Outlook applies reliably. */
 export function RichTextList({ ordered, variant, bottomSpacing, depth, items }: RichTextListProps): ReactNode {
     const theme = useOptionalTheme();
     const outlookTextStyle = useOutlookTextStyle();

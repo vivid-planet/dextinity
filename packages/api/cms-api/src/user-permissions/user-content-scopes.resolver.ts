@@ -41,10 +41,8 @@ export class UserContentScopesResolver {
         @Args("userId", { type: () => String }) userId: string,
         @Args("skipManual", { type: () => Boolean, nullable: true }) skipManual = false,
     ): Promise<ContentScope[]> {
-        const availableContentScopes = await this.userService.getAvailableContentScopes();
         return this.userService.filterContentScopesForUser({
             user: await this.userService.findUserOrThrow(userId),
-            availableContentScopes: availableContentScopes.map((availableContentScope) => availableContentScope.scope),
             includeContentScopesManual: !skipManual,
         });
     }

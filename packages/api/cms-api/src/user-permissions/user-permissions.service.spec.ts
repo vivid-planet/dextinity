@@ -8,7 +8,7 @@ import type { UserPermission } from "./entities/user-permission.entity";
 import type { ContentScope } from "./interfaces/content-scope.interface";
 import type { User } from "./interfaces/user";
 import { UserPermissionsService } from "./user-permissions.service";
-import type { AccessControlServiceInterface, UserPermissionsOptions } from "./user-permissions.types";
+import { type AccessControlServiceInterface, UserPermissions, type UserPermissionsOptions } from "./user-permissions.types";
 
 const user: User = { id: "1", name: "User", email: "user@example.com" };
 
@@ -83,19 +83,18 @@ describe("UserPermissionsService", () => {
     });
 
     describe("filterContentScopesForUser", () => {
-        const availableContentScopes: ContentScope[] = [
-            { domain: "main", language: "en" },
-            { domain: "main", language: "de" },
-        ];
         const options: UserPermissionsOptions = {
-            availableContentScopes,
+            availableContentScopes: [
+                { domain: "main", language: "en" },
+                { domain: "main", language: "de" },
+            ],
             availableContentScopeDimensions: [{ name: "domain" }, { name: "language" }, { name: "product" }],
         };
 
         it("returns a manual content scope as-is, including a value for a dimension outside the available content scopes", async () => {
             const service = createService(options, { manualContentScopes: [{ domain: "main", language: "en", product: "product-42" }] });
 
-            expect(await service.filterContentScopesForUser({ user, availableContentScopes, includeContentScopesManual: true })).toEqual([
+            expect(await service.filterContentScopesForUser({ user, includeContentScopesManual: true })).toEqual([
                 { domain: "main", language: "en", product: "product-42" },
             ]);
         });
@@ -103,8 +102,16 @@ describe("UserPermissionsService", () => {
         it("returns a manual content scope even when it is not part of the available content scopes", async () => {
             const service = createService(options, { manualContentScopes: [{ domain: "main", language: "fr", product: "product-42" }] });
 
-            expect(await service.filterContentScopesForUser({ user, availableContentScopes, includeContentScopesManual: true })).toEqual([
+            expect(await service.filterContentScopesForUser({ user, includeContentScopesManual: true })).toEqual([
                 { domain: "main", language: "fr", product: "product-42" },
+            ]);
+        });
+
+        it("represents access to all content scopes as a per-dimension wildcard spanning all declared dimensions", async () => {
+            const service = createService(options, { getContentScopesForUser: () => UserPermissions.allContentScopes });
+
+            expect(await service.filterContentScopesForUser({ user, includeContentScopesManual: false })).toEqual([
+                { domain: "*", language: "*", product: "*" },
             ]);
         });
     });

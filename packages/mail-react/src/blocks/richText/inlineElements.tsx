@@ -14,6 +14,12 @@ export const renderItalicText: RichTextInlineRenderer = (children, { key }) => (
     </em>
 );
 
+export const renderUnderlineText: RichTextInlineRenderer = (children, { key }) => (
+    <u key={key} style={{ textDecoration: "underline" }}>
+        {children}
+    </u>
+);
+
 export const renderStrikethroughText: RichTextInlineRenderer = (children, { key }) => <s key={key}>{children}</s>;
 
 export const renderSubscriptText: RichTextInlineRenderer = (children, { key }) => <sub key={key}>{children}</sub>;

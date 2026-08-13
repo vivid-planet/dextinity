@@ -1095,6 +1095,8 @@
                             "blocks": {
                                 "text": "RichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
+                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
+                                "tipTapText": "EmailCampaignTipTapRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -1135,6 +1137,8 @@
                             "blocks": {
                                 "text": "RichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
+                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
+                                "tipTapText": "EmailCampaignTipTapRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -1154,6 +1158,25 @@
         "description": "The salutation of an email campaign, filled with the name of the recipient.",
         "fields": [],
         "inputFields": []
+    },
+    {
+        "name": "EmailCampaignTipTapRichText",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
+            }
+        ]
     },
     {
         "name": "EmailLink",

@@ -4,6 +4,7 @@ import { MailDividerBlock } from "@src/mail/blocks/MailDividerBlock";
 import { MailImageBlock } from "@src/mail/blocks/MailImageBlock";
 import { MailRichTextBlock } from "@src/mail/blocks/MailRichTextBlock";
 import { MailSpacerBlock } from "@src/mail/blocks/MailSpacerBlock";
+import { MailTipTapRichTextBlock } from "@src/mail/blocks/MailTipTapRichTextBlock";
 import { MailTwoListSizesRichTextBlock } from "@src/mail/blocks/MailTwoListSizesRichTextBlock";
 
 export const WelcomeEmailContentBlock = createBlocksBlock({
@@ -11,6 +12,7 @@ export const WelcomeEmailContentBlock = createBlocksBlock({
     supportedBlocks: {
         text: MailRichTextBlock,
         twoListSizesText: MailTwoListSizesRichTextBlock,
+        tipTapText: MailTipTapRichTextBlock,
         image: MailImageBlock,
         button: MailButtonBlock,
         divider: MailDividerBlock,

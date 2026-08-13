@@ -367,7 +367,7 @@ All components are imported from `@dextinity/mail-react` — never from `@faire/
 
 ## Blocks
 
-`@dextinity/mail-react` ships components that render Dextinity CMS block data — currently pixel-image and rich-text blocks. Reach for these instead of hand-rolled markup whenever the source is a CMS block-data record.
+`@dextinity/mail-react` ships components that render Dextinity CMS block data — currently pixel-image blocks and the two rich-text blocks, draft-js and Tip-Tap. Reach for these instead of hand-rolled markup whenever the source is a CMS block-data record.
 
 ### Pixel-image blocks
 
@@ -419,7 +419,7 @@ When `data.damFile?.image` is absent, both blocks render nothing — no element,
 
 ### Rich-text blocks
 
-`createRichTextBlock` renders CMS RichText block data (draft-js raw content). **Call the factory once per configuration — at the top level of a file, never inside a component** — and export the returned pair; one configuration drives both rendering contexts.
+`createRichTextBlock` renders CMS RichText block data (draft-js raw content). For content from the Tip-Tap editor, see _Tip-Tap rich-text blocks_ below. **Call the factory once per configuration — at the top level of a file, never inside a component** — and export the returned pair; one configuration drives both rendering contexts.
 
 ```tsx title="src/emails/blocks/richText.ts"
 export const { MjmlRichTextBlock, HtmlRichTextBlock } = createRichTextBlock({
@@ -513,6 +513,32 @@ Key behaviors:
 - Rendered elements carry `richTextBlock__text`, `richTextBlock__list`, `richTextBlock__listItem`, `richTextBlock__listItemMarker`, `richTextBlock__listItemText`, and `richTextBlock__link` class names for targeting with `registerStyles`. The list table also carries `richTextBlock__list--ordered` or `richTextBlock__list--unordered`, and `richTextBlock__list--depth<Level>` naming its nesting level, counting the outermost as zero, with `richTextBlock__list--nested` on every level below that one. Only the outermost table names the text variant its items render with, such as `richTextBlock__list--variantBody`, and a rule scoped to that modifier applies to the nested levels as well. The rows carry `richTextBlock__listItem--itemSpacing`, or `richTextBlock__listItem--blockSpacing` on the last row when spacing follows the list, and `richTextBlock__listItem--itemSpacingAbove` on a nested level's first row, which carries the item spacing as `padding-top`. The cells restate the text styles inline, so a rule targeting list text needs `!important`.
 
 → To register a custom list block type across the admin RTE and the mail block, read [`references/rich-text-list-block-types.md`](references/rich-text-list-block-types.md).
+
+### Tip-Tap rich-text blocks
+
+`createTipTapRichTextBlock` renders CMS TipTapRichText block data, the successor to the draft-js block. The factory is experimental, and so is the CMS block that supplies its data. It renders through the same components and class names as `createRichTextBlock`, so lists, spacing and the styling written for them all carry over unchanged.
+
+```tsx title="src/emails/blocks/tipTapRichText.ts"
+export const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+    textBlockStyles: {
+        title: { variant: "title" },
+        header: { variant: "header" },
+    },
+});
+```
+
+Options:
+
+- `textBlockStyles` — look per style the editor picks. Wins over `textBlocks`.
+- `textBlocks` — default look per text block or list, used when the editor picks no style, e.g. `{ "unordered-list": { variant: "list" } }`.
+- `marks` — Tip-Tap's marks. `bold`, `italic`, `underline`, `strike`, `superscript` and `subscript` are built in.
+- `inlineStyles` — the inline styles the app defines in its RTE.
+- `linkTypes` — as for the draft-js block.
+
+Two things to know:
+
+- **Placeholders render as their literal `{{name}}` text**, for the sending system to substitute. Declare them in the CMS block's `placeholders` option instead of letting authors type the braces.
+- **Child blocks render nothing.** `cmsBlock` and `cmsInlineBlock` are skipped.
 
 ---
 

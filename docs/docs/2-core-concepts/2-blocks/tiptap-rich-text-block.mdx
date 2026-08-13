@@ -46,22 +46,23 @@ The TipTap Rich Text Block only replaces the Draft.js-based `RichTextBlock`. It 
 
 Most features of the Draft.js `RichTextBlock` have a direct equivalent in the TipTap Rich Text Block.
 
-| Draft.js `RichTextBlock`                        | TipTap Rich Text Block                                                           |
-| ----------------------------------------------- | -------------------------------------------------------------------------------- |
-| `createRichTextBlock`                           | `createTipTapRichTextBlock`                                                      |
-| `rte.supports` (`SupportedThings[]`)            | one option per feature ([Features](#features))                                   |
-| `bold`, `italic`, `strikethrough`, `sub`, `sup` | `bold`, `italic`, `strike`, `sub`, `sup`                                         |
-| `header-one` … `header-six`                     | [`textBlocks`](#text-blocks) + the text block type select (Heading 1–6)          |
-| `rte.standardBlockType`                         | [`defaultTextBlock`](#text-blocks)                                               |
-| `ordered-list`, `unordered-list`                | `orderedList`, `unorderedList`                                                   |
-| `history`                                       | `undoRedoButtons` (Admin only)                                                   |
-| `link`, `links-remove`                          | `link` (pass the link block)                                                     |
-| `non-breaking-space`, `soft-hyphen`             | `nonBreakingSpace`, `softHyphen`                                                 |
-| `rte.blocktypeMap` (custom block types)         | [`textBlockStyles`](#text-block-type-and-styling-selects) + the styling select   |
-| `rte.customInlineStyles`                        | [`inlineStyles`](#text-block-type-and-styling-selects) + the inline style select |
-| `rte.listLevelMax`                              | `listLevelMax`                                                                   |
-| `rte.maxBlocks`                                 | `maxTextBlocks`                                                                  |
-| Site rendering with `redraft` + `Renderers`     | Site rendering with `renderTipTapRichText` + `nodeMapping`/`markMapping`         |
+| Draft.js `RichTextBlock`                        | TipTap Rich Text Block                                                              |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `createRichTextBlock`                           | `createTipTapRichTextBlock`                                                         |
+| `rte.supports` (`SupportedThings[]`)            | one option per feature ([Features](#features))                                      |
+| `bold`, `italic`, `strikethrough`, `sub`, `sup` | `bold`, `italic`, `strike`, `sub`, `sup`                                            |
+| `header-one` … `header-six`                     | [`textBlocks`](#text-blocks) + the text block type select (Heading 1–6)             |
+| `rte.standardBlockType`                         | [`defaultTextBlock`](#text-blocks)                                                  |
+| `ordered-list`, `unordered-list`                | `orderedList`, `unorderedList`                                                      |
+| `history`                                       | `undoRedoButtons` (Admin only)                                                      |
+| `link`, `links-remove`                          | `link` (pass the link block)                                                        |
+| `non-breaking-space`, `soft-hyphen`             | `nonBreakingSpace`, `softHyphen`                                                    |
+| `rte.blocktypeMap` (custom block types)         | [`textBlockStyles`](#text-block-type-and-styling-selects) + the styling select      |
+| `rte.customInlineStyles`                        | [`inlineStyles`](#text-block-type-and-styling-selects) + the inline style select    |
+| `rte.listLevelMax`                              | `listLevelMax`                                                                      |
+| `rte.maxBlocks`                                 | `maxTextBlocks`                                                                     |
+| Site rendering with `redraft` + `Renderers`     | Site rendering with `renderTipTapRichText` + `nodeMapping`/`markMapping`            |
+| Mail rendering with `createRichTextBlock`       | Mail rendering with `createTipTapRichTextBlock` (both from `@dextinity/mail-react`) |
 
 ### Setup
 

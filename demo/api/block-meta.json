@@ -2015,6 +2015,25 @@
         ]
     },
     {
+        "name": "MailTipTapRichText",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
+            }
+        ]
+    },
+    {
         "name": "MailTwoListSizesRichText",
         "fields": [
             {
@@ -4428,6 +4447,7 @@
                             "blocks": {
                                 "text": "RichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
+                                "tipTapText": "MailTipTapRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -4467,6 +4487,7 @@
                             "blocks": {
                                 "text": "RichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
+                                "tipTapText": "MailTipTapRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",

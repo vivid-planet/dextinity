@@ -37,6 +37,46 @@ function draftContent<TEntityMap extends object>(blocks: DraftJsBlock[], entityM
     };
 }
 
+const phoneLink = {
+    type: "link",
+    attrs: { data: { attachedBlocks: [], activeType: "phone", block: { type: "phone", props: { phone: "+431234567" } } } },
+};
+
+const helpWithTipTap = {
+    tipTapContent: {
+        type: "doc",
+        content: [
+            { type: "paragraph", attrs: { textBlockStyle: "header" }, content: [{ type: "text", text: "Where to get help" }] },
+            {
+                type: "paragraph",
+                content: [
+                    {
+                        type: "text",
+                        text: "This text block uses the Tip-Tap editor, and renders through the same mail components as the blocks above. ",
+                    },
+                    { type: "text", marks: [phoneLink], text: "Call us" },
+                    { type: "text", text: " if anything is unclear." },
+                ],
+            },
+            {
+                type: "bulletList",
+                content: [
+                    {
+                        type: "listItem",
+                        content: [{ type: "paragraph", content: [{ type: "text", text: "Text block styles replace heading levels" }] }],
+                    },
+                    {
+                        type: "listItem",
+                        content: [
+                            { type: "paragraph", content: [{ type: "text", text: "Lists render as a table, so their indent holds in Outlook" }] },
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
+};
+
 @Injectable()
 export class WelcomeEmailFixtureService {
     private logger = new Logger(WelcomeEmailFixtureService.name);
@@ -135,6 +175,8 @@ export class WelcomeEmailFixtureService {
                             align: MailButtonAlignment.left,
                         },
                     },
+                    { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
+                    { key: faker.string.uuid(), visible: true, type: "tipTapText", props: helpWithTipTap },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
                     { key: faker.string.uuid(), visible: true, type: "divider", props: {} },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.small } },

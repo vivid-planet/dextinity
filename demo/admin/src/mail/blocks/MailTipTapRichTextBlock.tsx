@@ -4,9 +4,11 @@ import { MailLinkBlock } from "@src/mail/blocks/MailLinkBlock";
 import type { HTMLAttributes } from "react";
 import { FormattedMessage } from "react-intl";
 
-const mailTipTapRichTextBlockOptions = {
+export const mailTipTapRichTextBlockOptions = {
     link: MailLinkBlock,
-    textBlocks: [{ name: "paragraph", label: <FormattedMessage id="mail.tipTapRichText.textBlock.paragraph" defaultMessage="Paragraph" />, tag: "p" }],
+    textBlocks: [
+        { name: "paragraph", label: <FormattedMessage id="mail.tipTapRichText.textBlock.paragraph" defaultMessage="Paragraph" />, tag: "p" },
+    ],
     textBlockStyles: [
         {
             name: "title",

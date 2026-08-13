@@ -1,7 +1,7 @@
 import { createTipTapRichTextBlock, type CreateTipTapRichTextBlockOptions } from "@dextinity/cms-api";
 import { MailLinkBlock } from "@src/mail/blocks/mail-link.block";
 
-const mailTipTapRichTextBlockOptions: CreateTipTapRichTextBlockOptions = {
+export const mailTipTapRichTextBlockOptions: CreateTipTapRichTextBlockOptions = {
     link: MailLinkBlock,
     textBlocks: [{ name: "paragraph", tag: "p" }],
     textBlockStyles: [

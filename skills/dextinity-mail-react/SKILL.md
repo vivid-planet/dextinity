@@ -514,6 +514,21 @@ Key behaviors:
 
 → To register a custom list block type across the admin RTE and the mail block, read [`references/rich-text-list-block-types.md`](references/rich-text-list-block-types.md).
 
+### Tip-Tap rich-text blocks
+
+`createTipTapRichTextBlock` renders CMS TipTapRichText block data, the successor to the draft-js block. The factory is experimental, and so is the CMS block that supplies its data. It emits the same markup as `createRichTextBlock`, so lists, spacing, class names and CSS all carry over unchanged.
+
+```tsx title="src/emails/blocks/tipTapRichText.ts"
+export const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+    blockTypes: { "heading-1": { variant: "heading1" } },
+    textBlockStyles: { intro: { variant: "intro" } },
+});
+```
+
+- **A list's style sits on the paragraph inside each item**, not on the list, and the factory reads it from the first item. Nothing to do at the call site — worth knowing when a list's styling looks ignored.
+- **Placeholders render as their literal `{{name}}` text**, so the system that sends the mail can substitute the value. Pair this with the CMS block's `placeholders` option rather than having authors type the braces.
+- **Child blocks render nothing.** `cmsBlock` and `cmsInlineBlock` are skipped; a mail that needs them has to compose the block itself.
+
 ---
 
 ## Custom Components

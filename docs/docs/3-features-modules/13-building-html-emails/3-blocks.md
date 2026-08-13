@@ -76,7 +76,7 @@ On viewports narrower than the default body width, both blocks automatically sca
 
 ## Rich-text blocks
 
-The `createRichTextBlock` factory creates components that render `RichTextBlockData` (draft-js raw content) from the CMS. It returns one component for the MJML context and one for raw HTML, both driven by the same configuration.
+The `createRichTextBlock` factory creates components that render `RichTextBlockData` (draft-js raw content) from the CMS. It returns one component for the MJML context and one for raw HTML, both driven by the same configuration. For content from the Tip-Tap editor, see [Tip-Tap rich-text blocks](#tip-tap-rich-text-blocks) below.
 
 | Component           | Renders each draft block as | Use within                                                                        |
 | ------------------- | --------------------------- | --------------------------------------------------------------------------------- |
@@ -213,3 +213,64 @@ export const {
 - Headings are styled text, not semantic `<h1>` elements, matching the text components' design.
 - Empty draft blocks are skipped; when the data contains no text at all, the block renders nothing.
 - Rendered elements carry `richTextBlock__text`, `richTextBlock__list`, `richTextBlock__listItem`, `richTextBlock__listItemMarker`, `richTextBlock__listItemText`, and `richTextBlock__link` class names for targeting with [registerStyles](./2-components-and-theme.md). The list table also carries `richTextBlock__list--ordered` or `richTextBlock__list--unordered`, and `richTextBlock__list--depth<Level>` naming its nesting level, counting the outermost as zero, with `richTextBlock__list--nested` on every level below that one. Only the outermost table names the text variant its items render with, such as `richTextBlock__list--variantBody`, and a rule scoped to that modifier applies to the nested levels as well. The rows carry `richTextBlock__listItem--itemSpacing`, or `richTextBlock__listItem--blockSpacing` on the last row when spacing follows the list, and `richTextBlock__listItem--itemSpacingAbove` on a nested level's first row, which carries the item spacing as `padding-top`. The cells restate the text styles inline, so a rule targeting list text needs `!important`.
+
+## Tip-Tap rich-text blocks
+
+The `createTipTapRichTextBlock` factory creates components that render `TipTapRichTextBlockData` from the CMS. It returns one component for the MJML context and one for raw HTML, both driven by the same configuration.
+
+| Component                 | Renders each text block as | Use within                                                                        |
+| ------------------------- | -------------------------- | --------------------------------------------------------------------------------- |
+| `MjmlTipTapRichTextBlock` | `MjmlText`                 | an `MjmlColumn` (standard MJML layout model)                                      |
+| `HtmlTipTapRichTextBlock` | `HtmlText` (`<div>`)       | raw HTML or [MJML ending tags](./1-email-basics.md#ending-tags) such as `MjmlRaw` |
+
+Inside `MjmlRaw` in an `MjmlColumn`, `HtmlTipTapRichTextBlock` needs its own `<tr>` and `<td>` — see [Start Raw Content Inside a Column With `<tr>`](./1-email-basics.md#start-raw-content-inside-a-column-with-tr).
+
+:::info
+The factory is experimental, and so is the CMS Tip-Tap rich text block that supplies its data.
+:::
+
+Call the factory once — at the top level of a file, not inside a component — and export the returned components:
+
+```tsx title="src/emails/blocks/tipTapRichText.tsx"
+import { createTipTapRichTextBlock } from "@dextinity/mail-react";
+import type { PhoneLinkBlockData } from "@src/blocks.generated";
+
+export const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+    blockTypes: { "heading-1": { variant: "heading1" } },
+    textBlockStyles: { intro: { variant: "intro" } },
+    linkTypes: {
+        phone: (props: PhoneLinkBlockData) => (props.phone ? `tel:${props.phone}` : undefined),
+    },
+    inlineStyles: {
+        highlight: (children, { key }) => (
+            <span key={key} style={{ backgroundColor: "#ffff00" }}>
+                {children}
+            </span>
+        ),
+    },
+});
+```
+
+Usage sites then pass only the block data:
+
+```tsx
+<MjmlSection indent>
+    <MjmlColumn>
+        <MjmlTipTapRichTextBlock data={tipTapRichTextData} />
+    </MjmlColumn>
+</MjmlSection>
+```
+
+`blockTypes` styles a text block by its kind — `paragraph`, `heading-1` through `heading-6`, `unordered-list` and `ordered-list`. `textBlockStyles` styles it by the name the application declares in the [CMS block's text block styles](../../2-core-concepts/2-blocks/tiptap-rich-text-block.mdx#text-block-type-and-styling-selects), and wins where both apply. `marks` renders Tip-Tap's own marks and `inlineStyles` the named styles the application declares, and `linkTypes` resolves a link block to its `href`. A block type that `blockTypes` does not name renders with the base `theme.text` styles, so the factory also works unconfigured.
+
+Style values in `blockTypes` and `textBlockStyles` cannot be responsive. Define a theme variant instead, or set a `className` and register responsive CSS via [registerStyles](./2-components-and-theme.md). For a list, target `.<className> .richTextBlock__listItemText`, because the list's cells carry their own font styles.
+
+### Rendering behavior
+
+- Each text block renders as its own text component. The theme's `bottomSpacing` separates them, and the last block gets none.
+- Headings are styled text, not semantic `<h1>` elements, matching the text components' design.
+- The editor stores a list's style on the paragraph inside each of its items, not on the list. The factory reads it from the first item, so give the list its own name in `textBlockStyles`.
+- A placeholder renders the literal `{{name}}` text the editor shows, so the system that sends the mail can substitute it.
+- Child blocks render nothing: `cmsBlock` and `cmsInlineBlock` are skipped.
+- Text blocks without content are skipped; when the data holds no text at all, the block renders nothing.
+- Lists render as tables, because cell padding is the only spacing Outlook on Windows applies reliably. Elements carry `richTextBlock__text`, `richTextBlock__list`, `richTextBlock__listItem`, `richTextBlock__listItemMarker`, `richTextBlock__listItemText` and `richTextBlock__link` class names, plus modifiers naming a list's kind, depth and spacing. The list's cells restate the text styles inline, so a rule targeting list text needs `!important`.

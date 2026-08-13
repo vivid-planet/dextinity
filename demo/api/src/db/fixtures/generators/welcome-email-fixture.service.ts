@@ -37,6 +37,66 @@ function draftContent<TEntityMap extends object>(blocks: DraftJsBlock[], entityM
     };
 }
 
+const phoneLink = {
+    type: "link",
+    attrs: { data: { attachedBlocks: [{ type: "phone", props: { phone: "+431234567" } }], activeType: "phone" } },
+};
+
+const helpWithTipTap = {
+    tipTapContent: {
+        type: "doc",
+        content: [
+            {
+                type: "textBlock",
+                attrs: { textBlock: "paragraph", textBlockStyle: "header" },
+                content: [{ type: "text", text: "Where to get help" }],
+            },
+            {
+                type: "textBlock",
+                attrs: { textBlock: "paragraph" },
+                content: [
+                    {
+                        type: "text",
+                        text: "This text block uses the Tip-Tap editor, and renders through the same mail components as the blocks above. ",
+                    },
+                    { type: "text", marks: [phoneLink], text: "Call us" },
+                    { type: "text", text: " if anything is unclear." },
+                ],
+            },
+            {
+                type: "bulletList",
+                content: [
+                    {
+                        type: "listItem",
+                        content: [
+                            {
+                                type: "textBlock",
+                                attrs: { textBlock: "paragraph" },
+                                content: [{ type: "text", text: "Text block styles replace heading levels" }],
+                            },
+                        ],
+                    },
+                    {
+                        type: "listItem",
+                        content: [
+                            {
+                                type: "textBlock",
+                                attrs: { textBlock: "paragraph" },
+                                content: [{ type: "text", text: "Lists render as a table, so their indent holds in Outlook" }],
+                            },
+                        ],
+                    },
+                ],
+            },
+            {
+                type: "textBlock",
+                attrs: { textBlock: "paragraph", textBlockStyle: "small" },
+                content: [{ type: "text", text: "We answer calls on weekdays from 9 am to 5 pm." }],
+            },
+        ],
+    },
+};
+
 @Injectable()
 export class WelcomeEmailFixtureService {
     private logger = new Logger(WelcomeEmailFixtureService.name);
@@ -135,6 +195,8 @@ export class WelcomeEmailFixtureService {
                             align: MailButtonAlignment.left,
                         },
                     },
+                    { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
+                    { key: faker.string.uuid(), visible: true, type: "tipTapText", props: helpWithTipTap },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
                     { key: faker.string.uuid(), visible: true, type: "divider", props: {} },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.small } },

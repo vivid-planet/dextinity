@@ -2041,6 +2041,25 @@
         ]
     },
     {
+        "name": "MailTipTapRichText",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
+            }
+        ]
+    },
+    {
         "name": "MailTwoListSizesRichText",
         "description": "Formatted text, edited in the Draft.js based rich text editor.",
         "fields": [
@@ -2055,6 +2074,25 @@
                 "name": "draftContent",
                 "kind": "Json",
                 "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "MailTwoListSizesTipTapRichText",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
             }
         ]
     },
@@ -4410,6 +4448,8 @@
                             "blocks": {
                                 "text": "RichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
+                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
+                                "tipTapText": "MailTipTapRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -4449,6 +4489,8 @@
                             "blocks": {
                                 "text": "RichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
+                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
+                                "tipTapText": "MailTipTapRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",

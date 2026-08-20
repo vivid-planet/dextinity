@@ -1039,6 +1039,75 @@ export const ListLevelMax: StoryObj<typeof ListLevelMaxStory> = {
     },
 };
 
+const HeadingLevelsBlock = createTipTapRichTextBlock({ headingLevels: [2, 3, 4] });
+
+function HeadingLevelsStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(HeadingLevelsBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <HeadingLevelsBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
+    render: () => <HeadingLevelsStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Editor is ready", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("Heading dropdown only offers Heading 2-4, not 1, 5 or 6", async () => {
+            const textBlockTypeSelect = canvas.getByRole("combobox");
+            await userEvent.click(textBlockTypeSelect);
+
+            await waitFor(
+                () => {
+                    const body = within(document.body);
+                    expect(body.getByText("Heading 2")).toBeInTheDocument();
+                    expect(body.getByText("Heading 3")).toBeInTheDocument();
+                    expect(body.getByText("Heading 4")).toBeInTheDocument();
+                    expect(body.queryByText("Heading 1")).not.toBeInTheDocument();
+                    expect(body.queryByText("Heading 5")).not.toBeInTheDocument();
+                    expect(body.queryByText("Heading 6")).not.toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+
+            await userEvent.click(within(document.body).getByText("Heading 2"));
+        });
+
+        await step("Selected heading level is applied", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 2 })).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Keyboard shortcut for a disallowed level (Mod-Alt-1) does not apply Heading 1", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Alt>}1{/Alt}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(canvas.queryByRole("heading", { level: 1 })).not.toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};
+
 const CombinedStylesBlock = createTipTapRichTextBlock({
     textBlockStyles: [
         {

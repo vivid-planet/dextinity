@@ -144,6 +144,7 @@ interface TipTapRichTextBlockFactoryOptions {
     listLevelMax?: number;
     /**
      * Limits the selectable heading levels (1-6). Defaults to all levels ([1, 2, 3, 4, 5, 6]).
+     * Must be a non-empty array of unique integers between 1 and 6, otherwise an error is thrown.
      */
     headingLevels?: number[];
 }
@@ -503,6 +504,15 @@ export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOp
     const maxTextBlocks = options?.maxTextBlocks;
     const listLevelMax = options?.listLevelMax;
     const headingLevels = options?.headingLevels;
+
+    if (
+        headingLevels &&
+        (headingLevels.length === 0 ||
+            new Set(headingLevels).size !== headingLevels.length ||
+            headingLevels.some((level) => !Number.isInteger(level) || level < 1 || level > 6))
+    ) {
+        throw new Error("headingLevels must be a non-empty array of unique integers between 1 and 6");
+    }
 
     // Auto-enable link support when a link block is provided
     if (linkBlock && !supports.includes("link")) {

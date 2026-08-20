@@ -1108,6 +1108,19 @@ export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
     },
 };
 
+export const InvalidHeadingLevels: Story = {
+    render: () => <div />,
+    play: async ({ step }) => {
+        await step("Invalid headingLevels throw instead of silently creating a broken heading", async () => {
+            expect(() => createTipTapRichTextBlock({ headingLevels: [] })).toThrow();
+            expect(() => createTipTapRichTextBlock({ headingLevels: [0, 2, 3] })).toThrow();
+            expect(() => createTipTapRichTextBlock({ headingLevels: [1, 7] })).toThrow();
+            expect(() => createTipTapRichTextBlock({ headingLevels: [1, 1, 2] })).toThrow();
+            expect(() => createTipTapRichTextBlock({ headingLevels: [1.5, 2] })).toThrow();
+        });
+    },
+};
+
 const CombinedStylesBlock = createTipTapRichTextBlock({
     textBlockStyles: [
         {

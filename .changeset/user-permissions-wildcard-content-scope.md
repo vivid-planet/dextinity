@@ -15,3 +15,5 @@ getContentScopesForUser(user: User): ContentScopesForUser {
     return [{ domain: "main", language: "*" }];
 }
 ```
+
+For users with access to all content scopes, `currentUser.permissions[].contentScopes` now returns a single wildcard scope (e.g. `[{ domain: "*", language: "*" }]`) instead of the enumerated `availableContentScopes`. The default `isAllowed` and `currentUser.allowedContentScopes` handle the wildcard; a custom `isAllowed` must treat `"*"` as matching any value of a dimension.

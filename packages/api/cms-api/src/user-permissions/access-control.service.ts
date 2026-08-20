@@ -37,7 +37,7 @@ export abstract class AbstractAccessControlService implements AccessControlServi
             }
             for (const contentScope of permission.contentScopes) {
                 // The current user must have at least as much access as the target for this content scope. Unlike
-                // isScopeInTargetScope, the current user's scope must not be narrower on any dimension it constrains
+                // isScopeWithin, the current user's scope must not be narrower on any dimension it constrains
                 // beyond the target either, so the dimensions of both scopes are checked (a wildcard "*" matches any
                 // value; null and undefined are treated the same).
                 const hasCoveringContentScope = currentUserPermission.contentScopes.some((cs) => {

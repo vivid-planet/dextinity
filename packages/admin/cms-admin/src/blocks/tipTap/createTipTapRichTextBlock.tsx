@@ -410,14 +410,14 @@ const TipTapEditor = ({
                 // Remove excess text blocks (e.g. from paste)
                 const { tr } = editor.state;
                 const doc = editor.state.doc;
-                // Find the resolved position after the maxTextBlocks-th child
+                // Find the position after the maxTextBlocks-th child. Unlike other nodes, doc's own
+                // content positions start at 0 directly (it has no opening token to offset past).
                 let pos = 0;
                 for (let i = 0; i < maxTextBlocks; i++) {
                     pos += doc.child(i).nodeSize;
                 }
-                // In ProseMirror, doc content positions are offset by 1 (for the doc open token)
                 // Delete from after the last allowed text block to end of doc content
-                tr.delete(pos + 1, doc.content.size + 1);
+                tr.delete(pos, doc.content.size);
                 editor.view.dispatch(tr);
                 return;
             }

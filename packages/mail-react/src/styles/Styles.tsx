@@ -2,6 +2,7 @@ import { MjmlStyle } from "@faire/mjml-react";
 import type { ReactNode } from "react";
 
 import { useTheme } from "../theme/ThemeProvider.js";
+import { minifyHeadCss } from "./minifyHeadCss.js";
 import { getRegisteredStyles, type StylesPayload } from "./registerStyles.js";
 
 /** Internal component that renders the styles registry into `<MjmlStyle>` elements. */
@@ -23,7 +24,7 @@ export function Styles(): ReactNode {
 
     return (
         <>
-            {combinedStyleTagCss ? <MjmlStyle>{combinedStyleTagCss}</MjmlStyle> : null}
+            {combinedStyleTagCss ? <MjmlStyle>{minifyHeadCss(combinedStyleTagCss)}</MjmlStyle> : null}
             {entriesToInline.map((entry, index) => (
                 <MjmlStyle key={index} {...entry.mjmlStyleProps}>
                     {resolveCss(entry.styles)}

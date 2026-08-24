@@ -17,7 +17,7 @@ We extend `@faire/mjml-react` rather than fork it. A few rules keep that working
 - **Additive only.** A custom component must work everywhere the base did. Only add props — never remove or rename them, and don't require new providers or context. For theme access, prefer `useOptionalTheme()` over `useTheme()`.
 - **Wrap, don't reimplement.** Custom components delegate to `@faire/mjml-react`. Less to maintain, and we stay close to upstream behaviour.
 - **One export per name.** When we ship a custom version, it replaces the re-export. Consumers should never need to import from `@faire/mjml-react` directly.
-- **Public-facing documentation doesn't reference `@faire/mjml-react`.** TSDoc, story descriptions, and changeset entries describe behavior in terms of this package only. Internal places (feature READMEs, commit messages) can mention upstream when it adds maintainer context.
+- **Public-facing documentation doesn't reference `@faire/mjml-react`.** TSDoc, story descriptions, and changeset entries describe behavior in terms of this package only. Internal places (code comments, commit messages) can mention upstream when it adds maintainer context.
 
 ### Styling
 
@@ -52,53 +52,6 @@ Placeholder images use the `picsum.photos` seed URL pattern — `https://picsum.
 ### Changesets
 
 When a custom component replaces a re-export, describe the change against the previous re-export — the added props, features, or behavior. Consumers don't need to know the internal component is new; they only see what's different in the API they use.
-
-## Internal documentation per feature
-
-Features substantial enough to live in their own directory should have a `README.md` that describes the current state and how the feature changes it — and, when a maintainer might assume otherwise, the boundaries it deliberately doesn't cross. These READMEs are internal — written for the people (and agents) maintaining the code, not for consumers. End-user usage docs live elsewhere (see [Consumer-facing documentation](#consumer-facing-documentation)).
-
-### What is a feature
-
-A feature is any self-contained unit of behavior worth describing on its own — a component (`InlineLink`), a utility (`css` helper), an addon (the Storybook addon), or the package itself. Features nest: this README documents `@dextinity/mail-react` as a feature, and the components inside it are features in their own right.
-
-A feature README describes **only its own feature**. It does not describe parent features that contain it, nor sub-features it contains — each of those has its own README.
-
-### Where they live
-
-A feature that warrants a README is organized as a directory, with the README at the directory root (e.g. `src/components/inline-link/README.md`). Small features that live as a single file inside a parent don't need their own README — they're just part of the parent. Promote a file to a directory at the same time you give it a README.
-
-### What goes in a feature README
-
-**Title.** Use the exact identifier when the feature is a single component or function (e.g. `MjmlSection`); otherwise use a sentence-case name (e.g. _Inline link_).
-
-Two sections, in order. Only the intro is required.
-
-1. **Intro.** One short paragraph: the current state, and how the feature changes it. Describe the current state as plain facts — what's there, what's required, what's missing — rather than framing it as "a problem the feature solves". Maintainers read this to work on the code, not to be sold on the feature's existence.
-2. **Non-goals** (optional). Things the feature deliberately doesn't do — only when a reader would reasonably assume it does, typically because the feature's name, its domain, or a sibling feature suggests so. The test: would a maintainer look here for this and be surprised it's missing? If not, leave it out. Skip the obvious; skip future work; skip rejected alternatives — those belong in the commit that made the choice.
-
-    Write each bullet as a noun phrase naming the thing not done (`Not a heading component`, `No CSS variables`). Add a single follow-up sentence only when the reader needs to be redirected to the alternative or told why.
-
-Other sections should be rare — only when content is durable, feature-specific, and doesn't fit the two above. Specifically not warranted: no Architecture (the code shows it), no Design decisions (commits carry them), no Usage (consumer docs), no Dependencies (imports show them; non-obvious cross-feature coupling belongs in the intro).
-
-**Express the rule, not the code.** Every line should say something the code doesn't. Don't restate type signatures, prop lists, formulas, or control flow — the code already shows those.
-
-**Length.** Simple feature → one paragraph. Complex feature → one screen, no scrolling. Past a screen and you're probably duplicating commit history or describing what the code shows.
-
-### Template
-
-```md
-# <feature-name>
-
-<One short paragraph: the current state, and how the feature changes it.>
-
-## Non-goals <!-- only if any -->
-
-- <Noun phrase naming what the feature deliberately doesn't do.> <Optional follow-up sentence pointing to the alternative or stating the rationale.>
-```
-
-### Living documents
-
-Feature READMEs (this one included) should stay current. Update them in the same PR as any change that makes them inaccurate or adds context worth recording.
 
 ## Usage documentation
 

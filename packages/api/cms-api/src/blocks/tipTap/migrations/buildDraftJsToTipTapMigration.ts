@@ -47,18 +47,9 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
         protected migrate(from: From): To {
             // No-op for data that does not look like DraftJS (e.g. already TipTap-shaped).
             if (!isDraftJsContent(from.draftContent)) {
-                if (from.tipTapContent === undefined) {
-                    return { tipTapContent: EMPTY_DOC };
-                }
-                if (isValidTipTapContentSync(from.tipTapContent, schema, { maxTextBlocks, listLevelMax, headingLevels })) {
+                if (from.tipTapContent !== undefined) {
                     return { tipTapContent: from.tipTapContent };
                 }
-
-                if (process.env.NODE_ENV === "development") {
-                    throw new Error(`DraftJS->TipTap migration found existing TipTap content that doesn't pass validation`);
-                }
-
-                console.warn("DraftJS->TipTap migration found existing TipTap content that doesn't pass validation, using empty doc");
                 return { tipTapContent: EMPTY_DOC };
             }
 

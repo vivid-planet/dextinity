@@ -69,20 +69,6 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
         });
     });
 
-    describe("validates already-TipTap-shaped content against headingLevels", () => {
-        const block = createTipTapRichTextBlock({ headingLevels: [2, 3, 4], migrateFromDraftJs: true }, "MigratedRichTextHeadingLevels");
-
-        it("falls back to an empty doc instead of keeping a disallowed heading level", () => {
-            const data = block.blockDataFactory({
-                tipTapContent: {
-                    type: "doc",
-                    content: [{ type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Title" }] }],
-                },
-            });
-            expect(data.tipTapContent).toEqual({ type: "doc", content: [{ type: "paragraph" }] });
-        });
-    });
-
     describe("inline style marks", () => {
         const block = createTipTapRichTextBlock({ migrateFromDraftJs: true }, "MigratedRichTextInlineStyles");
 

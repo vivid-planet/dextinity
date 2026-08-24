@@ -88,10 +88,15 @@ export const FileUploadField = <TFieldValues extends FieldValues>({
 
         const body = new FormData();
         body.append("file", file, file.name);
-        body.append("recaptchaToken", recaptchaToken);
 
+        // The reCAPTCHA token and the file type go into headers instead of the body, so the route can reject
+        // an invalid upload before reading any of the file.
         const response = await fetch(`/${language}/api/file-upload`, {
             method: "POST",
+            headers: {
+                "x-recaptcha-token": recaptchaToken,
+                "x-file-type": file.type,
+            },
             body,
         });
 

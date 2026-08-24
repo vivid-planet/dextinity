@@ -31,4 +31,12 @@ describe("HtmlImage", () => {
         expect(html).not.toContain("v:roundrect");
         expect(html).not.toContain("<span");
     });
+
+    it("rounds the VML shape by the same radius as the image", () => {
+        const html = renderToStaticMarkup(
+            <HtmlImage src="image.jpg" alt="A photo" width={100} height={100} borderRadius={50} style={{ borderRadius: 10 }} />,
+        );
+
+        expect(html).toContain('arcsize="20%"');
+    });
 });

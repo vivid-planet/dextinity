@@ -21,19 +21,13 @@ export type HtmlImageProps = ComponentProps<"img"> & {
  * For MJML context, use `MjmlImage`.
  */
 export function HtmlImage({ className, borderRadius, style, src, width, height, alt, ...restProps }: HtmlImageProps): ReactNode {
+    const imageStyle: CSSProperties = { borderRadius, ...style };
+
     const imageNode = (
-        <img
-            className={clsx("htmlImage", className)}
-            style={{ borderRadius, ...style }}
-            src={src}
-            width={width}
-            height={height}
-            alt={alt}
-            {...restProps}
-        />
+        <img className={clsx("htmlImage", className)} style={imageStyle} src={src} width={width} height={height} alt={alt} {...restProps} />
     );
 
-    const outlookImageVml = src === undefined ? null : generateOutlookImageVml({ src, width, height, borderRadius, alt });
+    const outlookImageVml = src === undefined ? null : generateOutlookImageVml({ src, width, height, borderRadius: imageStyle.borderRadius, alt });
 
     if (outlookImageVml === null) {
         return imageNode;

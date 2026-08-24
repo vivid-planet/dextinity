@@ -24,7 +24,7 @@ const { HtmlRichTextBlock } = createRichTextBlock();
 type Story = StoryObj<typeof HtmlRichTextBlock>;
 
 const config: Meta<typeof HtmlRichTextBlock> = {
-    title: "Components/Blocks/HtmlRichTextBlock",
+    title: "Blocks/HtmlRichTextBlock",
     component: HtmlRichTextBlock,
     tags: ["autodocs"],
     parameters: {

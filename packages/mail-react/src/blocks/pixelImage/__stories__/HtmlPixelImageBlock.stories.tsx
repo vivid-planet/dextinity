@@ -9,7 +9,7 @@ import { exampleBlockData } from "./exampleBlockData.js";
 type Story = StoryObj<typeof HtmlPixelImageBlock>;
 
 const config: Meta<typeof HtmlPixelImageBlock> = {
-    title: "Components/Blocks/HtmlPixelImageBlock",
+    title: "Blocks/HtmlPixelImageBlock",
     component: HtmlPixelImageBlock,
     tags: ["autodocs"],
     parameters: {

@@ -24,7 +24,7 @@ const { MjmlRichTextBlock } = createRichTextBlock();
 type Story = StoryObj<typeof MjmlRichTextBlock>;
 
 const config: Meta<typeof MjmlRichTextBlock> = {
-    title: "Components/Blocks/MjmlRichTextBlock",
+    title: "Blocks/MjmlRichTextBlock",
     component: MjmlRichTextBlock,
     tags: ["autodocs"],
     parameters: {

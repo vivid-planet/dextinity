@@ -328,6 +328,7 @@ export const TipTapToolbar = ({
 
     return (
         <Box
+            className="TipTapToolbar-root"
             sx={{
                 display: "flex",
                 flexWrap: "wrap",

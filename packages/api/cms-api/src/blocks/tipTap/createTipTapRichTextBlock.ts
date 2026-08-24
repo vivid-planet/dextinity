@@ -89,6 +89,8 @@ interface TipTapInlineStyle {
     appliesTo?: TipTapTextBlockType[];
 }
 
+const allHeadingLevels: HeadingLevel[] = [1, 2, 3, 4, 5, 6];
+
 const defaultSupports: TipTapSupports[] = [
     "bold",
     "italic",
@@ -442,7 +444,7 @@ function IsTipTapContent(
                         }
 
                         // Enforce headingLevels restriction
-                        if (headingLevels !== undefined && containsInvalidHeadingLevel(value as JSONContent, headingLevels)) {
+                        if (containsInvalidHeadingLevel(value as JSONContent, headingLevels ?? allHeadingLevels)) {
                             return false;
                         }
 

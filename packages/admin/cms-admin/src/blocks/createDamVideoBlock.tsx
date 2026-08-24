@@ -27,11 +27,11 @@ export type DamVideoBlockState = Omit<DamVideoBlockData, "previewImage"> & { pre
  *   show controls depend on each other (a video with neither can't be played), so they're all offered or none.
  * - `"previewImage"` — the poster image shown before playback.
  */
-export type DamVideoBlockSupports = "controls" | "previewImage";
+type DamVideoBlockSupports = "controls" | "previewImage";
 
 const defaultSupports: DamVideoBlockSupports[] = ["controls", "previewImage"];
 
-export interface DamVideoBlockFactoryOptions {
+interface DamVideoBlockFactoryOptions {
     /**
      * What the editor can set besides the video file itself. Leave out anything the site implementation
      * doesn't use, for instance `["controls"]` for a site that renders no poster image, or `[]` for a site

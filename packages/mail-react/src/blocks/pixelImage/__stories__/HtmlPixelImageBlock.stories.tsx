@@ -27,6 +27,7 @@ const config: Meta<typeof HtmlPixelImageBlock> = {
             control: "select",
             options: ["inherit", "16x9", "4x3", "3x2", "3x1", "2x1", "1x1", "1x2", "1x3", "2x3", "3x4", "9x16"],
         },
+        borderRadius: { control: "number" },
     },
     args: {
         data: exampleBlockData,
@@ -85,6 +86,41 @@ export const AspectRatioOverride: Story = {
                             <td>
                                 <HtmlPixelImageBlock {...args} />
                                 <HtmlPixelImageBlock {...args} aspectRatio="16x9" />
+                            </td>
+                        </tr>
+                    </MjmlRaw>
+                </MjmlColumn>
+            </MjmlSection>
+        </MjmlMailRoot>
+    ),
+};
+
+export const RoundedCorners: Story = {
+    args: {
+        borderRadius: 16,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: "Rounds the image corners through the `borderRadius` prop of `HtmlImage`.",
+            },
+        },
+    },
+    render: (args) => (
+        <MjmlMailRoot
+            config={{
+                pixelImageBlock: {
+                    validSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 2560, 3200, 3840],
+                    baseUrl: "",
+                },
+            }}
+        >
+            <MjmlSection indent>
+                <MjmlColumn>
+                    <MjmlRaw>
+                        <tr>
+                            <td>
+                                <HtmlPixelImageBlock {...args} />
                             </td>
                         </tr>
                     </MjmlRaw>

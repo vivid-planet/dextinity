@@ -1,10 +1,13 @@
 import clsx from "clsx";
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps, CSSProperties, ReactNode } from "react";
 
 import { registerStyles } from "../../styles/registerStyles.js";
 import { css } from "../../utils/css.js";
 
-export type HtmlImageProps = ComponentProps<"img">;
+export type HtmlImageProps = ComponentProps<"img"> & {
+    /** Corner radius of the image. */
+    borderRadius?: CSSProperties["borderRadius"];
+};
 
 /**
  * Renders an `<img>` tag that adapts to its container width below the default
@@ -15,8 +18,8 @@ export type HtmlImageProps = ComponentProps<"img">;
  * Inside `MjmlRaw` in an `MjmlColumn`, place `HtmlImage` in a `<tr>` and `<td>` of its own.
  * For MJML context, use `MjmlImage`.
  */
-export function HtmlImage({ className, ...restProps }: HtmlImageProps): ReactNode {
-    return <img className={clsx("htmlImage", className)} {...restProps} />;
+export function HtmlImage({ className, borderRadius, style, ...restProps }: HtmlImageProps): ReactNode {
+    return <img className={clsx("htmlImage", className)} style={{ borderRadius, ...style }} {...restProps} />;
 }
 
 registerStyles(

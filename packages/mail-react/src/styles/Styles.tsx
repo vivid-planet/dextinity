@@ -2,26 +2,33 @@ import { MjmlStyle } from "@faire/mjml-react";
 import type { ReactNode } from "react";
 
 import { useTheme } from "../theme/ThemeProvider.js";
-import { getRegisteredStyles } from "./registerStyles.js";
+import { getRegisteredStyles, type StylesPayload } from "./registerStyles.js";
 
-/**
- * Internal component that iterates the styles registry and renders one
- * `<MjmlStyle>` element per entry.
- */
+/** Internal component that renders the styles registry into `<MjmlStyle>` elements. */
 export function Styles(): ReactNode {
     const theme = useTheme();
     const entries = Array.from(getRegisteredStyles().values());
 
+    function resolveCss(styles: StylesPayload): string {
+        return typeof styles === "function" ? styles(theme) : styles;
+    }
+
+    const combinedStyleTagCss = entries
+        .filter((entry) => !entry.mjmlStyleProps?.inline)
+        .map((entry) => resolveCss(entry.styles))
+        .filter(Boolean)
+        .join("\n");
+
+    const entriesToInline = entries.filter((entry) => entry.mjmlStyleProps?.inline);
+
     return (
         <>
-            {entries.map((entry, index) => {
-                const cssString = typeof entry.styles === "function" ? entry.styles(theme) : entry.styles;
-                return (
-                    <MjmlStyle key={index} {...entry.mjmlStyleProps}>
-                        {cssString}
-                    </MjmlStyle>
-                );
-            })}
+            {combinedStyleTagCss ? <MjmlStyle>{combinedStyleTagCss}</MjmlStyle> : null}
+            {entriesToInline.map((entry, index) => (
+                <MjmlStyle key={index} {...entry.mjmlStyleProps}>
+                    {resolveCss(entry.styles)}
+                </MjmlStyle>
+            ))}
         </>
     );
 }

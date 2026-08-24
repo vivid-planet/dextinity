@@ -8,6 +8,7 @@ import {
     type SitePreviewData,
 } from "@dextinity/site-nextjs";
 
+import { createSystemUserAuthorizationHeader } from "./createSystemUserAuthorizationHeader";
 import { getVisibilityParam } from "./ServerContext";
 
 type Fetch = typeof fetch;
@@ -25,10 +26,6 @@ export function createGraphQLFetch({ fetch: passedFetch }: { fetch?: Fetch } = {
         );
     } else {
         // Server-side rendering
-        if (!process.env.API_BASIC_AUTH_SYSTEM_USER_PASSWORD) {
-            throw new Error("API_BASIC_AUTH_SYSTEM_USER_PASSWORD is not set");
-        }
-
         let previewData: SitePreviewData | undefined;
         const visibilityParam = getVisibilityParam();
         if (visibilityParam === "invisibleBlocks") {
@@ -44,7 +41,7 @@ export function createGraphQLFetch({ fetch: passedFetch }: { fetch?: Fetch } = {
             createFetchWithDefaults(createFetchWithDefaultNextRevalidate(passedFetch || fetch, 7.5 * 60), {
                 cache: "force-cache",
                 headers: {
-                    authorization: `Basic ${Buffer.from(`system-user:${process.env.API_BASIC_AUTH_SYSTEM_USER_PASSWORD}`).toString("base64")}`,
+                    authorization: createSystemUserAuthorizationHeader(),
                     ...convertPreviewDataToHeaders(previewData),
                 },
             }),

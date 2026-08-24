@@ -35,6 +35,7 @@ export function createConfig(processEnv: NodeJS.ProcessEnv) {
         corsAllowedOrigin: new RegExp(envVars.CORS_ALLOWED_ORIGIN),
         defaultLocale: "en", // fallback locale
         auth: {
+            ...dextinityConfig.auth,
             systemUserPassword: envVars.BASIC_AUTH_SYSTEM_USER_PASSWORD,
             idpClientId: envVars.IDP_CLIENT_ID,
             idpJwksUri: envVars.IDP_JWKS_URI,

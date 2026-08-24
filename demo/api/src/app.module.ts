@@ -48,7 +48,7 @@ import { TranslationModule } from "@src/translation/translation.module";
 import { Request } from "express";
 
 import { AccessControlService } from "./auth/access-control.service";
-import { AuthModule, SYSTEM_USER_NAME } from "./auth/auth.module";
+import { AuthModule } from "./auth/auth.module";
 import { UserService } from "./auth/user.service";
 import { DamScope } from "./dam/dto/dam-scope";
 import { DamFile } from "./dam/entities/dam-file.entity";
@@ -128,7 +128,7 @@ export class AppModule {
                         ),
                         userService,
                         accessControlService,
-                        systemUsers: [SYSTEM_USER_NAME],
+                        systemUsers: [config.auth.systemUserName],
                     }),
                     inject: [UserService, AccessControlService],
                     imports: [authModule],

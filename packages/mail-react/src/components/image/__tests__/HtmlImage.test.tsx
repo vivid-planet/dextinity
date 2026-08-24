@@ -16,4 +16,19 @@ describe("HtmlImage", () => {
         expect(html).toContain("border-radius:2px");
         expect(html).not.toContain("border-radius:8px");
     });
+
+    it("gives classic Outlook a VML shape and hides the image from it", () => {
+        const html = renderToStaticMarkup(<HtmlImage src="image.jpg" alt="A photo" width={536} height={301} borderRadius={16} />);
+
+        expect(html).toContain("<!--[if mso]><v:roundrect");
+        expect(html).toContain("<![endif]--><!--[if !mso]><!--></span><img");
+        expect(html).toContain("<!--<![endif]-->");
+    });
+
+    it("leaves the markup untouched when the height is unknown", () => {
+        const html = renderToStaticMarkup(<HtmlImage src="image.jpg" alt="A photo" width={536} borderRadius={16} />);
+
+        expect(html).not.toContain("v:roundrect");
+        expect(html).not.toContain("<span");
+    });
 });

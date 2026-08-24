@@ -14,26 +14,32 @@ import { BlockAdminComponentSection } from "./common/BlockAdminComponentSection"
 import type { GQLVideoBlockDamFileQuery, GQLVideoBlockDamFileQueryVariables } from "./createDamVideoBlock.generated";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
-import { VideoOptionsFields, type VideoOptionsSupports } from "./helpers/VideoOptionsFields";
+import { VideoOptionsFields } from "./helpers/VideoOptionsFields";
 import { PixelImageBlock } from "./PixelImageBlock";
 import { BlockCategory, type BlockDependency, type BlockInterface, type BlockState } from "./types";
 import { resolveNewState } from "./utils";
 
 export type DamVideoBlockState = Omit<DamVideoBlockData, "previewImage"> & { previewImage: BlockState<typeof PixelImageBlock> };
 
-export type DamVideoBlockSupports = VideoOptionsSupports | "previewImage";
+/**
+ * What the editor can set besides the video file itself:
+ * - `"controls"` — the playback options autoplay, loop and show controls. Bundled because autoplay and
+ *   show controls depend on each other (a video with neither can't be played), so they're all offered or none.
+ * - `"previewImage"` — the poster image shown before playback.
+ */
+export type DamVideoBlockSupports = "controls" | "previewImage";
 
-const defaultSupports: DamVideoBlockSupports[] = ["autoplay", "loop", "showControls", "previewImage"];
+const defaultSupports: DamVideoBlockSupports[] = ["controls", "previewImage"];
 
 export interface DamVideoBlockFactoryOptions {
     /**
      * What the editor can set besides the video file itself. Leave out anything the site implementation
-     * doesn't use, for instance `["loop", "showControls", "previewImage"]` for a site that can't autoplay,
-     * or `[]` for a site that only reads the file's URL.
+     * doesn't use, for instance `["controls"]` for a site that renders no poster image, or `[]` for a site
+     * that only reads the file's URL.
      *
      * Values that are already stored are kept as they are, the editor just can't change them anymore.
      * The preview image is always part of the block's data, leaving it out only hides it from the editor.
-     * @default ["autoplay", "loop", "showControls", "previewImage"]
+     * @default ["controls", "previewImage"]
      */
     supports?: DamVideoBlockSupports[];
     tags?: Array<MessageDescriptor | string>;
@@ -48,8 +54,6 @@ export const createDamVideoBlock = (
         block: BlockInterface<DamVideoBlockData, DamVideoBlockState, DamVideoBlockInput>,
     ) => BlockInterface<DamVideoBlockData, DamVideoBlockState, DamVideoBlockInput>,
 ): BlockInterface<DamVideoBlockData, DamVideoBlockState, DamVideoBlockInput> => {
-    const videoOptionsSupports = supports.filter((support): support is VideoOptionsSupports => support !== "previewImage");
-
     const DamVideoBlock: BlockInterface<DamVideoBlockData, DamVideoBlockState, DamVideoBlockInput> = {
         ...createBlockSkeleton(),
 
@@ -160,7 +164,7 @@ export const createDamVideoBlock = (
                             allowedMimetypes={["video/mp4", "video/webm"]}
                             preview={<Video fontSize="large" color="primary" />}
                         />
-                        <VideoOptionsFields supports={videoOptionsSupports} />
+                        {supports.includes("controls") && <VideoOptionsFields />}
                         {supports.includes("previewImage") && (
                             <BlockAdminComponentSection
                                 title={<FormattedMessage id="dextinity.blocks.video.previewImage" defaultMessage="Preview Image" />}

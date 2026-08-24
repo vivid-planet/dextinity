@@ -68,38 +68,31 @@ export const Default: Story = {
     },
 };
 
-const WithoutAutoplayBlock = createDamVideoBlock({ supports: ["loop", "showControls", "previewImage"] });
+const WithoutControlsBlock = createDamVideoBlock({ supports: ["previewImage"] });
 
-function WithoutAutoplayStory() {
-    const [state, setState] = useState<DamVideoBlockState>(WithoutAutoplayBlock.defaultValues());
+function WithoutControlsStory() {
+    const [state, setState] = useState<DamVideoBlockState>(WithoutControlsBlock.defaultValues());
 
     return (
         <StoryWrapper state={state}>
-            <WithoutAutoplayBlock.AdminComponent state={state} updateState={setState} />
+            <WithoutControlsBlock.AdminComponent state={state} updateState={setState} />
         </StoryWrapper>
     );
 }
 
-export const WithoutAutoplay: StoryObj<typeof WithoutAutoplayStory> = {
-    render: () => <WithoutAutoplayStory />,
-    play: async ({ canvas, userEvent, step }) => {
-        await step("Autoplay isn't offered, the remaining options are", async () => {
+export const WithoutControls: StoryObj<typeof WithoutControlsStory> = {
+    render: () => <WithoutControlsStory />,
+    play: async ({ canvas, step }) => {
+        await step("No playback option is offered", async () => {
             await waitFor(() => {
-                expect(canvas.getByRole("switch", { name: "Loop" })).toBeInTheDocument();
+                expect(canvas.getByRole("button", { name: "Choose image" })).toBeInTheDocument();
             });
 
-            expect(canvas.queryByRole("switch", { name: "Autoplay" })).not.toBeInTheDocument();
-            expect(canvas.getByRole("switch", { name: "Show controls" })).toBeInTheDocument();
+            expect(canvas.queryAllByRole("switch")).toHaveLength(0);
         });
 
-        await step("Switching off show controls doesn't enable the unsupported autoplay", async () => {
-            await userEvent.click(canvas.getByRole("switch", { name: "Show controls" }));
-
-            await waitFor(() => {
-                expect(readState(canvas)).toMatchObject({ showControls: false });
-            });
-
-            expect(readState(canvas).autoplay).toBeUndefined();
+        await step("The preview image is still offered, it isn't a playback option", async () => {
+            expect(canvas.getByRole("button", { name: "Choose image" })).toBeInTheDocument();
         });
     },
 };
@@ -124,7 +117,7 @@ export const FileOnly: StoryObj<typeof FileOnlyStory> = {
                 expect(canvas.getByRole("button", { name: "Choose file" })).toBeInTheDocument();
             });
 
-            expect(canvas.queryAllByRole("checkbox")).toHaveLength(0);
+            expect(canvas.queryAllByRole("switch")).toHaveLength(0);
             expect(canvas.queryByRole("button", { name: "Choose image" })).not.toBeInTheDocument();
         });
 

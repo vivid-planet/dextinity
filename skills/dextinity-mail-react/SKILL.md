@@ -547,6 +547,8 @@ const { html, mjmlWarnings } = renderMailHtml(
 - **Client** (`@dextinity/mail-react/client`) — uses `mjml-browser`, works without `fs`
 - `renderMailHtml` is **not** on the main `@dextinity/mail-react` barrel — always import from `/server` or `/client`
 - Returns `{ html: string; mjmlWarnings: MjmlWarning[] }` — warnings are collected, not thrown
+- A framework that bundles server code (Next.js) must list `mjml` in the application's own `package.json` too, or rendering fails at runtime
+- Nothing imports it directly — add `mjml` to `ignoreDependencies` in `knip.json` rather than removing it as unused
 
 ### Logging MJML Warnings
 

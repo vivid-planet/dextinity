@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ReactElement } from "react";
 import { expect } from "storybook/test";
 
-import { createRichTextBlock } from "../../blocks/richText/createRichTextBlock.js";
+import { createRichTextBlock } from "../../blocks/richText/draftJs/createRichTextBlock.js";
 import { renderMailHtml } from "../../client/renderMailHtml.js";
 import { MjmlMailRoot } from "../../components/mailRoot/MjmlMailRoot.js";
 import { MjmlSection } from "../../components/section/MjmlSection.js";

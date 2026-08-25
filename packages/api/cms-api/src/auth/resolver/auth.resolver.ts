@@ -2,9 +2,9 @@ import { Inject, Type } from "@nestjs/common";
 import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
 import { IncomingMessage } from "http";
-import isEqual from "lodash.isequal";
 
 import { SkipBuild } from "../../builds/skip-build.decorator";
+import { ContentScopeSet } from "../../user-permissions/content-scope-set";
 import { DisablePermissionCheck, RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
 import { ContentScopeWithLabel } from "../../user-permissions/dto/content-scope";
 import { CurrentUser } from "../../user-permissions/dto/current-user";
@@ -56,9 +56,9 @@ export function createAuthResolver(config?: AuthResolverConfig): Type<unknown> {
 
         @ResolveField(() => [ContentScopeWithLabel])
         async allowedContentScopes(@Parent() user: CurrentUser): Promise<ContentScopeWithLabel[]> {
-            const allowedContentScopes = user.permissions.flatMap((p) => p.contentScopes);
+            const allowedContentScopes = new ContentScopeSet(user.permissions.flatMap((p) => p.contentScopes));
             return (await this.service.getAvailableContentScopes()).filter((contentScopeWithLabel) =>
-                allowedContentScopes.some((allowedContentScope) => isEqual(contentScopeWithLabel.scope, allowedContentScope)),
+                allowedContentScopes.has(contentScopeWithLabel.scope),
             );
         }
     }

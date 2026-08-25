@@ -4,11 +4,10 @@ import { EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
 import { isFuture, isPast } from "date-fns";
 import { Request } from "express";
-import isEqual from "lodash.isequal";
-import uniqWith from "lodash.uniqwith";
 import getUuid from "uuid-by-string";
 
 import { AbstractAccessControlService } from "./access-control.service";
+import { ContentScopeSet } from "./content-scope-set";
 import { DisablePermissionCheck, REQUIRED_PERMISSION_METADATA_KEY, RequiredPermissionMetadata } from "./decorators/required-permission.decorator";
 import { ContentScopeWithLabel } from "./dto/content-scope";
 import { CurrentUser, CurrentUserPermission } from "./dto/current-user";
@@ -75,7 +74,9 @@ export class UserPermissionsService {
                     ]),
                 ),
             }));
-        return uniqWith(contentScopesWithLabel, (value: ContentScopeWithLabel, other: ContentScopeWithLabel) => isEqual(value.scope, other.scope));
+        const uniqueScopes = new ContentScopeSet();
+
+        return contentScopesWithLabel.filter((contentScope) => uniqueScopes.add(contentScope.scope));
     }
 
     async getAvailablePermissions(): Promise<Permission[]> {
@@ -133,12 +134,12 @@ export class UserPermissionsService {
     }
 
     async checkContentScopes(contentScopes: ContentScope[]): Promise<void> {
-        const availableContentScopes = await this.getAvailableContentScopes();
-        contentScopes.forEach((scope) => {
-            if (!availableContentScopes.some((cs) => isEqual(cs.scope, scope))) {
+        const availableContentScopes = new ContentScopeSet((await this.getAvailableContentScopes()).map((cs) => cs.scope));
+        for (const scope of contentScopes) {
+            if (!availableContentScopes.has(scope)) {
                 throw new Error(`ContentScope does not exist: ${JSON.stringify(scope)}.`);
             }
-        });
+        }
     }
 
     async warmupHasPermissionCache() {
@@ -206,7 +207,7 @@ export class UserPermissionsService {
     }
 
     async getContentScopes(user: User, includeContentScopesManual = true): Promise<ContentScope[]> {
-        const availableContentScopes = (await this.getAvailableContentScopes()).map((cs) => cs.scope);
+        const availableContentScopes = new ContentScopeSet((await this.getAvailableContentScopes()).map((cs) => cs.scope));
         return this.filterContentScopesForUser({ user, availableContentScopes, includeContentScopesManual });
     }
 
@@ -214,7 +215,7 @@ export class UserPermissionsService {
     // Used by the request-scoped UserContentScopesLoaderService so the contentScopesCount field resolver doesn't
     // recompute the full available-scope list once per returned user.
     async getContentScopesForUsers(users: User[], includeContentScopesManual = true): Promise<ContentScope[][]> {
-        const availableContentScopes = (await this.getAvailableContentScopes()).map((cs) => cs.scope);
+        const availableContentScopes = new ContentScopeSet((await this.getAvailableContentScopes()).map((cs) => cs.scope));
         return Promise.all(users.map((user) => this.filterContentScopesForUser({ user, availableContentScopes, includeContentScopesManual })));
     }
 
@@ -224,7 +225,7 @@ export class UserPermissionsService {
         includeContentScopesManual,
     }: {
         user: User;
-        availableContentScopes: ContentScope[];
+        availableContentScopes: ContentScopeSet;
         includeContentScopesManual: boolean;
     }): Promise<ContentScope[]> {
         const contentScopes: ContentScope[] = [];
@@ -232,7 +233,7 @@ export class UserPermissionsService {
         if (this.accessControlService.getContentScopesForUser) {
             const userContentScopes = await this.accessControlService.getContentScopesForUser(user);
             if (userContentScopes === UserPermissions.allContentScopes) {
-                contentScopes.push(...availableContentScopes);
+                contentScopes.push(...availableContentScopes.values());
             } else {
                 contentScopes.push(...userContentScopes);
             }
@@ -241,11 +242,13 @@ export class UserPermissionsService {
         if (includeContentScopesManual) {
             const entity = await this.contentScopeRepository.findOne({ userId: user.id });
             if (entity) {
-                contentScopes.push(...entity.contentScopes.filter((value) => availableContentScopes.some((cs) => isEqual(cs, value))));
+                contentScopes.push(...entity.contentScopes.filter((value) => availableContentScopes.has(value)));
             }
         }
 
-        return uniqWith(contentScopes, isEqual);
+        const uniqueScopes = new ContentScopeSet();
+
+        return contentScopes.filter((scope) => uniqueScopes.add(scope));
     }
 
     async getImpersonatedUser(authenticatedUser: User, request: Request): Promise<User | undefined> {
@@ -290,7 +293,11 @@ export class UserPermissionsService {
                 const contentScopes = userPermission.overrideContentScopes ? userPermission.contentScopes : userContentScopes;
                 const existingPermission = acc.find((p) => p.permission === userPermission.permission);
                 if (existingPermission) {
-                    existingPermission.contentScopes = uniqWith([...existingPermission.contentScopes, ...contentScopes], isEqual);
+                    const uniqueScopes = new ContentScopeSet(existingPermission.contentScopes);
+                    existingPermission.contentScopes = [
+                        ...existingPermission.contentScopes,
+                        ...contentScopes.filter((scope) => uniqueScopes.add(scope)),
+                    ];
                 } else {
                     acc.push({
                         permission: userPermission.permission,

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
-import isEqual from "lodash.isequal";
 
+import { ContentScopeSet } from "./content-scope-set";
 import { CurrentUser, CurrentUserPermission } from "./dto/current-user";
 import { ContentScope } from "./interfaces/content-scope.interface";
 import { AccessControlServiceInterface, Permission } from "./user-permissions.types";
@@ -36,8 +36,9 @@ export abstract class AbstractAccessControlService implements AccessControlServi
                 this.logger.debug(`Missing permission "${permission.permission}".`);
                 return false;
             }
+            const currentUserContentScopes = new ContentScopeSet(currentUserPermission.contentScopes);
             for (const contentScope of permission.contentScopes) {
-                if (!currentUserPermission.contentScopes.find((cs) => isEqual(cs, contentScope))) {
+                if (!currentUserContentScopes.has(contentScope)) {
                     this.logger.debug(`Missing content scope ${JSON.stringify(contentScope)} for permission "${permission.permission}".`);
                     return false;
                 }

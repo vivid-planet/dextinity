@@ -21,4 +21,18 @@ describe("MjmlPixelImageBlock", () => {
 
         expect(html).toContain("border-radius:8px");
     });
+
+    it("always has the dimensions the Outlook VML needs, without the caller giving a height", () => {
+        const { html } = renderMailHtml(
+            <MjmlMailRoot config={{ pixelImageBlock: { validSizes: [640, 1280], baseUrl: "" } }}>
+                <MjmlSection>
+                    <MjmlColumn>
+                        <MjmlPixelImageBlock data={exampleBlockData} width={300} aspectRatio="3x2" borderRadius={8} />
+                    </MjmlColumn>
+                </MjmlSection>
+            </MjmlMailRoot>,
+        );
+
+        expect(html).toMatch(/<v:roundrect[^>]*style="width:300px;height:200px;"/);
+    });
 });

@@ -165,7 +165,7 @@ Outlook ignores `background-image` entirely. Use a VML-based workaround for Outl
 
 ### No CSS `border-radius` in Outlook
 
-Outlook ignores `border-radius` — rounded corners render as sharp rectangles. The workaround is VML `v:roundrect` in conditional comments (`<!--[if mso]>`). See [Bulletproof Buttons](https://www.buttons.cm/) and the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
+Outlook ignores `border-radius` — rounded corners render as sharp rectangles. `MjmlImage` and `HtmlImage` cover images: their `borderRadius` prop also renders a VML shape for Outlook, as long as `width` and `height` are given in pixels and the radius is given in pixels or as `"50%"`. Everything else, buttons included, needs the workaround by hand — VML `v:roundrect` in conditional comments (`<!--[if mso]>`). See [Bulletproof Buttons](https://www.buttons.cm/) and the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
 
 ---
 

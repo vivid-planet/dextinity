@@ -71,3 +71,25 @@ export const RoundedCorners: Story = {
         </MjmlSection>
     ),
 };
+
+export const Circle: Story = {
+    args: {
+        borderRadius: "50%",
+        width: 240,
+        height: 240,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: "A `borderRadius` of `50%` makes a square image round.",
+            },
+        },
+    },
+    render: (args) => (
+        <MjmlSection indent>
+            <MjmlColumn>
+                <MjmlImage {...args} src={`https://picsum.photos/seed/mjml-image-circle/${args.width}/${args.height}`} />
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+};

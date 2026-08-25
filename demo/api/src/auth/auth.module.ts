@@ -16,6 +16,8 @@ import { AccessControlService } from "./access-control.service";
 import { staticUsers } from "./static-users";
 import { UserService } from "./user.service";
 
+// Must match SYSTEM_USER_NAME in demo/site/src/util/systemUser.ts.
+// When changing the name, it needs to be updated everywhere (api and site).
 export const SYSTEM_USER_NAME = "system-user";
 
 @Module({})

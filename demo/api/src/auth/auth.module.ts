@@ -13,12 +13,9 @@ import { JwtModule } from "@nestjs/jwt";
 import { Config } from "@src/config/config";
 
 import { AccessControlService } from "./access-control.service";
+import { SYSTEM_USER_NAME } from "./constants";
 import { staticUsers } from "./static-users";
 import { UserService } from "./user.service";
-
-// Must match SYSTEM_USER_NAME in demo/site/src/util/systemUser.ts.
-// When changing the name, it needs to be updated everywhere (api and site).
-export const SYSTEM_USER_NAME = "system-user";
 
 @Module({})
 export class AuthModule {

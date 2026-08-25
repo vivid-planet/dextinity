@@ -1,5 +1,5 @@
 import { persistedQueryRoute } from "@dextinity/site-nextjs/server";
-import { SYSTEM_USER_NAME } from "@src/util/systemUser";
+import { SYSTEM_USER_NAME } from "@src/auth/constants";
 
 export const dynamic = "force-dynamic";
 

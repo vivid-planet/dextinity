@@ -7,9 +7,9 @@ import {
     type GraphQLFetch,
     type SitePreviewData,
 } from "@dextinity/site-nextjs";
+import { SYSTEM_USER_NAME } from "@src/auth/constants";
 
 import { getVisibilityParam } from "./ServerContext";
-import { SYSTEM_USER_NAME } from "./systemUser";
 
 type Fetch = typeof fetch;
 

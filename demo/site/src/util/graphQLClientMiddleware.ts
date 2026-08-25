@@ -1,6 +1,5 @@
 import { createFetchWithDefaults, createGraphQLFetch } from "@dextinity/site-nextjs";
-
-import { SYSTEM_USER_NAME } from "./systemUser";
+import { SYSTEM_USER_NAME } from "@src/auth/constants";
 
 export function createGraphQLFetchMiddleware() {
     if (!process.env.API_BASIC_AUTH_SYSTEM_USER_PASSWORD) {

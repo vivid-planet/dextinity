@@ -1,4 +1,4 @@
-import { greyPalette } from "@dextinity/admin";
+import { BaseTranslationDialog, greyPalette, useContentTranslationService } from "@dextinity/admin";
 import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Extension } from "@tiptap/core";
@@ -7,7 +7,7 @@ import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import { EditorContent, type JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { type ComponentType, type HTMLAttributes, type ReactNode, useEffect } from "react";
+import { type ComponentType, type HTMLAttributes, type ReactNode, useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
@@ -147,6 +147,11 @@ interface TipTapRichTextBlockFactoryOptions {
      * Must be a non-empty array of unique integers between 1 and 6, otherwise an error is thrown.
      */
     headingLevels?: number[];
+    /**
+     * Hides the in-toolbar "Translate" button, e.g. to avoid a nested translate button when this
+     * block is rendered inside another translation UI.
+     */
+    disableContentTranslation?: boolean;
 }
 
 function getPlainTextFromContent(content: JSONContent): string {
@@ -335,6 +340,22 @@ const ReadOnlyContent = styled("div")({
     },
 });
 
+interface TipTapEditorProps {
+    state: TipTapRichTextBlockState;
+    updateState: React.Dispatch<React.SetStateAction<TipTapRichTextBlockState>>;
+    supports: TipTapSupports[];
+    textBlockStyles: TipTapTextBlockStyle[];
+    inlineStyles: TipTapInlineStyle[];
+    placeholders: TipTapPlaceholder[];
+    linkBlock?: BlockInterface & LinkBlockInterface;
+    childBlocks: Record<string, TipTapChildBlock>;
+    maxTextBlocks?: number;
+    listLevelMax?: number;
+    headingLevels?: number[];
+    readOnly?: boolean;
+    disableContentTranslation?: boolean;
+}
+
 const TipTapEditor = ({
     state,
     updateState,
@@ -348,20 +369,8 @@ const TipTapEditor = ({
     listLevelMax,
     headingLevels,
     readOnly,
-}: {
-    state: TipTapRichTextBlockState;
-    updateState: React.Dispatch<React.SetStateAction<TipTapRichTextBlockState>>;
-    supports: TipTapSupports[];
-    textBlockStyles: TipTapTextBlockStyle[];
-    inlineStyles: TipTapInlineStyle[];
-    placeholders: TipTapPlaceholder[];
-    linkBlock?: BlockInterface & LinkBlockInterface;
-    childBlocks: Record<string, TipTapChildBlock>;
-    maxTextBlocks?: number;
-    listLevelMax?: number;
-    headingLevels?: number[];
-    readOnly?: boolean;
-}) => {
+    disableContentTranslation,
+}: TipTapEditorProps) => {
     const hasTextBlockStyles = textBlockStyles.length > 0;
     const hasInlineStyles = inlineStyles.length > 0;
     const hasLink = supports.includes("link") && !!linkBlock;
@@ -452,8 +461,22 @@ const TipTapEditor = ({
         }
     }, [readOnly, editor, state.tipTapContent]);
 
+    const translationContext = useContentTranslationService();
+    const canTranslate = translationContext.enabled && !disableContentTranslation;
+    const [translationDialogState, setTranslationDialogState] = useState<{ original: JSONContent; translated: JSONContent } | null>(null);
+
     if (!editor) {
         return null;
+    }
+
+    async function handleTranslateClick() {
+        const original = editor.getJSON();
+        const translated = await translateTextNodesAsync(original, translationContext.translate);
+        if (translationContext.showApplyTranslationDialog) {
+            setTranslationDialogState({ original, translated });
+        } else {
+            editor.commands.setContent(translated);
+        }
     }
 
     const editorNode = <EditorContent editor={editor} />;
@@ -476,15 +499,80 @@ const TipTapEditor = ({
                                 childBlocks={childBlocks}
                                 listLevelMax={listLevelMax}
                                 headingLevels={headingLevels}
+                                canTranslate={canTranslate}
+                                onTranslateClick={handleTranslateClick}
                             />
                             <Box sx={{ "& .tiptap": { minHeight: 200, p: "20px", outline: "none" } }}>{editorNode}</Box>
                         </Box>
+                    )}
+                    {translationDialogState && (
+                        <TipTapContentTranslationDialog
+                            open
+                            onClose={() => setTranslationDialogState(null)}
+                            originalContent={translationDialogState.original}
+                            translatedContent={translationDialogState.translated}
+                            onApplyTranslation={(content) => {
+                                editor.commands.setContent(content);
+                                setTranslationDialogState(null);
+                            }}
+                            editorProps={{
+                                supports,
+                                textBlockStyles,
+                                inlineStyles,
+                                placeholders,
+                                linkBlock,
+                                childBlocks,
+                                maxTextBlocks,
+                                listLevelMax,
+                            }}
+                        />
                     )}
                 </ChildBlocksContext.Provider>
             </InlineStyleContext.Provider>
         </TextBlockStyleContext.Provider>
     );
 };
+
+interface TipTapContentTranslationDialogProps {
+    open: boolean;
+    onClose: () => void;
+    originalContent: JSONContent;
+    translatedContent: JSONContent;
+    onApplyTranslation: (content: JSONContent) => void;
+    editorProps: Pick<
+        TipTapEditorProps,
+        "supports" | "textBlockStyles" | "inlineStyles" | "placeholders" | "linkBlock" | "childBlocks" | "maxTextBlocks" | "listLevelMax"
+    >;
+}
+
+const TipTapContentTranslationDialog = ({
+    open,
+    onClose,
+    originalContent,
+    translatedContent,
+    onApplyTranslation,
+    editorProps,
+}: TipTapContentTranslationDialogProps) => (
+    <BaseTranslationDialog
+        open={open}
+        onClose={onClose}
+        originalText={originalContent}
+        translatedText={translatedContent}
+        onApplyTranslation={onApplyTranslation}
+        renderOriginalText={(content) => <TipTapEditor state={{ tipTapContent: content }} updateState={() => {}} {...editorProps} readOnly />}
+        renderTranslatedText={(content, onChange) => (
+            <TipTapEditor
+                state={{ tipTapContent: content }}
+                updateState={(next) => {
+                    const nextState = typeof next === "function" ? next({ tipTapContent: content }) : next;
+                    onChange(nextState.tipTapContent);
+                }}
+                {...editorProps}
+                disableContentTranslation
+            />
+        )}
+    />
+);
 
 type TipTapRichTextBlockInterface = BlockInterface<TipTapRichTextBlockData, TipTapRichTextBlockState, TipTapRichTextBlockInput> &
     ReadOnlyBlockRenderInterface<TipTapRichTextBlockState>;
@@ -513,6 +601,7 @@ export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOp
     ) {
         throw new Error("headingLevels must be a non-empty array of unique integers between 1 and 6");
     }
+    const disableContentTranslation = options?.disableContentTranslation;
 
     // Auto-enable link support when a link block is provided
     if (linkBlock && !supports.includes("link")) {
@@ -529,6 +618,7 @@ export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOp
         maxTextBlocks,
         listLevelMax,
         headingLevels,
+        disableContentTranslation,
     };
 
     const TipTapRichTextBlock: TipTapRichTextBlockInterface = {

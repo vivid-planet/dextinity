@@ -1,7 +1,8 @@
+import { ContentTranslationServiceProvider } from "@dextinity/admin";
 import { Box, chipClasses, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type HTMLAttributes, type ReactNode, useState } from "react";
+import { type HTMLAttributes, type PropsWithChildren, type ReactNode, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "../createTipTapRichTextBlock";
@@ -1246,6 +1247,100 @@ export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
                     expect(firstParagraph.getBoundingClientRect().top).toBeLessThan(paragraphTopBeforeScroll);
                 },
                 { timeout: 5000 },
+            );
+        });
+    },
+};
+
+const uppercaseTranslate = async (text: string): Promise<string> => text.toUpperCase();
+
+// No `supports` means only the translate button renders, so it's the toolbar's sole (and thus unambiguous) button.
+const TranslationBlock = createTipTapRichTextBlock({ supports: [] });
+
+const translationInitialState: TipTapRichTextBlockState = {
+    tipTapContent: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "Hello world" }] }] },
+};
+
+function TranslationProvider({ children, showApplyTranslationDialog }: PropsWithChildren<{ showApplyTranslationDialog?: boolean }>) {
+    return (
+        <ContentTranslationServiceProvider enabled translate={uppercaseTranslate} showApplyTranslationDialog={showApplyTranslationDialog}>
+            {children}
+        </ContentTranslationServiceProvider>
+    );
+}
+
+function TranslationStory({ showApplyTranslationDialog }: { showApplyTranslationDialog?: boolean }) {
+    const [state, setState] = useState<TipTapRichTextBlockState>(translationInitialState);
+
+    return (
+        <TranslationProvider showApplyTranslationDialog={showApplyTranslationDialog}>
+            <StoryWrapper state={state}>
+                <TranslationBlock.AdminComponent state={state} updateState={setState} />
+            </StoryWrapper>
+        </TranslationProvider>
+    );
+}
+
+export const Translation: StoryObj<typeof TranslationStory> = {
+    render: () => <TranslationStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Editor is ready with a translate button", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                    expect(canvas.getByRole("button")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("Clicking translate replaces the content immediately (no review dialog)", async () => {
+            await userEvent.click(canvas.getByRole("button"));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toHaveTextContent("HELLO WORLD");
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};
+
+export const TranslationWithApplyDialog: StoryObj<typeof TranslationStory> = {
+    render: () => <TranslationStory showApplyTranslationDialog />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Editor is ready with a translate button", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("button")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("Clicking translate opens a review dialog with the original and translated content", async () => {
+            await userEvent.click(canvas.getByRole("button"));
+
+            await waitFor(
+                () => {
+                    expect(within(document.body).getByText("Translation")).toBeInTheDocument();
+                    expect(within(document.body).getByText("Hello world")).toBeInTheDocument();
+                    expect(within(document.body).getByText("HELLO WORLD")).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Applying the translation updates the editor and closes the dialog", async () => {
+            await userEvent.click(within(document.body).getByRole("button", { name: "Apply" }));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toHaveTextContent("HELLO WORLD");
+                    expect(within(document.body).queryByText("Translation")).not.toBeInTheDocument();
+                },
+                { timeout: 3000 },
             );
         });
     },

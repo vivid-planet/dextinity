@@ -3,6 +3,8 @@ import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TipTapContent = Record<string, any>;
 
+const allHeadingLevels = [1, 2, 3, 4, 5, 6];
+
 // ProseMirror's Node.fromJSON silently drops unknown marks. This function
 // checks the raw JSON for mark types that don't exist in the schema.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -92,7 +94,7 @@ export function isValidTipTapContentSync(
             return false;
         }
 
-        if (headingLevels !== undefined && containsInvalidHeadingLevel(value as TipTapContent, headingLevels)) {
+        if (containsInvalidHeadingLevel(value as TipTapContent, headingLevels ?? allHeadingLevels)) {
             return false;
         }
 

@@ -121,6 +121,14 @@ Always use `theme.breakpoints.*.belowMediaQuery` inside `registerStyles` instead
 
 → For the full `registerStyles` API, `css` helper, and custom component patterns, read [`references/styling-and-customization.md`](references/styling-and-customization.md).
 
+### Switching Content by Breakpoint
+
+Sometimes you cannot make both views from the same HTML, because the mobile view needs a different structure than the desktop view. Then put both layouts in the email and hide one of them: inline styles hide the mobile layout, and a media query in `registerStyles` switches the two.
+
+Two layouts make twice as much markup, so first try to make one layout that works at each width. Columns already stack on mobile.
+
+→ For the hiding styles, the extra step classic Outlook needs, and what to avoid, read [`references/layout-patterns.md`](references/layout-patterns.md) → Breakpoint Content Switch.
+
 ---
 
 ## Common Pitfalls

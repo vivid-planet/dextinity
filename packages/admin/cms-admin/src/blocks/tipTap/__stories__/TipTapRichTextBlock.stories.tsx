@@ -1324,12 +1324,14 @@ export const TranslationWithApplyDialog: StoryObj<typeof TranslationStory> = {
 
             await waitFor(
                 () => {
-                    expect(within(document.body).getByText("Translation")).toBeInTheDocument();
-                    expect(within(document.body).getByText("Hello world")).toBeInTheDocument();
-                    expect(within(document.body).getByText("HELLO WORLD")).toBeInTheDocument();
+                    expect(within(document.body).getByRole("heading", { name: "Translation" })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
+
+            const dialog = within(document.body).getByRole("dialog");
+            expect(within(dialog).getByText("Hello world")).toBeInTheDocument();
+            expect(within(dialog).getByText("HELLO WORLD")).toBeInTheDocument();
         });
 
         await step("Applying the translation updates the editor and closes the dialog", async () => {
@@ -1338,10 +1340,40 @@ export const TranslationWithApplyDialog: StoryObj<typeof TranslationStory> = {
             await waitFor(
                 () => {
                     expect(canvas.getByRole("textbox")).toHaveTextContent("HELLO WORLD");
-                    expect(within(document.body).queryByText("Translation")).not.toBeInTheDocument();
+                    expect(within(document.body).queryByRole("dialog")).not.toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
+        });
+    },
+};
+
+const NoTranslateBlock = createTipTapRichTextBlock({ supports: [], disableContentTranslation: true });
+
+function NoTranslateStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(translationInitialState);
+
+    return (
+        <TranslationProvider>
+            <StoryWrapper state={state}>
+                <NoTranslateBlock.AdminComponent state={state} updateState={setState} />
+            </StoryWrapper>
+        </TranslationProvider>
+    );
+}
+
+export const TranslationDisabled: StoryObj<typeof NoTranslateStory> = {
+    render: () => <NoTranslateStory />,
+    play: async ({ canvas, step }) => {
+        await step("Translate button does not render, even though the translation context is enabled", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+
+            expect(canvas.queryByRole("button")).not.toBeInTheDocument();
         });
     },
 };

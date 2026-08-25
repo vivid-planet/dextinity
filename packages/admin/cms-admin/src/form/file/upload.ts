@@ -78,13 +78,6 @@ interface ReplaceFileByIdData {
     fileId: string;
 }
 
-class FileUploadError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = "FileUploadError";
-    }
-}
-
 export function replaceById({ apiUrl, data, damBasePath }: Omit<UploadFileParams, "data"> & { data: ReplaceFileByIdData }) {
     const controller = new AbortController();
     const promise = (async () => {
@@ -110,9 +103,7 @@ export function replaceById({ apiUrl, data, damBasePath }: Omit<UploadFileParams
         const dataJson = await response.json();
 
         if (!response.ok) {
-            throw new FileUploadError(
-                typeof dataJson?.message === "string" ? dataJson.message : `Replacing the file failed with status ${response.status}`,
-            );
+            throw new Error(typeof dataJson?.message === "string" ? dataJson.message : `Replacing the file failed with status ${response.status}`);
         }
 
         return { data: dataJson };

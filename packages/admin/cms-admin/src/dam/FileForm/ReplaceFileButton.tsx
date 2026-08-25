@@ -25,7 +25,7 @@ export function ReplaceFileButton({ file }: ReplaceFileButtonProps) {
     const { apiUrl } = useDextinityConfig();
     const damConfig = useDamConfig();
     const damBasePath = useDamBasePath();
-    const { allAcceptedMimeTypes, filteredAcceptedMimeTypes } = useDamAcceptedMimeTypes();
+    const { filteredAcceptedMimeTypes } = useDamAcceptedMimeTypes();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -36,8 +36,7 @@ export function ReplaceFileButton({ file }: ReplaceFileButtonProps) {
     const [replaceLoading, setReplaceLoading] = useState(false);
 
     const fileCategory = getDamFileCategory(file.mimetype);
-    const acceptedMimeTypesForReplacement =
-        fileCategory === "document" ? allAcceptedMimeTypes.filter((mimeType) => mimeType === file.mimetype) : filteredAcceptedMimeTypes[fileCategory];
+    const acceptedMimeTypesForReplacement = fileCategory === "document" ? [file.mimetype] : filteredAcceptedMimeTypes[fileCategory];
 
     const { getInputProps } = useDropzone({
         maxSize: maxFileSizeInBytes,

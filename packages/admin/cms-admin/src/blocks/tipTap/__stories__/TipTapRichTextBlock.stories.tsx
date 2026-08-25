@@ -1091,3 +1091,76 @@ export const CombinedTextBlockAndInlineStyles: StoryObj<typeof CombinedStylesSto
         });
     },
 };
+
+const RequireTextBlockStyleBlock = createTipTapRichTextBlock({
+    textBlockStyles: [
+        {
+            name: "h2-large",
+            label: "H2 Large",
+            appliesTo: ["heading-2"],
+            element: (p) => <Typography sx={{ fontSize: 36, lineHeight: 1.2 }} variant="h2" {...p} />,
+        },
+        {
+            name: "h2-small",
+            label: "H2 Small",
+            appliesTo: ["heading-2"],
+            element: (p) => <Typography sx={{ fontSize: 24, lineHeight: 1.2 }} variant="h2" {...p} />,
+        },
+        {
+            name: "intro",
+            label: "Intro Text",
+            appliesTo: ["paragraph"],
+            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
+        },
+    ],
+    requireTextBlockStyle: true,
+});
+
+function RequireTextBlockStyleStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(RequireTextBlockStyleBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <RequireTextBlockStyleBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const RequireTextBlockStyle: StoryObj<typeof RequireTextBlockStyleStory> = {
+    render: () => <RequireTextBlockStyleStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("The initial paragraph already has a style selected — no 'Default' option is offered", async () => {
+            await waitFor(
+                () => {
+                    const comboboxes = canvas.getAllByRole("combobox");
+                    expect(comboboxes).toHaveLength(2);
+                    expect(comboboxes[1]).toHaveTextContent("Intro Text");
+                },
+                { timeout: 5000 },
+            );
+
+            await userEvent.click(canvas.getAllByRole("combobox")[1]);
+            await waitFor(() => {
+                expect(within(document.body).queryByRole("option", { name: "Default" })).not.toBeInTheDocument();
+            });
+            await userEvent.keyboard("{Escape}");
+        });
+
+        await step("Switching to Heading 2 auto-assigns its first applicable style instead of 'Default'", async () => {
+            const textBlockTypeSelect = canvas.getAllByRole("combobox")[0];
+            await userEvent.click(textBlockTypeSelect);
+
+            await waitFor(() => {
+                expect(within(document.body).getByText("Heading 2")).toBeInTheDocument();
+            });
+            await userEvent.click(within(document.body).getByText("Heading 2"));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("H2 Large");
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};

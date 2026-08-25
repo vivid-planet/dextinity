@@ -135,6 +135,12 @@ export interface CreateTipTapRichTextBlockOptions {
      */
     listLevelMax?: number;
     /**
+     * Requires every heading or paragraph that has at least one applicable entry in `textBlockStyles`
+     * to have one explicitly set. Content missing a required style will be rejected during validation.
+     * Requires a non-empty `textBlockStyles` array.
+     */
+    requireTextBlockStyle?: boolean;
+    /**
      * Enables best-effort migration of DraftJS-based RichTextBlock data
      * (`{ draftContent: { blocks, entityMap } }`) into TipTap data.
      *
@@ -333,6 +339,26 @@ function getTextBlockTypeFromNode(node: JSONContent): TipTapTextBlockType | unde
     return undefined;
 }
 
+function containsMissingTextBlockStyle(content: JSONContent, textBlockStyles: TipTapTextBlockStyle[]): boolean {
+    const textBlockType = getTextBlockTypeFromNode(content);
+    if (textBlockType) {
+        const hasApplicableStyle = textBlockStyles.some((style) => !style.appliesTo || style.appliesTo.includes(textBlockType));
+        if (hasApplicableStyle && !content.attrs?.textBlockStyle) {
+            return true;
+        }
+    }
+
+    if (Array.isArray(content.content)) {
+        for (const child of content.content) {
+            if (containsMissingTextBlockStyle(child, textBlockStyles)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 function containsInvalidInlineStyleMarks(
     content: JSONContent,
     inlineStyles: TipTapInlineStyle[],
@@ -372,6 +398,8 @@ function IsTipTapContent(
         maxTextBlocks,
         allowedPlaceholderNames,
         listLevelMax,
+        textBlockStyles,
+        requireTextBlockStyle,
     }: {
         inlineStyles: TipTapInlineStyle[];
         linkBlock?: Block;
@@ -379,6 +407,8 @@ function IsTipTapContent(
         maxTextBlocks?: number;
         allowedPlaceholderNames?: string[];
         listLevelMax?: number;
+        textBlockStyles: TipTapTextBlockStyle[];
+        requireTextBlockStyle?: boolean;
     },
     validationOptions?: ValidationOptions,
 ) {
@@ -421,6 +451,11 @@ function IsTipTapContent(
                             if (depth > listLevelMax) {
                                 return false;
                             }
+                        }
+
+                        // Enforce requireTextBlockStyle: reject headings/paragraphs missing a style that applies to them
+                        if (requireTextBlockStyle && containsMissingTextBlockStyle(value as JSONContent, textBlockStyles)) {
+                            return false;
                         }
 
                         // Validate link mark data
@@ -515,12 +550,17 @@ export function createTipTapRichTextBlock(
         childBlocks: childBlocksConfig = {},
         maxTextBlocks,
         listLevelMax,
+        requireTextBlockStyle = false,
         migrateFromDraftJs = false,
     }: CreateTipTapRichTextBlockOptions = {},
     nameOrOptions: BlockFactoryNameOrOptions = "TipTapRichText",
 ): Block<TipTapRichTextBlockDataInterface, TipTapRichTextBlockInputInterface> {
     const blockName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
     const baseMigrate = typeof nameOrOptions !== "string" && nameOrOptions.migrate ? nameOrOptions.migrate : { migrations: [], version: 0 };
+
+    if (requireTextBlockStyle && textBlockStyles.length === 0) {
+        throw new Error("requireTextBlockStyle requires a non-empty textBlockStyles array");
+    }
 
     const hasLink = !!LinkBlock;
     const childBlocks: Record<string, Block> = Object.fromEntries(Object.entries(childBlocksConfig).map(([key, { block }]) => [key, block]));
@@ -624,6 +664,8 @@ export function createTipTapRichTextBlock(
             maxTextBlocks,
             allowedPlaceholderNames,
             listLevelMax,
+            textBlockStyles,
+            requireTextBlockStyle,
         })
         @BlockField({ type: "tipTapRichTextBlock", childBlocks })
         tipTapContent: JSONContent;

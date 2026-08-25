@@ -22,6 +22,7 @@ import { TextBlockStyleHeading } from "./extensions/TextBlockStyleHeading";
 import { TextBlockStyleParagraph } from "./extensions/TextBlockStyleParagraph";
 import { InlineStyleContext } from "./InlineStyleContext";
 import { createListLevelMaxExtension, getListNestingDepthFromJson, trimListNesting } from "./listLevelMaxHelpers";
+import { createRequireTextBlockStyleExtension, getDefaultTextBlockStyleName } from "./requireTextBlockStyleHelpers";
 import { TextBlockStyleContext } from "./TextBlockStyleContext";
 import { TipTapToolbar } from "./TipTapToolbar";
 
@@ -141,6 +142,12 @@ interface TipTapRichTextBlockFactoryOptions {
      * A value of 1 means only a flat list (no nesting), 2 allows one level of sub-lists, etc.
      */
     listLevelMax?: number;
+    /**
+     * Requires every heading or paragraph that has at least one applicable entry in `textBlockStyles`
+     * to have one explicitly set. The toolbar no longer offers an unstyled "Default" option for such
+     * text block types, and one is auto-assigned wherever it would otherwise be missing.
+     */
+    requireTextBlockStyle?: boolean;
 }
 
 function getPlainTextFromContent(content: JSONContent): string {
@@ -340,6 +347,7 @@ const TipTapEditor = ({
     childBlocks,
     maxTextBlocks,
     listLevelMax,
+    requireTextBlockStyle,
     readOnly,
 }: {
     state: TipTapRichTextBlockState;
@@ -352,6 +360,7 @@ const TipTapEditor = ({
     childBlocks: Record<string, TipTapChildBlock>;
     maxTextBlocks?: number;
     listLevelMax?: number;
+    requireTextBlockStyle: boolean;
     readOnly?: boolean;
 }) => {
     const hasTextBlockStyles = textBlockStyles.length > 0;
@@ -392,6 +401,7 @@ const TipTapEditor = ({
             ...(hasInlineChildBlocks ? [CmsInlineBlock] : []),
             ...(maxTextBlocks !== undefined ? [createMaxTextBlocksExtension(maxTextBlocks)] : []),
             ...(listLevelMax !== undefined ? [createListLevelMaxExtension(listLevelMax)] : []),
+            ...(requireTextBlockStyle ? [createRequireTextBlockStyleExtension(textBlockStyles)] : []),
         ],
         content: state.tipTapContent,
         editable: !readOnly,
@@ -400,14 +410,14 @@ const TipTapEditor = ({
                 // Remove excess text blocks (e.g. from paste)
                 const { tr } = editor.state;
                 const doc = editor.state.doc;
-                // Find the resolved position after the maxTextBlocks-th child
+                // Find the position after the maxTextBlocks-th child. Unlike other nodes, doc's own
+                // content positions start at 0 directly (it has no opening token to offset past).
                 let pos = 0;
                 for (let i = 0; i < maxTextBlocks; i++) {
                     pos += doc.child(i).nodeSize;
                 }
-                // In ProseMirror, doc content positions are offset by 1 (for the doc open token)
                 // Delete from after the last allowed text block to end of doc content
-                tr.delete(pos + 1, doc.content.size + 1);
+                tr.delete(pos, doc.content.size);
                 editor.view.dispatch(tr);
                 return;
             }
@@ -459,6 +469,7 @@ const TipTapEditor = ({
                                 linkBlock={linkBlock}
                                 childBlocks={childBlocks}
                                 listLevelMax={listLevelMax}
+                                requireTextBlockStyle={requireTextBlockStyle}
                             />
                             <Box sx={{ "& .tiptap": { minHeight: 200, p: "20px", outline: "none" } }}>{editorNode}</Box>
                         </Box>
@@ -486,13 +497,36 @@ export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOp
     const hasChildBlocks = Object.keys(childBlocks).length > 0;
     const maxTextBlocks = options?.maxTextBlocks;
     const listLevelMax = options?.listLevelMax;
+    const requireTextBlockStyle = options?.requireTextBlockStyle ?? false;
 
     // Auto-enable link support when a link block is provided
     if (linkBlock && !supports.includes("link")) {
         supports = [...supports, "link"];
     }
 
-    const sharedEditorProps = { supports, textBlockStyles, inlineStyles, placeholders, linkBlock, childBlocks, maxTextBlocks, listLevelMax };
+    const sharedEditorProps = {
+        supports,
+        textBlockStyles,
+        inlineStyles,
+        placeholders,
+        linkBlock,
+        childBlocks,
+        maxTextBlocks,
+        listLevelMax,
+        requireTextBlockStyle,
+    };
+
+    const initialContent: JSONContent = requireTextBlockStyle
+        ? {
+              type: "doc",
+              content: [
+                  {
+                      type: "paragraph",
+                      attrs: { textBlockStyle: getDefaultTextBlockStyleName("paragraph", textBlockStyles) },
+                  },
+              ],
+          }
+        : emptyContent;
 
     const TipTapRichTextBlock: TipTapRichTextBlockInterface = {
         ...createBlockSkeleton(),
@@ -501,7 +535,7 @@ export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOp
 
         displayName: <FormattedMessage id="dextinity.blocks.tipTapRichText" defaultMessage="Rich Text (TipTap)" />,
 
-        defaultValues: () => ({ tipTapContent: emptyContent }),
+        defaultValues: () => ({ tipTapContent: initialContent }),
 
         category: BlockCategory.TextAndContent,
 

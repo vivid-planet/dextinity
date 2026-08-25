@@ -165,6 +165,7 @@ export const TipTapToolbar = ({
     linkBlock,
     childBlocks,
     listLevelMax,
+    requireTextBlockStyle,
 }: {
     editor: Editor;
     supports: TipTapSupports[];
@@ -174,6 +175,7 @@ export const TipTapToolbar = ({
     linkBlock?: BlockInterface & LinkBlockInterface;
     childBlocks: Record<string, TipTapChildBlock>;
     listLevelMax?: number;
+    requireTextBlockStyle?: boolean;
 }) => {
     const intl = useIntl();
     const [moreAnchorEl, setMoreAnchorEl] = useState<null | HTMLElement>(null);
@@ -392,9 +394,11 @@ export const TipTapToolbar = ({
                             MenuProps={{ elevation: 1 }}
                             sx={selectSx}
                         >
-                            <MenuItem value="" dense>
-                                <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockStyle.default" defaultMessage="Default" />
-                            </MenuItem>
+                            {!requireTextBlockStyle && (
+                                <MenuItem value="" dense>
+                                    <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockStyle.default" defaultMessage="Default" />
+                                </MenuItem>
+                            )}
                             {applicableTextBlockStyles.map((style) => (
                                 <MenuItem key={style.name} value={style.name} dense>
                                     {style.label}

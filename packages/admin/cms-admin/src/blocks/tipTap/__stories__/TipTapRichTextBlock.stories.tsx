@@ -1324,7 +1324,7 @@ export const TranslationWithApplyDialog: StoryObj<typeof TranslationStory> = {
 
             await waitFor(
                 () => {
-                    expect(within(document.body).getByRole("heading", { name: "Translation" })).toBeInTheDocument();
+                    expect(within(document.body).getByRole("heading", { name: "Translation", level: 2 })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );

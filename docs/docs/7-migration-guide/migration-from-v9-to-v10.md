@@ -208,7 +208,24 @@ Remove the stale skill directories so agents don't load both versions:
 rm -rf .claude/skills/comet-admin-ui .claude/skills/comet-block .claude/skills/comet-core-admin-component-authoring .claude/skills/comet-mail-react .claude/skills/comet-major-migration .claude/skills/comet-minor-update
 ```
 
-The `dev-pm` skill, the rules under `rules/coding-guidelines/` and the `agent-features.json` format are unchanged.
+The rules under `rules/coding-guidelines/` and the `agent-features.json` format are unchanged.
+
+### Get the `dev-pm` skill from `dev-process-manager`
+
+The `dev-pm` skill is no longer shipped by `@dextinity/agent-features`. It now comes with `dev-process-manager` itself, so it stays in sync with the tool it documents. Update `dev-process-manager` to the latest version and reinstall the agent features:
+
+```sh
+npm install --save-dev dev-process-manager@latest
+npx @dextinity/cli install-agent-features
+```
+
+`install-agent-features` discovers the skill in `node_modules/dev-process-manager/skills/` and symlinks it into the target directories as before.
+
+If you don't update `dev-process-manager`, remove the stale copy so agents don't load an outdated version:
+
+```sh
+rm -rf .agents/skills/dev-pm .claude/skills/dev-pm
+```
 
 Also update the package name in the install script and the root `package.json`:
 

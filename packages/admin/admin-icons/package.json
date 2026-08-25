@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/admin-icons",
-    "version": "10.0.1",
+    "version": "10.1.0",
     "description": "A collection of icons for Dextinity Admin",
     "repository": {
         "directory": "packages/admin/admin-icons",

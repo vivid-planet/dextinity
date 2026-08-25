@@ -6,7 +6,7 @@ import { FileValidationService } from "../file-utils/file-validation.service";
 import { HasValidFilenameConstraint } from "./common/decorators/has-valid-filename.decorator";
 import { damDefaultAcceptedMimetypes } from "./common/mimeTypes/dam-default-accepted-mimetypes";
 import { DamConfig, damDefaultBasePath } from "./dam.config";
-import { DAM_CONFIG, DAM_FILE_VALIDATION_SERVICE } from "./dam.constants";
+import { DAM_CONFIG, DAM_DISABLE_SCOPE_ACCESS_CONTROL, DAM_FILE_VALIDATION_SERVICE } from "./dam.constants";
 import { createDamItemsResolver } from "./files/dam-items.resolver";
 import { DamItemsService } from "./files/dam-items.service";
 import { createDamMediaAlternativeResolver } from "./files/dam-media-alternatives/dam-media-alternative.resolver";
@@ -23,6 +23,7 @@ import { createFoldersController } from "./files/folders.controller";
 import { createFoldersResolver } from "./files/folders.resolver";
 import { FoldersService } from "./files/folders.service";
 import { ImageCropArea } from "./images/entities/image-crop-area.entity";
+import { DamScopeAccessControlService } from "./scope-access-control.service";
 import { DamScopeInterface } from "./types";
 
 interface DamFilesModuleOptions {
@@ -30,6 +31,14 @@ interface DamFilesModuleOptions {
     Scope?: Type<DamScopeInterface>;
     Folder: Type<FolderInterface>;
     File: Type<FileInterface>;
+    /**
+     * Disables the scope-based access control checks in the DAM controllers.
+     *
+     * By default the controllers use the `AccessControlService` provided by `UserPermissionsModule`, and deny access when none is
+     * available. Set to `true` only when running the DAM without `UserPermissionsModule`, behind your own authentication guard —
+     * the DAM will then skip its own scope checks.
+     */
+    disableScopeAccessControl?: boolean;
 }
 
 @Global()
@@ -37,7 +46,7 @@ interface DamFilesModuleOptions {
 export class DamFilesModule {
     private static registered = false;
 
-    static register({ damConfig: damConfigOptions, Scope, Folder, File }: DamFilesModuleOptions): DynamicModule {
+    static register({ damConfig: damConfigOptions, Scope, Folder, File, disableScopeAccessControl = false }: DamFilesModuleOptions): DynamicModule {
         // The module is global and declares the DAM file and folder routes. DamModule registers it internally, so registering
         // both would mount those routes twice.
         if (DamFilesModule.registered) {
@@ -59,6 +68,11 @@ export class DamFilesModule {
         const damConfigProvider: ValueProvider<DamConfig> = {
             provide: DAM_CONFIG,
             useValue: damConfig,
+        };
+
+        const disableScopeAccessControlProvider: ValueProvider<boolean> = {
+            provide: DAM_DISABLE_SCOPE_ACCESS_CONTROL,
+            useValue: disableScopeAccessControl,
         };
 
         const fileValidationServiceProvider = {
@@ -98,6 +112,7 @@ export class DamFilesModule {
             imports: [MikroOrmModule.forFeature([File, Folder, DamFileImage, ImageCropArea, DamMediaAlternative])],
             providers: [
                 damConfigProvider,
+                disableScopeAccessControlProvider,
                 fileValidationServiceProvider,
                 DamItemsResolver,
                 DamItemsService,
@@ -109,12 +124,13 @@ export class DamFilesModule {
                 HasValidFilenameConstraint,
                 FileWarningService,
                 DamMediaAlternativeResolver,
+                DamScopeAccessControlService,
             ],
             controllers: [
                 createFilesController({ Scope, damBasePath: damConfig.basePath }),
                 createFoldersController({ damBasePath: damConfig.basePath }),
             ],
-            exports: [FilesService, FoldersService, DamItemsService, damConfigProvider],
+            exports: [FilesService, FoldersService, DamItemsService, damConfigProvider, DamScopeAccessControlService],
         };
     }
 }

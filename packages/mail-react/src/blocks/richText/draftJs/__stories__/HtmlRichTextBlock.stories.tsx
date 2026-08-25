@@ -1,18 +1,19 @@
 import { MjmlColumn, MjmlRaw } from "@faire/mjml-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { MjmlSection } from "../../../components/section/MjmlSection.js";
-import { registerStyles } from "../../../styles/registerStyles.js";
-import { createTheme } from "../../../theme/createTheme.js";
-import { ThemeProvider } from "../../../theme/ThemeProvider.js";
-import type { Theme } from "../../../theme/themeTypes.js";
-import { css } from "../../../utils/css.js";
+import { MjmlSection } from "../../../../components/section/MjmlSection.js";
+import { registerStyles } from "../../../../styles/registerStyles.js";
+import { createTheme } from "../../../../theme/createTheme.js";
+import { ThemeProvider } from "../../../../theme/ThemeProvider.js";
+import type { Theme } from "../../../../theme/themeTypes.js";
+import { css } from "../../../../utils/css.js";
 import { createRichTextBlock } from "../createRichTextBlock.js";
 import {
     bulletedListBlockData,
     exampleBlockData,
     headlinesOnlyBlockData,
     highlightBlockData,
+    listSizesBlockData,
     listSpacingBlockData,
     listVarietyBlockData,
     nestedListBlockData,
@@ -23,7 +24,7 @@ const { HtmlRichTextBlock } = createRichTextBlock();
 type Story = StoryObj<typeof HtmlRichTextBlock>;
 
 const config: Meta<typeof HtmlRichTextBlock> = {
-    title: "Components/Blocks/HtmlRichTextBlock",
+    title: "Blocks/HtmlRichTextBlock",
     component: HtmlRichTextBlock,
     tags: ["autodocs"],
     parameters: {
@@ -155,6 +156,44 @@ export const ListSpacingPerVariant: Story = {
                     <tr>
                         <td>
                             <HtmlPerVariantRichTextBlock data={listSpacingBlockData} />
+                        </td>
+                    </tr>
+                </MjmlRaw>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+};
+
+const { HtmlRichTextBlock: HtmlListSizesRichTextBlock } = createRichTextBlock({
+    blockTypes: {
+        "unordered-list-item": { variant: "copyDefault" },
+        "ordered-list-item": { variant: "copyDefault" },
+        "unordered-list-item-large": { variant: "copyLarge", list: "unordered" },
+        "ordered-list-item-large": { variant: "copyLarge", list: "ordered" },
+    },
+});
+
+const listSizesTheme = createTheme({
+    text: {
+        variants: {
+            copyDefault: { fontSize: "16px", lineHeight: "24px", bottomSpacing: "16px" },
+            copyLarge: { fontSize: "22px", lineHeight: "30px", bottomSpacing: "16px" },
+        },
+    },
+});
+
+/** A draft block carries one type, so a list in a second paragraph size needs a block type of its own, declaring its kind through `list`. One block instance renders every registered size, and two adjacent list block types render as two lists, the numbered one starting again at `1.`. */
+export const ListSizes: Story = {
+    parameters: {
+        theme: listSizesTheme,
+    },
+    render: () => (
+        <MjmlSection indent>
+            <MjmlColumn>
+                <MjmlRaw>
+                    <tr>
+                        <td>
+                            <HtmlListSizesRichTextBlock data={listSizesBlockData} />
                         </td>
                     </tr>
                 </MjmlRaw>

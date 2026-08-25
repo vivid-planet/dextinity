@@ -1,5 +1,11 @@
 # @comet/api-generator
 
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/cms-api@10.1.0
+
 ## 10.0.1
 
 ### Patch Changes

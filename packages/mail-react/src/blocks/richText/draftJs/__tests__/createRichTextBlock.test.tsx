@@ -3,13 +3,13 @@ import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { MjmlMailRoot } from "../../../components/mailRoot/MjmlMailRoot.js";
-import { MjmlSection } from "../../../components/section/MjmlSection.js";
-import { renderMailHtml } from "../../../server/renderMailHtml.js";
-import { createTheme } from "../../../theme/createTheme.js";
-import { defaultTheme } from "../../../theme/defaultTheme.js";
-import { getDefaultFromResponsiveValue } from "../../../theme/responsiveValue.js";
-import { ThemeProvider } from "../../../theme/ThemeProvider.js";
+import { MjmlMailRoot } from "../../../../components/mailRoot/MjmlMailRoot.js";
+import { MjmlSection } from "../../../../components/section/MjmlSection.js";
+import { renderMailHtml } from "../../../../server/renderMailHtml.js";
+import { createTheme } from "../../../../theme/createTheme.js";
+import { defaultTheme } from "../../../../theme/defaultTheme.js";
+import { getDefaultFromResponsiveValue } from "../../../../theme/responsiveValue.js";
+import { ThemeProvider } from "../../../../theme/ThemeProvider.js";
 import type { RichTextBlockData } from "../common.js";
 import { createRichTextBlock } from "../createRichTextBlock.js";
 
@@ -475,6 +475,59 @@ describe("createRichTextBlock — lists", () => {
 
         expect(renderWithTheme(<HtmlVariantRichTextBlock data={data} />, themeWithVariants)).toContain("richTextBlock__list--variantBody");
         expect(renderWithTheme(<HtmlRichTextBlock data={data} />, themeWithDefaultVariant)).toContain("richTextBlock__list--variantBody");
+    });
+});
+
+describe("createRichTextBlock — list block types", () => {
+    function createListBlocks(type: string, texts: string[]) {
+        return texts.map((text, index) => createDraftBlock({ key: `${type}-${String(index)}`, text, type }));
+    }
+
+    it("renders a block type that declares a list kind as a list of that kind", () => {
+        const { HtmlRichTextBlock } = createRichTextBlock({
+            blockTypes: {
+                "unordered-list-item-small": { list: "unordered" },
+                "ordered-list-item-small": { list: "ordered" },
+            },
+        });
+        const data = createBlockData([
+            ...createListBlocks("unordered-list-item-small", ["Bulleted item"]),
+            ...createListBlocks("ordered-list-item-small", ["Numbered one", "Numbered two"]),
+        ]);
+        const markup = renderWithTheme(<HtmlRichTextBlock data={data} />);
+
+        expect(markup).toContain("richTextBlock__list--unordered");
+        expect(markup).toContain("richTextBlock__list--ordered");
+        expect(markerTextsInDocumentOrder(markup)).toEqual(["•", "1.", "2."]);
+    });
+
+    it("renders two list block types independently of each other", () => {
+        const { HtmlRichTextBlock } = createRichTextBlock({
+            blockTypes: {
+                "ordered-list-item": { variant: "body" },
+                "ordered-list-item-large": { variant: "heading1", list: "ordered" },
+            },
+        });
+        const data = createBlockData([
+            ...createListBlocks("ordered-list-item", ["Standard one", "Standard two"]),
+            ...createListBlocks("ordered-list-item-large", ["Large one", "Large two"]),
+        ]);
+        const markup = renderWithTheme(<HtmlRichTextBlock data={data} />, themeWithVariants);
+
+        expect(markup.match(/richTextBlock__list--depth0/g)).toHaveLength(2);
+        expect(markerTextsInDocumentOrder(markup)).toEqual(["1.", "2.", "1.", "2."]);
+        expect(markup).toContain("richTextBlock__list--variantBody");
+        expect(markup).toContain("richTextBlock__list--variantHeading1");
+    });
+
+    it("keeps the declared kind out of the rendered mail", () => {
+        const { MjmlRichTextBlock, HtmlRichTextBlock } = createRichTextBlock({
+            blockTypes: { "unordered-list-item-small": { list: "unordered" } },
+        });
+        const data = createBlockData(createListBlocks("unordered-list-item-small", ["Item one"]));
+
+        expect(renderWithTheme(<MjmlRichTextBlock data={data} />)).not.toMatch(/\slist="/);
+        expect(renderWithTheme(<HtmlRichTextBlock data={data} />)).not.toContain("list:unordered");
     });
 });
 

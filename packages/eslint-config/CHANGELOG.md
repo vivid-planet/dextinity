@@ -1,5 +1,11 @@
 # @comet/eslint-config
 
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/eslint-plugin@10.1.0
+
 ## 10.0.1
 
 ### Patch Changes

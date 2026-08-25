@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/cli",
-    "version": "10.0.1",
+    "version": "10.1.0",
     "description": "A collection of CLI tools for Dextinity projects",
     "repository": {
         "directory": "packages/cli",

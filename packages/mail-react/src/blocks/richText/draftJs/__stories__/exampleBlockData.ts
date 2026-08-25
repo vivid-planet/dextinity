@@ -159,7 +159,7 @@ export const highlightBlockData: RichTextBlockData = {
     },
 };
 
-function createListItems(type: "unordered-list-item" | "ordered-list-item", texts: string[]) {
+function createListItems(type: string, texts: string[]) {
     return texts.map((text, index) => ({
         key: `${type}-${String(index)}`,
         text,
@@ -278,6 +278,18 @@ export const listSpacingBlockData: RichTextBlockData = {
         blocks: [
             ...createListItems("unordered-list-item", ["Bulleted item one", "Bulleted item two", "Bulleted item three"]),
             ...createListItems("ordered-list-item", ["Numbered item one", "Numbered item two", "Numbered item three"]),
+        ],
+        entityMap: {},
+    },
+};
+
+export const listSizesBlockData: RichTextBlockData = {
+    draftContent: {
+        blocks: [
+            ...createListItems("unordered-list-item", ["A bulleted item at the standard size", "And a second one"]),
+            ...createListItems("unordered-list-item-large", ["A bulleted item at the large size", "And a second one"]),
+            ...createListItems("ordered-list-item", ["A numbered item at the standard size", "And a second one"]),
+            ...createListItems("ordered-list-item-large", ["A numbered item at the large size, counted on its own", "And a second one"]),
         ],
         entityMap: {},
     },

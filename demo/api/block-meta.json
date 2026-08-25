@@ -1070,6 +1070,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "text": "RichText",
+                                "twoListSizesText": "MailTwoListSizesRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -1109,6 +1110,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "text": "RichText",
+                                "twoListSizesText": "MailTwoListSizesRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -1935,6 +1937,23 @@
                     "medium",
                     "large"
                 ],
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "MailTwoListSizesRichText",
+        "fields": [
+            {
+                "name": "draftContent",
+                "kind": "Json",
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "draftContent",
+                "kind": "Json",
                 "nullable": false
             }
         ]
@@ -4286,6 +4305,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "text": "RichText",
+                                "twoListSizesText": "MailTwoListSizesRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -4324,6 +4344,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "text": "RichText",
+                                "twoListSizesText": "MailTwoListSizesRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",

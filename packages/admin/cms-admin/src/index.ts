@@ -15,6 +15,7 @@ export { type BlocksConfig, BlocksConfigProvider, useBlocksConfig } from "./bloc
 export { type BlockContext } from "./blocks/context/BlockContext";
 export { BlockContextProvider } from "./blocks/context/BlockContextProvider";
 export { useBlockContext } from "./blocks/context/useBlockContext";
+export { createDamVideoBlock } from "./blocks/createDamVideoBlock";
 export { createImageLinkBlock } from "./blocks/createImageLinkBlock";
 export { createLinkBlock } from "./blocks/createLinkBlock";
 export type { RichTextBlockFactoryOptions } from "./blocks/createRichTextBlock";

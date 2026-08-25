@@ -111,11 +111,29 @@ Usage sites then pass only the block data:
 
 ### Block type configuration
 
-The `blockTypes` option maps the application's draft block types to the styling of the text component that renders them. Each entry accepts a theme [text variant](./2-components-and-theme.md), plain style values (`color`, `fontSize`, `fontWeight`, …), and a `className`.
+The `blockTypes` option maps the application's draft block types to the styling of the text component that renders them. Each entry accepts a theme [text variant](./2-components-and-theme.md), plain style values (`color`, `fontSize`, `fontWeight`, …), a `className`, and a `list` kind.
 
 The factory works without any configuration: `createRichTextBlock()` renders every draft block with the base `theme.text` styles, as do block types missing from `blockTypes`. This makes the block usable before any text variants exist in the theme.
 
 Style values in `blockTypes` don't support responsive values — define a theme variant for responsive styling, or set a `className` and register responsive CSS via `registerStyles`. For a list block type, such a rule has to target `.<className> .richTextBlock__listItemText`, because the list's cells carry their own font styles.
+
+An entry's `list` property selects the list renderer instead of the paragraph one. A draft block has only one block type, so a list in a second text variant needs a custom block type. The application adds that block type to its RTE, and its entry here declares the kind of list:
+
+```tsx
+export const { MjmlRichTextBlock, HtmlRichTextBlock } = createRichTextBlock({
+    blockTypes: {
+        "unordered-list-item": { variant: "copy" },
+        "unordered-list-item-large": { variant: "copyLarge", list: "unordered" },
+        "ordered-list-item-large": { variant: "copyLarge", list: "ordered" },
+    },
+});
+```
+
+`unordered-list-item` and `ordered-list-item` are draft-js's own list types. They default to their kind, so they render as lists without a `list` entry. Every other block type is a paragraph unless it sets one.
+
+:::note
+Draft-js handles the nesting level of `unordered-list-item` and `ordered-list-item` only. An editor cannot indent a custom list block type.
+:::
 
 ### Link types
 
@@ -187,6 +205,8 @@ export const {
 
 - Each draft block renders as its own text component; spacing between blocks comes from the theme's `bottomSpacing`, and the last block gets none.
 - Each list renders as a table inside one text component, with a row per item, a marker cell and a text cell — the indent and the marker gap are cell padding, which is the only spacing Outlook on Windows applies reliably.
+- Consecutive draft blocks form one list only while their block type stays the same. Two list block types that follow each other render as two tables, and the numbered one starts again at `1.`
+- A nested level takes its font styles from the list around it, because MJML cannot place one text component inside another.
 - List spacing comes from the theme's `list.indent` (before the marker), `list.markerGap` (between the marker and the text) and `list.itemSpacing` (between items, and above a nested level's first item), all responsive and all applying to every list the block renders. To override it, register a rule scoped to a list's type, depth or variant modifier with `{ inline: true }`, which has MJML write the declaration into the cell's `style` attribute at compile time so it also reaches Outlook.
 - The markers come from the theme's `list.unorderedMarker` and `list.orderedMarker`, each either a fixed node (`unorderedMarker: "▪"`) or a function receiving the item's `index`, counting from zero within its own list, and `depth`, the nesting level of that list.
 - A marker must be a plain HTML element, not an MJML component. A marker wider than the others widens the marker column and moves the text edge with it.

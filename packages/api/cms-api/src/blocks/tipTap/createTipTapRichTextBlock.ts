@@ -91,6 +91,14 @@ interface TipTapInlineStyle {
 
 const allHeadingLevels: HeadingLevel[] = [1, 2, 3, 4, 5, 6];
 
+function isValidHeadingLevels(headingLevels: number[]): headingLevels is HeadingLevel[] {
+    return (
+        headingLevels.length > 0 &&
+        new Set(headingLevels).size === headingLevels.length &&
+        headingLevels.every((level) => Number.isInteger(level) && level >= 1 && level <= 6)
+    );
+}
+
 const defaultSupports: TipTapSupports[] = [
     "bold",
     "italic",
@@ -390,7 +398,7 @@ function IsTipTapContent(
         maxTextBlocks?: number;
         allowedPlaceholderNames?: string[];
         listLevelMax?: number;
-        headingLevels: number[];
+        headingLevels: HeadingLevel[];
     },
     validationOptions?: ValidationOptions,
 ) {
@@ -540,14 +548,9 @@ export function createTipTapRichTextBlock(
     const blockName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
     const baseMigrate = typeof nameOrOptions !== "string" && nameOrOptions.migrate ? nameOrOptions.migrate : { migrations: [], version: 0 };
 
-    if (
-        headingLevels.length === 0 ||
-        new Set(headingLevels).size !== headingLevels.length ||
-        headingLevels.some((level) => !Number.isInteger(level) || level < 1 || level > 6)
-    ) {
+    if (!isValidHeadingLevels(headingLevels)) {
         throw new Error("headingLevels must be a non-empty array of unique integers between 1 and 6");
     }
-    const validatedHeadingLevels = headingLevels as HeadingLevel[];
 
     const hasLink = !!LinkBlock;
     const childBlocks: Record<string, Block> = Object.fromEntries(Object.entries(childBlocksConfig).map(([key, { block }]) => [key, block]));
@@ -563,7 +566,7 @@ export function createTipTapRichTextBlock(
         hasLink,
         hasBlockChildBlocks,
         hasInlineChildBlocks,
-        validatedHeadingLevels,
+        headingLevels,
     );
     const schema = getSchema(extensions);
 
@@ -591,7 +594,7 @@ export function createTipTapRichTextBlock(
                       link: LinkBlock,
                       maxTextBlocks,
                       listLevelMax,
-                      headingLevels: validatedHeadingLevels,
+                      headingLevels,
                       textBlockStyleMap: draftJsTextBlockStyleMap,
                       inlineStyleMap: draftJsInlineStyleMap,
                   }),
@@ -661,7 +664,7 @@ export function createTipTapRichTextBlock(
             maxTextBlocks,
             allowedPlaceholderNames,
             listLevelMax,
-            headingLevels: validatedHeadingLevels,
+            headingLevels,
         })
         @BlockField({ type: "tipTapRichTextBlock", childBlocks })
         tipTapContent: JSONContent;

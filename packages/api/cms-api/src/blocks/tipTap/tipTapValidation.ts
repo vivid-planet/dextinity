@@ -1,9 +1,8 @@
+import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TipTapContent = Record<string, any>;
-
-const allHeadingLevels = [1, 2, 3, 4, 5, 6];
 
 // ProseMirror's Node.fromJSON silently drops unknown marks. This function
 // checks the raw JSON for mark types that don't exist in the schema.
@@ -30,7 +29,7 @@ function containsUnknownMarks(json: any, schema: Schema): boolean {
     return false;
 }
 
-export function containsInvalidHeadingLevel(content: TipTapContent, headingLevels: number[]): boolean {
+export function containsInvalidHeadingLevel(content: TipTapContent, headingLevels: HeadingLevel[]): boolean {
     if (typeof content !== "object" || content === null) {
         return false;
     }
@@ -71,7 +70,7 @@ export function getListNestingDepth(content: TipTapContent, currentDepth = 0): n
 export function isValidTipTapContentSync(
     value: unknown,
     schema: Schema,
-    { maxTextBlocks, listLevelMax, headingLevels }: { maxTextBlocks?: number; listLevelMax?: number; headingLevels?: number[] } = {},
+    { maxTextBlocks, listLevelMax, headingLevels }: { maxTextBlocks?: number; listLevelMax?: number; headingLevels: HeadingLevel[] },
 ): boolean {
     if (typeof value !== "object" || value === null) {
         return false;
@@ -94,7 +93,7 @@ export function isValidTipTapContentSync(
             return false;
         }
 
-        if (containsInvalidHeadingLevel(value as TipTapContent, headingLevels ?? allHeadingLevels)) {
+        if (containsInvalidHeadingLevel(value as TipTapContent, headingLevels)) {
             return false;
         }
 

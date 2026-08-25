@@ -1,4 +1,5 @@
 import type { JSONContent } from "@tiptap/core";
+import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import type { Schema } from "@tiptap/pm/model";
 import type { ClassConstructor } from "class-transformer";
 
@@ -32,7 +33,7 @@ function isDraftJsContent(value: unknown): value is DraftJsContent {
 interface BuildOptions extends ConvertOptions {
     schema: Schema;
     maxTextBlocks?: number;
-    headingLevels?: number[];
+    headingLevels: HeadingLevel[];
     link?: Block;
 }
 
@@ -63,7 +64,7 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
             }
 
             const stripped = buildStrippedTipTapDoc(from.draftContent);
-            if (isValidTipTapContentSync(stripped, schema, { maxTextBlocks })) {
+            if (isValidTipTapContentSync(stripped, schema, { maxTextBlocks, headingLevels })) {
                 console.warn("DraftJS->TipTap migration failed, using stripped content");
                 return { tipTapContent: stripped };
             }

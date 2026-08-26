@@ -1,4 +1,5 @@
 import { Box, chipClasses, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type HTMLAttributes, type ReactNode, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
@@ -1157,6 +1158,95 @@ export const CombinedTextBlockAndInlineStyles: StoryObj<typeof CombinedStylesSto
             // Heading select + text block style select + inline style select
             const comboboxes = canvas.getAllByRole("combobox");
             expect(comboboxes.length).toBeGreaterThanOrEqual(3);
+        });
+    },
+};
+
+// Simulates the surrounding admin UI, which scrolls the block's container rather than the block itself.
+const ScrollableContainer = styled("div")({
+    height: 250,
+    overflowY: "auto",
+});
+
+const longTextContent: TipTapRichTextBlockState = {
+    tipTapContent: {
+        type: "doc",
+        content: Array.from({ length: 30 }, (_, index) => ({
+            type: "paragraph",
+            content: [{ type: "text", text: `Paragraph ${index + 1}: enough text to make the container scroll past the toolbar.` }],
+        })),
+    },
+};
+
+function StickyToolbarStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(longTextContent);
+
+    return (
+        <ScrollableContainer data-testid="scroll-container">
+            <TipTapRichTextBlock.AdminComponent state={state} updateState={setState} />
+        </ScrollableContainer>
+    );
+}
+
+function findStickyAncestor(element: HTMLElement): HTMLElement {
+    for (let current: HTMLElement | null = element; current; current = current.parentElement) {
+        if (getComputedStyle(current).position === "sticky") {
+            return current;
+        }
+    }
+    throw new Error("No sticky ancestor found");
+}
+
+export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
+    render: () => <StickyToolbarStory />,
+    play: async ({ canvas, canvasElement, step }) => {
+        const getScrollContainer = () => canvasElement.querySelector('[data-testid="scroll-container"]') as HTMLElement | null;
+
+        await step("Editor is ready and the container has more content than fits", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+
+            await waitFor(
+                () => {
+                    const scrollContainer = getScrollContainer();
+                    expect(scrollContainer).not.toBeNull();
+                    expect(scrollContainer!.scrollHeight).toBeGreaterThan(scrollContainer!.clientHeight);
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        const scrollContainer = getScrollContainer()!;
+        const undoButton = canvas.getAllByRole("button")[0];
+        const toolbar = findStickyAncestor(undoButton);
+        const firstParagraph = canvas.getByText("Paragraph 1: enough text to make the container scroll past the toolbar.");
+
+        const toolbarTopBeforeScroll = toolbar.getBoundingClientRect().top;
+        const paragraphTopBeforeScroll = firstParagraph.getBoundingClientRect().top;
+
+        await step("Scroll the container down", async () => {
+            scrollContainer.scrollTop = 300;
+
+            await waitFor(
+                () => {
+                    expect(scrollContainer.scrollTop).toBeGreaterThan(0);
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("Toolbar stays pinned to the top while the content scrolls behind it", async () => {
+            await waitFor(
+                () => {
+                    expect(toolbar.getBoundingClientRect().top).toBe(toolbarTopBeforeScroll);
+                    expect(firstParagraph.getBoundingClientRect().top).toBeLessThan(paragraphTopBeforeScroll);
+                },
+                { timeout: 5000 },
+            );
         });
     },
 };

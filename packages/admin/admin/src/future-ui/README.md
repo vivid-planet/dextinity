@@ -91,8 +91,8 @@ The contract has two parts: **structural class names** for a component's element
 
 **Structural class names** identify a component's root and its parts:
 
-- **Root** — `comet<Component>`. The outermost element of a component, camelCased. Examples: `cometButton`, `cometTextField`.
-- **Parts** — `comet<Component>__<partName>`. A part is a named sub-element; the part name is camelCased. Examples: `cometButton__startIcon`, `cometTextField__label`.
+- **Root** — `dextinity<Component>`. The outermost element of a component, camelCased. Examples: `dextinityButton`, `dextinityTextField`.
+- **Parts** — `dextinity<Component>__<partName>`. A part is a named sub-element; the part name is camelCased. Examples: `dextinityButton__startIcon`, `dextinityTextField__label`.
 
 **Owner-state styling** uses `data-*` attributes on the root element, following base-ui's own conversion of an owner-state object:
 
@@ -102,14 +102,14 @@ The contract has two parts: **structural class names** for a component's element
 
 **Emission.** These attributes cover owner-state values only; parts are class names. How a component emits them depends on its foundation: one rendered through `useRender` passes `state: ownerState` for base-ui to convert; one built on a base-ui primitive lets the primitive emit the state it owns and passes the rest inline (`data-variant={variant}`).
 
-**Composition.** When a Future UI component is used as the root of another component, both root classes appear on the same element — a `CustomButton` rendering through `Button` produces `cometButton cometCustomButton`. Either layer is targetable.
+**Composition.** When a Future UI component is used as the root of another component, both root classes appear on the same element — a `CustomButton` rendering through `Button` produces `dextinityButton dextinityCustomButton`. Either layer is targetable.
 
 **Authoring source.** The SCSS module's local class names match the public part names; the stylesheet's file name is the single source of a component's emitted name. The mapping:
 
-| Source local | Emitted DOM class        |
-| ------------ | ------------------------ |
-| `root`       | `cometButton`            |
-| `startIcon`  | `cometButton__startIcon` |
+| Source local | Emitted DOM class            |
+| ------------ | ---------------------------- |
+| `root`       | `dextinityButton`            |
+| `startIcon`  | `dextinityButton__startIcon` |
 
 - A component with no single dominant element names no class `root`.
 - Owner-state styles use attribute selectors nested under `.root` with `&` (`.root { &[data-variant="primary"] { … } }`).

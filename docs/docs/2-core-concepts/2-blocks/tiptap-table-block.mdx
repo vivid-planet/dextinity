@@ -1,0 +1,160 @@
+---
+title: TipTap Table Block
+sidebar_position: 4.6
+---
+
+# TipTap Table Block
+
+The `TipTapTableBlock` is a table block based on [TipTap](https://tiptap.dev/), created with the `createTipTapTableBlock` factory.
+It is an alternative to the [grid-based `TableBlock`](./4-factories.mdx#tableblock) and is built on the same foundation as the [TipTap Rich Text Block](./tiptap-rich-text-block.mdx).
+
+Where the grid-based `TableBlock` stores a list of columns and a list of rows, each cell holding its own nested rich text block, the TipTap Table Block is **a single TipTap editor whose document is one table**. Editors type directly into the cells and work with the table as a whole.
+
+This has a few consequences worth knowing up front:
+
+- **One editor, one document.** Cell content lives in the same ProseMirror document as the table structure, so there is no per-cell block instance and no separate cell dialog. Editing feels like editing a table in a word processor.
+- **The table cannot be deleted.** The document's content expression is `table`, so the table is the document's only allowed child. ProseMirror rejects every transaction that would remove it, and the same expression validates the content on the API. Rows and columns can be added and removed freely; the last row and the last column cannot be removed.
+- **Merged cells.** Because the table is a real ProseMirror table, cells can be merged and split — something the grid-based block cannot express.
+
+:::caution Experimental
+
+The TipTap Table Block is **experimental**.
+The factories (`createTipTapTableBlock`) are marked `@experimental` and their APIs may change in a minor release without following semantic versioning.
+
+:::
+
+## Replacing the `TableBlock`
+
+| Grid-based `TableBlock`                                     | TipTap Table Block                                              |
+| ----------------------------------------------------------- | --------------------------------------------------------------- |
+| `createTableBlock({ richText })`                            | `createTipTapTableBlock()`                                      |
+| Data: `{ columns: [...], rows: [...] }`                     | Data: `{ tipTapContent }` (a ProseMirror document)              |
+| One nested rich text block per cell                         | One editor for the whole table                                  |
+| Edited in a dialog with a data grid                         | Edited inline, like a rich text block                           |
+| Column sizes and row/column highlighting as explicit fields | Header row via `tableHeader` cells; styling belongs to the site |
+| No merged cells                                             | `colspan` / `rowspan` via merge and split                       |
+
+The two blocks store incompatible data. There is no automatic migration, so replacing the grid-based `TableBlock` in an existing project means writing a [block migration](./5-migrations.mdx) that converts `{ columns, rows }` into a single table document.
+
+## Setup
+
+The factory takes the same options as `createTipTapRichTextBlock` — `supports`, `textBlockStyles`, `inlineStyles`, `placeholders`, `link`, `childBlocks`, `listLevelMax` — which apply to the content **inside the cells**.
+
+`maxTextBlocks` is not available: the document holds exactly one table, so there are no top-level text blocks to limit.
+
+Headings are not part of the default `supports`, because a table's header row already carries the emphasis a heading would.
+
+### API
+
+```ts title="tip-tap-table.block.ts (API)"
+import { createTipTapTableBlock } from "@dextinity/cms-api";
+
+import { LinkBlock } from "./link.block";
+
+export const TipTapTableBlock = createTipTapTableBlock(
+    {
+        link: LinkBlock,
+        textBlockStyles: [
+            { name: "paragraph300", appliesTo: ["paragraph"] },
+            { name: "paragraph200", appliesTo: ["paragraph"] },
+        ],
+    },
+    "TipTapTable",
+);
+```
+
+### Admin
+
+```tsx title="TipTapTableBlock.tsx (Admin)"
+import { createTipTapTableBlock } from "@dextinity/cms-admin";
+
+import { LinkBlock } from "./LinkBlock";
+
+export const TipTapTableBlock = createTipTapTableBlock({
+    link: LinkBlock,
+    textBlockStyles: [
+        {
+            name: "paragraph300",
+            label: (
+                <FormattedMessage id="tipTapTableBlock.paragraph300" defaultMessage="Paragraph" />
+            ),
+            appliesTo: ["paragraph"],
+            element: (props) => <p style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
+        },
+    ],
+});
+```
+
+The Admin factory additionally accepts:
+
+| Option           | Default         | Description                                                                                       |
+| ---------------- | --------------- | ------------------------------------------------------------------------------------------------- |
+| `name`           | `"TipTapTable"` | Block name. Must match the name used on the API.                                                  |
+| `defaultRows`    | `3`             | Rows of the initial table, including the header row.                                              |
+| `defaultColumns` | `3`             | Columns of the initial table.                                                                     |
+| `headerRow`      | `true`          | Whether the initial table starts with a header row. The header row can be toggled in the toolbar. |
+
+The toolbar shows a **Table** menu with the table operations: insert row above/below, delete row, insert column left/right, delete column, toggle the header row, and merge/split cells. _Delete row_ and _Delete column_ are disabled when they would remove the last row or column.
+
+### Site
+
+The site render helper `renderTipTapRichText` renders tables out of the box: a leading row whose cells are all header cells becomes a `<thead>`, `colspan`/`rowspan` are applied, and stored column widths become a `<colgroup>`.
+
+Override the table nodes via `nodeMapping` to apply your own markup and styling:
+
+```tsx title="TipTapTableBlock.tsx (Site)"
+"use client";
+import {
+    type PropsWithData,
+    renderTipTapRichText,
+    type TipTapNode,
+    type TipTapNodeHandler,
+} from "@dextinity/site-nextjs";
+import type { TipTapTableBlockData } from "@src/blocks.generated";
+
+import styles from "./TipTapTableBlock.module.scss";
+
+const nodeMapping: Record<string, TipTapNodeHandler> = {
+    table: ({ children }) => (
+        <table className={styles.table}>
+            <tbody>{children}</tbody>
+        </table>
+    ),
+    tableRow: ({ children }) => <tr className={styles.row}>{children}</tr>,
+    tableHeader: ({ node, children }) => (
+        <th
+            className={styles.headerCell}
+            colSpan={node.attrs?.colspan as number}
+            rowSpan={node.attrs?.rowspan as number}
+            scope="col"
+        >
+            {children}
+        </th>
+    ),
+    tableCell: ({ node, children }) => (
+        <td
+            className={styles.cell}
+            colSpan={node.attrs?.colspan as number}
+            rowSpan={node.attrs?.rowspan as number}
+        >
+            {children}
+        </td>
+    ),
+};
+
+export const TipTapTableBlock = ({ data }: PropsWithData<TipTapTableBlockData>) => (
+    <>{renderTipTapRichText({ content: data.tipTapContent as TipTapNode, nodeMapping })}</>
+);
+```
+
+## Tables inside a rich text block
+
+Tables are not exclusive to the table block. Adding `"table"` to a rich text block's `supports` allows editors to insert tables between paragraphs:
+
+```ts
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    supports: ["bold", "italic", "heading", "unordered-list", "table"],
+});
+```
+
+The difference to the table block is the document structure: here a table is one of many top-level nodes and can be deleted like any other, whereas the table block pins exactly one table into the document.

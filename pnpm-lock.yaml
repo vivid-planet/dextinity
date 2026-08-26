@@ -1538,6 +1538,9 @@ importers:
       '@tiptap/extension-superscript':
         specifier: ^3.22.3
         version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)
+      '@tiptap/extension-table':
+        specifier: ^3.22.3
+        version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)
       '@tiptap/pm':
         specifier: ^3.22.3
         version: 3.22.3
@@ -2066,6 +2069,9 @@ importers:
         specifier: ^3.22.3
         version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)
       '@tiptap/extension-superscript':
+        specifier: ^3.22.3
+        version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)
+      '@tiptap/extension-table':
         specifier: ^3.22.3
         version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)
       '@tiptap/pm':
@@ -8363,6 +8369,12 @@ packages:
 
   '@tiptap/extension-superscript@3.22.3':
     resolution: {integrity: sha512-q+yPA+vbvaqiVGTJddjBhvWgqLXu6j39knz3TgJKw4nBuvoAXWrlWtgOy44wwIIs8vILI4wENoUuoI0+vOzynA==}
+    peerDependencies:
+      '@tiptap/core': ^3.22.3
+      '@tiptap/pm': ^3.22.3
+
+  '@tiptap/extension-table@3.22.3':
+    resolution: {integrity: sha512-inbQSusJad7H0T++L1APg/anfL5d15cNGp2YG3vwo6TQr71nn2c9pepvmz3xuAIt8eygZDRba+4GT/COP1f9QA==}
     peerDependencies:
       '@tiptap/core': ^3.22.3
       '@tiptap/pm': ^3.22.3
@@ -24922,6 +24934,11 @@ snapshots:
       '@tiptap/pm': 3.22.3
 
   '@tiptap/extension-superscript@3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)':
+    dependencies:
+      '@tiptap/core': 3.22.3(@tiptap/pm@3.22.3)
+      '@tiptap/pm': 3.22.3
+
+  '@tiptap/extension-table@3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)':
     dependencies:
       '@tiptap/core': 3.22.3(@tiptap/pm@3.22.3)
       '@tiptap/pm': 3.22.3

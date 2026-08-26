@@ -4075,146 +4075,18 @@
         "name": "TipTapTable",
         "fields": [
             {
-                "name": "columns",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "id",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "size",
-                            "kind": "Enum",
-                            "enum": [
-                                "extraSmall",
-                                "small",
-                                "standard",
-                                "large",
-                                "extraLarge"
-                            ],
-                            "nullable": false
-                        },
-                        {
-                            "name": "highlighted",
-                            "kind": "Boolean",
-                            "nullable": false
-                        }
-                    ]
-                },
-                "nullable": false
-            },
-            {
-                "name": "rows",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "id",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "highlighted",
-                            "kind": "Boolean",
-                            "nullable": false
-                        },
-                        {
-                            "name": "cellValues",
-                            "kind": "NestedObjectList",
-                            "object": {
-                                "fields": [
-                                    {
-                                        "name": "columnId",
-                                        "kind": "String",
-                                        "nullable": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "kind": "Block",
-                                        "block": "TipTapRichText",
-                                        "nullable": false
-                                    }
-                                ]
-                            },
-                            "nullable": false
-                        }
-                    ]
-                },
-                "nullable": false
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
             }
         ],
         "inputFields": [
             {
-                "name": "columns",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "id",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "size",
-                            "kind": "Enum",
-                            "enum": [
-                                "extraSmall",
-                                "small",
-                                "standard",
-                                "large",
-                                "extraLarge"
-                            ],
-                            "nullable": false
-                        },
-                        {
-                            "name": "highlighted",
-                            "kind": "Boolean",
-                            "nullable": false
-                        }
-                    ]
-                },
-                "nullable": false
-            },
-            {
-                "name": "rows",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "id",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "highlighted",
-                            "kind": "Boolean",
-                            "nullable": false
-                        },
-                        {
-                            "name": "cellValues",
-                            "kind": "NestedObjectList",
-                            "object": {
-                                "fields": [
-                                    {
-                                        "name": "columnId",
-                                        "kind": "String",
-                                        "nullable": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "kind": "Block",
-                                        "block": "TipTapRichText",
-                                        "nullable": false
-                                    }
-                                ]
-                            },
-                            "nullable": false
-                        }
-                    ]
-                },
-                "nullable": false
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
             }
         ]
     },

@@ -51,6 +51,7 @@
         "@tiptap/extension-paragraph": "^3.22.3",
         "@tiptap/extension-subscript": "^3.22.3",
         "@tiptap/extension-superscript": "^3.22.3",
+        "@tiptap/extension-table": "^3.22.3",
         "@tiptap/pm": "^3.22.3",
         "@tiptap/starter-kit": "^3.22.3",
         "base64url": "^3.0.1",

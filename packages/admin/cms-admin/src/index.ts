@@ -89,6 +89,7 @@ export type {
     TipTapTextBlockType,
 } from "./blocks/tipTap/createTipTapRichTextBlock";
 export { createTipTapRichTextBlock } from "./blocks/tipTap/createTipTapRichTextBlock";
+export { createTipTapTableBlock } from "./blocks/tipTap/createTipTapTableBlock";
 export type {
     AnonymousBlockInterface,
     BlockAdminComponent,

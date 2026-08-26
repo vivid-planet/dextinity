@@ -2,6 +2,7 @@ import { type Extensions, getSchema, type JSONContent } from "@tiptap/core";
 import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
+import { Table, TableKit, TableRow } from "@tiptap/extension-table";
 import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
 import StarterKit from "@tiptap/starter-kit";
 import { plainToInstance } from "class-transformer";
@@ -32,6 +33,7 @@ import { Placeholder } from "./extensions/Placeholder";
 import { SoftHyphen } from "./extensions/SoftHyphen";
 import { TextBlockStyleHeading } from "./extensions/TextBlockStyleHeading";
 import { TextBlockStyleParagraph } from "./extensions/TextBlockStyleParagraph";
+import { createTipTapDocument } from "./extensions/TipTapDocument";
 import { buildDraftJsToTipTapMigration } from "./migrations/buildDraftJsToTipTapMigration";
 import type { TextBlockStyleMapping } from "./migrations/convertDraftJsToTipTap";
 import { containsInvalidHeadingLevel, getListNestingDepth } from "./tipTapValidation";
@@ -48,7 +50,8 @@ export type TipTapSupports =
     | "unordered-list"
     | "non-breaking-space"
     | "soft-hyphen"
-    | "link";
+    | "link"
+    | "table";
 
 export type { JSONContent as TipTapRichTextBlockContent } from "@tiptap/core";
 
@@ -170,21 +173,52 @@ export interface CreateTipTapRichTextBlockOptions {
     migrateFromDraftJs?: boolean | { textBlockStyleMap?: Record<string, string | TextBlockStyleMapping>; inlineStyleMap?: Record<string, string> };
 }
 
-function buildExtensions(
-    supports: TipTapSupports[],
-    textBlockStyles: TipTapTextBlockStyle[],
-    inlineStyles: TipTapInlineStyle[],
-    placeholders: TipTapPlaceholder[],
-    hasLink: boolean,
-    hasBlockChildBlocks: boolean,
-    hasInlineChildBlocks: boolean,
-    headingLevels: HeadingLevel[],
-): Extensions {
+// A table row must always keep at least one cell. TipTap's default content expression ends in `*`,
+// which lets a full-document deletion leave a table with an empty row that no longer accepts columns.
+const TableRowWithCell = TableRow.extend({ content: "(tableCell | tableHeader)+" });
+
+function buildTableExtensions(singleTableDocument: boolean): Extensions {
+    if (!singleTableDocument) {
+        return [TableKit.configure({ tableRow: false }), TableRowWithCell];
+    }
+
+    return [
+        TableKit.configure({ table: false, tableRow: false }),
+        // Taking the table out of the "block" group keeps it out of its own cells, whose content
+        // expression is "block+", while the document still refers to it by name.
+        Table.extend({ group: "tableBlock" }),
+        TableRowWithCell,
+    ];
+}
+
+function buildExtensions({
+    supports,
+    textBlockStyles,
+    inlineStyles,
+    placeholders,
+    hasLink,
+    hasBlockChildBlocks,
+    hasInlineChildBlocks,
+    headingLevels,
+    singleTableDocument,
+}: {
+    supports: TipTapSupports[];
+    textBlockStyles: TipTapTextBlockStyle[];
+    inlineStyles: TipTapInlineStyle[];
+    placeholders: TipTapPlaceholder[];
+    hasLink: boolean;
+    hasBlockChildBlocks: boolean;
+    hasInlineChildBlocks: boolean;
+    headingLevels: HeadingLevel[];
+    singleTableDocument?: boolean;
+}): Extensions {
     const hasTextBlockStyles = textBlockStyles.length > 0;
     const hasInlineStyles = inlineStyles.length > 0;
     const hasPlaceholders = placeholders.length > 0;
     return [
+        ...(singleTableDocument ? [createTipTapDocument("table")] : []),
         StarterKit.configure({
+            document: singleTableDocument ? false : undefined,
             bold: supports.includes("bold") ? {} : false,
             italic: supports.includes("italic") ? {} : false,
             underline: supports.includes("underline") ? {} : false,
@@ -209,6 +243,7 @@ function buildExtensions(
         ...(hasLink ? [CmsLink] : []),
         ...(hasBlockChildBlocks ? [CmsBlock] : []),
         ...(hasInlineChildBlocks ? [CmsInlineBlock] : []),
+        ...(supports.includes("table") ? buildTableExtensions(!!singleTableDocument) : []),
     ];
 }
 
@@ -530,6 +565,34 @@ function extractTextEntries(node: JSONContent, headingLevel?: number): TextEntry
  * @experimental
  */
 export function createTipTapRichTextBlock(
+    options: CreateTipTapRichTextBlockOptions = {},
+    nameOrOptions: BlockFactoryNameOrOptions = "TipTapRichText",
+): Block<TipTapRichTextBlockDataInterface, TipTapRichTextBlockInputInterface> {
+    return createTipTapBlock(options, nameOrOptions);
+}
+
+/**
+ * Options that are shared by all TipTap-based block factories but are not part of the public
+ * `createTipTapRichTextBlock` API.
+ *
+ * @internal
+ */
+export interface InternalTipTapBlockOptions {
+    /**
+     * Restricts the document to exactly one table, as used by `createTipTapTableBlock`. The table
+     * becomes the document's only allowed child, so ProseMirror rejects every transaction that
+     * would delete it, and it is taken out of the `block` group so it cannot be nested in its own
+     * cells.
+     */
+    singleTableDocument?: boolean;
+}
+
+/**
+ * Shared implementation behind `createTipTapRichTextBlock` and `createTipTapTableBlock`.
+ *
+ * @internal
+ */
+export function createTipTapBlock(
     {
         supports = defaultSupports,
         textBlockStyles = [],
@@ -542,7 +605,8 @@ export function createTipTapRichTextBlock(
         listLevelMax,
         headingLevels = allHeadingLevels,
         migrateFromDraftJs = false,
-    }: CreateTipTapRichTextBlockOptions = {},
+        singleTableDocument = false,
+    }: CreateTipTapRichTextBlockOptions & InternalTipTapBlockOptions = {},
     nameOrOptions: BlockFactoryNameOrOptions = "TipTapRichText",
 ): Block<TipTapRichTextBlockDataInterface, TipTapRichTextBlockInputInterface> {
     const blockName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
@@ -558,7 +622,7 @@ export function createTipTapRichTextBlock(
     const hasChildBlocks = childBlockConfigs.length > 0;
     const hasBlockChildBlocks = childBlockConfigs.some(({ display }) => display === "block");
     const hasInlineChildBlocks = childBlockConfigs.some(({ display }) => display === "inline");
-    const extensions = buildExtensions(
+    const extensions = buildExtensions({
         supports,
         textBlockStyles,
         inlineStyles,
@@ -567,7 +631,8 @@ export function createTipTapRichTextBlock(
         hasBlockChildBlocks,
         hasInlineChildBlocks,
         headingLevels,
-    );
+        singleTableDocument,
+    });
     const schema = getSchema(extensions);
 
     const draftJsTextBlockStyleMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.textBlockStyleMap : undefined;

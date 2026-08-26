@@ -1,6 +1,7 @@
 import { greyPalette, Tooltip } from "@dextinity/admin";
 import {
     Add,
+    Grid,
     MoreHorizontal,
     RteBold,
     RteClearLink,
@@ -22,6 +23,7 @@ import {
 } from "@dextinity/admin-icons";
 import {
     Box,
+    Divider,
     FormControl,
     inputBaseClasses,
     ListItemIcon,
@@ -33,6 +35,7 @@ import {
     type SvgIconProps,
 } from "@mui/material";
 import { grey as muiGreyPalette } from "@mui/material/colors";
+import { isInTable, selectedRect } from "@tiptap/pm/tables";
 import { type Editor, useEditorState } from "@tiptap/react";
 import { type ForwardRefExoticComponent, type MouseEvent, type ReactNode, type RefAttributes, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -135,6 +138,45 @@ const toolbarSlotSx = {
 
 const ToolbarGroup = ({ children }: { children: ReactNode }) => <Box sx={toolbarSlotSx}>{children}</Box>;
 
+/**
+ * `editor.can()` runs commands without a dispatch, which skips the guards prosemirror-tables uses
+ * to refuse deleting the last row or column, so those two are derived from the selected rect here.
+ */
+const getTableEditorState = (editor: Editor) => {
+    if (!isInTable(editor.state)) {
+        return {
+            isTableActive: false,
+            canDeleteRow: false,
+            canDeleteColumn: false,
+            canMergeCells: false,
+            canSplitCell: false,
+            isHeaderRowActive: false,
+        };
+    }
+
+    const rect = selectedRect(editor.state);
+    const firstRow = rect.table.firstChild;
+    let isHeaderRowActive = false;
+    if (firstRow && firstRow.childCount > 0) {
+        isHeaderRowActive = true;
+        for (let index = 0; index < firstRow.childCount; index++) {
+            if (firstRow.child(index).type.name !== "tableHeader") {
+                isHeaderRowActive = false;
+                break;
+            }
+        }
+    }
+
+    return {
+        isTableActive: true,
+        canDeleteRow: !(rect.top === 0 && rect.bottom === rect.map.height),
+        canDeleteColumn: !(rect.left === 0 && rect.right === rect.map.width),
+        canMergeCells: editor.can().mergeCells(),
+        canSplitCell: editor.can().splitCell(),
+        isHeaderRowActive,
+    };
+};
+
 const selectFormControlSx = {
     [`& .${inputBaseClasses.root}`]: {
         backgroundColor: "transparent",
@@ -183,6 +225,7 @@ export const TipTapToolbar = ({
     const [childBlockAnchorEl, setChildBlockAnchorEl] = useState<null | HTMLElement>(null);
     const [insertChildBlock, setInsertChildBlock] = useState<({ key: string } & TipTapChildBlock) | null>(null);
     const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+    const [tableAnchorEl, setTableAnchorEl] = useState<null | HTMLElement>(null);
     const hasInlineFormatButtons = (["bold", "italic", "underline", "strike"] as const).some((s) => supports.includes(s));
     const moreOptions = (["sub", "sup"] as const).some((s) => supports.includes(s));
     const lists = (["ordered-list", "unordered-list"] as const).some((s) => supports.includes(s));
@@ -191,6 +234,7 @@ export const TipTapToolbar = ({
     const hasPlaceholders = placeholders.length > 0;
     const hasInlineStyles = inlineStyles.length > 0;
     const hasChildBlocks = Object.keys(childBlocks).length > 0;
+    const hasTable = supports.includes("table");
 
     const editorState = useEditorState({
         editor,
@@ -261,6 +305,7 @@ export const TipTapToolbar = ({
                 isBulletListActive: e.isActive("bulletList"),
                 isLinkActive: e.isActive("link"),
                 selectionEmpty: e.state.selection.empty,
+                ...getTableEditorState(e),
             };
         },
     });
@@ -278,6 +323,16 @@ export const TipTapToolbar = ({
     const handleChildBlockClose = () => {
         setChildBlockAnchorEl(null);
         setTimeout(() => editor.commands.focus(), 0);
+    };
+
+    const handleTableClose = () => {
+        setTableAnchorEl(null);
+        setTimeout(() => editor.commands.focus(), 0);
+    };
+
+    const runTableCommand = (run: () => void) => {
+        handleTableClose();
+        setTimeout(run, 0);
     };
 
     const applicableTextBlockStyles = textBlockStyles.filter(
@@ -638,6 +693,71 @@ export const TipTapToolbar = ({
                         disabled={!editorState.isLinkActive}
                         onToggle={() => editor.chain().focus().extendMarkRange("link").unsetCmsLink().run()}
                     />
+                </ToolbarGroup>
+            )}
+            {hasTable && (
+                <ToolbarGroup>
+                    <Tooltip title={<FormattedMessage id="dextinity.blocks.tipTapRichText.table.tooltip" defaultMessage="Table" />}>
+                        <Box
+                            component="button"
+                            type="button"
+                            aria-label={intl.formatMessage({ id: "dextinity.blocks.tipTapRichText.table.tooltip", defaultMessage: "Table" })}
+                            disabled={!editorState.isTableActive}
+                            onMouseDown={(e: MouseEvent) => {
+                                e.preventDefault();
+                                setTableAnchorEl(e.currentTarget as HTMLElement);
+                            }}
+                            sx={toolbarButtonSx}
+                        >
+                            <Grid sx={{ fontSize: 15 }} color="inherit" />
+                        </Box>
+                    </Tooltip>
+                    <Menu open={Boolean(tableAnchorEl)} anchorEl={tableAnchorEl} onClose={handleTableClose}>
+                        <MenuItem onClick={() => runTableCommand(() => editor.chain().focus().addRowBefore().run())}>
+                            <FormattedMessage id="dextinity.blocks.tipTapRichText.table.insertRowAbove" defaultMessage="Insert row above" />
+                        </MenuItem>
+                        <MenuItem onClick={() => runTableCommand(() => editor.chain().focus().addRowAfter().run())}>
+                            <FormattedMessage id="dextinity.blocks.tipTapRichText.table.insertRowBelow" defaultMessage="Insert row below" />
+                        </MenuItem>
+                        <MenuItem
+                            disabled={!editorState.canDeleteRow}
+                            onClick={() => runTableCommand(() => editor.chain().focus().deleteRow().run())}
+                        >
+                            <FormattedMessage id="dextinity.blocks.tipTapRichText.table.deleteRow" defaultMessage="Delete row" />
+                        </MenuItem>
+                        <Divider />
+                        <MenuItem onClick={() => runTableCommand(() => editor.chain().focus().addColumnBefore().run())}>
+                            <FormattedMessage id="dextinity.blocks.tipTapRichText.table.insertColumnLeft" defaultMessage="Insert column left" />
+                        </MenuItem>
+                        <MenuItem onClick={() => runTableCommand(() => editor.chain().focus().addColumnAfter().run())}>
+                            <FormattedMessage id="dextinity.blocks.tipTapRichText.table.insertColumnRight" defaultMessage="Insert column right" />
+                        </MenuItem>
+                        <MenuItem
+                            disabled={!editorState.canDeleteColumn}
+                            onClick={() => runTableCommand(() => editor.chain().focus().deleteColumn().run())}
+                        >
+                            <FormattedMessage id="dextinity.blocks.tipTapRichText.table.deleteColumn" defaultMessage="Delete column" />
+                        </MenuItem>
+                        <Divider />
+                        <MenuItem
+                            selected={editorState.isHeaderRowActive}
+                            onClick={() => runTableCommand(() => editor.chain().focus().toggleHeaderRow().run())}
+                        >
+                            <FormattedMessage id="dextinity.blocks.tipTapRichText.table.headerRow" defaultMessage="Header row" />
+                        </MenuItem>
+                        <MenuItem
+                            disabled={!editorState.canMergeCells}
+                            onClick={() => runTableCommand(() => editor.chain().focus().mergeCells().run())}
+                        >
+                            <FormattedMessage id="dextinity.blocks.tipTapRichText.table.mergeCells" defaultMessage="Merge cells" />
+                        </MenuItem>
+                        <MenuItem
+                            disabled={!editorState.canSplitCell}
+                            onClick={() => runTableCommand(() => editor.chain().focus().splitCell().run())}
+                        >
+                            <FormattedMessage id="dextinity.blocks.tipTapRichText.table.splitCell" defaultMessage="Split cell" />
+                        </MenuItem>
+                    </Menu>
                 </ToolbarGroup>
             )}
             {hasChildBlocks && (

@@ -1,5 +1,15 @@
-import { createTableBlock } from "@dextinity/cms-api";
+import { createTipTapTableBlock } from "@dextinity/cms-api";
 
-import { TipTapRichTextBlock } from "./tip-tap-rich-text.block";
+import { LinkBlock } from "./link.block";
 
-export const TipTapTableBlock = createTableBlock({ richText: TipTapRichTextBlock }, "TipTapTable");
+export const TipTapTableBlock = createTipTapTableBlock(
+    {
+        link: LinkBlock,
+        textBlockStyles: [
+            { name: "paragraph300", appliesTo: ["paragraph"] },
+            { name: "paragraph200", appliesTo: ["paragraph"] },
+        ],
+        inlineStyles: [{ name: "highlight" }],
+    },
+    "TipTapTable",
+);

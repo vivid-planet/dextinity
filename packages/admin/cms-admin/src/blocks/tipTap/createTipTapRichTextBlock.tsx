@@ -1,10 +1,11 @@
 import { greyPalette } from "@dextinity/admin";
 import { Box } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { alpha, type CSSObject, styled, type Theme } from "@mui/material/styles";
 import { Extension } from "@tiptap/core";
 import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
+import { Table, TableKit, TableRow } from "@tiptap/extension-table";
 import { EditorContent, type JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { type ComponentType, type HTMLAttributes, type ReactNode, useEffect } from "react";
@@ -21,6 +22,7 @@ import { Placeholder } from "./extensions/Placeholder";
 import { SoftHyphen } from "./extensions/SoftHyphen";
 import { TextBlockStyleHeading } from "./extensions/TextBlockStyleHeading";
 import { TextBlockStyleParagraph } from "./extensions/TextBlockStyleParagraph";
+import { createTipTapDocument } from "./extensions/TipTapDocument";
 import { InlineStyleContext } from "./InlineStyleContext";
 import { createListLevelMaxExtension, getListNestingDepthFromJson, trimListNesting } from "./listLevelMaxHelpers";
 import { TextBlockStyleContext } from "./TextBlockStyleContext";
@@ -39,7 +41,8 @@ export type TipTapSupports =
     | "unordered-list"
     | "non-breaking-space"
     | "soft-hyphen"
-    | "link";
+    | "link"
+    | "table";
 
 const defaultSupports: TipTapSupports[] = [
     "history",
@@ -116,7 +119,7 @@ export interface TipTapChildBlock {
     display: "block" | "inline";
 }
 
-interface TipTapRichTextBlockFactoryOptions {
+export interface TipTapRichTextBlockFactoryOptions {
     supports?: TipTapSupports[];
     textBlockStyles?: TipTapTextBlockStyle[];
     inlineStyles?: TipTapInlineStyle[];
@@ -325,7 +328,65 @@ async function translateTextNodesAsync(content: JSONContent, translate: (text: s
     return result;
 }
 
-const ReadOnlyContent = styled("div")({
+// A table row must always keep at least one cell. TipTap's default content expression ends in `*`,
+// which lets a full-document deletion leave a table with an empty row that no longer accepts columns.
+const TableRowWithCell = TableRow.extend({ content: "(tableCell | tableHeader)+" });
+
+const buildTableExtensions = (singleTableDocument: boolean) => {
+    if (!singleTableDocument) {
+        return [TableKit.configure({ tableRow: false }), TableRowWithCell];
+    }
+
+    return [
+        TableKit.configure({ table: false, tableRow: false }),
+        // Taking the table out of the "block" group keeps it out of its own cells, whose content
+        // expression is "block+", while the document still refers to it by name.
+        Table.extend({ group: "tableBlock" }),
+        TableRowWithCell,
+    ];
+};
+
+const tableStyles = (theme: Theme): CSSObject => ({
+    ".tiptap table": {
+        borderCollapse: "collapse",
+        tableLayout: "fixed",
+        width: "100%",
+        margin: 0,
+    },
+
+    ".tiptap table td, .tiptap table th": {
+        border: `1px solid ${greyPalette[200]}`,
+        padding: "6px 8px",
+        verticalAlign: "top",
+        boxSizing: "border-box",
+        position: "relative",
+
+        "& > :first-of-type": {
+            marginTop: 0,
+        },
+
+        "& > :last-child": {
+            marginBottom: 0,
+        },
+    },
+
+    ".tiptap table th": {
+        backgroundColor: greyPalette[50],
+        fontWeight: "bold",
+        textAlign: "left",
+    },
+
+    // prosemirror-tables adds this class to every cell covered by a cell selection
+    ".tiptap table .selectedCell:after": {
+        content: '""',
+        position: "absolute",
+        inset: 0,
+        backgroundColor: alpha(theme.palette.primary.main, 0.15),
+        pointerEvents: "none",
+    },
+});
+
+const ReadOnlyContent = styled("div")(({ theme }) => ({
     ".tiptap > :first-child, .tiptap > :first-child > :first-child": {
         marginTop: 0,
     },
@@ -333,7 +394,9 @@ const ReadOnlyContent = styled("div")({
     ".tiptap > :last-child, .tiptap > :last-child > :last-child": {
         marginBottom: 0,
     },
-});
+
+    ...tableStyles(theme),
+}));
 
 const TipTapEditor = ({
     state,
@@ -347,6 +410,7 @@ const TipTapEditor = ({
     maxTextBlocks,
     listLevelMax,
     headingLevels,
+    singleTableDocument,
     readOnly,
 }: {
     state: TipTapRichTextBlockState;
@@ -360,6 +424,7 @@ const TipTapEditor = ({
     maxTextBlocks?: number;
     listLevelMax?: number;
     headingLevels?: number[];
+    singleTableDocument?: boolean;
     readOnly?: boolean;
 }) => {
     const hasTextBlockStyles = textBlockStyles.length > 0;
@@ -373,7 +438,9 @@ const TipTapEditor = ({
 
     const editor = useEditor({
         extensions: [
+            ...(singleTableDocument ? [createTipTapDocument("table")] : []),
             StarterKit.configure({
+                document: singleTableDocument ? false : undefined,
                 bold: supports.includes("bold") ? {} : false,
                 italic: supports.includes("italic") ? {} : false,
                 underline: supports.includes("underline") ? {} : false,
@@ -408,6 +475,7 @@ const TipTapEditor = ({
             ...(hasInlineChildBlocks ? [CmsInlineBlock] : []),
             ...(maxTextBlocks !== undefined ? [createMaxTextBlocksExtension(maxTextBlocks)] : []),
             ...(listLevelMax !== undefined ? [createListLevelMaxExtension(listLevelMax)] : []),
+            ...(supports.includes("table") ? buildTableExtensions(!!singleTableDocument) : []),
         ],
         content: state.tipTapContent,
         editable: !readOnly,
@@ -477,7 +545,9 @@ const TipTapEditor = ({
                                 listLevelMax={listLevelMax}
                                 headingLevels={headingLevels}
                             />
-                            <Box sx={{ "& .tiptap": { minHeight: 200, p: "20px", outline: "none" } }}>{editorNode}</Box>
+                            <Box sx={(theme) => ({ "& .tiptap": { minHeight: 200, p: "20px", outline: "none" }, ...tableStyles(theme) })}>
+                                {editorNode}
+                            </Box>
                         </Box>
                     )}
                 </ChildBlocksContext.Provider>
@@ -486,13 +556,36 @@ const TipTapEditor = ({
     );
 };
 
-type TipTapRichTextBlockInterface = BlockInterface<TipTapRichTextBlockData, TipTapRichTextBlockState, TipTapRichTextBlockInput> &
+export type TipTapRichTextBlockInterface = BlockInterface<TipTapRichTextBlockData, TipTapRichTextBlockState, TipTapRichTextBlockInput> &
     ReadOnlyBlockRenderInterface<TipTapRichTextBlockState>;
 
 /**
  * @experimental
  */
-export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOptions): TipTapRichTextBlockInterface => {
+export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOptions): TipTapRichTextBlockInterface => createTipTapBlock(options);
+
+/**
+ * Options that are shared by all TipTap-based block factories but are not part of the public
+ * `createTipTapRichTextBlock` API.
+ *
+ * @internal
+ */
+export interface InternalTipTapBlockOptions {
+    /**
+     * Restricts the document to exactly one table, as used by `createTipTapTableBlock`. The table
+     * becomes the document's only allowed child, so ProseMirror rejects every transaction that
+     * would delete it, and it is taken out of the `block` group so it cannot be nested in its own
+     * cells.
+     */
+    singleTableDocument?: boolean;
+}
+
+/**
+ * Shared implementation behind `createTipTapRichTextBlock` and `createTipTapTableBlock`.
+ *
+ * @internal
+ */
+export const createTipTapBlock = (options?: TipTapRichTextBlockFactoryOptions & InternalTipTapBlockOptions): TipTapRichTextBlockInterface => {
     let supports = options?.supports ?? defaultSupports;
     const textBlockStyles = options?.textBlockStyles ?? [];
     const inlineStyles = options?.inlineStyles ?? [];
@@ -504,6 +597,7 @@ export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOp
     const maxTextBlocks = options?.maxTextBlocks;
     const listLevelMax = options?.listLevelMax;
     const headingLevels = options?.headingLevels;
+    const singleTableDocument = options?.singleTableDocument;
 
     if (
         headingLevels &&
@@ -529,6 +623,7 @@ export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOp
         maxTextBlocks,
         listLevelMax,
         headingLevels,
+        singleTableDocument,
     };
 
     const TipTapRichTextBlock: TipTapRichTextBlockInterface = {

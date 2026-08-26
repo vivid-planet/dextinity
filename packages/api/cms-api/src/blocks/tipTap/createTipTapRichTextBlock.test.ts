@@ -1462,3 +1462,44 @@ describe("createTipTapRichTextBlock block typing", () => {
         expect(blockData.tipTapContent.type).toBe("doc");
     });
 });
+
+describe("createTipTapRichTextBlock with table support", () => {
+    const block = createTipTapRichTextBlock({ supports: ["bold", "table"] }, "TestRichTextWithTable");
+
+    const tableNode = {
+        type: "table",
+        content: [
+            {
+                type: "tableRow",
+                content: [
+                    { type: "tableHeader", content: [{ type: "paragraph", content: [{ type: "text", text: "Name" }] }] },
+                    { type: "tableCell", content: [{ type: "paragraph", content: [{ type: "text", text: "Ada" }] }] },
+                ],
+            },
+        ],
+    };
+
+    it("should accept a table next to a paragraph", async () => {
+        const input = block.blockInputFactory({
+            tipTapContent: {
+                type: "doc",
+                content: [{ type: "paragraph", content: [{ type: "text", text: "Intro" }] }, tableNode],
+            },
+        });
+        const errors = await validate(input);
+        expect(errors).toHaveLength(0);
+    });
+
+    it("should index cell text for search", () => {
+        const blockData = block.blockDataFactory({ tipTapContent: { type: "doc", content: [tableNode] } });
+
+        expect(blockData.searchText()).toEqual(["Name", "Ada"]);
+    });
+
+    it("should reject a table when table support is disabled", async () => {
+        const blockWithoutTable = createTipTapRichTextBlock({ supports: ["bold"] }, "TestRichTextWithoutTable");
+        const input = blockWithoutTable.blockInputFactory({ tipTapContent: { type: "doc", content: [tableNode] } });
+        const errors = await validate(input);
+        expect(errors).toHaveLength(1);
+    });
+});

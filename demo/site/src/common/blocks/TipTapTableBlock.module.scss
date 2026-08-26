@@ -1,0 +1,42 @@
+@use "@src/styles/variables" as *;
+
+.pageLayoutContent {
+    grid-column: 3 / -3;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.row:not(:last-child) {
+    border-bottom: 1px solid var(--table-border);
+}
+
+.cell {
+    background-color: var(--table-default-bg);
+    text-align: left;
+    padding: 0;
+    vertical-align: top;
+
+    &__content {
+        min-height: 48px;
+        padding: var(--spacing-s200);
+        box-sizing: border-box;
+        color: var(--table-default-text);
+    }
+
+    &--highlighted {
+        background-color: var(--table-highlight-bg);
+        color: var(--table-highlight-text);
+        font-weight: 700;
+    }
+
+    &:not(:last-child) {
+        border-right: 1px solid var(--table-border);
+    }
+}
+
+.text:not(:last-child) {
+    margin-bottom: var(--spacing-s100);
+}

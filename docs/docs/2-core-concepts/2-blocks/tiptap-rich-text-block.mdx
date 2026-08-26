@@ -379,3 +379,15 @@ const nodeMapping: Record<string, TipTapNodeHandler> = {
     cmsInlineBlock: renderCmsBlock, // inline child blocks
 };
 ```
+
+### Tables
+
+Adding `"table"` to `supports` lets editors insert tables between the other top-level nodes. The toolbar then shows a **Table** menu for adding and removing rows and columns, toggling the header row, and merging or splitting cells:
+
+```ts
+createTipTapRichTextBlock({ supports: ["bold", "italic", "heading", "table"] });
+```
+
+Tables render out of the box on the site — `renderTipTapRichText` has default mappings for `table`, `tableRow`, `tableHeader` and `tableCell`.
+
+If a block should contain nothing but a table, use the [TipTap Table Block](./tiptap-table-block.mdx) instead: it pins exactly one, non-deletable table into the document.

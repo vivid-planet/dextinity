@@ -19,72 +19,72 @@ jobs:
             - name: "Library: Clone translations"
               uses: actions/checkout@v6
               with:
-                  repository: vivid-planet/comet-lang
+                  repository: vivid-planet/dextinity-lang
                   token: ${{ secrets.VIVID_PLANET_BOT_TOKEN }}
-                  path: "demo/admin/lang/comet-lang"
+                  path: "demo/admin/lang/dextinity-lang"
 
             - uses: ./.github/actions/setup
 
             - name: "Library: Extract i18n strings"
               run: |
                   pnpm run intl:extract
-                  cp -r lang/* demo/admin/lang/comet-lang/
+                  cp -r lang/* demo/admin/lang/dextinity-lang/
 
             - name: "Library: Update translatable strings"
               uses: EndBug/add-and-commit@v10
               with:
-                  cwd: "./demo/admin/lang/comet-lang"
+                  cwd: "./demo/admin/lang/dextinity-lang"
 
             - name: "Demo Admin: Clone translations"
               uses: actions/checkout@v6
               with:
-                  repository: vivid-planet/comet-demo-lang
+                  repository: vivid-planet/dextinity-demo-lang
                   token: ${{ secrets.VIVID_PLANET_BOT_TOKEN }}
-                  path: "demo/admin/lang/comet-demo-lang"
+                  path: "demo/admin/lang/dextinity-demo-lang"
 
             - name: "Demo Admin: Extract i18n strings"
               run: |
                   cd demo/admin
                   pnpm run intl:extract
-                  cp -r lang-extracted/* lang/comet-demo-lang/admin
+                  cp -r lang-extracted/* lang/dextinity-demo-lang/admin
 
             - name: "Demo Admin: Update translatable strings"
               uses: EndBug/add-and-commit@v10
               with:
-                  cwd: "./demo/admin/lang/comet-demo-lang"
+                  cwd: "./demo/admin/lang/dextinity-demo-lang"
 
             - name: "Demo Site: Clone translations"
               uses: actions/checkout@v6
               with:
-                  repository: vivid-planet/comet-demo-lang
+                  repository: vivid-planet/dextinity-demo-lang
                   token: ${{ secrets.VIVID_PLANET_BOT_TOKEN }}
-                  path: "demo/site/lang/comet-demo-lang"
+                  path: "demo/site/lang/dextinity-demo-lang"
 
             - name: "Demo Site: Extract i18n strings"
               run: |
                   cd demo/site
                   pnpm run intl:extract
-                  cp -r lang-extracted/* lang/comet-demo-lang/site
+                  cp -r lang-extracted/* lang/dextinity-demo-lang/site
 
             - name: "Demo Site: Update translatable strings"
               uses: EndBug/add-and-commit@v10
               with:
-                  cwd: "./demo/site/lang/comet-demo-lang"
+                  cwd: "./demo/site/lang/dextinity-demo-lang"
 
             - name: "Demo Api: Clone translations"
               uses: actions/checkout@v6
               with:
-                  repository: vivid-planet/comet-demo-lang
+                  repository: vivid-planet/dextinity-demo-lang
                   token: ${{ secrets.VIVID_PLANET_BOT_TOKEN }}
-                  path: "demo/api/lang/comet-demo-lang"
+                  path: "demo/api/lang/dextinity-demo-lang"
 
             - name: "Demo Api: Extract i18n strings"
               run: |
                   cd demo/api
                   pnpm run intl:extract
-                  cp -r lang-extracted/* lang/comet-demo-lang/api
+                  cp -r lang-extracted/* lang/dextinity-demo-lang/api
 
             - name: "Demo Api: Update translatable strings"
               uses: EndBug/add-and-commit@v10
               with:
-                  cwd: "./demo/api/lang/comet-demo-lang"
+                  cwd: "./demo/api/lang/dextinity-demo-lang"

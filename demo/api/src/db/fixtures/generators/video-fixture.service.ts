@@ -1,4 +1,4 @@
-import { createFileUploadInputFromUrl, FileInterface, FilesService } from "@comet/cms-api";
+import { createFileUploadInputFromUrl, FileInterface, FilesService } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { DamScope } from "@src/dam/dto/dam-scope";

@@ -1,4 +1,4 @@
-import eslintConfigReact, { restrictedImportPaths } from "@comet/eslint-config/future/react.js";
+import eslintConfigReact, { restrictedImportPaths } from "@dextinity/eslint-config/future/react.js";
 import { defineConfig, globalIgnores } from "eslint/config";
 import storybook from "eslint-plugin-storybook";
 
@@ -6,7 +6,7 @@ const dataGridImportRestrictions = ["@mui/x-data-grid", "@mui/x-data-grid-pro", 
     ["DataGrid", "DataGridPro", "DataGridPremium"].map((importName) => ({
         name,
         importNames: [importName],
-        message: "Please use DataGrid from `@comet/cms-admin` instead, which resolves the configured grid via `CometConfig`.",
+        message: "Please use DataGrid from `@dextinity/cms-admin` instead, which resolves the configured grid via `DextinityConfig`.",
     })),
 );
 
@@ -29,7 +29,7 @@ export default defineConfig([
     },
     {
         rules: {
-            "@comet/no-other-module-relative-import": "off",
+            "@dextinity/no-other-module-relative-import": "off",
         },
     },
     {
@@ -69,7 +69,7 @@ export default defineConfig([
             "@typescript-eslint/no-explicit-any": "off",
             "@typescript-eslint/no-non-null-assertion": "off",
             "no-console": "off",
-            "@comet/no-other-module-relative-import": "off",
+            "@dextinity/no-other-module-relative-import": "off",
             "react/react-in-jsx-scope": "off",
             "react/jsx-no-literals": "off",
         },

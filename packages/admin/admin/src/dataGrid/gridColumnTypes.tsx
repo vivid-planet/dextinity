@@ -39,7 +39,7 @@ const DatePickerFilter = ({ item, applyValue }: GridFilterInputValueProps) => {
                     },
                     slotProps: {
                         textField: {
-                            label: <FormattedMessage id="dataGrid.filterOperator.date.label" defaultMessage="Value" />,
+                            label: <FormattedMessage id="dextinity.dataGrid.filterOperator.date.label" defaultMessage="Value" />,
                             onBlur: () => {
                                 applyValue({ ...item, value: internalValue });
                             },
@@ -80,7 +80,7 @@ const DateTimePickerFilter = ({ item, applyValue }: GridFilterInputValueProps) =
     return (
         <DateTimePicker
             value={internalValue}
-            label={<FormattedMessage id="dataGrid.filterOperator.dateTime.label" defaultMessage="Value" />}
+            label={<FormattedMessage id="dextinity.dataGrid.filterOperator.dateTime.label" defaultMessage="Value" />}
             onChange={(newValue: Date | undefined) => {
                 setInternalValue(newValue);
             }}

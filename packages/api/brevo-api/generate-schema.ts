@@ -1,5 +1,5 @@
-import { createOneOfBlock, createRichTextBlock, ExternalLinkBlock, registerAdditionalPermissions } from "@comet/cms-api";
-import { CombinedPermission } from "@comet/cms-api/lib/user-permissions/user-permissions.types";
+import { createOneOfBlock, createRichTextBlock, ExternalLinkBlock, registerAdditionalPermissions } from "@dextinity/cms-api";
+import { CombinedPermission } from "@dextinity/cms-api/lib/user-permissions/user-permissions.types";
 import { Embeddable } from "@mikro-orm/postgresql";
 import { NestFactory } from "@nestjs/core";
 import { Field, GraphQLSchemaBuilderModule, GraphQLSchemaFactory, InputType, ObjectType, registerEnumType } from "@nestjs/graphql";

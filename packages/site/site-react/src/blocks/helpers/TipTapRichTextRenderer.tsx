@@ -55,6 +55,7 @@ const defaultTipTapNodeMapping: Record<string, TipTapNodeHandler> = {
 const defaultTipTapMarkMapping: Record<string, TipTapMarkHandler> = {
     bold: ({ children }) => <strong>{children}</strong>,
     italic: ({ children }) => <em>{children}</em>,
+    underline: ({ children }) => <u>{children}</u>,
     strike: ({ children }) => <s>{children}</s>,
     superscript: ({ children }) => <sup>{children}</sup>,
     subscript: ({ children }) => <sub>{children}</sub>,

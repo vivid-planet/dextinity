@@ -1,11 +1,11 @@
-import { Field } from "@comet/admin";
-import { createFinalFormRte } from "@comet/admin-rte";
+import { Field } from "@dextinity/admin";
+import { createFinalFormRte } from "@dextinity/admin-rte";
 import { Form } from "react-final-form";
 
 const { RteField } = createFinalFormRte();
 
 export default {
-    title: "@comet/admin-rte",
+    title: "@dextinity/admin-rte",
 };
 
 export const ToolbarButtonsSubmitForm = {

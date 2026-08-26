@@ -6,8 +6,8 @@ import { registerStyles } from "../../styles/registerStyles.js";
 import { getDefaultOrUndefined } from "../../theme/responsiveValue.js";
 import { useOptionalTheme } from "../../theme/ThemeProvider.js";
 import type { TextVariantStyles, Theme, VariantName } from "../../theme/themeTypes.js";
+import { generateResponsiveTextCss } from "./generateResponsiveTextCss.js";
 import { OutlookTextStyleProvider, type OutlookTextStyleValues } from "./OutlookTextStyleContext.js";
-import { generateResponsiveTextCss } from "./textStyles.js";
 
 export type MjmlTextProps = IMjmlTextProps & {
     /**
@@ -16,7 +16,7 @@ export type MjmlTextProps = IMjmlTextProps & {
      * Custom variants should be defined in the theme, through module augmentation.
      *
      * ```ts
-     * declare module "@comet/mail-react" {
+     * declare module "@dextinity/mail-react" {
      *     interface TextVariants { heading: true; body: true }
      * }
      * ```
@@ -116,11 +116,11 @@ function getThemedProps(
     };
 }
 
-export function generateTextStyles(theme: Theme): string {
+export function generateMjmlTextStyles(theme: Theme): string {
     return generateResponsiveTextCss(theme, {
         styleSelector: (variantName) => `.mjmlText--${variantName} > div`,
         spacingSelector: (variantName) => `.mjmlText--bottomSpacing.mjmlText--${variantName}`,
     });
 }
 
-registerStyles(generateTextStyles);
+registerStyles(generateMjmlTextStyles);

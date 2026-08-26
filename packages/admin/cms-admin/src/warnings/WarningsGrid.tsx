@@ -14,7 +14,7 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import { Chip } from "@mui/material";
 import type { GridFilterModel } from "@mui/x-data-grid";
 import { capitalCase } from "change-case";
@@ -108,24 +108,24 @@ export function WarningsGrid() {
         {
             ...dataGridDateTimeColumn,
             field: "createdAt",
-            headerName: intl.formatMessage({ id: "warning.dateTime", defaultMessage: "Date / Time" }),
+            headerName: intl.formatMessage({ id: "dextinity.warning.dateTime", defaultMessage: "Date / Time" }),
             width: 200,
         },
         {
             field: "severity",
-            headerName: intl.formatMessage({ id: "warning.severity", defaultMessage: "Severity" }),
+            headerName: intl.formatMessage({ id: "dextinity.warning.severity", defaultMessage: "Severity" }),
             type: "singleSelect",
             valueOptions: [
-                { value: "high", label: intl.formatMessage({ id: "warning.severity.high", defaultMessage: "High" }) },
-                { value: "medium", label: intl.formatMessage({ id: "warning.severity.medium", defaultMessage: "Medium" }) },
-                { value: "low", label: intl.formatMessage({ id: "warning.severity.low", defaultMessage: "Low" }) },
+                { value: "high", label: intl.formatMessage({ id: "dextinity.warning.severity.high", defaultMessage: "High" }) },
+                { value: "medium", label: intl.formatMessage({ id: "dextinity.warning.severity.medium", defaultMessage: "Medium" }) },
+                { value: "low", label: intl.formatMessage({ id: "dextinity.warning.severity.low", defaultMessage: "Low" }) },
             ],
             width: 150,
             renderCell: (params) => <WarningSeverity severity={params.value} />,
         },
         {
             field: "name",
-            headerName: intl.formatMessage({ id: "warning.name", defaultMessage: "Name" }),
+            headerName: intl.formatMessage({ id: "dextinity.warning.name", defaultMessage: "Name" }),
             width: 200,
             renderCell: ({ row }) => {
                 return (
@@ -138,14 +138,14 @@ export function WarningsGrid() {
         },
         {
             field: "secondaryInformation",
-            headerName: intl.formatMessage({ id: "warning.info", defaultMessage: "Info" }),
+            headerName: intl.formatMessage({ id: "dextinity.warning.info", defaultMessage: "Info" }),
             sortable: false,
             visible: false,
             valueGetter: (params, row) => row.entityInfo?.secondaryInformation,
         },
         {
             field: "type",
-            headerName: intl.formatMessage({ id: "warning.type", defaultMessage: "Type" }),
+            headerName: intl.formatMessage({ id: "dextinity.warning.type", defaultMessage: "Type" }),
             type: "singleSelect",
             valueOptions: Object.entries(entityDependencyMap).map(([value, dependency]) => ({
                 value,
@@ -159,13 +159,13 @@ export function WarningsGrid() {
         },
         {
             field: "message",
-            headerName: intl.formatMessage({ id: "warning.message", defaultMessage: "Message" }),
+            headerName: intl.formatMessage({ id: "dextinity.warning.message", defaultMessage: "Message" }),
             flex: 1,
             renderCell: (params) => <WarningMessage message={params.value} warningMessages={warningMessages} />,
         },
         {
             field: "scope",
-            headerName: intl.formatMessage({ id: "warning.scope", defaultMessage: "Scope" }),
+            headerName: intl.formatMessage({ id: "dextinity.warning.scope", defaultMessage: "Scope" }),
             type: "singleSelect",
             sortable: false,
             valueOptions: scopeValueOptions,

@@ -1,13 +1,13 @@
 {
-    "name": "@comet/admin-babel-preset",
-    "version": "9.1.1",
+    "name": "@dextinity/admin-babel-preset",
+    "version": "10.1.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet",
+        "url": "https://github.com/vivid-planet/dextinity",
         "directory": "packages/admin/admin-babel-preset"
     },
     "type": "commonjs",
-    "description": "Babel preset for Comet Admin packages",
+    "description": "Babel preset for Dextinity Admin packages",
     "license": "BSD-2-Clause",
     "main": "index.js",
     "dependencies": {

@@ -21,23 +21,23 @@ const Root = createComponentSlot("div")<AppHeaderFillSpaceClassKey>({
  * @deprecated Use `FillSpace` instead.
  */
 export function AppHeaderFillSpace(inProps: AppHeaderFillSpaceProps) {
-    const { slotProps, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminAppHeaderFillSpace" });
+    const { slotProps, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminAppHeaderFillSpace" });
 
     return <Root {...slotProps?.root} {...restProps} />;
 }
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminAppHeaderFillSpace: AppHeaderFillSpaceProps;
+        DextinityAdminAppHeaderFillSpace: AppHeaderFillSpaceProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminAppHeaderFillSpace: AppHeaderFillSpaceClassKey;
+        DextinityAdminAppHeaderFillSpace: AppHeaderFillSpaceClassKey;
     }
 
     interface Components {
-        CometAdminAppHeaderFillSpace?: {
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminAppHeaderFillSpace"];
+        DextinityAdminAppHeaderFillSpace?: {
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminAppHeaderFillSpace"];
         };
     }
 }

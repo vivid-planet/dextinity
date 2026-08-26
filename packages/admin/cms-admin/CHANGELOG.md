@@ -1,5 +1,226 @@
 # @comet/cms-admin
 
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/admin@10.1.0
+- @dextinity/admin-date-time@10.1.0
+- @dextinity/admin-icons@10.1.0
+- @dextinity/admin-rte@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- Updated dependencies [48748b0]
+    - @dextinity/admin@10.0.1
+    - @dextinity/admin-date-time@10.0.1
+    - @dextinity/admin-rte@10.0.1
+    - @dextinity/admin-icons@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/cms-admin` to `@dextinity/cms-admin`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename `CometConfigProvider` to `DextinityConfigProvider`, `useCometConfig` to `useDextinityConfig` and the `CometConfig` type to `DextinityConfig`. By convention, the project's `comet-config.json` is renamed to `dextinity-config.json`
+    - Rename the `cometType` property of iframe messages to `dextinityType`. The site must use a matching `@dextinity/site-react` or `@dextinity/site-nextjs` version
+    - Rename the site preview cookie from `__comet_site_preview` to `__dextinity_site_preview` and the impersonation cookie from `comet-impersonate-user-id` to `dextinity-impersonate-user-id`
+    - Expect the renamed `DextinityImageResolutionException` and `DextinityValidationException` error codes in DAM file uploads. A matching `@dextinity/cms-api` version is required
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme` and the generated CSS class names
+    - Rename the CSS variables from `--comet-admin-*` to `--dextinity-admin-*`
+    - Replace the Comet logo in the header, the about modal and the site preview with the Dextinity logo
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+    - @dextinity/admin-date-time@10.0.0
+    - @dextinity/admin-icons@10.0.0
+    - @dextinity/admin-rte@10.0.0
+    - @dextinity/admin@10.0.0
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/cms-admin` to `@dextinity/cms-admin`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename `CometConfigProvider` to `DextinityConfigProvider`, `useCometConfig` to `useDextinityConfig` and the `CometConfig` type to `DextinityConfig`. By convention, the project's `comet-config.json` is renamed to `dextinity-config.json`
+    - Rename the `cometType` property of iframe messages to `dextinityType`. The site must use a matching `@dextinity/site-react` or `@dextinity/site-nextjs` version
+    - Rename the site preview cookie from `__comet_site_preview` to `__dextinity_site_preview` and the impersonation cookie from `comet-impersonate-user-id` to `dextinity-impersonate-user-id`
+    - Expect the renamed `DextinityImageResolutionException` and `DextinityValidationException` error codes in DAM file uploads. A matching `@dextinity/cms-api` version is required
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme` and the generated CSS class names
+    - Rename the CSS variables from `--comet-admin-*` to `--dextinity-admin-*`
+    - Replace the Comet logo in the header, the about modal and the site preview with the Dextinity logo
+
+### Patch Changes
+
+## 9.5.0
+
+### Patch Changes
+
+- @comet/admin@9.5.0
+- @comet/admin-date-time@9.5.0
+- @comet/admin-icons@9.5.0
+- @comet/admin-rte@9.5.0
+
+## 9.4.0
+
+### Minor Changes
+
+- ca88ec6: Add `ReadOnlyBlockRenderInterface`
+
+    A block that implements the interface provides a `ReadOnlyComponent` that renders its state without an editing UI. Rich text blocks implement it:
+
+    ```tsx
+    const RichTextBlock = createRichTextBlock({ link: LinkBlock });
+
+    <RichTextBlock.ReadOnlyComponent state={state} />;
+    ```
+
+- ca88ec6: Accept any rich text block in `createTableBlock`, such as TipTap
+
+    The `richText` option accepts any block that implements `ReadOnlyBlockRenderInterface`:
+
+    ```ts
+    const TipTapRichTextBlock = createTipTapRichTextBlock(...);
+
+    createTableBlock({ richText: TipTapRichTextBlock, name: "TipTapTable" });
+    ```
+
+- 71d6a95: Add read-only rendering to the TipTap rich text block
+
+    `createTipTapRichTextBlock` now returns a `ReadOnlyComponent` that renders saved content without an editing UI, for showing the content where it must not be editable.
+
+    ```tsx
+    const RichTextBlock = createTipTapRichTextBlock();
+
+    <RichTextBlock.ReadOnlyComponent state={state} />;
+    ```
+
+### Patch Changes
+
+- 4e27111: Rename the TipTap block type dropdown's `Default` entry to `Paragraph`, after the HTML tag it produces
+- 0f17fbd: Open the `Permissions` tab by default when editing a user in the `UserPermissionsPage`
+
+    Selecting a user now opens the `Permissions` tab instead of `Basic Data`, while the tab order stays unchanged. Users without the `userPermissions` permission (who don't see the `Permissions` tab) continue to open the `Basic Data` tab.
+
+- Updated dependencies [bf1ff64]
+- Updated dependencies [085b9ac]
+    - @comet/admin@9.4.0
+    - @comet/admin-date-time@9.4.0
+    - @comet/admin-rte@9.4.0
+    - @comet/admin-icons@9.4.0
+
+## 9.3.0
+
+### Minor Changes
+
+- 924b66c: Add `underline` support to `createTipTapRichTextBlock`
+
+    The `underline` inline style is now part of the `supports` list and can be toggled via a new toolbar button. The underline mark is validated by the API, rendered as `<u>` by `renderTipTapRichText`, and the DraftJS migration maps the `UNDERLINE` inline style to it when supported. Per default it is disabled, pass a `supports` list with `underline` to enable it.
+
+### Patch Changes
+
+- Updated dependencies [7b2d8db]
+    - @comet/admin@9.3.0
+    - @comet/admin-date-time@9.3.0
+    - @comet/admin-rte@9.3.0
+    - @comet/admin-icons@9.3.0
+
+## 9.2.2
+
+### Patch Changes
+
+- @comet/admin@9.2.2
+- @comet/admin-date-time@9.2.2
+- @comet/admin-icons@9.2.2
+- @comet/admin-rte@9.2.2
+
+## 9.2.1
+
+### Patch Changes
+
+- @comet/admin@9.2.1
+- @comet/admin-date-time@9.2.1
+- @comet/admin-icons@9.2.1
+- @comet/admin-rte@9.2.1
+
+## 9.2.0
+
+### Minor Changes
+
+- ee0bf93: Add AI content disclosure for DAM assets (EU AI Act, Article 50)
+
+    Editors can mark a DAM asset as **AI generated** or **AI modified** in the file settings. When such an asset is published, the site renders the official EU AI-content label and merges the disclosure into the media element's accessible name, so screen-reader users learn which asset is AI.
+
+    **API**
+
+    New `aiContentType` field (`Generated` | `Modified`) on DAM files, exposed through the `PixelImage` and `DamVideo` blocks.
+
+    **Admin**
+
+    New "AI content" field in the DAM file settings, shown for image, video and audio assets only (other file types cannot constitute a deep fake).
+
+    **Site**
+
+    `PixelImageBlock` and `DamVideoBlock` render the disclosure automatically for marked assets. Both accept props to customize it:
+    - `aiContentDisclosureProps` — override the badge.
+    - `customAiContentDisclosure` — render your own disclosure, or `null` for none.
+    - `aiContentAltTextPrefixLabels` — localize the accessible-name prefix (defaults to English).
+
+    `@comet/site-react` also exports the `AiContentDisclosure` badge and the `getAiContentAltTextWithPrefix` helper.
+
+- ba56f97: Warn editors when videos that are too large for performant delivery are used
+
+    Videos are delivered without optimization, so large videos can lead to poor loading performance. A warning is now shown when a video exceeds a configurable file size:
+    - as a snackbar after uploading it to the DAM
+    - as an alert on the DAM asset detail page
+    - as an alert in the `DamVideoBlock` when such a video is selected
+
+    The threshold defaults to 10 MB and can be configured (or the warning disabled entirely) via the new `videoPerformanceWarningFileSize` option in the `dam` config:
+
+    ```tsx
+    <CometConfigProvider
+        dam={{
+            // ...
+            videoPerformanceWarningFileSize: 25, // warn for videos larger than 25 MB
+            // or set to `false` to disable the warning globally
+        }}
+    >
+    ```
+
+### Patch Changes
+
+- 8c866a3: Persist the DAM sorting preference across sessions
+
+    The Digital Asset Management asset list now remembers the selected sorting (column and direction) in `localStorage` instead of resetting to alphabetical (`name` ascending) on every visit.
+
+- 48d06d6: Fix hard-to-read text color in the DAM drag & drop upload overlay
+
+    The upload overlay (shown when dragging files over a DAM folder) used a dark grey text color on its near-black background, making the text hard to read. It now uses white text for proper contrast.
+
+- eb0b156: Fix the warnings page crashing due to an invalid `state` filter
+
+    The `WarningsGrid` initialized its default filter with the field `state` instead of `status`, which doesn't exist on the `WarningFilter` input type. This caused the GraphQL request to fail with a `400 Bad Request`, crashing the warnings page (`/system/warnings`).
+
+- Updated dependencies [5a05d97]
+    - @comet/admin@9.2.0
+    - @comet/admin-date-time@9.2.0
+    - @comet/admin-rte@9.2.0
+    - @comet/admin-icons@9.2.0
+
 ## 9.1.1
 
 ### Patch Changes

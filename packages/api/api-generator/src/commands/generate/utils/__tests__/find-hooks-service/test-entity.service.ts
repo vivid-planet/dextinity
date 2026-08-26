@@ -1,4 +1,4 @@
-import type { CrudGeneratorHooksService, MutationError } from "@comet/cms-api";
+import type { CrudGeneratorHooksService, MutationError } from "@dextinity/cms-api";
 
 export enum TestMutationErrorCode {
     titleTooShort = "titleTooShort",

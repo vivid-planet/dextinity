@@ -1,13 +1,13 @@
 {
-    "name": "@comet/mail-react",
-    "version": "9.1.1",
+    "name": "@dextinity/mail-react",
+    "version": "10.1.0",
     "description": "Utilities for building HTML emails with React",
     "license": "BSD-2-Clause",
     "type": "module",
     "repository": {
         "directory": "packages/mail-react",
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet"
+        "url": "https://github.com/vivid-planet/dextinity"
     },
     "exports": {
         ".": "./lib/index.js",
@@ -24,7 +24,7 @@
         "build-storybook": "storybook build",
         "clean": "rimraf lib 'src/**/*.generated.ts'",
         "dev": "pnpm run clean && pnpm generate-block-types && tsc --watch",
-        "generate-block-types": "comet generate-block-types",
+        "generate-block-types": "dextinity generate-block-types",
         "generate-block-types:watch": "chokidar -s \"**/block-meta.json\" -c \"$npm_execpath generate-block-types\"",
         "lint": "pnpm generate-block-types && run-p lint:prettier lint:eslint lint:tsc",
         "lint:ci": "pnpm run lint",
@@ -48,8 +48,8 @@
         "redraft": "^0.10.2"
     },
     "devDependencies": {
-        "@comet/cli": "workspace:*",
-        "@comet/eslint-config": "workspace:*",
+        "@dextinity/cli": "workspace:*",
+        "@dextinity/eslint-config": "workspace:*",
         "@storybook/addon-docs": "^10.3.5",
         "@storybook/addon-vitest": "10.3.5",
         "@storybook/react-vite": "^10.3.5",
@@ -62,7 +62,7 @@
         "chokidar-cli": "^3.0.0",
         "eslint": "^9.39.4",
         "npm-run-all2": "^8.0.4",
-        "playwright": "^1.49.1",
+        "playwright": "^1.62.0",
         "prettier": "^3.6.2",
         "react": "^19.2.6",
         "react-dom": "^19.2.6",

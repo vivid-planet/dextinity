@@ -1,4 +1,4 @@
-import { createTipTapRichTextBlock } from "@comet/cms-admin";
+import { createTipTapRichTextBlock } from "@dextinity/cms-admin";
 import { ProductPriceBlock } from "@src/products/blocks/ProductPriceBlock";
 import { ProductTeaserBlock } from "@src/products/blocks/ProductTeaserBlock";
 import type { HTMLAttributes } from "react";

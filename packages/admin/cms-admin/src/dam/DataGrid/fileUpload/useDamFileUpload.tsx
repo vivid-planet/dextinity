@@ -1,12 +1,12 @@
 import { useApolloClient } from "@apollo/client";
-import { Alert, useSnackbarApi } from "@comet/admin";
+import { Alert, useSnackbarApi } from "@dextinity/admin";
 import { Snackbar } from "@mui/material";
 import { type ReactNode, useCallback, useMemo, useState } from "react";
 import type { Accept, FileRejection } from "react-dropzone";
 import { FormattedMessage } from "react-intl";
 
 import { NetworkError, UnknownError } from "../../../common/errors/errorMessages";
-import { useCometConfig } from "../../../config/CometConfigContext";
+import { useDextinityConfig } from "../../../config/DextinityConfigContext";
 import { replaceByFilenameAndFolder, upload } from "../../../form/file/upload";
 import type { GQLLicenseInput } from "../../../graphql.generated";
 import { useDamBasePath, useDamConfig, useVideoPerformanceWarning } from "../../config/damConfig";
@@ -134,7 +134,7 @@ const addFolderPathToFiles = async (acceptedFiles: FileWithDamUploadMetadata[]):
 };
 
 export const useDamFileUpload = (options: UploadDamFileOptions): FileUploadApi => {
-    const { apiUrl } = useCometConfig();
+    const { apiUrl } = useDextinityConfig();
     const damConfig = useDamConfig();
     const damBasePath = useDamBasePath();
     const client = useApolloClient();
@@ -445,9 +445,9 @@ export const useDamFileUpload = (options: UploadDamFileOptions): FileUploadApi =
                 } catch (err) {
                     errorOccurred = true;
 
-                    if (hasObjectErrorData(err) && err.response?.data.error === "CometImageResolutionException") {
+                    if (hasObjectErrorData(err) && err.response?.data.error === "DextinityImageResolutionException") {
                         addValidationError(file, <MaxResolutionError maxResolution={damConfig.maxSrcResolution} />);
-                    } else if (hasObjectErrorData(err) && err.response?.data.error === "CometValidationException") {
+                    } else if (hasObjectErrorData(err) && err.response?.data.error === "DextinityValidationException") {
                         const message = err.response.data.message;
                         const extension = `.${file.name.split(".").pop()}`;
                         if (message.includes("Unsupported mime type")) {
@@ -494,7 +494,7 @@ export const useDamFileUpload = (options: UploadDamFileOptions): FileUploadApi =
                 <Snackbar autoHideDuration={5000}>
                     <Alert severity="warning">
                         <FormattedMessage
-                            id="comet.dam.videoPerformanceWarning.snackbar"
+                            id="dextinity.dam.videoPerformanceWarning.snackbar"
                             defaultMessage="{count, plural, one {A very large video was uploaded} other {# very large videos were uploaded}}. Videos are delivered without optimization, which can lead to poor loading performance."
                             values={{ count: tooLargeVideoCount }}
                         />

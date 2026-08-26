@@ -15,8 +15,8 @@ const useGridColumns = (apiRef: ReturnType<typeof useGridApiRef>) => {
         setColumns(
             // TODO: find a better solution than the `as GridColDef[] | undefined` cast.
             // The problem is, that due to the more complicated GridColDef type, introduced in Mui-X v6 and the override
-            // GridColDef type from @comet/admin, the types returned from apiRef.current?.getAllColumns?.() are not
-            // compatible with the @comet/admin GridColDef.
+            // GridColDef type from @dextinity/admin, the types returned from apiRef.current?.getAllColumns?.() are not
+            // compatible with the @dextinity/admin GridColDef.
             apiRef.current?.getAllColumns?.() as GridColDef[] | undefined,
         );
     }, [apiRef]);

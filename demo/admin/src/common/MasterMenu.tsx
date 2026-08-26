@@ -1,11 +1,11 @@
-import { Assets, Dashboard, Data, Mail, PageTree, Snips, Wrench } from "@comet/admin-icons";
+import { Assets, Dashboard, Data, Mail, PageTree, Snips, Wrench } from "@dextinity/admin-icons";
 import {
     BrevoConfigPage,
     createBrevoContactsPage,
     createBrevoTestContactsPage,
     createEmailCampaignsPage,
     createTargetGroupsPage,
-} from "@comet/brevo-admin";
+} from "@dextinity/brevo-admin";
 import {
     ContentScopeIndicator,
     CronJobsPage,
@@ -19,7 +19,7 @@ import {
     PublisherPage,
     UserPermissionsPage,
     WarningsPage,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 import { type BrevoContactConfig, getBrevoContactConfig } from "@src/brevo/brevoModuleConfig/brevoContactsPageAttributesConfig";
 import { additionalFormConfig } from "@src/brevo/brevoModuleConfig/targetGroupFormConfig";
 import { EmailCampaignContentBlock } from "@src/brevo/emailCampaigns/blocks/EmailCampaignContentBlock";
@@ -47,6 +47,7 @@ import ProductsHandmadePage from "@src/products/ProductsPage";
 import { ProductTagsPage as ProductTagsHandmadePage } from "@src/products/tags/ProductTagsPage";
 import { RedirectsPage } from "@src/redirects/RedirectsPage";
 import type { ContentScope } from "@src/site-configs";
+import { EditWelcomeEmailPage } from "@src/welcomeEmail/EditWelcomeEmailPage";
 import { useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Redirect, type RouteComponentProps } from "react-router";
@@ -200,6 +201,15 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             primary: <FormattedMessage id="menu.newsletter" defaultMessage="Newsletter" />,
             icon: <Mail />,
             items: [
+                {
+                    type: "route",
+                    primary: <FormattedMessage id="menu.newsletter.welcomeEmail" defaultMessage="Welcome email" />,
+                    route: {
+                        path: "/newsletter/welcome-email",
+                        component: EditWelcomeEmailPage,
+                    },
+                    requiredPermission: "pageTree",
+                },
                 {
                     type: "route",
                     primary: <FormattedMessage id="menu.newsletter.emailCampaigns" defaultMessage="Email campaigns" />,

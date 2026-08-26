@@ -1,4 +1,4 @@
-import { useCometConfig } from "../config/CometConfigContext";
+import { useDextinityConfig } from "../config/DextinityConfigContext";
 import { useContentScope } from "../contentScope/Provider";
 
 export interface RedirectsConfig {
@@ -6,13 +6,13 @@ export interface RedirectsConfig {
 }
 
 function useRedirectsConfig(): RedirectsConfig {
-    const cometConfig = useCometConfig();
+    const dextinityConfig = useDextinityConfig();
 
-    if (!cometConfig.redirects) {
-        throw new Error("No redirects configuration found. Make sure to set `redirects` in `CometConfigProvider`.");
+    if (!dextinityConfig.redirects) {
+        throw new Error("No redirects configuration found. Make sure to set `redirects` in `DextinityConfigProvider`.");
     }
 
-    return cometConfig.redirects;
+    return dextinityConfig.redirects;
 }
 
 export function useRedirectsScope(): { [key: string]: unknown } {

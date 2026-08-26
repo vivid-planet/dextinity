@@ -1,4 +1,4 @@
-import { Button, FinalForm, SwitchField } from "@comet/admin";
+import { Button, FinalForm, SwitchField } from "@dextinity/admin";
 
 export default {
     title: "Docs/Form/Components/FinalForm Fields/FinalForm Switch",

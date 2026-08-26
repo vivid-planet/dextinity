@@ -2,20 +2,24 @@
 title: Building HTML Emails
 ---
 
-`@comet/mail-react` lets you build responsive, themed HTML emails using React components. Under the hood it uses [MJML](https://documentation.mjml.io/) to generate cross-client-compatible HTML. On top of the raw MJML components the library provides a theme system, higher-level wrapper components, a style utility layer, and Storybook integration for live previewing emails during development.
+`@dextinity/mail-react` lets you build responsive, themed HTML emails using React components. Under the hood it uses [MJML](https://documentation.mjml.io/) to generate cross-client-compatible HTML. On top of the raw MJML components the library provides a theme system, higher-level wrapper components, a style utility layer, and Storybook integration for live previewing emails during development.
 
-:::tip 🤖 Agent Skill `comet-mail-react`
-An agent skill for building HTML emails with `@comet/mail-react` is available. It provides AI coding agents with email development best practices, component patterns, and cross-client compatibility guidance. See [Installing Agent Features](../../4-guides/5-installing-agent-features.md) for setup instructions.
+:::note
+Live component previews are available in our [Storybook](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/mail-react_docs-intro--docs).
+:::
+
+:::tip 🤖 Agent Skill `dextinity-mail-react`
+An agent skill for building HTML emails with `@dextinity/mail-react` is available. It provides AI coding agents with email development best practices, component patterns, and cross-client compatibility guidance. See [Installing Agent Features](../../4-guides/5-installing-agent-features.md) for setup instructions.
 :::
 
 :::info
-If you're looking for the server-side mail template system that handles template registration, dependency injection, and sending — see [Mail Templates Module](../12-mail-templates-module/index.md). `@comet/mail-react` focuses on building the email markup itself and integrates with the Mail Templates Module via `renderMailHtml`.
+If you're looking for the server-side mail template system that handles template registration, dependency injection, and sending — see [Mail Templates Module](../12-mail-templates-module/index.md). `@dextinity/mail-react` focuses on building the email markup itself and integrates with the Mail Templates Module via `renderMailHtml`.
 :::
 
 ## Installation
 
 ```bash
-npm install @comet/mail-react
+npm install @dextinity/mail-react
 ```
 
 - **`react`** is a required peer dependency
@@ -31,7 +35,7 @@ Add the addon to your `.storybook/main.ts`:
 const config = {
     addons: [
         // ... other addons
-        "@comet/mail-react/storybook",
+        "@dextinity/mail-react/storybook",
     ],
 };
 ```
@@ -52,7 +56,7 @@ Storybook previews show how the email renders in a web browser, but email client
 The Storybook decorator handles `MjmlMailRoot` automatically, so stories only need to define the email content:
 
 ```tsx title="src/stories/MyFirstMail.stories.tsx"
-import { MjmlColumn, MjmlSection, MjmlText } from "@comet/mail-react";
+import { MjmlColumn, MjmlSection, MjmlText } from "@dextinity/mail-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const config: Meta = {
@@ -90,7 +94,7 @@ In Storybook, the decorator handles MJML-to-HTML conversion automatically. When 
 
 - [**Email Basics**](./1-email-basics.md) — Layout rules, nesting requirements, and when to use MJML vs HTML components
 - [**Theme & Base Components**](./2-components-and-theme.md) — Full theme API, text variants, responsive values, and all available base components
-- [**Blocks**](./3-blocks.md) — Drop-in components for rendering Comet CMS block data (e.g. pixel-image blocks) in emails
+- [**Blocks**](./3-blocks.md) — Drop-in components for rendering Dextinity CMS block data (e.g. pixel-image blocks) in emails
 - [**Rendering**](./4-rendering.md) — Converting email templates to HTML with `renderMailHtml`, browser environments, and Mail Templates Module integration
 - [**Customization**](./5-customization.md) — Creating custom components, extending the theme with module augmentation, and adding responsive styles
 - [**Layout Patterns**](./6-layout-patterns.md) — Ready-to-use layout recipes including multi-column layouts with gaps and responsive stacking

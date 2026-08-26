@@ -1,5 +1,213 @@
 # @comet/cms-api
 
+## 10.1.0
+
+## 10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/cms-api` to `@dextinity/cms-api`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename `CometException` and its subclasses: `CometValidationException` -> `DextinityValidationException`, `CometEntityNotFoundException` -> `DextinityEntityNotFoundException`, `CometImageResolutionException` -> `DextinityImageResolutionException`. The error codes returned by the API change accordingly, so a matching `@dextinity/cms-admin` version is required
+    - Rename `CometAuthGuard` to `DextinityAuthGuard` and the `@DisableCometGuards()` decorator to `@DisableDextinityGuards()`
+    - Rename the database tables `CometFileUpload`, `CometUserPermission` and `CometUserContentScopes` to `DextinityFileUpload`, `DextinityUserPermission` and `DextinityUserContentScopes`. A migration is shipped with the package, so running the migrations is sufficient
+    - Rename the site preview cookie from `__comet_site_preview` to `__dextinity_site_preview` and the impersonation cookie from `comet-impersonate-user-id` to `dextinity-impersonate-user-id`
+
+### Minor Changes
+
+- 86f90cb: Support `dextinity.com/*` Kubernetes labels and annotations
+
+    The Builds, Cron Jobs and Kubernetes modules now read the labels and annotations of Kubernetes resources with the `dextinity.com` prefix:
+
+    | Previously                      | Now                             |
+    | ------------------------------- | ------------------------------- |
+    | `comet-dxp.com/instance`        | `dextinity.com/instance`        |
+    | `comet-dxp.com/parent-cron-job` | `dextinity.com/parent-cron-job` |
+    | `comet-dxp.com/label`           | `dextinity.com/label`           |
+    | `comet-dxp.com/builder`         | `dextinity.com/builder`         |
+    | `comet-dxp.com/trigger`         | `dextinity.com/trigger`         |
+    | `comet-dxp.com/content-scope`   | `dextinity.com/content-scope`   |
+
+    The `comet-dxp.com` prefix is still supported, so existing Helm charts keep working without changes.
+    Resources are expected to use one prefix or the other: if no resource matches the `dextinity.com` labels, the `comet-dxp.com` ones are used instead.
+
+    **Example**
+
+    ```yaml
+    metadata:
+        annotations:
+            dextinity.com/label: "Demo Cron Job"
+            dextinity.com/content-scope: '{ "domain": "main", "language": "en" }'
+    ```
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/cms-api` to `@dextinity/cms-api`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename `CometException` and its subclasses: `CometValidationException` -> `DextinityValidationException`, `CometEntityNotFoundException` -> `DextinityEntityNotFoundException`, `CometImageResolutionException` -> `DextinityImageResolutionException`. The error codes returned by the API change accordingly, so a matching `@dextinity/cms-admin` version is required
+    - Rename `CometAuthGuard` to `DextinityAuthGuard` and the `@DisableCometGuards()` decorator to `@DisableDextinityGuards()`
+    - Rename the database tables `CometFileUpload`, `CometUserPermission` and `CometUserContentScopes` to `DextinityFileUpload`, `DextinityUserPermission` and `DextinityUserContentScopes`. A migration is shipped with the package, so running the migrations is sufficient
+    - Rename the site preview cookie from `__comet_site_preview` to `__dextinity_site_preview` and the impersonation cookie from `comet-impersonate-user-id` to `dextinity-impersonate-user-id`
+
+### Minor Changes
+
+- 86f90cb: Support `dextinity.com/*` Kubernetes labels and annotations
+
+    The Builds, Cron Jobs and Kubernetes modules now read the labels and annotations of Kubernetes resources with the `dextinity.com` prefix:
+
+    | Previously                      | Now                             |
+    | ------------------------------- | ------------------------------- |
+    | `comet-dxp.com/instance`        | `dextinity.com/instance`        |
+    | `comet-dxp.com/parent-cron-job` | `dextinity.com/parent-cron-job` |
+    | `comet-dxp.com/label`           | `dextinity.com/label`           |
+    | `comet-dxp.com/builder`         | `dextinity.com/builder`         |
+    | `comet-dxp.com/trigger`         | `dextinity.com/trigger`         |
+    | `comet-dxp.com/content-scope`   | `dextinity.com/content-scope`   |
+
+    The `comet-dxp.com` prefix is still supported, so existing Helm charts keep working without changes.
+    Resources are expected to use one prefix or the other: if no resource matches the `dextinity.com` labels, the `comet-dxp.com` ones are used instead.
+
+    **Example**
+
+    ```yaml
+    metadata:
+        annotations:
+            dextinity.com/label: "Demo Cron Job"
+            dextinity.com/content-scope: '{ "domain": "main", "language": "en" }'
+    ```
+
+### Patch Changes
+
+## 9.5.0
+
+### Minor Changes
+
+- 4eadaf5: Deprecate `FilesService.calculateDominantColor`
+
+    Computing the dominant color of an image was the only part of `FilesService` that used imgproxy. It moved to an internal service that `DamImagesModule` provides, so file handling no longer depends on imgproxy.
+
+    `FilesService.calculateDominantColor` returns the color when `DamImagesModule` is registered, and `undefined` when it is not.
+
+- 4eadaf5: Split `DamModule` into composable sub-modules
+
+    `DamModule` is now a facade composing four sub-modules: `DamFilesModule` (file and folder storage, upload and serving), `DamImagesModule` (image scaling via imgproxy, dominant color), `DamBlocksModule` (block transformers) and `DamDependentsModule` (the `dependents` field on `DamFile`). `DamModule.register()` keeps its signature and still composes all four.
+
+    `DamModule` and its sub-modules now throw when they are registered more than once in the same process. A second registration would mount the DAM routes twice and add the `dependents` field to the file type again, so it never worked as intended.
+
+    Projects that only need DAM file upload and storage can register `DamFilesModule` on its own, without `ImgproxyModule` and without `DependenciesModule`:
+
+    ```ts
+    DamFilesModule.register({ damConfig, Scope: DamScope, File: DamFile, Folder: DamFolder });
+    ```
+
+    In that setup, `FilesService` receives no dominant color calculator, so uploads skip the color and `FilesService.calculateDominantColor` returns `undefined`.
+
+## 9.4.0
+
+### Patch Changes
+
+- 0dac371: Keep the list nesting when migrating Draft.js content to TipTap
+
+    The `migrateFromDraftJs` option of `createTipTapRichTextBlock` ignored the `depth` of Draft.js list items, so nested lists were flattened into a single list. The migration now converts the `depth` into nested TipTap lists.
+
+    Nesting is limited by the block's `listLevelMax` option: list items that are indented deeper are placed on the deepest allowed level instead of being dropped.
+
+- 14d481e: Keep the text block type when the Draft.js → TipTap migration maps a block type to a `textBlockStyle`
+
+    A Draft.js block type listed in `migrateFromDraftJs.textBlockStyleMap` was always converted to a paragraph, so a `header-two` block mapped to a `headline450` style lost its heading tag and was rendered with whatever tag the style defaults to. Mapped header types now keep their heading level and only receive the mapped `textBlockStyle`.
+
+    For custom Draft.js block types that were rendered as a heading (e.g. a `headline450` block type rendered as `<h2>`), the target text block type can now be set explicitly by passing an object instead of a style name:
+
+    **Example**
+
+    ```ts
+    createTipTapRichTextBlock({
+        textBlockStyles: [{ name: "headline450", appliesTo: ["heading-2"] }],
+        migrateFromDraftJs: {
+            textBlockStyleMap: { headline450: { textBlockType: "heading-2", textBlockStyle: "headline450" } },
+        },
+    });
+    ```
+
+    `textBlockType` accepts `paragraph` and `heading-1` … `heading-6`, and both properties are optional.
+
+- 8c6be74: Improve performance of the `contentScopesCount` field when querying the users list
+
+    When resolving `contentScopesCount` for a list of users, the available content scopes were recomputed (and deduplicated) once per row. They are now resolved a single time per request through a request-scoped `DataLoader`, which noticeably speeds up the users list when many content scopes are configured.
+
+## 9.3.0
+
+### Minor Changes
+
+- 924b66c: Add `underline` support to `createTipTapRichTextBlock`
+
+    The `underline` inline style is now part of the `supports` list and can be toggled via a new toolbar button. The underline mark is validated by the API, rendered as `<u>` by `renderTipTapRichText`, and the DraftJS migration maps the `UNDERLINE` inline style to it when supported. Per default it is disabled, pass a `supports` list with `underline` to enable it.
+
+### Patch Changes
+
+- a8e8f02: Export `DamFileAiContentType` enum
+
+## 9.2.2
+
+### Patch Changes
+
+- d1022e2: Improve performance of the `block_index_dependencies` materialized view refresh
+
+    Resolve the `EntityInfo` of the root and target entity once over the union of all root blocks, instead of joining `EntityInfo` inside each root block's `SELECT`. Previously the `EntityInfo` view (a `UNION` over every entity, including a recursive DAM folder-path CTE) was re-evaluated once per root block, which dominated the refresh cost on large datasets. The refreshed view's columns and contents are unchanged.
+
+- a2515ce: Add timing and outcome logs to the `refreshBlockIndexViews` command
+
+    The command now logs how long the refresh took and whether a refresh was actually performed or skipped because the block index views were still fresh enough.
+
+## 9.2.1
+
+## 9.2.0
+
+### Minor Changes
+
+- ee0bf93: Add AI content disclosure for DAM assets (EU AI Act, Article 50)
+
+    Editors can mark a DAM asset as **AI generated** or **AI modified** in the file settings. When such an asset is published, the site renders the official EU AI-content label and merges the disclosure into the media element's accessible name, so screen-reader users learn which asset is AI.
+
+    **API**
+
+    New `aiContentType` field (`Generated` | `Modified`) on DAM files, exposed through the `PixelImage` and `DamVideo` blocks.
+
+    **Admin**
+
+    New "AI content" field in the DAM file settings, shown for image, video and audio assets only (other file types cannot constitute a deep fake).
+
+    **Site**
+
+    `PixelImageBlock` and `DamVideoBlock` render the disclosure automatically for marked assets. Both accept props to customize it:
+    - `aiContentDisclosureProps` — override the badge.
+    - `customAiContentDisclosure` — render your own disclosure, or `null` for none.
+    - `aiContentAltTextPrefixLabels` — localize the accessible-name prefix (defaults to English).
+
+    `@comet/site-react` also exports the `AiContentDisclosure` badge and the `getAiContentAltTextWithPrefix` helper.
+
+- 8d46a98: Remove special handling that excluded DAM URLs from the access log
+
+    Previously, requests to DAM routes were excluded from the access log. They are now logged like any other HTTP request.
+
+### Patch Changes
+
+- 3c28742: Prevent `pg_advisory_xact_lock` query spam when refreshing block index dependencies
+
+    `DependenciesService.refreshViews()` runs once per resolved `dependents`/`dependencies` field, so a single view (e.g. the DAM "Usages" column) triggers many parallel refreshes. When the last refresh was older than 15 minutes (or none existed), each took the blocking lock path and piled up waiting, each holding a database connection. This could exhaust the connection pool and surface as `Knex: Timeout acquiring a connection` errors.
+
+    Parallel refreshes within a process are now deduplicated into a single in-flight refresh, so at most one advisory lock is taken per instance, while the cross-instance advisory lock still prevents concurrent `REFRESH MATERIALIZED VIEW` runs.
+
 ## 9.1.1
 
 ## 9.1.0

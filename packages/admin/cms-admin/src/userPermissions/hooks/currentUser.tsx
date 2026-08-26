@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { Loading } from "@comet/admin";
+import { Loading } from "@dextinity/admin";
 import { createContext, type PropsWithChildren, useContext } from "react";
 import { FormattedMessage } from "react-intl";
 
@@ -65,7 +65,7 @@ export const CurrentUserProvider = ({ isAllowed, children }: PropsWithChildren<{
     if (error) {
         return (
             <FormattedMessage
-                id="comet.currentUser.loadError"
+                id="dextinity.currentUser.loadError"
                 defaultMessage="Cannot load user: {errorMessage}"
                 values={{ errorMessage: error.message }}
             />

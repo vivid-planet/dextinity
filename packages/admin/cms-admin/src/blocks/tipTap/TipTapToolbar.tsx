@@ -1,4 +1,4 @@
-import { greyPalette, Tooltip } from "@comet/admin";
+import { greyPalette, Tooltip } from "@dextinity/admin";
 import {
     Add,
     MoreHorizontal,
@@ -17,8 +17,9 @@ import {
     RteSup,
     RteTextPlaceholder,
     RteUl,
+    RteUnderlined,
     RteUndo,
-} from "@comet/admin-icons";
+} from "@dextinity/admin-icons";
 import {
     Box,
     FormControl,
@@ -164,6 +165,7 @@ export const TipTapToolbar = ({
     linkBlock,
     childBlocks,
     listLevelMax,
+    headingLevels = [1, 2, 3, 4, 5, 6],
 }: {
     editor: Editor;
     supports: TipTapSupports[];
@@ -173,6 +175,7 @@ export const TipTapToolbar = ({
     linkBlock?: BlockInterface & LinkBlockInterface;
     childBlocks: Record<string, TipTapChildBlock>;
     listLevelMax?: number;
+    headingLevels?: number[];
 }) => {
     const intl = useIntl();
     const [moreAnchorEl, setMoreAnchorEl] = useState<null | HTMLElement>(null);
@@ -180,7 +183,7 @@ export const TipTapToolbar = ({
     const [childBlockAnchorEl, setChildBlockAnchorEl] = useState<null | HTMLElement>(null);
     const [insertChildBlock, setInsertChildBlock] = useState<({ key: string } & TipTapChildBlock) | null>(null);
     const [linkDialogOpen, setLinkDialogOpen] = useState(false);
-    const hasInlineFormatButtons = (["bold", "italic", "strike"] as const).some((s) => supports.includes(s));
+    const hasInlineFormatButtons = (["bold", "italic", "underline", "strike"] as const).some((s) => supports.includes(s));
     const moreOptions = (["sub", "sup"] as const).some((s) => supports.includes(s));
     const lists = (["ordered-list", "unordered-list"] as const).some((s) => supports.includes(s));
     const specialChars = (["non-breaking-space", "soft-hyphen"] as const).some((s) => supports.includes(s));
@@ -250,6 +253,7 @@ export const TipTapToolbar = ({
                 canDedent: e.can().liftListItem("listItem"),
                 isBoldActive: e.isActive("bold"),
                 isItalicActive: e.isActive("italic"),
+                isUnderlineActive: e.isActive("underline"),
                 isStrikeActive: e.isActive("strike"),
                 isSuperscriptActive: e.isActive("superscript"),
                 isSubscriptActive: e.isActive("subscript"),
@@ -326,9 +330,13 @@ export const TipTapToolbar = ({
 
     return (
         <Box
+            className="DextinityAdminTipTapToolbar-root"
             sx={{
                 display: "flex",
                 flexWrap: "wrap",
+                position: "sticky",
+                top: 0,
+                zIndex: 2,
                 borderTop: `1px solid ${greyPalette[100]}`,
                 backgroundColor: muiGreyPalette[100],
                 px: "6px",
@@ -339,14 +347,14 @@ export const TipTapToolbar = ({
                     <ToolbarButton
                         editor={editor}
                         icon={RteUndo}
-                        tooltip={<FormattedMessage id="comet.blocks.tipTapRichText.undo.tooltip" defaultMessage="Undo" />}
+                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.undo.tooltip" defaultMessage="Undo" />}
                         disabled={!editorState.canUndo}
                         onToggle={() => editor.chain().focus().undo().run()}
                     />
                     <ToolbarButton
                         editor={editor}
                         icon={RteRedo}
-                        tooltip={<FormattedMessage id="comet.blocks.tipTapRichText.redo.tooltip" defaultMessage="Redo" />}
+                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.redo.tooltip" defaultMessage="Redo" />}
                         disabled={!editorState.canRedo}
                         onToggle={() => editor.chain().focus().redo().run()}
                     />
@@ -364,12 +372,12 @@ export const TipTapToolbar = ({
                             sx={selectSx}
                         >
                             <MenuItem value="paragraph" dense>
-                                <FormattedMessage id="comet.blocks.tipTapRichText.textBlockType.default" defaultMessage="Default" />
+                                <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockType.paragraph" defaultMessage="Paragraph" />
                             </MenuItem>
-                            {([1, 2, 3, 4, 5, 6] as const).map((level) => (
+                            {headingLevels.map((level) => (
                                 <MenuItem key={level} value={String(level)} dense>
                                     <FormattedMessage
-                                        id="comet.blocks.tipTapRichText.textBlockType.heading"
+                                        id="dextinity.blocks.tipTapRichText.textBlockType.heading"
                                         defaultMessage="Heading {level}"
                                         values={{ level }}
                                     />
@@ -391,7 +399,7 @@ export const TipTapToolbar = ({
                             sx={selectSx}
                         >
                             <MenuItem value="" dense>
-                                <FormattedMessage id="comet.blocks.tipTapRichText.textBlockStyle.default" defaultMessage="Default" />
+                                <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockStyle.default" defaultMessage="Default" />
                             </MenuItem>
                             {applicableTextBlockStyles.map((style) => (
                                 <MenuItem key={style.name} value={style.name} dense>
@@ -415,7 +423,7 @@ export const TipTapToolbar = ({
                             disabled={editorState.selectionEmpty}
                         >
                             <MenuItem value="" dense>
-                                <FormattedMessage id="comet.blocks.tipTapRichText.inlineStyle.default" defaultMessage="Default" />
+                                <FormattedMessage id="dextinity.blocks.tipTapRichText.inlineStyle.default" defaultMessage="Default" />
                             </MenuItem>
                             {applicableInlineStyles.map((style) => (
                                 <MenuItem key={style.name} value={style.name} dense>
@@ -432,7 +440,7 @@ export const TipTapToolbar = ({
                         <ToolbarButton
                             editor={editor}
                             icon={RteBold}
-                            tooltip={<FormattedMessage id="comet.blocks.tipTapRichText.bold.tooltip" defaultMessage="Bold" />}
+                            tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.bold.tooltip" defaultMessage="Bold" />}
                             isActive="bold"
                             onToggle={() => editor.chain().focus().toggleBold().run()}
                         />
@@ -441,23 +449,34 @@ export const TipTapToolbar = ({
                         <ToolbarButton
                             editor={editor}
                             icon={RteItalic}
-                            tooltip={<FormattedMessage id="comet.blocks.tipTapRichText.italic.tooltip" defaultMessage="Italic" />}
+                            tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.italic.tooltip" defaultMessage="Italic" />}
                             isActive="italic"
                             onToggle={() => editor.chain().focus().toggleItalic().run()}
+                        />
+                    )}
+                    {supports.includes("underline") && (
+                        <ToolbarButton
+                            editor={editor}
+                            icon={RteUnderlined}
+                            tooltip={<FormattedMessage id="dextintiy.blocks.tipTapRichText.underline.tooltip" defaultMessage="Underline" />}
+                            isActive="underline"
+                            onToggle={() => editor.chain().focus().toggleUnderline().run()}
                         />
                     )}
                     {supports.includes("strike") && (
                         <ToolbarButton
                             editor={editor}
                             icon={RteStrikethrough}
-                            tooltip={<FormattedMessage id="comet.blocks.tipTapRichText.strike.tooltip" defaultMessage="Strikethrough" />}
+                            tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.strike.tooltip" defaultMessage="Strikethrough" />}
                             isActive="strike"
                             onToggle={() => editor.chain().focus().toggleStrike().run()}
                         />
                     )}
                     {moreOptions && (
                         <>
-                            <Tooltip title={<FormattedMessage id="comet.blocks.tipTapRichText.moreOptions.tooltip" defaultMessage="More options" />}>
+                            <Tooltip
+                                title={<FormattedMessage id="dextinity.blocks.tipTapRichText.moreOptions.tooltip" defaultMessage="More options" />}
+                            >
                                 <Box
                                     component="button"
                                     type="button"
@@ -480,7 +499,7 @@ export const TipTapToolbar = ({
                                             setTimeout(() => editor.chain().focus().toggleSuperscript().run(), 0);
                                         }}
                                     >
-                                        <FormattedMessage id="comet.blocks.tipTapRichText.superscript.label" defaultMessage="Superscript" />
+                                        <FormattedMessage id="dextinity.blocks.tipTapRichText.superscript.label" defaultMessage="Superscript" />
                                         <ListItemIcon sx={{ justifyContent: "flex-end" }}>
                                             <RteSup />
                                         </ListItemIcon>
@@ -495,7 +514,7 @@ export const TipTapToolbar = ({
                                             setTimeout(() => editor.chain().focus().toggleSubscript().run(), 0);
                                         }}
                                     >
-                                        <FormattedMessage id="comet.blocks.tipTapRichText.subscript.label" defaultMessage="Subscript" />
+                                        <FormattedMessage id="dextinity.blocks.tipTapRichText.subscript.label" defaultMessage="Subscript" />
                                         <ListItemIcon sx={{ justifyContent: "flex-end" }}>
                                             <RteSub />
                                         </ListItemIcon>
@@ -512,7 +531,7 @@ export const TipTapToolbar = ({
                         <ToolbarButton
                             editor={editor}
                             icon={RteOl}
-                            tooltip={<FormattedMessage id="comet.blocks.tipTapRichText.orderedList.tooltip" defaultMessage="Ordered list" />}
+                            tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.orderedList.tooltip" defaultMessage="Ordered list" />}
                             isActive="orderedList"
                             onToggle={() => editor.chain().focus().toggleOrderedList().run()}
                         />
@@ -521,7 +540,7 @@ export const TipTapToolbar = ({
                         <ToolbarButton
                             editor={editor}
                             icon={RteUl}
-                            tooltip={<FormattedMessage id="comet.blocks.tipTapRichText.bulletList.tooltip" defaultMessage="Bullet list" />}
+                            tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.bulletList.tooltip" defaultMessage="Bullet list" />}
                             isActive="bulletList"
                             onToggle={() => editor.chain().focus().toggleBulletList().run()}
                         />
@@ -529,14 +548,14 @@ export const TipTapToolbar = ({
                     <ToolbarButton
                         editor={editor}
                         icon={RteIndentIncrease}
-                        tooltip={<FormattedMessage id="comet.blocks.tipTapRichText.indent.tooltip" defaultMessage="Increase indent" />}
+                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.indent.tooltip" defaultMessage="Increase indent" />}
                         disabled={!editorState.canIndent}
                         onToggle={() => editor.chain().focus().sinkListItem("listItem").run()}
                     />
                     <ToolbarButton
                         editor={editor}
                         icon={RteIndentDecrease}
-                        tooltip={<FormattedMessage id="comet.blocks.tipTapRichText.dedent.tooltip" defaultMessage="Decrease indent" />}
+                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.dedent.tooltip" defaultMessage="Decrease indent" />}
                         disabled={!editorState.canDedent}
                         onToggle={() => editor.chain().focus().liftListItem("listItem").run()}
                     />
@@ -550,7 +569,7 @@ export const TipTapToolbar = ({
                             icon={RteNonBreakingSpace}
                             tooltip={
                                 <FormattedMessage
-                                    id="comet.blocks.tipTapRichText.nonBreakingSpace.tooltip"
+                                    id="dextinity.blocks.tipTapRichText.nonBreakingSpace.tooltip"
                                     defaultMessage="Insert a non-breaking space"
                                 />
                             }
@@ -561,7 +580,9 @@ export const TipTapToolbar = ({
                         <ToolbarButton
                             editor={editor}
                             icon={RteSoftHyphen}
-                            tooltip={<FormattedMessage id="comet.blocks.tipTapRichText.softHyphen.tooltip" defaultMessage="Insert a soft hyphen" />}
+                            tooltip={
+                                <FormattedMessage id="dextinity.blocks.tipTapRichText.softHyphen.tooltip" defaultMessage="Insert a soft hyphen" />
+                            }
                             onToggle={() => editor.chain().focus().insertContent({ type: "softHyphen" }).run()}
                         />
                     )}
@@ -569,12 +590,14 @@ export const TipTapToolbar = ({
             )}
             {hasPlaceholders && (
                 <ToolbarGroup>
-                    <Tooltip title={<FormattedMessage id="comet.blocks.tipTapRichText.placeholder.tooltip" defaultMessage="Insert placeholder" />}>
+                    <Tooltip
+                        title={<FormattedMessage id="dextinity.blocks.tipTapRichText.placeholder.tooltip" defaultMessage="Insert placeholder" />}
+                    >
                         <Box
                             component="button"
                             type="button"
                             aria-label={intl.formatMessage({
-                                id: "comet.blocks.tipTapRichText.placeholder.tooltip",
+                                id: "dextinity.blocks.tipTapRichText.placeholder.tooltip",
                                 defaultMessage: "Insert placeholder",
                             })}
                             onMouseDown={(e: MouseEvent) => {
@@ -607,7 +630,7 @@ export const TipTapToolbar = ({
                     <ToolbarButton
                         editor={editor}
                         icon={RteLink}
-                        tooltip={<FormattedMessage id="comet.blocks.tipTapRichText.link.tooltip" defaultMessage="Link" />}
+                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.link.tooltip" defaultMessage="Link" />}
                         isActive="link"
                         disabled={editorState.selectionEmpty && !editorState.isLinkActive}
                         onToggle={() => setLinkDialogOpen(true)}
@@ -615,7 +638,7 @@ export const TipTapToolbar = ({
                     <ToolbarButton
                         editor={editor}
                         icon={RteClearLink}
-                        tooltip={<FormattedMessage id="comet.blocks.tipTapRichText.removeLink.tooltip" defaultMessage="Remove link" />}
+                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.removeLink.tooltip" defaultMessage="Remove link" />}
                         disabled={!editorState.isLinkActive}
                         onToggle={() => editor.chain().focus().extendMarkRange("link").unsetCmsLink().run()}
                     />
@@ -623,12 +646,12 @@ export const TipTapToolbar = ({
             )}
             {hasChildBlocks && (
                 <ToolbarGroup>
-                    <Tooltip title={<FormattedMessage id="comet.blocks.tipTapRichText.insertBlock.tooltip" defaultMessage="Insert block" />}>
+                    <Tooltip title={<FormattedMessage id="dextinity.blocks.tipTapRichText.insertBlock.tooltip" defaultMessage="Insert block" />}>
                         <Box
                             component="button"
                             type="button"
                             aria-label={intl.formatMessage({
-                                id: "comet.blocks.tipTapRichText.insertBlock.tooltip",
+                                id: "dextinity.blocks.tipTapRichText.insertBlock.tooltip",
                                 defaultMessage: "Insert block",
                             })}
                             onMouseDown={(e: MouseEvent) => {

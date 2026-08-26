@@ -18,7 +18,7 @@ import {
     ToolbarTitleItem,
     usePersistedStateId,
     useTableQueryFilter,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import { faker } from "@faker-js/faker";
 import { Typography } from "@mui/material";
 

@@ -4,7 +4,7 @@ exports[`sort by id > id not be default value if sort is disabled 1`] = `
 "import { ArgsType, Field, IntersectionType, registerEnumType, ID } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsOptional, IsString, ValidateNested, IsEnum, IsUUID } from "class-validator";
-import { OffsetBasedPaginationArgs, SortDirection } from "@comet/cms-api";
+import { OffsetBasedPaginationArgs, SortDirection } from "@dextinity/cms-api";
 import { TestEntity3Filter } from "./test-entity3.filter";
 import { TestEntity3Sort, TestEntity3SortField } from "./test-entity3.sort";
 

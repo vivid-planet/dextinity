@@ -1,4 +1,4 @@
-import { MjmlColumn, MjmlMailRoot, MjmlSection, MjmlSpacer, MjmlText } from "@comet/mail-react";
+import { MjmlColumn, MjmlMailRoot, MjmlSection, MjmlSpacer, MjmlText } from "@dextinity/mail-react";
 import type { RichTextBlockData } from "@src/blocks.generated";
 import { FormattedMessage } from "react-intl";
 

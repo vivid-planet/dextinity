@@ -1,5 +1,105 @@
 # @comet/admin-rte
 
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/admin@10.1.0
+- @dextinity/admin-icons@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- Updated dependencies [48748b0]
+    - @dextinity/admin@10.0.1
+    - @dextinity/admin-icons@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin-rte` to `@dextinity/admin-rte`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme` and the generated CSS class names
+    - Rename the `--comet-admin-rte-outer-border-color` CSS variable to `--dextinity-admin-rte-outer-border-color`
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+    - @dextinity/admin-icons@10.0.0
+    - @dextinity/admin@10.0.0
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin-rte` to `@dextinity/admin-rte`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme` and the generated CSS class names
+    - Rename the `--comet-admin-rte-outer-border-color` CSS variable to `--dextinity-admin-rte-outer-border-color`
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [085b9ac]
+    - @dextinity/admin-icons@10.0.0-beta.0
+    - @dextinity/admin@10.0.0-beta.0
+
+## 9.5.0
+
+### Patch Changes
+
+- @comet/admin@9.5.0
+- @comet/admin-icons@9.5.0
+
+## 9.4.0
+
+### Patch Changes
+
+- Updated dependencies [bf1ff64]
+- Updated dependencies [085b9ac]
+    - @comet/admin@9.4.0
+    - @comet/admin-icons@9.4.0
+
+## 9.3.0
+
+### Patch Changes
+
+- Updated dependencies [7b2d8db]
+    - @comet/admin@9.3.0
+    - @comet/admin-icons@9.3.0
+
+## 9.2.2
+
+### Patch Changes
+
+- @comet/admin@9.2.2
+- @comet/admin-icons@9.2.2
+
+## 9.2.1
+
+### Patch Changes
+
+- @comet/admin@9.2.1
+- @comet/admin-icons@9.2.1
+
+## 9.2.0
+
+### Patch Changes
+
+- Updated dependencies [5a05d97]
+    - @comet/admin@9.2.0
+    - @comet/admin-icons@9.2.0
+
 ## 9.1.1
 
 ### Patch Changes

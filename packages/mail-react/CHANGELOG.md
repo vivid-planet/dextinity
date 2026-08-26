@@ -1,5 +1,139 @@
 # @comet/mail-react
 
+## 10.1.0
+
+### Minor Changes
+
+- b0577d5: Add `list` to the RichText block's `blockTypes`, so a custom block type renders as a list
+
+    Use it for a list in more than one text variant. A draft block has only one block type, so each variant needs a block type of its own.
+
+    **Example**
+
+    ```tsx
+    export const { MjmlRichTextBlock, HtmlRichTextBlock } = createRichTextBlock({
+        blockTypes: {
+            "unordered-list-item": { variant: "copy" },
+            "unordered-list-item-large": { variant: "copyLarge", list: "unordered" },
+            "ordered-list-item-large": { variant: "copyLarge", list: "ordered" },
+        },
+    });
+    ```
+
+    For backward compatibility, `unordered-list-item` and `ordered-list-item` still render as lists without `list`.
+
+## 10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/mail-react` to `@dextinity/mail-react`
+
+    Update the dependency in `package.json` and all imports:
+
+    ```diff
+    - import { MjmlPixelImageBlock } from "@comet/mail-react";
+    + import { MjmlPixelImageBlock } from "@dextinity/mail-react";
+    ```
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/mail-react` to `@dextinity/mail-react`
+
+    Update the dependency in `package.json` and all imports:
+
+    ```diff
+    - import { MjmlPixelImageBlock } from "@comet/mail-react";
+    + import { MjmlPixelImageBlock } from "@dextinity/mail-react";
+    ```
+
+## 9.5.0
+
+## 9.4.0
+
+### Minor Changes
+
+- 6a50452: Add `theme.list.unorderedMarker` and `theme.list.orderedMarker` for the markers of the lists the RichText block renders
+
+    Each marker is either a fixed node or a function of the item's zero-based `index` in its own list and that list's `depth`:
+
+    ```tsx
+    const theme = createTheme({
+        list: {
+            unorderedMarker: ({ depth }) => ["▪", "–", "·"][depth % 3],
+            // 97 is the code of "a", so nested items are lettered a., b., c.
+            orderedMarker: ({ index, depth }) => (depth === 0 ? `${index + 1}.` : `${String.fromCharCode(97 + index)}.`),
+        },
+    });
+    ```
+
+- 706e44e: Fix the stray `mj-text` tag and spacing in the RichText block's nested lists
+
+    A nested level rendered a literal `mj-text` tag into the compiled mail, and the text variant's block spacing fell below that level's last item instead of below the whole list.
+
+    A nested table no longer carries the variant modifier — scope such a rule to the outermost list's variant, which reaches every level. Two new modifiers name a level directly: `richTextBlock__list--depth<Level>` and `richTextBlock__list--nested`.
+
+- b5ab577: Space rich-text list items evenly at every nesting level
+
+    `list.itemSpacing` now also applies above a nested level's first item, on the row's `richTextBlock__listItem--itemSpacingAbove` class.
+
+### Patch Changes
+
+- e60e17b: Fix crash in the RichText block when it starts with a nested list item
+
+    An editor produces this by pressing Tab on the first item of a list, or by clearing the text of the item above a nested one.
+
+- d1f2040: Fix the RichText block's ordered list markers (e.g. `10.`) breaking over two lines in Outlook on the web
+- af14a71: Fix the full-width button overflowing its container in some webmail clients
+
+    A `MjmlButton` or `HtmlButton` with `fullWidth` set rendered wider than the content around it, reaching past the edge of the mail body.
+
+## 9.3.0
+
+### Minor Changes
+
+- 80458d2: Add `theme.list` spacing tokens for the lists rendered by the RichText block
+
+    `indent` sets the space before the marker, `markerGap` the space between the marker and the item's text, and `itemSpacing` the space between items. All three accept responsive values.
+
+    ```ts
+    const theme = createTheme({
+        list: {
+            indent: { default: 24, mobile: 16 },
+            markerGap: 12,
+            itemSpacing: 8,
+        },
+    });
+    ```
+
+### Patch Changes
+
+- c010180: Fix `MjmlDivider` breaking the surrounding layout
+
+    A section or column that came after the one holding an `MjmlDivider` rendered outside its wrapper or group instead of inside it. In a section using `disableResponsiveBehavior` (which keeps its columns side-by-side on mobile instead of stacking), the columns' shared wrapper broke, so the following column stacked anyway. In an `MjmlWrapper`, the background stopped after the section holding the divider, so every section below it lost the background.
+
+    `MjmlDivider` now wraps its divider `<table>` in an extra row and cell. The class names stay on the `<table>`, so descendant selectors still match — but a selector using a direct-child combinator that expected the table to sit immediately inside the column will need updating, since there's now a `<tr><td>` in between.
+
+- 1252ae5: Fix inline links losing their color in Outlook on Windows
+
+    `HtmlInlineLink` rendered blue in Outlook on Windows instead of matching the text around it, unless the theme set a base text color. The base text theme now defines one, so links match without any configuration.
+
+    As a result, a text color set through the `MjmlMailRoot` `attributes` slot no longer applies — set it on `theme.text` or on a text variant instead.
+
+- 6c2fd10: Fix inconsistent spacing of rich-text lists across email clients by rendering each list as a table instead of `<ul>` / `<ol>`
+    - `richTextBlock__listItem` is now a `<tr>` instead of an `<li>`, so margin and padding set on it no longer apply. Every row but the last carries `richTextBlock__listItem--itemSpacing`, with the spacing on its cells.
+    - List cells restate the text styles inline, so a rule targeting list text needs `!important`. The cells carry `richTextBlock__listItemMarker` and `richTextBlock__listItemText`.
+    - The table carries a modifier naming its text variant, such as `richTextBlock__list--variantBody`, and one naming its list type, `richTextBlock__list--ordered` or `richTextBlock__list--unordered`.
+
+## 9.2.2
+
+## 9.2.1
+
+## 9.2.0
+
 ## 9.1.1
 
 ## 9.1.0

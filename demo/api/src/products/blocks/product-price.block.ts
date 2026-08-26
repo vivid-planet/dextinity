@@ -9,7 +9,7 @@ import {
     BlockMetaFieldKind,
     createBlock,
     IsUndefinable,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { IsUUID } from "class-validator";
 
 import { ProductPriceBlockTransformerService } from "./product-price-block-transformer.service";

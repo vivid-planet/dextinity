@@ -5,7 +5,7 @@ description: Run, restart, stop, and inspect logs/status of long-running develop
 
 # dev-pm Skill
 
-`dev-pm` (`@comet/dev-process-manager`) supervises long-running dev processes (servers, watchers, codegen, storybook, docker, …). Available scripts and groups are defined in `dev-pm.config.ts` at the repo root — read it to discover what can be started.
+`dev-pm` (`dev-process-manager`) supervises long-running dev processes (servers, watchers, codegen, storybook, docker, …). Available scripts and groups are defined in `dev-pm.config.ts` at the repo root — read it to discover what can be started.
 
 ## Critical rules
 

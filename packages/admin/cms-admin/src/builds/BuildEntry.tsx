@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import { AppHeaderDropdown, LocalErrorScopeApolloContext, useFocusAwarePolling } from "@comet/admin";
-import { SsgRunning, SsgStandby } from "@comet/admin-icons";
+import { AppHeaderDropdown, LocalErrorScopeApolloContext, useFocusAwarePolling } from "@dextinity/admin";
+import { SsgRunning, SsgStandby } from "@dextinity/admin-icons";
 import { Box, List, ListItem, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { differenceInMinutes, parseISO } from "date-fns";
@@ -43,12 +43,12 @@ const BuildStatusPopperContent = ({ data: { autoBuildStatus, builds } }: { data:
 
             content.push(
                 <Typography variant="body2">
-                    <FormattedMessage id="comet.header.buildStatus.buildRunning" defaultMessage="Publication is in progress." />
+                    <FormattedMessage id="dextinity.header.buildStatus.buildRunning" defaultMessage="Publication is in progress." />
                     {remainingRuntime !== undefined && (
                         <>
                             {" "}
                             <FormattedMessage
-                                id="comet.header.buildStatus.estimatedCompletion"
+                                id="dextinity.header.buildStatus.estimatedCompletion"
                                 defaultMessage="Estimated time to finish: {remainingRuntime, plural,
                                     =0 {< 1 min}
                                     other {± # min}
@@ -65,7 +65,7 @@ const BuildStatusPopperContent = ({ data: { autoBuildStatus, builds } }: { data:
             content.push(
                 <Typography variant="body2">
                     <FormattedMessage
-                        id="comet.header.buildStatus.nextScheduledBuild"
+                        id="dextinity.header.buildStatus.nextScheduledBuild"
                         defaultMessage="New content changes found. Next publication is planned for: "
                     />{" "}
                     <FormattedTime value={nextCheck} />
@@ -77,7 +77,7 @@ const BuildStatusPopperContent = ({ data: { autoBuildStatus, builds } }: { data:
         if (lastBuild.status === "failed") {
             content.push(
                 <Typography variant="body2" color="error">
-                    <FormattedMessage id="comet.header.buildStatus.lastBuildFailure" defaultMessage="Last publication failed" />
+                    <FormattedMessage id="dextinity.header.buildStatus.lastBuildFailure" defaultMessage="Last publication failed" />
                 </Typography>,
             );
         }
@@ -86,7 +86,7 @@ const BuildStatusPopperContent = ({ data: { autoBuildStatus, builds } }: { data:
     if (!autoBuildStatus.hasChangesSinceLastBuild) {
         content.push(
             <Typography variant="body2">
-                <FormattedMessage id="comet.header.buildStatus.noChanges" defaultMessage="No new content changes" />
+                <FormattedMessage id="dextinity.header.buildStatus.noChanges" defaultMessage="No new content changes" />
             </Typography>,
         );
     }
@@ -144,14 +144,14 @@ export function BuildEntry() {
                     <ListItem dense={false}>
                         <Typography variant="body2">
                             <strong>
-                                <FormattedMessage id="comet.header.buildStatus.staticSiteGeneration" defaultMessage="Static Site Generation" />
+                                <FormattedMessage id="dextinity.header.buildStatus.staticSiteGeneration" defaultMessage="Static Site Generation" />
                             </strong>
                         </Typography>
                     </ListItem>
                     {error !== undefined && (
                         <ListItem dense={false}>
                             <Typography variant="body2" color="error">
-                                <FormattedMessage id="comet.header.buildStatus.error" defaultMessage="Failed to fetch build status" />
+                                <FormattedMessage id="dextinity.header.buildStatus.error" defaultMessage="Failed to fetch build status" />
                             </Typography>
                         </ListItem>
                     )}

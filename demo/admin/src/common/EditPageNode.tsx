@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
-import { SelectField } from "@comet/admin";
-import { createEditPageNode } from "@comet/cms-admin";
+import { SelectField } from "@dextinity/admin";
+import { createEditPageNode } from "@dextinity/cms-admin";
 import { Box, Divider, MenuItem } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 

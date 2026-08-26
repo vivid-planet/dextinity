@@ -1,4 +1,4 @@
-import { type IEditDialogApi, useStackSwitchApi } from "@comet/admin";
+import { type IEditDialogApi, useStackSwitchApi } from "@dextinity/admin";
 import { Checkbox } from "@mui/material";
 import { type CSSProperties, type Dispatch, type SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { type DropTargetMonitor, useDrag, useDrop } from "react-dnd";

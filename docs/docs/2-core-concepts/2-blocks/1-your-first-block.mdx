@@ -4,7 +4,7 @@ title: Your First Block
 
 import CodeBlock from "@theme/CodeBlock";
 
-Blocks are the primary building patterns of a COMET DXP CMS application. In this guide, you will learn how to create your first block, from beginning to end.
+Blocks are the primary building patterns of a Dextinity CMS application. In this guide, you will learn how to create your first block, from beginning to end.
 
 <!-- TODO: Be more specific: Three parts, API, admin and site -->
 
@@ -49,7 +49,7 @@ class HeadlineBlockData extends BlockData {
 
 The `@BlockField` and `@ChildBlock` decorators are used to create the block meta, which is used by the admin and the site to generate TypeScript interfaces for the block automatically. This feature is inspired by [NestJS' GraphQL code first approach](https://docs.nestjs.com/graphql/quick-start#code-first).
 
-Note how we use the `RichTextBlock`, a COMET DXP block, to create our Headline block. Composing a block out of child blocks and additional fields is no problem!
+Note how we use the `RichTextBlock`, a Dextinity block, to create our Headline block. Composing a block out of child blocks and additional fields is no problem!
 
 ### Define the Block Input
 
@@ -58,7 +58,7 @@ Once we have defined the block data, we also need to define the block input. The
 <!-- TODO Add a comparison to GraphQL object and input type -->
 
 ```ts title="headline.block.ts"
-import { blockInputToData } from "@comet/cms-api";
+import { blockInputToData } from "@dextinity/cms-api";
 
 class HeadlineBlockInput extends BlockInput {
     @IsUndefinable()
@@ -125,9 +125,9 @@ The complete code for our Headline API block (including all necessary imports) c
     createBlock,
     ExtractBlockInput,
     blockInputToData,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { RichTextBlock } from "@src/common/blocks/rich-text.block";
-import { IsUndefinable } from "@comet/cms-api";
+import { IsUndefinable } from "@dextinity/cms-api";
 import { IsEnum, IsString } from "class-validator";\n
 export enum HeadlineLevel {
     HeaderOne = "header-one",
@@ -232,7 +232,7 @@ _The admin component of the Headline block_
 
 The admin component is the primary way a user interacts with a block. For our Headline block, the admin component consists of a text field for the eyebrow text, a rich text editor for the headline, and a select for the headline level.
 
-Let's take a look at how the admin component is defined in code. The text field for the **eyebrow text** is a plain Final Form field, used the same way you'd use it in any COMET DXP Admin application. The form is wrapped using `createCompositeBlockField`, which helps to integrate the form state into the block state. Also, note the use of the `HeadlineBlockData` type. This interface is generated using the block mentioned above meta -- how cool is that?!
+Let's take a look at how the admin component is defined in code. The text field for the **eyebrow text** is a plain Final Form field, used the same way you'd use it in any Dextinity Admin application. The form is wrapped using `createCompositeBlockField`, which helps to integrate the form state into the block state. Also, note the use of the `HeadlineBlockData` type. This interface is generated using the block mentioned above meta -- how cool is that?!
 
 ```tsx title="HeadlineBlock.tsx"
 eyebrow: {
@@ -300,7 +300,7 @@ export const PageContentBlock = createBlocksBlock({
 });
 ```
 
-Note how we are using `createBlocksBlock` once again? The helper is available for both the API and the admin part of your COMET DXP application!
+Note how we are using `createBlocksBlock` once again? The helper is available for both the API and the admin part of your Dextinity application!
 
 ### Part Two - Done!
 
@@ -312,8 +312,8 @@ The complete code for our Headline admin block (including all necessary imports)
     <summary>HeadlineBlock.tsx</summary>
     <div>
         <CodeBlock language="ts">
-            {`import { Field, FinalFormInput, FinalFormSelect } from "@comet/admin";
-import { BlockCategory, BlocksFinalForm, createCompositeBlock, createCompositeBlockField, createRichTextBlock } from "@comet/cms-admin";
+            {`import { Field, FinalFormInput, FinalFormSelect } from "@dextinity/admin";
+import { BlockCategory, BlocksFinalForm, createCompositeBlock, createCompositeBlockField, createRichTextBlock } from "@dextinity/cms-admin";
 import { MenuItem } from "@material-ui/core";
 import { HeadlineBlockData } from "@src/blocks.generated";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";\n
@@ -438,7 +438,7 @@ The complete code for our Headline site block (including all necessary imports) 
     <summary>HeadlineBlock.tsx</summary>
     <div>
         <CodeBlock language="tsx">
-            {`import { PropsWithData, withPreview } from "@comet/site-nextjs";
+            {`import { PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import { HeadlineBlockData } from "@src/blocks.generated";
 import { Renderers } from "redraft";\n
 import { RichTextBlock } from "./RichTextBlock";\n
@@ -483,12 +483,12 @@ export const HeadlineBlock = withPreview(
 
 ## Conclusion
 
-In this guide, we've learned how to create a block in a COMET DXP CMS project from start to end. We first defined the structure of the block's data in the API, then created the admin component for users to interact with the block, and finally added the block to the site (frontend).
+In this guide, we've learned how to create a block in a Dextinity CMS project from start to end. We first defined the structure of the block's data in the API, then created the admin component for users to interact with the block, and finally added the block to the site (frontend).
 
 Now you should be ready to create additional blocks! Maybe even a Dog Ear block?
 
 :::info
 
-We've only covered the basic concepts of COMET DXP blocks in this guide. To get a full picture, please review the [blocks](/docs/core-concepts/blocks/) section in our documentation.
+We've only covered the basic concepts of Dextinity blocks in this guide. To get a full picture, please review the [blocks](/docs/core-concepts/blocks/) section in our documentation.
 
 :::

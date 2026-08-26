@@ -1,4 +1,4 @@
-import { Close, Hamburger, HamburgerClose, HamburgerOpen } from "@comet/admin-icons";
+import { Close, Hamburger, HamburgerClose, HamburgerOpen } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, css, IconButton, type IconButtonClassKey, type IconButtonProps, type Theme, useThemeProps } from "@mui/material";
 import type { ReactNode } from "react";
 
@@ -10,7 +10,7 @@ export type AppHeaderMenuButtonProps = IconButtonProps;
 export type AppHeaderMenuButtonClassKey = IconButtonClassKey;
 
 export const AppHeaderMenuButton = (inProps: AppHeaderMenuButtonProps) => {
-    const { children: propChildren, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminAppHeaderMenuButton" });
+    const { children: propChildren, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminAppHeaderMenuButton" });
     const { toggleOpen, open, drawerVariant, hasMultipleMenuItems } = useMainNavigation();
 
     if (!hasMultipleMenuItems) {
@@ -55,17 +55,17 @@ const Root = createComponentSlot(IconButton)<AppHeaderMenuButtonClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminAppHeaderMenuButton: AppHeaderMenuButtonClassKey;
+        DextinityAdminAppHeaderMenuButton: AppHeaderMenuButtonClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminAppHeaderMenuButton: AppHeaderMenuButtonProps;
+        DextinityAdminAppHeaderMenuButton: AppHeaderMenuButtonProps;
     }
 
     interface Components {
-        CometAdminAppHeaderMenuButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminAppHeaderMenuButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminAppHeaderMenuButton"];
+        DextinityAdminAppHeaderMenuButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminAppHeaderMenuButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminAppHeaderMenuButton"];
         };
     }
 }

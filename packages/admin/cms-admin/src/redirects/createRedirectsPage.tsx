@@ -1,5 +1,5 @@
-import { Stack, StackPage, StackSwitch, StackToolbar } from "@comet/admin";
-import { Document, LinkExternal } from "@comet/admin-icons";
+import { Stack, StackPage, StackSwitch, StackToolbar } from "@dextinity/admin";
+import { Document, LinkExternal } from "@dextinity/admin-icons";
 import type { ComponentType, JSX } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -39,7 +39,7 @@ export function createRedirectsLinkBlock(customTargets?: Record<string, BlockInt
     return createOneOfBlock({
         supportedBlocks: { internal: RedirectsInternalLinkBlock, external: RedirectsExternalLinkBlock, ...customTargets },
         name: "RedirectsLink",
-        displayName: <FormattedMessage id="comet.blocks.link" defaultMessage="Link" />,
+        displayName: <FormattedMessage id="dextinity.blocks.link" defaultMessage="Link" />,
         allowEmpty: false,
     });
 }
@@ -54,18 +54,18 @@ function createRedirectsPage({ linkBlock = createRedirectsLinkBlock() }: CreateR
         const isGlobalScoped = Object.keys(scope).length === 0;
 
         return (
-            <Stack topLevelTitle={intl.formatMessage({ id: "comet.pages.redirects", defaultMessage: "Redirects" })}>
+            <Stack topLevelTitle={intl.formatMessage({ id: "dextinity.pages.redirects", defaultMessage: "Redirects" })}>
                 <StackSwitch initialPage="grid">
                     <StackPage name="grid">
                         <StackToolbar scopeIndicator={<ContentScopeIndicator global={isGlobalScoped} scope={isGlobalScoped ? undefined : scope} />} />
                         <RedirectsGrid linkBlock={linkBlock} scope={scope} />
                     </StackPage>
-                    <StackPage name="edit" title={intl.formatMessage({ id: "comet.pages.redirects.edit", defaultMessage: "edit" })}>
+                    <StackPage name="edit" title={intl.formatMessage({ id: "dextinity.pages.redirects.edit", defaultMessage: "edit" })}>
                         {(selectedId: string) => {
                             return <RedirectForm mode="edit" id={selectedId} linkBlock={linkBlock} scope={scope} />;
                         }}
                     </StackPage>
-                    <StackPage name="add" title={intl.formatMessage({ id: "comet.pages.redirects.create", defaultMessage: "create" })}>
+                    <StackPage name="add" title={intl.formatMessage({ id: "dextinity.pages.redirects.create", defaultMessage: "create" })}>
                         {() => {
                             return <RedirectForm mode="add" linkBlock={linkBlock} scope={scope} />;
                         }}

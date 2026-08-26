@@ -1,4 +1,4 @@
-import { createRichTextBlock } from "@comet/mail-react";
+import { createRichTextBlock } from "@dextinity/mail-react";
 import type { PhoneLinkBlockData } from "@src/blocks.generated";
 
 export const { MjmlRichTextBlock } = createRichTextBlock({

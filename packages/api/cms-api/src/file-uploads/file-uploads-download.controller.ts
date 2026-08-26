@@ -18,7 +18,7 @@ import { Response } from "express";
 import mime from "mime";
 import { PassThrough, Readable } from "stream";
 
-import { DisableCometGuards } from "../auth/decorators/disable-comet-guards.decorator";
+import { DisableDextinityGuards } from "../auth/decorators/disable-dextinity-guards.decorator";
 import { BlobStorageBackendService } from "../blob-storage/backends/blob-storage-backend.service";
 import { ScaledImagesCacheService } from "../blob-storage/cache/scaled-images-cache.service";
 import { createHashedPath } from "../blob-storage/utils/create-hashed-path.util";
@@ -233,7 +233,7 @@ export function createFileUploadsDownloadController(options: { public: boolean }
     }
 
     if (options.public) {
-        @DisableCometGuards()
+        @DisableDextinityGuards()
         class PublicFileUploadsDownloadController extends BaseFileUploadsDownloadController {
             protected readonly logger = new Logger(PublicFileUploadsDownloadController.name);
         }

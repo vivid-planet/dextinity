@@ -3,22 +3,22 @@ title: How to run
 sidebar_position: 2
 ---
 
-A COMET DXP application consists of multiple processes, such as:
+A Dextinity application consists of multiple processes, such as:
 
 - [an API](packages-tools#apiPackage)
 - [an admin application](packages-tools#adminPackage)
 - [a frontend site application](packages-tools#sitePackage)
 - type generators
 
-We recommend using a process manager to avoid starting all these processes manually. Luckily, the steps in the [installation section](creating-a-project#installation) automatically installed the package: [@vivid-planet/dev-process-manager](https://github.com/vivid-planet/dev-process-manager).
+We recommend using a process manager to avoid starting all these processes manually. Luckily, the steps in the [installation section](creating-a-project#installation) automatically installed the package: [dev-process-manager](https://dev-process-manager.com/).
 
-Executing the following command starts all processes required to run a [COMET DXP application](application-structure):
+Executing the following command starts all processes required to run a [Dextinity application](application-structure):
 
 `npm run dev`
 
 ## That's it!
 
-Your COMET DXP application is up and running.
+Your Dextinity application is up and running.
 
 :::info
 

@@ -1,5 +1,139 @@
 # @comet/brevo-admin
 
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/admin@10.1.0
+- @dextinity/admin-date-time@10.1.0
+- @dextinity/admin-icons@10.1.0
+- @dextinity/cms-admin@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- Updated dependencies [48748b0]
+    - @dextinity/admin@10.0.1
+    - @dextinity/admin-date-time@10.0.1
+    - @dextinity/cms-admin@10.0.1
+    - @dextinity/admin-icons@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/brevo-admin` to `@dextinity/brevo-admin`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Resolve the configuration via `DextinityConfigProvider` instead of `CometConfigProvider`
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+    - @dextinity/admin-date-time@10.0.0
+    - @dextinity/admin-icons@10.0.0
+    - @dextinity/admin@10.0.0
+    - @dextinity/cms-admin@10.0.0
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/brevo-admin` to `@dextinity/brevo-admin`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Resolve the configuration via `DextinityConfigProvider` instead of `CometConfigProvider`
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [085b9ac]
+- Updated dependencies [0f17fbd]
+    - @dextinity/admin-date-time@10.0.0-beta.0
+    - @dextinity/admin-icons@10.0.0-beta.0
+    - @dextinity/admin@10.0.0-beta.0
+    - @dextinity/cms-admin@10.0.0-beta.0
+
+## 9.5.0
+
+### Patch Changes
+
+- @comet/admin@9.5.0
+- @comet/admin-date-time@9.5.0
+- @comet/admin-icons@9.5.0
+- @comet/cms-admin@9.5.0
+
+## 9.4.0
+
+### Patch Changes
+
+- Updated dependencies [bf1ff64]
+- Updated dependencies [ca88ec6]
+- Updated dependencies [ca88ec6]
+- Updated dependencies [4e27111]
+- Updated dependencies [71d6a95]
+- Updated dependencies [085b9ac]
+- Updated dependencies [0f17fbd]
+    - @comet/admin@9.4.0
+    - @comet/cms-admin@9.4.0
+    - @comet/admin-date-time@9.4.0
+    - @comet/admin-icons@9.4.0
+
+## 9.3.0
+
+### Patch Changes
+
+- Updated dependencies [7b2d8db]
+- Updated dependencies [924b66c]
+    - @comet/admin@9.3.0
+    - @comet/cms-admin@9.3.0
+    - @comet/admin-date-time@9.3.0
+    - @comet/admin-icons@9.3.0
+
+## 9.2.2
+
+### Patch Changes
+
+- @comet/admin@9.2.2
+- @comet/admin-date-time@9.2.2
+- @comet/admin-icons@9.2.2
+- @comet/cms-admin@9.2.2
+
+## 9.2.1
+
+### Patch Changes
+
+- @comet/admin@9.2.1
+- @comet/admin-date-time@9.2.1
+- @comet/admin-icons@9.2.1
+- @comet/cms-admin@9.2.1
+
+## 9.2.0
+
+### Patch Changes
+
+- Updated dependencies [ee0bf93]
+- Updated dependencies [5a05d97]
+- Updated dependencies [8c866a3]
+- Updated dependencies [48d06d6]
+- Updated dependencies [ba56f97]
+- Updated dependencies [eb0b156]
+    - @comet/cms-admin@9.2.0
+    - @comet/admin@9.2.0
+    - @comet/admin-date-time@9.2.0
+    - @comet/admin-icons@9.2.0
+
 ## 9.1.1
 
 ### Patch Changes

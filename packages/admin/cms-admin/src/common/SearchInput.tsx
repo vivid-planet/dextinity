@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, Clear, Search } from "@comet/admin-icons";
+import { ChevronDown, ChevronUp, Clear, Search } from "@dextinity/admin-icons";
 import { IconButton, InputAdornment, InputBase, Typography } from "@mui/material";
 import { type ChangeEvent, type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useHotkeys, useIsHotkeyPressed } from "react-hotkeys-hook";

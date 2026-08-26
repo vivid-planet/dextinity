@@ -1,4 +1,4 @@
-import { createOneOfBlock, DamImageBlock, DamVideoBlock, VimeoVideoBlock, YouTubeVideoBlock } from "@comet/cms-api";
+import { createOneOfBlock, DamImageBlock, DamVideoBlock, VimeoVideoBlock, YouTubeVideoBlock } from "@dextinity/cms-api";
 
 export const MediaBlock = createOneOfBlock(
     {

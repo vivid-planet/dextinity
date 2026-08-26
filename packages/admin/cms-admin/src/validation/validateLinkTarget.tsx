@@ -4,6 +4,6 @@ import { isLinkTarget } from "./isLinkTarget";
 
 export function validateLinkTarget(linkTarget?: string) {
     if (linkTarget && !isLinkTarget(linkTarget)) {
-        return <FormattedMessage id="comet.validation.validateLinkTarget.invalid" defaultMessage="Invalid link target" />;
+        return <FormattedMessage id="dextinity.validation.validateLinkTarget.invalid" defaultMessage="Invalid link target" />;
     }
 }

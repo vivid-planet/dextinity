@@ -7,6 +7,6 @@ export function validateJson(value?: string) {
     try {
         JSON.parse(value);
     } catch {
-        return <FormattedMessage id="comet.validation.validateJson.invalid" defaultMessage="Invalid JSON" />;
+        return <FormattedMessage id="dextinity.validation.validateJson.invalid" defaultMessage="Invalid JSON" />;
     }
 }

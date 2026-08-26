@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import { dataGridDateTimeColumn, type GridColDef } from "@comet/admin";
-import { Warning } from "@comet/admin-icons";
+import { dataGridDateTimeColumn, type GridColDef } from "@dextinity/admin";
+import { Warning } from "@dextinity/admin-icons";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { useContentScope } from "../contentScope/Provider";
@@ -34,7 +34,7 @@ export const LatestWarningsDashboardWidget = () => {
         {
             ...disableFieldOptions,
             field: "message",
-            headerName: intl.formatMessage({ id: "dashboard.latestWarningsWidget.message", defaultMessage: "Message" }),
+            headerName: intl.formatMessage({ id: "dextinity.dashboard.latestWarningsWidget.message", defaultMessage: "Message" }),
             flex: 1,
             renderCell: (params) => <WarningMessage message={params.value} warningMessages={messages} />,
         },
@@ -42,13 +42,13 @@ export const LatestWarningsDashboardWidget = () => {
             ...dataGridDateTimeColumn,
             ...disableFieldOptions,
             field: "createdAt",
-            headerName: intl.formatMessage({ id: "dashboard.latestWarningsWidget.dateTime", defaultMessage: "Date / Time" }),
+            headerName: intl.formatMessage({ id: "dextinity.dashboard.latestWarningsWidget.dateTime", defaultMessage: "Date / Time" }),
             flex: 1,
         },
         {
             ...disableFieldOptions,
             field: "severity",
-            headerName: intl.formatMessage({ id: "dashboard.latestWarningsWidget.severity", defaultMessage: "Severity" }),
+            headerName: intl.formatMessage({ id: "dextinity.dashboard.latestWarningsWidget.severity", defaultMessage: "Severity" }),
             renderCell: (params) => <WarningSeverity severity={params.value} />,
         },
         {
@@ -62,7 +62,7 @@ export const LatestWarningsDashboardWidget = () => {
     return (
         <DashboardWidgetRoot
             icon={<Warning />}
-            header={<FormattedMessage id="dashboard.latestWarningsWidget.title" defaultMessage="Latest Warnings" />}
+            header={<FormattedMessage id="dextinity.dashboard.latestWarningsWidget.title" defaultMessage="Latest Warnings" />}
         >
             <DataGrid disableColumnMenu hideFooter columns={columns} rows={data?.warnings.nodes ?? []} loading={loading} />
         </DashboardWidgetRoot>

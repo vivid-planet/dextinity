@@ -1,18 +1,18 @@
 {
-    "name": "@comet/api-generator",
-    "version": "9.1.1",
-    "description": "Comet API Generator CLI tool",
+    "name": "@dextinity/api-generator",
+    "version": "10.1.0",
+    "description": "Dextinity API Generator CLI tool",
     "repository": {
         "directory": "packages/api/api-generator",
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet"
+        "url": "https://github.com/vivid-planet/dextinity"
     },
     "license": "BSD-2-Clause",
     "type": "commonjs",
     "main": "lib/apiGenerator.js",
     "typings": "lib/apiGenerator.d.ts",
     "bin": {
-        "comet-api-generator": "bin/api-generator.js"
+        "dextinity-api-generator": "bin/api-generator.js"
     },
     "sideEffects": false,
     "files": [
@@ -36,7 +36,7 @@
         "test:watch": "vitest --watch"
     },
     "dependencies": {
-        "@comet/cms-api": "workspace:*",
+        "@dextinity/cms-api": "workspace:*",
         "chokidar": "^4.0.3",
         "commander": "^9.5.0",
         "pluralize": "^8.0.0",
@@ -45,12 +45,12 @@
         "typescript": "^5.9.3"
     },
     "devDependencies": {
-        "@comet/eslint-config": "workspace:*",
+        "@dextinity/eslint-config": "workspace:*",
         "@mikro-orm/cli": "^6.6.14",
         "@mikro-orm/core": "^6.6.14",
         "@mikro-orm/postgresql": "^6.6.14",
         "@nestjs/graphql": "^13.4.0",
-        "@types/node": "^24.12.4",
+        "@types/node": "^24.13.3",
         "@types/pluralize": "^0.0.33",
         "class-validator": "^0.14.3",
         "eslint": "^9.39.4",

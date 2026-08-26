@@ -6,7 +6,7 @@ import {
     RequestContextInterface,
     RequiredPermission,
     validateNotModified,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity";

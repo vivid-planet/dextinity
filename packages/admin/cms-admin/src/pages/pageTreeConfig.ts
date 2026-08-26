@@ -1,6 +1,6 @@
 import type { DocumentNode } from "graphql";
 
-import { useCometConfig } from "../config/CometConfigContext";
+import { useDextinityConfig } from "../config/DextinityConfigContext";
 import type { DocumentInterface, DocumentType } from "../documents/types";
 import type { AllCategories } from "./pageTree/PageTreeContext";
 
@@ -20,11 +20,11 @@ export interface PageTreeConfig {
 }
 
 export function usePageTreeConfig(): PageTreeConfig {
-    const cometConfig = useCometConfig();
+    const dextinityConfig = useDextinityConfig();
 
-    if (!cometConfig.pageTree) {
-        throw new Error("No page tree configuration found. Make sure to set `pageTree` in `CometConfigProvider`.");
+    if (!dextinityConfig.pageTree) {
+        throw new Error("No page tree configuration found. Make sure to set `pageTree` in `DextinityConfigProvider`.");
     }
 
-    return cometConfig.pageTree;
+    return dextinityConfig.pageTree;
 }

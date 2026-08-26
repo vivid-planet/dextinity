@@ -1,5 +1,5 @@
 import { type ApolloClient, type RefetchQueriesOptions, useApolloClient } from "@apollo/client";
-import { Copy, Delete as DeleteIcon, Domain, Paste, Remove as RemoveIcon, ThreeDotSaving } from "@comet/admin-icons";
+import { Copy, Delete as DeleteIcon, Domain, Paste, Remove as RemoveIcon, ThreeDotSaving } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, Divider, Snackbar, type Theme, useThemeProps } from "@mui/material";
 import { type ReactNode, useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -79,7 +79,7 @@ export function CrudContextMenu<CopyData>(inProps: CrudContextMenuProps<CopyData
         ...restProp
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminCrudContextMenu",
+        name: "DextinityAdminCrudContextMenu",
     });
 
     const {
@@ -136,7 +136,9 @@ export function CrudContextMenu<CopyData>(inProps: CrudContextMenuProps<CopyData
                 input = JSON.parse(clipboard);
             } catch (e) {
                 errorDialog?.showError({
-                    userMessage: <FormattedMessage id="comet.common.clipboardInvalidFormat" defaultMessage="Clipboard contains an invalid format" />,
+                    userMessage: (
+                        <FormattedMessage id="dextinity.common.clipboardInvalidFormat" defaultMessage="Clipboard contains an invalid format" />
+                    ),
                     error: e.toString(),
                 });
             }
@@ -155,7 +157,7 @@ export function CrudContextMenu<CopyData>(inProps: CrudContextMenuProps<CopyData
                     errorDialog?.showError({
                         userMessage: (
                             <FormattedMessage
-                                id="comet.common.pasteFailedInvalidFormat"
+                                id="dextinity.common.pasteFailedInvalidFormat"
                                 defaultMessage="Paste failed, probably due to an invalid format"
                             />
                         ),
@@ -200,7 +202,7 @@ export function CrudContextMenu<CopyData>(inProps: CrudContextMenuProps<CopyData
                                     snackbarApi.showSnackbar(
                                         <Snackbar anchorOrigin={{ vertical: "bottom", horizontal: "left" }} autoHideDuration={5000}>
                                             <Alert severity="error">
-                                                <FormattedMessage id="comet.crudContextMenu.copyFailed" defaultMessage="Copy failed" />
+                                                <FormattedMessage id="dextinity.crudContextMenu.copyFailed" defaultMessage="Copy failed" />
                                             </Alert>
                                         </Snackbar>,
                                     );
@@ -295,17 +297,17 @@ const DeleteDialog = createComponentSlot(CommonDeleteDialog)<CrudContextMenuClas
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminCrudContextMenu: CrudContextMenuProps<unknown>;
+        DextinityAdminCrudContextMenu: CrudContextMenuProps<unknown>;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminCrudContextMenu: CrudContextMenuClassKey;
+        DextinityAdminCrudContextMenu: CrudContextMenuClassKey;
     }
 
     interface Components {
-        CometAdminCrudContextMenu?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminCrudContextMenu"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminCrudContextMenu"];
+        DextinityAdminCrudContextMenu?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminCrudContextMenu"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminCrudContextMenu"];
         };
     }
 }

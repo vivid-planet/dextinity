@@ -1,6 +1,6 @@
 import { gql, useApolloClient, useQuery } from "@apollo/client";
-import { Button, CancelButton, StackLink, Tooltip, useStackSwitchApi } from "@comet/admin";
-import { Play, Time } from "@comet/admin-icons";
+import { Button, CancelButton, StackLink, Tooltip, useStackSwitchApi } from "@dextinity/admin";
+import { Play, Time } from "@dextinity/admin-icons";
 import {
     // eslint-disable-next-line no-restricted-imports
     Dialog,
@@ -84,7 +84,7 @@ export function CronJobsGrid() {
                 columns={[
                     {
                         field: "name",
-                        headerName: intl.formatMessage({ id: "comet.pages.cronJobs.name", defaultMessage: "Name" }),
+                        headerName: intl.formatMessage({ id: "dextinity.pages.cronJobs.name", defaultMessage: "Name" }),
                         flex: 2,
                         ...disableFieldOptions,
                         valueGetter: (params, row) => {
@@ -99,26 +99,26 @@ export function CronJobsGrid() {
                     },
                     {
                         field: "schedule",
-                        headerName: intl.formatMessage({ id: "comet.pages.cronJobs.schedule", defaultMessage: "Schedule" }),
+                        headerName: intl.formatMessage({ id: "dextinity.pages.cronJobs.schedule", defaultMessage: "Schedule" }),
                         flex: 1,
                         ...disableFieldOptions,
                     },
                     {
                         field: "suspended",
-                        headerName: intl.formatMessage({ id: "comet.pages.cronJobs.status", defaultMessage: "Status" }),
+                        headerName: intl.formatMessage({ id: "dextinity.pages.cronJobs.status", defaultMessage: "Status" }),
                         flex: 1,
                         ...disableFieldOptions,
                         renderCell: ({ value }) => {
                             return value ? (
-                                <FormattedMessage id="comet.pages.cronJobs.suspended" defaultMessage="Suspended" />
+                                <FormattedMessage id="dextinity.pages.cronJobs.suspended" defaultMessage="Suspended" />
                             ) : (
-                                <FormattedMessage id="comet.pages.cronJobs.active" defaultMessage="Active" />
+                                <FormattedMessage id="dextinity.pages.cronJobs.active" defaultMessage="Active" />
                             );
                         },
                     },
                     {
                         field: "lastJobRun",
-                        headerName: intl.formatMessage({ id: "comet.pages.cronJobs.lastJobRun", defaultMessage: "Last Job Run" }),
+                        headerName: intl.formatMessage({ id: "dextinity.pages.cronJobs.lastJobRun", defaultMessage: "Last Job Run" }),
                         flex: 2,
                         renderCell: ({ value }) => {
                             return value ? (
@@ -131,7 +131,7 @@ export function CronJobsGrid() {
                                     />
                                 </>
                             ) : (
-                                <FormattedMessage id="comet.pages.cronJobs.never" defaultMessage="Never" />
+                                <FormattedMessage id="dextinity.pages.cronJobs.never" defaultMessage="Never" />
                             );
                         },
                         ...disableFieldOptions,
@@ -142,12 +142,12 @@ export function CronJobsGrid() {
                         headerName: "",
                         renderCell: ({ row }) => (
                             <>
-                                <Tooltip title={<FormattedMessage id="comet.pages.cronJobs.showRuns" defaultMessage="Show runs" />}>
+                                <Tooltip title={<FormattedMessage id="dextinity.pages.cronJobs.showRuns" defaultMessage="Show runs" />}>
                                     <IconButton component={StackLink} pageName="jobs" payload={row.name}>
                                         <Time color="primary" />
                                     </IconButton>
                                 </Tooltip>
-                                <Tooltip title={<FormattedMessage id="comet.pages.cronJobs.runJobNow" defaultMessage="Run job now" />}>
+                                <Tooltip title={<FormattedMessage id="dextinity.pages.cronJobs.runJobNow" defaultMessage="Run job now" />}>
                                     <IconButton>
                                         <Play
                                             color="primary"
@@ -166,11 +166,11 @@ export function CronJobsGrid() {
             />
             <Dialog open={dialogOpen} onClose={closeDialog}>
                 <DialogTitle>
-                    <FormattedMessage id="comet.pages.cronjob.dialog.title" defaultMessage="Start cron job now?" />
+                    <FormattedMessage id="dextinity.pages.cronjob.dialog.title" defaultMessage="Start cron job now?" />
                 </DialogTitle>
                 <DialogContent>
                     <FormattedMessage
-                        id="comet.pages.cronjob.dialog.content"
+                        id="dextinity.pages.cronjob.dialog.content"
                         defaultMessage="Are you sure you want to start the {cronJobName} cron job now?"
                         values={{
                             cronJobName: cronJobToStart,
@@ -192,7 +192,7 @@ export function CronJobsGrid() {
                             }
                         }}
                     >
-                        <FormattedMessage id="comet.pages.cronjob.dialog.action" defaultMessage="Start now" />
+                        <FormattedMessage id="dextinity.pages.cronjob.dialog.action" defaultMessage="Start now" />
                     </Button>
                 </DialogActions>
             </Dialog>

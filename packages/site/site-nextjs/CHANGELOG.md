@@ -1,5 +1,123 @@
 # @comet/site-nextjs
 
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/site-react@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- @dextinity/site-react@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/site-nextjs` to `@dextinity/site-nextjs`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the `cometType` property of iframe messages to `dextinityType`. A matching `@dextinity/cms-admin` version is required
+    - Rename the site preview cookie from `__comet_site_preview` to `__dextinity_site_preview`. A matching `@dextinity/cms-api` version is required
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+    - @dextinity/site-react@10.0.0
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/site-nextjs` to `@dextinity/site-nextjs`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the `cometType` property of iframe messages to `dextinityType`. A matching `@dextinity/cms-admin` version is required
+    - Rename the site preview cookie from `__comet_site_preview` to `__dextinity_site_preview`. A matching `@dextinity/cms-api` version is required
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+    - @dextinity/site-react@10.0.0-beta.0
+
+## 9.5.0
+
+### Patch Changes
+
+- @comet/site-react@9.5.0
+
+## 9.4.0
+
+### Patch Changes
+
+- @comet/site-react@9.4.0
+
+## 9.3.0
+
+### Minor Changes
+
+- 924b66c: Add `underline` support to `createTipTapRichTextBlock`
+
+    The `underline` inline style is now part of the `supports` list and can be toggled via a new toolbar button. The underline mark is validated by the API, rendered as `<u>` by `renderTipTapRichText`, and the DraftJS migration maps the `UNDERLINE` inline style to it when supported. Per default it is disabled, pass a `supports` list with `underline` to enable it.
+
+### Patch Changes
+
+- Updated dependencies [924b66c]
+    - @comet/site-react@9.3.0
+
+## 9.2.2
+
+### Patch Changes
+
+- @comet/site-react@9.2.2
+
+## 9.2.1
+
+### Patch Changes
+
+- 94a1d58: Fix client-side crash in `useCookieBotCookieApi` when Cookiebot is not yet initialized
+
+    The hook read `window.Cookiebot.consent` in its initial call, but `window.Cookiebot` exists as soon as the Cookiebot script has run, while `consent` is only populated once Cookiebot fires `CookiebotOnConsentReady`. Calling `Object.keys(consent)` before that threw `TypeError: Cannot convert undefined or null to object`, crashing the client. The initial call is now a no-op until consent is available.
+
+- Updated dependencies [94a1d58]
+    - @comet/site-react@9.2.1
+
+## 9.2.0
+
+### Minor Changes
+
+- ee0bf93: Add AI content disclosure for DAM assets (EU AI Act, Article 50)
+
+    Editors can mark a DAM asset as **AI generated** or **AI modified** in the file settings. When such an asset is published, the site renders the official EU AI-content label and merges the disclosure into the media element's accessible name, so screen-reader users learn which asset is AI.
+
+    **API**
+
+    New `aiContentType` field (`Generated` | `Modified`) on DAM files, exposed through the `PixelImage` and `DamVideo` blocks.
+
+    **Admin**
+
+    New "AI content" field in the DAM file settings, shown for image, video and audio assets only (other file types cannot constitute a deep fake).
+
+    **Site**
+
+    `PixelImageBlock` and `DamVideoBlock` render the disclosure automatically for marked assets. Both accept props to customize it:
+    - `aiContentDisclosureProps` — override the badge.
+    - `customAiContentDisclosure` — render your own disclosure, or `null` for none.
+    - `aiContentAltTextPrefixLabels` — localize the accessible-name prefix (defaults to English).
+
+    `@comet/site-react` also exports the `AiContentDisclosure` badge and the `getAiContentAltTextWithPrefix` helper.
+
+### Patch Changes
+
+- Updated dependencies [ee0bf93]
+    - @comet/site-react@9.2.0
+
 ## 9.1.1
 
 ### Patch Changes

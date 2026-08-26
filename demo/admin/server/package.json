@@ -1,8 +1,7 @@
 {
-    "name": "comet-demo-admin-server",
-    "version": "1.0.2",
+    "name": "dextinity-demo-admin-server",
     "private": true,
-    "description": "Comet Admin Demo Server Application",
+    "description": "Dextinity Admin Demo Server Application",
     "type": "commonjs",
     "dependencies": {
         "express": "^5.2.1",
@@ -14,6 +13,6 @@
         "node": "24"
     },
     "devDependencies": {
-        "@types/node": "^24.12.4"
+        "@types/node": "^24.13.3"
     }
 }

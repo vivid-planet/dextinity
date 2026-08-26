@@ -1,5 +1,5 @@
-import { Button, FillSpace, Toolbar, ToolbarActions } from "@comet/admin";
-import { type IRteRef, makeRteApi, Rte } from "@comet/admin-rte";
+import { Button, FillSpace, Toolbar, ToolbarActions } from "@dextinity/admin";
+import { type IRteRef, makeRteApi, Rte } from "@dextinity/admin-rte";
 import { Box, Card, CardContent } from "@mui/material";
 import { useReducer, useRef } from "react";
 
@@ -8,7 +8,7 @@ import { exampleContent, PrintEditorState, useAutoFocus } from "./helper";
 const [useRteApi] = makeRteApi();
 
 export default {
-    title: "comet-admin-rte",
+    title: "@dextinity/admin-rte",
 };
 
 export const RteDisable = {

@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, ChevronUp } from "@comet/admin-icons";
+import { ChevronDown, ChevronRight, ChevronUp } from "@dextinity/admin-icons";
 import { Collapse, type ComponentsOverrides, Fade, List, Menu, type Theme, type Typography, useThemeProps } from "@mui/material";
 import { Children, cloneElement, type MouseEvent, type ReactElement, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { matchPath, useLocation } from "react-router";
@@ -13,7 +13,7 @@ import {
     Root,
 } from "./CollapsibleItem.styles";
 import { useMainNavigation } from "./Context";
-import type { MainNavigationItem as CometMainNavigationItem, MainNavigationItemLevel, MainNavigationItemProps } from "./Item";
+import type { MainNavigationItem, MainNavigationItemLevel, MainNavigationItemProps } from "./Item";
 import type { MainNavigationItemRouterLinkProps } from "./ItemRouterLink";
 
 export type MainNavigationChild = ReactElement<MainNavigationCollapsibleItemProps | MainNavigationItemRouterLinkProps | MainNavigationItemProps>;
@@ -22,7 +22,7 @@ export interface MainNavigationCollapsibleItemProps
     extends Omit<MainNavigationItemProps, "slotProps">,
         ThemedComponentBaseProps<{
             root: "div";
-            mainNavigationItem: typeof CometMainNavigationItem;
+            mainNavigationItem: typeof MainNavigationItem;
             itemTitle: typeof Typography;
             collapsibleIndicator: "div";
         }> {
@@ -52,7 +52,7 @@ export const MainNavigationCollapsibleItem = (inProps: MainNavigationCollapsible
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminMainNavigationCollapsibleItem",
+        name: "DextinityAdminMainNavigationCollapsibleItem",
     });
 
     const {
@@ -234,17 +234,17 @@ export const MainNavigationCollapsibleItem = (inProps: MainNavigationCollapsible
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminMainNavigationCollapsibleItem: MainNavigationCollapsibleItemClassKey;
+        DextinityAdminMainNavigationCollapsibleItem: MainNavigationCollapsibleItemClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminMainNavigationCollapsibleItem: MainNavigationCollapsibleItemProps;
+        DextinityAdminMainNavigationCollapsibleItem: MainNavigationCollapsibleItemProps;
     }
 
     interface Components {
-        CometAdminMainNavigationCollapsibleItem?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminMainNavigationCollapsibleItem"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminMainNavigationCollapsibleItem"];
+        DextinityAdminMainNavigationCollapsibleItem?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminMainNavigationCollapsibleItem"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminMainNavigationCollapsibleItem"];
         };
     }
 }

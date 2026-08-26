@@ -1,5 +1,5 @@
-import { Stack } from "@comet/admin";
-import { DensityComfortable, DensityCompact, DensityStandard } from "@comet/admin-icons";
+import { Stack } from "@dextinity/admin";
+import { DensityComfortable, DensityCompact, DensityStandard } from "@dextinity/admin-icons";
 import { ListItemIcon, ListItemText } from "@mui/material";
 import { useState } from "react";
 

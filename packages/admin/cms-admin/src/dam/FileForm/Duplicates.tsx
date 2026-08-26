@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import { Alert, Button, FormSection, useStackApi } from "@comet/admin";
-import { BallTriangle as BallTriangleIcon, Link as LinkIcon, OpenNewTab as OpenNewTabIcon, Reload as ReloadIcon } from "@comet/admin-icons";
+import { Alert, Button, FormSection, useStackApi } from "@dextinity/admin";
+import { BallTriangle as BallTriangleIcon, Link as LinkIcon, OpenNewTab as OpenNewTabIcon, Reload as ReloadIcon } from "@dextinity/admin-icons";
 import { IconButton, List as MuiList, ListItem, ListItemIcon as MuiListItemIcon, ListItemSecondaryAction, ListItemText } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
@@ -39,7 +39,7 @@ const Duplicates = ({ fileId }: { fileId: string }) => {
         <FormSection
             title={
                 <FormattedMessage
-                    id="comet.dam.file.duplicates.title"
+                    id="dextinity.dam.file.duplicates.title"
                     defaultMessage="{count, plural, =0 {No files found} one {# file} other {# files}}"
                     values={{ count: data?.damFile.duplicates.length || 0 }}
                 />
@@ -48,7 +48,7 @@ const Duplicates = ({ fileId }: { fileId: string }) => {
             <List disablePadding>
                 <ListItemHeader key="refresh" divider>
                     <Button size="small" variant="textDark" endIcon={<ReloadIcon />} onClick={() => refetch({ id: fileId })}>
-                        <FormattedMessage id="comet.dam.file.duplicates.refresh" defaultMessage="Refresh" />
+                        <FormattedMessage id="dextinity.dam.file.duplicates.refresh" defaultMessage="Refresh" />
                     </Button>
                 </ListItemHeader>
                 {data?.damFile.duplicates.map((file) => {
@@ -89,11 +89,11 @@ const Duplicates = ({ fileId }: { fileId: string }) => {
                 )}
             </List>
             <Alert
-                title={<FormattedMessage id="comet.dam.file.duplicates.info.title" defaultMessage="What are duplicate assets?" />}
+                title={<FormattedMessage id="dextinity.dam.file.duplicates.info.title" defaultMessage="What are duplicate assets?" />}
                 sx={{ marginTop: 4 }}
             >
                 <FormattedMessage
-                    id="comet.dam.file.duplicates.info.content"
+                    id="dextinity.dam.file.duplicates.info.content"
                     defaultMessage="Duplicates refer to one or more identical copies of a digital asset stored in the DAM system. The DAM automatically detects identical assets, even if their file names are different, to reduce storage usage."
                 />
             </Alert>

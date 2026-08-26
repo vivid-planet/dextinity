@@ -17,8 +17,8 @@ import {
     useSnackbarApi,
     useStackSwitchApi,
     useStoredState,
-} from "@comet/admin";
-import { Info as InfoIcon } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Info as InfoIcon } from "@dextinity/admin-icons";
 import { DialogContent, Slide, type SlideProps, Snackbar } from "@mui/material";
 import {
     type DataGridProps,
@@ -203,7 +203,7 @@ const FolderDataGrid = ({
         {
             field: "name",
             headerName: intl.formatMessage({
-                id: "comet.dam.file.name",
+                id: "dextinity.dam.file.name",
                 defaultMessage: "Name",
             }),
             flex: 1,
@@ -235,7 +235,7 @@ const FolderDataGrid = ({
         {
             field: "importSourceType",
             headerName: intl.formatMessage({
-                id: "comet.dam.file.importSourceType",
+                id: "dextinity.dam.file.importSourceType",
                 defaultMessage: "Source",
             }),
             renderCell: ({ row }) => {
@@ -252,7 +252,7 @@ const FolderDataGrid = ({
             field: "type",
             sortBy: "mimetype",
             headerName: intl.formatMessage({
-                id: "comet.dam.file.fileType",
+                id: "dextinity.dam.file.fileType",
                 defaultMessage: "Type/Format",
             }),
             headerAlign: "left",
@@ -263,7 +263,7 @@ const FolderDataGrid = ({
                     return row.mimetype;
                 } else if (isFolder(row)) {
                     return intl.formatMessage({
-                        id: "comet.dam.file.fileType.folder",
+                        id: "dextinity.dam.file.fileType.folder",
                         defaultMessage: "Folder",
                     });
                 }
@@ -274,7 +274,7 @@ const FolderDataGrid = ({
             field: "info",
             sortBy: "size",
             headerName: intl.formatMessage({
-                id: "comet.dam.file.info",
+                id: "dextinity.dam.file.info",
                 defaultMessage: "Info",
             }),
             align: "right",
@@ -285,7 +285,7 @@ const FolderDataGrid = ({
                 } else {
                     return (
                         <FormattedMessage
-                            id="comet.dam.folderSize"
+                            id="dextinity.dam.folderSize"
                             defaultMessage="{number} {number, plural, one {item} other {items}}"
                             values={{
                                 number: row.numberOfFiles + row.numberOfChildFolders,
@@ -301,7 +301,7 @@ const FolderDataGrid = ({
                   {
                       field: "license",
                       headerName: intl.formatMessage({
-                          id: "comet.dam.file.license",
+                          id: "dextinity.dam.file.license",
                           defaultMessage: "License",
                       }),
                       headerAlign: "left",
@@ -320,11 +320,11 @@ const FolderDataGrid = ({
                                               />
                                           ) : (
                                               <>
-                                                  <FormattedMessage id="comet.dam.file.license.validUntil" defaultMessage="Valid until:" />{" "}
+                                                  <FormattedMessage id="dextinity.dam.file.license.validUntil" defaultMessage="Valid until:" />{" "}
                                                   {row.license.durationTo ? (
                                                       <FormattedDate value={row.license.durationTo} dateStyle="medium" />
                                                   ) : (
-                                                      <FormattedMessage id="comet.dam.file.license.unlimited" defaultMessage="Unlimited" />
+                                                      <FormattedMessage id="dextinity.dam.file.license.unlimited" defaultMessage="Unlimited" />
                                                   )}
                                               </>
                                           )
@@ -342,7 +342,7 @@ const FolderDataGrid = ({
         {
             field: "usages",
             headerName: intl.formatMessage({
-                id: "comet.dam.file.usages",
+                id: "dextinity.dam.file.usages",
                 defaultMessage: "Usages",
             }),
             headerAlign: "right",
@@ -353,7 +353,7 @@ const FolderDataGrid = ({
                     <>
                         <GridColumnHeaderTitle
                             label={intl.formatMessage({
-                                id: "comet.dam.file.usages",
+                                id: "dextinity.dam.file.usages",
                                 defaultMessage: "Usages",
                             })}
                             columnWidth={150}
@@ -361,7 +361,7 @@ const FolderDataGrid = ({
                         <Tooltip
                             title={
                                 <FormattedMessage
-                                    id="comet.dam.file.usages.tooltip"
+                                    id="dextinity.dam.file.usages.tooltip"
                                     defaultMessage="Cached for performance, can be slightly outdated"
                                 />
                             }
@@ -383,7 +383,7 @@ const FolderDataGrid = ({
         {
             field: "createdAt",
             headerName: intl.formatMessage({
-                id: "comet.dam.file.creationDate",
+                id: "dextinity.dam.file.creationDate",
                 defaultMessage: "Creation",
             }),
             headerAlign: "left",
@@ -395,7 +395,7 @@ const FolderDataGrid = ({
         {
             field: "updatedAt",
             headerName: intl.formatMessage({
-                id: "comet.dam.file.changeDate",
+                id: "dextinity.dam.file.changeDate",
                 defaultMessage: "Latest change",
             }),
             headerAlign: "left",
@@ -567,7 +567,7 @@ const FolderDataGrid = ({
             anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
             autoHideDuration={5000}
             TransitionComponent={(props: SlideProps) => <Slide {...props} direction="right" />}
-            message={<FormattedMessage id="comet.dam.upload.noEmptyFolders" defaultMessage="Empty folders can't be uploaded" />}
+            message={<FormattedMessage id="dextinity.dam.upload.noEmptyFolders" defaultMessage="Empty folders can't be uploaded" />}
         />
     );
 
@@ -583,7 +583,7 @@ const FolderDataGrid = ({
                 folderName:
                     currentFolderData?.damFolder.name ??
                     intl.formatMessage({
-                        id: "comet.dam.footer.assetManager",
+                        id: "dextinity.dam.footer.assetManager",
                         defaultMessage: "Asset Manager",
                     }),
             });
@@ -648,11 +648,11 @@ const FolderDataGrid = ({
 
     const getRowClassName = ({ row }: GridRowClassNameParams) => {
         if (fileUploadApi.newlyUploadedItems.find((newItem) => newItem.id === row.id)) {
-            return "CometDataGridRow--highlighted";
+            return "DextinityDataGridRow--highlighted";
         }
 
         if (row.isInboxFromOtherScope) {
-            return "CometDataGridRow--inboxFolder";
+            return "DextinityDataGridRow--inboxFolder";
         }
 
         return "";
@@ -705,8 +705,8 @@ const FolderDataGrid = ({
             <DamUploadFooter open={Boolean(uploadTargetFolderName)} folderName={uploadTargetFolderName} />
             <EditDialog
                 title={{
-                    edit: <FormattedMessage id="comet.dam.folderEditDialog.renameFolder" defaultMessage="Rename folder" />,
-                    add: <FormattedMessage id="comet.dam.folderEditDialog.addFolder" defaultMessage="Add folder" />,
+                    edit: <FormattedMessage id="dextinity.dam.folderEditDialog.renameFolder" defaultMessage="Rename folder" />,
+                    add: <FormattedMessage id="dextinity.dam.folderEditDialog.addFolder" defaultMessage="Add folder" />,
                 }}
             >
                 {({ selectedId, selectionMode }) => {

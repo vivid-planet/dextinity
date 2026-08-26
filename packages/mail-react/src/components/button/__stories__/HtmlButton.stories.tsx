@@ -31,7 +31,11 @@ const config: Meta<typeof HtmlButton> = {
         <MjmlSection indent>
             <MjmlColumn>
                 <MjmlRaw>
-                    <HtmlButton {...args} />
+                    <tr>
+                        <td>
+                            <HtmlButton {...args} />
+                        </td>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>
@@ -59,15 +63,19 @@ export const WithVariants: Story = {
         <MjmlSection indent>
             <MjmlColumn>
                 <MjmlRaw>
-                    <HtmlButton href="https://example.com">Primary (default)</HtmlButton>
-                    <TemporaryHtmlSpacer height="16px" />
-                    <HtmlButton href="https://example.com" variant="secondary">
-                        Secondary
-                    </HtmlButton>
-                    <TemporaryHtmlSpacer height="16px" />
-                    <HtmlButton href="https://example.com" variant="tertiary">
-                        Tertiary
-                    </HtmlButton>
+                    <tr>
+                        <td>
+                            <HtmlButton href="https://example.com">Primary (default)</HtmlButton>
+                            <TemporaryHtmlSpacer height="16px" />
+                            <HtmlButton href="https://example.com" variant="secondary">
+                                Secondary
+                            </HtmlButton>
+                            <TemporaryHtmlSpacer height="16px" />
+                            <HtmlButton href="https://example.com" variant="tertiary">
+                                Tertiary
+                            </HtmlButton>
+                        </td>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>
@@ -93,9 +101,13 @@ export const ResponsiveVariants: Story = {
         <MjmlSection indent>
             <MjmlColumn>
                 <MjmlRaw>
-                    <HtmlButton href="https://example.com" variant="primary">
-                        Shrinks on mobile
-                    </HtmlButton>
+                    <tr>
+                        <td>
+                            <HtmlButton href="https://example.com" variant="primary">
+                                Shrinks on mobile
+                            </HtmlButton>
+                        </td>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>
@@ -117,7 +129,11 @@ export const DefaultVariant: Story = {
         <MjmlSection indent>
             <MjmlColumn>
                 <MjmlRaw>
-                    <HtmlButton href="https://example.com">Uses the default &quot;primary&quot; variant</HtmlButton>
+                    <tr>
+                        <td>
+                            <HtmlButton href="https://example.com">Uses the default &quot;primary&quot; variant</HtmlButton>
+                        </td>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>
@@ -133,16 +149,20 @@ export const GradientBackground: Story = {
         <MjmlSection indent>
             <MjmlColumn>
                 <MjmlRaw>
-                    <HtmlButton
-                        href="https://example.com"
-                        style={{
-                            backgroundColor: "#5B4FC7",
-                            backgroundImage: "linear-gradient(to right, #5B4FC7, #FF6B6B)",
-                            color: "#FFFFFF",
-                        }}
-                    >
-                        Gradient button
-                    </HtmlButton>
+                    <tr>
+                        <td>
+                            <HtmlButton
+                                href="https://example.com"
+                                style={{
+                                    backgroundColor: "#5B4FC7",
+                                    backgroundImage: "linear-gradient(to right, #5B4FC7, #FF6B6B)",
+                                    color: "#FFFFFF",
+                                }}
+                            >
+                                Gradient button
+                            </HtmlButton>
+                        </td>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>
@@ -166,13 +186,17 @@ export const HoverAndActiveState: Story = {
             <MjmlSection indent>
                 <MjmlColumn>
                     <MjmlRaw>
-                        <HtmlButton
-                            href="https://example.com"
-                            className="interactiveButton"
-                            style={{ backgroundColor: "#5B4FC7", color: "#FFFFFF", border: "2px solid #5B4FC7" }}
-                        >
-                            Hover and press me
-                        </HtmlButton>
+                        <tr>
+                            <td>
+                                <HtmlButton
+                                    href="https://example.com"
+                                    className="interactiveButton"
+                                    style={{ backgroundColor: "#5B4FC7", color: "#FFFFFF", border: "2px solid #5B4FC7" }}
+                                >
+                                    Hover and press me
+                                </HtmlButton>
+                            </td>
+                        </tr>
                     </MjmlRaw>
                 </MjmlColumn>
             </MjmlSection>
@@ -185,9 +209,13 @@ export const FullWidth: Story = {
         <MjmlSection indent>
             <MjmlColumn>
                 <MjmlRaw>
-                    <HtmlButton href="https://example.com" fullWidth>
-                        Full-width button
-                    </HtmlButton>
+                    <tr>
+                        <td>
+                            <HtmlButton href="https://example.com" fullWidth>
+                                Full-width button
+                            </HtmlButton>
+                        </td>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>
@@ -199,17 +227,21 @@ export const FullWidthGradient: Story = {
         <MjmlSection indent>
             <MjmlColumn>
                 <MjmlRaw>
-                    <HtmlButton
-                        href="https://example.com"
-                        fullWidth
-                        style={{
-                            backgroundColor: "#5B4FC7",
-                            backgroundImage: "linear-gradient(to right, #5B4FC7, #FF6B6B)",
-                            color: "#FFFFFF",
-                        }}
-                    >
-                        Full-width gradient button
-                    </HtmlButton>
+                    <tr>
+                        <td>
+                            <HtmlButton
+                                href="https://example.com"
+                                fullWidth
+                                style={{
+                                    backgroundColor: "#5B4FC7",
+                                    backgroundImage: "linear-gradient(to right, #5B4FC7, #FF6B6B)",
+                                    color: "#FFFFFF",
+                                }}
+                            >
+                                Full-width gradient button
+                            </HtmlButton>
+                        </td>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>
@@ -227,8 +259,6 @@ export const FullWidthOnMobile: Story = {
                     }
                     .mobileFullWidth a {
                         display: block !important;
-                        width: 100% !important;
-                        box-sizing: border-box !important;
                         text-align: center !important;
                     }
                 }
@@ -239,9 +269,13 @@ export const FullWidthOnMobile: Story = {
             <MjmlSection indent>
                 <MjmlColumn>
                     <MjmlRaw>
-                        <HtmlButton href="https://example.com" className="mobileFullWidth">
-                            Full width on mobile only
-                        </HtmlButton>
+                        <tr>
+                            <td>
+                                <HtmlButton href="https://example.com" className="mobileFullWidth">
+                                    Full width on mobile only
+                                </HtmlButton>
+                            </td>
+                        </tr>
                     </MjmlRaw>
                 </MjmlColumn>
             </MjmlSection>
@@ -258,35 +292,31 @@ export const Alignment: Story = {
         <MjmlSection indent>
             <MjmlColumn>
                 <MjmlRaw>
-                    <table role="presentation" width="100%" cellPadding={0} cellSpacing={0} border={0}>
-                        <tbody>
-                            <tr>
-                                <td align="left">
-                                    <HtmlButton href="https://example.com">Left</HtmlButton>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <TemporaryHtmlSpacer height="16px" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="center">
-                                    <HtmlButton href="https://example.com">Center</HtmlButton>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <TemporaryHtmlSpacer height="16px" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="right">
-                                    <HtmlButton href="https://example.com">Right</HtmlButton>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <tr>
+                        <td align="left">
+                            <HtmlButton href="https://example.com">Left</HtmlButton>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <TemporaryHtmlSpacer height="16px" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <HtmlButton href="https://example.com">Center</HtmlButton>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <TemporaryHtmlSpacer height="16px" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            <HtmlButton href="https://example.com">Right</HtmlButton>
+                        </td>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>
@@ -302,19 +332,23 @@ export const SideBySide: Story = {
         <MjmlSection indent>
             <MjmlColumn>
                 <MjmlRaw>
-                    <table role="presentation" cellPadding={0} cellSpacing={0} border={0}>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <HtmlButton href="https://example.com">Button A</HtmlButton>
-                                </td>
-                                <td style={{ width: "16px", fontSize: "0", lineHeight: "0" }}>&nbsp;</td>
-                                <td>
-                                    <HtmlButton href="https://example.com">Button B</HtmlButton>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <tr>
+                        <td>
+                            <table role="presentation" cellPadding={0} cellSpacing={0} border={0}>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <HtmlButton href="https://example.com">Button A</HtmlButton>
+                                        </td>
+                                        <td style={{ width: "16px", fontSize: "0", lineHeight: "0" }}>&nbsp;</td>
+                                        <td>
+                                            <HtmlButton href="https://example.com">Button B</HtmlButton>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>
@@ -326,32 +360,36 @@ export const IconBeforeText: Story = {
         <MjmlSection indent>
             <MjmlColumn>
                 <MjmlRaw>
-                    <HtmlButton href="https://example.com">
-                        <table
-                            role="presentation"
-                            cellPadding={0}
-                            cellSpacing={0}
-                            border={0}
-                            style={{ display: "inline-block", verticalAlign: "middle" }}
-                        >
-                            <tbody>
-                                <tr>
-                                    <td valign="middle" style={{ paddingRight: "8px", fontSize: "0" }}>
-                                        <img
-                                            src="https://picsum.photos/seed/buttonicon/18/18"
-                                            alt=""
-                                            width={18}
-                                            height={18}
-                                            style={{ display: "block" }}
-                                        />
-                                    </td>
-                                    <td valign="middle" style={{ color: "#FFFFFF", textDecoration: "none" }}>
-                                        Icon before text
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </HtmlButton>
+                    <tr>
+                        <td>
+                            <HtmlButton href="https://example.com">
+                                <table
+                                    role="presentation"
+                                    cellPadding={0}
+                                    cellSpacing={0}
+                                    border={0}
+                                    style={{ display: "inline-block", verticalAlign: "middle" }}
+                                >
+                                    <tbody>
+                                        <tr>
+                                            <td valign="middle" style={{ paddingRight: "8px", fontSize: "0" }}>
+                                                <img
+                                                    src="https://picsum.photos/seed/buttonicon/18/18"
+                                                    alt=""
+                                                    width={18}
+                                                    height={18}
+                                                    style={{ display: "block" }}
+                                                />
+                                            </td>
+                                            <td valign="middle" style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                                                Icon before text
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </HtmlButton>
+                        </td>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>

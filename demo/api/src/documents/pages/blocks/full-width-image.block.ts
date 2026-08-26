@@ -10,7 +10,7 @@ import {
     DamImageBlock,
     ExtractBlockData,
     ExtractBlockInput,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { RichTextBlock } from "@src/common/blocks/rich-text.block";
 import { ValidateNested } from "class-validator";
 

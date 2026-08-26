@@ -40,13 +40,13 @@ export class MyRedirectTargetUrlService implements RedirectTargetUrlServiceInter
     <summary>Full example</summary>
 
 ```ts
-import { ExternalLinkBlock, ExtractBlockData } from "@comet/blocks-api";
+import { ExternalLinkBlock, ExtractBlockData } from "@dextinity/blocks-api";
 import {
     InternalLinkBlock,
     PageTreeReadApiService,
     RedirectsLinkBlock,
     RedirectTargetUrlServiceInterface,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Scope } from "@nestjs/common";

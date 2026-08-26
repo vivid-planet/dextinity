@@ -1,9 +1,9 @@
 {
-    "name": "@comet/brevo-admin",
-    "version": "9.1.1",
+    "name": "@dextinity/brevo-admin",
+    "version": "10.1.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet/",
+        "url": "https://github.com/vivid-planet/dextinity",
         "directory": "packages/admin/brevo-admin"
     },
     "license": "BSD-2-Clause",
@@ -23,7 +23,7 @@
         "build:babel": "pnpm exec babel ./src -x \".ts,.tsx\" -d lib",
         "build:types": "tsc --project ./tsconfig.build.json --emitDeclarationOnly",
         "clean": "rimraf lib 'src/**/*.generated.ts'",
-        "generate-block-types": "comet generate-block-types --inputs",
+        "generate-block-types": "dextinity generate-block-types --inputs",
         "generate-block-types:watch": "chokidar -s \"block-meta.json\" -c \"pnpm generate-block-types\"",
         "gql:types": "graphql-codegen",
         "gql:watch": "pnpm graphql-codegen --watch",
@@ -40,10 +40,10 @@
         "start:types": "tsc --project ./tsconfig.json --emitDeclarationOnly --watch --preserveWatchOutput"
     },
     "dependencies": {
-        "@comet/admin": "workspace:*",
-        "@comet/admin-date-time": "workspace:*",
-        "@comet/admin-icons": "workspace:*",
-        "@comet/cms-admin": "workspace:*",
+        "@dextinity/admin": "workspace:*",
+        "@dextinity/admin-date-time": "workspace:*",
+        "@dextinity/admin-icons": "workspace:*",
+        "@dextinity/cms-admin": "workspace:*",
         "date-fns": "^4.4.0",
         "react-dropzone": "^14.2.3"
     },
@@ -51,8 +51,8 @@
         "@apollo/client": "^3.14.1",
         "@babel/cli": "^7.29.7",
         "@babel/core": "^7.29.7",
-        "@comet/admin-babel-preset": "workspace:*",
-        "@comet/eslint-config": "workspace:*",
+        "@dextinity/admin-babel-preset": "workspace:*",
+        "@dextinity/eslint-config": "workspace:*",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
         "@graphql-codegen/cli": "^5.0.7",

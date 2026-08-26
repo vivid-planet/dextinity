@@ -1,4 +1,4 @@
-import { Add as AddIcon } from "@comet/admin-icons";
+import { Add as AddIcon } from "@dextinity/admin-icons";
 import { DataGrid as DataGridCommunity } from "@mui/x-data-grid";
 import { DataGridPro } from "@mui/x-data-grid-pro";
 

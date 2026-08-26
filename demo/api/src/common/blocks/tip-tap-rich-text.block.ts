@@ -1,4 +1,4 @@
-import { createTipTapRichTextBlock, typeSafeBlockMigrationPipe } from "@comet/cms-api";
+import { createTipTapRichTextBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
 import { ProductPriceBlock } from "@src/products/blocks/product-price.block";
 import { ProductTeaserBlock } from "@src/products/blocks/product-teaser.block";
 

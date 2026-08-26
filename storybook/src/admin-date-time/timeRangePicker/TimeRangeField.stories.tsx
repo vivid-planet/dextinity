@@ -1,11 +1,11 @@
-import { Alert, FinalForm } from "@comet/admin";
-import { TimeRangeField } from "@comet/admin-date-time";
+import { Alert, FinalForm } from "@dextinity/admin";
+import { TimeRangeField } from "@dextinity/admin-date-time";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 type Story = StoryObj<typeof TimeRangeField>;
 const config: Meta<typeof TimeRangeField> = {
     component: TimeRangeField,
-    title: "@comet/admin-date-time/timeRangePicker/TimeRangeField",
+    title: "@dextinity/admin-date-time/timeRangePicker/TimeRangeField",
 };
 export default config;
 

@@ -1,4 +1,4 @@
-import { Field } from "@comet/admin";
+import { Field } from "@dextinity/admin";
 import { defineMessage, FormattedMessage } from "react-intl";
 
 import type { PixelImageBlockData, SvgImageBlockData } from "../../blocks.generated";
@@ -18,11 +18,11 @@ const supportedBlocks: Record<string, BlockInterface> = {
 
 const DamImageBlock = createOneOfBlock({
     name: "DamImage",
-    displayName: <FormattedMessage id="comet.blocks.damImage" defaultMessage="Image" />,
+    displayName: <FormattedMessage id="dextinity.blocks.damImage" defaultMessage="Image" />,
     category: BlockCategory.Media,
     supportedBlocks,
     allowEmpty: false,
-    tags: [defineMessage({ id: "damImageBlock.tag.image", defaultMessage: "Image" })],
+    tags: [defineMessage({ id: "dextinity.damImageBlock.tag.image", defaultMessage: "Image" })],
 });
 
 // Custom Admin component to improve the image selection UX.
@@ -70,7 +70,7 @@ DamImageBlock.AdminComponent = function AdminComponent({ state, updateState }) {
                     name="damFile"
                     component={FileField}
                     fullWidth
-                    buttonText={<FormattedMessage id="comet.blocks.image.chooseImage" defaultMessage="Choose image" />}
+                    buttonText={<FormattedMessage id="dextinity.blocks.image.chooseImage" defaultMessage="Choose image" />}
                     allowedMimetypes={[...filteredAcceptedMimeTypes.pixelImage, ...filteredAcceptedMimeTypes.svgImage]}
                 />
             </BlocksFinalForm>

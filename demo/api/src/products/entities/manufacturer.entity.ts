@@ -1,4 +1,4 @@
-import { CrudGenerator, EntityInfo, IsNullable, IsUndefinable, RequiredPermission } from "@comet/cms-api";
+import { CrudGenerator, EntityInfo, IsNullable, IsUndefinable, RequiredPermission } from "@dextinity/cms-api";
 import {
     BaseEntity,
     Embeddable,

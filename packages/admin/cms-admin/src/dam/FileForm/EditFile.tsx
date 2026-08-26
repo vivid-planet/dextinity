@@ -14,7 +14,7 @@ import {
     ToolbarBackButton,
     ToolbarItem,
     ToolbarTitleItem,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import { Card, CardContent, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import isEqual from "lodash.isequal";
@@ -26,7 +26,7 @@ import ReactSplit from "react-split";
 import { useContentScope } from "../../contentScope/Provider";
 import { useDependenciesConfig } from "../../dependencies/dependenciesConfig";
 import { DependentsList } from "../../dependencies/DependentsList";
-import type { GQLFocalPoint, GQLImageCropAreaInput, GQLLicenseInput } from "../../graphql.generated";
+import type { GQLDamFileAiContentType, GQLFocalPoint, GQLImageCropAreaInput, GQLLicenseInput } from "../../graphql.generated";
 import { useUserPermissionCheck } from "../../userPermissions/hooks/currentUser";
 import { useDamConfig, useVideoPerformanceWarning } from "../config/damConfig";
 import { useDamAcceptedMimeTypes } from "../config/useDamAcceptedMimeTypes";
@@ -55,6 +55,7 @@ export interface EditImageFormValues {
 export interface EditFileFormValues extends EditImageFormValues {
     name: string;
     altText?: string | null;
+    aiContentType?: GQLDamFileAiContentType | null;
     title?: string | null;
     license?: Omit<GQLLicenseInput, "type"> & {
         type: LicenseType;
@@ -88,7 +89,7 @@ const EditFile = ({ id, contentScopeIndicator }: EditFormProps) => {
                 <CardContent>
                     <Typography color="error">
                         <FormattedMessage
-                            id="comet.dam.file.failedToLoad"
+                            id="dextinity.dam.file.failedToLoad"
                             defaultMessage="Failed to load file. <link>Go to Assets</link>"
                             values={{
                                 link: (chunks) => <RouterLink to={`${scopeMatch.url}/assets`}>{chunks}</RouterLink>,
@@ -149,6 +150,7 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
                     input: {
                         name: values.name,
                         altText: values.altText ?? null,
+                        aiContentType: values.aiContentType ?? null,
                         title: values.title ?? null,
                         image: {
                             cropArea,
@@ -179,6 +181,7 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
                     y: file.image?.cropArea.y ?? 0,
                 },
                 altText: file.altText,
+                aiContentType: file.aiContentType,
                 title: file.title,
                 license: {
                     type: file.license?.type ?? "NO_LICENSE",
@@ -225,7 +228,7 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
                             <RouterTabs>
                                 <RouterTab
                                     key="settings"
-                                    label={intl.formatMessage({ id: "comet.dam.file.settings", defaultMessage: "Settings" })}
+                                    label={intl.formatMessage({ id: "dextinity.dam.file.settings", defaultMessage: "Settings" })}
                                     path=""
                                 >
                                     <FileSettingsFields file={file} />
@@ -233,7 +236,7 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
                                 {file.image !== null && (
                                     <RouterTab
                                         key="infos"
-                                        label={intl.formatMessage({ id: "comet.dam.file.infos", defaultMessage: "Infos" })}
+                                        label={intl.formatMessage({ id: "dextinity.dam.file.infos", defaultMessage: "Infos" })}
                                         path="/infos"
                                     >
                                         <ImageInfos
@@ -251,14 +254,14 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
                                     <RouterTab
                                         key="media-alternatives"
                                         label={intl.formatMessage({
-                                            id: "comet.dam.file.mediaAlternatives.tabTitle",
+                                            id: "dextinity.dam.file.mediaAlternatives.tabTitle",
                                             defaultMessage: "Media alternatives",
                                         })}
                                         path="/media-alternatives"
                                     >
                                         {acceptedMimeTypes.filteredAcceptedMimeTypes.video.includes(file.mimetype) && (
                                             <FieldSet
-                                                title={<FormattedMessage id="comet.dam.file.captions" defaultMessage="Captions" />}
+                                                title={<FormattedMessage id="dextinity.dam.file.captions" defaultMessage="Captions" />}
                                                 disablePadding
                                             >
                                                 <MediaAlternativesGrid file={file} type="captions" direction="for" />
@@ -268,7 +271,7 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
                                             <FieldSet
                                                 title={
                                                     <FormattedMessage
-                                                        id="comet.dam.file.videosUsingCaptions"
+                                                        id="dextinity.dam.file.videosUsingCaptions"
                                                         defaultMessage="Videos using these captions"
                                                     />
                                                 }
@@ -281,7 +284,7 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
                                 )}
                                 <RouterTab
                                     key="duplicates"
-                                    label={intl.formatMessage({ id: "comet.dam.file.duplicates.tabTitle", defaultMessage: "Duplicates" })}
+                                    label={intl.formatMessage({ id: "dextinity.dam.file.duplicates.tabTitle", defaultMessage: "Duplicates" })}
                                     path="/duplicates"
                                 >
                                     <Duplicates fileId={file.id} />
@@ -289,7 +292,7 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
                                 {isAllowed("dependencies") && Object.keys(entityDependencyMap).length > 0 && (
                                     <RouterTab
                                         key="dependents"
-                                        label={intl.formatMessage({ id: "comet.dam.file.dependents", defaultMessage: "Dependents" })}
+                                        label={intl.formatMessage({ id: "dextinity.dam.file.dependents", defaultMessage: "Dependents" })}
                                         path="/dependents"
                                     >
                                         <DependentsList

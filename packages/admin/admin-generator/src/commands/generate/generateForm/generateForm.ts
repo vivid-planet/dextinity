@@ -80,31 +80,31 @@ export function generateForm(
         { name: "useApolloClient", importPath: "@apollo/client" },
         { name: "useQuery", importPath: "@apollo/client" },
         { name: "gql", importPath: "@apollo/client" },
-        { name: "CheckboxField", importPath: "@comet/admin" },
-        { name: "Field", importPath: "@comet/admin" },
-        { name: "filterByFragment", importPath: "@comet/admin" },
-        { name: "FinalForm", importPath: "@comet/admin" },
-        { name: "FinalFormInput", importPath: "@comet/admin" },
-        { name: "FinalFormRangeInput", importPath: "@comet/admin" },
-        { name: "FinalFormSelect", importPath: "@comet/admin" },
-        { name: "FinalFormSubmitEvent", importPath: "@comet/admin" },
-        { name: "Loading", importPath: "@comet/admin" },
-        { name: "NumberField", importPath: "@comet/admin" },
-        { name: "RadioGroupField", importPath: "@comet/admin" },
-        { name: "TextAreaField", importPath: "@comet/admin" },
-        { name: "TextField", importPath: "@comet/admin" },
-        { name: "useFormApiRef", importPath: "@comet/admin" },
-        { name: "useStackSwitchApi", importPath: "@comet/admin" },
-        { name: "ArrowLeft", importPath: "@comet/admin-icons" },
-        { name: "Lock", importPath: "@comet/admin-icons" },
-        { name: "DateTimeField", importPath: "@comet/admin-date-time" },
-        { name: "FinalFormDatePicker", importPath: "@comet/admin-date-time" },
-        { name: "BlockState", importPath: "@comet/cms-admin" },
-        { name: "createFinalFormBlock", importPath: "@comet/cms-admin" },
-        { name: "queryUpdatedAt", importPath: "@comet/cms-admin" },
-        { name: "resolveHasSaveConflict", importPath: "@comet/cms-admin" },
-        { name: "useFormSaveConflict", importPath: "@comet/cms-admin" },
-        { name: "FileUploadField", importPath: "@comet/cms-admin" },
+        { name: "CheckboxField", importPath: "@dextinity/admin" },
+        { name: "Field", importPath: "@dextinity/admin" },
+        { name: "filterByFragment", importPath: "@dextinity/admin" },
+        { name: "FinalForm", importPath: "@dextinity/admin" },
+        { name: "FinalFormInput", importPath: "@dextinity/admin" },
+        { name: "FinalFormRangeInput", importPath: "@dextinity/admin" },
+        { name: "FinalFormSelect", importPath: "@dextinity/admin" },
+        { name: "FinalFormSubmitEvent", importPath: "@dextinity/admin" },
+        { name: "Loading", importPath: "@dextinity/admin" },
+        { name: "NumberField", importPath: "@dextinity/admin" },
+        { name: "RadioGroupField", importPath: "@dextinity/admin" },
+        { name: "TextAreaField", importPath: "@dextinity/admin" },
+        { name: "TextField", importPath: "@dextinity/admin" },
+        { name: "useFormApiRef", importPath: "@dextinity/admin" },
+        { name: "useStackSwitchApi", importPath: "@dextinity/admin" },
+        { name: "ArrowLeft", importPath: "@dextinity/admin-icons" },
+        { name: "Lock", importPath: "@dextinity/admin-icons" },
+        { name: "DateTimeField", importPath: "@dextinity/admin-date-time" },
+        { name: "FinalFormDatePicker", importPath: "@dextinity/admin-date-time" },
+        { name: "BlockState", importPath: "@dextinity/cms-admin" },
+        { name: "createFinalFormBlock", importPath: "@dextinity/cms-admin" },
+        { name: "queryUpdatedAt", importPath: "@dextinity/cms-admin" },
+        { name: "resolveHasSaveConflict", importPath: "@dextinity/cms-admin" },
+        { name: "useFormSaveConflict", importPath: "@dextinity/cms-admin" },
+        { name: "FileUploadField", importPath: "@dextinity/cms-admin" },
         { name: "IconButton", importPath: "@mui/material" },
         { name: "MenuItem", importPath: "@mui/material" },
         { name: "InputAdornment", importPath: "@mui/material" },
@@ -160,7 +160,7 @@ export function generateForm(
     }
 
     if (useScopeFromContext) {
-        imports.push({ name: "useContentScope", importPath: "@comet/cms-admin" });
+        imports.push({ name: "useContentScope", importPath: "@dextinity/cms-admin" });
     }
 
     if (editMode) {
@@ -190,8 +190,8 @@ export function generateForm(
     const fileFields = formFields.filter((field) => field.type == "fileUpload");
 
     if (fileFields.length > 0) {
-        imports.push({ name: "GQLFinalFormFileUploadFragment", importPath: "@comet/cms-admin" });
-        imports.push({ name: "GQLFinalFormFileUploadDownloadableFragment", importPath: "@comet/cms-admin" });
+        imports.push({ name: "GQLFinalFormFileUploadFragment", importPath: "@dextinity/cms-admin" });
+        imports.push({ name: "GQLFinalFormFileUploadDownloadableFragment", importPath: "@dextinity/cms-admin" });
     }
 
     let hooksCode = "";

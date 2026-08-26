@@ -2,7 +2,7 @@
 title: Content Visibility
 ---
 
-COMET DXP has a built-in content visibility system that controls which content is served to different consumers. Pages in the page tree have a **visibility state**, and individual blocks inside documents can be toggled **visible or invisible**. The API uses the `x-include-invisible-content` HTTP header to decide what content to include in responses.
+Dextinity has a built-in content visibility system that controls which content is served to different consumers. Pages in the page tree have a **visibility state**, and individual blocks inside documents can be toggled **visible or invisible**. The API uses the `x-include-invisible-content` HTTP header to decide what content to include in responses.
 
 ## Page Tree Node Visibility
 
@@ -51,7 +51,7 @@ When the header is **absent**, only published pages and visible blocks are retur
 
 ### Authentication Requirement
 
-When the `x-include-invisible-content` header is present, the API **requires authentication** — even on endpoints that would normally be public (decorated with `@DisableCometGuards()`). This ensures that invisible content is never accidentally exposed to unauthenticated users.
+When the `x-include-invisible-content` header is present, the API **requires authentication** — even on endpoints that would normally be public (decorated with `@DisableDextinityGuards()`). This ensures that invisible content is never accidentally exposed to unauthenticated users.
 
 ## How Each Layer Uses the Header
 
@@ -86,7 +86,7 @@ The site preview mode allows editors to see content that is not yet live. The ad
 The **visibility toggle** ("Show only visible") in the `SitePreview` component controls **only block visibility**. When the toggle is off (showing all content), `Blocks:Invisible` is added to the header so that hidden blocks are also rendered in the preview. When the toggle is on, only visible blocks are shown — but unpublished pages remain accessible.
 
 ```typescript
-// From @comet/site-react — convertPreviewDataToHeaders
+// From @dextinity/site-react — convertPreviewDataToHeaders
 const includeInvisiblePages = !!previewData; // Always true when in preview mode
 const includeInvisibleBlocks = previewData && previewData.includeInvisible; // Controlled by the toggle
 ```
@@ -96,7 +96,7 @@ const includeInvisibleBlocks = previewData && previewData.includeInvisible; // C
 If you write custom GraphQL resolvers that have their own visibility logic, use the `@RequestContext()` decorator to respect the header. For example, a news resolver with a `visible` boolean column:
 
 ```typescript title="news.resolver.ts"
-import { RequestContext, RequestContextInterface } from "@comet/cms-api";
+import { RequestContext, RequestContextInterface } from "@dextinity/cms-api";
 
 @Resolver(() => News)
 export class NewsResolver {

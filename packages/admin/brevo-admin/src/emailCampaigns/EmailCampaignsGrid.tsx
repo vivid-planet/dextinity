@@ -17,9 +17,9 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Add as AddIcon, Edit, Statistics, Visible } from "@comet/admin-icons";
-import type { BlockInterface, ContentScope } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { Add as AddIcon, Edit, Statistics, Visible } from "@dextinity/admin-icons";
+import type { BlockInterface, ContentScope } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import { isBefore } from "date-fns";
 import type { ReactElement } from "react";
@@ -101,7 +101,7 @@ function EmailCampaignsGridToolbar() {
             <ToolbarFillSpace />
             <ToolbarActions>
                 <Button startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add" variant="primary">
-                    <FormattedMessage id="cometBrevoModule.emailCampaign.newEmailCampaign" defaultMessage="New email campaign" />
+                    <FormattedMessage id="dextinity.emailCampaign.newEmailCampaign" defaultMessage="New email campaign" />
                 </Button>
             </ToolbarActions>
         </DataGridToolbar>
@@ -125,16 +125,16 @@ export function EmailCampaignsGrid({
     const sendingStateOptions: { label: string; value: string }[] = [
         {
             value: "SENT",
-            label: intl.formatMessage({ id: "cometBrevoModule.emailCampaign.sent", defaultMessage: "Sent" }),
+            label: intl.formatMessage({ id: "dextinity.emailCampaign.sent", defaultMessage: "Sent" }),
         },
-        { value: "DRAFT", label: intl.formatMessage({ id: "cometBrevoModule.emailCampaign.draft", defaultMessage: "Draft" }) },
-        { value: "SCHEDULED", label: intl.formatMessage({ id: "cometBrevoModule.emailCampaign.scheduled", defaultMessage: "Scheduled" }) },
+        { value: "DRAFT", label: intl.formatMessage({ id: "dextinity.emailCampaign.draft", defaultMessage: "Draft" }) },
+        { value: "SCHEDULED", label: intl.formatMessage({ id: "dextinity.emailCampaign.scheduled", defaultMessage: "Scheduled" }) },
     ];
 
     const columns: GridColDef<GQLEmailCampaignsListFragment>[] = [
         {
             field: "updatedAt",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.emailCampaign.updatedAt", defaultMessage: "Updated At" }),
+            headerName: intl.formatMessage({ id: "dextinity.emailCampaign.updatedAt", defaultMessage: "Updated At" }),
             type: "dateTime",
             valueGetter: (params, row) => row.updatedAt && new Date(row.updatedAt),
             width: 150,
@@ -142,17 +142,21 @@ export function EmailCampaignsGrid({
         },
         {
             field: "createdAt",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.emailCampaign.createdAt", defaultMessage: "Created At" }),
+            headerName: intl.formatMessage({ id: "dextinity.emailCampaign.createdAt", defaultMessage: "Created At" }),
             type: "dateTime",
             valueGetter: (params, row) => row.updatedAt && new Date(row.updatedAt),
             width: 150,
             filterable: false,
         },
-        { field: "title", headerName: intl.formatMessage({ id: "cometBrevoModule.emailCampaign.title", defaultMessage: "Title" }), flex: 2 },
-        { field: "subject", headerName: intl.formatMessage({ id: "cometBrevoModule.emailCampaign.subject", defaultMessage: "Subject" }), flex: 1 },
+        { field: "title", headerName: intl.formatMessage({ id: "dextinity.emailCampaign.title", defaultMessage: "Title" }), flex: 2 },
+        {
+            field: "subject",
+            headerName: intl.formatMessage({ id: "dextinity.emailCampaign.subject", defaultMessage: "Subject" }),
+            flex: 1,
+        },
         {
             field: "sendingState",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.emailCampaign.sendingState", defaultMessage: "Sending State" }),
+            headerName: intl.formatMessage({ id: "dextinity.emailCampaign.sendingState", defaultMessage: "Sending State" }),
             renderCell: ({ value }) => <SendingStateColumn sendingState={value} />,
             width: 150,
             sortable: false,
@@ -161,14 +165,14 @@ export function EmailCampaignsGrid({
         },
         {
             field: "scheduledAt",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.emailCampaign.scheduledAt", defaultMessage: "Scheduled At" }),
+            headerName: intl.formatMessage({ id: "dextinity.emailCampaign.scheduledAt", defaultMessage: "Scheduled At" }),
             type: "dateTime",
             valueGetter: (params, row) => row.updatedAt && new Date(row.updatedAt),
             width: 200,
         },
         {
             field: "brevoTargetGroups",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.emailCampaign.targetGroups", defaultMessage: "Target groups" }),
+            headerName: intl.formatMessage({ id: "dextinity.emailCampaign.targetGroups", defaultMessage: "Target groups" }),
             width: 150,
             renderCell: ({ value }) => value.map((value: { title: string }) => value.title).join(", "),
             filterable: false,

@@ -185,11 +185,11 @@ Run from `packages/admin/admin`: `pnpm run test:unit`, `pnpm run test:storybook`
 
 ## Theme
 
-Components read their colors and metrics from CSS custom properties (`var(--comet-button-…)`, `var(--comet-color-…)`, `var(--comet-typography-…)`) with **no fallback** — an unthemed component renders visibly unstyled rather than silently drifting to a default. There is no runtime JS theme object.
+Components read their colors and metrics from CSS custom properties (`var(--dextinity-button-…)`, `var(--dextinity-color-…)`, `var(--dextinity-typography-…)`) with **no fallback** — an unthemed component renders visibly unstyled rather than silently drifting to a default. There is no runtime JS theme object.
 
 ### Token layers
 
-The tokens are defined in five SCSS partials under [`theme/`](theme), composed into the provider module with `@use` and wrapped in a single `@layer comet`: `_primitives.scss` (raw values, internal), `_brand.scss`, `_responsive.scss`, `_semantic.scss`, and `_components.scss`. [`generateThemeTokens.ts`](cli/generateThemeTokens.ts) generates them, along with the prop-value types ([`theme/types.ts`](theme/types.ts)).
+The tokens are defined in five SCSS partials under [`theme/`](theme), composed into the provider module with `@use` and wrapped in a single `@layer dextinity`: `_primitives.scss` (raw values, internal), `_brand.scss`, `_responsive.scss`, `_semantic.scss`, and `_components.scss`. [`generateThemeTokens.ts`](cli/generateThemeTokens.ts) generates them, along with the prop-value types ([`theme/types.ts`](theme/types.ts)).
 
 ### Regenerating the tokens
 

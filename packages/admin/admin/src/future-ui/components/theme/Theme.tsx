@@ -23,7 +23,7 @@ export interface ThemeProps extends ComponentPropsWithoutRef<"div"> {
  */
 export function Theme({ colorScheme = "light", className, children, ...restProps }: ThemeProps) {
     return (
-        <div {...restProps} data-comet-color-scheme={colorScheme} className={clsx(styles.root, className)}>
+        <div {...restProps} data-dextinity-color-scheme={colorScheme} className={clsx(styles.root, className)}>
             {children}
         </div>
     );

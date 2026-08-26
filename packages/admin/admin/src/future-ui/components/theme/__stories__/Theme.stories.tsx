@@ -115,7 +115,7 @@ export const SwitchSystemColorScheme: Story = {
 /**
  * A consumer remaps the brand primary color to a different primitive. The
  * override is unlayered, so it wins over the shipped tokens (which live in
- * `@layer comet`) and cascades to every component that reads the primary color
+ * `@layer dextinity`) and cascades to every component that reads the primary color
  * — without touching the primitive layer.
  */
 export const OverrideBrandToken: Story = {

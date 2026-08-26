@@ -1,17 +1,17 @@
 .root {
     margin: 0;
-    color: var(--comet-color-foreground-default);
+    color: var(--dextinity-color-foreground-default);
     font-family: inherit;
 
     &[data-variant="headline"] {
-        font-size: var(--comet-typography-h1-size);
-        font-weight: var(--comet-font-weight-semibold);
-        line-height: var(--comet-typography-h1-line-height);
+        font-size: var(--dextinity-typography-h1-size);
+        font-weight: var(--dextinity-font-weight-semibold);
+        line-height: var(--dextinity-typography-h1-line-height);
     }
 
     &[data-variant="body"] {
-        font-size: var(--comet-typography-body-md-size);
-        font-weight: var(--comet-font-weight-regular);
-        line-height: var(--comet-typography-body-md-line-height);
+        font-size: var(--dextinity-typography-body-md-size);
+        font-weight: var(--dextinity-font-weight-regular);
+        line-height: var(--dextinity-typography-body-md-line-height);
     }
 }

@@ -1,6 +1,6 @@
 # Future UI
 
-This sub-package is an **experimental**, UI-only React component library inside `@comet/admin`, consumed as `@comet/admin/future-ui`. It is self-contained: it keeps its own directory and contains no routing, forms, data fetching, or other non-UI logic. Whether it stays a separate sub-package or later becomes part of `@comet/admin`'s own UI layer is still open; the UI-only separation holds either way.
+This sub-package is an **experimental**, UI-only React component library inside `@dextinity/admin`, consumed as `@dextinity/admin/future-ui`. It is self-contained: it keeps its own directory and contains no routing, forms, data fetching, or other non-UI logic. Whether it stays a separate sub-package or later becomes part of `@dextinity/admin`'s own UI layer is still open; the UI-only separation holds either way.
 
 Future UI builds from an unstyled foundation rather than evolving the existing MUI-based components; `@base-ui/react` is the chosen foundation.
 
@@ -11,7 +11,7 @@ Any export may change or be removed at any time, without deprecation notice. Eve
 ## Non-goals
 
 - **No non-UI logic.** Forms (`final-form`, `react-hook-form`), routing (`react-router`), data fetching (Apollo), and similar concerns stay out.
-- **No dependency on `@mui/material`, `@mui/system`, Emotion, or any other part of the existing `@comet/admin` styling stack.** Future UI is a fresh foundation; cross-imports reintroduce the competing system it removes.
+- **No dependency on `@mui/material`, `@mui/system`, Emotion, or any other part of the existing `@dextinity/admin` styling stack.** Future UI is a fresh foundation; cross-imports reintroduce the competing system it removes.
 
 ## Folder and file names
 
@@ -149,7 +149,7 @@ Each declared prop is exposed as a control through `argTypes`, by kind:
 
 #### Dev story
 
-`__stories__/<name>.dev.stories.tsx`, optional, nests its title under a `Dev` segment (`Future UI/<Component>/Dev/<Name>`) and sets `tags: ["!autodocs"]` in its meta, keeping these out of the consumer docs. A dev story serves any development, testing, or debugging need, so add them freely — e.g. reproduce a bug in a dev story and use it to confirm the fix, rather than reaching for the Comet demo or a consuming project.
+`__stories__/<name>.dev.stories.tsx`, optional, nests its title under a `Dev` segment (`Future UI/<Component>/Dev/<Name>`) and sets `tags: ["!autodocs"]` in its meta, keeping these out of the consumer docs. A dev story serves any development, testing, or debugging need, so add them freely — e.g. reproduce a bug in a dev story and use it to confirm the fix, rather than reaching for the Dextinity demo or a consuming project.
 
 #### Figma
 
@@ -202,7 +202,7 @@ The partials and types are generated from a design-token export, not edited manu
 5. From the repo root, run the generator, pointing it at that directory by absolute path:
 
     ```bash
-    pnpm --filter @comet/admin run generate-future-ui-theme-tokens /absolute/path/to/design-tokens
+    pnpm --filter @dextinity/admin run generate-future-ui-theme-tokens /absolute/path/to/design-tokens
     ```
 
 ### Selecting a color scheme
@@ -211,7 +211,7 @@ The partials and types are generated from a design-token export, not edited manu
 
 ## CLI
 
-Maintainer scripts, run through `pnpm --filter @comet/admin run …`:
+Maintainer scripts, run through `pnpm --filter @dextinity/admin run …`:
 
 - **`future-ui-figma list`** prints the DDS component inventory as JSON — every component or component set a designer has marked for development in Figma (dev status "Ready for development" or "Completed"), skipping non-public `_`-prefixed names. It reads the Figma file over the REST API, so `FIGMA_TOKEN` must be set to a Figma [personal access token](https://developers.figma.com/docs/rest-api/personal-access-tokens/), or `list` fails with an `auth_missing` error. The token needs only the `file_content:read` scope.
 - **`future-ui-figma describe-target <component>`** prints the props one component's Figma design says it should have as JSON — each prop's type, an enum's options, and its default value.

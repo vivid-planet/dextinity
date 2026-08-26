@@ -31,7 +31,7 @@ export { BlockAdminComponentRoot };
 
 const ChildrenContainer = styled("div")`
     .DextinityAdminRte-root > .DextinityAdminRteToolbar-root,
-    .TipTapToolbar-root {
+    .DextinityAdminTipTapToolbar-root {
         top: 70px;
     }
 `;

@@ -2,12 +2,11 @@
 "@dextinity/cms-admin": minor
 ---
 
-Support heading-only TipTap rich text blocks via the new `allowParagraph` and `defaultHeadingLevel` options
+Support heading-only TipTap rich text blocks
 
-`createTipTapRichTextBlock` accepts two new options:
+`paragraph` is now a text block type in `supports`, next to `heading`, `ordered-list` and `unordered-list`. Leaving it out results in a heading-only block (e.g. a headline): the text block type select only offers headings and the editor starts with a heading instead of a paragraph.
 
-- `allowParagraph?: boolean` (defaults to `true`) — set to `false` for a block without paragraphs, for instance a headline. The text block type select then only offers headings and the editor starts with a heading instead of a paragraph. Requires `heading` in `supports` and cannot be combined with list support, because a list item's content starts with a paragraph.
-- `defaultHeadingLevel?: number` — the heading level of newly created headings. Defaults to the lowest level in `headingLevels` and must be one of them.
+`createTipTapRichTextBlock` also accepts a new `defaultHeadingLevel?: number` option, the heading level of newly created headings. It defaults to the lowest level in `headingLevels` and must be one of them.
 
 **Example**
 
@@ -18,7 +17,19 @@ createTipTapRichTextBlock({
     supports: ["heading", "bold", "italic"],
     headingLevels: [2, 3, 4],
     defaultHeadingLevel: 3,
-    allowParagraph: false,
     maxTextBlocks: 1,
 });
 ```
+
+**Breaking change**
+
+Blocks that pass `supports` need `paragraph` added to keep their paragraphs — without it, existing paragraph content is no longer valid:
+
+```diff
+ createTipTapRichTextBlock({
+-    supports: ["bold", "italic"],
++    supports: ["paragraph", "bold", "italic"],
+ });
+```
+
+`supports` must contain at least one text block type (`paragraph` or `heading`), and list support requires `paragraph`, because a list item's content starts with a paragraph. Both are checked when the block is created. Blocks that don't pass `supports` are unaffected, `paragraph` is part of the default.

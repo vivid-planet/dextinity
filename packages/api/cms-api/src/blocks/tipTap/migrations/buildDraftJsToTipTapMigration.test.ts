@@ -289,7 +289,6 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
                 supports: ["heading", "bold"],
                 headingLevels: [2, 3, 4],
                 defaultHeadingLevel: 3,
-                allowParagraph: false,
                 migrateFromDraftJs: true,
             },
             "MigratedHeadingOnly",

@@ -2,12 +2,11 @@
 "@dextinity/cms-api": minor
 ---
 
-Support heading-only TipTap rich text blocks via the new `allowParagraph` and `defaultHeadingLevel` options
+Support heading-only TipTap rich text blocks
 
-`createTipTapRichTextBlock` accepts two new options, mirroring the ones added to `@dextinity/cms-admin`:
+`paragraph` is now a text block type in `supports`, next to `heading`, `ordered-list` and `unordered-list`, mirroring the change in `@dextinity/cms-admin`. Leaving it out results in a heading-only block (e.g. a headline), and content containing a paragraph is rejected during validation.
 
-- `allowParagraph?: boolean` (defaults to `true`) — set to `false` for a block without paragraphs, for instance a headline. Content containing a paragraph is rejected during validation. Requires `heading` in `supports` and cannot be combined with list support, because a list item's content starts with a paragraph.
-- `defaultHeadingLevel?: number` — the heading level used for headings that don't specify one. Defaults to the lowest level in `headingLevels` and must be one of them. `migrateFromDraftJs` uses it for Draft.js blocks that don't carry a heading level, so migrated content doesn't fall back to paragraphs the schema doesn't allow.
+`createTipTapRichTextBlock` also accepts a new `defaultHeadingLevel?: number` option, the heading level used for headings that don't specify one. It defaults to the lowest level in `headingLevels` and must be one of them. `migrateFromDraftJs` uses it for Draft.js blocks that don't carry a heading level, so migrated content doesn't fall back to paragraphs the schema doesn't allow.
 
 **Example**
 
@@ -18,7 +17,19 @@ createTipTapRichTextBlock({
     supports: ["heading", "bold", "italic"],
     headingLevels: [2, 3, 4],
     defaultHeadingLevel: 3,
-    allowParagraph: false,
     maxTextBlocks: 1,
 });
 ```
+
+**Breaking change**
+
+Blocks that pass `supports` need `paragraph` added to keep their paragraphs — without it, stored paragraph content no longer passes validation:
+
+```diff
+ createTipTapRichTextBlock({
+-    supports: ["bold", "italic"],
++    supports: ["paragraph", "bold", "italic"],
+ });
+```
+
+`supports` must contain at least one text block type (`paragraph` or `heading`), and list support requires `paragraph`, because a list item's content starts with a paragraph. Both are checked when the block is created. Blocks that don't pass `supports` are unaffected, `paragraph` is part of the default.

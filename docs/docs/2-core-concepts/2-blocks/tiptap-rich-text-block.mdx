@@ -52,7 +52,7 @@ Most features of the Draft.js `RichTextBlock` have a direct equivalent in the Ti
 | `rte.supports` (`SupportedThings[]`)            | `supports` (`TipTapSupports[]`)                                                                      |
 | `bold`, `italic`, `strikethrough`, `sub`, `sup` | `bold`, `italic`, `strike`, `sub`, `sup`                                                             |
 | `header-one` … `header-six`                     | `heading` support + the [text-block-type select](#text-block-type-and-styling-selects) (Heading 1–6) |
-| `rte.standardBlockType`                         | [`defaultHeadingLevel`](#restricting-the-text-block-types) (+ `allowParagraph: false`)               |
+| `rte.standardBlockType`                         | [`defaultHeadingLevel`](#restricting-the-text-block-types)                                           |
 | `ordered-list`, `unordered-list`                | `ordered-list`, `unordered-list`                                                                     |
 | `history`                                       | `history` (Admin only)                                                                               |
 | `link`, `links-remove`                          | pass a `link` block (automatically enables `link` support)                                           |
@@ -329,11 +329,10 @@ const nodeMapping: Record<string, TipTapNodeHandler> = {
 
 ### Restricting the text block types
 
-By default, the text block type select offers a paragraph and all six heading levels. Three options narrow this down:
+The text block types are part of `supports`: `paragraph`, `heading`, `ordered-list` and `unordered-list`. Leaving `paragraph` out results in a **heading-only block**. Two further options narrow the headings down:
 
 - `headingLevels` — the selectable heading levels. Defaults to `[1, 2, 3, 4, 5, 6]`.
 - `defaultHeadingLevel` — the level of newly created headings. Defaults to the lowest level in `headingLevels`.
-- `allowParagraph` — set to `false` to remove the paragraph, leaving a **heading-only block**.
 
 A heading-only block is the TipTap equivalent of the Draft.js pattern of a `RichTextBlock` restricted to `header-*` block types with a `standardBlockType` — for instance the headline part of a heading block:
 
@@ -343,7 +342,6 @@ export const TipTapHeadlineBlock = createTipTapRichTextBlock(
         supports: ["heading", "bold", "italic"],
         headingLevels: [2, 3, 4],
         defaultHeadingLevel: 3,
-        allowParagraph: false,
         maxTextBlocks: 1,
     },
     { name: "TipTapHeadline" },
@@ -355,18 +353,17 @@ export const TipTapHeadlineBlock = createTipTapRichTextBlock({
     supports: ["heading", "bold", "italic"],
     headingLevels: [2, 3, 4],
     defaultHeadingLevel: 3,
-    allowParagraph: false,
     maxTextBlocks: 1,
 });
 ```
 
 The editor starts with an H3, the select only offers _Heading 2_ – _Heading 4_, and `Mod-Alt-2/3/4` switch between them (levels outside `headingLevels` have no shortcut).
 
-The options are validated when the block is created: `headingLevels` must be a non-empty array of unique integers between 1 and 6, and `defaultHeadingLevel` must be one of them. `allowParagraph: false` requires `heading` in `supports` — otherwise no text block type would be left — and cannot be combined with `ordered-list`/`unordered-list`, because a list item's content starts with a paragraph.
+The options are validated when the block is created: `headingLevels` must be a non-empty array of unique integers between 1 and 6, and `defaultHeadingLevel` must be one of them. `supports` must contain at least one text block type (`paragraph` or `heading`), and list support requires `paragraph`, because a list item's content starts with a paragraph.
 
 :::caution Existing content
 
-The API rejects content that the configuration doesn't allow: a heading level outside `headingLevels`, or a paragraph in a block with `allowParagraph: false`. Narrowing these options for a block that already holds content therefore requires a [migration](./5-migrations.mdx). For content coming from the Draft.js block, the built-in [`migrateFromDraftJs`](#migrating-existing-content) migration already converts Draft.js blocks without a heading level into a heading with `defaultHeadingLevel`.
+The API rejects content that the configuration doesn't allow: a heading level outside `headingLevels`, or a paragraph in a block without `paragraph` in `supports`. Narrowing these options for a block that already holds content therefore requires a [migration](./5-migrations.mdx). For content coming from the Draft.js block, the built-in [`migrateFromDraftJs`](#migrating-existing-content) migration already converts Draft.js blocks without a heading level into a heading with `defaultHeadingLevel`.
 
 :::
 

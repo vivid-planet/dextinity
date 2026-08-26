@@ -232,7 +232,7 @@ describe("createTipTapRichTextBlock validation", () => {
     });
 
     describe("bold-only schema", () => {
-        const block = createTipTapRichTextBlock({ supports: ["bold"] }, "TestBoldOnly");
+        const block = createTipTapRichTextBlock({ supports: ["paragraph", "bold"] }, "TestBoldOnly");
 
         it("should accept bold text", async () => {
             const input = block.blockInputFactory({
@@ -322,7 +322,7 @@ describe("createTipTapRichTextBlock validation", () => {
     });
 
     describe("schema with underline support", () => {
-        const block = createTipTapRichTextBlock({ supports: ["underline"] }, "TestUnderline");
+        const block = createTipTapRichTextBlock({ supports: ["paragraph", "underline"] }, "TestUnderline");
 
         it("should accept underline marks", async () => {
             const input = block.blockInputFactory({
@@ -344,7 +344,7 @@ describe("createTipTapRichTextBlock validation", () => {
     describe("schema with text block styles", () => {
         const block = createTipTapRichTextBlock(
             {
-                supports: ["bold", "heading"],
+                supports: ["paragraph", "bold", "heading"],
                 textBlockStyles: [{ name: "intro", appliesTo: ["paragraph"] }, { name: "highlight" }],
             },
             "TestBlockStyles",
@@ -405,7 +405,7 @@ describe("createTipTapRichTextBlock validation", () => {
     describe("schema with text block styles and lists", () => {
         const block = createTipTapRichTextBlock(
             {
-                supports: ["bold", "heading", "ordered-list", "unordered-list"],
+                supports: ["paragraph", "bold", "heading", "ordered-list", "unordered-list"],
                 textBlockStyles: [
                     { name: "intro", appliesTo: ["paragraph"] },
                     { name: "listStyle", appliesTo: ["ordered-list", "unordered-list"] },
@@ -500,7 +500,7 @@ describe("createTipTapRichTextBlock validation", () => {
     describe("inlineStyles", () => {
         const block = createTipTapRichTextBlock(
             {
-                supports: ["bold"],
+                supports: ["paragraph", "bold"],
                 inlineStyles: [{ name: "highlight" }, { name: "tag" }],
             },
             "TestInlineStyles",
@@ -551,7 +551,7 @@ describe("createTipTapRichTextBlock validation", () => {
     });
 
     describe("inlineStyles rejected when not configured", () => {
-        const block = createTipTapRichTextBlock({ supports: ["bold"] }, "TestNoInlineStyles");
+        const block = createTipTapRichTextBlock({ supports: ["paragraph", "bold"] }, "TestNoInlineStyles");
 
         it("should reject inlineStyle mark when inlineStyles not configured", async () => {
             const input = block.blockInputFactory({
@@ -573,7 +573,7 @@ describe("createTipTapRichTextBlock validation", () => {
     describe("inlineStyles with appliesTo", () => {
         const block = createTipTapRichTextBlock(
             {
-                supports: ["bold", "heading"],
+                supports: ["paragraph", "bold", "heading"],
                 inlineStyles: [
                     { name: "highlight" },
                     { name: "tag", appliesTo: ["paragraph"] },
@@ -688,8 +688,8 @@ describe("createTipTapRichTextBlock validation", () => {
         });
     });
 
-    describe("minimal schema (no supports)", () => {
-        const block = createTipTapRichTextBlock({ supports: [] }, "TestMinimal");
+    describe("minimal schema (paragraph only)", () => {
+        const block = createTipTapRichTextBlock({ supports: ["paragraph"] }, "TestMinimal");
 
         it("should accept a plain paragraph", async () => {
             const input = block.blockInputFactory({
@@ -963,7 +963,7 @@ describe("createTipTapRichTextBlock validation", () => {
     describe("schema with placeholders", () => {
         const block = createTipTapRichTextBlock(
             {
-                supports: ["bold"],
+                supports: ["paragraph", "bold"],
                 placeholders: [{ name: "firstName" }, { name: "lastName" }],
             },
             "TestPlaceholders",
@@ -1007,7 +1007,7 @@ describe("createTipTapRichTextBlock validation", () => {
     });
 
     describe("schema without placeholders", () => {
-        const block = createTipTapRichTextBlock({ supports: ["bold"] }, "TestNoPlaceholders");
+        const block = createTipTapRichTextBlock({ supports: ["paragraph", "bold"] }, "TestNoPlaceholders");
 
         it("should reject a placeholder node when no placeholders are configured", async () => {
             const input = block.blockInputFactory({
@@ -1287,9 +1287,9 @@ describe("createTipTapRichTextBlock validation", () => {
         });
     });
 
-    describe("allowParagraph and defaultHeadingLevel options", () => {
+    describe("heading-only schema (no paragraph in supports)", () => {
         const block = createTipTapRichTextBlock(
-            { supports: ["heading", "bold"], headingLevels: [2, 3, 4], defaultHeadingLevel: 3, allowParagraph: false },
+            { supports: ["heading", "bold"], headingLevels: [2, 3, 4], defaultHeadingLevel: 3 },
             "TestHeadingOnly",
         );
 
@@ -1304,7 +1304,7 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(errors).toHaveLength(0);
         });
 
-        it("should reject a paragraph when paragraphs are not allowed", async () => {
+        it("should reject a paragraph when paragraph is not in supports", async () => {
             const input = block.blockInputFactory({
                 tipTapContent: {
                     type: "doc",
@@ -1333,20 +1333,18 @@ describe("createTipTapRichTextBlock validation", () => {
             ).toThrow();
         });
 
-        it("should throw when paragraphs are disabled without heading support", () => {
-            expect(() => createTipTapRichTextBlock({ supports: ["bold"], allowParagraph: false }, "TestNoTextBlockTypeLeft")).toThrow();
+        it("should throw when supports contains no text block type", () => {
+            expect(() => createTipTapRichTextBlock({ supports: ["bold"] }, "TestNoTextBlockTypeLeft")).toThrow();
         });
 
-        it("should throw when paragraphs are disabled together with list support", () => {
-            expect(() =>
-                createTipTapRichTextBlock({ supports: ["heading", "unordered-list"], allowParagraph: false }, "TestHeadingOnlyWithLists"),
-            ).toThrow();
+        it("should throw when lists are supported without a paragraph", () => {
+            expect(() => createTipTapRichTextBlock({ supports: ["heading", "unordered-list"] }, "TestHeadingOnlyWithLists")).toThrow();
         });
     });
 
     describe("childBlocks option", () => {
         const block = createTipTapRichTextBlock(
-            { supports: ["bold"], childBlocks: { externalLink: { block: ExternalLinkBlock, display: "block" } } },
+            { supports: ["paragraph", "bold"], childBlocks: { externalLink: { block: ExternalLinkBlock, display: "block" } } },
             "TestChildBlocks",
         );
 
@@ -1384,7 +1382,7 @@ describe("createTipTapRichTextBlock validation", () => {
         });
 
         it("should reject a child block node when no childBlocks are configured", async () => {
-            const blockWithoutChildBlocks = createTipTapRichTextBlock({ supports: ["bold"] }, "TestNoChildBlocks");
+            const blockWithoutChildBlocks = createTipTapRichTextBlock({ supports: ["paragraph", "bold"] }, "TestNoChildBlocks");
             const input = blockWithoutChildBlocks.blockInputFactory({
                 tipTapContent: cmsBlockNode("externalLink", { targetUrl: "https://example.com", openInNewWindow: false, noFollow: false }),
             });
@@ -1407,7 +1405,7 @@ describe("createTipTapRichTextBlock validation", () => {
 
     describe("inline childBlocks option", () => {
         const block = createTipTapRichTextBlock(
-            { supports: ["bold"], childBlocks: { externalLink: { block: ExternalLinkBlock, display: "inline" } } },
+            { supports: ["paragraph", "bold"], childBlocks: { externalLink: { block: ExternalLinkBlock, display: "inline" } } },
             "TestInlineChildBlocks",
         );
 
@@ -1465,7 +1463,7 @@ describe("createTipTapRichTextBlock validation", () => {
 });
 
 describe("createTipTapRichTextBlock block typing", () => {
-    const block = createTipTapRichTextBlock({ supports: ["bold"] }, "TestTyping");
+    const block = createTipTapRichTextBlock({ supports: ["paragraph", "bold"] }, "TestTyping");
 
     // The typed return value is what makes the block usable in fixtures: `blockInputFactory`
     // validates the `tipTapContent` shape at the call site (no type annotation needed) and the

@@ -149,7 +149,7 @@ export const ReadOnly: Story = {
     },
 };
 
-const BoldOnlyBlock = createTipTapRichTextBlock({ supports: ["bold"] });
+const BoldOnlyBlock = createTipTapRichTextBlock({ supports: ["paragraph", "bold"] });
 
 function BoldOnlyStory() {
     const [state, setState] = useState<TipTapRichTextBlockState>(BoldOnlyBlock.defaultValues());
@@ -343,7 +343,7 @@ export const Placeholders: StoryObj<typeof PlaceholdersStory> = {
 };
 
 const PlaceholdersWithContentBlock = createTipTapRichTextBlock({
-    supports: ["bold", "italic"],
+    supports: ["paragraph", "bold", "italic"],
     placeholders: [
         { name: "firstName", label: "First Name" },
         { name: "lastName", label: "Last Name" },
@@ -566,7 +566,7 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
 };
 
 const ListTextBlockStylesBlock = createTipTapRichTextBlock({
-    supports: ["bold", "ordered-list", "unordered-list", "heading"],
+    supports: ["paragraph", "bold", "ordered-list", "unordered-list", "heading"],
     textBlockStyles: [
         {
             name: "intro",
@@ -1165,7 +1165,6 @@ const HeadingOnlyBlock = createTipTapRichTextBlock({
     supports: ["history", "heading", "bold", "italic"],
     headingLevels: [2, 3, 4],
     defaultHeadingLevel: 3,
-    allowParagraph: false,
 });
 
 function HeadingOnlyStory() {
@@ -1244,7 +1243,6 @@ const HeadingOnlyWithTextBlockStylesBlock = createTipTapRichTextBlock({
     supports: ["heading", "bold"],
     headingLevels: [2, 3, 4],
     defaultHeadingLevel: 3,
-    allowParagraph: false,
     textBlockStyles: [
         {
             name: "headline550",

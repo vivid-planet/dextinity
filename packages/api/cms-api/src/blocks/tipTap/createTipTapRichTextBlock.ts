@@ -43,6 +43,7 @@ export type TipTapSupports =
     | "strike"
     | "sub"
     | "sup"
+    | "paragraph"
     | "heading"
     | "ordered-list"
     | "unordered-list"
@@ -109,6 +110,7 @@ const defaultSupports: TipTapSupports[] = [
     "strike",
     "sub",
     "sup",
+    "paragraph",
     "heading",
     "ordered-list",
     "unordered-list",
@@ -160,14 +162,6 @@ export interface CreateTipTapRichTextBlockOptions {
      * `headingLevels`. Must be one of `headingLevels`, otherwise an error is thrown.
      */
     defaultHeadingLevel?: number;
-    /**
-     * Allows paragraphs as a text block type. Defaults to `true`.
-     *
-     * Set to `false` for a heading-only block (e.g. a headline). Content containing a paragraph
-     * will be rejected during validation. Requires `heading` in `supports` and cannot be combined
-     * with list support, because list items are built from paragraphs.
-     */
-    allowParagraph?: boolean;
     /**
      * Enables best-effort migration of DraftJS-based RichTextBlock data
      * (`{ draftContent: { blocks, entityMap } }`) into TipTap data.
@@ -614,7 +608,6 @@ export function createTipTapRichTextBlock(
         listLevelMax,
         headingLevels = allHeadingLevels,
         defaultHeadingLevel,
-        allowParagraph = true,
         migrateFromDraftJs = false,
     }: CreateTipTapRichTextBlockOptions = {},
     nameOrOptions: BlockFactoryNameOrOptions = "TipTapRichText",
@@ -632,12 +625,14 @@ export function createTipTapRichTextBlock(
 
     const resolvedDefaultHeadingLevel = (defaultHeadingLevel ?? Math.min(...headingLevels)) as HeadingLevel;
 
+    const allowParagraph = supports.includes("paragraph");
+
     if (!allowParagraph) {
         if (!supports.includes("heading")) {
-            throw new Error('allowParagraph: false requires "heading" in supports, otherwise no text block type is left');
+            throw new Error('supports must contain at least one text block type ("paragraph" or "heading")');
         }
         if (supports.includes("ordered-list") || supports.includes("unordered-list")) {
-            throw new Error("allowParagraph: false cannot be combined with list support, because a list item's content starts with a paragraph");
+            throw new Error('List support requires "paragraph" in supports, because a list item\'s content starts with a paragraph');
         }
     }
 

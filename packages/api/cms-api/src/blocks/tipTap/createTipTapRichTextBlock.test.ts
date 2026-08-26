@@ -1241,6 +1241,52 @@ describe("createTipTapRichTextBlock validation", () => {
         });
     });
 
+    describe("headingLevels option", () => {
+        const block = createTipTapRichTextBlock({ headingLevels: [2, 3, 4] }, "TestHeadingLevels");
+
+        it("should accept a heading within the allowed levels", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "Heading" }] }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
+        });
+
+        it("should reject a heading level outside the allowed levels", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Heading" }] }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
+            expect(errors[0].property).toBe("tipTapContent");
+        });
+
+        it("should throw when headingLevels is invalid", () => {
+            expect(() => createTipTapRichTextBlock({ headingLevels: [] }, "TestInvalidHeadingLevelsEmpty")).toThrow();
+            expect(() => createTipTapRichTextBlock({ headingLevels: [0, 2, 3] }, "TestInvalidHeadingLevelsZero")).toThrow();
+            expect(() => createTipTapRichTextBlock({ headingLevels: [1, 7] }, "TestInvalidHeadingLevelsSeven")).toThrow();
+            expect(() => createTipTapRichTextBlock({ headingLevels: [1, 1, 2] }, "TestInvalidHeadingLevelsDuplicate")).toThrow();
+            expect(() => createTipTapRichTextBlock({ headingLevels: [1.5, 2] }, "TestInvalidHeadingLevelsFraction")).toThrow();
+        });
+
+        it("should accept content without headings regardless of headingLevels", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "paragraph", content: [{ type: "text", text: "Just text" }] }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
+        });
+    });
+
     describe("childBlocks option", () => {
         const block = createTipTapRichTextBlock(
             { supports: ["bold"], childBlocks: { externalLink: { block: ExternalLinkBlock, display: "block" } } },

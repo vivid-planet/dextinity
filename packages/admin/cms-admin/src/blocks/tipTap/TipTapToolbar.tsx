@@ -165,6 +165,7 @@ export const TipTapToolbar = ({
     linkBlock,
     childBlocks,
     listLevelMax,
+    headingLevels = [1, 2, 3, 4, 5, 6],
 }: {
     editor: Editor;
     supports: TipTapSupports[];
@@ -174,6 +175,7 @@ export const TipTapToolbar = ({
     linkBlock?: BlockInterface & LinkBlockInterface;
     childBlocks: Record<string, TipTapChildBlock>;
     listLevelMax?: number;
+    headingLevels?: number[];
 }) => {
     const intl = useIntl();
     const [moreAnchorEl, setMoreAnchorEl] = useState<null | HTMLElement>(null);
@@ -368,7 +370,7 @@ export const TipTapToolbar = ({
                             <MenuItem value="paragraph" dense>
                                 <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockType.paragraph" defaultMessage="Paragraph" />
                             </MenuItem>
-                            {([1, 2, 3, 4, 5, 6] as const).map((level) => (
+                            {headingLevels.map((level) => (
                                 <MenuItem key={level} value={String(level)} dense>
                                     <FormattedMessage
                                         id="dextinity.blocks.tipTapRichText.textBlockType.heading"

@@ -1,4 +1,5 @@
 import type { JSONContent } from "@tiptap/core";
+import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import type { Schema } from "@tiptap/pm/model";
 import type { ClassConstructor } from "class-transformer";
 
@@ -32,13 +33,14 @@ function isDraftJsContent(value: unknown): value is DraftJsContent {
 interface BuildOptions extends ConvertOptions {
     schema: Schema;
     maxTextBlocks?: number;
+    headingLevels: HeadingLevel[];
     link?: Block;
 }
 
 const EMPTY_DOC: JSONContent = { type: "doc", content: [{ type: "paragraph" }] };
 
 export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConstructor<BlockMigrationInterface> {
-    const { schema, maxTextBlocks, supports, link, textBlockStyleMap, inlineStyleMap, listLevelMax } = options;
+    const { schema, maxTextBlocks, headingLevels, supports, link, textBlockStyleMap, inlineStyleMap, listLevelMax } = options;
 
     return class DraftJsToTipTapMigration extends BlockMigration<(from: From) => To> implements BlockMigrationInterface {
         public readonly toVersion = 1;
@@ -53,7 +55,7 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
             }
 
             const converted = convertDraftJsToTipTap(from.draftContent, { supports, link, textBlockStyleMap, inlineStyleMap, listLevelMax });
-            if (isValidTipTapContentSync(converted, schema, { maxTextBlocks, listLevelMax })) {
+            if (isValidTipTapContentSync(converted, schema, { maxTextBlocks, listLevelMax, headingLevels })) {
                 return { tipTapContent: converted };
             }
 
@@ -62,7 +64,7 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
             }
 
             const stripped = buildStrippedTipTapDoc(from.draftContent);
-            if (isValidTipTapContentSync(stripped, schema, { maxTextBlocks })) {
+            if (isValidTipTapContentSync(stripped, schema, { maxTextBlocks, headingLevels })) {
                 console.warn("DraftJS->TipTap migration failed, using stripped content");
                 return { tipTapContent: stripped };
             }

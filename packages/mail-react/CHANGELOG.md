@@ -1,5 +1,29 @@
 # @comet/mail-react
 
+## 10.2.0
+
+### Minor Changes
+
+- bdd62e9: Add a `borderRadius` prop to `MjmlImage`, `HtmlImage`, `MjmlPixelImageBlock` and `HtmlPixelImageBlock`
+
+    **Example**
+
+    ```tsx
+    <MjmlImage src="https://example.com/image.jpg" alt="Example" width={520} borderRadius={16} />
+    ```
+
+    A `style` prop passed by the caller wins over `borderRadius`.
+
+### Patch Changes
+
+- f3e81aa: Round images in classic Outlook
+
+    `borderRadius` on `MjmlImage`, `HtmlImage`, `MjmlPixelImageBlock` and `HtmlPixelImageBlock` now also rounds the image in classic Outlook.
+
+    Classic Outlook rounds the image only when `width` and `height` are given in pixels, and the radius is given in pixels or as `"50%"`. In every other case the image stays square in that client.
+
+- c980b75: Fix the `MjmlButton` background image not reaching clients that drop `<style>` blocks
+
 ## 10.1.0
 
 ### Minor Changes

@@ -7,7 +7,14 @@ import type { Block } from "../../block";
 import { BlockMigration } from "../../migrations/BlockMigration";
 import type { BlockMigrationInterface } from "../../migrations/types";
 import { isValidTipTapContentSync } from "../tipTapValidation";
-import { buildStrippedTipTapDoc, convertDraftJsToTipTap, type ConvertOptions, type DraftJsContent } from "./convertDraftJsToTipTap";
+import {
+    buildEmptyTipTapDoc,
+    buildStrippedTipTapDoc,
+    convertDraftJsToTipTap,
+    type ConvertOptions,
+    type DefaultTextBlockOptions,
+    type DraftJsContent,
+} from "./convertDraftJsToTipTap";
 
 interface From {
     draftContent?: DraftJsContent;
@@ -37,10 +44,21 @@ interface BuildOptions extends ConvertOptions {
     link?: Block;
 }
 
-const EMPTY_DOC: JSONContent = { type: "doc", content: [{ type: "paragraph" }] };
-
 export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConstructor<BlockMigrationInterface> {
-    const { schema, maxTextBlocks, headingLevels, supports, link, textBlockStyleMap, inlineStyleMap, listLevelMax } = options;
+    const {
+        schema,
+        maxTextBlocks,
+        headingLevels,
+        defaultHeadingLevel,
+        allowParagraph = true,
+        supports,
+        link,
+        textBlockStyleMap,
+        inlineStyleMap,
+        listLevelMax,
+    } = options;
+    const defaultTextBlock: DefaultTextBlockOptions = { defaultHeadingLevel, allowParagraph };
+    const emptyDoc: JSONContent = buildEmptyTipTapDoc(defaultTextBlock);
 
     return class DraftJsToTipTapMigration extends BlockMigration<(from: From) => To> implements BlockMigrationInterface {
         public readonly toVersion = 1;
@@ -51,10 +69,17 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
                 if (from.tipTapContent !== undefined) {
                     return { tipTapContent: from.tipTapContent };
                 }
-                return { tipTapContent: EMPTY_DOC };
+                return { tipTapContent: emptyDoc };
             }
 
-            const converted = convertDraftJsToTipTap(from.draftContent, { supports, link, textBlockStyleMap, inlineStyleMap, listLevelMax });
+            const converted = convertDraftJsToTipTap(from.draftContent, {
+                supports,
+                link,
+                textBlockStyleMap,
+                inlineStyleMap,
+                listLevelMax,
+                ...defaultTextBlock,
+            });
             if (isValidTipTapContentSync(converted, schema, { maxTextBlocks, listLevelMax, headingLevels })) {
                 return { tipTapContent: converted };
             }
@@ -63,14 +88,14 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
                 throw new Error(`DraftJS->TipTap migration produced invalid content that doesn't pass validation`);
             }
 
-            const stripped = buildStrippedTipTapDoc(from.draftContent);
+            const stripped = buildStrippedTipTapDoc(from.draftContent, defaultTextBlock);
             if (isValidTipTapContentSync(stripped, schema, { maxTextBlocks, headingLevels })) {
                 console.warn("DraftJS->TipTap migration failed, using stripped content");
                 return { tipTapContent: stripped };
             }
 
             console.warn("DraftJS->TipTap migration failed, lost content!");
-            return { tipTapContent: EMPTY_DOC };
+            return { tipTapContent: emptyDoc };
         }
     };
 }

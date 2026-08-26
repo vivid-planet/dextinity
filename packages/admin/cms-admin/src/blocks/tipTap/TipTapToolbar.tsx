@@ -33,6 +33,7 @@ import {
     type SvgIconProps,
 } from "@mui/material";
 import { grey as muiGreyPalette } from "@mui/material/colors";
+import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import { type Editor, useEditorState } from "@tiptap/react";
 import { type ForwardRefExoticComponent, type MouseEvent, type ReactNode, type RefAttributes, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -165,7 +166,9 @@ export const TipTapToolbar = ({
     linkBlock,
     childBlocks,
     listLevelMax,
-    headingLevels = [1, 2, 3, 4, 5, 6],
+    headingLevels,
+    defaultHeadingLevel,
+    allowParagraph,
 }: {
     editor: Editor;
     supports: TipTapSupports[];
@@ -175,7 +178,9 @@ export const TipTapToolbar = ({
     linkBlock?: BlockInterface & LinkBlockInterface;
     childBlocks: Record<string, TipTapChildBlock>;
     listLevelMax?: number;
-    headingLevels?: number[];
+    headingLevels: HeadingLevel[];
+    defaultHeadingLevel: HeadingLevel;
+    allowParagraph: boolean;
 }) => {
     const intl = useIntl();
     const [moreAnchorEl, setMoreAnchorEl] = useState<null | HTMLElement>(null);
@@ -201,7 +206,7 @@ export const TipTapToolbar = ({
                         return String(level);
                     }
                 }
-                return "paragraph";
+                return allowParagraph ? "paragraph" : String(defaultHeadingLevel);
             })();
             const activeTipTapTextBlockType: TipTapTextBlockType = (() => {
                 if (e.isActive("orderedList")) {
@@ -217,7 +222,7 @@ export const TipTapToolbar = ({
                 }
                 return "paragraph";
             })();
-            const attrs = e.isActive("heading") ? e.getAttributes("heading") : e.getAttributes("paragraph");
+            const attrs = e.isActive("heading") || !allowParagraph ? e.getAttributes("heading") : e.getAttributes("paragraph");
             const activeInlineStyle = (() => {
                 if (!hasInlineStyles) {
                     return "";
@@ -226,8 +231,9 @@ export const TipTapToolbar = ({
                 return (inlineStyleAttrs.type as string) ?? "";
             })();
 
-            // Calculate current list nesting depth for listLevelMax enforcement
-            let canIndent = e.can().sinkListItem("listItem");
+            // Calculate current list nesting depth for listLevelMax enforcement.
+            // The list item node only exists in the schema when lists are supported.
+            let canIndent = lists && e.can().sinkListItem("listItem");
             if (canIndent && listLevelMax !== undefined) {
                 const { $from } = e.state.selection;
                 let listDepth = 0;
@@ -250,7 +256,7 @@ export const TipTapToolbar = ({
                 canUndo: e.can().undo(),
                 canRedo: e.can().redo(),
                 canIndent,
-                canDedent: e.can().liftListItem("listItem"),
+                canDedent: lists && e.can().liftListItem("listItem"),
                 isBoldActive: e.isActive("bold"),
                 isItalicActive: e.isActive("italic"),
                 isUnderlineActive: e.isActive("underline"),
@@ -315,7 +321,7 @@ export const TipTapToolbar = ({
 
     const handleTextBlockStyleChange = (e: SelectChangeEvent) => {
         const value = e.target.value || null;
-        const nodeType = editor.isActive("heading") ? "heading" : "paragraph";
+        const nodeType = editor.isActive("heading") || !allowParagraph ? "heading" : "paragraph";
         editor.chain().focus().updateAttributes(nodeType, { textBlockStyle: value }).run();
     };
 
@@ -367,9 +373,11 @@ export const TipTapToolbar = ({
                             MenuProps={{ elevation: 1 }}
                             sx={selectSx}
                         >
-                            <MenuItem value="paragraph" dense>
-                                <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockType.paragraph" defaultMessage="Paragraph" />
-                            </MenuItem>
+                            {allowParagraph && (
+                                <MenuItem value="paragraph" dense>
+                                    <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockType.paragraph" defaultMessage="Paragraph" />
+                                </MenuItem>
+                            )}
                             {headingLevels.map((level) => (
                                 <MenuItem key={level} value={String(level)} dense>
                                     <FormattedMessage

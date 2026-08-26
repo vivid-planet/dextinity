@@ -1287,6 +1287,63 @@ describe("createTipTapRichTextBlock validation", () => {
         });
     });
 
+    describe("allowParagraph and defaultHeadingLevel options", () => {
+        const block = createTipTapRichTextBlock(
+            { supports: ["heading", "bold"], headingLevels: [2, 3, 4], defaultHeadingLevel: 3, allowParagraph: false },
+            "TestHeadingOnly",
+        );
+
+        it("should accept a heading within the allowed levels", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "heading", attrs: { level: 3 }, content: [{ type: "text", text: "Headline" }] }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
+        });
+
+        it("should reject a paragraph when paragraphs are not allowed", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "paragraph", content: [{ type: "text", text: "Text" }] }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
+            expect(errors[0].property).toBe("tipTapContent");
+        });
+
+        it("should reject a heading level outside the allowed levels", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Headline" }] }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
+        });
+
+        it("should throw when defaultHeadingLevel is not one of the headingLevels", () => {
+            expect(() =>
+                createTipTapRichTextBlock({ headingLevels: [2, 3, 4], defaultHeadingLevel: 1 }, "TestDefaultHeadingLevelMismatch"),
+            ).toThrow();
+        });
+
+        it("should throw when paragraphs are disabled without heading support", () => {
+            expect(() => createTipTapRichTextBlock({ supports: ["bold"], allowParagraph: false }, "TestNoTextBlockTypeLeft")).toThrow();
+        });
+
+        it("should throw when paragraphs are disabled together with list support", () => {
+            expect(() =>
+                createTipTapRichTextBlock({ supports: ["heading", "unordered-list"], allowParagraph: false }, "TestHeadingOnlyWithLists"),
+            ).toThrow();
+        });
+    });
+
     describe("childBlocks option", () => {
         const block = createTipTapRichTextBlock(
             { supports: ["bold"], childBlocks: { externalLink: { block: ExternalLinkBlock, display: "block" } } },

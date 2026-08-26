@@ -283,6 +283,66 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
         });
     });
 
+    describe("heading-only target schema", () => {
+        const block = createTipTapRichTextBlock(
+            {
+                supports: ["heading", "bold"],
+                headingLevels: [2, 3, 4],
+                defaultHeadingLevel: 3,
+                allowParagraph: false,
+                migrateFromDraftJs: true,
+            },
+            "MigratedHeadingOnly",
+        );
+
+        it("migrates a DraftJS block without a heading level into a heading with the default level", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [draftBlock({ type: "unstyled", text: "Headline" })],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [{ type: "heading", attrs: { level: 3 }, content: [{ type: "text", text: "Headline" }] }],
+            });
+        });
+
+        it("keeps a DraftJS heading level that is allowed", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [draftBlock({ type: "header-two", text: "Headline" })],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [{ type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "Headline" }] }],
+            });
+        });
+
+        it("migrates empty DraftJS content into an empty heading with the default level", () => {
+            const data = block.blockDataFactory({
+                draftContent: { blocks: [], entityMap: {} },
+            });
+            expect(data.tipTapContent).toEqual({ type: "doc", content: [{ type: "heading", attrs: { level: 3 } }] });
+        });
+
+        it("falls back to headings with the default level when the conversion is invalid", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    // header-one is not part of headingLevels, so the converted doc doesn't validate.
+                    blocks: [draftBlock({ type: "header-one", text: "Headline" })],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [{ type: "heading", attrs: { level: 3 }, content: [{ type: "text", text: "Headline" }] }],
+            });
+        });
+    });
+
     describe("maxTextBlocks fallback", () => {
         const block = createTipTapRichTextBlock({ maxTextBlocks: 2, migrateFromDraftJs: true }, "MigratedRichTextMaxBlocks");
 

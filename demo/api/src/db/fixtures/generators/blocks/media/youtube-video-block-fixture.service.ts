@@ -1,4 +1,4 @@
-import { ExtractBlockInputFactoryProps, YouTubeVideoBlock } from "@comet/cms-api";
+import { ExtractBlockInputFactoryProps, YouTubeVideoBlock } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import { faker } from "@src/db/fixtures/faker";
 

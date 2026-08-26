@@ -10,8 +10,8 @@ import {
     ToolbarActions,
     ToolbarAutomaticTitleItem,
     ToolbarBackButton,
-} from "@comet/admin";
-import { ContentScopeIndicator } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { ContentScopeIndicator } from "@dextinity/cms-admin";
 import { useIntl } from "react-intl";
 
 import { ProductCategoriesGrid } from "./generated/ProductCategoriesGrid";

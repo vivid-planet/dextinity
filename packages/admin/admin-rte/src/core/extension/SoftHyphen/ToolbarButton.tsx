@@ -1,4 +1,4 @@
-import { RteSoftHyphen } from "@comet/admin-icons";
+import { RteSoftHyphen } from "@dextinity/admin-icons";
 // eslint-disable-next-line no-restricted-imports
 import Tooltip from "@mui/material/Tooltip";
 import { EditorState, Modifier } from "draft-js";
@@ -24,7 +24,7 @@ export function ToolbarButton({ editorState, setEditorState }: IControlProps) {
 
     return (
         <Tooltip
-            title={<FormattedMessage id="comet.rte.extensions.softHyphen.buttonTooltip" defaultMessage="Insert a soft hyphen" />}
+            title={<FormattedMessage id="dextinity.rte.extensions.softHyphen.buttonTooltip" defaultMessage="Insert a soft hyphen" />}
             placement="top"
         >
             <span>

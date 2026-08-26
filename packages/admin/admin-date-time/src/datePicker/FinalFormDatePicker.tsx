@@ -7,7 +7,7 @@ export type FinalFormDatePickerProps = DatePickerProps;
 type FinalFormDatePickerInternalProps = FieldRenderProps<string, HTMLInputElement | HTMLTextAreaElement>;
 
 /**
- * @deprecated Use `DatePickerField` from `@comet/admin` instead.
+ * @deprecated Use `DatePickerField` from `@dextinity/admin` instead.
  *
  * Final Form-compatible DatePicker component.
  *

@@ -43,7 +43,7 @@ export interface FilterBarActiveFilterBadgeProps
 export function FilterBarActiveFilterBadge(inProps: FilterBarActiveFilterBadgeProps) {
     const { countValue, slotProps, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminFilterBarActiveFilterBadge",
+        name: "DextinityAdminFilterBarActiveFilterBadge",
     });
     if (countValue > 0) {
         return (
@@ -60,17 +60,17 @@ export function FilterBarActiveFilterBadge(inProps: FilterBarActiveFilterBadgePr
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFilterBarActiveFilterBadge: FilterBarActiveFilterBadgeClassKey;
+        DextinityAdminFilterBarActiveFilterBadge: FilterBarActiveFilterBadgeClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFilterBarActiveFilterBadge: FilterBarActiveFilterBadgeProps;
+        DextinityAdminFilterBarActiveFilterBadge: FilterBarActiveFilterBadgeProps;
     }
 
     interface Components {
-        CometAdminFilterBarActiveFilterBadge?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFilterBarActiveFilterBadge"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFilterBarActiveFilterBadge"];
+        DextinityAdminFilterBarActiveFilterBadge?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFilterBarActiveFilterBadge"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFilterBarActiveFilterBadge"];
         };
     }
 }

@@ -1,4 +1,4 @@
-import { BlockCategory, createCompositeBlock, createCompositeBlockSelectField, createRichTextBlock } from "@comet/cms-admin";
+import { BlockCategory, createCompositeBlock, createCompositeBlockSelectField, createRichTextBlock } from "@dextinity/cms-admin";
 import type { HeadingBlockData } from "@src/blocks.generated";
 import { FormattedMessage } from "react-intl";
 

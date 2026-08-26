@@ -1,5 +1,5 @@
-import { migrationsList as brevoMigrationsList } from "@comet/brevo-api";
-import { createMigrationsList, createOrmConfig } from "@comet/cms-api";
+import { migrationsList as brevoMigrationsList } from "@dextinity/brevo-api";
+import { createMigrationsList, createOrmConfig } from "@dextinity/cms-api";
 import { DataloaderType, TextType, Type } from "@mikro-orm/core";
 import { defineConfig, EntityCaseNamingStrategy } from "@mikro-orm/postgresql";
 import path from "path";

@@ -1,4 +1,4 @@
-import { Search } from "@comet/admin-icons";
+import { Search } from "@dextinity/admin-icons";
 import { Card, CardContent, Checkbox, FormControlLabel, Grid, InputAdornment, InputBase, Typography } from "@mui/material";
 import { type ChangeEvent, useState } from "react";
 

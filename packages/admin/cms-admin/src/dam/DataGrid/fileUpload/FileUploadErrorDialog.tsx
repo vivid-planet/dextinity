@@ -1,4 +1,4 @@
-import { Button, messages } from "@comet/admin";
+import { Button, messages } from "@dextinity/admin";
 import {
     // eslint-disable-next-line no-restricted-imports
     Dialog,
@@ -53,20 +53,23 @@ export const FileUploadErrorDialog = ({ open = false, onClose, validationErrors 
     return (
         <Dialog maxWidth="lg" fullWidth open={open}>
             <DialogTitle>
-                <FormattedMessage id="comet.pages.dam.uploadErrors" defaultMessage="Upload errors" />
+                <FormattedMessage id="dextinity.pages.dam.uploadErrors" defaultMessage="Upload errors" />
             </DialogTitle>
             <DialogContent>
                 <Typography style={{ paddingBottom: "16px" }} variant="subtitle1">
-                    <FormattedMessage id="comet.pages.dam.followingFilesCouldNotBeUploaded" defaultMessage="Following files could not be uploaded:" />
+                    <FormattedMessage
+                        id="dextinity.pages.dam.followingFilesCouldNotBeUploaded"
+                        defaultMessage="Following files could not be uploaded:"
+                    />
                 </Typography>
                 <Table>
                     <TableHead>
                         <TableRow>
                             <TableHeadCell>
-                                <FormattedMessage id="comet.pages.dam.file" defaultMessage="File" />
+                                <FormattedMessage id="dextinity.pages.dam.file" defaultMessage="File" />
                             </TableHeadCell>
                             <TableHeadCell>
-                                <FormattedMessage id="comet.pages.dam.errors" defaultMessage="Errors" />
+                                <FormattedMessage id="dextinity.pages.dam.errors" defaultMessage="Errors" />
                             </TableHeadCell>
                         </TableRow>
                     </TableHead>

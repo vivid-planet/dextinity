@@ -1,4 +1,4 @@
-import { SnackbarProvider, UndoSnackbar, useSnackbarApi } from "@comet/admin";
+import { SnackbarProvider, UndoSnackbar, useSnackbarApi } from "@dextinity/admin";
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { type MouseEvent, useState } from "react";
 
@@ -34,7 +34,7 @@ const UndoSnackbarExample = () => {
 };
 
 export default {
-    title: "@comet/admin/snackbar",
+    title: "@dextinity/admin/snackbar",
 };
 
 export const _UndoSnackbar = () => {

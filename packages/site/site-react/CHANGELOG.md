@@ -1,5 +1,177 @@
 # @comet/site-react
 
+## 10.1.0
+
+## 10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/site-react` to `@dextinity/site-react`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the `cometType` property of iframe messages to `dextinityType`. A matching `@dextinity/cms-admin` version is required
+    - Rename the window property of `useLocalStorageCookieApi` from `window.cometLocalStorageCookieApi` to `window.dextinityLocalStorageCookieApi` and its localStorage key from `comet-dev-cookie-api-consented-cookies` to `dextinity-dev-cookie-api-consented-cookies`. Previously consented cookies are therefore reset in local development
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/site-react` to `@dextinity/site-react`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the `cometType` property of iframe messages to `dextinityType`. A matching `@dextinity/cms-admin` version is required
+    - Rename the window property of `useLocalStorageCookieApi` from `window.cometLocalStorageCookieApi` to `window.dextinityLocalStorageCookieApi` and its localStorage key from `comet-dev-cookie-api-consented-cookies` to `dextinity-dev-cookie-api-consented-cookies`. Previously consented cookies are therefore reset in local development
+
+## 9.5.0
+
+## 9.4.0
+
+## 9.3.0
+
+### Minor Changes
+
+- 924b66c: Add `underline` support to `createTipTapRichTextBlock`
+
+    The `underline` inline style is now part of the `supports` list and can be toggled via a new toolbar button. The underline mark is validated by the API, rendered as `<u>` by `renderTipTapRichText`, and the DraftJS migration maps the `UNDERLINE` inline style to it when supported. Per default it is disabled, pass a `supports` list with `underline` to enable it.
+
+## 9.2.2
+
+## 9.2.1
+
+### Patch Changes
+
+- 94a1d58: Fix client-side crash in `useCookieBotCookieApi` when Cookiebot is not yet initialized
+
+    The hook read `window.Cookiebot.consent` in its initial call, but `window.Cookiebot` exists as soon as the Cookiebot script has run, while `consent` is only populated once Cookiebot fires `CookiebotOnConsentReady`. Calling `Object.keys(consent)` before that threw `TypeError: Cannot convert undefined or null to object`, crashing the client. The initial call is now a no-op until consent is available.
+
+## 9.2.0
+
+### Minor Changes
+
+- ee0bf93: Add AI content disclosure for DAM assets (EU AI Act, Article 50)
+
+    Editors can mark a DAM asset as **AI generated** or **AI modified** in the file settings. When such an asset is published, the site renders the official EU AI-content label and merges the disclosure into the media element's accessible name, so screen-reader users learn which asset is AI.
+
+    **API**
+
+    New `aiContentType` field (`Generated` | `Modified`) on DAM files, exposed through the `PixelImage` and `DamVideo` blocks.
+
+    **Admin**
+
+    New "AI content" field in the DAM file settings, shown for image, video and audio assets only (other file types cannot constitute a deep fake).
+
+    **Site**
+
+    `PixelImageBlock` and `DamVideoBlock` render the disclosure automatically for marked assets. Both accept props to customize it:
+    - `aiContentDisclosureProps` — override the badge.
+    - `customAiContentDisclosure` — render your own disclosure, or `null` for none.
+    - `aiContentAltTextPrefixLabels` — localize the accessible-name prefix (defaults to English).
+
+    `@comet/site-react` also exports the `AiContentDisclosure` badge and the `getAiContentAltTextWithPrefix` helper.
+
+## 9.1.1
+
+## 9.1.0
+
+## 9.0.1
+
+## 9.0.0
+
+### Major Changes
+
+- 8b3932d: Move server-only exports to `/server` subpath
+
+    Server-only exports have been moved to a separate `/server` entry point to prevent server-only code from being pulled into client bundles. While tree-shaking previously removed unused server code, this is an optional optimization — Vite's dev server, for example, does not tree-shake, causing errors when importing these packages in non-server environments (e.g., Storybook).
+
+    **`@comet/site-nextjs`**: `sitePreviewRoute`, `legacyPagesRouterSitePreviewApiHandler`, `previewParams`, `legacyPagesRouterPreviewParams`, and `persistedQueryRoute` must now be imported from `@comet/site-nextjs/server`:
+
+    ```diff
+    - import { sitePreviewRoute } from "@comet/site-nextjs";
+    + import { sitePreviewRoute } from "@comet/site-nextjs/server";
+    ```
+
+    ```diff
+    - import { previewParams } from "@comet/site-nextjs";
+    + import { previewParams } from "@comet/site-nextjs/server";
+    ```
+
+    ```diff
+    - import { persistedQueryRoute } from "@comet/site-nextjs";
+    + import { persistedQueryRoute } from "@comet/site-nextjs/server";
+    ```
+
+    **`@comet/site-react`**: `persistedQueryRoute` must now be imported from `@comet/site-react/server`:
+
+    ```diff
+    - import { persistedQueryRoute } from "@comet/site-react";
+    + import { persistedQueryRoute } from "@comet/site-react/server";
+    ```
+
+### Minor Changes
+
+- ab5e547: Add `JsonLd` component for typed schema.org structured data
+
+    Renders any [`schema-dts`](https://www.npmjs.com/package/schema-dts) entity inside a `<script type="application/ld+json">` tag. The payload is escaped so a `</script>` sequence in user content cannot break out of the script tag.
+
+    ```tsx
+    import { JsonLd } from "@comet/site-react";
+    import type { Organization } from "schema-dts";
+
+    <JsonLd<Organization>
+        data={{
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Acme",
+            url: "https://acme.example",
+            logo: "https://acme.example/logo.png",
+        }}
+    />;
+    ```
+
+    Also re-exported from `@comet/site-nextjs`.
+
+- 4c1aeb2: Add `noFollow` option to `ExternalLinkBlock`
+
+    Editors can now mark an external link as `nofollow` via a new checkbox in the admin form. When enabled, the rendered `<a>` tag receives `rel="nofollow"`. Existing links are unaffected by an automatic block-data migration that sets `noFollow` to `false`.
+
+- 54f57dd: Support loading data for child blocks embedded in rich text content in `recursivelyLoadBlockData`
+
+    Child blocks embedded in a `createTipTapRichTextBlock` rich text block (stored as `cmsBlock`/`cmsInlineBlock` nodes) are now traversed by `recursivelyLoadBlockData`, so their registered block loaders run just like for any other nested block. This allows rich text child blocks to load additional data (e.g. via a GraphQL query) without relying on a `BlockTransformerService` on the API side.
+
+    To support this, the `tipTapContent` field of a `createTipTapRichTextBlock` block is now declared with a dedicated `TipTapRichTextBlock` block meta kind (instead of `Json`) that carries the configured child blocks. The block loader uses this kind to detect rich text content instead of inspecting arbitrary `Json` fields.
+
+    Also re-exported from `@comet/site-nextjs`.
+
+- 740dba8: Add support for React 19
+
+### Patch Changes
+
+- cfa70a2: Fix preview-image to playback transition in video blocks
+    - `DamVideoBlock`: clicking the preview image's play button now starts video playback. Previously, the click dismissed the preview but the browser's autoplay policy blocked playback of videos with sound because the gesture happened on the preview image rather than the `<video>` element. Playback is now triggered explicitly inside the ref callback to stay within the user gesture window.
+    - `YouTubeVideoBlock` / `VimeoVideoBlock`: when the preview image is dismissed, `isPlaying` is now set to `true` so `PlayPauseButton` shows the correct icon, and the playback is flagged as manually handled so the viewport handler does not immediately pause the video.
+
+- 4f018d5: Fix `VimeoVideoBlock` not autoplaying on initial page load when `autoplay` is enabled and no `previewImage` is set
+
+    Without a `previewImage`, the iframe URL was missing `autoplay=1` and playback relied on a `postMessage("play")` fired from the `IntersectionObserver` callback. That message raced against the Vimeo player's initialization inside the iframe — when it arrived first the message was dropped and the video stayed paused, while the `PlayPauseButton` optimistically showed the "Pause" state, requiring two clicks to recover. `autoplay=1` is now appended whenever `autoplay` is enabled so Vimeo handles autoplay natively. The existing `muted=1` param satisfies the browser autoplay policy.
+
+    The iframe is also marked with `loading="lazy"` so blocks far below the fold don't request the Vimeo player upfront.
+
+- d870d05: Fix Cookiebot consent initialization
+
+    Fix a race condition where the `CookiebotOnConsentReady` event fires before the `useCookieBotCookieApi` hook is mounted.
+
+- e125c84: Use `OnetrustActiveGroups` instead of `ConsentIntegrationData` in `useOneTrustCookieApi`
+
+    `ConsentIntegrationData` is used for OneTrust's internal logging and can be `null`, which caused `useOneTrustCookieApi` to crash. As recommended by OneTrust support, `window.OnetrustActiveGroups` is used instead, as it is always available when the consent banner is implemented.
+
+- 865fcfd: Remove legacy CJS fields (`module`, `types`) from package.json as these packages are ESM-only
+
 ## 9.0.0-beta.6
 
 ### Minor Changes

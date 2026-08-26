@@ -11,7 +11,7 @@ When the built-in components don't cover your layout needs, you can create custo
 `css` is a tagged template literal that returns a plain string. Its purpose is to enable CSS syntax highlighting and auto-formatting in editors that support it (e.g., the styled-components VS Code extension):
 
 ```ts
-import { css } from "@comet/mail-react";
+import { css } from "@dextinity/mail-react";
 
 const mobilePadding = css`
     @media (max-width: 419px) {
@@ -33,7 +33,7 @@ There are two ways to register styles:
 **Static CSS** — when you don't need theme values:
 
 ```ts
-import { css, registerStyles } from "@comet/mail-react";
+import { css, registerStyles } from "@dextinity/mail-react";
 
 registerStyles(css`
     @media (max-width: 419px) {
@@ -47,7 +47,7 @@ registerStyles(css`
 **Theme-aware CSS** — when you need access to theme tokens (breakpoints, colors, sizes):
 
 ```ts
-import { css, registerStyles } from "@comet/mail-react";
+import { css, registerStyles } from "@dextinity/mail-react";
 
 registerStyles(
     (theme) => css`
@@ -72,7 +72,7 @@ Theme-aware `registerStyles` entries always resolve against the **root theme** f
 Here's a complete custom component that applies base styles inline and uses `registerStyles` for a responsive override:
 
 ```tsx title="CalloutBox.tsx"
-import { css, MjmlColumn, MjmlRaw, MjmlSection, registerStyles } from "@comet/mail-react";
+import { css, MjmlColumn, MjmlRaw, MjmlSection, registerStyles } from "@dextinity/mail-react";
 
 function CalloutBox({ title, children }: { title: string; children: React.ReactNode }) {
     return (
@@ -122,7 +122,7 @@ The key pattern:
 
 ## Forwarding Props via `slotProps`
 
-Some `@comet/mail-react` components use internal sub-components that aren't directly accessible through the component's own props. These components expose a `slotProps` prop, which lets you forward additional props to specific internal elements.
+Some `@dextinity/mail-react` components use internal sub-components that aren't directly accessible through the component's own props. These components expose a `slotProps` prop, which lets you forward additional props to specific internal elements.
 
 For example, when `disableResponsiveBehavior` is enabled, `MjmlSection` wraps its children in an internal `MjmlGroup`. Use `slotProps.group` to forward props to it:
 
@@ -178,7 +178,7 @@ The built-in components apply stable CSS class names that you can target in your
 Use the class names above to add responsive overrides for built-in components. For example, changing the background color of indented sections on mobile:
 
 ```ts
-import { css, registerStyles } from "@comet/mail-react";
+import { css, registerStyles } from "@dextinity/mail-react";
 
 registerStyles(
     (theme) => css`
@@ -207,7 +207,7 @@ MJML generates table-based HTML. When targeting nested elements inside MJML comp
 Add keys via TypeScript module augmentation:
 
 ```ts title="config.ts"
-declare module "@comet/mail-react" {
+declare module "@dextinity/mail-react" {
     interface Config {
         assetBaseUrl?: string;
     }
@@ -217,7 +217,7 @@ declare module "@comet/mail-react" {
 Pass the value at the root and read it from any descendant:
 
 ```tsx
-import { MjmlMailRoot, useConfig, type Config } from "@comet/mail-react";
+import { MjmlMailRoot, useConfig, type Config } from "@dextinity/mail-react";
 
 const config: Config = { assetBaseUrl: process.env.ASSET_BASE_URL };
 

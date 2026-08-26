@@ -1,4 +1,4 @@
-import { DragIndicator } from "@comet/admin-icons";
+import { DragIndicator } from "@dextinity/admin-icons";
 // eslint-disable-next-line no-restricted-imports
 import type { GridColDef, GridColumnHeaderParams, GridValidRowModel } from "@mui/x-data-grid";
 import {

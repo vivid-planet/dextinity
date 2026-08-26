@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { Field, FinalForm, FinalFormInput, Selected, Table, TableQuery, useSelectionRoute, useTableQuery } from "@comet/admin";
+import { Field, FinalForm, FinalFormInput, Selected, Table, TableQuery, useSelectionRoute, useTableQuery } from "@dextinity/admin";
 import { Grid } from "@mui/material";
 
 import { apolloRestStoryDecorator } from "../../../apollo-rest-story.decorator";

@@ -4,7 +4,7 @@ Do not create a pull request summary.
 
 ## Coding Guidelines
 
-Follow the coding guidelines at https://docs.comet-dxp.com/docs/coding-guidelines/. The most important rules are summarized below.
+Follow the coding guidelines at https://cms-docs.dextinity.com/docs/coding-guidelines/. The most important rules are summarized below.
 
 ### General
 

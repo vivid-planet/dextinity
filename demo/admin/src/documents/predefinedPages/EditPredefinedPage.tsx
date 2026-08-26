@@ -10,9 +10,9 @@ import {
     ToolbarItem,
     useFormApiRef,
     useStackApi,
-} from "@comet/admin";
-import { ArrowLeft } from "@comet/admin-icons";
-import { ContentScopeIndicator, PageName, queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { ArrowLeft } from "@dextinity/admin-icons";
+import { ContentScopeIndicator, PageName, queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import type { GQLPredefinedPageType } from "@src/graphql.generated";
 import { useMemo } from "react";

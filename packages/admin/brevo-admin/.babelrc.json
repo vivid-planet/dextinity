@@ -1,4 +1,4 @@
 {
     "ignore": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx", "**/__tests__/**"],
-    "presets": ["@comet/admin-babel-preset"]
+    "presets": ["@dextinity/admin-babel-preset"]
 }

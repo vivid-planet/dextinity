@@ -1,4 +1,4 @@
-import type { CrudGeneratorHooksService } from "@comet/cms-api";
+import type { CrudGeneratorHooksService } from "@dextinity/cms-api";
 
 import type { TestEntity3MutationError } from "./test-entity3-error";
 

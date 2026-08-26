@@ -1,3 +1,3 @@
-import { createSeoBlock } from "@comet/cms-api";
+import { createSeoBlock } from "@dextinity/cms-api";
 
 export const SeoBlock = createSeoBlock();

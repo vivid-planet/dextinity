@@ -1,4 +1,4 @@
-import { AttachedDocument, DependenciesModule } from "@comet/cms-api";
+import { AttachedDocument, DependenciesModule } from "@dextinity/cms-api";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@src/config/config.module";
@@ -51,6 +51,7 @@ import { StandaloneHeadingBlockFixtureService } from "./generators/blocks/text-a
 import { TableBlockFixtureService } from "./generators/blocks/text-and-content/table-block-fixture.service";
 import { TextImageBlockFixtureService } from "./generators/blocks/text-and-content/text-image-block-fixture.service";
 import { TipTapRichTextBlockFixtureService } from "./generators/blocks/text-and-content/tip-tap-rich-text-block-fixture.service";
+import { TipTapTableBlockFixtureService } from "./generators/blocks/text-and-content/tip-tap-table-block-fixture.service";
 import { DocumentGeneratorService } from "./generators/document-generator.service";
 import { DraftJsMigrationPageFixtureService } from "./generators/draft-js-migration-page-fixture.service";
 import { FileUploadsFixtureService } from "./generators/file-uploads-fixture.service";
@@ -65,6 +66,7 @@ import { SeoBlockFixtureService } from "./generators/seo-block-fixture.service";
 import { StageBlockFixtureService } from "./generators/stage-block-fixture.service";
 import { SvgImageFileFixtureService } from "./generators/svg-image-file-fixture.service";
 import { VideoFixtureService } from "./generators/video-fixture.service";
+import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.service";
 
 @Module({
     imports: [
@@ -128,6 +130,8 @@ import { VideoFixtureService } from "./generators/video-fixture.service";
         ProductListBlockFixtureService,
         TableBlockFixtureService,
         TipTapRichTextBlockFixtureService,
+        TipTapTableBlockFixtureService,
+        WelcomeEmailFixtureService,
     ],
 })
 export class FixturesModule {}

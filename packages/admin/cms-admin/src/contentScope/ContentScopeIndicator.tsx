@@ -1,5 +1,5 @@
-import { messages } from "@comet/admin";
-import { Domain } from "@comet/admin-icons";
+import { messages } from "@dextinity/admin";
+import { Domain } from "@dextinity/admin-icons";
 import { type SvgIconProps, useTheme } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { PropsWithChildren, ReactNode } from "react";

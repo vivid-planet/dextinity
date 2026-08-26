@@ -1,5 +1,5 @@
-import { messages } from "@comet/admin";
-import { Domain } from "@comet/admin-icons";
+import { messages } from "@dextinity/admin";
+import { Domain } from "@dextinity/admin-icons";
 import {
     // eslint-disable-next-line no-restricted-imports
     Button,
@@ -37,7 +37,7 @@ function OpenLinkDialog({ open, onClose, link }: OpenLinkDialogProps) {
                     </Grid>
                     <Grid>
                         <Typography>
-                            <FormattedMessage id="comet.preview.openLink.title" defaultMessage="Open Link" />
+                            <FormattedMessage id="dextinity.preview.openLink.title" defaultMessage="Open Link" />
                         </Typography>
                     </Grid>
                 </Grid>
@@ -45,7 +45,7 @@ function OpenLinkDialog({ open, onClose, link }: OpenLinkDialogProps) {
             <DialogContent>
                 <Typography>
                     <FormattedMessage
-                        id="comet.preview.openExternalLink.description"
+                        id="dextinity.preview.openExternalLink.description"
                         defaultMessage='Do you want to open "{url}" in a new Browser tab?'
                         values={{
                             url: link?.targetUrl,
@@ -66,7 +66,7 @@ function OpenLinkDialog({ open, onClose, link }: OpenLinkDialogProps) {
                     variant="contained"
                     color="primary"
                 >
-                    <FormattedMessage id="comet.openLinkDialog.actionButtons.open" defaultMessage="Open" />
+                    <FormattedMessage id="dextinity.openLinkDialog.actionButtons.open" defaultMessage="Open" />
                 </Button>
             </DialogActions>
         </Dialog>

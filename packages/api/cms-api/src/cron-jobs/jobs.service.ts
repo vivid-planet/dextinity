@@ -4,6 +4,7 @@ import { format } from "date-fns";
 
 import { LABEL_ANNOTATION } from "../kubernetes/kubernetes.constants";
 import { KubernetesService } from "../kubernetes/kubernetes.service";
+import { getAnnotation } from "../kubernetes/kubernetes-metadata";
 import { Job } from "./dto/job.object";
 
 @Injectable()
@@ -14,7 +15,7 @@ export class JobsService {
         return {
             id: job.metadata?.uid as string,
             name: job.metadata?.name as string,
-            label: job.metadata?.annotations?.[LABEL_ANNOTATION],
+            label: getAnnotation(job, LABEL_ANNOTATION),
             startTime: job.status?.startTime,
             completionTime: job.status?.completionTime,
             status: this.kubernetesService.getStatusForKubernetesJob(job),

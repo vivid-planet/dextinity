@@ -14,9 +14,9 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Add, Block, Check, Delete, Edit } from "@comet/admin-icons";
-import type { ContentScope } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { Add, Block, Check, Delete, Edit } from "@dextinity/admin-icons";
+import type { ContentScope } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import type { GridSlotsComponent } from "@mui/x-data-grid";
 import type { ReactElement } from "react";
@@ -76,17 +76,17 @@ function BrevoContactsGridToolbar({ intl, scope }: BrevoContactsGridToolbarProps
     return (
         <>
             <DataGridToolbar>
-                <FormattedMessage id="cometBrevoModule.brevoContact.title" defaultMessage="Contacts" />
+                <FormattedMessage id="dextinity.brevoContact.title" defaultMessage="Contacts" />
                 <GridToolbarQuickFilter
                     placeholder={intl.formatMessage({
-                        id: "cometBrevoModule.brevoContact.searchEmail",
+                        id: "dextinity.brevoContact.searchEmail",
                         defaultMessage: "Search email address",
                     })}
                 />
                 <ToolbarFillSpace />
                 <CrudMoreActionsMenu overallActions={[moreActionsMenuItem]} />
                 <Button startIcon={<Add />} component={StackLink} pageName="add" payload="add" variant="primary">
-                    <FormattedMessage id="cometBrevoModule.brevoContact.newContact" defaultMessage="New contact" />
+                    <FormattedMessage id="dextinity.brevoContact.newContact" defaultMessage="New contact" />
                 </Button>
             </DataGridToolbar>
             {contactImportComponent}
@@ -123,7 +123,7 @@ export function BrevoContactsGrid({
     const columns: GridColDef<GQLBrevoContactsListFragment>[] = [
         {
             field: "createdAt",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.brevoContact.subscribedAt", defaultMessage: "Subscribed At" }),
+            headerName: intl.formatMessage({ id: "dextinity.brevoContact.subscribedAt", defaultMessage: "Subscribed At" }),
             filterable: false,
             sortable: false,
             width: 150,
@@ -131,7 +131,7 @@ export function BrevoContactsGrid({
         },
         {
             field: "modifiedAt",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.brevoContact.modifiedAt", defaultMessage: "Modified At" }),
+            headerName: intl.formatMessage({ id: "dextinity.brevoContact.modifiedAt", defaultMessage: "Modified At" }),
             filterable: false,
             sortable: false,
             width: 150,
@@ -139,7 +139,7 @@ export function BrevoContactsGrid({
         },
         {
             field: "email",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.brevoContact.email", defaultMessage: "Email" }),
+            headerName: intl.formatMessage({ id: "dextinity.brevoContact.email", defaultMessage: "Email" }),
             filterable: false,
             sortable: false,
             width: 150,
@@ -147,7 +147,7 @@ export function BrevoContactsGrid({
         },
         {
             field: "emailBlacklisted",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.brevoContact.emailBlocked", defaultMessage: "Email blocked" }),
+            headerName: intl.formatMessage({ id: "dextinity.brevoContact.emailBlocked", defaultMessage: "Email blocked" }),
             type: "boolean",
             filterable: false,
             sortable: false,
@@ -179,9 +179,9 @@ export function BrevoContactsGrid({
                                     icon={params.row.emailBlacklisted ? <Check /> : <Block />}
                                 >
                                     {params.row.emailBlacklisted ? (
-                                        <FormattedMessage id="cometBrevoModule.brevoContact.actions.unblock" defaultMessage="Unblock" />
+                                        <FormattedMessage id="dextinity.brevoContact.actions.unblock" defaultMessage="Unblock" />
                                     ) : (
-                                        <FormattedMessage id="cometBrevoModule.brevoContact.actions.block" defaultMessage="Block" />
+                                        <FormattedMessage id="dextinity.brevoContact.actions.block" defaultMessage="Block" />
                                     )}
                                 </RowActionsItem>
 

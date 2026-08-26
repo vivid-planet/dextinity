@@ -86,7 +86,7 @@ export const Button = forwardRef(<C extends ElementType = "button">(inProps: But
         endIcon,
         children,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminButton" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminButton" });
 
     const windowSize = useWindowSize();
     const theme = useTheme();
@@ -175,17 +175,17 @@ const MobileTooltip = createComponentSlot(Tooltip)<ButtonClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminButton: ButtonClassKey;
+        DextinityAdminButton: ButtonClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminButton: ButtonProps;
+        DextinityAdminButton: ButtonProps;
     }
 
     interface Components {
-        CometAdminButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminButton"];
+        DextinityAdminButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminButton"];
         };
     }
 }

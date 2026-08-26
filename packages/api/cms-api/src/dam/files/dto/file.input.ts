@@ -19,6 +19,7 @@ import { IsNullable } from "../../../common/validators/is-nullable";
 import { IsUndefinable } from "../../../common/validators/is-undefinable";
 import { ImageCropAreaInput } from "../../images/dto/image-crop-area.input";
 import { DamScopeInterface } from "../../types";
+import { DamFileAiContentType } from "../entities/ai-content-type.enum";
 import { LicenseType } from "../entities/license.embeddable";
 
 export class ImageFileInput {
@@ -141,6 +142,12 @@ export class UpdateFileInput {
     @IsString()
     @IsOptional()
     altText?: string;
+
+    @Field(() => DamFileAiContentType, { nullable: true })
+    @IsEnum(DamFileAiContentType)
+    @IsNullable()
+    @IsUndefinable()
+    aiContentType?: DamFileAiContentType | null;
 
     @Field(() => UpdateImageFileInput, { nullable: true })
     @Type(() => UpdateImageFileInput)

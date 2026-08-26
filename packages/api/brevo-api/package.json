@@ -1,9 +1,9 @@
 {
-    "name": "@comet/brevo-api",
-    "version": "9.0.0-beta.6",
+    "name": "@dextinity/brevo-api",
+    "version": "10.1.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet/",
+        "url": "https://github.com/vivid-planet/dextinity",
         "directory": "packages/api/brevo-api"
     },
     "license": "BSD-2-Clause",
@@ -35,7 +35,7 @@
         "test:watch": "vitest --watch"
     },
     "dependencies": {
-        "@comet/cms-api": "workspace:*",
+        "@dextinity/cms-api": "workspace:*",
         "@fast-csv/parse": "^5.0.7",
         "@getbrevo/brevo": "^5.0.4",
         "@nestjs/axios": "^4.0.1",
@@ -52,7 +52,7 @@
         "uuid": "^11.1.1"
     },
     "devDependencies": {
-        "@comet/eslint-config": "workspace:*",
+        "@dextinity/eslint-config": "workspace:*",
         "@kubernetes/client-node": "^1.4.0",
         "@mikro-orm/cli": "^6.6.14",
         "@mikro-orm/core": "^6.6.14",
@@ -70,7 +70,7 @@
         "chokidar-cli": "^2.1.0",
         "eslint": "^9.39.4",
         "express": "^5.2.1",
-        "graphql": "^16.14.0",
+        "graphql": "^16.14.2",
         "prettier": "^3.4.2",
         "reflect-metadata": "^0.2.2",
         "rimraf": "^3.0.2",

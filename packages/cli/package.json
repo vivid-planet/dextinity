@@ -1,18 +1,18 @@
 {
-    "name": "@comet/cli",
-    "version": "9.0.0-beta.6",
-    "description": "A collection of CLI tools for Comet projects",
+    "name": "@dextinity/cli",
+    "version": "10.1.0",
+    "description": "A collection of CLI tools for Dextinity projects",
     "repository": {
         "directory": "packages/cli",
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet"
+        "url": "https://github.com/vivid-planet/dextinity"
     },
     "license": "BSD-2-Clause",
     "type": "commonjs",
     "main": "lib/index.js",
     "typings": "lib/index.d.ts",
     "bin": {
-        "comet": "bin/comet.js"
+        "dextinity": "bin/dextinity.js"
     },
     "sideEffects": false,
     "files": [
@@ -42,9 +42,9 @@
         "ts-node": "^10.9.2"
     },
     "devDependencies": {
-        "@comet/eslint-config": "workspace:*",
+        "@dextinity/eslint-config": "workspace:*",
         "@types/js-yaml": "^4.0.9",
-        "@types/node": "^24.12.4",
+        "@types/node": "^24.13.3",
         "eslint": "^9.39.4",
         "npm-run-all2": "^8.0.4",
         "rimraf": "^6.1.2",

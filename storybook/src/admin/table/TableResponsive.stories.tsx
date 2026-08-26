@@ -1,4 +1,4 @@
-import { type ITableRowProps, Table, TableBodyRow, TableColumns, useWindowSize } from "@comet/admin";
+import { type ITableRowProps, Table, TableBodyRow, TableColumns, useWindowSize } from "@dextinity/admin";
 import { TableCell } from "@mui/material";
 
 function ExampleTableRow({ columns, row, showSecondRow, rowProps }: ITableRowProps<IExampleRow> & { showSecondRow: boolean }) {
@@ -24,7 +24,7 @@ interface IExampleRow {
 }
 
 export default {
-    title: "@comet/admin/table",
+    title: "@dextinity/admin/table",
 };
 
 export const Responsive = () => {

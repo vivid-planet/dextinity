@@ -1,4 +1,4 @@
-import { gql } from "@comet/site-nextjs";
+import { gql } from "@dextinity/site-nextjs";
 import { Footer } from "@src/layout/footer/Footer";
 import { footerFragment } from "@src/layout/footer/Footer.fragment";
 import { Header } from "@src/layout/header/Header";

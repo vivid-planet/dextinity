@@ -1,6 +1,6 @@
 import { gql, useApolloClient } from "@apollo/client";
-import { Button, CancelButton, CrudMoreActionsMenuContext, Dialog } from "@comet/admin";
-import { Online } from "@comet/admin-icons";
+import { Button, CancelButton, CrudMoreActionsMenuContext, Dialog } from "@dextinity/admin";
+import { Online } from "@dextinity/admin-icons";
 import { DialogActions, DialogContent, ListItemIcon, MenuItem } from "@mui/material";
 import { useContext, useState } from "react";
 import { FormattedMessage } from "react-intl";

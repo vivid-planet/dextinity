@@ -1,4 +1,4 @@
-import type { Block } from "@comet/cms-api";
+import type { Block } from "@dextinity/cms-api";
 import type { Type } from "@nestjs/common";
 import type { EmailCampaignInterface } from "src/email-campaign/entities/email-campaign-entity.factory";
 import type { TargetGroupInterface } from "src/target-group/entity/target-group-entity.factory";

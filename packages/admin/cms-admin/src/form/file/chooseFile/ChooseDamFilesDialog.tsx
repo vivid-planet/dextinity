@@ -1,4 +1,4 @@
-import { Button } from "@comet/admin";
+import { Button } from "@dextinity/admin";
 import { DialogActions } from "@mui/material";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -43,7 +43,7 @@ export const ChooseDamFilesDialog = ({ onClose, onConfirm, initialFileIds, allow
         <BaseChooseDamFileDialog
             open
             onClose={handleClose}
-            title={<FormattedMessage id="comet.form.file.selectFiles" defaultMessage="Select files from DAM" />}
+            title={<FormattedMessage id="dextinity.form.file.selectFiles" defaultMessage="Select files from DAM" />}
             stateKey="choose-files-dam-location"
             allowedMimetypes={allowedMimetypes}
             renderFileLabel={(file, options) => <FileLabel file={file} {...options} />}
@@ -55,11 +55,11 @@ export const ChooseDamFilesDialog = ({ onClose, onConfirm, initialFileIds, allow
             actions={
                 <DialogActions>
                     <Button variant="textLight" onClick={handleClose} disabled={isConfirming}>
-                        <FormattedMessage id="comet.generic.cancel" defaultMessage="Cancel" />
+                        <FormattedMessage id="dextinity.generic.cancel" defaultMessage="Cancel" />
                     </Button>
                     <Button variant="primary" onClick={handleConfirm} disabled={selectedFileIds.length === 0 || isConfirming}>
                         <FormattedMessage
-                            id="comet.form.file.applyFileSelection"
+                            id="dextinity.form.file.applyFileSelection"
                             defaultMessage="Select {count, plural, one {# file} other {# files}}"
                             values={{ count: selectedFileIds.length }}
                         />

@@ -1,4 +1,4 @@
-import type { CrudGeneratorHooksService, CurrentUser, MutationError } from "@comet/cms-api";
+import type { CrudGeneratorHooksService, CurrentUser, MutationError } from "@dextinity/cms-api";
 import { Field, ObjectType, registerEnumType } from "@nestjs/graphql";
 
 import type { ProductVariant } from "./entities/product-variant.entity";

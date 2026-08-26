@@ -1,4 +1,4 @@
-import { Clear } from "@comet/admin-icons";
+import { Clear } from "@dextinity/admin-icons";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
 import type { GetMuiComponentTheme } from "./getComponentsTheme";

@@ -1,4 +1,4 @@
-import { ExtractBlockInputFactoryProps } from "@comet/cms-api";
+import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import { faker } from "@src/db/fixtures/faker";
 import { StandaloneRichTextBlockFixtureService } from "@src/db/fixtures/generators/blocks/text-and-content/standalone-rich-text-block-fixture.service";
@@ -29,6 +29,7 @@ import { StandaloneHeadingBlockFixtureService } from "./blocks/text-and-content/
 import { TableBlockFixtureService } from "./blocks/text-and-content/table-block-fixture.service";
 import { TextImageBlockFixtureService } from "./blocks/text-and-content/text-image-block-fixture.service";
 import { TipTapRichTextBlockFixtureService } from "./blocks/text-and-content/tip-tap-rich-text-block-fixture.service";
+import { TipTapTableBlockFixtureService } from "./blocks/text-and-content/tip-tap-table-block-fixture.service";
 
 export type BlockCategory = "layout" | "media" | "navigation" | "teaser" | "textAndContent" | "form";
 
@@ -59,6 +60,7 @@ export class PageContentBlockFixtureService {
         private readonly contactFormBlockFixtureService: ContactFormBlockFixtureService,
         private readonly tableBlockFixtureService: TableBlockFixtureService,
         private readonly tipTapRichTextBlockFixtureService: TipTapRichTextBlockFixtureService,
+        private readonly tipTapTableBlockFixtureService: TipTapTableBlockFixtureService,
     ) {}
 
     async generateBlockInput(blockCategory?: BlockCategory): Promise<ExtractBlockInputFactoryProps<typeof PageContentBlock>> {
@@ -91,6 +93,7 @@ export class PageContentBlockFixtureService {
             contactForm: ["form", this.contactFormBlockFixtureService],
             table: ["textAndContent", this.tableBlockFixtureService],
             tipTapRichText: ["textAndContent", this.tipTapRichTextBlockFixtureService],
+            tipTapTable: ["textAndContent", this.tipTapTableBlockFixtureService],
         };
 
         const supportedBlocksFixtureGenerators = Object.entries(fixtures)

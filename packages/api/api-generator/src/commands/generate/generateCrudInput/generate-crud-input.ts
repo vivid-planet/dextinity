@@ -1,4 +1,4 @@
-import { hasCrudFieldFeature, type Permission } from "@comet/cms-api";
+import { hasCrudFieldFeature, type Permission } from "@dextinity/cms-api";
 import type { EntityMetadata } from "@mikro-orm/postgresql";
 import { getMetadataStorage } from "class-validator";
 import { SyntaxKind } from "ts-morph";
@@ -78,12 +78,12 @@ export async function generateCrudInput(
 
     let fieldsOut = "";
     const imports: Imports = [
-        { name: "IsSlug", importPath: "@comet/cms-api" },
-        { name: "RootBlockInputScalar", importPath: "@comet/cms-api" },
-        { name: "IsNullable", importPath: "@comet/cms-api" },
-        { name: "PartialType", importPath: "@comet/cms-api" },
-        { name: "BlockInputInterface", importPath: "@comet/cms-api" },
-        { name: "isBlockInputInterface", importPath: "@comet/cms-api" },
+        { name: "IsSlug", importPath: "@dextinity/cms-api" },
+        { name: "RootBlockInputScalar", importPath: "@dextinity/cms-api" },
+        { name: "IsNullable", importPath: "@dextinity/cms-api" },
+        { name: "PartialType", importPath: "@dextinity/cms-api" },
+        { name: "BlockInputInterface", importPath: "@dextinity/cms-api" },
+        { name: "isBlockInputInterface", importPath: "@dextinity/cms-api" },
         { name: "IsString", importPath: "class-validator" },
         { name: "IsNotEmpty", importPath: "class-validator" },
         { name: "ValidateNested", importPath: "class-validator" },

@@ -17,7 +17,15 @@ export class RefreshBlockIndexViewsCommand extends CommandRunner {
 
     @CreateRequestContext()
     async run(params: string[], options: { force?: true }): Promise<void> {
-        await this.dependenciesService.refreshViews({ awaitRefresh: true, force: options.force });
+        console.time("refreshing block index views");
+        const result = await this.dependenciesService.refreshViews({ awaitRefresh: true, force: options.force });
+        console.timeEnd("refreshing block index views");
+
+        if (result === "skipped") {
+            console.log("Skipped refresh: block index views are fresh enough");
+        } else {
+            console.log("Refreshed block index views");
+        }
     }
 
     @Option({

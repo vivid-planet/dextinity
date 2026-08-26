@@ -39,7 +39,7 @@ const AppHeaderRoot = createComponentSlot(MuiAppBar)<AppHeaderClassKey, OwnerSta
 );
 
 export const AppHeader = (inProps: AppHeaderProps) => {
-    const props = useThemeProps({ props: inProps, name: "CometAdminAppHeader" });
+    const props = useThemeProps({ props: inProps, name: "DextinityAdminAppHeader" });
     const { children, headerHeight: passedHeaderHeight, position = "fixed", color = "primary", ...restProps } = props;
 
     const { headerHeight: masterLayoutHeaderHeight } = useContext(MasterLayoutContext);
@@ -65,17 +65,17 @@ export const AppHeader = (inProps: AppHeaderProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminAppHeader: AppHeaderClassKey;
+        DextinityAdminAppHeader: AppHeaderClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminAppHeader: AppHeaderProps;
+        DextinityAdminAppHeader: AppHeaderProps;
     }
 
     interface Components {
-        CometAdminAppHeader?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminAppHeader"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminAppHeader"];
+        DextinityAdminAppHeader?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminAppHeader"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminAppHeader"];
         };
     }
 }

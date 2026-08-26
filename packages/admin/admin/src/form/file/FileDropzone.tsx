@@ -1,4 +1,4 @@
-import { Error, Select } from "@comet/admin-icons";
+import { Error, Select } from "@dextinity/admin-icons";
 import { Box, type ComponentsOverrides, css, type Theme, Typography, useThemeProps } from "@mui/material";
 import { type ReactNode, useState } from "react";
 import { type DropzoneOptions, useDropzone } from "react-dropzone";
@@ -51,14 +51,14 @@ export const FileDropzone = (inProps: FileDropzoneProps) => {
         hideButton,
         multiple,
         dropzoneText = multiple ? (
-            <FormattedMessage id="comet.fileDropzone.dropfiles" defaultMessage="Drop files here to upload" />
+            <FormattedMessage id="dextinity.fileDropzone.dropfiles" defaultMessage="Drop files here to upload" />
         ) : (
-            <FormattedMessage id="comet.fileDropzone.dropFile" defaultMessage="Drop file here to upload" />
+            <FormattedMessage id="dextinity.fileDropzone.dropFile" defaultMessage="Drop file here to upload" />
         ),
         buttonText = multiple ? (
-            <FormattedMessage id="comet.fileDropzone.selectfiles" defaultMessage="Select files" />
+            <FormattedMessage id="dextinity.fileDropzone.selectfiles" defaultMessage="Select files" />
         ) : (
-            <FormattedMessage id="comet.fileDropzone.selectfile" defaultMessage="Select file" />
+            <FormattedMessage id="dextinity.fileDropzone.selectfile" defaultMessage="Select file" />
         ),
         iconMapping = {},
         slotProps,
@@ -67,7 +67,7 @@ export const FileDropzone = (inProps: FileDropzoneProps) => {
         ...restDropzoneOptions
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminFileDropzone",
+        name: "DextinityAdminFileDropzone",
     });
     const { error: errorIcon = <Error color="error" />, select: selectIcon = <Select /> } = iconMapping;
     const [focused, setFocused] = useState(false);
@@ -243,17 +243,17 @@ const SelectFileButton = createComponentSlot(Button)<FileDropzoneClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFileDropzone: FileDropzoneClassKey;
+        DextinityAdminFileDropzone: FileDropzoneClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFileDropzone: FileDropzoneProps;
+        DextinityAdminFileDropzone: FileDropzoneProps;
     }
 
     interface Components {
-        CometAdminFileDropzone?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFileDropzone"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFileDropzone"];
+        DextinityAdminFileDropzone?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFileDropzone"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFileDropzone"];
         };
     }
 }

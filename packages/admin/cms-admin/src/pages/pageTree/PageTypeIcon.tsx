@@ -1,4 +1,4 @@
-import { Home, Link as LinkIcon } from "@comet/admin-icons";
+import { Home, Link as LinkIcon } from "@dextinity/admin-icons";
 import type { SvgIconProps } from "@mui/material";
 import type { JSX, ReactNode } from "react";
 

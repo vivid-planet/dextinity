@@ -1,4 +1,4 @@
-import { Stack, StackBreadcrumbs } from "@comet/admin";
+import { Stack, StackBreadcrumbs } from "@dextinity/admin";
 import { styled } from "@mui/material/styles";
 import type { PropsWithChildren, ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
@@ -8,7 +8,7 @@ interface Props {
 }
 
 const BlockAdminComponentRoot = (props: PropsWithChildren<Props>) => {
-    const { children, title = <FormattedMessage id="comet.blocks" defaultMessage="Blocks" /> } = props;
+    const { children, title = <FormattedMessage id="dextinity.blocks" defaultMessage="Blocks" /> } = props;
 
     return (
         <Stack topLevelTitle={title}>
@@ -30,7 +30,8 @@ const BlockAdminComponentRoot = (props: PropsWithChildren<Props>) => {
 export { BlockAdminComponentRoot };
 
 const ChildrenContainer = styled("div")`
-    .CometAdminRte-root > .CometAdminRteToolbar-root {
+    .DextinityAdminRte-root > .DextinityAdminRteToolbar-root,
+    .DextinityAdminTipTapToolbar-root {
         top: 70px;
     }
 `;

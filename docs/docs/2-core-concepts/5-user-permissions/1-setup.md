@@ -38,7 +38,7 @@ class UserService implements UserPermissionsUserServiceInterface {
 }
 ```
 
-While `getUser` and `findUsers` are self-explaining, `createUserFromRequest` needs some context about the authorization strategies provided by NestJS. COMET DXP provides a custom strategy that expects a signed JWT in the Authorization Header. When using `createAuthProxyJwtStrategy`, the current user has to be loaded from the information of the submitted JWT. By default the `getUser` method is called, however, by providing `createUserFromRequest` a custom implementation is possible.
+While `getUser` and `findUsers` are self-explaining, `createUserFromRequest` needs some context about the authorization strategies provided by NestJS. Dextinity provides a custom strategy that expects a signed JWT in the Authorization Header. When using `createAuthProxyJwtStrategy`, the current user has to be loaded from the information of the submitted JWT. By default the `getUser` method is called, however, by providing `createUserFromRequest` a custom implementation is possible.
 
 :::info
 There may exist ready-to-use UserService-libraries that support the identity provider of your choice.
@@ -62,7 +62,7 @@ export interface AccessControlServiceInterface {
 
 Furthermore, the Access Control Service may provide two methods that allow to programmatically assign permissions and scopes to certain users. These assignments are handled throughout the system in the same way as manually assigned permissions and/or scopes. Moreover, they are also reflected in the admin panel.
 
-It's also possible to add additional properties and meta information to permissions (`validFrom`, `validTo`, `reason`, `requestedBy`, `approvedBy`). Additionally, for admin users, COMET DXP also provides the constants `UserPermissions.allPermissions` and `UserPermissions.allContentScopes`.
+It's also possible to add additional properties and meta information to permissions (`validFrom`, `validTo`, `reason`, `requestedBy`, `approvedBy`). Additionally, for admin users, Dextinity also provides the constants `UserPermissions.allPermissions` and `UserPermissions.allContentScopes`.
 
 :::note
 `getContentScopesForUser` returns the general scopes for the user but can be overridden for each permission in `getPermissionsForUser`. Please refer to the types that the IDE offers.

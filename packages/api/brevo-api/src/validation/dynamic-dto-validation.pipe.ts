@@ -1,4 +1,4 @@
-import { ValidationExceptionFactory } from "@comet/cms-api";
+import { ValidationExceptionFactory } from "@dextinity/cms-api";
 import { type Type, ValidationPipe } from "@nestjs/common";
 
 export class DynamicDtoValidationPipe extends ValidationPipe {

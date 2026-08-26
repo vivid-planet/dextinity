@@ -2,7 +2,7 @@
 title: Implementing reCAPTCHA for a form
 ---
 
-This guide explains how to add [Google reCAPTCHA Enterprise](https://cloud.google.com/recaptcha) to a form in a Comet site.
+This guide explains how to add [Google reCAPTCHA Enterprise](https://cloud.google.com/recaptcha) to a form in a Dextinity site.
 reCAPTCHA protects your forms from spam and abuse by assessing risk on the server side without requiring user interaction.
 
 ## Prerequisites

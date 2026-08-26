@@ -17,9 +17,9 @@ import {
     useErrorDialog,
     useFormApiRef,
     useStackApi,
-} from "@comet/admin";
-import { ArrowLeft } from "@comet/admin-icons";
-import { type ContentScope, ContentScopeIndicator, resolveHasSaveConflict, useFormSaveConflict } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { ArrowLeft } from "@dextinity/admin-icons";
+import { type ContentScope, ContentScopeIndicator, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { Card, IconButton } from "@mui/material";
 import { Box } from "@mui/system";
 import type { FormApi } from "final-form";
@@ -193,7 +193,7 @@ export function BrevoContactForm({ id, scope, input2State, additionalFormFields,
                             </IconButton>
                         </ToolbarItem>
                         <ToolbarTitleItem>
-                            <FormattedMessage id="cometBrevoModule.brevoContacts.brevoContact" defaultMessage="Contact" />
+                            <FormattedMessage id="dextinity.brevoContacts.brevoContact" defaultMessage="Contact" />
                         </ToolbarTitleItem>
                         <ToolbarFillSpace />
                         <ToolbarActions>
@@ -205,7 +205,7 @@ export function BrevoContactForm({ id, scope, input2State, additionalFormFields,
                             <Box sx={{ marginBottom: 4 }}>
                                 <Alert severity="warning">
                                     <FormattedMessage
-                                        id="cometBrevoModule.brevoContact.contactEditAlert"
+                                        id="dextinity.brevoContact.contactEditAlert"
                                         defaultMessage="Editing a contact will affect all scopes and the target groups within those scopes."
                                     />
                                 </Alert>
@@ -215,20 +215,18 @@ export function BrevoContactForm({ id, scope, input2State, additionalFormFields,
                             required
                             fullWidth
                             name="email"
-                            label={<FormattedMessage id="cometBrevoModule.brevoContact.email" defaultMessage="Email" />}
+                            label={<FormattedMessage id="dextinity.brevoContact.email" defaultMessage="Email" />}
                             disabled={mode === "edit"}
                         />
                         {mode === "add" && (
                             <Card sx={{ padding: 4, marginBottom: 5 }}>
-                                <FormSection
-                                    title={<FormattedMessage id="cometBrevoModule.brevoContact.doubleOptIn" defaultMessage="Double Opt-in" />}
-                                >
+                                <FormSection title={<FormattedMessage id="dextinity.brevoContact.doubleOptIn" defaultMessage="Double Opt-in" />}>
                                     {allowAddingContactsWithoutDoi && (
                                         <CheckboxField
                                             name="sendDoubleOptIn"
                                             label={
                                                 <FormattedMessage
-                                                    id="cometBrevoModule.brevoContact.sendDoubleOptInMail"
+                                                    id="dextinity.brevoContact.sendDoubleOptInMail"
                                                     defaultMessage="Send double opt-in email"
                                                 />
                                             }
@@ -238,14 +236,14 @@ export function BrevoContactForm({ id, scope, input2State, additionalFormFields,
                                     {values.sendDoubleOptIn ? (
                                         <Alert severity="warning" sx={{ marginBottom: 5 }}>
                                             <FormattedMessage
-                                                id="cometBrevoModule.brevoContact.contactAddAlert"
+                                                id="dextinity.brevoContact.contactAddAlert"
                                                 defaultMessage="The contact will get a double opt-in email to confirm the subscription. After the contact's confirmation, the contact will be added to the corresponding target groups in this scope depending on the contact's attributes. Before the confirmation the contact will not be shown on the contacts page."
                                             />
                                         </Alert>
                                     ) : (
                                         <Alert severity="error" sx={{ marginBottom: 5 }}>
                                             <FormattedMessage
-                                                id="cometBrevoModule.brevoContact.contactNoOptInAlert"
+                                                id="dextinity.brevoContact.contactNoOptInAlert"
                                                 defaultMessage="No Double Opt-In email will be sent. You are responsible for ensuring that recipients have provided their consent before proceeding. If consent has not been given, sending a Double Opt-In email is legally required.
                                                 
                                                 Additionally, the creation of the user will be tracked, and you may need to provide clarification if users report any issues."
@@ -259,7 +257,7 @@ export function BrevoContactForm({ id, scope, input2State, additionalFormFields,
                                         name="redirectionUrl"
                                         label={
                                             <FormattedMessage
-                                                id="cometBrevoModule.brevoContact.redirectionUrl"
+                                                id="dextinity.brevoContact.redirectionUrl"
                                                 defaultMessage="Redirection Url (Contact will be redirected to this page after the confirmation in the double opt-in email)"
                                             />
                                         }
@@ -269,7 +267,7 @@ export function BrevoContactForm({ id, scope, input2State, additionalFormFields,
                         )}
                         {additionalFormFields && (
                             <Card sx={{ padding: 4 }}>
-                                <FormSection title={<FormattedMessage id="cometBrevoModule.brevoContact.attributes" defaultMessage="Attributes" />}>
+                                <FormSection title={<FormattedMessage id="dextinity.brevoContact.attributes" defaultMessage="Attributes" />}>
                                     {additionalFormFields}
                                 </FormSection>
                             </Card>

@@ -1,11 +1,11 @@
 {
-    "name": "@comet/admin-color-picker",
-    "version": "9.0.0-beta.6",
-    "description": "Comet Admin Color Picker component",
+    "name": "@dextinity/admin-color-picker",
+    "version": "10.1.0",
+    "description": "Dextinity Admin Color Picker component",
     "repository": {
         "directory": "packages/admin/admin-color-picker",
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet"
+        "url": "https://github.com/vivid-planet/dextinity"
     },
     "license": "BSD-2-Clause",
     "sideEffects": false,
@@ -37,8 +37,8 @@
         "start:types": "tsc --project ./tsconfig.json --emitDeclarationOnly --watch --preserveWatchOutput"
     },
     "dependencies": {
-        "@comet/admin": "workspace:*",
-        "@comet/admin-icons": "workspace:*",
+        "@dextinity/admin": "workspace:*",
+        "@dextinity/admin-icons": "workspace:*",
         "react-colorful": "^5.6.1",
         "tinycolor2": "^1.6.0",
         "use-debounce": "^10.0.6"
@@ -46,8 +46,8 @@
     "devDependencies": {
         "@babel/cli": "^7.29.7",
         "@babel/core": "^7.29.7",
-        "@comet/admin-babel-preset": "workspace:*",
-        "@comet/eslint-config": "workspace:*",
+        "@dextinity/admin-babel-preset": "workspace:*",
+        "@dextinity/eslint-config": "workspace:*",
         "@mui/material": "^7.3.11",
         "@types/react": "^19.2.15",
         "@types/react-dom": "^19.2.3",

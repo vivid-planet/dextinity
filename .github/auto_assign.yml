@@ -8,7 +8,3 @@ reviewers:
 skipKeywords:
     - Merge main into next
     - Version Packages
-
-skipUsers:
-    - renovate[bot]
-    - Copilot

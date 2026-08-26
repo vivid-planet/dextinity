@@ -1,4 +1,4 @@
-import { RteSoftHyphen } from "@comet/admin-icons";
+import { RteSoftHyphen } from "@dextinity/admin-icons";
 import { mergeAttributes, Node } from "@tiptap/core";
 import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 

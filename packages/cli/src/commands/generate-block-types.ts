@@ -31,6 +31,8 @@ function writeFieldType(field: BlockMetaField, blockNamePostfix: string) {
         if (field.array) {
             content += "[]";
         }
+    } else if (field.kind === "TipTapRichTextBlock") {
+        content += "unknown";
     } else if (field.kind === "Enum") {
         const enumType = `"${field.enum.join('" | "')}"`;
         content += field.array ? `(${enumType})[]` : enumType;

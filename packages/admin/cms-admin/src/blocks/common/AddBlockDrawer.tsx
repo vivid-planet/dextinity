@@ -1,5 +1,5 @@
-import { useStoredState } from "@comet/admin";
-import { Close, Search } from "@comet/admin-icons";
+import { useStoredState } from "@dextinity/admin";
+import { Close, Search } from "@dextinity/admin-icons";
 import {
     Checkbox,
     DialogContent,
@@ -149,7 +149,7 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock }: Props) 
     return (
         <Drawer open={open} onClose={onClose} anchor="right">
             <Header>
-                <FormattedMessage id="comet.blocks.drawer.header" defaultMessage="Add new block" />
+                <FormattedMessage id="dextinity.blocks.drawer.header" defaultMessage="Add new block" />
                 <IconButton
                     onClick={onClose}
                     sx={(theme) => ({
@@ -166,7 +166,7 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock }: Props) 
                         <InputBase
                             fullWidth
                             autoFocus
-                            placeholder={intl.formatMessage({ id: "comet.blocks.drawer.searchField.placeholder", defaultMessage: "Search..." })}
+                            placeholder={intl.formatMessage({ id: "dextinity.blocks.drawer.searchField.placeholder", defaultMessage: "Search..." })}
                             startAdornment={
                                 <InputAdornment position="start">
                                     <Search />
@@ -180,7 +180,7 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock }: Props) 
                     <InputItem>
                         <FormControlLabel
                             control={<Checkbox checked={addAndEdit} onChange={handleAddAndEditChange} color="primary" />}
-                            label={<FormattedMessage id="comet.blocks.drawer.addAndEdit" defaultMessage="add + edit" />}
+                            label={<FormattedMessage id="dextinity.blocks.drawer.addAndEdit" defaultMessage="add + edit" />}
                         />
                     </InputItem>
                 </ContentItem>

@@ -1,5 +1,5 @@
 import { type ApolloClient, gql } from "@apollo/client";
-import { LocalErrorScopeApolloContext } from "@comet/admin";
+import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 import isEqual from "lodash.isequal";
 import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
@@ -93,7 +93,7 @@ export async function sendPages(
     const hasDamScope = Object.entries(targetDamScope).length > 0;
 
     // 1. find all source scopes of file dependencies, to create an dam inbox folder if needed
-    updateProgress(0, <FormattedMessage id="comet.pages.paste.analyzingPages" defaultMessage="analyzing pages" />);
+    updateProgress(0, <FormattedMessage id="dextinity.pages.paste.analyzingPages" defaultMessage="analyzing pages" />);
     {
         let progressPages = 0;
         const sourceScopes: Record<string, unknown>[] = [];
@@ -144,7 +144,7 @@ export async function sendPages(
             progressPages++;
             updateProgress(
                 (progressPages / pages.length) * 10,
-                <FormattedMessage id="comet.pages.paste.analyzingPages" defaultMessage="analyzing pages" />,
+                <FormattedMessage id="dextinity.pages.paste.analyzingPages" defaultMessage="analyzing pages" />,
             ); // 10% of progress is used for analyzing pages
         }
 
@@ -159,7 +159,7 @@ export async function sendPages(
     }
 
     // 2. traverses the tree with top-down strategy and create page tree nodes
-    updateProgress(10, <FormattedMessage id="comet.pages.paste.creatingPages" defaultMessage="creating pages" />);
+    updateProgress(10, <FormattedMessage id="dextinity.pages.paste.creatingPages" defaultMessage="creating pages" />);
 
     const handlePageTreeNode = async (node: PageClipboard, newParentId: string | null, posOffset: number): Promise<string> => {
         const documentType = documentTypes[node.documentType];
@@ -214,7 +214,7 @@ export async function sendPages(
                 progressPages++;
                 updateProgress(
                     10 + (progressPages / pages.length) * 40,
-                    <FormattedMessage id="comet.pages.paste.creatingPages" defaultMessage="creating pages" />,
+                    <FormattedMessage id="dextinity.pages.paste.creatingPages" defaultMessage="creating pages" />,
                 ); // next 40% of progress is used for creating pages
                 await traverse(node.id, newPageTreeUUID);
             }
@@ -225,7 +225,7 @@ export async function sendPages(
     // 3. create documents (and copy files if required) and attach them to the page tree nodes
     // no top-down strategy needed
     {
-        updateProgress(50, <FormattedMessage id="comet.pages.paste.creatingDocuments" defaultMessage="creating documents" />);
+        updateProgress(50, <FormattedMessage id="dextinity.pages.paste.creatingDocuments" defaultMessage="creating documents" />);
         let progressPages = 0;
         for (const sourcePage of pages) {
             const documentType = documentTypes[sourcePage.documentType];
@@ -309,12 +309,12 @@ export async function sendPages(
             progressPages++;
             updateProgress(
                 50 + (progressPages / pages.length) * 50,
-                <FormattedMessage id="comet.pages.paste.creatingDocuments" defaultMessage="creating documents" />,
+                <FormattedMessage id="dextinity.pages.paste.creatingDocuments" defaultMessage="creating documents" />,
             ); // last 50% of progress is used for creating documents
         }
     }
 
-    updateProgress(100, <FormattedMessage id="comet.pages.paste.reloadingPages" defaultMessage="reloading pages" />);
+    updateProgress(100, <FormattedMessage id="dextinity.pages.paste.reloadingPages" defaultMessage="reloading pages" />);
 
     // 4. Refetch Pages query
     await client.refetchQueries({ include: ["Pages"] });

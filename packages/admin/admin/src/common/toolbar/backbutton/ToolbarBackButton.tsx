@@ -1,4 +1,4 @@
-import { ArrowLeft } from "@comet/admin-icons";
+import { ArrowLeft } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, IconButton as MuiIconButton, type Theme } from "@mui/material";
 import { css, useThemeProps } from "@mui/material/styles";
 import type { ReactNode } from "react";
@@ -18,7 +18,7 @@ const Root = createComponentSlot("div")<ToolbarBackButtonClassKey>({
     flex: 0;
     display: flex;
 
-    .CometAdminToolbarItem-root {
+    .DextinityAdminToolbarItem-root {
         padding: 0;
     }
 `);
@@ -61,7 +61,7 @@ export const ToolbarBackButton = (inProps: ToolbarBackButtonProps) => {
         backIcon = <ArrowLeft sx={{ fontSize: 24 }} />,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminToolbarBackButton" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminToolbarBackButton" });
     const stackApi = useStackApi();
 
     if (!stackApi || stackApi.breadCrumbs.length <= 1) {
@@ -83,17 +83,17 @@ export const ToolbarBackButton = (inProps: ToolbarBackButtonProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminToolbarBackButton: ToolbarBackButtonClassKey;
+        DextinityAdminToolbarBackButton: ToolbarBackButtonClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminToolbarBackButton: ToolbarBackButtonProps;
+        DextinityAdminToolbarBackButton: ToolbarBackButtonProps;
     }
 
     interface Components {
-        CometAdminToolbarBackButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminToolbarBackButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminToolbarBackButton"];
+        DextinityAdminToolbarBackButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminToolbarBackButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminToolbarBackButton"];
         };
     }
 }

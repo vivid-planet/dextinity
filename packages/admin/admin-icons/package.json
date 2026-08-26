@@ -1,11 +1,11 @@
 {
-    "name": "@comet/admin-icons",
-    "version": "9.0.0-beta.6",
-    "description": "A collection of icons for Comet Admin",
+    "name": "@dextinity/admin-icons",
+    "version": "10.1.0",
+    "description": "A collection of icons for Dextinity Admin",
     "repository": {
         "directory": "packages/admin/admin-icons",
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet"
+        "url": "https://github.com/vivid-planet/dextinity"
     },
     "license": "BSD-2-Clause",
     "sideEffects": false,
@@ -44,11 +44,11 @@
     "devDependencies": {
         "@babel/cli": "^7.29.7",
         "@babel/core": "^7.29.7",
-        "@comet/admin-babel-preset": "workspace:*",
-        "@comet/eslint-config": "workspace:*",
+        "@dextinity/admin-babel-preset": "workspace:*",
+        "@dextinity/eslint-config": "workspace:*",
         "@mui/material": "^7.3.11",
         "@types/cli-progress": "^3.11.6",
-        "@types/node": "^24.12.4",
+        "@types/node": "^24.13.3",
         "@types/react": "^19.2.15",
         "@types/react-dom": "^19.2.3",
         "change-case": "^4.1.2",

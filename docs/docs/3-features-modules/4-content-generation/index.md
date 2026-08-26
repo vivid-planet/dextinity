@@ -2,7 +2,7 @@
 title: Content Generation
 ---
 
-COMET DXP supports some features for generating content with third party tools (e.g., ChatGPT).
+Dextinity supports some features for generating content with third party tools (e.g., ChatGPT).
 
 ## Setup
 
@@ -38,7 +38,7 @@ export class AppModule {
 
 #### Azure OpenAI
 
-If you want to use Azure OpenAI for the content generation, you can use COMET's `AzureOpenAiContentGenerationService`.
+If you want to use Azure OpenAI for the content generation, you can use Dextinity's `AzureOpenAiContentGenerationService`.
 In this case, you must import and configure the `AzureOpenAiContentGenerationModule`:
 
 ```diff

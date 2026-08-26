@@ -1,5 +1,5 @@
-import { CopyToClipboardButton, HoverActions, Table } from "@comet/admin";
-import { Download, Maximize } from "@comet/admin-icons";
+import { CopyToClipboardButton, HoverActions, Table } from "@dextinity/admin";
+import { Download, Maximize } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 
 export default {

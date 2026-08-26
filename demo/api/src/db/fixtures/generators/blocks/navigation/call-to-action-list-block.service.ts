@@ -1,4 +1,4 @@
-import { ExtractBlockInputFactoryProps } from "@comet/cms-api";
+import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import { CallToActionListBlock } from "@src/common/blocks/call-to-action-list.block";
 import { faker } from "@src/db/fixtures/faker";

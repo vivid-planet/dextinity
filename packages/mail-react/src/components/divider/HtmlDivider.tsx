@@ -17,6 +17,8 @@ export type HtmlDividerProps = DividerProps;
 
 /**
  * Themed divider for use inside MJML ending tags or outside of the MJML context.
+ * Inside `MjmlRaw` in an `MjmlColumn`, place `HtmlDivider` in a `<tr>` and `<td>` of its own.
+ * For MJML context, use `MjmlDivider`.
  */
 export function HtmlDivider({
     variant: variantProp,

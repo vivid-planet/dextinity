@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import type { GridColDef } from "@comet/admin";
+import type { GridColDef } from "@dextinity/admin";
 import { parseISO } from "date-fns";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -22,7 +22,7 @@ export const LatestBuildsDashboardWidget = () => {
         {
             ...disableFieldOptions,
             field: "runtime",
-            headerName: intl.formatMessage({ id: "dashboard.latestBuildsWidget.runtime", defaultMessage: "Runtime" }),
+            headerName: intl.formatMessage({ id: "dextinity.dashboard.latestBuildsWidget.runtime", defaultMessage: "Runtime" }),
             flex: 1,
             renderCell: ({ row }) => (
                 <JobRuntime
@@ -34,14 +34,14 @@ export const LatestBuildsDashboardWidget = () => {
         {
             ...disableFieldOptions,
             field: "status",
-            headerName: intl.formatMessage({ id: "dashboard.latestBuildsWidget.status", defaultMessage: "Status" }),
+            headerName: intl.formatMessage({ id: "dextinity.dashboard.latestBuildsWidget.status", defaultMessage: "Status" }),
             width: 150,
             renderCell: ({ row }) => <JobStatus status={row.status}>{row.status}</JobStatus>,
         },
     ];
 
     return (
-        <DashboardWidgetRoot header={<FormattedMessage id="dashboard.latestBuildsWidget.title" defaultMessage="Latest Builds" />}>
+        <DashboardWidgetRoot header={<FormattedMessage id="dextinity.dashboard.latestBuildsWidget.title" defaultMessage="Latest Builds" />}>
             <DataGrid disableColumnMenu hideFooter autoHeight columns={columns} rows={data?.builds ?? []} loading={loading} />
         </DashboardWidgetRoot>
     );

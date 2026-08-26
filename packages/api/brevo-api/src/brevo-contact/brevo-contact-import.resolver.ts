@@ -1,4 +1,4 @@
-import { CurrentUser, FileUpload, FileUploadsService, GetCurrentUser, RequiredPermission } from "@comet/cms-api";
+import { CurrentUser, FileUpload, FileUploadsService, GetCurrentUser, RequiredPermission } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Type } from "@nestjs/common";

@@ -22,12 +22,12 @@ export function generateEnumFilterDto(type: "enum" | "enums", enumName: string, 
     imports.push({ name: "InputType", importPath: "@nestjs/graphql" });
     let enumFilterOut;
     if (type == "enums") {
-        imports.push({ name: "createEnumsFilter", importPath: "@comet/cms-api" });
+        imports.push({ name: "createEnumsFilter", importPath: "@dextinity/cms-api" });
         enumFilterOut = `@InputType()
         export class ${enumName}EnumsFilter extends createEnumsFilter(${enumName}) {}
     `;
     } else {
-        imports.push({ name: "createEnumFilter", importPath: "@comet/cms-api" });
+        imports.push({ name: "createEnumFilter", importPath: "@dextinity/cms-api" });
         enumFilterOut = `@InputType()
         export class ${enumName}EnumFilter extends createEnumFilter(${enumName}) {}
     `;

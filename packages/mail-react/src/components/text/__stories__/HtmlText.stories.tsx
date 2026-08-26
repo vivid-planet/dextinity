@@ -21,11 +21,9 @@ export const Default: Story = {
         <MjmlSection>
             <MjmlColumn>
                 <MjmlRaw>
-                    <table>
-                        <tr>
-                            <HtmlText>Default text with base theme styles</HtmlText>
-                        </tr>
-                    </table>
+                    <tr>
+                        <HtmlText>Default text with base theme styles</HtmlText>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>
@@ -52,17 +50,15 @@ export const WithVariants: Story = {
         <MjmlSection>
             <MjmlColumn>
                 <MjmlRaw>
-                    <table>
-                        <tr>
-                            <HtmlText variant="heading">Heading variant</HtmlText>
-                        </tr>
-                        <tr>
-                            <HtmlText variant="body">Body variant</HtmlText>
-                        </tr>
-                        <tr>
-                            <HtmlText variant="caption">Caption variant</HtmlText>
-                        </tr>
-                    </table>
+                    <tr>
+                        <HtmlText variant="heading">Heading variant</HtmlText>
+                    </tr>
+                    <tr>
+                        <HtmlText variant="body">Body variant</HtmlText>
+                    </tr>
+                    <tr>
+                        <HtmlText variant="caption">Caption variant</HtmlText>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>
@@ -87,11 +83,9 @@ export const ResponsiveVariants: Story = {
         <MjmlSection>
             <MjmlColumn>
                 <MjmlRaw>
-                    <table>
-                        <tr>
-                            <HtmlText variant="heading">Responsive heading — shrinks on mobile</HtmlText>
-                        </tr>
-                    </table>
+                    <tr>
+                        <HtmlText variant="heading">Responsive heading — shrinks on mobile</HtmlText>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>
@@ -113,19 +107,17 @@ export const BottomSpacing: Story = {
         <MjmlSection>
             <MjmlColumn>
                 <MjmlRaw>
-                    <table>
-                        <tr>
-                            <HtmlText variant="heading" bottomSpacing>
-                                Heading with bottom spacing
-                            </HtmlText>
-                        </tr>
-                        <tr>
-                            <HtmlText bottomSpacing>Base text with bottom spacing</HtmlText>
-                        </tr>
-                        <tr>
-                            <HtmlText>Text without bottom spacing</HtmlText>
-                        </tr>
-                    </table>
+                    <tr>
+                        <HtmlText variant="heading" bottomSpacing>
+                            Heading with bottom spacing
+                        </HtmlText>
+                    </tr>
+                    <tr>
+                        <HtmlText bottomSpacing>Base text with bottom spacing</HtmlText>
+                    </tr>
+                    <tr>
+                        <HtmlText>Text without bottom spacing</HtmlText>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>
@@ -148,14 +140,12 @@ export const DefaultVariant: Story = {
         <MjmlSection>
             <MjmlColumn>
                 <MjmlRaw>
-                    <table>
-                        <tr>
-                            <HtmlText>Uses the default &quot;body&quot; variant automatically</HtmlText>
-                        </tr>
-                        <tr>
-                            <HtmlText variant="heading">Explicit heading variant</HtmlText>
-                        </tr>
-                    </table>
+                    <tr>
+                        <HtmlText>Uses the default &quot;body&quot; variant automatically</HtmlText>
+                    </tr>
+                    <tr>
+                        <HtmlText variant="heading">Explicit heading variant</HtmlText>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>
@@ -167,7 +157,11 @@ export const ElementPropAsDiv: Story = {
         <MjmlSection>
             <MjmlColumn>
                 <MjmlRaw>
-                    <HtmlText element="div">Rendered as a div with theme styles</HtmlText>
+                    <tr>
+                        <td>
+                            <HtmlText element="div">Rendered as a div with theme styles</HtmlText>
+                        </td>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>
@@ -179,9 +173,13 @@ export const ElementPropAsAnchor: Story = {
         <MjmlSection>
             <MjmlColumn>
                 <MjmlRaw>
-                    <HtmlText element="a" href="https://example.com" style={{ textDecoration: "underline" }}>
-                        Rendered as an anchor with href
-                    </HtmlText>
+                    <tr>
+                        <td>
+                            <HtmlText element="a" href="https://example.com" style={{ textDecoration: "underline" }}>
+                                Rendered as an anchor with href
+                            </HtmlText>
+                        </td>
+                    </tr>
                 </MjmlRaw>
             </MjmlColumn>
         </MjmlSection>

@@ -1,4 +1,4 @@
-import { Close, Maximize } from "@comet/admin-icons";
+import { Close, Maximize } from "@dextinity/admin-icons";
 import {
     ButtonBase,
     type ComponentsOverrides,
@@ -53,11 +53,11 @@ export interface ContentOverflowProps
 export const ContentOverflow = (inProps: PropsWithChildren<ContentOverflowProps>) => {
     const {
         children,
-        dialogTitle = <FormattedMessage id="comet.contentOverflow.dialogTitle" defaultMessage="Preview" />,
+        dialogTitle = <FormattedMessage id="dextinity.contentOverflow.dialogTitle" defaultMessage="Preview" />,
         iconMapping = {},
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminContentOverflow" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminContentOverflow" });
     const { openDialog: openDialogIcon = <Maximize fontSize="inherit" />, closeDialog: closeDialogIcon = <Close /> } = iconMapping;
 
     const [open, setOpen] = useState(false);
@@ -208,17 +208,17 @@ const InnerDialogContent = createComponentSlot("div")<ContentOverflowClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminContentOverflow: ContentOverflowClassKey;
+        DextinityAdminContentOverflow: ContentOverflowClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminContentOverflow: ContentOverflowProps;
+        DextinityAdminContentOverflow: ContentOverflowProps;
     }
 
     interface Components {
-        CometAdminContentOverflow?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminContentOverflow"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminContentOverflow"];
+        DextinityAdminContentOverflow?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminContentOverflow"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminContentOverflow"];
         };
     }
 }

@@ -1,4 +1,4 @@
-import { Field, FinalFormInput } from "@comet/admin";
+import { Field, FinalFormInput } from "@dextinity/admin";
 import { Box } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 
@@ -31,7 +31,7 @@ const validateIdentifier = (value?: string) => {
     }
 
     return value && isValidVimeoIdentifier(value) ? undefined : (
-        <FormattedMessage id="comet.blocks.vimeoVideo.validation" defaultMessage="Should be a valid Vimeo URL or identifier" />
+        <FormattedMessage id="dextinity.blocks.vimeoVideo.validation" defaultMessage="Should be a valid Vimeo URL or identifier" />
     );
 };
 
@@ -40,7 +40,7 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
 
     name: "VimeoVideo",
 
-    displayName: <FormattedMessage id="comet.blocks.vimeoVideo" defaultMessage="Video (Vimeo)" />,
+    displayName: <FormattedMessage id="dextinity.blocks.vimeoVideo" defaultMessage="Video (Vimeo)" />,
 
     defaultValues: () => ({ showControls: true, previewImage: PixelImageBlock.defaultValues() }),
 
@@ -74,7 +74,7 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
                     <BlocksFinalForm onSubmit={updateState} initialValues={state}>
                         <Field
                             name="vimeoIdentifier"
-                            label={<FormattedMessage id="comet.blocks.vimeoVideo.vimeoIdentifier" defaultMessage="Vimeo URL or Vimeo Video ID" />}
+                            label={<FormattedMessage id="dextinity.blocks.vimeoVideo.vimeoIdentifier" defaultMessage="Vimeo URL or Vimeo Video ID" />}
                             validate={validateIdentifier}
                             type="text"
                             component={FinalFormInput}
@@ -83,7 +83,7 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
                         />
                         <VideoOptionsFields />
                     </BlocksFinalForm>
-                    <BlockAdminComponentSection title={<FormattedMessage id="comet.blocks.video.previewImage" defaultMessage="Preview Image" />}>
+                    <BlockAdminComponentSection title={<FormattedMessage id="dextinity.blocks.video.previewImage" defaultMessage="Preview Image" />}>
                         <PixelImageBlock.AdminComponent
                             state={state.previewImage}
                             updateState={(setStateAction) => {

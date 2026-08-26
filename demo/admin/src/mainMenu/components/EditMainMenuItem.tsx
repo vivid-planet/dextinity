@@ -10,8 +10,8 @@ import {
     ToolbarActions,
     ToolbarBackButton,
     ToolbarTitleItem,
-} from "@comet/admin";
-import { Add, Delete, Preview } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Add, Delete, Preview } from "@dextinity/admin-icons";
 import {
     BlockAdminComponentRoot,
     type BlockOutputApi,
@@ -26,7 +26,7 @@ import {
     useBlockPreview,
     useContentScope,
     useSiteConfig,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 import { Box } from "@mui/material";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import isEqual from "lodash.isequal";

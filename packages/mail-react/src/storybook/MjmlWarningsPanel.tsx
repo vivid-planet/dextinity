@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { AddonPanel, Badge } from "storybook/internal/components";
 import { useChannel } from "storybook/manager-api";
 
-const RENDER_RESULT_EVENT = "comet-mail-render-result";
+const RENDER_RESULT_EVENT = "dextinity-mail-render-result";
 
 type MjmlWarning = {
     tagName: string;

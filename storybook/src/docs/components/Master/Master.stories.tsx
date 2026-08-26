@@ -10,8 +10,8 @@ import {
     RouterBrowserRouter,
     Toolbar,
     ToolbarTitleItem,
-} from "@comet/admin";
-import { Dashboard, Wrench } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Dashboard, Wrench } from "@dextinity/admin-icons";
 import { AppBar, Box, Card, CardContent, Drawer, Toolbar as MuiToolbar, Typography } from "@mui/material";
 import { useState } from "react";
 

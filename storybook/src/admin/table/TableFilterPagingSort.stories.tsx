@@ -14,7 +14,7 @@ import {
     useTableQueryFilter,
     useTableQueryPaging,
     useTableQuerySort,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import { Typography } from "@mui/material";
 import * as qs from "qs";
 
@@ -103,7 +103,7 @@ interface IResponseLinks {
 }
 
 export default {
-    title: "@comet/admin/table",
+    title: "@dextinity/admin/table",
 
     decorators: [
         apolloRestStoryDecorator({

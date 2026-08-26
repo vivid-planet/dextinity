@@ -106,7 +106,7 @@ export interface MainNavigationItemGroupProps
 export const MainNavigationItemGroup = (inProps: MainNavigationItemGroupProps) => {
     const { title, shortTitle, helperIcon, children, isMenuOpen, slotProps, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminMainNavigationItemGroup",
+        name: "DextinityAdminMainNavigationItemGroup",
     });
 
     const intl = useIntl();
@@ -176,17 +176,17 @@ export const MainNavigationItemGroup = (inProps: MainNavigationItemGroupProps) =
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminMainNavigationItemGroup: MainNavigationItemGroupProps;
+        DextinityAdminMainNavigationItemGroup: MainNavigationItemGroupProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminMainNavigationItemGroup: MainNavigationItemGroupClassKey;
+        DextinityAdminMainNavigationItemGroup: MainNavigationItemGroupClassKey;
     }
 
     interface Components {
-        CometAdminMainNavigationItemGroup?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminMainNavigationItemGroup"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminMainNavigationItemGroup"];
+        DextinityAdminMainNavigationItemGroup?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminMainNavigationItemGroup"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminMainNavigationItemGroup"];
         };
     }
 }

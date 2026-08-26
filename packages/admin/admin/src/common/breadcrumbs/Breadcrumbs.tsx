@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, ChevronUp } from "@comet/admin-icons";
+import { ChevronDown, ChevronRight, ChevronUp } from "@dextinity/admin-icons";
 import { type ButtonBase, type ComponentsOverrides, type Popover as MuiPopover, type Typography, useMediaQuery } from "@mui/material";
 import { type Theme, useThemeProps } from "@mui/material/styles";
 import type { ReactNode } from "react";
@@ -41,7 +41,7 @@ export interface BreadcrumbsProps
 export type BreadcrumbsSlotProps = BreadcrumbsProps["slotProps"];
 
 export const Breadcrumbs = (inProps: BreadcrumbsProps) => {
-    const { iconMapping = {}, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminBreadcrumbs" });
+    const { iconMapping = {}, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminBreadcrumbs" });
     const isDesktop = useMediaQuery((theme: Theme) => theme.breakpoints.up("sm"));
 
     const {
@@ -59,17 +59,17 @@ export const Breadcrumbs = (inProps: BreadcrumbsProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminBreadcrumbs: BreadcrumbsProps;
+        DextinityAdminBreadcrumbs: BreadcrumbsProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminBreadcrumbs: BreadcrumbsClassKey;
+        DextinityAdminBreadcrumbs: BreadcrumbsClassKey;
     }
 
     interface Components {
-        CometAdminBreadcrumbs?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminBreadcrumbs"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminBreadcrumbs"];
+        DextinityAdminBreadcrumbs?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminBreadcrumbs"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminBreadcrumbs"];
         };
     }
 }

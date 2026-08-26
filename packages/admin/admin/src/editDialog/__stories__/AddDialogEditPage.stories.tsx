@@ -1,4 +1,4 @@
-import { Add, Edit } from "@comet/admin-icons";
+import { Add, Edit } from "@dextinity/admin-icons";
 import { DialogContent, Typography } from "@mui/material";
 import type { StoryObj } from "@storybook/react-vite";
 import { expect, waitFor, within } from "storybook/test";

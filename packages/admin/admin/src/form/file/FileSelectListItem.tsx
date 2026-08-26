@@ -1,4 +1,4 @@
-import { Delete, Download, Error, File as FileIcon, FileNotMenu, ThreeDotSaving } from "@comet/admin-icons";
+import { Delete, Download, Error, File as FileIcon, FileNotMenu, ThreeDotSaving } from "@dextinity/admin-icons";
 import {
     Chip,
     type ComponentsOverrides,
@@ -85,7 +85,7 @@ export const FileSelectListItem = (inProps: FileSelectListItemProps) => {
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminFileSelectListItem",
+        name: "DextinityAdminFileSelectListItem",
     });
     const fileNameRef = useRef<HTMLDivElement>(null);
     const fileNameIsOverflowing = useElementIsOverflowing(fileNameRef);
@@ -212,11 +212,11 @@ const Root = createComponentSlot("div")<FileSelectListItemClassKey, OwnerState>(
         &:hover {
             background-color: ${theme.palette.grey[100]};
 
-            .CometAdminFileSelectListItem-fileSize {
+            .DextinityAdminFileSelectListItem-fileSize {
                 background-color: ${theme.palette.grey[200]};
             }
 
-            .CometAdminFileSelectListItem-iconButton {
+            .DextinityAdminFileSelectListItem-iconButton {
                 color: ${theme.palette.grey[900]};
             }
         }
@@ -452,17 +452,17 @@ const IconButton = createComponentSlot(MuiIconButton)<FileSelectListItemClassKey
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFileSelectListItem: FileSelectListItemClassKey;
+        DextinityAdminFileSelectListItem: FileSelectListItemClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFileSelectListItem: FileSelectListItemProps;
+        DextinityAdminFileSelectListItem: FileSelectListItemProps;
     }
 
     interface Components {
-        CometAdminFileSelectListItem?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFileSelectListItem"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFileSelectListItem"];
+        DextinityAdminFileSelectListItem?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFileSelectListItem"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFileSelectListItem"];
         };
     }
 }

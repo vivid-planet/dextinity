@@ -1,10 +1,10 @@
-import { makeRteApi, Rte } from "@comet/admin-rte";
+import { makeRteApi, Rte } from "@dextinity/admin-rte";
 import { Box, Card, CardContent } from "@mui/material";
 
 const [useRteApi] = makeRteApi();
 
 export default {
-    title: "@comet/admin-rte",
+    title: "@dextinity/admin-rte",
     args: {
         minHeight: 0,
     },

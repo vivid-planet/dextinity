@@ -13,8 +13,8 @@ import {
     TextAreaField,
     TextField,
     useFormApiRef,
-} from "@comet/admin";
-import { DateField, DateTimeField } from "@comet/admin-date-time";
+} from "@dextinity/admin";
+import { DateField, DateTimeField } from "@dextinity/admin-date-time";
 import {
     type BlockState,
     createFinalFormBlock,
@@ -26,7 +26,7 @@ import {
     queryUpdatedAt,
     resolveHasSaveConflict,
     useFormSaveConflict,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 import { InputAdornment, MenuItem } from "@mui/material";
 import type { GQLProductMutationErrorCode, GQLProductType } from "@src/graphql.generated";
 import type {
@@ -68,7 +68,7 @@ const rootBlocks = {
     image: DamImageBlock,
 };
 
-// Set types for FinalFormFileUpload manually, as they cannot be generated from the fragment in `@comet/cms-admin`
+// Set types for FinalFormFileUpload manually, as they cannot be generated from the fragment in `@dextinity/cms-admin`
 type ProductFormManualFragment = Omit<GQLProductFormManualFragment, "priceList" | "datasheets" | "relatedImages"> & {
     priceList: GQLFinalFormFileUploadFragment | null;
     datasheets: Array<GQLFinalFormFileUploadFragment>;

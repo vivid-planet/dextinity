@@ -1,4 +1,4 @@
-import { AddNoCircle } from "@comet/admin-icons";
+import { AddNoCircle } from "@dextinity/admin-icons";
 import { ButtonBase, type ButtonBaseProps } from "@mui/material";
 import { styled } from "@mui/material/styles";
 

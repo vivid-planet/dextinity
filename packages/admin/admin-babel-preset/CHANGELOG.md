@@ -1,5 +1,59 @@
 # @comet/admin-babel-preset
 
+## 10.1.0
+
+## 10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin-babel-preset` to `@dextinity/admin-babel-preset`
+
+    Update the dependency in `package.json` and the preset name in your Babel configuration:
+
+    ```diff
+    - "presets": ["@comet/admin-babel-preset"]
+    + "presets": ["@dextinity/admin-babel-preset"]
+    ```
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin-babel-preset` to `@dextinity/admin-babel-preset`
+
+    Update the dependency in `package.json` and the preset name in your Babel configuration:
+
+    ```diff
+    - "presets": ["@comet/admin-babel-preset"]
+    + "presets": ["@dextinity/admin-babel-preset"]
+    ```
+
+## 9.5.0
+
+## 9.4.0
+
+## 9.3.0
+
+## 9.2.2
+
+## 9.2.1
+
+## 9.2.0
+
+## 9.1.1
+
+## 9.1.0
+
+## 9.0.1
+
+## 9.0.0
+
+### Major Changes
+
+- 5f1566a: Make packages ESM-only
+
 ## 9.0.0-beta.6
 
 ## 9.0.0-beta.5

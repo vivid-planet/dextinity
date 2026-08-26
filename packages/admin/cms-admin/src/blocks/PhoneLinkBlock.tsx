@@ -1,4 +1,4 @@
-import { Field, FinalFormInput } from "@comet/admin";
+import { Field, FinalFormInput } from "@dextinity/admin";
 import { FormattedMessage } from "react-intl";
 
 import type { PhoneLinkBlockData, PhoneLinkBlockInput } from "../blocks.generated";
@@ -14,7 +14,7 @@ export const PhoneLinkBlock: BlockInterface<PhoneLinkBlockData, PhoneLinkBlockDa
 
     name: "PhoneLink",
 
-    displayName: <FormattedMessage id="comet.blocks.link.phone" defaultMessage="Phone Number" />,
+    displayName: <FormattedMessage id="dextinity.blocks.link.phone" defaultMessage="Phone Number" />,
 
     defaultValues: () => ({ phone: undefined }),
 
@@ -29,7 +29,7 @@ export const PhoneLinkBlock: BlockInterface<PhoneLinkBlockData, PhoneLinkBlockDa
             <SelectPreviewComponent>
                 <BlocksFinalForm onSubmit={updateState} initialValues={state}>
                     <Field
-                        label={<FormattedMessage id="comet.blocks.link.phone" defaultMessage="Phone Number" />}
+                        label={<FormattedMessage id="dextinity.blocks.link.phone" defaultMessage="Phone Number" />}
                         name="phone"
                         component={FinalFormInput}
                         fullWidth

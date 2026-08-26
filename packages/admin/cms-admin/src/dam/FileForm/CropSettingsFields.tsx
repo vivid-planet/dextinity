@@ -1,5 +1,5 @@
-import { Button, Field, FieldContainer, FormSection } from "@comet/admin";
-import { Reset } from "@comet/admin-icons";
+import { Button, Field, FieldContainer, FormSection } from "@dextinity/admin";
+import { Reset } from "@dextinity/admin-icons";
 import { FormControlLabel, Switch } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { ChangeEvent, JSX } from "react";
@@ -35,34 +35,34 @@ export function CropSettingsFields({ disabled }: Props): JSX.Element {
 
     return (
         <Container>
-            <FormSection title={<FormattedMessage id="comet.dam.file.cropSettings.sectionTitle" defaultMessage="Crop/Focus settings" />}>
+            <FormSection title={<FormattedMessage id="dextinity.dam.file.cropSettings.sectionTitle" defaultMessage="Crop/Focus settings" />}>
                 <FieldContainer
                     fullWidth
                     helperText={
                         <>
                             <FormattedMessage
-                                id="comet.dam.file.croppingInfoText"
+                                id="dextinity.dam.file.croppingInfoText"
                                 defaultMessage="Cropping selects the maximum visible area. Depending on the aspect ratio, the image may be cropped further on the page."
                             />
                             <br />
                             <br />
                             <FormattedMessage
-                                id="comet.dam.file.focusPointInfoText"
+                                id="dextinity.dam.file.focusPointInfoText"
                                 defaultMessage="The focus point marks the most important part of the image, which is always visible. Choose it wisely."
                             />
                         </>
                     }
                 >
                     <BlockAdminComponentSection
-                        title={<FormattedMessage id="comet.dam.file.cropSettings.smartFocusPoint.title" defaultMessage="Smart focus point" />}
+                        title={<FormattedMessage id="dextinity.dam.file.cropSettings.smartFocusPoint.title" defaultMessage="Smart focus point" />}
                     >
                         <FormControlLabel
                             control={<Switch checked={focalPoint === "SMART"} onChange={handleSmartFocalPointChange} />}
                             label={
                                 focalPoint === "SMART" ? (
-                                    <FormattedMessage id="comet.dam.file.smartFocusPoint.yes" defaultMessage="Yes" />
+                                    <FormattedMessage id="dextinity.dam.file.smartFocusPoint.yes" defaultMessage="Yes" />
                                 ) : (
-                                    <FormattedMessage id="comet.dam.file.smartFocusPoint.no" defaultMessage="No" />
+                                    <FormattedMessage id="dextinity.dam.file.smartFocusPoint.no" defaultMessage="No" />
                                 )
                             }
                         />
@@ -74,7 +74,7 @@ export function CropSettingsFields({ disabled }: Props): JSX.Element {
                         fullWidth
                         helperText={
                             <FormattedMessage
-                                id="comet.blocks.image.hintSelectFocalPoint"
+                                id="dextinity.blocks.image.hintSelectFocalPoint"
                                 defaultMessage="You can also select the focus point by clicking on the bullets in the image."
                             />
                         }
@@ -98,7 +98,7 @@ export function CropSettingsFields({ disabled }: Props): JSX.Element {
                                 }}
                                 variant="outlined"
                             >
-                                <FormattedMessage id="comet.dam.file.resetCropArea" defaultMessage="Reset crop area" />
+                                <FormattedMessage id="dextinity.dam.file.resetCropArea" defaultMessage="Reset crop area" />
                             </Button>
                         )}
                     </Field>

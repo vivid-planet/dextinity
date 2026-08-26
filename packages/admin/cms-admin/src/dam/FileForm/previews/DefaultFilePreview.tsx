@@ -1,4 +1,4 @@
-import { File } from "@comet/admin-icons";
+import { File } from "@dextinity/admin-icons";
 import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { ReactElement } from "react";

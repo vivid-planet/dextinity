@@ -1,4 +1,4 @@
-import { ExtractBlockInputFactoryProps, ImagePosition } from "@comet/cms-api";
+import { ExtractBlockInputFactoryProps, ImagePosition } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import { TextImageBlock } from "@src/common/blocks/text-image.block";
 import { faker } from "@src/db/fixtures/faker";

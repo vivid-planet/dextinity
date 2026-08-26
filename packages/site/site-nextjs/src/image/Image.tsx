@@ -1,4 +1,4 @@
-import { generateImageUrl, parseAspectRatio } from "@comet/site-react";
+import { generateImageUrl, parseAspectRatio } from "@dextinity/site-react";
 // eslint-disable-next-line no-restricted-imports
 import NextImageImport, { type ImageProps as NextImageProps } from "next/image";
 

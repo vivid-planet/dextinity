@@ -1,4 +1,4 @@
-import { RteNonBreakingSpace } from "@comet/admin-icons";
+import { RteNonBreakingSpace } from "@dextinity/admin-icons";
 import { styled } from "@mui/material/styles";
 import type { ContentState } from "draft-js";
 import type { PropsWithChildren } from "react";

@@ -1,5 +1,169 @@
 # @comet/eslint-config
 
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/eslint-plugin@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- @dextinity/eslint-plugin@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/eslint-config` to `@dextinity/eslint-config`
+
+    Update the dependency in `package.json` and the imports in your ESLint configuration:
+
+    ```diff
+    - import eslintConfigReact from "@comet/eslint-config/future/react.js";
+    + import eslintConfigReact from "@dextinity/eslint-config/future/react.js";
+    ```
+
+    **Breaking changes**
+    - Rename the plugin namespace from `@comet` to `@dextinity`. Rule overrides and disable comments must be updated, for instance, `@comet/no-other-module-relative-import` -> `@dextinity/no-other-module-relative-import`
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+    - @dextinity/eslint-plugin@10.0.0
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/eslint-config` to `@dextinity/eslint-config`
+
+    Update the dependency in `package.json` and the imports in your ESLint configuration:
+
+    ```diff
+    - import eslintConfigReact from "@comet/eslint-config/future/react.js";
+    + import eslintConfigReact from "@dextinity/eslint-config/future/react.js";
+    ```
+
+    **Breaking changes**
+    - Rename the plugin namespace from `@comet` to `@dextinity`. Rule overrides and disable comments must be updated, for instance, `@comet/no-other-module-relative-import` -> `@dextinity/no-other-module-relative-import`
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+    - @dextinity/eslint-plugin@10.0.0-beta.0
+
+## 9.5.0
+
+### Patch Changes
+
+- @comet/eslint-plugin@9.5.0
+
+## 9.4.0
+
+### Patch Changes
+
+- @comet/eslint-plugin@9.4.0
+
+## 9.3.0
+
+### Patch Changes
+
+- @comet/eslint-plugin@9.3.0
+
+## 9.2.2
+
+### Patch Changes
+
+- @comet/eslint-plugin@9.2.2
+
+## 9.2.1
+
+### Patch Changes
+
+- @comet/eslint-plugin@9.2.1
+
+## 9.2.0
+
+### Patch Changes
+
+- @comet/eslint-plugin@9.2.0
+
+## 9.1.1
+
+### Patch Changes
+
+- @comet/eslint-plugin@9.1.1
+
+## 9.1.0
+
+### Patch Changes
+
+- @comet/eslint-plugin@9.1.0
+
+## 9.0.1
+
+### Patch Changes
+
+- @comet/eslint-plugin@9.0.1
+
+## 9.0.0
+
+### Major Changes
+
+- 23a09c2: Add `curly` ESLint rule to enforce braces for control statements
+
+    This rule requires braces around the body of all control statements (if, else, for, while, etc.) to improve code readability and reduce diff size when adding statements.
+
+- 1f903b6: Enable `@typescript-eslint/no-import-type-side-effects` rule
+- f51972c: Enable `@graphql-eslint/naming-convention` in `react.js` and `nextjs.js`
+
+    GraphQL code generation appends the operation kind (`Fragment`, `Query`, `Mutation`, `Subscription`) to the generated TypeScript type name. Naming an operation `FooFragment` / `FooQuery` therefore produces duplicated types like `GQLFooFragmentFragment` / `GQLFooQueryQuery`. The `@graphql-eslint/naming-convention` rule from `@graphql-eslint/eslint-plugin` reports such names inside `gql`/`graphql`-tagged template literals.
+
+- 99140f8: Bump MUI X Data Grid peer dependency to v8
+
+    See the migration guide for information on how to upgrade.
+
+- db6b83a: Prevent lib imports from `@comet/` packages
+
+    Use `no-restricted-imports` to prevent importing private files from `@comet/*/lib`. For example, the following import would be forbidden:
+
+    ```ts
+    import { something } from "@comet/admin/lib/some/private/file";
+    ```
+
+- 77a371e: Prevent importing dev dependencies in the API
+
+    Add `import/no-extraneous-dependencies` rule with `devDependencies` restriction to the NestJS ESLint config, preventing accidental imports of dev-only packages in production source files. Dev dependencies may only be imported in test files.
+
+    Fix `@comet/brevo-api` to correctly declare `@nestjs/graphql`, `graphql`, `graphql-scalars`, `lodash.isequal`, and `uuid` as dependencies/peerDependencies instead of devDependencies, since they are imported in source code.
+
+- 695a9c9: Promote `future/*` ESLint rules into the main configs
+
+    The rules previously only available via `@comet/eslint-config/future/*` are now part of the main configs and apply by default. The `future/*` subpaths are kept as aliases that re-export the main configs, so existing imports continue to work without changes.
+
+    **Newly active rules in the main configs**
+    - `react.js`:
+        - `react/jsx-no-literals` (with a small allowlist of common symbols)
+        - `@typescript-eslint/consistent-type-exports`
+        - `formatjs/enforce-default-message` is now enforced as `"literal"`
+    - `nextjs.js`:
+        - `node-cache` is restricted via `no-restricted-imports`
+    - `nestjs.js`:
+        - `node-cache` is restricted via `no-restricted-imports` (and `restrictedImportPaths` is now exported)
+
+- 740dba8: Add support for Next.js 15 and 16
+
+    `@comet/site-nextjs` now supports Next.js 14, 15, and 16. We recommend using Next.js 16.
+
+### Patch Changes
+
+- c57e54e: Allow `console.info` and `console.debug` in the `no-console` ESLint rule
+- 4b1d586: Fix missing Rules of React in `@comet/eslint-config/nextjs.js`
+- Updated dependencies [db6b83a]
+    - @comet/eslint-plugin@9.0.0
+
 ## 9.0.0-beta.6
 
 ### Patch Changes

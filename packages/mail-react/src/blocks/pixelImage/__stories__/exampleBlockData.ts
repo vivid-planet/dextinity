@@ -9,7 +9,7 @@ export const exampleBlockData: PixelImageBlockData = {
         contentHash: "example-hash",
         archived: false,
         scope: { domain: "at" },
-        fileUrl: "https://picsum.photos/seed/comet-pixel-image/1000/1000",
+        fileUrl: "https://picsum.photos/seed/dextinity-pixel-image/1000/1000",
         image: {
             width: 1000,
             height: 1000,
@@ -17,5 +17,5 @@ export const exampleBlockData: PixelImageBlockData = {
             dominantColor: "#000000",
         },
     },
-    urlTemplate: "https://picsum.photos/seed/comet-pixel-image/$resizeWidth/$resizeHeight",
+    urlTemplate: "https://picsum.photos/seed/dextinity-pixel-image/$resizeWidth/$resizeHeight",
 };

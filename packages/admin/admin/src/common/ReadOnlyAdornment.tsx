@@ -1,4 +1,4 @@
-import { Lock } from "@comet/admin-icons";
+import { Lock } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, css, InputAdornment, type InputAdornmentProps, type Theme, useThemeProps } from "@mui/material";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
@@ -22,7 +22,7 @@ export const ReadOnlyAdornment = (inProps: ReadOnlyAdornmentProps) => {
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminReadOnlyAdornment",
+        name: "DextinityAdminReadOnlyAdornment",
     });
 
     if (!inputIsReadOnly) {
@@ -45,17 +45,17 @@ const Root = createComponentSlot(InputAdornment)<ReadOnlyAdornmentClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminReadOnlyAdornment: ReadOnlyAdornmentProps;
+        DextinityAdminReadOnlyAdornment: ReadOnlyAdornmentProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminReadOnlyAdornment: ReadOnlyAdornmentClassKey;
+        DextinityAdminReadOnlyAdornment: ReadOnlyAdornmentClassKey;
     }
 
     interface Components {
-        CometAdminReadOnlyAdornment?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminReadOnlyAdornment"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminReadOnlyAdornment"];
+        DextinityAdminReadOnlyAdornment?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminReadOnlyAdornment"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminReadOnlyAdornment"];
         };
     }
 }

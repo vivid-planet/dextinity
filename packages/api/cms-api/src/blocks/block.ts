@@ -221,6 +221,7 @@ export enum BlockMetaFieldKind {
     OneOfBlocks = "OneOfBlocks",
     NestedObject = "NestedObject",
     NestedObjectList = "NestedObjectList",
+    TipTapRichTextBlock = "TipTapRichTextBlock",
 }
 
 export type BlockMetaLiteralFieldKind = BlockMetaFieldKind.String | BlockMetaFieldKind.Number | BlockMetaFieldKind.Boolean | BlockMetaFieldKind.Json;
@@ -236,7 +237,17 @@ export type BlockMetaField =
     | { name: string; kind: BlockMetaFieldKind.Block; block: Block; nullable: boolean }
     | { name: string; kind: BlockMetaFieldKind.NestedObject; object: BlockMetaInterface; nullable: boolean }
     | { name: string; kind: BlockMetaFieldKind.NestedObjectList; object: BlockMetaInterface; nullable: boolean }
-    | { name: string; kind: BlockMetaFieldKind.OneOfBlocks; blocks: Record<string, Block>; nullable: boolean };
+    | { name: string; kind: BlockMetaFieldKind.OneOfBlocks; blocks: Record<string, Block>; nullable: boolean }
+    | {
+          name: string;
+          kind: BlockMetaFieldKind.TipTapRichTextBlock;
+          /**
+           * The child blocks the rich text content may contain, keyed by their stable config key.
+           * Lets consumers like the block loader process blocks embedded in the content.
+           */
+          childBlocks: Record<string, Block>;
+          nullable: boolean;
+      };
 
 export interface BlockMetaInterface {
     fields: BlockMetaField[];

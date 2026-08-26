@@ -1,4 +1,4 @@
-import { Columns4 } from "@comet/admin-icons";
+import { Columns4 } from "@dextinity/admin-icons";
 import { GridPreferencePanelsValue, useGridApiContext } from "@mui/x-data-grid";
 import { useCallback } from "react";
 import { FormattedMessage } from "react-intl";

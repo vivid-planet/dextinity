@@ -5,6 +5,7 @@ import {
     Collection,
     Embedded,
     Entity,
+    Enum,
     Index,
     ManyToOne,
     OneToMany,
@@ -24,6 +25,7 @@ import { CreateWarnings } from "../../../warnings/decorators/create-warnings.dec
 import { DamScopeInterface } from "../../types";
 import { DamMediaAlternative } from "../dam-media-alternatives/entities/dam-media-alternative.entity";
 import { FileWarningService } from "../file-warning.service";
+import { DamFileAiContentType } from "./ai-content-type.enum";
 import { DamFileImage } from "./file-image.entity";
 import { FolderInterface } from "./folder.entity";
 import { License } from "./license.embeddable";
@@ -38,6 +40,7 @@ export interface FileInterface extends BaseEntity {
     contentHash: string;
     title?: string;
     altText?: string;
+    aiContentType?: DamFileAiContentType;
     archived: boolean;
     copyOf?: FileInterface;
     copies: FileInterface[];
@@ -111,6 +114,10 @@ export function createFileEntity({ Scope, Folder }: { Scope?: Type<DamScopeInter
             nullable: true,
         })
         altText?: string;
+
+        @Field(() => DamFileAiContentType, { nullable: true })
+        @Enum({ items: () => DamFileAiContentType, nullable: true })
+        aiContentType?: DamFileAiContentType;
 
         @Field()
         @Property({

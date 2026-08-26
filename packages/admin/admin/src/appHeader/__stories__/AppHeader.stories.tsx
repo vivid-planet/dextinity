@@ -1,8 +1,7 @@
-import { Account, Dashboard, Language, Logout, Preview } from "@comet/admin-icons";
+import { Account, Dashboard, DextinityLogo, Language, Logout, Preview } from "@dextinity/admin-icons";
 import { Avatar, Box, Divider, MenuItem, MenuList } from "@mui/material";
 
 import { Button } from "../../common/buttons/Button";
-import { CometLogo } from "../../common/CometLogo";
 import { FillSpace } from "../../common/FillSpace";
 import { MainContent } from "../../common/MainContent";
 import { MainNavigationItemRouterLink } from "../../mui/mainNavigation/ItemRouterLink";
@@ -36,7 +35,7 @@ function MasterHeader() {
     return (
         <AppHeader>
             <AppHeaderMenuButton />
-            <CometLogo />
+            <DextinityLogo variant="light" sx={{ fontSize: 34 }} />
             <FillSpace />
             <AppHeaderButton startIcon={<Preview />}>Preview</AppHeaderButton>
             <AppHeaderDropdown buttonChildren="Language" startIcon={<Language />}>

@@ -1,7 +1,7 @@
 import { Divider, Grid, Paper, Typography } from "@mui/material";
 
 export default {
-    title: "@comet/admin/Typography",
+    title: "@dextinity/admin/Typography",
 };
 
 export const _Typography = () => (

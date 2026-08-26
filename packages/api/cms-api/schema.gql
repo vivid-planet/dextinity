@@ -163,7 +163,7 @@ type BuildTemplate {
   name: String!
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
 }
@@ -180,7 +180,7 @@ type Build {
   name: String
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
   trigger: String
@@ -208,7 +208,7 @@ type KubernetesCronJob {
   name: String!
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
   schedule: String!
@@ -222,7 +222,7 @@ type KubernetesJob {
   name: String!
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
   status: KubernetesJobStatus!
@@ -461,6 +461,7 @@ type DamFile {
   contentHash: String!
   title: String
   altText: String
+  aiContentType: DamFileAiContentType
   archived: Boolean!
   image: DamFileImage
   license: DamFileLicense
@@ -474,6 +475,11 @@ type DamFile {
   alternativesForThisFile: [DamMediaAlternative!]!
   thisFileIsAlternativeFor: [DamMediaAlternative!]!
   dependents(offset: Int! = 0, limit: Int! = 25, filter: DependentFilter, sort: [DependencySort!], forceRefresh: Boolean! = false): PaginatedDependencies!
+}
+
+enum DamFileAiContentType {
+  Generated
+  Modified
 }
 
 type PaginatedDamItems {
@@ -723,6 +729,8 @@ input WarningFilter {
   updatedAt: DateTimeFilter
   message: StringFilter
   type: StringFilter
+  name: StringFilter
+  secondaryInformation: StringFilter
   severity: WarningSeverityEnumFilter
   status: WarningStatusEnumFilter
   scope: ScopeFilter
@@ -758,6 +766,7 @@ enum WarningSortField {
   updatedAt
   message
   type
+  name
   severity
   status
 }
@@ -838,6 +847,7 @@ input UpdateDamFileInput {
   name: String
   title: String
   altText: String
+  aiContentType: DamFileAiContentType
   image: UpdateImageFileInput
   folderId: ID
   license: LicenseInput

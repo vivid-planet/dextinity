@@ -63,7 +63,7 @@ export function generateFormLayout({
         finalFormConfig.subscription = { ...finalFormConfig.subscription, ...generatedFields.finalFormConfig?.subscription };
         finalFormConfig.renderProps = { ...finalFormConfig.renderProps, ...generatedFields.finalFormConfig?.renderProps };
 
-        imports.push({ name: "FieldSet", importPath: "@comet/admin" });
+        imports.push({ name: "FieldSet", importPath: "@dextinity/admin" });
         const supportPlaceholder = config.supportText?.includes("{");
         if (supportPlaceholder) {
             imports.push({ name: "FormSpy", importPath: "react-final-form" });
@@ -140,8 +140,8 @@ export function generateFormLayout({
             wrapFormValueToGqlInputCode: `${name.split(".").pop()}Enabled && $fieldName ? $inner : null`,
         });
 
-        imports.push({ name: "FinalFormSwitch", importPath: "@comet/admin" });
-        imports.push({ name: "messages", importPath: "@comet/admin" });
+        imports.push({ name: "FinalFormSwitch", importPath: "@dextinity/admin" });
+        imports.push({ name: "messages", importPath: "@dextinity/admin" });
         imports.push({ name: "FormControlLabel", importPath: "@mui/material" });
 
         code = `<Field

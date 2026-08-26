@@ -1,4 +1,4 @@
-import { Save } from "@comet/admin-icons";
+import { Save } from "@dextinity/admin-icons";
 import { DialogActions, DialogContent, DialogContentText, type DialogProps } from "@mui/material";
 import { Form } from "react-final-form";
 
@@ -51,7 +51,7 @@ export default {
             options: {
                 "Dialog Title Example": "Dialog Title Example",
                 "Really long dialog title":
-                    "Really long dialog title that is really long and takes up a lot of space because of all the words that are used in this title of the dialog you are seeing here in the storybook example inside comet that is used to test the dialog title",
+                    "Really long dialog title that is really long and takes up a lot of space because of all the words that are used in this title of the dialog you are seeing here in the storybook example inside Dextinity that is used to test the dialog title",
                 None: "",
             },
         },

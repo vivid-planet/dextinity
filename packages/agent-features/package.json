@@ -1,17 +1,22 @@
 {
-    "name": "@comet/agent-features",
-    "version": "9.0.0-beta.6",
-    "description": "Agent features (skills and rules) for Comet projects",
+    "name": "@dextinity/agent-features",
+    "version": "10.1.0",
+    "description": "Agent features (skills and rules) for Dextinity projects",
     "repository": {
         "directory": "packages/agent-features",
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet"
+        "url": "https://github.com/vivid-planet/dextinity"
     },
     "license": "BSD-2-Clause",
+    "type": "module",
     "files": [
         "skills/**",
         "rules/**"
     ],
+    "scripts": {
+        "build": "node build.ts",
+        "clean": "node build.ts --clean"
+    },
     "publishConfig": {
         "access": "public",
         "registry": "https://registry.npmjs.org"

@@ -32,7 +32,7 @@ const Typography = createComponentSlot(MuiTypography)<ToolbarTitleItemClassKey>(
 })();
 
 export const ToolbarTitleItem = (inProps: ToolbarTitleItemProps) => {
-    const { children, typographyProps = {}, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminToolbarTitleItem" });
+    const { children, typographyProps = {}, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminToolbarTitleItem" });
 
     return (
         <Root {...slotProps?.root} {...restProps}>
@@ -45,17 +45,17 @@ export const ToolbarTitleItem = (inProps: ToolbarTitleItemProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminToolbarTitleItem: ToolbarTitleItemClassKey;
+        DextinityAdminToolbarTitleItem: ToolbarTitleItemClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminToolbarTitleItem: ToolbarTitleItemProps;
+        DextinityAdminToolbarTitleItem: ToolbarTitleItemProps;
     }
 
     interface Components {
-        CometAdminToolbarTitleItem?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminToolbarTitleItem"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminToolbarTitleItem"];
+        DextinityAdminToolbarTitleItem?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminToolbarTitleItem"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminToolbarTitleItem"];
         };
     }
 }

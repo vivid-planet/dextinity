@@ -79,7 +79,7 @@ export function Tabs(inProps: TabsProps) {
         ScrollButtonComponent = TabScrollButton,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminTabs" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminTabs" });
 
     let value: ITabsState["value"];
     let setValue: ITabsState["setValue"];
@@ -150,17 +150,17 @@ export function Tabs(inProps: TabsProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminTabs: TabsClassKey;
+        DextinityAdminTabs: TabsClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminTabs: TabsProps;
+        DextinityAdminTabs: TabsProps;
     }
 
     interface Components {
-        CometAdminTabs?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminTabs"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminTabs"];
+        DextinityAdminTabs?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminTabs"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminTabs"];
         };
     }
 }

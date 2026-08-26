@@ -8,7 +8,7 @@ import type { AttachedDocument } from "./entities/attached-document.entity";
 import { type PageTreeNodeCategory, type PageTreeNodeInterface, PageTreeNodeVisibility as Visibility, type ScopeInterface } from "./types";
 import pathBuilder from "./utils/path-builder";
 
-const tracer = opentelemetry.trace.getTracer("@comet/cms-api");
+const tracer = opentelemetry.trace.getTracer("@dextinity/cms-api");
 
 interface PageTreeNodeFilterOptions {
     parentId?: string | null;

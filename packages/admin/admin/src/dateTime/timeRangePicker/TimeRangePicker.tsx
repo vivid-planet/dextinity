@@ -1,10 +1,10 @@
-import { Time } from "@comet/admin-icons";
+import { Time } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, css, inputLabelClasses, type Theme, useThemeProps } from "@mui/material";
 import type { TimeRangePickerProps as MuiTimeRangePickerProps } from "@mui/x-date-pickers-pro";
 import { type ComponentType, lazy, type ReactNode, Suspense, useState } from "react";
 import { useIntl } from "react-intl";
 
-import { ClearInputAdornment as CometClearInputAdornment } from "../../common/ClearInputAdornment";
+import { ClearInputAdornment as BaseClearInputAdornment } from "../../common/ClearInputAdornment";
 import { OpenPickerAdornment } from "../../common/OpenPickerAdornment";
 import { ReadOnlyAdornment } from "../../common/ReadOnlyAdornment";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
@@ -23,7 +23,7 @@ export type TimeRangePickerClassKey = "root" | "clearInputAdornment" | "readOnly
 
 export type TimeRangePickerProps = ThemedComponentBaseProps<{
     root: ComponentType<MuiTimeRangePickerProps>;
-    clearInputAdornment: typeof CometClearInputAdornment;
+    clearInputAdornment: typeof BaseClearInputAdornment;
     readOnlyAdornment: typeof ReadOnlyAdornment;
     openPickerAdornment: typeof OpenPickerAdornment;
 }> & {
@@ -63,7 +63,7 @@ const getTimeRangeValue = (value: TimeRange | undefined): [Date | null, Date | n
  * text fields with a time icon that opens a time range picker dialog. The component handles time strings in 24-hour
  * format (HH:mm) and includes features like clearing, read-only state, and customizable icons.
  *
- * - [Storybook](https://storybook.comet-dxp.com/?path=/docs/@comet/admin_components-datetime-timerangepicker--docs)
+ * - [Storybook](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/admin_components-datetime-timerangepicker--docs)
  * - [MUI X TimeRangePicker Documentation](https://mui.com/x/react-date-pickers/time-range-picker/)
  */
 export const TimeRangePicker = (inProps: TimeRangePickerProps) => {
@@ -81,7 +81,7 @@ export const TimeRangePicker = (inProps: TimeRangePickerProps) => {
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminTimeRangePicker",
+        name: "DextinityAdminTimeRangePicker",
     });
     const intl = useIntl();
 
@@ -124,7 +124,7 @@ export const TimeRangePicker = (inProps: TimeRangePickerProps) => {
                 slotProps={{
                     ...slotProps?.root?.slotProps,
                     field: {
-                        dateSeparator: intl.formatMessage({ id: "comet.timeRangePicker.separator", defaultMessage: "to" }),
+                        dateSeparator: intl.formatMessage({ id: "dextinity.timeRangePicker.separator", defaultMessage: "to" }),
                         ...slotProps?.root?.slotProps?.field,
                     },
                     textField: (ownerState) => {
@@ -150,7 +150,7 @@ export const TimeRangePicker = (inProps: TimeRangePickerProps) => {
                                             ...slotProps?.openPickerAdornment?.slotProps,
                                             openPickerButton: {
                                                 "aria-label": intl.formatMessage({
-                                                    id: "comet.timeRangePicker.openPicker",
+                                                    id: "dextinity.timeRangePicker.openPicker",
                                                     defaultMessage: "Open time range picker",
                                                 }),
                                                 ...slotProps?.openPickerAdornment?.slotProps?.openPickerButton,
@@ -203,24 +203,24 @@ const LazyRoot = lazy(async () => {
     };
 });
 
-const ClearInputAdornment = createComponentSlot(CometClearInputAdornment)<TimeRangePickerClassKey>({
+const ClearInputAdornment = createComponentSlot(BaseClearInputAdornment)<TimeRangePickerClassKey>({
     componentName: "TimeRangePicker",
     slotName: "clearInputAdornment",
 })();
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminTimeRangePicker: TimeRangePickerProps;
+        DextinityAdminTimeRangePicker: TimeRangePickerProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminTimeRangePicker: TimeRangePickerClassKey;
+        DextinityAdminTimeRangePicker: TimeRangePickerClassKey;
     }
 
     interface Components {
-        CometAdminTimeRangePicker?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminTimeRangePicker"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminTimeRangePicker"];
+        DextinityAdminTimeRangePicker?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminTimeRangePicker"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminTimeRangePicker"];
         };
     }
 }

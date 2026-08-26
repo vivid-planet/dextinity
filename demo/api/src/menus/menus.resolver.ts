@@ -1,4 +1,4 @@
-import { PageTreeNodeInterface, PageTreeReadApiService, RequiredPermission } from "@comet/cms-api";
+import { PageTreeNodeInterface, PageTreeReadApiService, RequiredPermission } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, Query, Resolver } from "@nestjs/graphql";
 import { PageTreeNodeScope } from "@src/page-tree/dto/page-tree-node-scope";

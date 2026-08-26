@@ -16,8 +16,8 @@ import {
     useDataGridRemote,
     useEditDialog,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon } from "@dextinity/admin-icons";
 import { DialogContent, IconButton } from "@mui/material";
 import type { GridSlotsComponent, GridToolbarProps } from "@mui/x-data-grid";
 import { type ReactElement, useState } from "react";
@@ -119,7 +119,7 @@ export function MediaAlternativesGrid({ file, type, direction }: MediaAlternativ
     const columns: GridColDef<GQLDamMediaAlternativeGridFragment>[] = [
         {
             field: direction === "for" ? "alternative" : "for",
-            headerName: intl.formatMessage({ id: "damMediaAlternatives.title", defaultMessage: "File" }),
+            headerName: intl.formatMessage({ id: "dextinity.damMediaAlternatives.title", defaultMessage: "File" }),
             flex: 1,
             minWidth: 150,
             renderCell: ({ row }) =>
@@ -132,7 +132,7 @@ export function MediaAlternativesGrid({ file, type, direction }: MediaAlternativ
         },
         {
             field: "language",
-            headerName: intl.formatMessage({ id: "damMediaAlternatives.language", defaultMessage: "Language" }),
+            headerName: intl.formatMessage({ id: "dextinity.damMediaAlternatives.language", defaultMessage: "Language" }),
             flex: 1,
             minWidth: 50,
             filterable: false,

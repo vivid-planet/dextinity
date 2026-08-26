@@ -1,11 +1,11 @@
 {
-    "name": "@comet/admin-date-time",
-    "version": "9.0.0-beta.6",
-    "description": "Comet Admin Date Time component",
+    "name": "@dextinity/admin-date-time",
+    "version": "10.1.0",
+    "description": "Dextinity Admin Date Time component",
     "repository": {
         "directory": "packages/admin/admin-date-time",
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet"
+        "url": "https://github.com/vivid-planet/dextinity"
     },
     "license": "BSD-2-Clause",
     "sideEffects": [
@@ -40,8 +40,8 @@
         "start:types": "tsc --project ./tsconfig.json --emitDeclarationOnly --watch --preserveWatchOutput"
     },
     "dependencies": {
-        "@comet/admin": "workspace:*",
-        "@comet/admin-icons": "workspace:*",
+        "@dextinity/admin": "workspace:*",
+        "@dextinity/admin-icons": "workspace:*",
         "@mui/utils": "^7.3.11",
         "date-fns": "^4.4.0",
         "react-date-range": "^2.0.1"
@@ -49,8 +49,8 @@
     "devDependencies": {
         "@babel/cli": "^7.29.7",
         "@babel/core": "^7.29.7",
-        "@comet/admin-babel-preset": "workspace:*",
-        "@comet/eslint-config": "workspace:*",
+        "@dextinity/admin-babel-preset": "workspace:*",
+        "@dextinity/eslint-config": "workspace:*",
         "@mui/material": "^7.3.11",
         "@types/react": "^19.2.15",
         "@types/react-date-range": "^1.4.10",

@@ -31,10 +31,6 @@ export const Default: Story = {
             },
         });
 
-        const footerTheme = structuredClone(theme);
-        footerTheme.colors.background.content = "#2d4a6e";
-        footerTheme.text.color = "#c8d8e9";
-
         return (
             <MjmlMailRoot theme={theme}>
                 <MjmlSection backgroundColor="#1a1a1a" indent>

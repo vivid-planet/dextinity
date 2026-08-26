@@ -14,7 +14,7 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import { Chip } from "@mui/material";
 import type { GridFilterModel } from "@mui/x-data-grid";
 import { capitalCase } from "change-case";
@@ -24,6 +24,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { useContentScope } from "../contentScope/Provider";
 import { DataGrid } from "../dataGrid/DataGrid";
 import { useDependenciesConfig } from "../dependencies/dependenciesConfig";
+import { getDisplayNameString } from "../dependencies/getDisplayNameString";
 import { WarningActions } from "./WarningActions";
 import { WarningMessage } from "./WarningMessage";
 import { useWarningsConfig } from "./warningsConfig";
@@ -79,7 +80,7 @@ function WarningsGridToolbar() {
 export function WarningsGrid() {
     const intl = useIntl();
     const dataGridProps = {
-        ...useDataGridRemote({ initialFilter: { items: [{ field: "state", operator: "is", value: "open" }] } }),
+        ...useDataGridRemote({ initialFilter: { items: [{ field: "status", operator: "is", value: "open" }] } }),
         ...usePersistentColumnState("WarningsGrid"),
     };
     const { messages: warningMessages } = useWarningsConfig();
@@ -107,26 +108,24 @@ export function WarningsGrid() {
         {
             ...dataGridDateTimeColumn,
             field: "createdAt",
-            headerName: intl.formatMessage({ id: "warning.dateTime", defaultMessage: "Date / Time" }),
+            headerName: intl.formatMessage({ id: "dextinity.warning.dateTime", defaultMessage: "Date / Time" }),
             width: 200,
         },
         {
             field: "severity",
-            headerName: intl.formatMessage({ id: "warning.severity", defaultMessage: "Severity" }),
+            headerName: intl.formatMessage({ id: "dextinity.warning.severity", defaultMessage: "Severity" }),
             type: "singleSelect",
             valueOptions: [
-                { value: "high", label: intl.formatMessage({ id: "warning.severity.high", defaultMessage: "High" }) },
-                { value: "medium", label: intl.formatMessage({ id: "warning.severity.medium", defaultMessage: "Medium" }) },
-                { value: "low", label: intl.formatMessage({ id: "warning.severity.low", defaultMessage: "Low" }) },
+                { value: "high", label: intl.formatMessage({ id: "dextinity.warning.severity.high", defaultMessage: "High" }) },
+                { value: "medium", label: intl.formatMessage({ id: "dextinity.warning.severity.medium", defaultMessage: "Medium" }) },
+                { value: "low", label: intl.formatMessage({ id: "dextinity.warning.severity.low", defaultMessage: "Low" }) },
             ],
             width: 150,
             renderCell: (params) => <WarningSeverity severity={params.value} />,
         },
         {
-            field: "nameInfo",
-            headerName: intl.formatMessage({ id: "warning.nameAndInfo", defaultMessage: "Name/Info" }),
-            sortable: false,
-            filterable: false,
+            field: "name",
+            headerName: intl.formatMessage({ id: "dextinity.warning.name", defaultMessage: "Name" }),
             width: 200,
             renderCell: ({ row }) => {
                 return (
@@ -138,24 +137,35 @@ export function WarningsGrid() {
             },
         },
         {
-            field: "type",
-            headerName: intl.formatMessage({ id: "warning.type", defaultMessage: "Type" }),
+            field: "secondaryInformation",
+            headerName: intl.formatMessage({ id: "dextinity.warning.info", defaultMessage: "Info" }),
             sortable: false,
-            filterable: false,
+            visible: false,
+            valueGetter: (params, row) => row.entityInfo?.secondaryInformation,
+        },
+        {
+            field: "type",
+            headerName: intl.formatMessage({ id: "dextinity.warning.type", defaultMessage: "Type" }),
+            type: "singleSelect",
+            valueOptions: Object.entries(entityDependencyMap).map(([value, dependency]) => ({
+                value,
+                label: getDisplayNameString(dependency.displayName, intl, value),
+            })),
             width: 100,
+            valueGetter: (params, row) => row.sourceInfo.rootEntityName,
             renderCell: ({ row }) => (
                 <Chip label={entityDependencyMap[row.sourceInfo.rootEntityName]?.displayName ?? row.sourceInfo.rootEntityName} />
             ),
         },
         {
             field: "message",
-            headerName: intl.formatMessage({ id: "warning.message", defaultMessage: "Message" }),
+            headerName: intl.formatMessage({ id: "dextinity.warning.message", defaultMessage: "Message" }),
             flex: 1,
             renderCell: (params) => <WarningMessage message={params.value} warningMessages={warningMessages} />,
         },
         {
             field: "scope",
-            headerName: intl.formatMessage({ id: "warning.scope", defaultMessage: "Scope" }),
+            headerName: intl.formatMessage({ id: "dextinity.warning.scope", defaultMessage: "Scope" }),
             type: "singleSelect",
             sortable: false,
             valueOptions: scopeValueOptions,
@@ -182,6 +192,7 @@ export function WarningsGrid() {
         {
             field: "actions",
             headerName: "",
+            filterable: false,
             sortable: false,
             renderCell: ({ row }) => <WarningActions scope={row.scope} sourceInfo={row.sourceInfo} />,
         },
@@ -219,7 +230,7 @@ export function WarningsGrid() {
             search: gqlSearch,
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
-            sort: muiGridSortToGql(dataGridProps.sortModel),
+            sort: muiGridSortToGql(dataGridProps.sortModel, columns),
         },
     });
     const rowCount = useBufferedRowCount(data?.warnings.totalCount);

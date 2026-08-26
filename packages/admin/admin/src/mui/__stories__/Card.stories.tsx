@@ -1,4 +1,4 @@
-import { ArrowRight, Reload } from "@comet/admin-icons";
+import { ArrowRight, Reload } from "@dextinity/admin-icons";
 import { Card, CardContent, CardHeader, Grid, IconButton, Typography } from "@mui/material";
 
 import { Button } from "../../common/buttons/Button";

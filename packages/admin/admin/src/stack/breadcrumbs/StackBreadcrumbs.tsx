@@ -1,4 +1,4 @@
-import { ChevronRight } from "@comet/admin-icons";
+import { ChevronRight } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, css, type Theme, useTheme, useThemeProps } from "@mui/material/styles";
 import type Typography from "@mui/material/Typography";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
@@ -92,7 +92,12 @@ export interface StackBreadcrumbsProps
 }
 
 export function StackBreadcrumbs(inProps: StackBreadcrumbsProps) {
-    const { separator, overflowLinkText = ". . .", slotProps, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminStackBreadcrumbs" });
+    const {
+        separator,
+        overflowLinkText = ". . .",
+        slotProps,
+        ...restProps
+    } = useThemeProps({ props: inProps, name: "DextinityAdminStackBreadcrumbs" });
     const stackApi = useStackApi();
     const { palette } = useTheme();
     const breadcrumbsRef = useRef<HTMLDivElement>(null);
@@ -141,17 +146,17 @@ export function StackBreadcrumbs(inProps: StackBreadcrumbsProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminStackBreadcrumbs: StackBreadcrumbsClassKey;
+        DextinityAdminStackBreadcrumbs: StackBreadcrumbsClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminStackBreadcrumbs: StackBreadcrumbsProps;
+        DextinityAdminStackBreadcrumbs: StackBreadcrumbsProps;
     }
 
     interface Components {
-        CometAdminStackBreadcrumbs?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminStackBreadcrumbs"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminStackBreadcrumbs"];
+        DextinityAdminStackBreadcrumbs?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminStackBreadcrumbs"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminStackBreadcrumbs"];
         };
     }
 }

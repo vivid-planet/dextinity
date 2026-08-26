@@ -1,4 +1,4 @@
-import { OffsetBasedPaginationArgs } from "@comet/cms-api";
+import { OffsetBasedPaginationArgs } from "@dextinity/cms-api";
 import { ArgsType, Field, ID } from "@nestjs/graphql";
 import { IsOptional, IsString } from "class-validator";
 

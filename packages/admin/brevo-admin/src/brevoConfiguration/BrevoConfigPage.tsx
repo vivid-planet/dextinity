@@ -1,4 +1,4 @@
-import { useContentScope } from "@comet/cms-admin";
+import { useContentScope } from "@dextinity/cms-admin";
 import type { JSX } from "react";
 
 import { useBrevoConfig } from "../common/BrevoConfigProvider";

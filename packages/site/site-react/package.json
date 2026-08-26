@@ -1,10 +1,10 @@
 {
-    "name": "@comet/site-react",
-    "version": "9.0.0-beta.6",
-    "description": "Comet Site React package",
+    "name": "@dextinity/site-react",
+    "version": "10.1.0",
+    "description": "Dextinity Site React package",
     "repository": {
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet",
+        "url": "https://github.com/vivid-planet/dextinity",
         "directory": "packages/site/site-react"
     },
     "license": "BSD-2-Clause",
@@ -31,7 +31,7 @@
         "build": "pnpm run clean && pnpm run generate-block-types && vite build",
         "clean": "rimraf lib 'src/**/*.generated.ts'",
         "dev": "pnpm run clean && pnpm generate-block-types && vite build --watch",
-        "generate-block-types": "comet generate-block-types",
+        "generate-block-types": "dextinity generate-block-types",
         "generate-block-types:watch": "chokidar -s \"block-meta.json\" -c \"pnpm generate-block-types\"",
         "lint": "pnpm generate-block-types && run-p lint:prettier lint:eslint lint:tsc",
         "lint:ci": "pnpm run lint",
@@ -53,8 +53,8 @@
         "usehooks-ts": "^3.1.1"
     },
     "devDependencies": {
-        "@comet/cli": "workspace:*",
-        "@comet/eslint-config": "workspace:*",
+        "@dextinity/cli": "workspace:*",
+        "@dextinity/eslint-config": "workspace:*",
         "@types/draft-js": "^0.11.20",
         "@types/lodash.isequal": "^4.5.8",
         "@types/react": "^19.2.15",

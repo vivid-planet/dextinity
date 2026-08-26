@@ -1,4 +1,4 @@
-import { DatePicker, DatePickerField, FieldContainer } from "@comet/admin";
+import { DatePicker, DatePickerField, FieldContainer } from "@dextinity/admin";
 import { Grid } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
@@ -8,7 +8,7 @@ type Story = StoryObj<typeof DatePicker>;
 
 const config: Meta<typeof DatePicker> = {
     component: DatePicker,
-    title: "@comet/admin/dateTime/DatePicker",
+    title: "@dextinity/admin/dateTime/DatePicker",
 };
 export default config;
 

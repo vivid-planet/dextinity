@@ -1,5 +1,256 @@
 # @comet/admin-generator
 
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/admin@10.1.0
+- @dextinity/admin-icons@10.1.0
+- @dextinity/cms-admin@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- Updated dependencies [48748b0]
+    - @dextinity/admin@10.0.1
+    - @dextinity/cms-admin@10.0.1
+    - @dextinity/admin-icons@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin-generator` to `@dextinity/admin-generator`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the `comet-admin-generator` binary to `dextinity-admin-generator`:
+
+        ```diff
+        - "generate-admin": "comet-admin-generator generate"
+        + "generate-admin": "dextinity-admin-generator generate"
+        ```
+
+    - Rename the config file suffix from `.cometGen.tsx` to `.dextinityGen.tsx`. The default file pattern is now `src/**/*.dextinityGen.{ts,tsx}`
+    - Change the header of generated files. Rerun the generator to update them
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+    - @dextinity/admin-icons@10.0.0
+    - @dextinity/admin@10.0.0
+    - @dextinity/cms-admin@10.0.0
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin-generator` to `@dextinity/admin-generator`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the `comet-admin-generator` binary to `dextinity-admin-generator`:
+
+        ```diff
+        - "generate-admin": "comet-admin-generator generate"
+        + "generate-admin": "dextinity-admin-generator generate"
+        ```
+
+    - Rename the config file suffix from `.cometGen.tsx` to `.dextinityGen.tsx`. The default file pattern is now `src/**/*.dextinityGen.{ts,tsx}`
+    - Change the header of generated files. Rerun the generator to update them
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [085b9ac]
+- Updated dependencies [0f17fbd]
+    - @dextinity/admin-icons@10.0.0-beta.0
+    - @dextinity/admin@10.0.0-beta.0
+    - @dextinity/cms-admin@10.0.0-beta.0
+
+## 9.5.0
+
+### Patch Changes
+
+- @comet/admin@9.5.0
+- @comet/admin-icons@9.5.0
+- @comet/cms-admin@9.5.0
+
+## 9.4.0
+
+### Patch Changes
+
+- Updated dependencies [bf1ff64]
+- Updated dependencies [ca88ec6]
+- Updated dependencies [ca88ec6]
+- Updated dependencies [4e27111]
+- Updated dependencies [71d6a95]
+- Updated dependencies [085b9ac]
+- Updated dependencies [0f17fbd]
+    - @comet/admin@9.4.0
+    - @comet/cms-admin@9.4.0
+    - @comet/admin-icons@9.4.0
+
+## 9.3.0
+
+### Patch Changes
+
+- Updated dependencies [7b2d8db]
+- Updated dependencies [924b66c]
+    - @comet/admin@9.3.0
+    - @comet/cms-admin@9.3.0
+    - @comet/admin-icons@9.3.0
+
+## 9.2.2
+
+### Patch Changes
+
+- @comet/admin@9.2.2
+- @comet/admin-icons@9.2.2
+- @comet/cms-admin@9.2.2
+
+## 9.2.1
+
+### Patch Changes
+
+- @comet/admin@9.2.1
+- @comet/admin-icons@9.2.1
+- @comet/cms-admin@9.2.1
+
+## 9.2.0
+
+### Patch Changes
+
+- Updated dependencies [ee0bf93]
+- Updated dependencies [5a05d97]
+- Updated dependencies [8c866a3]
+- Updated dependencies [48d06d6]
+- Updated dependencies [ba56f97]
+- Updated dependencies [eb0b156]
+    - @comet/cms-admin@9.2.0
+    - @comet/admin@9.2.0
+    - @comet/admin-icons@9.2.0
+
+## 9.1.1
+
+### Patch Changes
+
+- Updated dependencies [097f85a]
+    - @comet/cms-admin@9.1.1
+    - @comet/admin@9.1.1
+    - @comet/admin-icons@9.1.1
+
+## 9.1.0
+
+### Patch Changes
+
+- Updated dependencies [319f5b8]
+    - @comet/cms-admin@9.1.0
+    - @comet/admin@9.1.0
+    - @comet/admin-icons@9.1.0
+
+## 9.0.1
+
+### Patch Changes
+
+- Updated dependencies [0c8063e]
+    - @comet/cms-admin@9.0.1
+    - @comet/admin@9.0.1
+    - @comet/admin-icons@9.0.1
+
+## 9.0.0
+
+### Major Changes
+
+- 99140f8: Bump MUI X Data Grid peer dependency to v8
+
+    See the migration guide for information on how to upgrade.
+
+- 0ec748a: Convert to ESM
+
+    To upgrade, make the following changes to your `tsconfig.json`:
+
+    ```diff
+    {
+        "compilerOptions": {
+    -       "module": "ESNext",
+    -       "moduleResolution": "Node",
+    +       "module": "preserve",
+    +       "moduleResolution": "bundler"
+        }
+    }
+    ```
+
+### Minor Changes
+
+- f1e6145: Add `initialPageSize` option to `GridConfig` for the Admin Generator. When set, the value is passed as `pageSize` to `useDataGridRemote` in the generated DataGrid code.
+- f066335: Add support for React 19
+
+### Patch Changes
+
+- Updated dependencies [4c1aeb2]
+- Updated dependencies [92281f1]
+- Updated dependencies [dc8f29c]
+- Updated dependencies [15e771b]
+- Updated dependencies [c0cee12]
+- Updated dependencies [d7b77af]
+- Updated dependencies [7fbe2a7]
+- Updated dependencies [d7b77af]
+- Updated dependencies [1475f4a]
+- Updated dependencies [3cbf0ff]
+- Updated dependencies [8a93124]
+- Updated dependencies [8c2fdde]
+- Updated dependencies [f066335]
+- Updated dependencies [ee24125]
+- Updated dependencies [b4ba869]
+- Updated dependencies [0e9189b]
+- Updated dependencies [c6703db]
+- Updated dependencies [8cb0844]
+- Updated dependencies [127a492]
+- Updated dependencies [c6703db]
+- Updated dependencies [fa5c7a4]
+- Updated dependencies [5d006c1]
+- Updated dependencies [31d9296]
+- Updated dependencies [57678d0]
+- Updated dependencies [fdabaf1]
+- Updated dependencies [c7f80e9]
+- Updated dependencies [8e40458]
+- Updated dependencies [ae85ba9]
+- Updated dependencies [25f7342]
+- Updated dependencies [71dce06]
+- Updated dependencies [5f1566a]
+- Updated dependencies [99140f8]
+- Updated dependencies [b459ec7]
+- Updated dependencies [cabba53]
+- Updated dependencies [790e8d0]
+- Updated dependencies [8e3a074]
+- Updated dependencies [3fda20b]
+- Updated dependencies [f29b2d7]
+- Updated dependencies [fd5c36f]
+- Updated dependencies [3c81ff0]
+- Updated dependencies [5e87236]
+- Updated dependencies [631540c]
+- Updated dependencies [7ab96c2]
+- Updated dependencies [85b09a2]
+- Updated dependencies [171c335]
+- Updated dependencies [4729b3f]
+- Updated dependencies [8ad9dd8]
+- Updated dependencies [bc57b4a]
+- Updated dependencies [2fe9d4b]
+- Updated dependencies [460cbfb]
+- Updated dependencies [9cb3f95]
+- Updated dependencies [ab5e547]
+    - @comet/cms-admin@9.0.0
+    - @comet/admin@9.0.0
+    - @comet/admin-icons@9.0.0
+
 ## 9.0.0-beta.6
 
 ### Patch Changes

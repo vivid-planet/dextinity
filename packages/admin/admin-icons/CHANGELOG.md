@@ -1,5 +1,83 @@
 # @comet/admin-icons
 
+## 10.1.0
+
+## 10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin-icons` to `@dextinity/admin-icons`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Remove the `Comet` and `CometOutline` icons
+    - Remove the `CometColor` component. Use `DextinityIcon` instead, which provides the `light`, `dark` and `masked` variants
+    - Remove the `CometDigitalExperienceLogo` component. Use `DextinityLogo` instead, which provides the `light`, `dark` and `monochrome` variants
+    - Rename the `CometColor` member of the `IconName` type to `DextinityIcon`
+
+    `DextinityIcon` and `DextinityLogo` derive their size from `fontSize`, so call sites no longer pass `width`/`height` pairs:
+
+    ```diff
+    - <CometDigitalExperienceLogo width={132} height={30} />
+    + <DextinityLogo sx={{ fontSize: 30 }} />
+    ```
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin-icons` to `@dextinity/admin-icons`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Remove the `Comet` and `CometOutline` icons
+    - Remove the `CometColor` component. Use `DextinityIcon` instead, which provides the `light`, `dark` and `masked` variants
+    - Remove the `CometDigitalExperienceLogo` component. Use `DextinityLogo` instead, which provides the `light`, `dark` and `monochrome` variants
+    - Rename the `CometColor` member of the `IconName` type to `DextinityIcon`
+
+    `DextinityIcon` and `DextinityLogo` derive their size from `fontSize`, so call sites no longer pass `width`/`height` pairs:
+
+    ```diff
+    - <CometDigitalExperienceLogo width={132} height={30} />
+    + <DextinityLogo sx={{ fontSize: 30 }} />
+    ```
+
+## 9.5.0
+
+## 9.4.0
+
+## 9.3.0
+
+## 9.2.2
+
+## 9.2.1
+
+## 9.2.0
+
+## 9.1.1
+
+## 9.1.0
+
+## 9.0.1
+
+## 9.0.0
+
+### Major Changes
+
+- 5f1566a: Make packages ESM-only
+
+### Minor Changes
+
+- f066335: Add support for React 19
+
+### Patch Changes
+
+- 92281f1: Add `"sideEffects"` to package.json for better tree-shakability
+
 ## 9.0.0-beta.6
 
 ## 9.0.0-beta.5

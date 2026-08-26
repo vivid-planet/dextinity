@@ -6,7 +6,7 @@ title: Brevo Setup
 
 :::caution
 This documentation refers to Brevo v3 or higher.
-Make sure that your project uses COMET v7.0 or later.
+Make sure that your project uses Dextinity v7.0 or later.
 :::
 
 The Brevo Module provides three packages: `brevo-api`, `brevo-admin`, and the optional `brevo-mail-rendering` package. Please check the latest release [here](https://github.com/vivid-planet/comet-brevo-module/releases).
@@ -118,7 +118,7 @@ Be aware that at least one attribute in BrevoContactFilterAttributes must be set
 To add custom contact attributes, add `BrevoContactAttributes` and `BrevoContactFilterAttributes` to your project, as shown in this example:
 
 ```typescript
-import { IsUndefinable } from "@comet/cms-api";
+import { IsUndefinable } from "@dextinity/cms-api";
 import { Embeddable, Enum } from "@mikro-orm/core";
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { IsEnum, IsNotEmpty, IsString } from "class-validator";
@@ -402,8 +402,8 @@ The `TargetGroupFormConfig` is used to define the form fields and behavior for c
 
 ```typescript
 import { gql } from "@apollo/client";
-import { Field, FinalFormSelect } from "@comet/admin";
-import { EditTargetGroupFinalFormValues } from "@comet/brevo-admin";
+import { Field, FinalFormSelect } from "@dextinity/admin";
+import { EditTargetGroupFinalFormValues } from "@dextinity/brevo-admin";
 import { MenuItem } from "@mui/material";
 import { GQLBrevoContactBranch, GQLBrevoContactSalutation } from "@src/graphql.generated";
 import * as React from "react";
@@ -521,14 +521,14 @@ export const additionalFormConfig = {
 The Brevo module offers predefined admin pages. Add those to the `MasterMenu`. Also register the BrevoContactConfig in this step. This is an example implementation:
 
 ```typescript
-import { Assets, Dashboard, Mail, PageTree, Wrench } from "@comet/admin-icons";
+import { Assets, Dashboard, Mail, PageTree, Wrench } from "@dextinity/admin-icons";
 import {
     BrevoConfigPage,
     createBrevoContactsPage,
     createBrevoTestContactsPage,
     createEmailCampaignsPage,
     createTargetGroupsPage,
-} from "@comet/brevo-admin";
+} from "@dextinity/brevo-admin";
 import {
     AllCategories,
     ContentScopeIndicator,
@@ -540,7 +540,7 @@ import {
     MasterMenuRoutes,
     PagesPage,
     PublisherPage,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 import {
     BrevoContactConfig,
     getBrevoContactConfig,
@@ -799,4 +799,4 @@ To add the Brevo Mail Rendering package, add the following to your `package.json
 
 To use a block from the package, register it in your `NewsletterContentBlock` (or any `BlocksBlock` you use for creating email campaigns).  
 Make sure to register the block in your API, admin, and site projects.  
-For detailed instructions on working with blocks in Comet, see https://docs.comet-dxp.com/docs/core-concepts/blocks/your-first-block
+For detailed instructions on working with blocks in Dextinity, see https://cms-docs.dextinity.com/docs/core-concepts/blocks/your-first-block

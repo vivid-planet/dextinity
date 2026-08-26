@@ -1,4 +1,4 @@
-import { createComponentSlot, type ThemedComponentBaseProps } from "@comet/admin";
+import { createComponentSlot, type ThemedComponentBaseProps } from "@dextinity/admin";
 import {
     type ComponentsOverrides,
     css,
@@ -56,7 +56,7 @@ const Select = createComponentSlot(MuiSelect)<RteBlockTypeControlsClassKey>({
     ({ theme }) => css`
         .${selectClasses.select}.${inputBaseClasses.input} {
             min-height: 0;
-            color: ${getRteTheme(theme.components?.CometAdminRte?.defaultProps).colors.buttonIcon};
+            color: ${getRteTheme(theme.components?.DextinityAdminRte?.defaultProps).colors.buttonIcon};
             min-width: 180px;
             line-height: 24px;
             font-size: 14px;
@@ -66,7 +66,7 @@ const Select = createComponentSlot(MuiSelect)<RteBlockTypeControlsClassKey>({
 );
 
 function StyledBlockTypesControls(inProps: Props) {
-    const { disabled, blockTypes, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminRteBlockTypeControls" });
+    const { disabled, blockTypes, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminRteBlockTypeControls" });
     const { dropdownFeatures, activeDropdownBlockType, handleBlockTypeChange } = blockTypes;
 
     const blockTypesListItems: Array<{ name: string; label: ReactNode }> = dropdownFeatures.map((c) => ({ name: c.name, label: c.label }));
@@ -106,12 +106,12 @@ export default (p: IControlProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminRteBlockTypeControls: RteBlockTypeControlsClassKey;
+        DextinityAdminRteBlockTypeControls: RteBlockTypeControlsClassKey;
     }
 
     interface Components {
-        CometAdminRteBlockTypeControls?: {
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminRteBlockTypeControls"];
+        DextinityAdminRteBlockTypeControls?: {
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminRteBlockTypeControls"];
         };
     }
 }

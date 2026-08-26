@@ -1,4 +1,4 @@
-import { Alert, ErrorBoundary } from "@comet/admin";
+import { Alert, ErrorBoundary } from "@dextinity/admin";
 import { Box, Card, CardContent, Link, Typography } from "@mui/material";
 import type { Meta } from "@storybook/react-vite";
 
@@ -20,7 +20,7 @@ const ViewWithError = () => {
 };
 
 export default {
-    title: "@comet/admin/error-handling/error-boundaries",
+    title: "@dextinity/admin/error-handling/error-boundaries",
     args: {
         renderViewWithErrors: false,
     },

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { exampleSupportInfo } from "../exampleSupportInfo";
 import { Mail } from "../Mail";
 
 type Story = StoryObj<typeof Mail>;
@@ -20,7 +21,8 @@ export default config;
 
 export const Primary: Story = {
     args: {
-        recipient: { name: "John Doe", email: "product-manager@comet-dxp.com", language: "en" },
+        recipient: { name: "John Doe", email: "product-manager@dextinity.com", language: "en" },
         countProductPublished: 1,
+        supportInfo: exampleSupportInfo,
     },
 };

@@ -1,4 +1,4 @@
-import { MikroOrmModule } from "@comet/cms-api";
+import { MikroOrmModule } from "@dextinity/cms-api";
 import { Module } from "@nestjs/common";
 import { FixturesModule } from "@src/db/fixtures/fixtures.module";
 

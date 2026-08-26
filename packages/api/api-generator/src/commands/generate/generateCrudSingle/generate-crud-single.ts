@@ -1,4 +1,4 @@
-import { type CrudSingleGeneratorOptions, hasCrudFieldFeature, REQUIRED_PERMISSION_METADATA_KEY } from "@comet/cms-api";
+import { type CrudSingleGeneratorOptions, hasCrudFieldFeature, REQUIRED_PERMISSION_METADATA_KEY } from "@dextinity/cms-api";
 import type { EntityMetadata } from "@mikro-orm/postgresql";
 import * as path from "path";
 
@@ -42,7 +42,7 @@ export async function generateCrudSingle(generatorOptions: CrudSingleGeneratorOp
 
         const resolverOut = `import { FindOptions, EntityManager } from "@mikro-orm/postgresql";
     import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
-    import { ${entityHasRequiredPermission ? "" : "RequiredPermission, "}SortDirection, validateNotModified } from "@comet/cms-api";
+    import { ${entityHasRequiredPermission ? "" : "RequiredPermission, "}SortDirection, validateNotModified } from "@dextinity/cms-api";
     
     import { ${metadata.className} } from "${path.relative(targetDirectory, metadata.path).replace(/\.ts$/, "")}";
     ${

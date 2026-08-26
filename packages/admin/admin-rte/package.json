@@ -1,11 +1,11 @@
 {
-    "name": "@comet/admin-rte",
-    "version": "9.0.0-beta.6",
-    "description": "Comet Admin Rich Text Editor component",
+    "name": "@dextinity/admin-rte",
+    "version": "10.1.0",
+    "description": "Dextinity Admin Rich Text Editor component",
     "repository": {
         "directory": "packages/admin/admin-rte",
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet"
+        "url": "https://github.com/vivid-planet/dextinity"
     },
     "license": "BSD-2-Clause",
     "sideEffects": [
@@ -43,8 +43,8 @@
         "test:watch": "vitest --watch"
     },
     "dependencies": {
-        "@comet/admin": "workspace:*",
-        "@comet/admin-icons": "workspace:*",
+        "@dextinity/admin": "workspace:*",
+        "@dextinity/admin-icons": "workspace:*",
         "detect-browser": "^5.3.0",
         "draft-js-export-html": "^1.4.1",
         "draft-js-import-html": "^1.4.1",
@@ -54,8 +54,8 @@
     "devDependencies": {
         "@babel/cli": "^7.29.7",
         "@babel/core": "^7.29.7",
-        "@comet/admin-babel-preset": "workspace:*",
-        "@comet/eslint-config": "workspace:*",
+        "@dextinity/admin-babel-preset": "workspace:*",
+        "@dextinity/eslint-config": "workspace:*",
         "@mui/material": "^7.3.11",
         "@types/draft-js": "^0.11.20",
         "@types/react": "^19.2.15",

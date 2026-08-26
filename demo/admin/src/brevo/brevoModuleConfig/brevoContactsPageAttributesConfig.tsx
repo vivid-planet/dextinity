@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
-import { Field, FinalFormSelect, type GridColDef, TextField } from "@comet/admin";
-import type { EditBrevoContactFormValues } from "@comet/brevo-admin";
+import { Field, FinalFormSelect, type GridColDef, TextField } from "@dextinity/admin";
+import type { EditBrevoContactFormValues } from "@dextinity/brevo-admin";
 import { MenuItem } from "@mui/material";
 import type { GQLBrevoContactBranch, GQLBrevoContactSalutation } from "@src/graphql.generated";
 import type { DocumentNode } from "graphql";

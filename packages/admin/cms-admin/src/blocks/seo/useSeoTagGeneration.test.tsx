@@ -1,5 +1,5 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { useErrorDialog } from "@comet/admin";
+import { useErrorDialog } from "@dextinity/admin";
 import { act, renderHook } from "test-utils";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 
@@ -24,7 +24,7 @@ vi.mock("../../contentLanguage/useContentLanguage", () => {
     };
 });
 
-vi.mock(import("@comet/admin"), async (importOriginal) => {
+vi.mock(import("@dextinity/admin"), async (importOriginal) => {
     const originalModule = await importOriginal();
     return {
         ...originalModule,

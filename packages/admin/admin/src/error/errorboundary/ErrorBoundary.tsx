@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, Error } from "@comet/admin-icons";
+import { ChevronDown, ChevronRight, Error } from "@dextinity/admin-icons";
 // eslint-disable-next-line no-restricted-imports
 import { Alert as MuiAlert, type AlertProps, type ComponentsOverrides, Typography } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
@@ -139,7 +139,7 @@ const ExceptionStackTrace = createComponentSlot(Typography)<ErrorBoundaryClassKe
 })();
 
 export const ErrorBoundary = (inProps: ErrorBoundaryProps) => {
-    const props = useThemeProps({ props: inProps, name: "CometAdminErrorBoundary" });
+    const props = useThemeProps({ props: inProps, name: "DextinityAdminErrorBoundary" });
     const { onError } = useErrorHandler();
     return <CoreErrorBoundary {...props} onError={onError} />;
 };
@@ -181,7 +181,7 @@ class CoreErrorBoundary extends Component<CoreErrorBoundaryProps, IErrorBoundary
                         {userErrorMessage ? (
                             userErrorMessage
                         ) : (
-                            <FormattedMessage id="comet.error.abstractErrorMessage" defaultMessage="An error has occurred" />
+                            <FormattedMessage id="dextinity.error.abstractErrorMessage" defaultMessage="An error has occurred" />
                         )}
                     </Message>
 
@@ -216,17 +216,17 @@ class CoreErrorBoundary extends Component<CoreErrorBoundaryProps, IErrorBoundary
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminErrorBoundary: ErrorBoundaryClassKey;
+        DextinityAdminErrorBoundary: ErrorBoundaryClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminErrorBoundary: ErrorBoundaryProps;
+        DextinityAdminErrorBoundary: ErrorBoundaryProps;
     }
 
     interface Components {
-        CometAdminErrorBoundary?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminErrorBoundary"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminErrorBoundary"];
+        DextinityAdminErrorBoundary?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminErrorBoundary"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminErrorBoundary"];
         };
     }
 }

@@ -1,9 +1,9 @@
-import { DateField, type DateRange, DateRangeField, DateTimeField, TimeField, type TimeRange, TimeRangeField } from "@comet/admin-date-time";
+import { DateField, type DateRange, DateRangeField, DateTimeField, TimeField, type TimeRange, TimeRangeField } from "@dextinity/admin-date-time";
 import { Box, Card, CardContent } from "@mui/material";
 import { Form } from "react-final-form";
 
 export default {
-    title: "@comet/admin-date-time",
+    title: "@dextinity/admin-date-time",
     args: {
         initialValues: false,
     },

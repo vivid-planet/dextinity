@@ -1,4 +1,6 @@
-import { createTipTapRichTextBlock, typeSafeBlockMigrationPipe } from "@comet/cms-api";
+import { createTipTapRichTextBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
+import { ProductPriceBlock } from "@src/products/blocks/product-price.block";
+import { ProductTeaserBlock } from "@src/products/blocks/product-teaser.block";
 
 import { LinkBlock } from "./link.block";
 import { Heading1ToHeading2Migration } from "./tip-tap-rich-text/migrations/2-heading-1-to-heading-2.migration";
@@ -6,6 +8,10 @@ import { Heading1ToHeading2Migration } from "./tip-tap-rich-text/migrations/2-he
 export const TipTapRichTextBlock = createTipTapRichTextBlock(
     {
         link: LinkBlock,
+        childBlocks: {
+            productPrice: { block: ProductPriceBlock, display: "inline" },
+            productTeaser: { block: ProductTeaserBlock, display: "block" },
+        },
         textBlockStyles: [
             { name: "paragraph300", appliesTo: ["paragraph"] },
             { name: "paragraph200", appliesTo: ["paragraph"] },

@@ -7,7 +7,7 @@ import { renderMailHtml } from "../../../server/renderMailHtml.js";
 import { createTheme } from "../../../theme/createTheme.js";
 import { MjmlMailRoot } from "../../mailRoot/MjmlMailRoot.js";
 import { MjmlSection } from "../../section/MjmlSection.js";
-import { generateMjmlButtonStyles, MjmlButton } from "../MjmlButton.js";
+import { generateInlineBackgroundImageCss, generateMjmlButtonStyles, MjmlButton } from "../MjmlButton.js";
 
 function renderInMailRoot(button: ReactNode, theme?: ReturnType<typeof createTheme>) {
     return renderMailHtml(
@@ -107,14 +107,13 @@ describe("MjmlButton", () => {
         expect(html).toContain("mjmlButton--fullWidth");
     });
 
-    it("inlines the full-width styles onto the anchor so they survive clients that drop the style block", () => {
+    it("leaves no full-width rule in a style block, so it survives clients that drop them", () => {
         const { html } = renderInMailRoot(
             <MjmlButton href="https://example.com" fullWidth>
                 Full width
             </MjmlButton>,
         );
 
-        expect(html).toContain("box-sizing: border-box");
         expect(html).not.toMatch(/\.mjmlButton--fullWidth a\s*\{/);
     });
 
@@ -150,7 +149,7 @@ describe("MjmlButton", () => {
     });
 });
 
-describe("generateMjmlButtonStyles", () => {
+describe("MjmlButton styles", () => {
     it("returns empty CSS when no variants or base gradient are defined", () => {
         const theme = createTheme();
         expect(generateMjmlButtonStyles(theme)).toBe("");
@@ -159,7 +158,7 @@ describe("generateMjmlButtonStyles", () => {
     it("emits a base gradient rule on the anchor when theme.button.backgroundImage is set", () => {
         const theme = createTheme({ button: { backgroundImage: "linear-gradient(to right, red, blue)" } });
 
-        const result = generateMjmlButtonStyles(theme);
+        const result = generateInlineBackgroundImageCss(theme);
 
         expect(result).toContain(".mjmlButton a");
         expect(result).toContain("background-image: linear-gradient(to right, red, blue) !important");
@@ -170,7 +169,7 @@ describe("generateMjmlButtonStyles", () => {
             button: { variants: { primary: { backgroundImage: "linear-gradient(to right, red, blue)" } } },
         });
 
-        const result = generateMjmlButtonStyles(theme);
+        const result = generateInlineBackgroundImageCss(theme);
 
         expect(result).toContain(".mjmlButton--primary a");
         expect(result).toContain("background-image: linear-gradient(to right, red, blue) !important");

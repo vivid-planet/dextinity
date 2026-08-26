@@ -13,7 +13,7 @@ export const MuiThemeProvider = ({ theme, children }: PropsWithChildren<Props>) 
     if (theme.components?.MuiDataGrid?.defaultProps?.localeText) {
         // @ts-expect-error key 'filterOperatorSearch' does not exist in type 'GridLocaleText'
         theme.components.MuiDataGrid.defaultProps.localeText.filterOperatorSearch ??= intl.formatMessage({
-            id: "comet.dataGrid.filterOperators.search",
+            id: "dextinity.dataGrid.filterOperators.search",
             defaultMessage: "search",
         });
     }

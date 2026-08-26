@@ -1,4 +1,4 @@
-import { BlockCategory } from "@comet/cms-admin";
+import { BlockCategory } from "@dextinity/cms-admin";
 import { FormattedMessage } from "react-intl";
 
 const customBlockCategory = {

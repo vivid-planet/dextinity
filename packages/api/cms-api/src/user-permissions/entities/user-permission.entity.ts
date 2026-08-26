@@ -15,7 +15,7 @@ registerEnumType(UserPermissionSource, {
 });
 
 @ObjectType()
-@Entity({ tableName: "CometUserPermission" })
+@Entity({ tableName: "DextinityUserPermission" })
 export class UserPermission extends BaseEntity {
     @Field(() => ID)
     @PrimaryKey({ type: "uuid" })

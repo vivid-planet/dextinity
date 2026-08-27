@@ -477,7 +477,6 @@ export const TipTapToolbar = ({
                                         icon={style.icon!}
                                         tooltip={style.label}
                                         isActive={editor.isActive("inlineStyle", { type: style.name })}
-                                        disabled={editorState.selectionEmpty}
                                         onToggle={() => {
                                             if (editor.isActive("inlineStyle", { type: style.name })) {
                                                 editor.chain().focus().unsetInlineStyle().run();
@@ -553,7 +552,6 @@ export const TipTapToolbar = ({
                                         return (
                                             <MenuItem
                                                 key={style.name}
-                                                disabled={editorState.selectionEmpty}
                                                 selected={editor.isActive("inlineStyle", { type: style.name })}
                                                 onMouseDown={() => runMenuItemAction(toggleInlineStyle)}
                                                 onClick={(e) => handleMenuItemKeyboardActivate(e, toggleInlineStyle)}

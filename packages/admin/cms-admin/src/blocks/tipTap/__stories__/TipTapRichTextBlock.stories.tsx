@@ -878,16 +878,6 @@ export const InlineStyles: StoryObj<typeof InlineStylesStory> = {
             const selection = window.getSelection();
             selection?.removeAllRanges();
             selection?.addRange(range);
-
-            // Wait for the "Highlight"/"Tag" menu items to enable (TipTap picks up selection via the selectionchange event).
-            await userEvent.click(canvas.getByRole("button", { name: "More options" }));
-            await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("menuitem", { name: "Highlight" })).not.toHaveAttribute("aria-disabled", "true");
-                },
-                { timeout: 3000 },
-            );
-            await userEvent.keyboard("{Escape}");
         });
 
         await step("Apply 'Highlight' inline style from the More options menu", async () => {
@@ -1283,8 +1273,10 @@ export const InlineStylesAsButtons: StoryObj<typeof InlineStylesAsButtonsStory> 
 
         const [superscriptButton, subscriptButton, highlightButton] = canvas.getAllByRole("button");
 
-        await step("Highlight button is disabled while the selection is empty", async () => {
-            expect(highlightButton).toBeDisabled();
+        await step("Highlight button is enabled even without a selection, like superscript/subscript", async () => {
+            expect(superscriptButton).toBeEnabled();
+            expect(subscriptButton).toBeEnabled();
+            expect(highlightButton).toBeEnabled();
         });
 
         await step("Type text and select it", async () => {
@@ -1305,10 +1297,6 @@ export const InlineStylesAsButtons: StoryObj<typeof InlineStylesAsButtonsStory> 
             const selection = window.getSelection();
             selection?.removeAllRanges();
             selection?.addRange(range);
-
-            await waitFor(() => {
-                expect(highlightButton).toBeEnabled();
-            });
         });
 
         await step("Toggle superscript directly from the toolbar button", async () => {

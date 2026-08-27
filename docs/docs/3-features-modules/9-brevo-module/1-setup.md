@@ -145,7 +145,7 @@ Don't forget to generate and run a migration after adding the entities.
 
 To use the Brevo Module in your project, you need to register it in your main `AppModule`.  
 If your configuration varies by scope, pass the `scope` to the `resolveConfig` function to use the appropriate values for each scope.  
-You can also register additional entities or features you want to use later on (see the section [Optional Brevo Features](./2-features/index.md)).
+You can also register additional entities (see [Optional entities](#optional-entities)) or features you want to use later on (see the section [Optional Brevo Features](./2-features/index.md)).
 
 Example implementation:
 
@@ -219,6 +219,47 @@ emailCampaigns: {
     },
 },
 ```
+
+### Optional entities
+
+Besides `EmailCampaign` and `TargetGroup`, two optional entities can be registered. They are created with factories from `@dextinity/brevo-api` as well and only need the scope:
+
+```typescript title="api/src/brevo/blacklisted-contacts/entity/blacklisted-contacts.entity.ts"
+import { createBlacklistedContactsEntity } from "@dextinity/brevo-api";
+import { EmailCampaignContentScope } from "@src/brevo/email-campaign/email-campaign-content-scope";
+
+export const BlacklistedContacts = createBlacklistedContactsEntity({
+    Scope: EmailCampaignContentScope,
+});
+```
+
+```typescript title="api/src/brevo/brevo-email-import-log/entity/brevo-email-import-log.entity.ts"
+import { createBrevoEmailImportLogEntity } from "@dextinity/brevo-api";
+import { EmailCampaignContentScope } from "@src/brevo/email-campaign/email-campaign-content-scope";
+
+export const BrevoEmailImportLog = createBrevoEmailImportLogEntity({
+    Scope: EmailCampaignContentScope,
+});
+```
+
+Pass them to `BrevoModule.register` to enable them:
+
+```typescript
+brevo: {
+    // ...
+    BlacklistedContacts,
+    BrevoEmailImportLog,
+},
+```
+
+| Entity                | Description                                                                                                                                                  |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `BlacklistedContacts` | Stores the hashed email address of contacts that were deleted, so they cannot be added again without giving their consent.                                   |
+| `BrevoEmailImportLog` | Logs every contact that was added without a double opt-in, together with the responsible user and the source of the contact (manual creation or CSV import). |
+
+:::caution
+Both entities are required for [Add contacts without sending double opt-in](./2-features/contacts-without-doi.md). Without them, adding contacts without a double opt-in fails at runtime.
+:::
 
 ### Brevo Contact Attributes
 
@@ -942,23 +983,38 @@ To add the mail rendering package to your site, add the following to your `packa
 
 Implement a site component for every block registered in your `EmailCampaignContentBlock`, then render the block data to HTML using `renderMailHtml`. For detailed instructions on working with blocks in Dextinity, see [Your first block](../../2-core-concepts/2-blocks/1-your-first-block.mdx). Everything regarding the email markup itself — theme, base components, block components, and layout patterns — is covered in [Building HTML Emails](../13-building-html-emails/index.md).
 
-```tsx title="site/src/brevo/renderEmailCampaign.tsx"
-import { MjmlMailRoot } from "@dextinity/mail-react";
-import { renderMailHtml } from "@dextinity/mail-react/server";
+```tsx title="site/src/brevo/EmailCampaignMail.tsx"
+import { type Config, MjmlMailRoot } from "@dextinity/mail-react";
 import type { EmailCampaignContentBlockData } from "@src/blocks.generated";
 import { EmailCampaignContentBlock } from "@src/brevo/blocks/EmailCampaignContentBlock";
-import { theme } from "@src/brevo/theme";
+import { theme } from "@src/mail/theme";
 
-export function renderEmailCampaign(content: EmailCampaignContentBlockData) {
-    const { html } = renderMailHtml(
-        <MjmlMailRoot theme={theme}>
-            <EmailCampaignContentBlock content={content} />
-        </MjmlMailRoot>,
-    );
+type EmailCampaignMailProps = {
+    content: EmailCampaignContentBlockData;
+    config: Config;
+};
 
-    return html;
-}
+export const EmailCampaignMail = ({ content, config }: EmailCampaignMailProps) => (
+    <MjmlMailRoot theme={theme} config={config}>
+        <EmailCampaignContentBlock content={content} />
+    </MjmlMailRoot>
+);
 ```
+
+Render that component to HTML with `renderMailHtml` from `@dextinity/mail-react/server`, passing the mail config of the campaign's scope:
+
+```tsx
+import { renderMailHtml } from "@dextinity/mail-react/server";
+
+const { html } = renderMailHtml(
+    <EmailCampaignMail content={content} config={getMailConfig(scope)} />,
+);
+```
+
+:::caution
+`MjmlMailRoot` requires a `config` as soon as the campaign contains pixel-image blocks — `NewsletterImageBlock` as well as any block built on `MjmlPixelImageBlock` or `HtmlPixelImageBlock`.
+See [Pixel-image blocks](../13-building-html-emails/3-blocks.md#configuration) for how to build it.
+:::
 
 Your site must provide two endpoints:
 
@@ -967,4 +1023,4 @@ Your site must provide two endpoints:
 - **The block preview**, configured as `resolvePreviewUrlForScope` in the `BrevoConfigProvider`. It renders the campaign preview shown in the admin.
   See [`demo/site/src/app/block-preview/[domain]/[language]/brevo-email-campaign`](https://github.com/vivid-planet/dextinity/tree/main/demo/site/src/app/block-preview/%5Bdomain%5D/%5Blanguage%5D/brevo-email-campaign).
 
-Both render the same [`EmailCampaignMail`](https://github.com/vivid-planet/dextinity/blob/main/demo/site/src/brevo/EmailCampaignMail.tsx) component, which is where the campaign content is turned into MJML.
+Both render the same component, which is where the campaign content is turned into MJML. In Demo, this is [`EmailCampaignMail`](https://github.com/vivid-planet/dextinity/blob/main/demo/site/src/brevo/EmailCampaignMail.tsx).

@@ -12,7 +12,7 @@ If you are coming from an older version, see the [Brevo migration guides](./3-mi
 Note that the packages moved from the `@comet` to the `@dextinity` scope in v10, see [Migrating from v9 to v10](../../7-migration-guide/migration-from-v9-to-v10.md).
 :::
 
-The Brevo Module provides two packages: `@dextinity/brevo-api` and `@dextinity/brevo-admin`. Please check the latest release [here](https://github.com/vivid-planet/dextinity/releases).
+The Brevo Module provides two packages: `@dextinity/brevo-api` and `@dextinity/brevo-admin`. Please check the [latest Dextinity release](https://github.com/vivid-planet/dextinity/releases).
 
 Email campaigns are not rendered by the Brevo Module itself. Their content is rendered by your site, which the API requests before the campaign is sent to Brevo, see [Email Rendering](#email-rendering). We recommend [`@dextinity/mail-react`](../13-building-html-emails/index.md) for building the markup. Double opt-in mails are not affected: they are rendered by Brevo from a Brevo template.
 
@@ -973,7 +973,7 @@ Its only block, `NewsletterImageBlock`, is still provided by the module: the blo
 
 ### Installation
 
-To add the mail rendering package to your site, add the following to your `package.json` dependencies and install:
+To add `@dextinity/mail-react` to your site, add the following to your `package.json` dependencies and install:
 
 ```json
 "@dextinity/mail-react": "^10.0.0"
@@ -1000,6 +1000,10 @@ export const EmailCampaignMail = ({ content, config }: EmailCampaignMailProps) =
     </MjmlMailRoot>
 );
 ```
+
+This is a minimal example without localization: it renders `MjmlMailRoot` directly and only needs the block data and the mail config.
+Depending on your project, the component also wraps the content in your site's own mail root and provides the contexts your block components rely on, for instance an `IntlProvider` for translations.
+See Demo's [`EmailCampaignMail`](https://github.com/vivid-planet/dextinity/blob/main/demo/site/src/brevo/EmailCampaignMail.tsx) for such an implementation.
 
 Render that component to HTML with `renderMailHtml` from `@dextinity/mail-react/server`, passing the mail config of the campaign's scope:
 

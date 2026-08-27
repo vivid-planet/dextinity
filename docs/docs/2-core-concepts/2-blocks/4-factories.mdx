@@ -227,6 +227,41 @@ export const FullWidthImageBlock = createCompositeBlock({
 });
 ```
 
+## ExternalLinkBlock (Admin only)
+
+The `ExternalLinkBlock` lets editors enter a URL and offers two options besides it: "Open in new window" and "No follow".
+Where an option has no meaning — an internal application that is always embedded in an iframe, or redirects, where neither
+option affects the resulting HTTP redirect — use the `createExternalLinkBlock` factory to leave it out.
+
+```tsx title="ExternalLinkBlock.tsx"
+import { createExternalLinkBlock } from "@dextinity/cms-admin";
+
+// only "Open in new window" is offered
+export const ExternalLinkBlock = createExternalLinkBlock({ supports: ["openInNewWindow"] });
+
+// only the URL can be entered
+export const ExternalLinkBlock = createExternalLinkBlock({ supports: [] });
+```
+
+Pass the resulting block to `createLinkBlock` as the `external` target; everything built on that link block
+(`createTextLinkBlock`, `createImageLinkBlock`, rich text links, …) picks it up automatically.
+
+```tsx title="LinkBlock.tsx"
+import { createExternalLinkBlock, createLinkBlock, InternalLinkBlock } from "@dextinity/cms-admin";
+
+export const LinkBlock = createLinkBlock({
+    supportedBlocks: {
+        internal: InternalLinkBlock,
+        external: createExternalLinkBlock({ supports: [] }),
+    },
+});
+```
+
+Values that are already stored are kept as they are, the editor just can't change them anymore.
+Both fields stay part of the block's data either way, so the API block and the site component are unaffected.
+An option that is left out keeps its default — it isn't forced to a different value.
+To always open external links in a new tab, do so in the site implementation instead.
+
 ## FinalFormBlock (Admin only)
 
 The FinalFormBlock factory can be used to convert a block's `AdminComponent` API to the Final Form `Field` API.
@@ -337,6 +372,9 @@ export const LinkBlock = createLinkBlock({
     },
 });
 ```
+
+To hide the "Open in new window" or "No follow" option from editors, pass an `external` block created with
+[`createExternalLinkBlock`](#externallinkblock-admin-only) instead of `ExternalLinkBlock`.
 
 ### Site
 

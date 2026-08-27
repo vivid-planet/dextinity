@@ -227,11 +227,55 @@ export const FullWidthImageBlock = createCompositeBlock({
 });
 ```
 
-## ExternalLinkBlock (Admin only)
+## ExternalLinkBlock
 
 The `ExternalLinkBlock` lets editors enter a URL and offers two options besides it: "Open in new window" and "No follow".
 Where an option has no meaning — an internal application that is always embedded in an iframe, or redirects, where neither
-option affects the resulting HTTP redirect — use the `createExternalLinkBlock` factory to leave it out.
+option affects the resulting HTTP redirect — the `createExternalLinkBlock` factory leaves it out.
+
+There is one factory per layer, and they do different things. Pick by how far the option should disappear:
+
+|             | `@dextinity/cms-admin`          | `@dextinity/cms-api`                      |
+| ----------- | ------------------------------- | ----------------------------------------- |
+| Effect      | Hides the field from the editor | Removes the field from the block entirely |
+| Block name  | Fixed to `ExternalLink`         | Mandatory, must be your own               |
+| Granularity | Per usage site                  | Per block                                 |
+| Stored data | Untouched, keeps its default    | Untouched, lingers untyped                |
+
+### API
+
+Use the `createExternalLinkBlock` factory. Unlike in the admin, the block name is **mandatory**:
+
+```ts title="url-link.block.ts"
+import { createExternalLinkBlock } from "@dextinity/cms-api";
+
+export const UrlLinkBlock = createExternalLinkBlock({ supports: [] }, "UrlLink");
+```
+
+An option left out here doesn't exist at all: it is absent from `block-meta.json` and from the generated
+`UrlLinkBlockData` / `UrlLinkBlockInput` types, and sending it as input is rejected by validation.
+
+That is also why the name is mandatory. A block's field set is part of what its name promises: the name is what ties stored
+data, the generated types, the admin block and the site component together, so one name means one field set. Two blocks
+registered under the same name would produce two identically named interfaces in `blocks.generated.ts`. A block created with
+a reduced field set is therefore a block of its own, not a variant of `ExternalLinkBlock`, and it needs a matching admin
+block and site component under that same name.
+
+`ExternalLinkBlock` is unchanged and keeps all three fields, so nothing existing is affected.
+
+Two things to be aware of before reaching for this:
+
+- **Stored values are not deleted.** Removing a field takes it out of the contract, not out the database. Values already
+  stored under that block name stay in its JSON, untyped, until a migration removes them.
+- **Switching an existing usage site needs a migration.** Replacing `external: ExternalLinkBlock` with your own block
+  changes the key of the surrounding `OneOfBlock`, so stored content still carries `activeType: "external"` and no longer
+  resolves. That migration belongs on the surrounding link block, not on the new block — a new block starts at migration
+  version 0 and never sees data stored under a different name. Using the new block only in new usage sites needs no
+  migration at all.
+
+### Admin
+
+Use the `createExternalLinkBlock` factory:
 
 ```tsx title="ExternalLinkBlock.tsx"
 import { createExternalLinkBlock } from "@dextinity/cms-admin";
@@ -255,6 +299,10 @@ export const LinkBlock = createLinkBlock({
     },
 });
 ```
+
+You can create as many differently configured blocks as you like, because they all share one data shape. That is what makes
+the admin factory work per usage site — the core itself uses it that way, with `supports: []` in the redirects form next to
+the default in content.
 
 Values that are already stored are kept as they are, the editor just can't change them anymore.
 Both fields stay part of the block's data either way, so the API block and the site component are unaffected.
@@ -373,7 +421,7 @@ export const LinkBlock = createLinkBlock({
 ```
 
 To hide the "Open in new window" or "No follow" option from editors, pass an `external` block created with
-[`createExternalLinkBlock`](#externallinkblock-admin-only) instead of `ExternalLinkBlock`.
+[`createExternalLinkBlock`](#externallinkblock) instead of `ExternalLinkBlock`.
 
 ### Site
 

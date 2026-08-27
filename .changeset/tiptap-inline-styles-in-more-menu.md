@@ -1,5 +1,5 @@
 ---
-"@dextinity/cms-admin": patch
+"@dextinity/cms-admin": minor
 ---
 
 Move custom TipTap inline styles into the toolbar's "More options" menu

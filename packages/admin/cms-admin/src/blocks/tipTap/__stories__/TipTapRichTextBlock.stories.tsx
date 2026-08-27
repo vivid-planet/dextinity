@@ -852,9 +852,9 @@ export const InlineStyles: StoryObj<typeof InlineStylesStory> = {
                 { timeout: 5000 },
             );
 
-            // Heading select + inline style select
+            // Heading select only — custom inline styles live in the "More options" menu, not a dropdown.
             const comboboxes = canvas.getAllByRole("combobox");
-            expect(comboboxes).toHaveLength(2);
+            expect(comboboxes).toHaveLength(1);
         });
 
         await step("Type text and select it", async () => {
@@ -876,33 +876,20 @@ export const InlineStyles: StoryObj<typeof InlineStylesStory> = {
             selection?.removeAllRanges();
             selection?.addRange(range);
 
-            // Wait for the inline-style dropdown to enable (TipTap picks up selection via the selectionchange event).
+            // Wait for the "Highlight"/"Tag" menu items to enable (TipTap picks up selection via the selectionchange event).
+            await userEvent.click(canvas.getByRole("button", { name: "More options" }));
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[1]).not.toBeDisabled();
+                    expect(within(document.body).getByRole("menuitem", { name: "Highlight" })).not.toHaveAttribute("aria-disabled", "true");
                 },
                 { timeout: 3000 },
             );
+            await userEvent.keyboard("{Escape}");
         });
 
-        await step("Apply 'Highlight' inline style", async () => {
-            const inlineStyleSelect = canvas.getAllByRole("combobox")[1];
-            await userEvent.click(inlineStyleSelect);
-
-            await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("option", { name: "Highlight" })).toBeInTheDocument();
-                },
-                { timeout: 3000 },
-            );
-            await userEvent.click(within(document.body).getByRole("option", { name: "Highlight" }));
-
-            await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Highlight");
-                },
-                { timeout: 3000 },
-            );
+        await step("Apply 'Highlight' inline style from the More options menu", async () => {
+            await userEvent.click(canvas.getByRole("button", { name: "More options" }));
+            await userEvent.click(within(document.body).getByRole("menuitem", { name: "Highlight" }));
         });
 
         await step("Verify highlight element (from `element` prop) is rendered with its styling", async () => {
@@ -917,17 +904,17 @@ export const InlineStyles: StoryObj<typeof InlineStylesStory> = {
             );
         });
 
-        await step("Switch to 'Tag' inline style", async () => {
-            const inlineStyleSelect = canvas.getAllByRole("combobox")[1];
-            await userEvent.click(inlineStyleSelect);
+        await step("'Highlight' menu item is now shown as selected", async () => {
+            await userEvent.click(canvas.getByRole("button", { name: "More options" }));
+            await waitFor(() => {
+                // MenuItem's `selected` prop is exposed as the `Mui-selected` state class, not an ARIA attribute
+                // (role="menuitem" has no `aria-selected` in the ARIA spec — that's only valid on option/tab/etc.).
+                expect(within(document.body).getByRole("menuitem", { name: "Highlight" })).toHaveClass("Mui-selected");
+            });
+        });
 
-            await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("option", { name: "Tag" })).toBeInTheDocument();
-                },
-                { timeout: 3000 },
-            );
-            await userEvent.click(within(document.body).getByRole("option", { name: "Tag" }));
+        await step("Switch to 'Tag' inline style", async () => {
+            await userEvent.click(within(document.body).getByRole("menuitem", { name: "Tag" }));
         });
 
         await step("Verify tag element replaces the highlight element", async () => {
@@ -943,17 +930,9 @@ export const InlineStyles: StoryObj<typeof InlineStylesStory> = {
             );
         });
 
-        await step("Clear inline style resets to default rendering", async () => {
-            const inlineStyleSelect = canvas.getAllByRole("combobox")[1];
-            await userEvent.click(inlineStyleSelect);
-
-            await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("option", { name: "Default" })).toBeInTheDocument();
-                },
-                { timeout: 3000 },
-            );
-            await userEvent.click(within(document.body).getByRole("option", { name: "Default" }));
+        await step("Clicking the active 'Tag' item again clears the inline style", async () => {
+            await userEvent.click(canvas.getByRole("button", { name: "More options" }));
+            await userEvent.click(within(document.body).getByRole("menuitem", { name: "Tag" }));
 
             await waitFor(
                 () => {
@@ -1146,8 +1125,8 @@ function CombinedStylesStory() {
 
 export const CombinedTextBlockAndInlineStyles: StoryObj<typeof CombinedStylesStory> = {
     render: () => <CombinedStylesStory />,
-    play: async ({ canvas, step }) => {
-        await step("Editor is ready with both text block style and inline style dropdowns", async () => {
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Editor is ready with the text block style dropdown and the inline styles in the More options menu", async () => {
             await waitFor(
                 () => {
                     expect(canvas.getByRole("textbox")).toBeInTheDocument();
@@ -1155,9 +1134,15 @@ export const CombinedTextBlockAndInlineStyles: StoryObj<typeof CombinedStylesSto
                 { timeout: 5000 },
             );
 
-            // Heading select + text block style select + inline style select
+            // Heading select + text block style select — inline styles live in the "More options" menu, not a dropdown.
             const comboboxes = canvas.getAllByRole("combobox");
-            expect(comboboxes.length).toBeGreaterThanOrEqual(3);
+            expect(comboboxes.length).toBeGreaterThanOrEqual(2);
+
+            await userEvent.click(canvas.getByRole("button", { name: "More options" }));
+            await waitFor(() => {
+                expect(within(document.body).getByRole("menuitem", { name: "Highlight" })).toBeInTheDocument();
+                expect(within(document.body).getByRole("menuitem", { name: "Tag" })).toBeInTheDocument();
+            });
         });
     },
 };

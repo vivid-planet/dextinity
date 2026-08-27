@@ -189,7 +189,6 @@ export const TipTapToolbar = ({
     const specialChars = (["non-breaking-space", "soft-hyphen"] as const).some((s) => supports.includes(s));
     const hasLink = supports.includes("link") && !!linkBlock;
     const hasPlaceholders = placeholders.length > 0;
-    const hasInlineStyles = inlineStyles.length > 0;
     const hasChildBlocks = Object.keys(childBlocks).length > 0;
 
     const editorState = useEditorState({
@@ -218,13 +217,6 @@ export const TipTapToolbar = ({
                 return "paragraph";
             })();
             const attrs = e.isActive("heading") ? e.getAttributes("heading") : e.getAttributes("paragraph");
-            const activeInlineStyle = (() => {
-                if (!hasInlineStyles) {
-                    return "";
-                }
-                const inlineStyleAttrs = e.getAttributes("inlineStyle");
-                return (inlineStyleAttrs.type as string) ?? "";
-            })();
 
             // Calculate current list nesting depth for listLevelMax enforcement
             let canIndent = e.can().sinkListItem("listItem");
@@ -246,7 +238,6 @@ export const TipTapToolbar = ({
                 activeTextBlockType,
                 activeTipTapTextBlockType,
                 activeTextBlockStyle: (attrs.textBlockStyle as string) ?? "",
-                activeInlineStyle,
                 canUndo: e.can().undo(),
                 canRedo: e.can().redo(),
                 canIndent,
@@ -317,15 +308,6 @@ export const TipTapToolbar = ({
         const value = e.target.value || null;
         const nodeType = editor.isActive("heading") ? "heading" : "paragraph";
         editor.chain().focus().updateAttributes(nodeType, { textBlockStyle: value }).run();
-    };
-
-    const handleInlineStyleChange = (e: SelectChangeEvent) => {
-        const value = e.target.value;
-        if (value) {
-            editor.chain().focus().setInlineStyle({ type: value }).run();
-        } else {
-            editor.chain().focus().unsetInlineStyle().run();
-        }
     };
 
     return (
@@ -410,31 +392,7 @@ export const TipTapToolbar = ({
                     </FormControl>
                 </ToolbarGroup>
             )}
-            {applicableInlineStyles.length > 0 && (
-                <ToolbarGroup>
-                    <FormControl sx={selectFormControlSx}>
-                        <Select
-                            value={editorState.activeInlineStyle}
-                            onChange={handleInlineStyleChange}
-                            displayEmpty
-                            variant="filled"
-                            MenuProps={{ elevation: 1 }}
-                            sx={selectSx}
-                            disabled={editorState.selectionEmpty}
-                        >
-                            <MenuItem value="" dense>
-                                <FormattedMessage id="dextinity.blocks.tipTapRichText.inlineStyle.default" defaultMessage="Default" />
-                            </MenuItem>
-                            {applicableInlineStyles.map((style) => (
-                                <MenuItem key={style.name} value={style.name} dense>
-                                    {style.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </ToolbarGroup>
-            )}
-            {(hasInlineFormatButtons || moreOptions) && (
+            {(hasInlineFormatButtons || moreOptions || applicableInlineStyles.length > 0) && (
                 <ToolbarGroup>
                     {supports.includes("bold") && (
                         <ToolbarButton
@@ -472,7 +430,7 @@ export const TipTapToolbar = ({
                             onToggle={() => editor.chain().focus().toggleStrike().run()}
                         />
                     )}
-                    {moreOptions && (
+                    {(moreOptions || applicableInlineStyles.length > 0) && (
                         <>
                             <Tooltip
                                 title={<FormattedMessage id="dextinity.blocks.tipTapRichText.moreOptions.tooltip" defaultMessage="More options" />}
@@ -480,6 +438,10 @@ export const TipTapToolbar = ({
                                 <Box
                                     component="button"
                                     type="button"
+                                    aria-label={intl.formatMessage({
+                                        id: "dextinity.blocks.tipTapRichText.moreOptions.tooltip",
+                                        defaultMessage: "More options",
+                                    })}
                                     onMouseDown={(e: MouseEvent) => {
                                         e.preventDefault();
                                         setMoreAnchorEl(e.currentTarget as HTMLElement);
@@ -520,6 +482,26 @@ export const TipTapToolbar = ({
                                         </ListItemIcon>
                                     </MenuItem>
                                 )}
+                                {applicableInlineStyles.map((style) => (
+                                    <MenuItem
+                                        key={style.name}
+                                        disabled={editorState.selectionEmpty}
+                                        selected={editor.isActive("inlineStyle", { type: style.name })}
+                                        onMouseDown={(e) => {
+                                            handleMoreClose();
+                                            e.persist();
+                                            setTimeout(() => {
+                                                if (editor.isActive("inlineStyle", { type: style.name })) {
+                                                    editor.chain().focus().unsetInlineStyle().run();
+                                                } else {
+                                                    editor.chain().focus().setInlineStyle({ type: style.name }).run();
+                                                }
+                                            }, 0);
+                                        }}
+                                    >
+                                        {style.label}
+                                    </MenuItem>
+                                ))}
                             </Menu>
                         </>
                     )}

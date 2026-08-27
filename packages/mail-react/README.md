@@ -1,6 +1,6 @@
 # @dextinity/mail-react
 
-Single-package solution for building HTML emails with React and MJML. Consumers install only `@dextinity/mail-react` (plus `react`) — never `@faire/mjml-react` directly.
+Single-package solution for building HTML emails with React and MJML. Consumers never install `@faire/mjml-react` directly.
 
 The package:
 

@@ -9,40 +9,77 @@ import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "./types";
 
-type State = ExternalLinkBlockData;
+type ExternalLinkBlockOption = "openInNewWindow" | "noFollow";
 
-type ExternalLinkBlock = BlockInterface<ExternalLinkBlockData, State, ExternalLinkBlockInput> & LinkBlockInterface<State>;
+/** The options are optional because a block whose `fields` leave one out doesn't carry it at all. */
+type WithOptionalOptions<T extends Record<ExternalLinkBlockOption, boolean>> = Omit<T, ExternalLinkBlockOption> &
+    Partial<Pick<T, ExternalLinkBlockOption>>;
 
-type ExternalLinkBlockSupports = "openInNewWindow" | "noFollow";
+export type ExternalLinkBlockState = WithOptionalOptions<ExternalLinkBlockData>;
 
-const defaultSupports: ExternalLinkBlockSupports[] = ["openInNewWindow", "noFollow"];
+type State = ExternalLinkBlockState;
+
+type Output = WithOptionalOptions<ExternalLinkBlockInput>;
+
+type ExternalLinkBlock = BlockInterface<ExternalLinkBlockData, State, Output> & LinkBlockInterface<State>;
+
+const allOptions: ExternalLinkBlockOption[] = ["openInNewWindow", "noFollow"];
 
 interface ExternalLinkBlockFactoryOptions {
     /**
-     * What the editor can set besides the URL. Leave out anything that has no meaning where the block is
+     * Which options the block's data has besides the URL. Must match the API block this is paired with:
+     * sending a field the API block doesn't have is rejected by validation, and so is omitting one it has.
+     * Leave this alone unless you paired the block with an API block created by `createExternalLinkBlock`
+     * from `@dextinity/cms-api` — the `ExternalLinkBlock` shipped by the API has all of them.
+     * @default ["openInNewWindow", "noFollow"]
+     */
+    fields?: ExternalLinkBlockOption[];
+    /**
+     * Which of those options the editor can set. Leave out anything that has no meaning where the block is
      * used, for instance `[]` for redirects, where neither option affects the resulting HTTP redirect.
      *
      * Values that are already stored are kept as they are, the editor just can't change them anymore.
-     * Both fields stay part of the block's data either way, leaving one out only hides it from the editor.
-     * To always open external links in a new tab, do so in the site implementation instead — an option
-     * left out here keeps its default, it isn't forced to a different value.
-     * @default ["openInNewWindow", "noFollow"]
+     * A field left out here stays part of the block's data, so the API block and the site component are
+     * unaffected. It also keeps its default, it isn't forced to a different value — to always open external
+     * links in a new tab, do so in the site implementation instead.
+     *
+     * Must be a subset of `fields`: the editor can't set an option the block doesn't have.
+     * @default the value of `fields`
      */
-    supports?: ExternalLinkBlockSupports[];
+    supports?: ExternalLinkBlockOption[];
+    /**
+     * The block's name. Must match the name of the API block this is paired with, so only change it
+     * together with `fields` for a block created by `createExternalLinkBlock` from `@dextinity/cms-api`.
+     * @default "ExternalLink"
+     */
+    name?: string;
 }
 
 export function createExternalLinkBlock(
-    { supports = defaultSupports }: ExternalLinkBlockFactoryOptions = {},
+    { fields = allOptions, supports = fields, name = "ExternalLink" }: ExternalLinkBlockFactoryOptions = {},
     override?: (block: ExternalLinkBlock) => ExternalLinkBlock,
 ): ExternalLinkBlock {
+    const unsupportedFields = supports.filter((option) => !fields.includes(option));
+
+    if (unsupportedFields.length > 0) {
+        throw new Error(
+            `The ${name} block can't let the editor set ${unsupportedFields.join(", ")}, as it isn't part of its fields. Add it to "fields" or remove it from "supports".`,
+        );
+    }
+
+    const has = (option: ExternalLinkBlockOption) => fields.includes(option);
     const ExternalLinkBlock: ExternalLinkBlock = {
         ...createBlockSkeleton(),
 
-        name: "ExternalLink",
+        name,
 
         displayName: <FormattedMessage id="dextinity.blocks.externalLink" defaultMessage="External Link" />,
 
-        defaultValues: () => ({ targetUrl: undefined, openInNewWindow: false, noFollow: false }),
+        defaultValues: () => ({
+            targetUrl: undefined,
+            ...(has("openInNewWindow") ? { openInNewWindow: false } : {}),
+            ...(has("noFollow") ? { noFollow: false } : {}),
+        }),
 
         category: BlockCategory.Navigation,
 
@@ -53,16 +90,16 @@ export function createExternalLinkBlock(
         state2Output: (state) => {
             return {
                 targetUrl: state.targetUrl,
-                openInNewWindow: state.openInNewWindow,
-                noFollow: state.noFollow,
+                ...(has("openInNewWindow") ? { openInNewWindow: state.openInNewWindow } : {}),
+                ...(has("noFollow") ? { noFollow: state.noFollow } : {}),
             };
         },
 
         output2State: async (output) => {
             return {
                 targetUrl: output.targetUrl,
-                openInNewWindow: output.openInNewWindow,
-                noFollow: output.noFollow,
+                ...(has("openInNewWindow") ? { openInNewWindow: output.openInNewWindow } : {}),
+                ...(has("noFollow") ? { noFollow: output.noFollow } : {}),
             };
         },
 
@@ -74,8 +111,8 @@ export function createExternalLinkBlock(
             if (isLinkTarget(url)) {
                 return {
                     targetUrl: url,
-                    openInNewWindow: false,
-                    noFollow: false,
+                    ...(has("openInNewWindow") ? { openInNewWindow: false } : {}),
+                    ...(has("noFollow") ? { noFollow: false } : {}),
                 };
             }
 

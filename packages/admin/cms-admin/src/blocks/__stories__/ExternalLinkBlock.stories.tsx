@@ -3,10 +3,9 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ReactNode, useState } from "react";
 import { expect, waitFor } from "storybook/test";
 
-import type { ExternalLinkBlockData } from "../../blocks.generated";
-import { createExternalLinkBlock } from "../createExternalLinkBlock";
+import { createExternalLinkBlock, type ExternalLinkBlockState } from "../createExternalLinkBlock";
 
-function StatePreview({ state }: { state: ExternalLinkBlockData }) {
+function StatePreview({ state }: { state: ExternalLinkBlockState }) {
     return (
         <Box component="pre" data-testid="state" sx={{ mt: 2, p: 2, backgroundColor: "#f5f5f5", fontSize: 12, overflow: "auto", borderRadius: 1 }}>
             {JSON.stringify(state, null, 2)}
@@ -14,7 +13,7 @@ function StatePreview({ state }: { state: ExternalLinkBlockData }) {
     );
 }
 
-function StoryWrapper({ children, state }: { children: ReactNode; state: ExternalLinkBlockData }) {
+function StoryWrapper({ children, state }: { children: ReactNode; state: ExternalLinkBlockState }) {
     return (
         <>
             {children}
@@ -23,14 +22,14 @@ function StoryWrapper({ children, state }: { children: ReactNode; state: Externa
     );
 }
 
-function readState(canvas: { getByTestId: (id: string) => HTMLElement }): ExternalLinkBlockData {
+function readState(canvas: { getByTestId: (id: string) => HTMLElement }): ExternalLinkBlockState {
     return JSON.parse(canvas.getByTestId("state").textContent ?? "{}");
 }
 
 const ExternalLinkBlock = createExternalLinkBlock();
 
 function ExternalLinkBlockStory() {
-    const [state, setState] = useState<ExternalLinkBlockData>(ExternalLinkBlock.defaultValues());
+    const [state, setState] = useState<ExternalLinkBlockState>(ExternalLinkBlock.defaultValues());
 
     return (
         <StoryWrapper state={state}>
@@ -71,7 +70,7 @@ export const Default: Story = {
 const WithoutOptionsBlock = createExternalLinkBlock({ supports: [] });
 
 function WithoutOptionsStory() {
-    const [state, setState] = useState<ExternalLinkBlockData>(WithoutOptionsBlock.defaultValues());
+    const [state, setState] = useState<ExternalLinkBlockState>(WithoutOptionsBlock.defaultValues());
 
     return (
         <StoryWrapper state={state}>

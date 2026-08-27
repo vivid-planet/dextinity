@@ -235,12 +235,17 @@ option affects the resulting HTTP redirect — the `createExternalLinkBlock` fac
 
 There is one factory per layer, and they do different things. Pick by how far the option should disappear:
 
-|             | `@dextinity/cms-admin`          | `@dextinity/cms-api`                      |
-| ----------- | ------------------------------- | ----------------------------------------- |
-| Effect      | Hides the field from the editor | Removes the field from the block entirely |
-| Block name  | Fixed to `ExternalLink`         | Mandatory, must be your own               |
-| Granularity | Per usage site                  | Per block                                 |
-| Stored data | Untouched, keeps its default    | Untouched, lingers untyped                |
+|             | `@dextinity/cms-admin`                       | `@dextinity/cms-api`                      |
+| ----------- | -------------------------------------------- | ----------------------------------------- |
+| Effect      | Hides the field from the editor (`supports`) | Removes the field from the block entirely |
+| Block name  | Optional, defaults to `ExternalLink`         | Mandatory, must be your own               |
+| Granularity | Per usage site                               | Per block                                 |
+| Stored data | Untouched, keeps its default                 | Untouched, lingers untyped                |
+
+The admin factory can do both: `supports` hides a field the block still has, `fields` takes it out of the block's data to
+match an API block of your own. The API name is mandatory because API blocks are registered globally and one name means one
+field set, while admin blocks are not registered at all — which is exactly why the same admin block name can appear more
+than once, with different `supports`.
 
 ### API
 
@@ -305,9 +310,29 @@ the admin factory work per usage site — the core itself uses it that way, with
 the default in content.
 
 Values that are already stored are kept as they are, the editor just can't change them anymore.
-Both fields stay part of the block's data either way, so the API block and the site component are unaffected.
-An option that is left out keeps its default — it isn't forced to a different value.
+A field left out of `supports` stays part of the block's data, so the API block and the site component are unaffected.
+It also keeps its default — it isn't forced to a different value.
 To always open external links in a new tab, do so in the site implementation instead.
+
+#### Pairing with an API block of your own
+
+`supports` is about the editor, not about the data, so it can't pair the block with an API block that has fewer fields —
+the block would still send the fields the API block doesn't have, and validation rejects that. Use `fields` and `name` for
+that, matching what you passed to the API factory:
+
+```tsx title="UrlLinkBlock.tsx"
+import { createExternalLinkBlock } from "@dextinity/cms-admin";
+
+export const UrlLinkBlock = createExternalLinkBlock({ fields: [], name: "UrlLink" });
+```
+
+`fields` decides which options the block's data has, `supports` which of those the editor may set, and it defaults to
+`fields`. So `fields: []` alone already means the editor sees only the URL. `supports` has to be a subset of `fields` —
+the editor can't set an option the block doesn't have — and the factory throws at creation time if it isn't.
+
+Both must line up with the API block exactly: sending a field it doesn't have is rejected, and so is omitting one it has.
+Leave `fields` and `name` alone unless you created your own API block; the `ExternalLinkBlock` shipped by the API has all
+of them.
 
 ## FinalFormBlock (Admin only)
 

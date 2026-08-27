@@ -7,12 +7,31 @@ describe("createExternalLinkBlock", () => {
         expect(createExternalLinkBlock().name).toBe("ExternalLink");
     });
 
-    it("should keep the hidden fields in the block's data", () => {
-        expect(createExternalLinkBlock({ supports: [] }).defaultValues()).toEqual({
-            targetUrl: undefined,
-            openInNewWindow: false,
-            noFollow: false,
-        });
+    it("should allow naming the block after the API block it is paired with", () => {
+        expect(createExternalLinkBlock({ fields: [], name: "UrlLink" }).name).toBe("UrlLink");
+    });
+
+    it("should keep a field the editor can't set in the block's data", () => {
+        const block = createExternalLinkBlock({ supports: [] });
+
+        expect(block.defaultValues()).toEqual({ targetUrl: undefined, openInNewWindow: false, noFollow: false });
+        expect(block.state2Output(block.defaultValues())).toEqual({ targetUrl: undefined, openInNewWindow: false, noFollow: false });
+    });
+
+    it("should leave a field out of the block's data when it isn't one of its fields", () => {
+        const block = createExternalLinkBlock({ fields: [] });
+
+        expect(block.defaultValues()).toEqual({ targetUrl: undefined });
+        expect(block.state2Output(block.defaultValues())).toEqual({ targetUrl: undefined });
+        expect(block.url2State?.("https://www.example.com")).toEqual({ targetUrl: "https://www.example.com" });
+    });
+
+    it("should leave out only the fields it was told to", () => {
+        expect(createExternalLinkBlock({ fields: ["noFollow"] }).defaultValues()).toEqual({ targetUrl: undefined, noFollow: false });
+    });
+
+    it("should reject letting the editor set an option the block doesn't have", () => {
+        expect(() => createExternalLinkBlock({ fields: [], supports: ["noFollow"] })).toThrow(/noFollow/);
     });
 
     it("should allow overriding the block", () => {

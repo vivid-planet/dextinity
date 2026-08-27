@@ -459,6 +459,11 @@ export const TipTapToolbar = ({
                                         e.preventDefault();
                                         setMoreAnchorEl(e.currentTarget as HTMLElement);
                                     }}
+                                    onClick={(e: MouseEvent) => {
+                                        if (e.detail === 0) {
+                                            setMoreAnchorEl(e.currentTarget as HTMLElement);
+                                        }
+                                    }}
                                     sx={toolbarButtonSx}
                                 >
                                     <MoreHorizontal sx={{ fontSize: 15 }} color="inherit" />

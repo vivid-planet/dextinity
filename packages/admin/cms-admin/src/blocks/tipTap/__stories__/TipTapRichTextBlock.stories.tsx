@@ -1,3 +1,4 @@
+import { RteHighlight, Tag } from "@dextinity/admin-icons";
 import { Box, chipClasses, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -819,11 +820,13 @@ const InlineStylesBlock = createTipTapRichTextBlock({
         {
             name: "highlight",
             label: "Highlight",
+            icon: RteHighlight,
             element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
         },
         {
             name: "tag",
             label: "Tag",
+            icon: Tag,
             element: (props: HTMLAttributes<HTMLElement>) => (
                 <span style={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: 4 }} {...props} />
             ),
@@ -1101,11 +1104,13 @@ const CombinedStylesBlock = createTipTapRichTextBlock({
         {
             name: "highlight",
             label: "Highlight",
+            icon: RteHighlight,
             element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
         },
         {
             name: "tag",
             label: "Tag",
+            icon: Tag,
             element: (props: HTMLAttributes<HTMLElement>) => (
                 <span style={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: 4 }} {...props} />
             ),

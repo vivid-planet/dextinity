@@ -497,6 +497,7 @@ export const TipTapToolbar = ({
                                             editor.chain().focus().setInlineStyle({ type: style.name }).run();
                                         }
                                     };
+                                    const Icon = style.icon;
                                     return (
                                         <MenuItem
                                             key={style.name}
@@ -506,6 +507,11 @@ export const TipTapToolbar = ({
                                             onClick={(e) => handleMenuItemKeyboardActivate(e, toggleInlineStyle)}
                                         >
                                             {style.label}
+                                            {Icon && (
+                                                <ListItemIcon sx={{ justifyContent: "flex-end" }}>
+                                                    <Icon />
+                                                </ListItemIcon>
+                                            )}
                                         </MenuItem>
                                     );
                                 })}

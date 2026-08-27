@@ -2,7 +2,7 @@ import type { ComponentsOverrides } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
 import MuiTab, { type TabProps as MuiTabProps } from "@mui/material/Tab";
 import MuiTabs, { type TabsProps as MuiTabsProps } from "@mui/material/Tabs";
-import { type ChangeEvent, Children, type ComponentType, isValidElement, type ReactElement, type ReactNode, useState } from "react";
+import { Children, type ComponentType, isValidElement, type ReactElement, type ReactNode, type SyntheticEvent, useState } from "react";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
@@ -93,11 +93,11 @@ export function Tabs(inProps: TabsProps) {
         setValue = tabsState.setValue;
     }
 
-    const handleChange = (event: ChangeEvent, newValue: number) => {
+    const handleChange = (event: SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
 
-    Children.forEach(children, (child: ReactElement<TabProps>) => {
+    Children.forEach(children, (child) => {
         // as seen in https://github.com/mui-org/material-ui/blob/v4.11.0/packages/material-ui/src/Tabs/Tabs.js#L390
         if (!isValidElement<TabProps>(child)) {
             return null;
@@ -119,7 +119,7 @@ export function Tabs(inProps: TabsProps) {
                 {...slotProps?.tabs}
                 {...restProps}
             >
-                {Children.map(children, (child: ReactElement<TabProps>) => {
+                {Children.map(children, (child) => {
                     if (!isValidElement<TabProps>(child)) {
                         return null;
                     }
@@ -128,7 +128,7 @@ export function Tabs(inProps: TabsProps) {
                     return <TabComponent label={label} {...restTabProps} />;
                 })}
             </StyledTabs>
-            {Children.map(children, (child: ReactElement<TabProps>, index) => {
+            {Children.map(children, (child, index) => {
                 if (!isValidElement<TabProps>(child)) {
                     return null;
                 }

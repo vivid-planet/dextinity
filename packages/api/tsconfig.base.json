@@ -7,9 +7,7 @@
         "experimentalDecorators": true,
         "sourceMap": true,
         "incremental": true,
-        "strict": true,
         "strictPropertyInitialization": false,
-        "strictNullChecks": true,
         "declarationMap": true,
         "useDefineForClassFields": false
     }

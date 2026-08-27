@@ -39,10 +39,14 @@ interface EditPageNodeFinalFormValues {
     [key: string]: unknown;
 }
 
-interface CreateEditPageNodeProps {
+interface CreateEditPageNodeProps<AdditionalFormValues extends Record<string, unknown>> {
     additionalFormFields?: ReactNode;
     nodeFragment?: { name: string; fragment: DocumentNode };
-    valuesToInput?: (values: EditPageNodeFinalFormValues) => EditPageNodeFinalFormValues;
+    /**
+     * Maps the values of the `additionalFormFields` to the page node input.
+     * Generic over the values so that consumers can type them according to their `additionalFormFields`.
+     */
+    valuesToInput?: (values: { values: AdditionalFormValues }) => EditPageNodeFinalFormValues;
     disableHideInMenu?: boolean;
 }
 
@@ -53,12 +57,12 @@ export interface EditPageNodeProps {
     documentTypes: Record<DocumentType, DocumentInterface>;
 }
 
-export function createEditPageNode({
+export function createEditPageNode<AdditionalFormValues extends Record<string, unknown> = Record<string, unknown>>({
     additionalFormFields,
     nodeFragment,
     valuesToInput,
     disableHideInMenu = false,
-}: CreateEditPageNodeProps): (props: EditPageNodeProps) => JSX.Element {
+}: CreateEditPageNodeProps<AdditionalFormValues>): (props: EditPageNodeProps) => JSX.Element {
     const editPageNodeQuery = gql`
         query EditPageNode($id: ID!) {
             page: pageTreeNode(id: $id) {
@@ -250,7 +254,9 @@ export function createEditPageNode({
                         };
 
                         if (valuesToInput) {
-                            input = { ...input, ...valuesToInput({ values }) };
+                            // The values of the consumer's `additionalFormFields` are part of the form state at
+                            // runtime, but not of the statically known `FormValues`
+                            input = { ...input, ...valuesToInput({ values: values as unknown as AdditionalFormValues }) };
                         }
 
                         if (mode === "edit") {

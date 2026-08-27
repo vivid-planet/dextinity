@@ -9,8 +9,6 @@
         "outDir": "./lib",
         "removeComments": true,
         "sourceMap": true,
-        "strict": true,
-        "strictNullChecks": true,
         "strictPropertyInitialization": false,
         "target": "ES2023"
     },

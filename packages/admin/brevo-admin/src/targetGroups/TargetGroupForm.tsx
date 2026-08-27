@@ -40,15 +40,25 @@ export interface EditTargetGroupFinalFormValues {
     [key: string]: unknown;
 }
 
-interface FormProps {
+interface FormProps<TargetGroupValues extends EditTargetGroupFinalFormValues> {
     id: string;
     scope: ContentScope;
     additionalFormFields?: ReactNode;
     nodeFragment?: { name: string; fragment: DocumentNode };
-    input2State?: (values?: EditTargetGroupFinalFormValues) => EditTargetGroupFinalFormValues;
+    /**
+     * Maps the loaded data to the initial state of the `additionalFormFields`.
+     * Generic over the values so that consumers can type them according to their additional attributes.
+     */
+    input2State?: (values?: TargetGroupValues) => EditTargetGroupFinalFormValues;
 }
 
-export function TargetGroupForm({ id, scope, additionalFormFields, input2State, nodeFragment }: FormProps): ReactElement {
+export function TargetGroupForm<TargetGroupValues extends EditTargetGroupFinalFormValues = EditTargetGroupFinalFormValues>({
+    id,
+    scope,
+    additionalFormFields,
+    input2State,
+    nodeFragment,
+}: FormProps<TargetGroupValues>): ReactElement {
     const stackApi = useStackApi();
     const client = useApolloClient();
     const mode = "edit";
@@ -73,7 +83,8 @@ export function TargetGroupForm({ id, scope, additionalFormFields, input2State, 
         let additionalInitialValues = {};
 
         if (input2State) {
-            additionalInitialValues = input2State(data?.brevoTargetGroup);
+            // The additional fields are part of the loaded data at runtime, but not of the generated type
+            additionalInitialValues = input2State(data?.brevoTargetGroup as TargetGroupValues | undefined);
         }
 
         return data?.brevoTargetGroup ? { title: data.brevoTargetGroup.title, ...additionalInitialValues } : additionalInitialValues;

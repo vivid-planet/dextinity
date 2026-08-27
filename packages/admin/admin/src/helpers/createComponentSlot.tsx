@@ -51,13 +51,14 @@ export const createComponentSlot = <BaseComponent extends ElementType | keyof JS
     };
 };
 
-function withClassNameOwnerStateAndRef<Props extends object>(
+function withClassNameOwnerStateAndRef<Props extends object, ClassKey extends string, OwnerState extends object | undefined>(
     Component: StyledComponent<Props & { className?: string; ownerState?: object }>,
-    options: Options<string, object | undefined>,
+    options: Options<ClassKey, OwnerState>,
 ) {
     return forwardRef<unknown, ComponentProps<typeof Component>>((props, ref) => {
         const { className, ownerState } = props;
-        const resolvedClassNames = getResolvedClassNames(options, ownerState);
+        // The styled component types `ownerState` loosely as `object`, but it always carries this slot's owner state
+        const resolvedClassNames = getResolvedClassNames(options, ownerState as OwnerState);
         const customClassName = [className, ...resolvedClassNames].filter(Boolean).join(" ");
         return <Component {...(props as Props)} className={customClassName} ownerState={ownerState} ref={ref} />;
     });

@@ -43,7 +43,10 @@ interface HtmlTextImplementationProps extends HtmlTextOwnProps {
     className?: string;
     style?: CSSProperties;
     children?: ReactNode;
-    [key: string]: unknown;
+    // The remaining props are forwarded to the rendered element as-is. `any` (instead of `unknown`) is
+    // required so this implementation signature stays compatible with the element-specific overloads above.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
 }
 
 export type HtmlTextProps<E extends keyof JSX.IntrinsicElements = "td"> = HtmlTextOwnProps & {

@@ -5,8 +5,6 @@
         "lib": ["ES2023"],
         "outDir": "lib",
         "rootDir": "src",
-        "strict": true,
-        "strictNullChecks": true,
         "strictPropertyInitialization": false,
         "target": "ES2023",
         "useDefineForClassFields": false

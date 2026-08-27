@@ -3,7 +3,7 @@ import type { ComponentsOverrides } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
-import { type ReactNode, useCallback, useRef } from "react";
+import { type ComponentProps, type ReactNode, useCallback, useRef } from "react";
 import { type DropTargetMonitor, useDrag, useDrop, type XYCoord } from "react-dnd";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
@@ -52,9 +52,9 @@ function DndOrderRow<TRow extends IRow>(props: IDndOrderRowProps<TRow>) {
         },
     });
 
-    const [, drop] = useDrop({
+    const [, drop] = useDrop<DragItem>({
         accept: "row",
-        hover(item: DragItem, monitor: DropTargetMonitor) {
+        hover(item, monitor: DropTargetMonitor) {
             // SOURCE for this code: https://codesandbox.io/s/github/react-dnd/react-dnd/tree/gh-pages/examples_hooks_ts/04-sortable/simple
 
             if (!refRow.current) {
@@ -193,12 +193,11 @@ export function TableDndOrder<TRow extends IRow>(inProps: TableDndOrderProps<TRo
         [dragHandleIcon, moveRow, onDragEnd],
     );
 
-    const tableProps = {
-        renderTableRow,
-        renderHeadTableRow,
-    };
+    // `Root` is created from the generic `Table`, which loses its type parameter, so the row-typed props have to
+    // be widened here.
+    const tableProps = { ...restProps, renderTableRow, renderHeadTableRow } as unknown as ComponentProps<typeof Root>;
 
-    return <Root {...slotProps?.root} {...restProps} {...tableProps} />;
+    return <Root {...slotProps?.root} {...tableProps} />;
 }
 
 declare module "@mui/material/styles" {

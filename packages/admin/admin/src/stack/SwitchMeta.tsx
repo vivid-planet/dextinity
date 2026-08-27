@@ -14,7 +14,7 @@ export class StackSwitchMeta extends Component<IProps> {
     public static contextType = StackApiContext;
     declare context: ContextType<typeof StackApiContext>;
 
-    private parentId: string;
+    private parentId = "";
 
     public render() {
         return (

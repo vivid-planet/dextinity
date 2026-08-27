@@ -1,4 +1,4 @@
-import { createTheme, type Theme, type ThemeOptions } from "@mui/material";
+import { type Components, createTheme, type Theme, type ThemeOptions } from "@mui/material";
 import { createBreakpoints } from "@mui/system";
 import { deepmerge } from "@mui/utils";
 
@@ -52,7 +52,10 @@ export const createDextinityTheme = (
 
     const dextinityThemeOptions = {
         ...dextinityThemeOptionsBeforeAddingComponents,
-        components: getComponentsTheme(passedComponentsOptions, themeBeforeAddingComponents),
+        // `ThemeOptions["components"]` is typed with the full MUI theme while `Components` defaults to an
+        // `unknown` theme. Both only use the theme type in the style-override callbacks, which are passed
+        // through unchanged here.
+        components: getComponentsTheme(passedComponentsOptions as Components, themeBeforeAddingComponents),
     } satisfies ThemeOptions;
 
     const themeOptions = deepmerge(dextinityThemeOptions, restPassedOptions);

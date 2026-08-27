@@ -19,7 +19,7 @@ const Link = createComponentSlot(RouterLink)<StackBreadcrumbsClassKey>({
         color: ${theme.palette.grey[600]};
         text-decoration-color: currentColor;
     `,
-) as typeof MuiLink;
+) as unknown as typeof MuiLink;
 
 const DisabledLink = createComponentSlot(Typography)<StackBreadcrumbsClassKey>({
     componentName: "StackBreadcrumbs",

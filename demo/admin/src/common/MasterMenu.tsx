@@ -111,7 +111,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             })),
             route: {
                 path: "/pages/pagetree/:category",
-                render: ({ match }: RouteComponentProps<{ category: string }>) => {
+                render: ({ match }: RouteComponentProps<{ category?: string }>) => {
                     const category = urlParamToCategory(match.params.category);
 
                     if (category === undefined) {

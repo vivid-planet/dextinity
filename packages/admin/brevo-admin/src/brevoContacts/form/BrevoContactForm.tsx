@@ -54,15 +54,25 @@ type EditBrevoContactFormValuesWithAttributes = EditBrevoContactFormValues & {
     sendDoubleOptIn?: boolean;
 };
 
-interface FormProps {
+interface FormProps<ContactValues extends EditBrevoContactFormValues> {
     id?: number;
     scope: ContentScope;
     additionalFormFields?: ReactNode;
     additionalAttributesFragment?: { name: string; fragment: DocumentNode };
-    input2State?: (values?: EditBrevoContactFormValues) => EditBrevoContactFormValues;
+    /**
+     * Maps the loaded data to the initial state of the `additionalFormFields`.
+     * Generic over the values so that consumers can type them according to their additional attributes.
+     */
+    input2State?: (values?: ContactValues) => EditBrevoContactFormValues;
 }
 
-export function BrevoContactForm({ id, scope, input2State, additionalFormFields, additionalAttributesFragment }: FormProps): ReactElement {
+export function BrevoContactForm<ContactValues extends EditBrevoContactFormValues = EditBrevoContactFormValues>({
+    id,
+    scope,
+    input2State,
+    additionalFormFields,
+    additionalAttributesFragment,
+}: FormProps<ContactValues>): ReactElement {
     const stackApi = useStackApi();
     const client = useApolloClient();
     const mode = id ? "edit" : "add";
@@ -92,7 +102,8 @@ export function BrevoContactForm({ id, scope, input2State, additionalFormFields,
         if (input2State) {
             baseInitialValues = {
                 ...baseInitialValues,
-                ...input2State(data?.brevoContact),
+                // The additional attributes are part of the loaded data at runtime, but not of the generated type
+                ...input2State(data?.brevoContact as ContactValues | undefined),
             };
         }
 

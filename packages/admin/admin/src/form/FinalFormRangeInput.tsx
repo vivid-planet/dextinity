@@ -108,7 +108,11 @@ export function FinalFormRangeInput(inProps: FinalFormRangeInputProps) {
     const [internalMinInput, setInternalMinInput] = useState(fieldValue.min || undefined);
     const [internalMaxInput, setInternalMaxInput] = useState(fieldValue.max || undefined);
 
-    const handleSliderChange = (event: Event, newValue: number[]) => {
+    const handleSliderChange = (event: Event, newValue: number | number[]) => {
+        // The slider is given a range as its value, so it always reports back an array
+        if (!Array.isArray(newValue)) {
+            return;
+        }
         onChange({ min: newValue[0], max: newValue[1] });
     };
 

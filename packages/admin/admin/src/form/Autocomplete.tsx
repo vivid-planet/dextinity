@@ -116,7 +116,9 @@ export const FinalFormAutocomplete = <
     return (
         <Autocomplete
             popupIcon={popupIcon}
-            disableClearable
+            // The built-in clear indicator is replaced by a custom `ClearInputAdornment` below, so it is always
+            // disabled, independently of the `DisableClearable` type parameter (which only types the field value).
+            disableClearable={true as DisableClearable}
             // Opens the dropdown when the (multiple) end adornment container is clicked, which focuses the input
             // but swallows the click before it reaches the input root.
             openOnFocus

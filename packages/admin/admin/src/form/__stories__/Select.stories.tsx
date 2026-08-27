@@ -100,7 +100,7 @@ export const Select = () => {
                                 fullWidth
                                 componentsProps={{
                                     finalFormSelect: {
-                                        renderValue: (value: string) => options.find((option) => option.value === value)?.label,
+                                        renderValue: (value) => options.find((option) => option.value === value)?.label,
                                     },
                                 }}
                             >

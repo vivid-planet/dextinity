@@ -95,14 +95,18 @@ const createTargetGroupMutation = gql`
     }
 `;
 
-export function TargetGroupsGrid({
+export function TargetGroupsGrid<ContactAttributes extends AdditionalContactAttributesType = AdditionalContactAttributesType>({
     scope,
     exportTargetGroupOptions,
 }: {
     scope: ContentScope;
     exportTargetGroupOptions?: {
         additionalAttributesFragment: { name: string; fragment: DocumentNode };
-        exportFields: { renderValue: (row: AdditionalContactAttributesType) => string; headerName: string }[];
+        /**
+         * Fields appended to the CSV export. Generic over the row so that consumers can type it according to
+         * their `additionalAttributesFragment`.
+         */
+        exportFields: { renderValue: (row: ContactAttributes) => string; headerName: string }[];
     };
 }): ReactElement {
     const client = useApolloClient();
@@ -161,7 +165,8 @@ export function TargetGroupsGrid({
             contact.email,
             contact.emailBlacklisted,
             contact.smsBlacklisted,
-            exportTargetGroupOptions?.exportFields.map((field) => field.renderValue(contact)),
+            // The additional attributes are part of the loaded contact at runtime, but not of the generated type
+            exportTargetGroupOptions?.exportFields.map((field) => field.renderValue(contact as ContactAttributes)),
         ]);
 
         csvData.unshift(header);

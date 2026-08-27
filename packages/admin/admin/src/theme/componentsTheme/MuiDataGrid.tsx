@@ -21,7 +21,7 @@ import { DataGridPagination } from "../../dataGrid/pagination/DataGridPagination
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
 import type { GetMuiComponentTheme } from "./getComponentsTheme";
 
-const getDensityHeightValue = (density: string) => {
+const getDensityHeightValue = (density: string | undefined) => {
     switch (density) {
         case "compact":
             return 40;

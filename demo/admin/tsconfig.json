@@ -9,14 +9,13 @@
         "module": "preserve",
         "moduleResolution": "bundler",
         "noEmit": true,
-        "noImplicitAny": true,
         "paths": {
             "@src/*": ["src/*"]
         },
         "resolveJsonModule": true,
         "skipLibCheck": true,
         "sourceMap": true,
-        "strictNullChecks": true,
+        "strict": true,
         "target": "ESNext"
     },
     "include": ["src/**/*"],

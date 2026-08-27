@@ -1,10 +1,10 @@
 import { type ComponentsOverrides, type Drawer as MuiDrawer, type Theme, useThemeProps } from "@mui/material";
-import { Children, cloneElement, type ReactNode, useContext, useEffect, useMemo, useRef } from "react";
+import { Children, cloneElement, isValidElement, type ReactNode, useContext, useEffect, useMemo, useRef } from "react";
 import { useHistory } from "react-router";
 
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 import { MasterLayoutContext } from "../MasterLayoutContext";
-import type { MainNavigationChild, MainNavigationCollapsibleItemProps } from "./CollapsibleItem";
+import type { MainNavigationCollapsibleItemProps } from "./CollapsibleItem";
 import { useMainNavigation } from "./Context";
 import type { MainNavigationItemProps } from "./Item";
 import type { MainNavigationItemRouterLinkProps } from "./ItemRouterLink";
@@ -86,8 +86,11 @@ export const MainNavigation = (inProps: MainNavigationProps) => {
 
     const childElements = useMemo(
         () =>
-            Children.map(children, (child: MainNavigationChild) => {
-                return cloneElement<MainNavigationCollapsibleItemProps | MainNavigationItemRouterLinkProps | MainNavigationItemProps>(child, {
+            Children.map(children, (child) => {
+                if (!isValidElement<MainNavigationCollapsibleItemProps | MainNavigationItemRouterLinkProps | MainNavigationItemProps>(child)) {
+                    return child;
+                }
+                return cloneElement(child, {
                     isMenuOpen: open,
                 });
             }),

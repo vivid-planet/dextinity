@@ -15,7 +15,7 @@ describe("useBufferedRowCount", () => {
     });
 
     it("should keep the previous count when rowCount transitions to undefined", () => {
-        const { result, rerender } = renderHook(({ count }: { count: number | undefined }) => useBufferedRowCount(count), {
+        const { result, rerender } = renderHook<number, { count: number | undefined }>(({ count }) => useBufferedRowCount(count), {
             initialProps: { count: 100 },
         });
 
@@ -29,7 +29,7 @@ describe("useBufferedRowCount", () => {
     });
 
     it("should update when rowCount changes from one defined value to another", () => {
-        const { result, rerender } = renderHook(({ count }: { count: number | undefined }) => useBufferedRowCount(count), {
+        const { result, rerender } = renderHook<number, { count: number | undefined }>(({ count }) => useBufferedRowCount(count), {
             initialProps: { count: 10 },
         });
 
@@ -43,7 +43,7 @@ describe("useBufferedRowCount", () => {
     });
 
     it("should return 0 initially and then update once the first defined value arrives", () => {
-        const { result, rerender } = renderHook(({ count }: { count: number | undefined }) => useBufferedRowCount(count), {
+        const { result, rerender } = renderHook<number, { count: number | undefined }>(({ count }) => useBufferedRowCount(count), {
             initialProps: { count: undefined },
         });
 
@@ -57,7 +57,7 @@ describe("useBufferedRowCount", () => {
     });
 
     it("should retain the last known count through multiple undefined transitions", () => {
-        const { result, rerender } = renderHook(({ count }: { count: number | undefined }) => useBufferedRowCount(count), {
+        const { result, rerender } = renderHook<number, { count: number | undefined }>(({ count }) => useBufferedRowCount(count), {
             initialProps: { count: 50 },
         });
 

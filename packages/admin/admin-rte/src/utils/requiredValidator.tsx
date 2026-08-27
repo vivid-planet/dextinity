@@ -1,10 +1,12 @@
 import { convertFromRaw, type RawDraftContentState } from "draft-js";
-import type { FieldValidator } from "final-form";
+import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
 const requiredMessage = <FormattedMessage id="dextinity.form.required" defaultMessage="Required" />;
 
-export const requiredValidator: FieldValidator<string | RawDraftContentState | undefined> = (value) => {
+// Declared as a plain function instead of `FieldValidator<...>`: `FieldValidator`'s `meta` parameter makes the
+// type invariant in the field value, which would prevent using this validator for a `string`-valued field.
+export const requiredValidator = (value: string | RawDraftContentState | undefined): ReactNode => {
     if (value === undefined) {
         return requiredMessage;
     }

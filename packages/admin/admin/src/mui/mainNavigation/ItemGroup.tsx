@@ -5,7 +5,7 @@ import { FormattedMessage, type MessageDescriptor, useIntl } from "react-intl";
 import { Tooltip as CommonTooltip } from "../../common/Tooltip";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
-import type { MainNavigationChild, MainNavigationCollapsibleItemProps } from "./CollapsibleItem";
+import type { MainNavigationCollapsibleItemProps } from "./CollapsibleItem";
 import type { MainNavigationItemProps } from "./Item";
 import type { MainNavigationItemRouterLinkProps } from "./ItemRouterLink";
 
@@ -141,8 +141,11 @@ export const MainNavigationItemGroup = (inProps: MainNavigationItemGroupProps) =
 
     const childElements = useMemo(
         () =>
-            Children.map(children, (child: MainNavigationChild) => {
-                return cloneElement<MainNavigationCollapsibleItemProps | MainNavigationItemRouterLinkProps | MainNavigationItemProps>(child, {
+            Children.map(children, (child) => {
+                if (!isValidElement<MainNavigationCollapsibleItemProps | MainNavigationItemRouterLinkProps | MainNavigationItemProps>(child)) {
+                    return child;
+                }
+                return cloneElement(child, {
                     isMenuOpen,
                 });
             }),

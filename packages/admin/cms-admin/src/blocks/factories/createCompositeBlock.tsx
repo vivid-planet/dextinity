@@ -88,7 +88,9 @@ interface CreateCompositeBlockOptionsBase {
      * @param state The current state of the composite block
      * @returns An array of block keys in the order they should be rendered in the admin component, if undefined all blocks will be rendered in the order they are defined in the blocks object
      */
-    visibleOrderedBlocksForState?: (state: unknown) => string[] | undefined;
+    // `state` is typed as `any` because its shape depends on the configured blocks, so consumers narrow it
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    visibleOrderedBlocksForState?: (state: any) => string[] | undefined;
 }
 
 type CreateCompositeBlockOptionsWithGroups = Omit<CreateCompositeBlockOptionsBase, "blocks"> & { groups: Record<string, GroupConfiguration> };

@@ -9,22 +9,26 @@ import { ConfigVerification } from "../configVerification/ConfigVerification";
 import { BrevoTestContactsGrid } from "./BrevoTestContactsGrid";
 import { BrevoTestContactForm, type EditBrevoContactFormValues } from "./form/BrevoTestContactForm";
 
-interface CreateContactsPageOptions {
+interface CreateContactsPageOptions<ContactValues extends EditBrevoContactFormValues> {
     /** @deprecated Pass via BrevoConfigProvider instead */
     scopeParts?: string[];
     additionalAttributesFragment?: { name: string; fragment: DocumentNode };
     additionalGridFields?: GridColDef[];
     additionalFormFields?: ReactNode;
-    input2State?: (values?: EditBrevoContactFormValues) => EditBrevoContactFormValues;
+    /**
+     * Maps the loaded data to the initial state of the `additionalFormFields`.
+     * Generic over the values so that consumers can type them according to their additional attributes.
+     */
+    input2State?: (values?: ContactValues) => EditBrevoContactFormValues;
 }
 
-function createBrevoTestContactsPage({
+function createBrevoTestContactsPage<ContactValues extends EditBrevoContactFormValues = EditBrevoContactFormValues>({
     scopeParts: passedScopeParts,
     additionalAttributesFragment,
     additionalFormFields,
     additionalGridFields,
     input2State,
-}: CreateContactsPageOptions) {
+}: CreateContactsPageOptions<ContactValues>) {
     function BrevoTestContactsPage(): JSX.Element {
         const intl = useIntl();
         const brevoConfig = useBrevoConfig();

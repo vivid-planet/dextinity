@@ -33,9 +33,14 @@ export interface GQLDocument extends GQLDocumentInterface {
     [key: string]: unknown;
 }
 
+// The type parameters default to `any` (not `Record<string, unknown>`) because they appear in callback
+// parameter positions. A collection of document types (e.g. `Record<DocumentType, DocumentInterface>`) is
+// heterogeneous, so it must accept documents with a concrete input/output shape.
 export interface DocumentInterface<
-    DocumentInput extends Record<string, unknown> = Record<string, unknown>,
-    DocumentOutput extends Record<string, unknown> = Record<string, unknown>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    DocumentInput extends Record<string, unknown> = any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    DocumentOutput extends Record<string, unknown> = any,
 > {
     displayName: ReactNode;
     getQuery?: TypedDocumentNode<GQLPageQuery, GQLPageQueryVariables>; // TODO better typing (see createUsePage.tsx)
@@ -52,7 +57,9 @@ export interface DocumentInterface<
     SitePreviewAction?: ComponentType<SitePreviewActionProps>;
 }
 
-export type InfoTagProps<PageTreeNodeAdditionalFields extends object = object> = {
+// Defaults to `any` for the same reason as `DocumentInterface` above
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type InfoTagProps<PageTreeNodeAdditionalFields extends object = any> = {
     page: PageTreePage<PageTreeNodeAdditionalFields>;
 };
 

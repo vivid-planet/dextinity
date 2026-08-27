@@ -78,7 +78,7 @@ export function useDataGridExcelExport<Row extends GridValidRowModel, GQLQuery, 
                 createExcelExportDownload<Row>(columns, data, exportOptions);
             }
         } catch (e) {
-            setError(e);
+            setError(e instanceof Error ? e.message : String(e));
         } finally {
             setLoading(false);
         }

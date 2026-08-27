@@ -151,7 +151,9 @@ export type FormFieldConfig<T> = (
 ) & {
     label?: string | FormattedMessageElement;
     required?: boolean;
-    validate?: FieldValidator<unknown>;
+    // The value type depends on the field, so it is typed as `any` to let the configured validator narrow it
+
+    validate?: FieldValidator<any>;
     helperText?: string | FormattedMessageElement;
     readOnly?: boolean;
 };
@@ -212,7 +214,8 @@ export type InjectedFormVariables = {
     formApi: FormApi<unknown, Partial<unknown>>;
     scope: ContentScope;
 };
-export function injectFormVariables<T>(fn: (injectedVariables: InjectedFormVariables) => T): T {
+// `Variables` is generic so that the values of other form fields can be injected in addition to `InjectedFormVariables`
+export function injectFormVariables<T, Variables extends InjectedFormVariables = InjectedFormVariables>(fn: (injectedVariables: Variables) => T): T {
     // this function is only used in config but never called at runtime
     return fn({} as any);
 }

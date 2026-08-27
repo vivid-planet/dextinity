@@ -9,18 +9,32 @@ import { ConfigVerification } from "../configVerification/ConfigVerification";
 import { type EditTargetGroupFinalFormValues, TargetGroupForm } from "./TargetGroupForm";
 import { type AdditionalContactAttributesType, TargetGroupsGrid } from "./TargetGroupsGrid";
 
-interface CreateContactsPageOptions {
+interface CreateContactsPageOptions<
+    TargetGroupValues extends EditTargetGroupFinalFormValues,
+    ContactAttributes extends AdditionalContactAttributesType,
+> {
     additionalFormFields?: ReactNode;
     exportTargetGroupOptions?: {
         additionalAttributesFragment: { name: string; fragment: DocumentNode };
-        exportFields: { renderValue: (row: AdditionalContactAttributesType) => string; headerName: string }[];
+        /**
+         * Fields appended to the CSV export. Generic over the row so that consumers can type it according to
+         * their `additionalAttributesFragment`.
+         */
+        exportFields: { renderValue: (row: ContactAttributes) => string; headerName: string }[];
     };
     nodeFragment?: { name: string; fragment: DocumentNode };
-    input2State?: (values?: EditTargetGroupFinalFormValues) => EditTargetGroupFinalFormValues;
+    /**
+     * Maps the loaded data to the initial state of the `additionalFormFields`.
+     * Generic over the values so that consumers can type them according to their additional attributes.
+     */
+    input2State?: (values?: TargetGroupValues) => EditTargetGroupFinalFormValues;
     valuesToOutput?: (values: EditTargetGroupFinalFormValues) => EditTargetGroupFinalFormValues;
 }
 
-export function createTargetGroupsPage({ additionalFormFields, nodeFragment, input2State, exportTargetGroupOptions }: CreateContactsPageOptions) {
+export function createTargetGroupsPage<
+    TargetGroupValues extends EditTargetGroupFinalFormValues = EditTargetGroupFinalFormValues,
+    ContactAttributes extends AdditionalContactAttributesType = AdditionalContactAttributesType,
+>({ additionalFormFields, nodeFragment, input2State, exportTargetGroupOptions }: CreateContactsPageOptions<TargetGroupValues, ContactAttributes>) {
     function TargetGroupsPage(): JSX.Element {
         const { scopeParts } = useBrevoConfig();
         const { scope: completeScope } = useContentScope();

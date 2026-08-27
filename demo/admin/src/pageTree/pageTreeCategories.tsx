@@ -22,7 +22,10 @@ export function categoryToUrlParam(category: GQLPageTreeNodeCategory | string): 
     return kebabCase(category);
 }
 
-export function urlParamToCategory(param: string): GQLPageTreeNodeCategory | undefined {
+export function urlParamToCategory(param: string | undefined): GQLPageTreeNodeCategory | undefined {
+    if (param === undefined) {
+        return undefined;
+    }
     const category = camelCase(param);
     return isCategory(category) ? category : undefined;
 }

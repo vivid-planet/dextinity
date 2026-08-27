@@ -5,7 +5,7 @@ import TableFooter from "@mui/material/TableFooter";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
-import { Component, createRef, type KeyboardEvent, type ReactNode, type RefObject } from "react";
+import { Component, createRef, type KeyboardEvent, type MouseEvent, type ReactNode, type RefObject } from "react";
 
 import type { ISelectionApi } from "../SelectionApi";
 import type { IExportApi } from "./excelexport/IExportApi";
@@ -247,9 +247,9 @@ export class Table<TRow extends IRow> extends Component<ITableProps<TRow>> {
         );
     }
 
-    private handleClick = (id: string, event: MouseEvent) => {
+    private handleClick = (id: string | number, event: MouseEvent) => {
         if (this.props.selectable && this.props.selectionApi) {
-            this.props.selectionApi.handleSelectId(id);
+            this.props.selectionApi.handleSelectId(String(id));
         }
     };
 

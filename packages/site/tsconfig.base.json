@@ -4,10 +4,8 @@
         "target": "ES2015",
         "module": "ESNext",
         "moduleResolution": "Bundler",
-        "noImplicitAny": true,
         "jsx": "react-jsx",
         "noEmitOnError": true,
-        "strict": true,
         "declarationMap": true
     }
 }

@@ -93,7 +93,7 @@ export function generateExcelFile<Row extends GridValidRowModel>(
 
             worksheet.addRow(excelRow);
         } catch (e) {
-            throw new Error(e);
+            throw e instanceof Error ? e : new Error(String(e));
         }
     }
 

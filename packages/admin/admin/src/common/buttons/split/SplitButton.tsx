@@ -76,6 +76,13 @@ const MenuItem = createComponentSlot(MuiMenuItem)<SplitButtonClassKey>({
 /**
  * @deprecated Use a simple `SaveButton` instead as we are retiring the SplitButton pattern.
  */
+// The props of a `SplitButton` child that are read by the split button itself
+type SplitButtonChildProps = {
+    children?: ReactNode;
+    disabled?: boolean;
+    onClick?: () => void;
+};
+
 export function SplitButton(inProps: PropsWithChildren<SplitButtonProps>) {
     const {
         selectIcon = <ChevronDown />,
@@ -165,7 +172,10 @@ export function SplitButton(inProps: PropsWithChildren<SplitButtonProps>) {
                 {...slotProps?.popover}
             >
                 <MenuList {...slotProps?.menuList}>
-                    {childrenArray.map((child: ReactElement<any>, index) => {
+                    {childrenArray.map((child, index) => {
+                        if (!isValidElement<SplitButtonChildProps>(child)) {
+                            return null;
+                        }
                         return (
                             <MenuItem
                                 key={index}

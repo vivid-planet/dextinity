@@ -98,7 +98,7 @@ const submissionErrorMessages: { [K in GQLProductMutationErrorCode]: ReactNode }
 export function ProductForm({ id, width, onCreate }: FormProps) {
     const client = useApolloClient();
     const mode = id ? "edit" : "add";
-    const formApiRef = useFormApiRef<FormValues>();
+    const formApiRef = useFormApiRef<FormValues, InitialFormValues>();
 
     const { data, error, loading, refetch } = useQuery<GQLProductQuery, GQLProductQueryVariables>(
         productQuery,
@@ -141,7 +141,11 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
         },
     });
 
-    const handleSubmit = async ({ manufacturerCountry, ...formValues }: FormValues, form: FormApi<FormValues>, event: FinalFormSubmitEvent) => {
+    const handleSubmit = async (
+        { manufacturerCountry, ...formValues }: FormValues,
+        form: FormApi<FormValues, InitialFormValues>,
+        event: FinalFormSubmitEvent,
+    ) => {
         if (await saveConflict.checkForConflicts()) {
             throw new Error("Conflicts detected");
         }

@@ -49,10 +49,12 @@ const getOverridesInterpolation = <PropsName extends keyof ComponentsPropsList>(
 };
 
 // Overload for standard MUI components
+// `ComponentName` must be passed on to `OverridesStyleRules`, otherwise the interpolation callbacks are typed with the
+// owner state of every MUI component instead of this one's, which doesn't match the component theme's `styleOverrides`.
 export function mergeOverrideStyles<ComponentName extends keyof ComponentNameToClassKey & keyof ComponentsPropsList>(
-    passedIn?: Partial<OverridesStyleRules<ClassKey<ComponentName>>>,
-    dextinity?: Partial<OverridesStyleRules<ClassKey<ComponentName>>>,
-): Partial<OverridesStyleRules<ClassKey<ComponentName>>>;
+    passedIn?: Partial<OverridesStyleRules<ClassKey<ComponentName>, ComponentName>>,
+    dextinity?: Partial<OverridesStyleRules<ClassKey<ComponentName>, ComponentName>>,
+): Partial<OverridesStyleRules<ClassKey<ComponentName>, ComponentName>>;
 
 // Overload for components with custom owner state (e.g. MuiPickersTextField from `@mui/x-date-pickers`)
 export function mergeOverrideStyles<TStyleOverrides extends Record<string, any>>(

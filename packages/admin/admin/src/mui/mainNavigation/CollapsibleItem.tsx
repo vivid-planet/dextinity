@@ -1,6 +1,17 @@
 import { ChevronDown, ChevronRight, ChevronUp } from "@dextinity/admin-icons";
 import { Collapse, type ComponentsOverrides, Fade, List, Menu, type Theme, type Typography, useThemeProps } from "@mui/material";
-import { Children, cloneElement, type MouseEvent, type ReactElement, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import {
+    Children,
+    cloneElement,
+    isValidElement,
+    type MouseEvent,
+    type ReactElement,
+    type ReactNode,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import { matchPath, useLocation } from "react-router";
 
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
@@ -79,9 +90,10 @@ export const MainNavigationCollapsibleItem = (inProps: MainNavigationCollapsible
     }, [isMenuOpen]);
 
     const childElements = useMemo(() => {
-        function checkIfPathInLocation(
-            child: ReactElement<MainNavigationCollapsibleItemProps | MainNavigationItemRouterLinkProps | MainNavigationItemProps>,
-        ) {
+        function checkIfPathInLocation(child: ReactNode) {
+            if (!isValidElement<MainNavigationCollapsibleItemProps | MainNavigationItemRouterLinkProps | MainNavigationItemProps>(child)) {
+                return false;
+            }
             return "to" in child.props && matchPath(location.pathname, { path: child.props.to, strict: true });
         }
         hasSelectedChild.current = false;
@@ -94,11 +106,8 @@ export const MainNavigationCollapsibleItem = (inProps: MainNavigationCollapsible
             }
 
             // sub child is selected
-            const subChildElements =
-                "children" in child.props
-                    ? Children.map(child?.props?.children, (child: MainNavigationChild) => child)
-                    : ([] as MainNavigationChild[]);
-            if (subChildElements?.some((child: MainNavigationChild) => child.props && checkIfPathInLocation(child))) {
+            const subChildElements = "children" in child.props ? Children.toArray(child.props.children) : [];
+            if (subChildElements.some((subChild) => checkIfPathInLocation(subChild))) {
                 hasSelectedChild.current = true;
                 setIsSubmenuOpen(true);
             }

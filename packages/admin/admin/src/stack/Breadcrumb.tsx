@@ -16,7 +16,7 @@ export class StackBreadcrumb extends Component<IProps> {
     declare context: ContextType<typeof StackApiContext>;
 
     public id: string;
-    private parentId: string;
+    private parentId = "";
     constructor(props: IProps) {
         super(props);
         this.id = uuid();

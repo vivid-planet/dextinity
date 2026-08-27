@@ -1,12 +1,13 @@
 ---
 "@dextinity/cms-admin": minor
+"@dextinity/cms-api": minor
 ---
 
 Support heading-only TipTap rich text blocks
 
-`paragraph` is now a text block type in `supports`, next to `heading`, `ordered-list` and `unordered-list`. Leaving it out results in a heading-only block (e.g. a headline): the text block type select only offers headings and the editor starts with a heading instead of a paragraph.
+`paragraph` is now a text block type in `supports`, next to `heading`, `ordered-list` and `unordered-list`. Leaving it out results in a heading-only block (e.g. a headline): the text block type select only offers headings, the editor starts with a heading instead of a paragraph, and content containing a paragraph is rejected during validation.
 
-`createTipTapRichTextBlock` also accepts a new `defaultHeadingLevel?: number` option, the heading level of newly created headings. It defaults to the lowest level in `headingLevels` and must be one of them.
+`createTipTapRichTextBlock` also accepts a new `defaultHeadingLevel?: number` option, the heading level of newly created headings. It defaults to the lowest level in `headingLevels` and must be one of them. `migrateFromDraftJs` uses it for Draft.js blocks that don't carry a heading level, so migrated content doesn't fall back to paragraphs the schema doesn't allow.
 
 **Example**
 
@@ -23,7 +24,7 @@ createTipTapRichTextBlock({
 
 **Breaking change**
 
-Blocks that pass `supports` need `paragraph` added to keep their paragraphs — without it, existing paragraph content is no longer valid:
+Blocks that pass `supports` need `paragraph` added to keep their paragraphs — without it, existing paragraph content no longer passes validation:
 
 ```diff
  createTipTapRichTextBlock({

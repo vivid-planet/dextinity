@@ -815,7 +815,7 @@ export const MaxTextBlocks: StoryObj<typeof MaxTextBlocksStory> = {
     },
 };
 
-const InlineStylesBlock = createTipTapRichTextBlock({
+const InlineStylesMoreOptionsBlock = createTipTapRichTextBlock({
     inlineStyles: [
         {
             name: "highlight",
@@ -834,18 +834,18 @@ const InlineStylesBlock = createTipTapRichTextBlock({
     ],
 });
 
-function InlineStylesStory() {
-    const [state, setState] = useState<TipTapRichTextBlockState>(InlineStylesBlock.defaultValues());
+function InlineStylesMoreOptionsStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(InlineStylesMoreOptionsBlock.defaultValues());
 
     return (
         <StoryWrapper state={state}>
-            <InlineStylesBlock.AdminComponent state={state} updateState={setState} />
+            <InlineStylesMoreOptionsBlock.AdminComponent state={state} updateState={setState} />
         </StoryWrapper>
     );
 }
 
-export const InlineStyles: StoryObj<typeof InlineStylesStory> = {
-    render: () => <InlineStylesStory />,
+export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesMoreOptionsStory> = {
+    render: () => <InlineStylesMoreOptionsStory />,
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready", async () => {
             await waitFor(
@@ -1231,7 +1231,7 @@ export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
     },
 };
 
-const InlineStylesAsButtonsBlock = createTipTapRichTextBlock({
+const InlineStylesBlock = createTipTapRichTextBlock({
     supports: ["heading", "sub", "sup"],
     inlineStyles: [
         {
@@ -1243,18 +1243,18 @@ const InlineStylesAsButtonsBlock = createTipTapRichTextBlock({
     ],
 });
 
-function InlineStylesAsButtonsStory() {
-    const [state, setState] = useState<TipTapRichTextBlockState>(InlineStylesAsButtonsBlock.defaultValues());
+function InlineStylesStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(InlineStylesBlock.defaultValues());
 
     return (
         <StoryWrapper state={state}>
-            <InlineStylesAsButtonsBlock.AdminComponent state={state} updateState={setState} />
+            <InlineStylesBlock.AdminComponent state={state} updateState={setState} />
         </StoryWrapper>
     );
 }
 
-export const InlineStylesAsButtons: StoryObj<typeof InlineStylesAsButtonsStory> = {
-    render: () => <InlineStylesAsButtonsStory />,
+export const InlineStyles: StoryObj<typeof InlineStylesStory> = {
+    render: () => <InlineStylesStory />,
     play: async ({ canvas, userEvent, step }) => {
         await step(
             "Without bold/italic/underline/strike buttons, superscript/subscript/inline styles render as their own toolbar buttons instead of a 'More options' menu",

@@ -236,12 +236,11 @@ option affects the resulting HTTP redirect — use the `createExternalLinkBlock`
 ```tsx title="ExternalLinkBlock.tsx"
 import { createExternalLinkBlock } from "@dextinity/cms-admin";
 
-// only "Open in new window" is offered
 export const ExternalLinkBlock = createExternalLinkBlock({ supports: ["openInNewWindow"] });
-
-// only the URL can be entered
-export const ExternalLinkBlock = createExternalLinkBlock({ supports: [] });
 ```
+
+`supports` lists what the editor may set besides the URL. The example above offers "Open in new window" but not "No follow";
+pass `supports: []` to offer neither, so that only the URL can be entered.
 
 Pass the resulting block to `createLinkBlock` as the `external` target; everything built on that link block
 (`createTextLinkBlock`, `createImageLinkBlock`, rich text links, …) picks it up automatically.

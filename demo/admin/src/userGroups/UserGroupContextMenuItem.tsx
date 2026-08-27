@@ -9,21 +9,16 @@ import { FormattedMessage } from "react-intl";
 import { userGroupOptions } from "./userGroupOptions";
 
 interface UserGroupItem {
-    key: string;
-    visible: boolean;
-    type?: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    props: any;
     userGroup: GQLUserGroup;
 }
 
-interface Props {
-    item: UserGroupItem;
-    onChange: (item: UserGroupItem) => void;
+interface Props<Item extends UserGroupItem> {
+    item: Item;
+    onChange: (item: Item) => void;
     onMenuClose: () => void;
 }
 
-function UserGroupContextMenuItem({ item, onChange, onMenuClose }: Props): JSX.Element {
+function UserGroupContextMenuItem<Item extends UserGroupItem>({ item, onChange, onMenuClose }: Props<Item>): JSX.Element {
     const [dialogOpen, setDialogOpen] = useState(false);
 
     interface FormValues {

@@ -46,13 +46,11 @@ const branchOptions: Array<{ label: ReactNode; value: GQLBrevoContactBranch }> =
     },
 ];
 
-interface AdditionalFormConfigInputProps extends EditBrevoContactFormValues {
-    attributes: {
-        BRANCH?: Array<GQLBrevoContactBranch>;
-        SALUTATION?: GQLBrevoContactSalutation;
-        FIRSTNAME?: string;
-        LASTNAME?: string;
-    };
+interface BrevoContactAttributes {
+    BRANCH?: Array<GQLBrevoContactBranch>;
+    SALUTATION?: GQLBrevoContactSalutation;
+    FIRSTNAME?: string;
+    LASTNAME?: string;
 }
 
 export interface BrevoContactConfig {
@@ -62,11 +60,10 @@ export interface BrevoContactConfig {
         fragment: DocumentNode;
         name: string;
     };
-    input2State: (values?: AdditionalFormConfigInputProps) => {
-        attributes: { BRANCH?: Array<GQLBrevoContactBranch>; SALUTATION?: GQLBrevoContactSalutation; FIRSTNAME?: string; LASTNAME?: string };
-    };
+    input2State: (values?: EditBrevoContactFormValues) => { attributes: BrevoContactAttributes };
     exportFields: {
-        renderValue: (row: GQLBrevoContactAttributesFragment) => string;
+        // Rows are typed as an open record by @dextinity/brevo-admin, as it cannot know the project's contact attributes.
+        renderValue: (row: Record<string, unknown>) => string;
         headerName: string;
     }[];
 }
@@ -131,13 +128,14 @@ export const getBrevoContactConfig = (intl: IntlShape): BrevoContactConfig => {
                 />
             </>
         ),
-        input2State: (values?: AdditionalFormConfigInputProps) => {
+        input2State: (values) => {
+            const attributes = (values as { attributes?: BrevoContactAttributes } | undefined)?.attributes;
             return {
                 attributes: {
-                    BRANCH: values?.attributes?.BRANCH ?? [],
-                    SALUTATION: values?.attributes?.SALUTATION,
-                    FIRSTNAME: values?.attributes?.FIRSTNAME,
-                    LASTNAME: values?.attributes?.LASTNAME,
+                    BRANCH: attributes?.BRANCH ?? [],
+                    SALUTATION: attributes?.SALUTATION,
+                    FIRSTNAME: attributes?.FIRSTNAME,
+                    LASTNAME: attributes?.LASTNAME,
                 },
             };
         },
@@ -147,11 +145,11 @@ export const getBrevoContactConfig = (intl: IntlShape): BrevoContactConfig => {
         },
         exportFields: [
             {
-                renderValue: (row: GQLBrevoContactAttributesFragment) => row.attributes?.FIRSTNAME,
+                renderValue: (row) => (row as GQLBrevoContactAttributesFragment).attributes?.FIRSTNAME,
                 headerName: intl.formatMessage({ id: "brevoContact.firstName", defaultMessage: "First name" }),
             },
             {
-                renderValue: (row: GQLBrevoContactAttributesFragment) => row.attributes?.LASTNAME,
+                renderValue: (row) => (row as GQLBrevoContactAttributesFragment).attributes?.LASTNAME,
                 headerName: intl.formatMessage({ id: "brevoContact.lastName", defaultMessage: "Last name" }),
             },
         ],

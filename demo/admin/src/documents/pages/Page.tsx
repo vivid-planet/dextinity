@@ -66,9 +66,10 @@ export const Page: DocumentInterface<Pick<GQLPage, "content" | "seo">, GQLPageIn
             }
         }
     `,
-    InfoTag: ({ page }: InfoTagProps<GQLPageTreeNodeAdditionalFieldsFragment>) => {
-        if (page.userGroup !== "all") {
-            return <Chip size="small" label={page.userGroup} />;
+    InfoTag: ({ page }: InfoTagProps) => {
+        const { userGroup } = page as InfoTagProps<GQLPageTreeNodeAdditionalFieldsFragment>["page"];
+        if (userGroup !== "all") {
+            return <Chip size="small" label={userGroup} />;
         }
         return null;
     },

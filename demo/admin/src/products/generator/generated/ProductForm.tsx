@@ -220,8 +220,8 @@ export function ProductForm({ initialValues: passedInitialValues, onCreate, manu
                                 fullWidth
                                 name="title"
                                 label={<FormattedMessage id="product.title" defaultMessage="Title" />}
-                                validate={(value: string) =>
-                                    value.length < 3 ? (
+                                validate={(value: unknown) =>
+                                    typeof value === "string" && value.length < 3 ? (
                                         <FormattedMessage
                                             id="product.validate.titleMustBe3CharsLog"
                                             defaultMessage="Title must be at least 3 characters long"
@@ -236,10 +236,10 @@ export function ProductForm({ initialValues: passedInitialValues, onCreate, manu
                                 fullWidth
                                 name="slug"
                                 label={<FormattedMessage id="product.slug" defaultMessage="Slug" />}
-                                validate={(value: string) => {
+                                validate={(value: unknown) => {
                                     // eslint-disable-next-line no-console
                                     console.log(manufacturerCountry);
-                                    return validateProductSlug({ value, id, client });
+                                    return validateProductSlug({ value: value as string, id, client });
                                 }}
                             />
 

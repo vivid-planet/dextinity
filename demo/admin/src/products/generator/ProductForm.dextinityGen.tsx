@@ -27,8 +27,8 @@ export default defineConfig<GQLProduct>({
                     label: "Title", // default is generated from name (camelCaseToHumanReadable)
                     required: true, // default is inferred from gql schema
                     initialValue: "New Product",
-                    validate: (value: string) =>
-                        value.length < 3 ? (
+                    validate: (value: unknown) =>
+                        typeof value === "string" && value.length < 3 ? (
                             <FormattedMessage id="product.validate.titleMustBe3CharsLog" defaultMessage="Title must be at least 3 characters long" />
                         ) : undefined,
                 },
@@ -36,11 +36,11 @@ export default defineConfig<GQLProduct>({
                     type: "text",
                     name: "slug",
                     validate: injectFormVariables(
-                        ({ id, client, manufacturerCountry }: InjectedFormVariables & { manufacturerCountry: string }) =>
-                            (value: string) => {
+                        ({ id, client, manufacturerCountry }: InjectedFormVariables & { manufacturerCountry?: string }) =>
+                            (value: unknown) => {
                                 // eslint-disable-next-line no-console
                                 console.log(manufacturerCountry);
-                                return validateProductSlug({ value, id, client });
+                                return validateProductSlug({ value: value as string, id, client });
                             },
                     ),
                 },

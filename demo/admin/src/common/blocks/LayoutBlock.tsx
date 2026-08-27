@@ -121,7 +121,7 @@ export const LayoutBlock = createCompositeBlock(
     {
         name: "Layout",
         displayName: <FormattedMessage id="layoutBlock.displayName" defaultMessage="Layout" />,
-        visibleOrderedBlocksForState: (state: LayoutBlockData) => layoutOptions.find((option) => option.name === state.layout)?.visibleBlocks,
+        visibleOrderedBlocksForState: (state) => layoutOptions.find((option) => option.name === (state as LayoutBlockData).layout)?.visibleBlocks,
         blocks: {
             layout: {
                 block: createCompositeBlockField<LayoutBlockData["layout"]>({

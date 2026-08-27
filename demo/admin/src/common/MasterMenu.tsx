@@ -111,17 +111,19 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             })),
             route: {
                 path: "/pages/pagetree/:category",
-                render: ({ match }: RouteComponentProps<{ category: string }>) => {
-                    const category = urlParamToCategory(match.params.category);
+                render: ({ match }: RouteComponentProps<{ category?: string }>) => {
+                    const { category: categoryParam } = match.params;
+                    const category = categoryParam === undefined ? undefined : urlParamToCategory(categoryParam);
 
-                    if (category === undefined) {
+                    if (categoryParam === undefined || category === undefined) {
                         return <Redirect to={`${match.url}/dashboard`} />;
                     }
 
                     return (
                         <PagesPage
-                            path={`/pages/pagetree/${match.params.category}`}
-                            documentTypes={(category): Record<DocumentType, DocumentInterface> => {
+                            path={`/pages/pagetree/${categoryParam}`}
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            documentTypes={(category): Record<DocumentType, DocumentInterface<any, any>> => {
                                 if (category === "TopMenu") {
                                     return {
                                         Page,

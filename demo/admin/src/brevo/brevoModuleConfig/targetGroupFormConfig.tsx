@@ -44,20 +44,19 @@ const additionalPageTreeNodeFieldsFragment = {
     name: "TargetGroupFilters",
 };
 
-interface AdditionalFormConfigInputProps extends EditTargetGroupFinalFormValues {
-    filters: {
-        SALUTATION: Array<GQLBrevoContactSalutation>;
-        BRANCH: Array<GQLBrevoContactBranch>;
-    };
+interface TargetGroupFilters {
+    SALUTATION: Array<GQLBrevoContactSalutation>;
+    BRANCH: Array<GQLBrevoContactBranch>;
 }
 
 export const additionalFormConfig = {
-    input2State: (values?: AdditionalFormConfigInputProps) => {
+    input2State: (values?: EditTargetGroupFinalFormValues) => {
+        const filters = (values as { filters?: TargetGroupFilters } | undefined)?.filters;
         return {
             title: values?.title ?? "",
             filters: {
-                SALUTATION: values?.filters?.SALUTATION ?? [],
-                BRANCH: values?.filters?.BRANCH ?? [],
+                SALUTATION: filters?.SALUTATION ?? [],
+                BRANCH: filters?.BRANCH ?? [],
             },
         };
     },

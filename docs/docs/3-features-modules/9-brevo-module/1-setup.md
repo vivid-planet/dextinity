@@ -4,14 +4,6 @@ title: Brevo Setup
 
 # Setup
 
-:::caution
-This documentation refers to Brevo Module v10.
-The Brevo packages live in the [dextinity](https://github.com/vivid-planet/dextinity) monorepo and are versioned together with the Dextinity core packages.
-Therefore, they always require the same major version of all other `@dextinity/*` packages.
-If you are coming from an older version, see the [Brevo migration guides](./3-migration-guide/index.md).
-Note that the packages moved from the `@comet` to the `@dextinity` scope in v10, see [Migrating from v9 to v10](../../7-migration-guide/migration-from-v9-to-v10.md).
-:::
-
 The Brevo Module provides two packages: `@dextinity/brevo-api` and `@dextinity/brevo-admin`. Please check the [latest Dextinity release](https://github.com/vivid-planet/dextinity/releases).
 
 Email campaigns are not rendered by the Brevo Module itself. Their content is rendered by your site, which the API requests before the campaign is sent to Brevo, see [Email Rendering](#email-rendering). We recommend [`@dextinity/mail-react`](../13-building-html-emails/index.md) for building the markup. Double opt-in mails are not affected: they are rendered by Brevo from a Brevo template.

@@ -1240,3 +1240,113 @@ export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
         });
     },
 };
+
+const InlineStylesAsButtonsBlock = createTipTapRichTextBlock({
+    supports: ["heading", "sub", "sup"],
+    inlineStyles: [
+        {
+            name: "highlight",
+            label: "Highlight",
+            icon: RteHighlight,
+            element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
+        },
+    ],
+});
+
+function InlineStylesAsButtonsStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(InlineStylesAsButtonsBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <InlineStylesAsButtonsBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const InlineStylesAsButtons: StoryObj<typeof InlineStylesAsButtonsStory> = {
+    render: () => <InlineStylesAsButtonsStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step(
+            "Without bold/italic/underline/strike buttons, superscript/subscript/inline styles render as their own toolbar buttons instead of a 'More options' menu",
+            async () => {
+                await waitFor(
+                    () => {
+                        expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                    },
+                    { timeout: 5000 },
+                );
+
+                expect(canvas.queryByRole("button", { name: "More options" })).not.toBeInTheDocument();
+                expect(canvas.getAllByRole("button")).toHaveLength(3);
+            },
+        );
+
+        const [superscriptButton, subscriptButton, highlightButton] = canvas.getAllByRole("button");
+
+        await step("Highlight button is disabled while the selection is empty", async () => {
+            expect(highlightButton).toBeDisabled();
+        });
+
+        await step("Type text and select it", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("hello");
+
+            await waitFor(
+                () => {
+                    expect(editor).toHaveTextContent("hello");
+                },
+                { timeout: 3000 },
+            );
+
+            // userEvent's Shift+Home isn't supported in contenteditable; use the native Selection API.
+            const range = document.createRange();
+            range.selectNodeContents(editor);
+            const selection = window.getSelection();
+            selection?.removeAllRanges();
+            selection?.addRange(range);
+
+            await waitFor(() => {
+                expect(highlightButton).toBeEnabled();
+            });
+        });
+
+        await step("Toggle superscript directly from the toolbar button", async () => {
+            await userEvent.click(superscriptButton);
+            await waitFor(() => {
+                expect(document.querySelector("sup")).toHaveTextContent("hello");
+            });
+
+            await userEvent.click(superscriptButton);
+            await waitFor(() => {
+                expect(document.querySelector("sup")).toBeNull();
+            });
+        });
+
+        await step("Toggle subscript directly from the toolbar button", async () => {
+            await userEvent.click(subscriptButton);
+            await waitFor(() => {
+                expect(document.querySelector("sub")).toHaveTextContent("hello");
+            });
+
+            await userEvent.click(subscriptButton);
+            await waitFor(() => {
+                expect(document.querySelector("sub")).toBeNull();
+            });
+        });
+
+        await step("Toggle the 'Highlight' inline style directly from the toolbar button", async () => {
+            await userEvent.click(highlightButton);
+            await waitFor(() => {
+                const styledEl = document.querySelector('[data-inline-style="highlight"]');
+                expect(styledEl).toBeTruthy();
+                expect(styledEl).toHaveTextContent("hello");
+            });
+
+            await userEvent.click(highlightButton);
+            await waitFor(() => {
+                expect(document.querySelector("[data-inline-style]")).toBeNull();
+            });
+        });
+    },
+};

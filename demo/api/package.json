@@ -1,6 +1,5 @@
 {
     "name": "dextinity-demo-api",
-    "version": "1.0.0",
     "private": true,
     "description": "Dextinity API Demo Application",
     "type": "commonjs",

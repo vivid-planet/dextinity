@@ -1,6 +1,5 @@
 {
     "name": "dextinity-demo-admin-server",
-    "version": "1.0.2",
     "private": true,
     "description": "Dextinity Admin Demo Server Application",
     "type": "commonjs",

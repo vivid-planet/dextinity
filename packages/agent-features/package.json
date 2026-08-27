@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/agent-features",
-    "version": "10.0.0-beta.0",
+    "version": "10.2.0",
     "description": "Agent features (skills and rules) for Dextinity projects",
     "repository": {
         "directory": "packages/agent-features",
@@ -8,10 +8,15 @@
         "url": "https://github.com/vivid-planet/dextinity"
     },
     "license": "BSD-2-Clause",
+    "type": "module",
     "files": [
         "skills/**",
         "rules/**"
     ],
+    "scripts": {
+        "build": "node build.ts",
+        "clean": "node build.ts --clean"
+    },
     "publishConfig": {
         "access": "public",
         "registry": "https://registry.npmjs.org"

@@ -1,5 +1,104 @@
 # @comet/cms-admin
 
+## 10.2.0
+
+### Minor Changes
+
+- 7f9e1f7: Add `createDamVideoBlock` factory
+
+    The factory allows restricting what the editor can set on a video, for sites that don't use all of it.
+    Pass what the site supports via `supports` — anything left out isn't shown in the block's admin component anymore.
+    Values that are already stored stay untouched, the editor just can't change them anymore.
+    The preview image remains part of the block's data in any case, leaving it out only hides it from the editor.
+
+    `supports` takes `"controls"` (the playback options autoplay, loop and show controls, offered together since autoplay and show controls depend on each other) and `"previewImage"` (the poster image).
+
+    `DamVideoBlock` is now created with the factory and is still exported, so nothing needs to be changed in existing applications.
+
+    **Example**
+
+    A site that renders no poster image:
+
+    ```tsx
+    import { createDamVideoBlock } from "@dextinity/cms-admin";
+
+    export const DamVideoBlock = createDamVideoBlock({ supports: ["controls"] });
+    ```
+
+    A site that only reads the video file's URL, so the editor is left with just the file to choose:
+
+    ```tsx
+    export const DamVideoBlock = createDamVideoBlock({ supports: [] });
+    ```
+
+- edf2027: Allow restricting selectable heading levels in the TipTap rich text block via a new `headingLevels` option
+
+    `createTipTapRichTextBlock` accepts a new `headingLevels?: number[]` option to limit which heading levels (1-6) are selectable. Defaults to `[1, 2, 3, 4, 5, 6]`, so existing usages are unaffected. Must be a non-empty array of unique integers between 1 and 6, otherwise an error is thrown.
+
+    ```tsx
+    createTipTapRichTextBlock({
+        supports: ["heading"],
+        headingLevels: [2, 3, 4],
+    });
+    ```
+
+### Patch Changes
+
+- 30fad2a: Make the TipTap rich text block's toolbar sticky
+
+    The toolbar now stays fixed at the top of the editor while scrolling through longer text content, matching the previous Draft.js-based rich text editor's behavior.
+    - @dextinity/admin@10.2.0
+    - @dextinity/admin-date-time@10.2.0
+    - @dextinity/admin-icons@10.2.0
+    - @dextinity/admin-rte@10.2.0
+
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/admin@10.1.0
+- @dextinity/admin-date-time@10.1.0
+- @dextinity/admin-icons@10.1.0
+- @dextinity/admin-rte@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- Updated dependencies [48748b0]
+    - @dextinity/admin@10.0.1
+    - @dextinity/admin-date-time@10.0.1
+    - @dextinity/admin-rte@10.0.1
+    - @dextinity/admin-icons@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/cms-admin` to `@dextinity/cms-admin`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename `CometConfigProvider` to `DextinityConfigProvider`, `useCometConfig` to `useDextinityConfig` and the `CometConfig` type to `DextinityConfig`. By convention, the project's `comet-config.json` is renamed to `dextinity-config.json`
+    - Rename the `cometType` property of iframe messages to `dextinityType`. The site must use a matching `@dextinity/site-react` or `@dextinity/site-nextjs` version
+    - Rename the site preview cookie from `__comet_site_preview` to `__dextinity_site_preview` and the impersonation cookie from `comet-impersonate-user-id` to `dextinity-impersonate-user-id`
+    - Expect the renamed `DextinityImageResolutionException` and `DextinityValidationException` error codes in DAM file uploads. A matching `@dextinity/cms-api` version is required
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme` and the generated CSS class names
+    - Rename the CSS variables from `--comet-admin-*` to `--dextinity-admin-*`
+    - Replace the Comet logo in the header, the about modal and the site preview with the Dextinity logo
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+    - @dextinity/admin-date-time@10.0.0
+    - @dextinity/admin-icons@10.0.0
+    - @dextinity/admin-rte@10.0.0
+    - @dextinity/admin@10.0.0
+
 ## 10.0.0-beta.0
 
 ### Major Changes

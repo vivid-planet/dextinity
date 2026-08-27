@@ -1,5 +1,51 @@
 # @comet/admin
 
+## 10.2.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.2.0
+
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- 48748b0: Show the GraphQL error messages in the error dialog again
+
+    `createErrorDialogApolloLink` only passed the message of network errors to the `ErrorDialog`.
+    For GraphQL errors, the dialog showed "Unknown error" instead of the actual messages (e.g., the message of a `BadRequestException` thrown by the API).
+    - @dextinity/admin-icons@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin` to `@dextinity/admin`
+
+    Update the dependency in `package.json` and all imports:
+
+    ```diff
+    - import { MainContent } from "@comet/admin";
+    + import { MainContent } from "@dextinity/admin";
+    ```
+
+    **Breaking changes**
+    - Rename `createCometTheme` to `createDextinityTheme`
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme`, the `name` passed to `useThemeProps` in custom components and the generated CSS class names (`.CometAdminClearInputAdornment-root` -> `.DextinityAdminClearInputAdornment-root`)
+    - Rename the CSS variables from `--comet-admin-*` to `--dextinity-admin-*`, for instance, `--comet-admin-master-layout-content-top-spacing` -> `--dextinity-admin-master-layout-content-top-spacing`
+    - Remove the `CometLogo` component. Use `DextinityLogo` from `@dextinity/admin-icons` instead
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+    - @dextinity/admin-icons@10.0.0
+
 ## 10.0.0-beta.0
 
 ### Major Changes

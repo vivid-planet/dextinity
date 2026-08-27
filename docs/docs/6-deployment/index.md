@@ -38,8 +38,8 @@ It's important to note that deploying without Kubernetes comes with its own set 
 
 #### Serverless
 
-Serverless container platforms are a good option for those who want to deploy Dextinity applications without the complexity of Kubernetes. They are usually cheaper than Kubernetes and provide automatic scaling. An example deployment for the Digital Ocean App Platform can be found [here](https://github.com/vivid-planet/comet-starter/tree/main/.digitalocean).
+Serverless container platforms are a good option for those who want to deploy Dextinity applications without the complexity of Kubernetes. They are usually cheaper than Kubernetes and provide automatic scaling. An example deployment for the Digital Ocean App Platform can be found [here](https://github.com/vivid-planet/dextinity-starter/tree/main/.digitalocean).
 
 #### Docker Compose
 
-For those with budget constraints, [Docker Compose](https://docs.docker.com/compose/) can be a viable option for deploying Dextinity applications. An example deployment can be found [here](https://github.com/vivid-planet/comet-starter/tree/main/.docker-compose). The deployment only requires Docker to be installed on a server and leverages the power of [Traefik](https://doc.traefik.io/traefik/) to manage the ingress traffic (including SSL certificates).
+For those with budget constraints, [Docker Compose](https://docs.docker.com/compose/) can be a viable option for deploying Dextinity applications. An example deployment can be found [here](https://github.com/vivid-planet/dextinity-starter/tree/main/.docker-compose). The deployment only requires Docker to be installed on a server and leverages the power of [Traefik](https://doc.traefik.io/traefik/) to manage the ingress traffic (including SSL certificates).

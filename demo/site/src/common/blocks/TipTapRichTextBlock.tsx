@@ -5,7 +5,6 @@ import {
     type PropsWithData,
     renderTipTapRichText,
     type TipTapMarkHandler,
-    type TipTapNode,
     type TipTapNodeHandler,
     withPreview,
 } from "@dextinity/site-nextjs";
@@ -88,7 +87,7 @@ interface TipTapRichTextBlockProps extends PropsWithData<TipTapRichTextBlockData
 
 export const TipTapRichTextBlock = withPreview(
     ({ data, disableLastBottomSpacing }: TipTapRichTextBlockProps) => {
-        const content = data.tipTapContent as TipTapNode;
+        const content = data.tipTapContent;
         const rendered = renderTipTapRichText({ content, nodeMapping, markMapping });
 
         return (

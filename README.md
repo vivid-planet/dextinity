@@ -1,8 +1,8 @@
-# Comet DXP
+# Dextinity
 
-![npm (scoped with tag)](https://img.shields.io/npm/v/%40comet/admin/latest)
-![npm (scoped with tag)](https://img.shields.io/npm/v/%40comet/admin/canary)
-![npm (scoped with tag)](https://img.shields.io/npm/v/%40comet/admin/next-canary)
+![npm (scoped with tag)](https://img.shields.io/npm/v/%40dextinity/admin/latest)
+![npm (scoped with tag)](https://img.shields.io/npm/v/%40dextinity/admin/canary)
+![npm (scoped with tag)](https://img.shields.io/npm/v/%40dextinity/admin/next-canary)
 
 ![main](https://github.com/vivid-planet/dextinity/actions/workflows/lint.yml/badge.svg?branch=main)
 ![next](https://github.com/vivid-planet/dextinity/actions/workflows/lint.yml/badge.svg?branch=next)
@@ -11,9 +11,9 @@
 
 Visit https://cms-docs.dextinity.com/ to view the documentation.
 
-## Create a new Comet DXP project
+## Create a new Dextinity project
 
-Use `@comet/create-app` to create a new Comet DXP project. More information can be found in the [docs](https://cms-docs.dextinity.com/docs/getting-started/).
+Use `@dextinity/create-app` to create a new Dextinity project. More information can be found in the [docs](https://cms-docs.dextinity.com/docs/getting-started/).
 
 ## Development
 
@@ -49,7 +49,7 @@ MUI_LICENSE_KEY=your_license_key_here
 
 ### Build packages
 
-Before starting individual development processes, build all Comet packages at least once.
+Before starting individual development processes, build all Dextinity packages at least once.
 
 ```bash
 pnpm run build:packages
@@ -176,7 +176,7 @@ See [package.json](/package.json) for a list of all available dev scripts.
 
 ### Setup
 
-Configure `wml` to sync the comet `node_modules` to the external project:
+Configure `wml` to sync the Dextinity `node_modules` to the external project:
 
 ```bash
 ./wml-add.sh /path/to/my-project
@@ -188,7 +188,7 @@ It may be necessary to configure `watchman` to watch your globally installed `wm
 watchman watch $(dirname "$(dirname "$(which node)")")/lib/node_modules/wml/src
 ```
 
-Start syncing the comet `node_modules` to the external project:
+Start syncing the Dextinity `node_modules` to the external project:
 
 ```bash
 wml start

@@ -5,7 +5,7 @@
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity"
     },
-    "description": "Comet Monorepo",
+    "description": "Dextinity Monorepo",
     "license": "BSD-2-Clause",
     "scripts": {
         "create-site-configs-env": "dotenv -e .env.secrets -e .env.local -e .env -- pnpm exec dextinity inject-site-configs -f demo/site-configs/site-configs.ts -i demo/.env.site-configs.tpl -o demo/.env.site-configs --base64",

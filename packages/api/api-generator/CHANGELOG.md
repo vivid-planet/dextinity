@@ -1,5 +1,49 @@
 # @comet/api-generator
 
+## 10.2.0
+
+### Patch Changes
+
+- Updated dependencies [a4ec0fe]
+- Updated dependencies [edf2027]
+    - @dextinity/cms-api@10.2.0
+
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/cms-api@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- @dextinity/cms-api@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/api-generator` to `@dextinity/api-generator`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the `comet-api-generator` binary to `dextinity-api-generator`:
+
+        ```diff
+        - "generate-crud": "comet-api-generator"
+        + "generate-crud": "dextinity-api-generator"
+        ```
+
+    - Change the header of generated files. Rerun the generator to update them
+
+### Patch Changes
+
+- Updated dependencies [86f90cb]
+- Updated dependencies [f843a5e]
+    - @dextinity/cms-api@10.0.0
+
 ## 10.0.0-beta.0
 
 ### Major Changes

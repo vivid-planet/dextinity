@@ -1,5 +1,44 @@
 # @comet/brevo-api
 
+## 10.2.0
+
+### Patch Changes
+
+- Updated dependencies [a4ec0fe]
+- Updated dependencies [edf2027]
+    - @dextinity/cms-api@10.2.0
+
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/cms-api@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- @dextinity/cms-api@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/brevo-api` to `@dextinity/brevo-api`
+
+    Update the dependency in `package.json` and all imports:
+
+    ```diff
+    - import { BrevoModule } from "@comet/brevo-api";
+    + import { BrevoModule } from "@dextinity/brevo-api";
+    ```
+
+### Patch Changes
+
+- Updated dependencies [86f90cb]
+- Updated dependencies [f843a5e]
+    - @dextinity/cms-api@10.0.0
+
 ## 10.0.0-beta.0
 
 ### Major Changes

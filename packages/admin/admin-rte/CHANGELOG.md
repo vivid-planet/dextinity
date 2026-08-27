@@ -1,5 +1,46 @@
 # @comet/admin-rte
 
+## 10.2.0
+
+### Patch Changes
+
+- @dextinity/admin@10.2.0
+- @dextinity/admin-icons@10.2.0
+
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/admin@10.1.0
+- @dextinity/admin-icons@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- Updated dependencies [48748b0]
+    - @dextinity/admin@10.0.1
+    - @dextinity/admin-icons@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin-rte` to `@dextinity/admin-rte`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme` and the generated CSS class names
+    - Rename the `--comet-admin-rte-outer-border-color` CSS variable to `--dextinity-admin-rte-outer-border-color`
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+    - @dextinity/admin-icons@10.0.0
+    - @dextinity/admin@10.0.0
+
 ## 10.0.0-beta.0
 
 ### Major Changes

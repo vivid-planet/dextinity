@@ -1,4 +1,5 @@
 import { type Extensions, getSchema, type JSONContent } from "@tiptap/core";
+import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
@@ -33,7 +34,7 @@ import { TextBlockStyleHeading } from "./extensions/TextBlockStyleHeading";
 import { TextBlockStyleParagraph } from "./extensions/TextBlockStyleParagraph";
 import { buildDraftJsToTipTapMigration } from "./migrations/buildDraftJsToTipTapMigration";
 import type { TextBlockStyleMapping } from "./migrations/convertDraftJsToTipTap";
-import { getListNestingDepth } from "./tipTapValidation";
+import { containsInvalidHeadingLevel, getListNestingDepth } from "./tipTapValidation";
 
 export type TipTapSupports =
     | "bold"
@@ -88,6 +89,16 @@ interface TipTapInlineStyle {
     appliesTo?: TipTapTextBlockType[];
 }
 
+const allHeadingLevels: HeadingLevel[] = [1, 2, 3, 4, 5, 6];
+
+function isValidHeadingLevels(headingLevels: number[]): headingLevels is HeadingLevel[] {
+    return (
+        headingLevels.length > 0 &&
+        new Set(headingLevels).size === headingLevels.length &&
+        headingLevels.every((level) => Number.isInteger(level) && level >= 1 && level <= 6)
+    );
+}
+
 const defaultSupports: TipTapSupports[] = [
     "bold",
     "italic",
@@ -135,6 +146,12 @@ export interface CreateTipTapRichTextBlockOptions {
      */
     listLevelMax?: number;
     /**
+     * Limits the selectable heading levels (1-6). Defaults to all levels ([1, 2, 3, 4, 5, 6]).
+     * Must be a non-empty array of unique integers between 1 and 6, otherwise an error is thrown.
+     * Content with a heading level outside this set will be rejected during validation.
+     */
+    headingLevels?: number[];
+    /**
      * Enables best-effort migration of DraftJS-based RichTextBlock data
      * (`{ draftContent: { blocks, entityMap } }`) into TipTap data.
      *
@@ -161,6 +178,7 @@ function buildExtensions(
     hasLink: boolean,
     hasBlockChildBlocks: boolean,
     hasInlineChildBlocks: boolean,
+    headingLevels: HeadingLevel[],
 ): Extensions {
     const hasTextBlockStyles = textBlockStyles.length > 0;
     const hasInlineStyles = inlineStyles.length > 0;
@@ -171,7 +189,7 @@ function buildExtensions(
             italic: supports.includes("italic") ? {} : false,
             underline: supports.includes("underline") ? {} : false,
             strike: supports.includes("strike") ? {} : false,
-            heading: supports.includes("heading") ? (hasTextBlockStyles ? false : {}) : false,
+            heading: supports.includes("heading") ? (hasTextBlockStyles ? false : { levels: headingLevels }) : false,
             paragraph: hasTextBlockStyles ? false : undefined,
             orderedList: supports.includes("ordered-list") ? {} : false,
             bulletList: supports.includes("unordered-list") ? {} : false,
@@ -181,7 +199,7 @@ function buildExtensions(
             link: false,
         }),
         ...(hasTextBlockStyles ? [TextBlockStyleParagraph] : []),
-        ...(hasTextBlockStyles && supports.includes("heading") ? [TextBlockStyleHeading] : []),
+        ...(hasTextBlockStyles && supports.includes("heading") ? [TextBlockStyleHeading.configure({ levels: headingLevels })] : []),
         ...(hasInlineStyles ? [InlineStyleMark] : []),
         ...(supports.includes("sup") ? [Superscript] : []),
         ...(supports.includes("sub") ? [Subscript] : []),
@@ -372,6 +390,7 @@ function IsTipTapContent(
         maxTextBlocks,
         allowedPlaceholderNames,
         listLevelMax,
+        headingLevels,
     }: {
         inlineStyles: TipTapInlineStyle[];
         linkBlock?: Block;
@@ -379,6 +398,7 @@ function IsTipTapContent(
         maxTextBlocks?: number;
         allowedPlaceholderNames?: string[];
         listLevelMax?: number;
+        headingLevels: HeadingLevel[];
     },
     validationOptions?: ValidationOptions,
 ) {
@@ -421,6 +441,11 @@ function IsTipTapContent(
                             if (depth > listLevelMax) {
                                 return false;
                             }
+                        }
+
+                        // Enforce headingLevels restriction
+                        if (containsInvalidHeadingLevel(value as JSONContent, headingLevels)) {
+                            return false;
                         }
 
                         // Validate link mark data
@@ -515,6 +540,7 @@ export function createTipTapRichTextBlock(
         childBlocks: childBlocksConfig = {},
         maxTextBlocks,
         listLevelMax,
+        headingLevels = allHeadingLevels,
         migrateFromDraftJs = false,
     }: CreateTipTapRichTextBlockOptions = {},
     nameOrOptions: BlockFactoryNameOrOptions = "TipTapRichText",
@@ -522,13 +548,26 @@ export function createTipTapRichTextBlock(
     const blockName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
     const baseMigrate = typeof nameOrOptions !== "string" && nameOrOptions.migrate ? nameOrOptions.migrate : { migrations: [], version: 0 };
 
+    if (!isValidHeadingLevels(headingLevels)) {
+        throw new Error("headingLevels must be a non-empty array of unique integers between 1 and 6");
+    }
+
     const hasLink = !!LinkBlock;
     const childBlocks: Record<string, Block> = Object.fromEntries(Object.entries(childBlocksConfig).map(([key, { block }]) => [key, block]));
     const childBlockConfigs = Object.values(childBlocksConfig);
     const hasChildBlocks = childBlockConfigs.length > 0;
     const hasBlockChildBlocks = childBlockConfigs.some(({ display }) => display === "block");
     const hasInlineChildBlocks = childBlockConfigs.some(({ display }) => display === "inline");
-    const extensions = buildExtensions(supports, textBlockStyles, inlineStyles, placeholders, hasLink, hasBlockChildBlocks, hasInlineChildBlocks);
+    const extensions = buildExtensions(
+        supports,
+        textBlockStyles,
+        inlineStyles,
+        placeholders,
+        hasLink,
+        hasBlockChildBlocks,
+        hasInlineChildBlocks,
+        headingLevels,
+    );
     const schema = getSchema(extensions);
 
     const draftJsTextBlockStyleMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.textBlockStyleMap : undefined;
@@ -555,6 +594,7 @@ export function createTipTapRichTextBlock(
                       link: LinkBlock,
                       maxTextBlocks,
                       listLevelMax,
+                      headingLevels,
                       textBlockStyleMap: draftJsTextBlockStyleMap,
                       inlineStyleMap: draftJsInlineStyleMap,
                   }),
@@ -624,6 +664,7 @@ export function createTipTapRichTextBlock(
             maxTextBlocks,
             allowedPlaceholderNames,
             listLevelMax,
+            headingLevels,
         })
         @BlockField({ type: "tipTapRichTextBlock", childBlocks })
         tipTapContent: JSONContent;

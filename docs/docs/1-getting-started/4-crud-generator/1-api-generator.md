@@ -25,14 +25,14 @@ decorator. The usage of both decorators is the same.
 
 ### `@CrudGenerator()` options
 
-| Parameter            | Type                          | Default     | Description                                                                           |
-| -------------------- | ----------------------------- | ----------- | ------------------------------------------------------------------------------------- |
-| `requiredPermission` | `string[] \| string`          | Required    | Permission(s) required to access the CRUD operations.                                 |
-| `create`             | `boolean`                     | `true`      | If `true`, includes the "create" operation.                                           |
-| `update`             | `boolean`                     | `true`      | If `true`, includes the "update" operation.                                           |
-| `delete`             | `boolean`                     | `true`      | If `true`, includes the "delete" operation.                                           |
-| `list`               | `boolean`                     | `true`      | If `true`, includes the "list" operation.                                             |
-| `position`           | `object`                      | `undefined` | Configures the optional [magic `position` field](#position).                          |
+| Parameter            | Type                                           | Default     | Description                                                                                                          |
+| -------------------- | ---------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------- |
+| `requiredPermission` | `string[] \| string`                           | Required    | Permission(s) required to access the CRUD operations.                                                                |
+| `create`             | `boolean`                                      | `true`      | If `true`, includes the "create" operation.                                                                          |
+| `update`             | `boolean`                                      | `true`      | If `true`, includes the "update" operation.                                                                          |
+| `delete`             | `boolean`                                      | `true`      | If `true`, includes the "delete" operation.                                                                          |
+| `list`               | `boolean`                                      | `true`      | If `true`, includes the "list" operation.                                                                            |
+| `position`           | `object`                                       | `undefined` | Configures the optional [magic `position` field](#position).                                                         |
 | `hooksService`       | `class implementing CrudGeneratorHooksService` | `undefined` | An optional service class for injecting custom validation logic into mutations. See [Hooks Service](#hooks-service). |
 
 ## Annotate field
@@ -297,7 +297,10 @@ export class ProductMutationError implements MutationError {
 }
 
 export class ProductService implements CrudGeneratorHooksService {
-    async validateCreateInput(input: ProductInput, options: { currentUser: CurrentUser }): Promise<ProductMutationError[]> {
+    async validateCreateInput(
+        input: ProductInput,
+        options: { currentUser: CurrentUser },
+    ): Promise<ProductMutationError[]> {
         if (input.title.length < 3) {
             return [{ code: ProductMutationErrorCode.titleTooShort, field: "title" }];
         }
@@ -310,10 +313,10 @@ The API Generator inspects the hooks service using ts-morph at generation time t
 
 #### Available hooks and their options
 
-| Hook                  | Available options                                   | Description                                |
-| --------------------- | --------------------------------------------------- | ------------------------------------------ |
-| `validateCreateInput` | `currentUser`, `scope` (if entity has scope), `args` (for each dedicated resolver arg) | Called before a new entity is persisted.  |
-| `validateUpdateInput` | `currentUser`, `entity` (the existing entity)       | Called before an existing entity is updated. |
+| Hook                  | Available options                                                                      | Description                                  |
+| --------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `validateCreateInput` | `currentUser`, `scope` (if entity has scope), `args` (for each dedicated resolver arg) | Called before a new entity is persisted.     |
+| `validateUpdateInput` | `currentUser`, `entity` (the existing entity)                                          | Called before an existing entity is updated. |
 
 Each hook returns `Promise<MutationError[]>`. Return an empty array when validation passes.
 
@@ -386,7 +389,7 @@ renamed:    demo/api/src/products/generated/dto/product.sort.ts         -> demo/
 3. Remove the comments at the start of each generated file
 
 ```diff
-- // This file has been generated by comet api-generator.
+- // This file has been generated by Dextinity API Generator.
 - // You may choose to use this file as scaffold by moving this file out of generated folder and removing this comment.
 
 // ...

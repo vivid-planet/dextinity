@@ -121,6 +121,14 @@ Always use `theme.breakpoints.*.belowMediaQuery` inside `registerStyles` instead
 
 → For the full `registerStyles` API, `css` helper, and custom component patterns, read [`references/styling-and-customization.md`](references/styling-and-customization.md).
 
+### Switching Content by Breakpoint
+
+Sometimes you cannot make both views from the same HTML, because the mobile view needs a different structure than the desktop view. Then put both layouts in the email and hide one of them: inline styles hide the mobile layout, and a media query in `registerStyles` switches the two.
+
+Two layouts make twice as much markup, so first try to make one layout that works at each width. Columns already stack on mobile.
+
+→ For the hiding styles, the extra step classic Outlook needs, and what to avoid, read [`references/layout-patterns.md`](references/layout-patterns.md) → Breakpoint Content Switch.
+
 ---
 
 ## Common Pitfalls
@@ -157,7 +165,7 @@ Outlook ignores `background-image` entirely. Use a VML-based workaround for Outl
 
 ### No CSS `border-radius` in Outlook
 
-Outlook ignores `border-radius` — rounded corners render as sharp rectangles. The workaround is VML `v:roundrect` in conditional comments (`<!--[if mso]>`). See [Bulletproof Buttons](https://www.buttons.cm/) and the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
+Outlook ignores `border-radius` — rounded corners render as sharp rectangles. `MjmlImage` and `HtmlImage` cover images: their `borderRadius` prop also renders a VML shape for Outlook, as long as `width` and `height` are given in pixels and the radius is given in pixels or as `"50%"`. Everything else, buttons included, needs the workaround by hand — VML `v:roundrect` in conditional comments (`<!--[if mso]>`). See [Bulletproof Buttons](https://www.buttons.cm/) and the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
 
 ---
 
@@ -451,10 +459,13 @@ Key behaviors:
     ```
 
 - **Lists** render as a table inside one text component, with a row per item, a marker cell and a text cell — the indent and the marker gap are cell padding, which is the only spacing Outlook on Windows applies reliably.
+- **A block type is a list when it declares a kind**: `{ variant: "copyLarge", list: "unordered" }`. `unordered-list-item` and `ordered-list-item` are draft-js's own list types, and they default to their kind. Every other block type is a paragraph unless it sets `list`. Use it for a list in a second text variant. A draft block has only one block type, so that list needs a custom block type. One `createRichTextBlock` call renders every variant. Two adjacent list block types render as two tables, and the numbered one starts again at `1.` Draft-js indents `unordered-list-item` and `ordered-list-item` only, so an editor cannot nest a custom list block type.
 - **List spacing** comes from the theme's `list.indent` (before the marker), `list.markerGap` (between the marker and the text) and `list.itemSpacing` (between items, and above a nested level's first item), all responsive and all applying to every list the block renders. To override it, register a rule scoped to a list's type, depth or variant modifier with `{ inline: true }`, which has MJML write the declaration into the cell's `style` attribute at compile time so it also reaches Outlook.
 - **List markers** come from the theme's `list.unorderedMarker` and `list.orderedMarker`, each either a fixed node (`unorderedMarker: "▪"`) or a function of the item's `index` and its list's `depth`.
 - Spacing between blocks comes from the theme's `bottomSpacing` (the last block gets none); headings are styled text, not semantic `<h1>` elements.
 - Rendered elements carry `richTextBlock__text`, `richTextBlock__list`, `richTextBlock__listItem`, `richTextBlock__listItemMarker`, `richTextBlock__listItemText`, and `richTextBlock__link` class names for targeting with `registerStyles`. The list table also carries `richTextBlock__list--ordered` or `richTextBlock__list--unordered`, and `richTextBlock__list--depth<Level>` naming its nesting level, counting the outermost as zero, with `richTextBlock__list--nested` on every level below that one. Only the outermost table names the text variant its items render with, such as `richTextBlock__list--variantBody`, and a rule scoped to that modifier applies to the nested levels as well. The rows carry `richTextBlock__listItem--itemSpacing`, or `richTextBlock__listItem--blockSpacing` on the last row when spacing follows the list, and `richTextBlock__listItem--itemSpacingAbove` on a nested level's first row, which carries the item spacing as `padding-top`. The cells restate the text styles inline, so a rule targeting list text needs `!important`.
+
+→ To register a custom list block type across the admin RTE and the mail block, read [`references/rich-text-list-block-types.md`](references/rich-text-list-block-types.md).
 
 ---
 
@@ -547,6 +558,8 @@ const { html, mjmlWarnings } = renderMailHtml(
 - **Client** (`@dextinity/mail-react/client`) — uses `mjml-browser`, works without `fs`
 - `renderMailHtml` is **not** on the main `@dextinity/mail-react` barrel — always import from `/server` or `/client`
 - Returns `{ html: string; mjmlWarnings: MjmlWarning[] }` — warnings are collected, not thrown
+- A framework that bundles server code (Next.js) must list `mjml` in the application's own `package.json` too, or rendering fails at runtime
+- Nothing imports it directly — add `mjml` to `ignoreDependencies` in `knip.json` rather than removing it as unused
 
 ### Logging MJML Warnings
 

@@ -1,5 +1,85 @@
 # @comet/cms-api
 
+## 10.2.0
+
+### Minor Changes
+
+- a4ec0fe: Make the DAM's scope-based access control optional
+
+    The DAM controllers required an `AccessControlService`, so `DamFilesModule` couldn't be registered without `UserPermissionsModule`. The service is optional now. A DAM that has neither the service nor the option below refuses to start, because its GraphQL resolvers would serve requests unguarded.
+
+    Pass `disableScopeAccessControl` to run the DAM behind your own authentication guard, without any scope checks:
+
+    ```ts
+    DamFilesModule.register({
+        damConfig,
+        Scope: DamScope,
+        File: DamFile,
+        Folder: DamFolder,
+        disableScopeAccessControl: true,
+    });
+    ```
+
+    The option is only available on `DamFilesModule`, not on `DamModule`, which always runs with `UserPermissionsModule`.
+
+    Applications using `DamModule` together with `UserPermissionsModule` are unaffected: the endpoints keep using the registered `AccessControlService`.
+
+- edf2027: Allow restricting selectable heading levels in the TipTap rich text block via a new `headingLevels` option
+
+    `createTipTapRichTextBlock` accepts a new `headingLevels?: number[]` option to limit which heading levels (1-6) are allowed, mirroring the same option added to `@dextinity/cms-admin`. Content with a heading level outside this set is rejected during validation. Defaults to `[1, 2, 3, 4, 5, 6]`, so existing usages are unaffected. Must be a non-empty array of unique integers between 1 and 6, otherwise an error is thrown.
+
+    ```tsx
+    createTipTapRichTextBlock({
+        supports: ["heading"],
+        headingLevels: [2, 3, 4],
+    });
+    ```
+
+## 10.1.0
+
+## 10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/cms-api` to `@dextinity/cms-api`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename `CometException` and its subclasses: `CometValidationException` -> `DextinityValidationException`, `CometEntityNotFoundException` -> `DextinityEntityNotFoundException`, `CometImageResolutionException` -> `DextinityImageResolutionException`. The error codes returned by the API change accordingly, so a matching `@dextinity/cms-admin` version is required
+    - Rename `CometAuthGuard` to `DextinityAuthGuard` and the `@DisableCometGuards()` decorator to `@DisableDextinityGuards()`
+    - Rename the database tables `CometFileUpload`, `CometUserPermission` and `CometUserContentScopes` to `DextinityFileUpload`, `DextinityUserPermission` and `DextinityUserContentScopes`. A migration is shipped with the package, so running the migrations is sufficient
+    - Rename the site preview cookie from `__comet_site_preview` to `__dextinity_site_preview` and the impersonation cookie from `comet-impersonate-user-id` to `dextinity-impersonate-user-id`
+
+### Minor Changes
+
+- 86f90cb: Support `dextinity.com/*` Kubernetes labels and annotations
+
+    The Builds, Cron Jobs and Kubernetes modules now read the labels and annotations of Kubernetes resources with the `dextinity.com` prefix:
+
+    | Previously                      | Now                             |
+    | ------------------------------- | ------------------------------- |
+    | `comet-dxp.com/instance`        | `dextinity.com/instance`        |
+    | `comet-dxp.com/parent-cron-job` | `dextinity.com/parent-cron-job` |
+    | `comet-dxp.com/label`           | `dextinity.com/label`           |
+    | `comet-dxp.com/builder`         | `dextinity.com/builder`         |
+    | `comet-dxp.com/trigger`         | `dextinity.com/trigger`         |
+    | `comet-dxp.com/content-scope`   | `dextinity.com/content-scope`   |
+
+    The `comet-dxp.com` prefix is still supported, so existing Helm charts keep working without changes.
+    Resources are expected to use one prefix or the other: if no resource matches the `dextinity.com` labels, the `comet-dxp.com` ones are used instead.
+
+    **Example**
+
+    ```yaml
+    metadata:
+        annotations:
+            dextinity.com/label: "Demo Cron Job"
+            dextinity.com/content-scope: '{ "domain": "main", "language": "en" }'
+    ```
+
 ## 10.0.0-beta.0
 
 ### Major Changes

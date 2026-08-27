@@ -74,7 +74,7 @@ Record the resolved site list durably (e.g. a note on the first `TaskCreate` tas
 If a step is ambiguous or doesn't match the project, consult before guessing:
 
 - **https://github.com/vivid-planet/dextinity** — the monorepo. Check the source of the package the guide discusses for the new public API shape.
-- **https://github.com/vivid-planet/comet-starter** — the canonical reference project, always kept on the current major. Use it for questions like "how should `tsconfig.json` look after this migration?"
+- **https://github.com/vivid-planet/dextinity-starter** — the canonical reference project, always kept on the current major. Use it for questions like "how should `tsconfig.json` look after this migration?"
 
 Prefer the GitHub MCP; fall back to `WebFetch` on `raw.githubusercontent.com`. If still unclear, ask the user — don't guess.
 

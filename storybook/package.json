@@ -1,6 +1,5 @@
 {
     "name": "dextinity-storybook",
-    "version": "1.0.0",
     "private": true,
     "description": "Storybook for Dextinity components",
     "license": "BSD-2-Clause",

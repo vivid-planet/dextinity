@@ -1,5 +1,22 @@
 # @comet/eslint-plugin
 
+## 10.2.0
+
+## 10.1.0
+
+## 10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/eslint-plugin` to `@dextinity/eslint-plugin`
+
+    Update the dependency in `package.json`.
+
+    **Breaking changes**
+    - Register the plugin under the `@dextinity` namespace instead of `@comet`. Rule names change accordingly, for instance, `@comet/no-private-sibling-import` -> `@dextinity/no-private-sibling-import`
+
 ## 10.0.0-beta.0
 
 ### Major Changes

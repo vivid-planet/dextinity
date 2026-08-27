@@ -261,6 +261,19 @@ export const TipTapToolbar = ({
         setTimeout(() => editor.commands.focus(), 0);
     };
 
+    // Menu items run their action via onMouseDown (before the browser's default focus change collapses the
+    // editor selection) and via onClick guarded to keyboard activation (MouseEvent.detail is 0 there, unlike
+    // for a real pointer click), so both mouse and keyboard users can toggle a menu item.
+    const runMenuItemAction = (action: () => void) => {
+        handleMoreClose();
+        setTimeout(action, 0);
+    };
+    const handleMenuItemKeyboardActivate = (e: MouseEvent, action: () => void) => {
+        if (e.detail === 0) {
+            runMenuItemAction(action);
+        }
+    };
+
     const handlePlaceholderClose = () => {
         setPlaceholderAnchorEl(null);
         setTimeout(() => editor.commands.focus(), 0);
@@ -455,11 +468,8 @@ export const TipTapToolbar = ({
                                 {supports.includes("sup") && (
                                     <MenuItem
                                         selected={editor.isActive("superscript")}
-                                        onMouseDown={(e) => {
-                                            handleMoreClose();
-                                            e.persist();
-                                            setTimeout(() => editor.chain().focus().toggleSuperscript().run(), 0);
-                                        }}
+                                        onMouseDown={() => runMenuItemAction(() => editor.chain().focus().toggleSuperscript().run())}
+                                        onClick={(e) => handleMenuItemKeyboardActivate(e, () => editor.chain().focus().toggleSuperscript().run())}
                                     >
                                         <FormattedMessage id="dextinity.blocks.tipTapRichText.superscript.label" defaultMessage="Superscript" />
                                         <ListItemIcon sx={{ justifyContent: "flex-end" }}>
@@ -470,11 +480,8 @@ export const TipTapToolbar = ({
                                 {supports.includes("sub") && (
                                     <MenuItem
                                         selected={editor.isActive("subscript")}
-                                        onMouseDown={(e) => {
-                                            handleMoreClose();
-                                            e.persist();
-                                            setTimeout(() => editor.chain().focus().toggleSubscript().run(), 0);
-                                        }}
+                                        onMouseDown={() => runMenuItemAction(() => editor.chain().focus().toggleSubscript().run())}
+                                        onClick={(e) => handleMenuItemKeyboardActivate(e, () => editor.chain().focus().toggleSubscript().run())}
                                     >
                                         <FormattedMessage id="dextinity.blocks.tipTapRichText.subscript.label" defaultMessage="Subscript" />
                                         <ListItemIcon sx={{ justifyContent: "flex-end" }}>
@@ -482,26 +489,26 @@ export const TipTapToolbar = ({
                                         </ListItemIcon>
                                     </MenuItem>
                                 )}
-                                {applicableInlineStyles.map((style) => (
-                                    <MenuItem
-                                        key={style.name}
-                                        disabled={editorState.selectionEmpty}
-                                        selected={editor.isActive("inlineStyle", { type: style.name })}
-                                        onMouseDown={(e) => {
-                                            handleMoreClose();
-                                            e.persist();
-                                            setTimeout(() => {
-                                                if (editor.isActive("inlineStyle", { type: style.name })) {
-                                                    editor.chain().focus().unsetInlineStyle().run();
-                                                } else {
-                                                    editor.chain().focus().setInlineStyle({ type: style.name }).run();
-                                                }
-                                            }, 0);
-                                        }}
-                                    >
-                                        {style.label}
-                                    </MenuItem>
-                                ))}
+                                {applicableInlineStyles.map((style) => {
+                                    const toggleInlineStyle = () => {
+                                        if (editor.isActive("inlineStyle", { type: style.name })) {
+                                            editor.chain().focus().unsetInlineStyle().run();
+                                        } else {
+                                            editor.chain().focus().setInlineStyle({ type: style.name }).run();
+                                        }
+                                    };
+                                    return (
+                                        <MenuItem
+                                            key={style.name}
+                                            disabled={editorState.selectionEmpty}
+                                            selected={editor.isActive("inlineStyle", { type: style.name })}
+                                            onMouseDown={() => runMenuItemAction(toggleInlineStyle)}
+                                            onClick={(e) => handleMenuItemKeyboardActivate(e, toggleInlineStyle)}
+                                        >
+                                            {style.label}
+                                        </MenuItem>
+                                    );
+                                })}
                             </Menu>
                         </>
                     )}

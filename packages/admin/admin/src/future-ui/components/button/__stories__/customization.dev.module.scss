@@ -18,18 +18,18 @@
     background: #f4f0fa;
     border-radius: 12px;
 
-    :global(.cometButton) {
+    :global(.dextinityButton) {
         font-weight: 700;
         letter-spacing: 0.1em;
         text-transform: uppercase;
     }
 
-    :global(.cometButton)[data-variant="primary"] {
+    :global(.dextinityButton)[data-variant="primary"] {
         background: #6750a4;
     }
 
-    :global(.cometButton__startIcon),
-    :global(.cometButton__endIcon) {
+    :global(.dextinityButton__startIcon),
+    :global(.dextinityButton__endIcon) {
         color: #f4af3e;
     }
 }

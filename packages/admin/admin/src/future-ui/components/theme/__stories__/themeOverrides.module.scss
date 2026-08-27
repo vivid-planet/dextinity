@@ -1,4 +1,4 @@
-/* A consumer override. The shipped tokens live in `@layer comet`, so an
+/* A consumer override. The shipped tokens live in `@layer dextinity`, so an
    unlayered rule like this wins regardless of specificity and cascades to every
    component that reads the overridden tokens.
 
@@ -6,6 +6,6 @@
    overriding the brand layer while reusing the primitives, and leaving the
    primitive layer itself untouched. */
 .brandPrimaryOverride {
-    --comet-brand-color-primary-400: var(--comet-color-teal-400);
-    --comet-brand-color-primary-500: var(--comet-color-teal-400);
+    --dextinity-brand-color-primary-400: var(--dextinity-color-teal-400);
+    --dextinity-brand-color-primary-500: var(--dextinity-color-teal-400);
 }

@@ -6,11 +6,11 @@ const buttonModuleFilename = "/project/packages/admin/admin/src/future-ui/compon
 
 describe("generateScopedName", () => {
     it("maps `root` in a component module to the component's root class", () => {
-        expect(generateScopedName("root", buttonModuleFilename)).toBe("cometButton");
+        expect(generateScopedName("root", buttonModuleFilename)).toBe("dextinityButton");
     });
 
     it("maps a part name in a component module to the component's part class", () => {
-        expect(generateScopedName("startIcon", buttonModuleFilename)).toBe("cometButton__startIcon");
+        expect(generateScopedName("startIcon", buttonModuleFilename)).toBe("dextinityButton__startIcon");
     });
 
     it("maps a non-contract module deterministically", () => {

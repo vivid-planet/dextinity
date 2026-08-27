@@ -2,25 +2,25 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--comet-button-type-button-default-gap);
-    padding-block: var(--comet-button-type-button-default-padding-vertical);
-    padding-inline: var(--comet-button-type-button-default-padding-horizontal);
+    gap: var(--dextinity-button-type-button-default-gap);
+    padding-block: var(--dextinity-button-type-button-default-padding-vertical);
+    padding-inline: var(--dextinity-button-type-button-default-padding-horizontal);
     border: none;
-    border-radius: var(--comet-button-type-button-default-radius);
+    border-radius: var(--dextinity-button-type-button-default-radius);
     font-family: inherit;
-    font-size: var(--comet-button-type-button-default-font-size);
-    font-weight: var(--comet-button-type-button-default-font-weight);
-    line-height: var(--comet-button-type-button-default-font-line-height);
+    font-size: var(--dextinity-button-type-button-default-font-size);
+    font-weight: var(--dextinity-button-type-button-default-font-weight);
+    line-height: var(--dextinity-button-type-button-default-font-line-height);
     cursor: pointer;
 
     &[data-variant="primary"] {
-        background: var(--comet-button-color-primary-contained-default-background);
-        color: var(--comet-button-color-primary-contained-default-foreground);
+        background: var(--dextinity-button-color-primary-contained-default-background);
+        color: var(--dextinity-button-color-primary-contained-default-foreground);
     }
 
     &[data-variant="secondary"] {
-        background: var(--comet-button-color-secondary-contained-default-background);
-        color: var(--comet-button-color-secondary-contained-default-foreground);
+        background: var(--dextinity-button-color-secondary-contained-default-background);
+        color: var(--dextinity-button-color-secondary-contained-default-foreground);
     }
 
     &[data-disabled] {

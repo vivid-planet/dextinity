@@ -1,10 +1,10 @@
-import { Calendar } from "@comet/admin-icons";
+import { Calendar } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, css, inputLabelClasses, type Theme, useThemeProps } from "@mui/material";
 import { DatePicker as MuiDatePicker, type DatePickerProps as MuiDatePickerProps, pickersInputBaseClasses } from "@mui/x-date-pickers";
 import { type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
 
-import { ClearInputAdornment as CometClearInputAdornment } from "../../common/ClearInputAdornment";
+import { ClearInputAdornment as BaseClearInputAdornment } from "../../common/ClearInputAdornment";
 import { OpenPickerAdornment } from "../../common/OpenPickerAdornment";
 import { ReadOnlyAdornment } from "../../common/ReadOnlyAdornment";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
@@ -15,7 +15,7 @@ export type DatePickerClassKey = "root" | "clearInputAdornment" | "readOnlyAdorn
 
 export type DatePickerProps = ThemedComponentBaseProps<{
     root: typeof MuiDatePicker;
-    clearInputAdornment: typeof CometClearInputAdornment;
+    clearInputAdornment: typeof BaseClearInputAdornment;
     readOnlyAdornment: typeof ReadOnlyAdornment;
     openPickerAdornment: typeof OpenPickerAdornment;
 }> & {
@@ -51,7 +51,7 @@ export type DatePickerProps = ThemedComponentBaseProps<{
  * with a calendar icon that opens a date picker dialog. The component handles ISO 8601 date strings and includes
  * features like clearing, read-only state, and customizable icons.
  *
- * - [Storybook](https://storybook.comet-dxp.com/?path=/docs/@comet/admin_components-datetime-datepicker--docs)
+ * - [Storybook](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/admin_components-datetime-datepicker--docs)
  * - [MUI X DatePicker Documentation](https://mui.com/x/react-date-pickers/date-picker/)
  */
 export const DatePicker = (inProps: DatePickerProps) => {
@@ -69,7 +69,7 @@ export const DatePicker = (inProps: DatePickerProps) => {
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminDatePicker",
+        name: "DextinityAdminDatePicker",
     });
     const [open, setOpen] = useState(false);
     const intl = useIntl();
@@ -121,7 +121,7 @@ export const DatePicker = (inProps: DatePickerProps) => {
                                         ...slotProps?.openPickerAdornment?.slotProps,
                                         openPickerButton: {
                                             "aria-label": intl.formatMessage({
-                                                id: "comet.datePicker.openPicker",
+                                                id: "dextinity.datePicker.openPicker",
                                                 defaultMessage: "Open date picker",
                                             }),
                                             ...slotProps?.openPickerAdornment?.slotProps?.openPickerButton,
@@ -164,24 +164,24 @@ const Root = createComponentSlot(MuiDatePicker)<DatePickerClassKey>({
     }
 `);
 
-const ClearInputAdornment = createComponentSlot(CometClearInputAdornment)<DatePickerClassKey>({
+const ClearInputAdornment = createComponentSlot(BaseClearInputAdornment)<DatePickerClassKey>({
     componentName: "DatePicker",
     slotName: "clearInputAdornment",
 })();
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminDatePicker: DatePickerProps;
+        DextinityAdminDatePicker: DatePickerProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminDatePicker: DatePickerClassKey;
+        DextinityAdminDatePicker: DatePickerClassKey;
     }
 
     interface Components {
-        CometAdminDatePicker?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminDatePicker"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminDatePicker"];
+        DextinityAdminDatePicker?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminDatePicker"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminDatePicker"];
         };
     }
 }

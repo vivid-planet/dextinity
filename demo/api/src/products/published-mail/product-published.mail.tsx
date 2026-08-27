@@ -1,4 +1,4 @@
-import { MailTemplate, MailTemplateInterface } from "@comet/cms-api";
+import { MailTemplate, MailTemplateInterface } from "@dextinity/cms-api";
 import { TranslationService } from "@src/translation/translation.service";
 import { IntlProvider } from "react-intl";
 
@@ -12,7 +12,7 @@ export class ProductPublishedMail implements MailTemplateInterface<MailProps> {
     async generateMail(props: MailProps) {
         // Imported lazily so the heavy MJML/jsdom rendering stack isn't pulled into memory on
         // API startup — it's only needed when a mail is actually rendered.
-        const { renderMailHtml } = await import("@comet/mail-react/server");
+        const { renderMailHtml } = await import("@dextinity/mail-react/server");
 
         const intl = await this.translationService.getIntl(props.recipient.language);
         const { html, mjmlWarnings } = renderMailHtml(
@@ -37,28 +37,28 @@ export class ProductPublishedMail implements MailTemplateInterface<MailProps> {
         return [
             {
                 props: {
-                    recipient: { name: "John Doe", email: "product-manager@comet-dxp.com", language: "en" as const },
+                    recipient: { name: "John Doe", email: "product-manager@dextinity.com", language: "en" as const },
                     countProductPublished: "all" as const,
                     supportInfo: exampleSupportInfo,
                 },
             },
             {
                 props: {
-                    recipient: { name: "John Doe", email: "product-manager@comet-dxp.com", language: "en" as const },
+                    recipient: { name: "John Doe", email: "product-manager@dextinity.com", language: "en" as const },
                     countProductPublished: 1,
                     supportInfo: exampleSupportInfo,
                 },
             },
             {
                 props: {
-                    recipient: { name: "John Doe", email: "product-manager@comet-dxp.com", language: "en" as const },
+                    recipient: { name: "John Doe", email: "product-manager@dextinity.com", language: "en" as const },
                     countProductPublished: 5,
                     supportInfo: exampleSupportInfo,
                 },
             },
             {
                 props: {
-                    recipient: { name: "John Doe", email: "product-manager@comet-dxp.com", language: "de" as const },
+                    recipient: { name: "John Doe", email: "product-manager@dextinity.com", language: "de" as const },
                     countProductPublished: 5,
                     supportInfo: exampleSupportInfo,
                 },

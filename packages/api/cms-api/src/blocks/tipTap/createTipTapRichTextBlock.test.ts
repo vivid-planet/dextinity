@@ -11,7 +11,7 @@ import {
 } from "./createTipTapRichTextBlock";
 
 describe("createTipTapRichTextBlock validation", () => {
-    describe("default schema (all supports)", () => {
+    describe("default schema (default supports)", () => {
         const block = createTipTapRichTextBlock({}, "TestDefault");
 
         it("should accept a valid empty document", async () => {
@@ -63,6 +63,22 @@ describe("createTipTapRichTextBlock validation", () => {
             });
             const errors = await validate(input);
             expect(errors).toHaveLength(0);
+        });
+
+        it("should reject underline marks (not in default supports)", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "paragraph",
+                            content: [{ type: "text", marks: [{ type: "underline" }], text: "Underlined" }],
+                        },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
         });
 
         it("should accept headings", async () => {
@@ -250,6 +266,22 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(errors).toHaveLength(1);
         });
 
+        it("should reject underline (not in supports)", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "paragraph",
+                            content: [{ type: "text", marks: [{ type: "underline" }], text: "Underlined" }],
+                        },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
+        });
+
         it("should reject headings (not in supports)", async () => {
             const input = block.blockInputFactory({
                 tipTapContent: {
@@ -286,6 +318,26 @@ describe("createTipTapRichTextBlock validation", () => {
             });
             const errors = await validate(input);
             expect(errors).toHaveLength(1);
+        });
+    });
+
+    describe("schema with underline support", () => {
+        const block = createTipTapRichTextBlock({ supports: ["underline"] }, "TestUnderline");
+
+        it("should accept underline marks", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "paragraph",
+                            content: [{ type: "text", marks: [{ type: "underline" }], text: "Underlined" }],
+                        },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
         });
     });
 
@@ -1186,6 +1238,52 @@ describe("createTipTapRichTextBlock validation", () => {
             });
             const invalidErrors = await validate(invalidInput);
             expect(invalidErrors).toHaveLength(1);
+        });
+    });
+
+    describe("headingLevels option", () => {
+        const block = createTipTapRichTextBlock({ headingLevels: [2, 3, 4] }, "TestHeadingLevels");
+
+        it("should accept a heading within the allowed levels", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "Heading" }] }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
+        });
+
+        it("should reject a heading level outside the allowed levels", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Heading" }] }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
+            expect(errors[0].property).toBe("tipTapContent");
+        });
+
+        it("should throw when headingLevels is invalid", () => {
+            expect(() => createTipTapRichTextBlock({ headingLevels: [] }, "TestInvalidHeadingLevelsEmpty")).toThrow();
+            expect(() => createTipTapRichTextBlock({ headingLevels: [0, 2, 3] }, "TestInvalidHeadingLevelsZero")).toThrow();
+            expect(() => createTipTapRichTextBlock({ headingLevels: [1, 7] }, "TestInvalidHeadingLevelsSeven")).toThrow();
+            expect(() => createTipTapRichTextBlock({ headingLevels: [1, 1, 2] }, "TestInvalidHeadingLevelsDuplicate")).toThrow();
+            expect(() => createTipTapRichTextBlock({ headingLevels: [1.5, 2] }, "TestInvalidHeadingLevelsFraction")).toThrow();
+        });
+
+        it("should accept content without headings regardless of headingLevels", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "paragraph", content: [{ type: "text", text: "Just text" }] }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
         });
     });
 

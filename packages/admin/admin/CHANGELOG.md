@@ -1,5 +1,134 @@
 # @comet/admin
 
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- 48748b0: Show the GraphQL error messages in the error dialog again
+
+    `createErrorDialogApolloLink` only passed the message of network errors to the `ErrorDialog`.
+    For GraphQL errors, the dialog showed "Unknown error" instead of the actual messages (e.g., the message of a `BadRequestException` thrown by the API).
+    - @dextinity/admin-icons@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin` to `@dextinity/admin`
+
+    Update the dependency in `package.json` and all imports:
+
+    ```diff
+    - import { MainContent } from "@comet/admin";
+    + import { MainContent } from "@dextinity/admin";
+    ```
+
+    **Breaking changes**
+    - Rename `createCometTheme` to `createDextinityTheme`
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme`, the `name` passed to `useThemeProps` in custom components and the generated CSS class names (`.CometAdminClearInputAdornment-root` -> `.DextinityAdminClearInputAdornment-root`)
+    - Rename the CSS variables from `--comet-admin-*` to `--dextinity-admin-*`, for instance, `--comet-admin-master-layout-content-top-spacing` -> `--dextinity-admin-master-layout-content-top-spacing`
+    - Remove the `CometLogo` component. Use `DextinityLogo` from `@dextinity/admin-icons` instead
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+    - @dextinity/admin-icons@10.0.0
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin` to `@dextinity/admin`
+
+    Update the dependency in `package.json` and all imports:
+
+    ```diff
+    - import { MainContent } from "@comet/admin";
+    + import { MainContent } from "@dextinity/admin";
+    ```
+
+    **Breaking changes**
+    - Rename `createCometTheme` to `createDextinityTheme`
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme`, the `name` passed to `useThemeProps` in custom components and the generated CSS class names (`.CometAdminClearInputAdornment-root` -> `.DextinityAdminClearInputAdornment-root`)
+    - Rename the CSS variables from `--comet-admin-*` to `--dextinity-admin-*`, for instance, `--comet-admin-master-layout-content-top-spacing` -> `--dextinity-admin-master-layout-content-top-spacing`
+    - Remove the `CometLogo` component. Use `DextinityLogo` from `@dextinity/admin-icons` instead
+
+## 9.5.0
+
+### Patch Changes
+
+- @comet/admin-icons@9.5.0
+
+## 9.4.0
+
+### Minor Changes
+
+- 085b9ac: Add `disabled` support to `ToggleButtonGroupField`
+
+    Setting `disabled` on the field was accepted but had no effect — every button stayed clickable. It now disables all buttons, and individual options can be disabled by setting `disabled` on the option. When both are set, the field wins — an option cannot re-enable itself.
+
+    **Example**
+
+    ```tsx
+    <ToggleButtonGroupField
+        name="type"
+        options={[
+            { label: "Address", value: "address" },
+            { label: "Coordinates", value: "coordinates", disabled: true },
+        ]}
+    />
+    ```
+
+    `FinalFormToggleButtonGroup` now also supports `sx`, `className`, `slotProps` and theme customization through `CometAdminFinalFormToggleButtonGroup`, with the new `FinalFormToggleButtonGroupClassKey` type describing its slots.
+
+### Patch Changes
+
+- bf1ff64: Apply theme customizations for `DateRangePicker`
+
+    `defaultProps` and `styleOverrides` defined for `CometAdminDateRangePicker` had no effect, as the component read its theme props from `CometAdminFutureDateRangePicker`.
+    - @comet/admin-icons@9.4.0
+
+## 9.3.0
+
+### Patch Changes
+
+- 7b2d8db: Fix end adornment layout in multi-select `AutocompleteField`
+
+    Previously, the clear button could wrap below the chips and fall outside the visible field area in narrow containers.
+    Now the end adornment (loading indicator, clear button, error icon, popup icon) is pinned to the top right corner of the field and the input reserves exactly the required space for the currently visible adornments, so chips can never overlap it.
+    Additionally, the clear button is no longer shown for an empty multi-select, and clearing a multi-select now resets the value to an empty array instead of an empty string.
+    The dropdown now opens when the input receives focus (`openOnFocus`), so clicking anywhere into the field – including next to the icons – opens it.
+    - @comet/admin-icons@9.3.0
+
+## 9.2.2
+
+### Patch Changes
+
+- @comet/admin-icons@9.2.2
+
+## 9.2.1
+
+### Patch Changes
+
+- @comet/admin-icons@9.2.1
+
+## 9.2.0
+
+### Patch Changes
+
+- 5a05d97: Fix separation of multiple selected values in `FinalFormSelect`
+
+    When using `multiple`, the selected values were rendered concatenated without any separator (e.g. `value-2value-1value-3value-4`). They are now separated by a comma, matching the display of `SelectField`.
+
+    This affects all fields that render their selected values through the options/`getOptionLabel` path (i.e. without JSX `children`), namely `AsyncSelectField` and any `FinalFormSelect` used with an array value. Within Comet, this also corrects the display of the `targetGroups` and test email address selects in `@comet/brevo-admin` (`SendManagerFields`, `TestEmailCampaignForm`), which consume `FinalFormSelect` and had the same issue.
+    - @comet/admin-icons@9.2.0
+
 ## 9.1.1
 
 ### Patch Changes

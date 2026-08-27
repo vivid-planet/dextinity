@@ -4,7 +4,7 @@ import { Inject, Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Mutation, ObjectType, Query, Resolver } from "@nestjs/graphql";
 
 import type { ExtractBlockData } from "../blocks/block";
-import { CometValidationException } from "../common/errors/validation.exception";
+import { DextinityValidationException } from "../common/errors/validation.exception";
 import { PaginatedResponseFactory } from "../common/pagination/paginated-response.factory";
 import { DynamicDtoValidationPipe } from "../common/validation/dynamic-dto-validation.pipe";
 import { validateNotModified } from "../document/validateNotModified";
@@ -211,7 +211,7 @@ export function createRedirectsResolver({
             @Args("input", { type: () => RedirectInput }, new DynamicDtoValidationPipe(RedirectInput)) input: RedirectInputInterface,
         ): Promise<RedirectInterface> {
             if (!(await this.redirectService.isRedirectSourceAvailable(input.source, nonEmptyScopeOrNothing(scope)))) {
-                throw new CometValidationException("Validation failed");
+                throw new DextinityValidationException("Validation failed");
             }
 
             const entity = this.repository.create({
@@ -237,7 +237,7 @@ export function createRedirectsResolver({
             }
 
             if (!(await this.redirectService.isRedirectSourceAvailable(input.source, redirect.scope, { excludedId: redirect.id }))) {
-                throw new CometValidationException("Validation failed");
+                throw new DextinityValidationException("Validation failed");
             }
 
             wrap(redirect).assign({ ...input, target: input.target.transformToBlockData() });

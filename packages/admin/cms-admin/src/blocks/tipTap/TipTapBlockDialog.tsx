@@ -1,4 +1,4 @@
-import { CancelButton, DeleteButton, OkayButton } from "@comet/admin";
+import { CancelButton, DeleteButton, OkayButton } from "@dextinity/admin";
 // eslint-disable-next-line no-restricted-imports
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -39,13 +39,13 @@ export function TipTapBlockDialog({ block: Block, initialState, isEditing, onSub
             <DialogTitle>
                 {isEditing ? (
                     <FormattedMessage
-                        id="comet.blocks.tipTapRichText.editBlock"
+                        id="dextinity.blocks.tipTapRichText.editBlock"
                         defaultMessage='Edit "{block}"'
                         values={{ block: Block.displayName }}
                     />
                 ) : (
                     <FormattedMessage
-                        id="comet.blocks.tipTapRichText.insertBlock"
+                        id="dextinity.blocks.tipTapRichText.insertBlock"
                         defaultMessage='Insert "{block}"'
                         values={{ block: Block.displayName }}
                     />
@@ -59,7 +59,7 @@ export function TipTapBlockDialog({ block: Block, initialState, isEditing, onSub
                 <ButtonContainer>
                     {isEditing && onRemove && (
                         <DeleteButton onClick={handleRemove}>
-                            <FormattedMessage id="comet.blocks.tipTapRichText.removeBlock" defaultMessage="Delete block" />
+                            <FormattedMessage id="dextinity.blocks.tipTapRichText.removeBlock" defaultMessage="Delete block" />
                         </DeleteButton>
                     )}
                     <OkayButton onClick={handleUpdate} />

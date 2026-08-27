@@ -1,4 +1,4 @@
-import { Translate } from "@comet/admin-icons";
+import { Translate } from "@dextinity/admin-icons";
 import { IconButton, InputBase, type InputBaseProps } from "@mui/material";
 import { useState } from "react";
 import type { FieldRenderProps } from "react-final-form";
@@ -48,7 +48,7 @@ export function FinalFormInput({
                         <>
                             {clearable && input.value && <ClearInputAdornment position="end" onClick={() => input.onChange("")} />}
                             {isTranslatable && (
-                                <Tooltip title={<FormattedMessage id="comet.translate" defaultMessage="Translate" />}>
+                                <Tooltip title={<FormattedMessage id="dextinity.translate" defaultMessage="Translate" />}>
                                     <IconButton
                                         onClick={async () => {
                                             if (showApplyTranslationDialog) {

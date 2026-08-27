@@ -1,4 +1,4 @@
-import { ArrowRight, Favorite } from "@comet/admin-icons";
+import { ArrowRight, Favorite } from "@dextinity/admin-icons";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";

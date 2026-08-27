@@ -1,4 +1,4 @@
-import { BlockCategory, type BlockInterface, createBlockSkeleton } from "@comet/cms-admin";
+import { BlockCategory, type BlockInterface, createBlockSkeleton } from "@dextinity/cms-admin";
 import type { ContactFormBlockData, ContactFormBlockInput } from "@src/blocks.generated";
 import { FormattedMessage } from "react-intl";
 

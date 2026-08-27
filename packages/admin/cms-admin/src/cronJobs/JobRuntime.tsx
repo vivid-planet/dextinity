@@ -14,7 +14,7 @@ export function JobRuntime(props: RuntimeProps) {
 
         return (
             <FormattedMessage
-                id="comet.jobRuntime.startCompletionTime"
+                id="dextinity.jobRuntime.startCompletionTime"
                 defaultMessage="{start} - {completion} ({runtime} min)"
                 values={{
                     start: <FormattedDate value={startTime} dateStyle="short" timeStyle="short" />,
@@ -23,7 +23,7 @@ export function JobRuntime(props: RuntimeProps) {
                     ) : (
                         <FormattedDate value={completionTime} dateStyle="short" timeStyle="short" />
                     ),
-                    runtime: runtime <= 0 ? <FormattedMessage id="comet.jobRuntime.runtimeSmallerThanOneMinute" defaultMessage="< 1" /> : runtime,
+                    runtime: runtime <= 0 ? <FormattedMessage id="dextinity.jobRuntime.runtimeSmallerThanOneMinute" defaultMessage="< 1" /> : runtime,
                 }}
             />
         );

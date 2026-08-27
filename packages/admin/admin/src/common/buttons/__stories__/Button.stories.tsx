@@ -1,4 +1,4 @@
-import { Add, ArrowRight, Favorite, Wrench } from "@comet/admin-icons";
+import { Add, ArrowRight, Favorite, Wrench } from "@dextinity/admin-icons";
 import { Box, Chip, Stack } from "@mui/material";
 import type { Meta } from "@storybook/react-vite";
 import type { ReactNode } from "react";

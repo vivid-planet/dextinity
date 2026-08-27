@@ -1,11 +1,11 @@
 {
-    "name": "@comet/admin-generator",
-    "version": "9.1.1",
-    "description": "Comet Admin Generator CLI tool",
+    "name": "@dextinity/admin-generator",
+    "version": "10.1.0",
+    "description": "Dextinity Admin Generator CLI tool",
     "repository": {
         "directory": "packages/admin/admin-generator",
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet"
+        "url": "https://github.com/vivid-planet/dextinity"
     },
     "license": "BSD-2-Clause",
     "type": "module",
@@ -16,7 +16,7 @@
         }
     },
     "bin": {
-        "comet-admin-generator": "bin/admin-generator.mjs"
+        "dextinity-admin-generator": "bin/admin-generator.mjs"
     },
     "sideEffects": false,
     "files": [
@@ -40,9 +40,9 @@
         "test:watch": "vitest --watch"
     },
     "dependencies": {
-        "@comet/admin": "workspace:*",
-        "@comet/admin-icons": "workspace:*",
-        "@comet/cms-admin": "workspace:*",
+        "@dextinity/admin": "workspace:*",
+        "@dextinity/admin-icons": "workspace:*",
+        "@dextinity/cms-admin": "workspace:*",
         "@graphql-tools/graphql-file-loader": "^7.5.17",
         "@graphql-tools/load": "^7.8.14",
         "@mui/material": "^7.3.11",
@@ -58,8 +58,8 @@
     },
     "devDependencies": {
         "@apollo/client": "^3.14.1",
-        "@comet/eslint-config": "workspace:*",
-        "@types/node": "^24.12.4",
+        "@dextinity/eslint-config": "workspace:*",
+        "@types/node": "^24.13.3",
         "@types/object-path": "^0.11.4",
         "@types/pluralize": "^0.0.33",
         "@types/react": "^19.2.15",

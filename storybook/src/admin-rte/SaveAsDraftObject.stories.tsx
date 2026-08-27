@@ -1,4 +1,4 @@
-import { type IMakeRteApiProps, makeRteApi, type OnDebouncedContentChangeFn, Rte } from "@comet/admin-rte";
+import { type IMakeRteApiProps, makeRteApi, type OnDebouncedContentChangeFn, Rte } from "@dextinity/admin-rte";
 import { Box, Card, CardContent } from "@mui/material";
 import { convertFromRaw, convertToRaw, type RawDraftContentState } from "draft-js";
 import { useState } from "react";
@@ -43,7 +43,7 @@ const makeRteApiProps: IMakeRteApiProps<RawDraftContentState> = {
 const [useRteApi] = makeRteApi<RawDraftContentState>(makeRteApiProps);
 
 export default {
-    title: "@comet/admin-rte/save-as",
+    title: "@dextinity/admin-rte/save-as",
 };
 
 export const SaveAsRawDraftJsObject = {

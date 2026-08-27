@@ -9,6 +9,6 @@ export const licenseTypeArray: readonly LicenseType[] = ["NO_LICENSE", "ROYALTY_
 
 export const licenseTypeLabels: { [key in LicenseType]: ReactNode } = {
     NO_LICENSE: "-",
-    ROYALTY_FREE: <FormattedMessage id="comet.dam.file.licenseType.royaltyFree" defaultMessage="Royalty free" />,
-    RIGHTS_MANAGED: <FormattedMessage id="comet.dam.file.licenseType.rightsManaged" defaultMessage="Rights managed" />,
+    ROYALTY_FREE: <FormattedMessage id="dextinity.dam.file.licenseType.royaltyFree" defaultMessage="Royalty free" />,
+    RIGHTS_MANAGED: <FormattedMessage id="dextinity.dam.file.licenseType.rightsManaged" defaultMessage="Rights managed" />,
 };

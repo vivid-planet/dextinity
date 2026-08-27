@@ -10,7 +10,7 @@ import {
     createBlock,
     createBlocksBlock,
     ExtractBlockInput,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { AccordionBlock } from "@src/common/blocks/accordion.block";
 import { MediaGalleryBlock } from "@src/common/blocks/media-gallery.block";
 import { SpaceBlock } from "@src/common/blocks/space.block";
@@ -19,6 +19,7 @@ import { StandaloneHeadingBlock } from "@src/common/blocks/standalone-heading.bl
 import { StandaloneMediaBlock } from "@src/common/blocks/standalone-media.block";
 import { StandaloneRichTextBlock } from "@src/common/blocks/standalone-rich-text.block";
 import { TableBlock } from "@src/common/blocks/table.block";
+import { TipTapTableBlock } from "@src/common/blocks/tip-tap-table.block";
 import { ColumnsBlock } from "@src/documents/pages/blocks/columns.block";
 import { KeyFactsBlock } from "@src/documents/pages/blocks/key-facts.block";
 import { TeaserBlock } from "@src/documents/pages/blocks/teaser.block";
@@ -39,6 +40,7 @@ export const ContentBlock = createBlocksBlock(
             space: SpaceBlock,
             teaser: TeaserBlock,
             table: TableBlock,
+            tipTapTable: TipTapTableBlock,
         },
     },
     { name: "ContentGroupContent" },

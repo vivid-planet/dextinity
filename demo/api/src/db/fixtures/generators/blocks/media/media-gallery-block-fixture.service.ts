@@ -1,4 +1,4 @@
-import { ExtractBlockInputFactoryProps } from "@comet/cms-api";
+import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import { MediaGalleryBlock, MediaGalleryListBlock } from "@src/common/blocks/media-gallery.block";
 import { MediaGalleryItemBlock } from "@src/common/blocks/media-gallery-item.block";

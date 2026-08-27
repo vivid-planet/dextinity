@@ -1,4 +1,4 @@
-import { createComponentSlot, InputWithPopper, type InputWithPopperClassKey, type ThemedComponentBaseProps } from "@comet/admin";
+import { createComponentSlot, InputWithPopper, type InputWithPopperClassKey, type ThemedComponentBaseProps } from "@dextinity/admin";
 import { InputAdornment } from "@mui/material";
 import type { CSSProperties } from "@mui/material/styles";
 import { deepmerge } from "@mui/utils";

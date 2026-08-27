@@ -1,4 +1,4 @@
-import { Music } from "@comet/admin-icons";
+import { Music } from "@dextinity/admin-icons";
 import { styled } from "@mui/material/styles";
 
 const AudioThumbnailWrapper = styled("div")`

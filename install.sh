@@ -24,7 +24,7 @@ sh ./demo/api/intl-update.sh
 sh ./demo/site/intl-update.sh
 
 # Build the packages CLI and eslint-plugin to be used for dev startup
-pnpm --filter '@comet/cli' --filter '@comet/eslint-plugin' run build
+pnpm --filter '@dextinity/cli' --filter '@dextinity/eslint-plugin' run build
 
 # Install agent features
 pnpm run install-agent-features

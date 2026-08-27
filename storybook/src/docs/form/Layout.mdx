@@ -12,7 +12,7 @@ When using `variant="vertical"` (which is the default value) the label is shown 
 With `variant="horizontal"` the label is shown on the left side of the field, where all labels have a fixed width.  
 Adding the `fullWidth` prop will cause the field and it's input to take up all the width, given by the parent element.
 
-## Examples for the different types of layouts, supported by comet-admin
+## Examples for the different types of layouts, supported by Dextinity Admin
 
 ### Inline Fields
 
@@ -75,12 +75,12 @@ If you want to use the horizontal layout on an individual [Field](?path=/docs/do
 </FieldContainer>
 ```
 
-To use the horizontal layout throughout your application, set it as the default value in your theme, on `CometAdminFormFieldContainer`.
+To use the horizontal layout throughout your application, set it as the default value in your theme, on `DextinityAdminFormFieldContainer`.
 
 ```ts
-const theme = createCometTheme({
+const theme = createDextinityTheme({
     components: {
-        CometAdminFormFieldContainer: {
+        DextinityAdminFormFieldContainer: {
             defaultProps: {
                 variant: "horizontal",
             },

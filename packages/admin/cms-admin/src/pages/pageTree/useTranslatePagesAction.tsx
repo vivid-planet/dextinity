@@ -1,5 +1,5 @@
 import { gql, useApolloClient } from "@apollo/client";
-import { Button, Dialog, messages, useContentTranslationService, useErrorDialog } from "@comet/admin";
+import { Button, Dialog, messages, useContentTranslationService, useErrorDialog } from "@dextinity/admin";
 import { DialogActions, DialogContent, DialogContentText } from "@mui/material";
 import { type ReactNode, useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -37,7 +37,7 @@ export function useTranslatePagesAction({ pages, documentTypes }: Props): {
     const [translating, setTranslating] = useState(false);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const progress = useProgressDialog({
-        title: <FormattedMessage id="comet.translator.progress.title" defaultMessage="Translating pages" />,
+        title: <FormattedMessage id="dextinity.translator.progress.title" defaultMessage="Translating pages" />,
     });
 
     const eligiblePages = pages.filter((page) => page.visibility !== "Archived");
@@ -61,7 +61,7 @@ export function useTranslatePagesAction({ pages, documentTypes }: Props): {
                 progress.updateProgress(
                     (i / eligiblePages.length) * 100,
                     <FormattedMessage
-                        id="comet.translator.progress.message"
+                        id="dextinity.translator.progress.message"
                         defaultMessage="Translating {current} of {total}: {name}"
                         values={{ current: i + 1, total: eligiblePages.length, name: page.name }}
                     />,
@@ -151,10 +151,10 @@ export function useTranslatePagesAction({ pages, documentTypes }: Props): {
         } catch (error) {
             progress.updateProgress(undefined);
             errorDialog?.showError({
-                title: <FormattedMessage id="comet.translator.error.title" defaultMessage="Translation failed" />,
+                title: <FormattedMessage id="dextinity.translator.error.title" defaultMessage="Translation failed" />,
                 userMessage: (
                     <FormattedMessage
-                        id="comet.translator.error.message"
+                        id="dextinity.translator.error.message"
                         defaultMessage="An error occurred while translating the content. Please try again."
                     />
                 ),
@@ -174,10 +174,10 @@ export function useTranslatePagesAction({ pages, documentTypes }: Props): {
                 onClose={() => setConfirmDialogOpen(false)}
                 title={
                     isSinglePage ? (
-                        <FormattedMessage id="comet.translator.confirmDialog.title" defaultMessage="Translate page content?" />
+                        <FormattedMessage id="dextinity.translator.confirmDialog.title" defaultMessage="Translate page content?" />
                     ) : (
                         <FormattedMessage
-                            id="comet.translator.confirmDialog.titleMultiple"
+                            id="dextinity.translator.confirmDialog.titleMultiple"
                             defaultMessage="Translate {count} pages?"
                             values={{ count: eligiblePages.length }}
                         />
@@ -188,12 +188,12 @@ export function useTranslatePagesAction({ pages, documentTypes }: Props): {
                     <DialogContentText>
                         {isSinglePage ? (
                             <FormattedMessage
-                                id="comet.translator.confirmDialog.message"
+                                id="dextinity.translator.confirmDialog.message"
                                 defaultMessage="All text content of this page will be translated. This action cannot be reverted."
                             />
                         ) : (
                             <FormattedMessage
-                                id="comet.translator.confirmDialog.messageMultiple"
+                                id="dextinity.translator.confirmDialog.messageMultiple"
                                 defaultMessage="All text content of {count} pages will be translated. This action cannot be reverted."
                                 values={{ count: eligiblePages.length }}
                             />
@@ -205,7 +205,7 @@ export function useTranslatePagesAction({ pages, documentTypes }: Props): {
                         <FormattedMessage {...messages.cancel} />
                     </Button>
                     <Button onClick={handleTranslate} variant="primary">
-                        <FormattedMessage id="comet.translator.confirmDialog.confirm" defaultMessage="Translate" />
+                        <FormattedMessage id="dextinity.translator.confirmDialog.confirm" defaultMessage="Translate" />
                     </Button>
                 </DialogActions>
             </Dialog>

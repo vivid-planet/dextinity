@@ -1,4 +1,4 @@
-import { SelectField } from "@comet/admin";
+import { SelectField } from "@dextinity/admin";
 import { MenuItem } from "@mui/material";
 import type { ReactNode } from "react";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
@@ -26,7 +26,7 @@ export const createSpaceBlock = <T extends string | number>({
 
         name,
 
-        displayName: <FormattedMessage id="comet.blocks.space" defaultMessage="Space" />,
+        displayName: <FormattedMessage id="dextinity.blocks.space" defaultMessage="Space" />,
 
         category: BlockCategory.Layout,
 

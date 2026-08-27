@@ -10,8 +10,8 @@ import {
     ToolbarActions,
     ToolbarAutomaticTitleItem,
     ToolbarBackButton,
-} from "@comet/admin";
-import { ContentScopeIndicator, useContentScopeConfig } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { ContentScopeIndicator, useContentScopeConfig } from "@dextinity/cms-admin";
 import { useIntl } from "react-intl";
 
 import { NewsForm } from "./generated/NewsForm";

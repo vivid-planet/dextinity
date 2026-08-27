@@ -11,7 +11,7 @@ This doesn't play well with our deployment setup for the following reasons:
 
 Instead of using `next/image`, choose one of the following options based on the image's origin:
 
-1. For DAM images, use the `Image` component from `@comet/site-nextjs` instead, which uses the imgproxy to optimize images.
+1. For DAM images, use the `Image` component from `@dextinity/site-nextjs` instead, which uses the imgproxy to optimize images.
 2. For local images (i.e., files in the `public/` folder), use a plain `<img>` tag instead.
 
     :::note

@@ -1,6 +1,6 @@
 import { useApolloClient } from "@apollo/client";
-import { Field, FinalForm, FinalFormInput, type FinalFormSubmitEvent, useStackSwitchApi } from "@comet/admin";
-import type { ContentScope } from "@comet/cms-admin";
+import { Field, FinalForm, FinalFormInput, type FinalFormSubmitEvent, useStackSwitchApi } from "@dextinity/admin";
+import type { ContentScope } from "@dextinity/cms-admin";
 import type { FormApi } from "final-form";
 import type { ReactElement } from "react";
 import { FormattedMessage } from "react-intl";
@@ -49,7 +49,7 @@ export function TargetGroupDialog({ scope }: TargetGroupDialogProps): ReactEleme
                         fullWidth
                         name="title"
                         component={FinalFormInput}
-                        label={<FormattedMessage id="cometBrevoModule.targetGroup.title" defaultMessage="Title" />}
+                        label={<FormattedMessage id="dextinity.targetGroup.title" defaultMessage="Title" />}
                     />
                 );
             }}

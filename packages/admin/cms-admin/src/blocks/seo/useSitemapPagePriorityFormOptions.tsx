@@ -7,7 +7,7 @@ const useSitemapPagePriorityFormOptions = (): Array<{ value: string; label: stri
         {
             value: "0_0",
             label: intl.formatMessage({
-                id: "comet.blocks.seo.sitemap.priority.0_0",
+                id: "dextinity.blocks.seo.sitemap.priority.0_0",
                 defaultMessage: "0.0 (Low)",
             }),
         },
@@ -30,7 +30,7 @@ const useSitemapPagePriorityFormOptions = (): Array<{ value: string; label: stri
         {
             value: "0_5",
             label: intl.formatMessage({
-                id: "comet.blocks.seo.sitemap.priority.0_5",
+                id: "dextinity.blocks.seo.sitemap.priority.0_5",
                 defaultMessage: "0.5 (Default)",
             }),
         },
@@ -53,7 +53,7 @@ const useSitemapPagePriorityFormOptions = (): Array<{ value: string; label: stri
         {
             value: "1_0",
             label: intl.formatMessage({
-                id: "comet.blocks.seo.sitemap.priority.1_0",
+                id: "dextinity.blocks.seo.sitemap.priority.1_0",
                 defaultMessage: "1.0 (High)",
             }),
         },

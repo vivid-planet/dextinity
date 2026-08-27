@@ -1,8 +1,7 @@
 {
-    "name": "comet-docs",
-    "version": "0.0.0",
+    "name": "dextinity-docs",
     "private": true,
-    "description": "Documentation for Comet",
+    "description": "Documentation for Dextinity",
     "scripts": {
         "build": "run-s clear:generated-docs generate-component-docs:static-storybook build:docusaurus",
         "build:docusaurus": "docusaurus build",
@@ -52,7 +51,7 @@
         "search-insights": "^2.17.3"
     },
     "devDependencies": {
-        "@comet/eslint-config": "workspace:*",
+        "@dextinity/eslint-config": "workspace:*",
         "@docusaurus/module-type-aliases": "^3.10.1",
         "@docusaurus/plugin-content-docs": "^3.10.1",
         "@docusaurus/tsconfig": "^3.10.1",

@@ -1,5 +1,104 @@
 # @comet/brevo-api
 
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/cms-api@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- @dextinity/cms-api@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/brevo-api` to `@dextinity/brevo-api`
+
+    Update the dependency in `package.json` and all imports:
+
+    ```diff
+    - import { BrevoModule } from "@comet/brevo-api";
+    + import { BrevoModule } from "@dextinity/brevo-api";
+    ```
+
+### Patch Changes
+
+- Updated dependencies [86f90cb]
+- Updated dependencies [f843a5e]
+    - @dextinity/cms-api@10.0.0
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/brevo-api` to `@dextinity/brevo-api`
+
+    Update the dependency in `package.json` and all imports:
+
+    ```diff
+    - import { BrevoModule } from "@comet/brevo-api";
+    + import { BrevoModule } from "@dextinity/brevo-api";
+    ```
+
+### Patch Changes
+
+- Updated dependencies [86f90cb]
+- Updated dependencies [f843a5e]
+- Updated dependencies [8c6be74]
+    - @dextinity/cms-api@10.0.0-beta.0
+
+## 9.5.0
+
+### Patch Changes
+
+- Updated dependencies [4eadaf5]
+- Updated dependencies [4eadaf5]
+    - @comet/cms-api@9.5.0
+
+## 9.4.0
+
+### Patch Changes
+
+- Updated dependencies [0dac371]
+- Updated dependencies [14d481e]
+- Updated dependencies [8c6be74]
+    - @comet/cms-api@9.4.0
+
+## 9.3.0
+
+### Patch Changes
+
+- Updated dependencies [a8e8f02]
+- Updated dependencies [924b66c]
+    - @comet/cms-api@9.3.0
+
+## 9.2.2
+
+### Patch Changes
+
+- Updated dependencies [d1022e2]
+- Updated dependencies [a2515ce]
+    - @comet/cms-api@9.2.2
+
+## 9.2.1
+
+### Patch Changes
+
+- @comet/cms-api@9.2.1
+
+## 9.2.0
+
+### Patch Changes
+
+- Updated dependencies [ee0bf93]
+- Updated dependencies [3c28742]
+- Updated dependencies [8d46a98]
+    - @comet/cms-api@9.2.0
+
 ## 9.1.1
 
 ### Patch Changes

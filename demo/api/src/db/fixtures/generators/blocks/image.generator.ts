@@ -1,4 +1,4 @@
-import { type DamImageBlock, type ExtractBlockInputFactoryProps, type FileInterface, FocalPoint, type ImageCropAreaInput } from "@comet/cms-api";
+import { type DamImageBlock, type ExtractBlockInputFactoryProps, type FileInterface, FocalPoint, type ImageCropAreaInput } from "@dextinity/cms-api";
 import { faker } from "@src/db/fixtures/faker";
 
 export const generateImageBlock = (

@@ -37,7 +37,7 @@ Apply these when designing features, reviewing diffs, or writing validation/auth
 
 ## Don't roll your own crypto / auth
 
-- Security-sensitive primitives (hashing, signing, auth flows, session handling) must use vetted libraries or Comet's built-in tools. No obscurity-based schemes.
+- Security-sensitive primitives (hashing, signing, auth flows, session handling) must use vetted libraries or Dextinity's built-in tools. No obscurity-based schemes.
 
 ## Admin / public separation
 

@@ -6,15 +6,15 @@ import prettierPlugin from "eslint-plugin-prettier/recommended";
 import unusedImports from "eslint-plugin-unused-imports";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import { configs as eslintPluginJsonc } from "eslint-plugin-jsonc";
-import cometPlugin from "@comet/eslint-plugin";
+import dextinityPlugin from "@dextinity/eslint-plugin";
 import importPlugin from "eslint-plugin-import";
 import js from "@eslint/js";
 import packageJson from "eslint-plugin-package-json";
 
 export const restrictedImportPatterns = [
     {
-        group: ["@comet/*/lib", "@comet/*/lib/**"],
-        message: "Don't import private files from @comet packages via /lib. Use the package root instead.",
+        group: ["@dextinity/*/lib", "@dextinity/*/lib/**"],
+        message: "Don't import private files from @dextinity packages via /lib. Use the package root instead.",
     },
 ];
 
@@ -47,10 +47,10 @@ const config = [
     },
     {
         plugins: {
-            "@comet": cometPlugin,
+            "@dextinity": dextinityPlugin,
         },
         rules: {
-            "@comet/no-other-module-relative-import": ["warn"],
+            "@dextinity/no-other-module-relative-import": ["warn"],
         },
     },
     {

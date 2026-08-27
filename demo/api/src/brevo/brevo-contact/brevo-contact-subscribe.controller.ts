@@ -1,5 +1,5 @@
-import { BrevoContactsService, SubscribeResponse } from "@comet/brevo-api";
-import { DisableCometGuards } from "@comet/cms-api";
+import { BrevoContactsService, SubscribeResponse } from "@dextinity/brevo-api";
+import { DisableDextinityGuards } from "@dextinity/cms-api";
 import { Body, Controller, Post } from "@nestjs/common";
 
 import { BrevoContactSubscribeInput } from "./dto/brevo-contact-subscribe.input";
@@ -8,7 +8,7 @@ import { BrevoContactSubscribeInput } from "./dto/brevo-contact-subscribe.input"
 export class BrevoContactSubscribeController {
     constructor(private readonly brevoContactsService: BrevoContactsService) {}
 
-    @DisableCometGuards()
+    @DisableDextinityGuards()
     @Post(`/subscribe`)
     async subscribe(@Body() data: BrevoContactSubscribeInput): Promise<SubscribeResponse> {
         // Here, the application should add logic to handle reCAPTCHA verification

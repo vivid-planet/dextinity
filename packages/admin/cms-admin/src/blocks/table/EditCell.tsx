@@ -3,13 +3,12 @@ import { styled } from "@mui/material/styles";
 import { type GridRenderEditCellParams, useGridApiContext } from "@mui/x-data-grid-pro";
 import { useCallback, useState } from "react";
 
-import type { RichTextBlockState } from "../createRichTextBlock";
 import { resolveNewState } from "../utils";
 import { useTableBlockContext } from "./TableBlockContext";
 
 export const EditCell = ({ id, field, value }: GridRenderEditCellParams) => {
     const { RichTextBlock } = useTableBlockContext();
-    const [valueState, setValueState] = useState<RichTextBlockState>(value);
+    const [valueState, setValueState] = useState(value);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>();
     const apiRef = useGridApiContext();
 

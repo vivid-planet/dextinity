@@ -173,7 +173,7 @@ const Text = createComponentSlot(Typography)<TooltipClassKey>({
 })();
 
 export const Tooltip = (inProps: TooltipProps) => {
-    const props = useThemeProps({ props: inProps, name: "CometAdminTooltip" });
+    const props = useThemeProps({ props: inProps, name: "DextinityAdminTooltip" });
     const { color = "dark", disableInteractive, arrow, children, title, description, customContent, slotProps = {}, ...restProps } = props;
     const theme = useTheme();
 
@@ -256,17 +256,17 @@ const getMuiTooltipTitle = ({ title, description, customContent }: TooltipConten
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminTooltip: TooltipProps;
+        DextinityAdminTooltip: TooltipProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminTooltip: TooltipClassKey;
+        DextinityAdminTooltip: TooltipClassKey;
     }
 
     interface Components {
-        CometAdminTooltip?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminTooltip"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminTooltip"];
+        DextinityAdminTooltip?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminTooltip"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminTooltip"];
         };
     }
 }

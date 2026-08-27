@@ -1,4 +1,4 @@
-import { previewParams } from "@comet/site-nextjs/server";
+import { previewParams } from "@dextinity/site-nextjs/server";
 import { getHostByHeaders, getSiteConfigForHost } from "@src/util/siteConfig";
 import { type NextRequest, NextResponse } from "next/server";
 

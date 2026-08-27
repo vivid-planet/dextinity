@@ -68,7 +68,7 @@ function createDefaultBlockSkeleton<InputApi, State, OutputApi>(): DefaultBlockS
     return {
         ...common<InputApi, State, OutputApi>(),
         AdminComponent: () => {
-            return <FormattedMessage id="comet.blocks.skeleton.noAdminImplemented" defaultMessage="This block has no configurable content" />;
+            return <FormattedMessage id="dextinity.blocks.skeleton.noAdminImplemented" defaultMessage="This block has no configurable content" />;
         },
     };
 }
@@ -80,7 +80,9 @@ function createRootBlockSkeleton<InputApi, State, OutputApi>(): RootBlockSkeleto
             {
                 key: "",
                 label: "Label",
-                content: <FormattedMessage id="comet.blocks.skeleton.noAdminImplemented" defaultMessage="This block has no configurable content" />,
+                content: (
+                    <FormattedMessage id="dextinity.blocks.skeleton.noAdminImplemented" defaultMessage="This block has no configurable content" />
+                ),
             },
         ], // empty implementation
     };

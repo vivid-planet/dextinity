@@ -1,7 +1,7 @@
 import { gql, useApolloClient } from "@apollo/client";
-import { AsyncSelectField } from "@comet/admin";
-import { Image } from "@comet/admin-icons";
-import { type BlockInterface, BlocksFinalForm, createBlockSkeleton } from "@comet/cms-admin";
+import { AsyncSelectField } from "@dextinity/admin";
+import { Image } from "@dextinity/admin-icons";
+import { type BlockInterface, BlocksFinalForm, createBlockSkeleton } from "@dextinity/cms-admin";
 import type { ProductTeaserBlockData, ProductTeaserBlockInput } from "@src/blocks.generated";
 import { FormattedMessage } from "react-intl";
 

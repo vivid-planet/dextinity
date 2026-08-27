@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { createOffsetLimitPagingAction, Table, TableQuery, useTableQuery, useTableQueryPaging } from "@comet/admin";
+import { createOffsetLimitPagingAction, Table, TableQuery, useTableQuery, useTableQueryPaging } from "@dextinity/admin";
 
 import { apolloRestStoryDecorator } from "../../../apollo-rest-story.decorator";
 

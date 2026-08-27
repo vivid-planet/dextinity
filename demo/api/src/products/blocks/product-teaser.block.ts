@@ -1,4 +1,4 @@
-import { BlockData, BlockField, BlockIndexData, BlockInput, blockInputToData, createBlock } from "@comet/cms-api";
+import { BlockData, BlockField, BlockIndexData, BlockInput, blockInputToData, createBlock } from "@dextinity/cms-api";
 import { IsOptional, IsUUID } from "class-validator";
 
 class ProductTeaserBlockData extends BlockData {

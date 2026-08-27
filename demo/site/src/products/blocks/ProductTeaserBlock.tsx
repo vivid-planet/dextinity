@@ -1,5 +1,5 @@
 "use client";
-import { type PropsWithData, withPreview } from "@comet/site-nextjs";
+import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { ProductTeaserBlockData } from "@src/blocks.generated";
 
 import type { LoadedData } from "./ProductTeaserBlock.loader";

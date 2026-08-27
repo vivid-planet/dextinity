@@ -1,4 +1,4 @@
-import { SnackbarProvider } from "@comet/admin";
+import { SnackbarProvider } from "@dextinity/admin";
 import type { Decorator } from "@storybook/react-vite";
 
 export function snackbarDecorator(): Decorator {

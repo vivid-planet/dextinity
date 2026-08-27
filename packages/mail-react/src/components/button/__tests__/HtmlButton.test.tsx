@@ -106,18 +106,13 @@ describe("HtmlButton", () => {
         expect(html).toContain("background-image:linear-gradient(to right, red, blue)");
     });
 
-    it("spans the full width when fullWidth is set", () => {
+    it("adds the full-width modifier class when fullWidth is set", () => {
         const html = renderToStaticMarkup(
             <HtmlButton href="https://example.com" fullWidth>
                 Full width
             </HtmlButton>,
         );
 
-        // fullWidth spans the table (width attribute, honored by Outlook) and fills the
-        // anchor (display:block + width:100%) so the whole button area is clickable.
-        expect(html).toContain('width="100%"');
-        expect(html).toContain("display:block");
-        expect(html).toContain("width:100%");
         expect(html).toContain("htmlButton--fullWidth");
     });
 

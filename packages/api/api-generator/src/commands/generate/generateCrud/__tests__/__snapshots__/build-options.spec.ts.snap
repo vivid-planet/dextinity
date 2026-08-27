@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`buildOptions > buildSortProps > nested m:1 relation string field should be used as sortProp 1`] = `
-"import { SortDirection } from "@comet/cms-api";
+"import { SortDirection } from "@dextinity/cms-api";
     import { Field, InputType, registerEnumType } from "@nestjs/graphql";
     import { Type } from "class-transformer";
     import { IsEnum } from "class-validator";

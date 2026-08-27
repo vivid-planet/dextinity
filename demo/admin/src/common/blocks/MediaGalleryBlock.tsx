@@ -1,4 +1,4 @@
-import { BlockCategory, createCompositeBlock, createCompositeBlockSelectField, createListBlock } from "@comet/cms-admin";
+import { BlockCategory, createCompositeBlock, createCompositeBlockSelectField, createListBlock } from "@dextinity/cms-admin";
 import type { MediaGalleryBlockData } from "@src/blocks.generated";
 import { MediaGalleryItemBlock } from "@src/common/blocks/MediaGalleryItemBlock";
 import { mediaAspectRatioOptions } from "@src/util/mediaAspectRatios";

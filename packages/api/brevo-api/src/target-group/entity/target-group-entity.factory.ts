@@ -1,4 +1,4 @@
-import { DocumentInterface } from "@comet/cms-api";
+import { DocumentInterface } from "@dextinity/cms-api";
 import { Collection, Embedded, Entity, ManyToMany, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";

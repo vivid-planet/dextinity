@@ -1,11 +1,11 @@
 import { gql, useQuery } from "@apollo/client";
-import { Minimize } from "@comet/admin-icons";
+import { Minimize } from "@dextinity/admin-icons";
 import { Grid, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useEffect } from "react";
 
 import { useIFrameBridge } from "../../blocks/iframebridge/useIFrameBridge";
-import { useCometConfig } from "../../config/CometConfigContext";
+import { useDextinityConfig } from "../../config/DextinityConfigContext";
 import { useContentScope } from "../../contentScope/Provider";
 import { DeviceToggle } from "../common/DeviceToggle";
 import { IFrameViewer } from "../common/IFrameViewer";
@@ -23,7 +23,7 @@ function BlockPreview({ url, previewState, previewApi: { device, setDevice, show
     const iFrameBridge = useIFrameBridge();
     const { scope } = useContentScope();
 
-    const { graphQLApiUrl } = useCometConfig();
+    const { graphQLApiUrl } = useDextinityConfig();
 
     const { data, error } = useQuery<GQLBlockPreviewJwtQuery>(
         gql`

@@ -697,7 +697,8 @@
                                 "richtext": "StandaloneRichText",
                                 "space": "Space",
                                 "teaser": "Teaser",
-                                "table": "Table"
+                                "table": "Table",
+                                "tipTapTable": "TipTapTable"
                             },
                             "nullable": false
                         }
@@ -742,7 +743,8 @@
                                 "richtext": "StandaloneRichText",
                                 "space": "Space",
                                 "teaser": "Teaser",
-                                "table": "Table"
+                                "table": "Table",
+                                "tipTapTable": "TipTapTable"
                             },
                             "nullable": false
                         }
@@ -959,6 +961,15 @@
                             "nullable": true
                         },
                         {
+                            "name": "aiContentType",
+                            "kind": "Enum",
+                            "enum": [
+                                "Generated",
+                                "Modified"
+                            ],
+                            "nullable": true
+                        },
+                        {
                             "name": "archived",
                             "kind": "Boolean",
                             "nullable": false
@@ -1059,9 +1070,12 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "text": "RichText",
-                                "divider": "EmailCampaignDivider",
-                                "salutation": "EmailCampaignSalutation",
-                                "image": "NewsletterImage"
+                                "twoListSizesText": "MailTwoListSizesRichText",
+                                "image": "MailImage",
+                                "button": "MailButton",
+                                "divider": "MailDivider",
+                                "spacer": "MailSpacer",
+                                "salutation": "EmailCampaignSalutation"
                             },
                             "nullable": false
                         }
@@ -1096,9 +1110,12 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "text": "RichText",
-                                "divider": "EmailCampaignDivider",
-                                "salutation": "EmailCampaignSalutation",
-                                "image": "NewsletterImage"
+                                "twoListSizesText": "MailTwoListSizesRichText",
+                                "image": "MailImage",
+                                "button": "MailButton",
+                                "divider": "MailDivider",
+                                "spacer": "MailSpacer",
+                                "salutation": "EmailCampaignSalutation"
                             },
                             "nullable": false
                         }
@@ -1107,11 +1124,6 @@
                 "nullable": false
             }
         ]
-    },
-    {
-        "name": "EmailCampaignDivider",
-        "fields": [],
-        "inputFields": []
     },
     {
         "name": "EmailCampaignSalutation",
@@ -1729,6 +1741,224 @@
         ]
     },
     {
+        "name": "MailButton",
+        "fields": [
+            {
+                "name": "text",
+                "kind": "String",
+                "nullable": false
+            },
+            {
+                "name": "link",
+                "kind": "Block",
+                "block": "ExternalLink",
+                "nullable": false
+            },
+            {
+                "name": "variant",
+                "kind": "Enum",
+                "enum": [
+                    "filled",
+                    "outlined"
+                ],
+                "nullable": false
+            },
+            {
+                "name": "align",
+                "kind": "Enum",
+                "enum": [
+                    "left",
+                    "center",
+                    "right"
+                ],
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "text",
+                "kind": "String",
+                "nullable": false
+            },
+            {
+                "name": "link",
+                "kind": "Block",
+                "block": "ExternalLink",
+                "nullable": false
+            },
+            {
+                "name": "variant",
+                "kind": "Enum",
+                "enum": [
+                    "filled",
+                    "outlined"
+                ],
+                "nullable": false
+            },
+            {
+                "name": "align",
+                "kind": "Enum",
+                "enum": [
+                    "left",
+                    "center",
+                    "right"
+                ],
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "MailDivider",
+        "fields": [],
+        "inputFields": []
+    },
+    {
+        "name": "MailImage",
+        "fields": [
+            {
+                "name": "image",
+                "kind": "Block",
+                "block": "PixelImage",
+                "nullable": false
+            },
+            {
+                "name": "fullWidth",
+                "kind": "Boolean",
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "image",
+                "kind": "Block",
+                "block": "PixelImage",
+                "nullable": false
+            },
+            {
+                "name": "fullWidth",
+                "kind": "Boolean",
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "MailLink",
+        "fields": [
+            {
+                "name": "title",
+                "kind": "String",
+                "nullable": true
+            },
+            {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "external": "ExternalLink",
+                                "phone": "PhoneLink"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
+                "name": "activeType",
+                "kind": "String",
+                "nullable": true
+            },
+            {
+                "name": "block",
+                "kind": "NestedObject",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "external": "ExternalLink",
+                                "phone": "PhoneLink"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": true
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "activeType",
+                "kind": "String",
+                "nullable": false
+            },
+            {
+                "name": "title",
+                "kind": "String",
+                "nullable": true
+            }
+        ]
+    },
+    {
+        "name": "MailSpacer",
+        "fields": [
+            {
+                "name": "spacing",
+                "kind": "Enum",
+                "enum": [
+                    "small",
+                    "medium",
+                    "large"
+                ],
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "spacing",
+                "kind": "Enum",
+                "enum": [
+                    "small",
+                    "medium",
+                    "large"
+                ],
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "MailTwoListSizesRichText",
+        "fields": [
+            {
+                "name": "draftContent",
+                "kind": "Json",
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "draftContent",
+                "kind": "Json",
+                "nullable": false
+            }
+        ]
+    },
+    {
         "name": "Media",
         "fields": [
             {
@@ -2229,6 +2459,7 @@
                                 "textImage": "TextImage",
                                 "fullWidthImage": "FullWidthImage",
                                 "table": "Table",
+                                "tipTapTable": "TipTapTable",
                                 "tipTapRichText": "TipTapRichText",
                                 "productList": "ProductList",
                                 "pageTreeIndex": "PageTreeIndex",
@@ -2297,6 +2528,7 @@
                                 "textImage": "TextImage",
                                 "fullWidthImage": "FullWidthImage",
                                 "table": "Table",
+                                "tipTapTable": "TipTapTable",
                                 "tipTapRichText": "TipTapRichText",
                                 "productList": "ProductList",
                                 "pageTreeIndex": "PageTreeIndex",
@@ -2383,6 +2615,15 @@
                         {
                             "name": "altText",
                             "kind": "String",
+                            "nullable": true
+                        },
+                        {
+                            "name": "aiContentType",
+                            "kind": "Enum",
+                            "enum": [
+                                "Generated",
+                                "Modified"
+                            ],
                             "nullable": true
                         },
                         {
@@ -3831,6 +4072,153 @@
         ]
     },
     {
+        "name": "TipTapTable",
+        "fields": [
+            {
+                "name": "columns",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "size",
+                            "kind": "Enum",
+                            "enum": [
+                                "extraSmall",
+                                "small",
+                                "standard",
+                                "large",
+                                "extraLarge"
+                            ],
+                            "nullable": false
+                        },
+                        {
+                            "name": "highlighted",
+                            "kind": "Boolean",
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
+                "name": "rows",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "highlighted",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "cellValues",
+                            "kind": "NestedObjectList",
+                            "object": {
+                                "fields": [
+                                    {
+                                        "name": "columnId",
+                                        "kind": "String",
+                                        "nullable": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "kind": "Block",
+                                        "block": "TipTapRichText",
+                                        "nullable": false
+                                    }
+                                ]
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "columns",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "size",
+                            "kind": "Enum",
+                            "enum": [
+                                "extraSmall",
+                                "small",
+                                "standard",
+                                "large",
+                                "extraLarge"
+                            ],
+                            "nullable": false
+                        },
+                        {
+                            "name": "highlighted",
+                            "kind": "Boolean",
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
+                "name": "rows",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "highlighted",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "cellValues",
+                            "kind": "NestedObjectList",
+                            "object": {
+                                "fields": [
+                                    {
+                                        "name": "columnId",
+                                        "kind": "String",
+                                        "nullable": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "kind": "Block",
+                                        "block": "TipTapRichText",
+                                        "nullable": false
+                                    }
+                                ]
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            }
+        ]
+    },
+    {
         "name": "VimeoVideo",
         "fields": [
             {
@@ -3886,6 +4274,87 @@
                 "name": "vimeoIdentifier",
                 "kind": "String",
                 "nullable": true
+            }
+        ]
+    },
+    {
+        "name": "WelcomeEmailContent",
+        "fields": [
+            {
+                "name": "blocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "text": "RichText",
+                                "twoListSizesText": "MailTwoListSizesRichText",
+                                "image": "MailImage",
+                                "button": "MailButton",
+                                "divider": "MailDivider",
+                                "spacer": "MailSpacer"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "blocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "text": "RichText",
+                                "twoListSizesText": "MailTwoListSizesRichText",
+                                "image": "MailImage",
+                                "button": "MailButton",
+                                "divider": "MailDivider",
+                                "spacer": "MailSpacer"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
             }
         ]
     },

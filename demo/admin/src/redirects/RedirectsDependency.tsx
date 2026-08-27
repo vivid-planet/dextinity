@@ -1,4 +1,4 @@
-import { createDependencyMethods, type DependencyInterface } from "@comet/cms-admin";
+import { createDependencyMethods, type DependencyInterface } from "@dextinity/cms-admin";
 import { FormattedMessage } from "react-intl";
 
 import { RedirectsLinkBlock } from "./RedirectsPage";

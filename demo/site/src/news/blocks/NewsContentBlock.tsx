@@ -1,4 +1,4 @@
-import { BlocksBlock, type PropsWithData, type SupportedBlocks } from "@comet/site-nextjs";
+import { BlocksBlock, type PropsWithData, type SupportedBlocks } from "@dextinity/site-nextjs";
 import type { NewsContentBlockData } from "@src/blocks.generated";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
 import { HeadingBlock } from "@src/common/blocks/HeadingBlock";

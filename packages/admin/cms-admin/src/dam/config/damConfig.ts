@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { useCometConfig } from "../../config/CometConfigContext";
+import { useDextinityConfig } from "../../config/DextinityConfigContext";
 
 export interface DamConfig {
     acceptedMimeTypes?: string[];
@@ -23,13 +23,13 @@ export interface DamConfig {
 const defaultVideoPerformanceWarningFileSize = 10;
 
 export function useDamConfig(): DamConfig {
-    const cometConfig = useCometConfig();
+    const dextinityConfig = useDextinityConfig();
 
-    if (!cometConfig.dam) {
-        throw new Error("No DAM configuration found. Make sure to set `dam` in `CometConfigProvider`.");
+    if (!dextinityConfig.dam) {
+        throw new Error("No DAM configuration found. Make sure to set `dam` in `DextinityConfigProvider`.");
     }
 
-    return cometConfig.dam;
+    return dextinityConfig.dam;
 }
 
 interface VideoPerformanceWarning {

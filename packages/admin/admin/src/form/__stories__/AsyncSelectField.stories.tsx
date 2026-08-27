@@ -1,5 +1,5 @@
 import { gql, useApolloClient } from "@apollo/client";
-import { Info, WarningSolid } from "@comet/admin-icons";
+import { Info, WarningSolid } from "@dextinity/admin-icons";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import type { Manufacturer } from "../../../.storybook/mocks/handlers";

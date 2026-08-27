@@ -1,4 +1,4 @@
-import { CancelButton, OkayButton } from "@comet/admin";
+import { CancelButton, OkayButton } from "@dextinity/admin";
 import {
     // eslint-disable-next-line no-restricted-imports
     Dialog,
@@ -25,30 +25,30 @@ type PageActionMessages = {
 
 const Messages: PageActionMessages = {
     publish: {
-        title: () => <FormattedMessage id="comet.pages.confirmDialog.publish.title" defaultMessage="Publish selected pages?" />,
+        title: () => <FormattedMessage id="dextinity.pages.confirmDialog.publish.title" defaultMessage="Publish selected pages?" />,
         content: ({ selectedPagesCount }) => (
             <FormattedMessage
-                id="comet.pages.confirmDialog.publish.content"
+                id="dextinity.pages.confirmDialog.publish.content"
                 defaultMessage="Are you sure that you want to publish {amount, plural, =0 {no pages} one {the selected page} other {the # selected pages}}?"
                 values={{ amount: selectedPagesCount }}
             />
         ),
     },
     unpublish: {
-        title: () => <FormattedMessage id="comet.pages.confirmDialog.unpublish.title" defaultMessage="Unpublish selected pages?" />,
+        title: () => <FormattedMessage id="dextinity.pages.confirmDialog.unpublish.title" defaultMessage="Unpublish selected pages?" />,
         content: ({ selectedPagesCount }) => (
             <FormattedMessage
-                id="comet.pages.confirmDialog.unpublish.content"
+                id="dextinity.pages.confirmDialog.unpublish.content"
                 defaultMessage="Are you sure that you want to unpublish {amount, plural, =0 {no pages} one {the selected page} other {the # selected pages}}?"
                 values={{ amount: selectedPagesCount }}
             />
         ),
     },
     archive: {
-        title: () => <FormattedMessage id="comet.pages.confirmDialog.archive.title" defaultMessage="Archive selected pages?" />,
+        title: () => <FormattedMessage id="dextinity.pages.confirmDialog.archive.title" defaultMessage="Archive selected pages?" />,
         content: ({ selectedPagesCount }) => (
             <FormattedMessage
-                id="comet.pages.confirmDialog.archive.content"
+                id="dextinity.pages.confirmDialog.archive.content"
                 defaultMessage="Are you sure that you want to archive {amount, plural, =0 {no pages} one {the selected page} other {the # selected pages}}?"
                 values={{ amount: selectedPagesCount }}
             />
@@ -81,7 +81,7 @@ export const ConfirmPageActionDialog = ({ open, onCloseDialog, action, selectedP
                     }}
                     autoFocus={true}
                 >
-                    <FormattedMessage id="comet.pages.confirmDialog.confirm" defaultMessage="Confirm" />
+                    <FormattedMessage id="dextinity.pages.confirmDialog.confirm" defaultMessage="Confirm" />
                 </OkayButton>
             </DialogActions>
         </Dialog>

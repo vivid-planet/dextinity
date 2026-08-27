@@ -9,6 +9,7 @@ import { CurrentUser } from "./dto/current-user";
 import { FindUsersArgs, PermissionFilter } from "./dto/paginated-user-list";
 import { UserPermissionsUser } from "./dto/user";
 import { User } from "./interfaces/user";
+import { UserContentScopesLoaderService } from "./user-content-scopes-loader.service";
 import { UserPermissionsService } from "./user-permissions.service";
 
 @ObjectType()
@@ -19,7 +20,10 @@ class UserPermissionPaginatedUserList extends PaginatedResponseFactory.create(Us
 export class UserResolver {
     private readonly logger = new Logger(UserResolver.name);
 
-    constructor(private readonly userService: UserPermissionsService) {}
+    constructor(
+        private readonly userService: UserPermissionsService,
+        private readonly userContentScopesLoader: UserContentScopesLoaderService,
+    ) {}
 
     @Query(() => UserPermissionsUser)
     async userPermissionsUserById(@Args("id", { type: () => String }) id: string): Promise<UserPermissionsUser> {
@@ -115,7 +119,7 @@ export class UserResolver {
 
     @ResolveField(() => Int)
     async contentScopesCount(@Parent() user: UserPermissionsUser): Promise<number> {
-        return (await this.userService.getContentScopes(user)).length;
+        return (await this.userContentScopesLoader.load(user)).length;
     }
 
     @ResolveField(() => Boolean)

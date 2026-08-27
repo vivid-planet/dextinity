@@ -1,5 +1,5 @@
 // Inspired by https://testing-library.com/docs/react-testing-library/setup/#custom-render
-import { MuiThemeProvider, SnackbarProvider } from "@comet/admin";
+import { MuiThemeProvider, SnackbarProvider } from "@dextinity/admin";
 import { createTheme } from "@mui/material";
 import { render as testingLibraryRender, type RenderOptions, type RenderResult } from "@testing-library/react";
 import type { ReactElement, ReactNode } from "react";

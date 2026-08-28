@@ -12,7 +12,7 @@ The versions of the project that are currently supported with security updates.
 |   < 8.x | :x:                                   |
 
 > [!NOTE]
-> Version 9.x is not supported. Use 10.x instead, which is largely compatible with 9.x as it only contains the COMET -> Dextinity rename.
+> Version 9.x is not supported. Use 10.x instead, which is largely compatible with 9.x as it only contains the COMET -> Dextinity rename. See the [migration guide from v9 to v10](https://cms-docs.dextinity.com/docs/migration-guide/migration-from-v9-to-v10).
 
 ## Reporting a vulnerability
 

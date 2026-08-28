@@ -235,17 +235,21 @@ option affects the resulting HTTP redirect — the `createExternalLinkBlock` fac
 
 There is one factory per layer, and they do different things. Pick by how far the option should disappear:
 
-|             | `@dextinity/cms-admin`                       | `@dextinity/cms-api`                      |
-| ----------- | -------------------------------------------- | ----------------------------------------- |
-| Effect      | Hides the field from the editor (`supports`) | Removes the field from the block entirely |
-| Block name  | Optional, defaults to `ExternalLink`         | Mandatory, must be your own               |
-| Granularity | Per usage site                               | Per block                                 |
-| Stored data | Untouched, keeps its default                 | Untouched, lingers untyped                |
+|             | `@dextinity/cms-admin`                         | `@dextinity/cms-api`                      |
+| ----------- | ---------------------------------------------- | ----------------------------------------- |
+| Effect      | Hides the field from the editor (`supports`)   | Removes the field from the block entirely |
+| Block name  | `ExternalLink`, own one required with `fields` | Mandatory, must be your own               |
+| Granularity | Per usage site                                 | Per block                                 |
+| Stored data | Untouched, keeps its default                   | Untouched, lingers untyped                |
 
 The admin factory can do both: `supports` hides a field the block still has, `fields` takes it out of the block's data to
-match an API block of your own. The API name is mandatory because API blocks are registered globally and one name means one
-field set, while admin blocks are not registered at all — which is exactly why the same admin block name can appear more
-than once, with different `supports`.
+match an API block of your own. Either way the name promises a field set, so the API factory always needs one of its own,
+and the admin factory needs one as soon as `fields` leaves an option out — it throws otherwise.
+
+The same admin block name may appear more than once, as the core itself does with `supports: []` in the redirects form next
+to the default in content. What makes that safe is that those blocks share one data shape, not that admin blocks go
+unregistered: the block clipboard decides whether copied content fits where it is pasted by comparing block names, so two
+blocks sharing a name have to be interchangeable.
 
 ### API
 
@@ -327,8 +331,10 @@ export const UrlLinkBlock = createExternalLinkBlock({ fields: [], name: "UrlLink
 ```
 
 `fields` decides which options the block's data has, `supports` which of those the editor may set, and it defaults to
-`fields`. So `fields: []` alone already means the editor sees only the URL. `supports` has to be a subset of `fields` —
-the editor can't set an option the block doesn't have — and the factory throws at creation time if it isn't.
+`fields`. So `fields: []` alone already means the editor sees only the URL. Two rules are checked at creation time and
+throw if broken: `supports` has to be a subset of `fields` — the editor can't set an option the block doesn't have — and a
+reduced `fields` needs a `name` of its own, so that a block with fewer fields can't keep passing itself off as
+`ExternalLink`.
 
 Both must line up with the API block exactly: sending a field it doesn't have is rejected, and so is omitting one it has.
 Leave `fields` and `name` alone unless you created your own API block; the `ExternalLinkBlock` shipped by the API has all

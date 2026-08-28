@@ -48,22 +48,34 @@ interface ExternalLinkBlockFactoryOptions {
      */
     supports?: ExternalLinkBlockOption[];
     /**
-     * The block's name. Must match the name of the API block this is paired with, so only change it
-     * together with `fields` for a block created by `createExternalLinkBlock` from `@dextinity/cms-api`.
+     * The block's name. Must match the name of the API block this is paired with. Required as soon as
+     * `fields` leaves an option out, because the name promises a field set — it is what ties stored data,
+     * the generated types and the site component together, and what the block clipboard matches on when
+     * deciding whether copied content fits where it is pasted.
      * @default "ExternalLink"
      */
     name?: string;
 }
 
 export function createExternalLinkBlock(
-    { fields = allOptions, supports = fields, name = "ExternalLink" }: ExternalLinkBlockFactoryOptions = {},
+    { fields = allOptions, supports = fields, name }: ExternalLinkBlockFactoryOptions = {},
     override?: (block: ExternalLinkBlock) => ExternalLinkBlock,
 ): ExternalLinkBlock {
+    // A reduced field set only fits an API block of your own, so it must not keep the ExternalLink name:
+    // that name promises the field set of the API's ExternalLinkBlock, and it is also what the block
+    // clipboard matches on when deciding whether copied content fits where it is pasted.
+    if (name === undefined && !allOptions.every((option) => fields.includes(option))) {
+        throw new Error(
+            `An external link block that leaves an option out of its "fields" needs a "name" of its own, matching the API block it is paired with. The ExternalLinkBlock shipped by the API has all of them — use "supports" to hide an option from the editor while keeping it in the data.`,
+        );
+    }
+
+    const blockName = name ?? "ExternalLink";
     const unsupportedFields = supports.filter((option) => !fields.includes(option));
 
     if (unsupportedFields.length > 0) {
         throw new Error(
-            `The ${name} block can't let the editor set ${unsupportedFields.join(", ")}, as it isn't part of its fields. Add it to "fields" or remove it from "supports".`,
+            `The ${blockName} block can't let the editor set ${unsupportedFields.join(", ")}, as it isn't part of its fields. Add it to "fields" or remove it from "supports".`,
         );
     }
 
@@ -71,7 +83,7 @@ export function createExternalLinkBlock(
     const ExternalLinkBlock: ExternalLinkBlock = {
         ...createBlockSkeleton(),
 
-        name,
+        name: blockName,
 
         displayName: <FormattedMessage id="dextinity.blocks.externalLink" defaultMessage="External Link" />,
 

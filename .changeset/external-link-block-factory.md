@@ -29,7 +29,7 @@ Values that are already stored are kept as they are, the editor just can't chang
 export const UrlLinkBlock = createExternalLinkBlock({ fields: [], name: "UrlLink" });
 ```
 
-`fields` decides which options the block's data has, `supports` which of those the editor may set, defaulting to `fields`. `supports` has to be a subset of `fields`, and the factory throws at creation time if it isn't. Both must match the API block exactly: sending a field it doesn't have is rejected by validation, and so is omitting one it has.
+`fields` decides which options the block's data has, `supports` which of those the editor may set, defaulting to `fields`. Both must match the API block exactly: sending a field it doesn't have is rejected by validation, and so is omitting one it has. Two rules are checked at creation time and throw if broken: `supports` has to be a subset of `fields`, and a reduced `fields` needs a `name` of its own — a block with fewer fields must not keep passing itself off as `ExternalLink`, not least because the block clipboard matches on the name.
 
 **Redirects no longer offer "Open in new window" and "No follow"**
 

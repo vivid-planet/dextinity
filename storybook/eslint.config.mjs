@@ -16,6 +16,8 @@ export default defineConfig([
             "@dextinity/no-other-module-relative-import": "off",
             "react/react-in-jsx-scope": "off",
             "react/jsx-no-literals": "off",
+            // The dependencies can only list the package `@dextinity/mail-react`, while the rule looks for the addon name with the `/storybook` subpath.
+            "storybook/no-uninstalled-addons": ["error", { ignore: ["@dextinity/mail-react/storybook"] }],
         },
     },
 ]);

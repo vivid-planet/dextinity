@@ -45,7 +45,7 @@
         "@graphql-tools/load": "^7.8.14",
         "@graphql-typed-document-node/core": "^3.1.1",
         "@mui/lab": "^5.0.0-alpha.76",
-        "axios": "^0.21.0",
+        "axios": "^0.33.0",
         "change-case": "^4.1.2",
         "class-validator": "^0.14.1",
         "commander": "^10.0.1",

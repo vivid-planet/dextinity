@@ -5,10 +5,14 @@
 The versions of the project that are currently supported with security updates.
 
 | Version | Supported                             |
-|--------:|:--------------------------------------|
-|     9.x | :white_check_mark:                    |
+| ------: | :------------------------------------ |
+|  ≥ 10.x | :white_check_mark:                    |
+|     9.x | :x: (use 10.x instead, see note)      |
 |     8.x | :white_check_mark: (until 2027-07-07) |
 |   < 8.x | :x:                                   |
+
+> [!NOTE]
+> Version 9.x is not supported. Use 10.x instead, which is largely compatible with 9.x as it only contains the COMET -> Dextinity rename.
 
 ## Reporting a vulnerability
 

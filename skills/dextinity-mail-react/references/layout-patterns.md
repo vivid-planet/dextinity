@@ -25,6 +25,19 @@ Follow the BEM convention with camelCase blocks. Adapt the block name to the com
 
 ---
 
+## Column Widths Must Be Inline
+
+Set `disableResponsiveBehavior` on **every** section with more than one column, including sections that are meant to stack. The prop wraps the columns in an `MjmlGroup`, which is what makes MJML write their widths inline. Without it the widths exist only in a `min-width` media query, and clients that drop that query — GMX and Web.de, for example — show the columns stacked.
+
+Two things follow:
+
+- Write the mobile stacking yourself, in `theme.breakpoints.mobile.belowMediaQuery`. A group never stacks by itself.
+- Target the column container one level deeper. The group adds a `<div>`, so a flex container is `… > td > div`.
+
+Inside a group, a column without a `width` prop gets `parseInt(100 / siblings)%` — `33%` for three columns, not `33.33%`. Set explicit widths when the count does not divide 100 evenly.
+
+---
+
 ## Symmetric Two-Column Layout (Equal Width)
 
 Two equal-width columns with a gap between them, stacking vertically on mobile.
@@ -39,7 +52,7 @@ const TwoColumnsSection = () => {
     const halfGap = columnGap / 2;
 
     return (
-        <MjmlSection indent className="twoColumnsSection">
+        <MjmlSection indent disableResponsiveBehavior className="twoColumnsSection">
             <MjmlColumn className="twoColumnsSection__leftColumn" paddingRight={halfGap}>
                 <MjmlText>Left column content.</MjmlText>
             </MjmlColumn>
@@ -53,12 +66,19 @@ const TwoColumnsSection = () => {
 
 ### Responsive Stacking
 
-On mobile, columns stack vertically. Reset the gap padding so content stretches full-width, and add a vertical margin between the stacked columns:
+The group suppresses MJML's own stacking, so write it yourself. Reset the gap padding so content stretches full-width, and add a vertical margin between the stacked columns:
 
 ```ts
 registerStyles(
     (theme) => css`
         ${theme.breakpoints.mobile.belowMediaQuery} {
+            .twoColumnsSection__leftColumn,
+            .twoColumnsSection__rightColumn {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
             .twoColumnsSection__leftColumn > table > tbody > tr > td {
                 padding-right: 0 !important;
             }
@@ -105,7 +125,7 @@ Scales to any N; 3 and 4 differ only in how many middle columns you repeat. Perc
 Three columns shown; for four or more, repeat the middle-column.
 
 ```tsx
-<MjmlSection indent className="multiColumnSection">
+<MjmlSection indent disableResponsiveBehavior className="multiColumnSection">
     <MjmlColumn className="multiColumnSection__column" width={outerColumnWidth} paddingRight={halfColumnGap}>
         …
     </MjmlColumn>
@@ -122,55 +142,15 @@ Three columns shown; for four or more, repeat the middle-column.
 
 Stacking is a **design decision per component**, not a function of column count. Do not assume the user wants the storybook default — these are starting points, not rules. If it is unclear which strategy fits, infer from the content (dense text vs. short labels vs. fixed-width icons/numbers) or ask.
 
-| Strategy            | When to pick it                                                                         | How it's implemented                                                               |
-| ------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| A. Stack at mobile  | Columns stay readable while narrowing below `bodyWidth` (e.g., 3-col storybook default) | Flex reset at `default` + stack at `mobile`                                        |
-| B. Stack at default | Columns would get too cramped below `bodyWidth` (e.g., 4-col storybook default)         | Flex reset that stacks at `default`                                                |
-| C. Never stack      | Short fixed content that must remain horizontal (numeric rows, icon strips)             | `disableResponsiveBehavior` + flex reset one level deeper (targets `… > td > div`) |
+| Strategy            | When to pick it                                                                         | How it's implemented                        |
+| ------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------- |
+| A. Stack at mobile  | Columns stay readable while narrowing below `bodyWidth` (e.g., 3-col storybook default) | Flex reset at `default` + stack at `mobile` |
+| B. Stack at default | Columns would get too cramped below `bodyWidth` (e.g., 4-col storybook default)         | Flex reset that stacks at `default`         |
+| C. Never stack      | Short fixed content that must remain horizontal (numeric rows, icon strips)             | Flex reset at `default`, no `mobile` block  |
 
-All three strategies share the same flex reset on the element that directly contains the columns — it neutralises the compensated inline widths so content areas stay equal at every viewport (without it, percentage widths and pixel paddings drift apart below `bodyWidth`, making columns unequal by a few pixels). For A and B the container is the section's inner `<td>`; for C it is the `MjmlGroup` wrapper `<div>` that `disableResponsiveBehavior` inserts between the `<td>` and the columns, so the selector goes one level deeper (`… > td > div`). They also differ at `mobile.belowMediaQuery`: A adds a stack override, B collapses into the `default` block and stacks immediately, C adds nothing. Strategy C additionally needs `disableResponsiveBehavior` on the section — MJML auto-stacks below its own mobile breakpoint by default, and this prop wraps the columns in an `MjmlGroup` internally so the auto-stack is suppressed even in clients that ignore the flex CSS.
+All three strategies share the same flex reset on the `MjmlGroup` `<div>` that directly contains the columns — it neutralises the compensated inline widths so content areas stay equal at every viewport (without it, percentage widths and pixel paddings drift apart below `bodyWidth`, making columns unequal by a few pixels). They differ only at `mobile.belowMediaQuery`: A adds a stack override, B collapses into the `default` block and stacks immediately, C adds nothing. The section carries `disableResponsiveBehavior` in every case, because the columns need their inline widths — see [Column Widths Must Be Inline](#column-widths-must-be-inline).
 
 **Strategy A** — keep the horizontal intermediate state, stack at mobile:
-
-```ts
-${theme.breakpoints.default.belowMediaQuery} {
-    .multiColumnSection > table > tbody > tr > td {
-        display: flex !important;
-        gap: 20px !important;
-    }
-    .multiColumnSection__column {
-        flex: 1 1 0% !important;
-        width: auto !important;
-        max-width: none !important;
-        display: block !important;
-    }
-    .multiColumnSection__column > table > tbody > tr > td {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-    }
-}
-
-${theme.breakpoints.mobile.belowMediaQuery} {
-    .multiColumnSection > table > tbody > tr > td {
-        flex-direction: column !important;
-    }
-    .multiColumnSection__column {
-        flex: none !important;
-        width: 100% !important;
-        max-width: 100% !important;
-    }
-}
-```
-
-**Strategy B** — collapse the two blocks: put `flex-direction: column` and `width: 100%` in the `default.belowMediaQuery` block and drop the `mobile.belowMediaQuery` block.
-
-**Strategy C** — set `disableResponsiveBehavior` on the section and apply Strategy A's flex reset one level deeper (the group wrapper), dropping the `mobile.belowMediaQuery` block:
-
-```tsx
-<MjmlSection indent disableResponsiveBehavior className="multiColumnSection">
-    {/* …columns as in the pattern above… */}
-</MjmlSection>
-```
 
 ```ts
 ${theme.breakpoints.default.belowMediaQuery} {
@@ -189,9 +169,22 @@ ${theme.breakpoints.default.belowMediaQuery} {
         padding-right: 0 !important;
     }
 }
+
+${theme.breakpoints.mobile.belowMediaQuery} {
+    .multiColumnSection > table > tbody > tr > td > div {
+        flex-direction: column !important;
+    }
+    .multiColumnSection__column {
+        flex: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
 ```
 
-The only difference from Strategy A's `default.belowMediaQuery` block is the `> div` in the first selector — `disableResponsiveBehavior` wraps the columns in an `MjmlGroup` `<div>` inside the `<td>`, so the flex container has to target that wrapper instead of the `<td>` to make the columns its direct flex children. Applying flex to the `<td>` instead would give it a single flex item (the wrapper), and the block-display rule on the columns below would make them stack vertically inside that wrapper.
+**Strategy B** — collapse the two blocks: put `flex-direction: column` and `width: 100%` in the `default.belowMediaQuery` block and drop the `mobile.belowMediaQuery` block.
+
+**Strategy C** — keep Strategy A's `default.belowMediaQuery` block and drop the `mobile.belowMediaQuery` block. The columns then hold their flex widths at every viewport.
 
 ---
 
@@ -219,7 +212,7 @@ const fluidColumnWidth = sectionInnerWidth - SMALL_COLUMN_WIDTH;
 Gap is created by padding on the fluid column's inner edge:
 
 ```tsx
-<MjmlSection indent>
+<MjmlSection indent disableResponsiveBehavior>
     <MjmlColumn className="imageTextLayout__smallColumn" width={`${SMALL_COLUMN_WIDTH}px`} verticalAlign="middle">
         <MjmlImage src="..." alt="..." width={SMALL_COLUMN_WIDTH} />
     </MjmlColumn>
@@ -233,12 +226,19 @@ To place the small column on the right, swap column order and move padding to `p
 
 ### Two-Breakpoint Responsive Behavior
 
-Fixed-width columns overflow between `bodyWidth` and the mobile stacking breakpoint. Use two stacked `belowMediaQuery` blocks — the later one overrides the earlier via cascade order:
+Fixed-width columns overflow between `bodyWidth` and the mobile stacking breakpoint. Use two stacked `belowMediaQuery` blocks — the later one overrides the earlier via cascade order.
+
+Inside a group a pixel width is written inline as a percentage of the section, so the fixed column also needs its pixel width back below `bodyWidth`, where the section is narrower:
 
 ```ts
 registerStyles(
     (theme) => css`
         ${theme.breakpoints.default.belowMediaQuery} {
+            .imageTextLayout__smallColumn {
+                width: ${SMALL_COLUMN_WIDTH}px !important;
+                max-width: ${SMALL_COLUMN_WIDTH}px !important;
+            }
+
             .imageTextLayout__fluidColumn {
                 width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
                 max-width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
@@ -246,7 +246,9 @@ registerStyles(
         }
 
         ${theme.breakpoints.mobile.belowMediaQuery} {
+            .imageTextLayout__smallColumn,
             .imageTextLayout__fluidColumn {
+                display: block !important;
                 width: 100% !important;
                 max-width: 100% !important;
             }
@@ -267,11 +269,11 @@ This cascade-based approach is the idiomatic pattern. Never use hardcoded `@medi
 
 ### Controlling Mobile Stack Order with `direction="rtl"`
 
-MJML stacks columns in source order on mobile. To make a right-side column stack on top, use `direction="rtl"` on the section to flip the desktop visual order while keeping the source (and mobile stacking) order:
+MJML stacks columns in source order on mobile. To make a right-side column stack on top, use `direction="rtl"` to flip the desktop visual order while keeping the source (and mobile stacking) order. The prop goes on the group, not on the section: `MjmlGroup` writes its own `direction` and defaults it to `ltr`, so a value on the section would be cancelled.
 
 ```tsx
 <MjmlWrapper padding={`0 ${sectionIndent}px`} backgroundColor={theme.colors.background.content}>
-    <MjmlSection direction="rtl">
+    <MjmlSection disableResponsiveBehavior slotProps={{ group: { direction: "rtl" } }}>
         <MjmlColumn className="layout__smallColumn" width={`${SMALL_COLUMN_WIDTH}px`}>
             <MjmlImage src="..." alt="..." width={SMALL_COLUMN_WIDTH} />
         </MjmlColumn>
@@ -293,9 +295,9 @@ When using `direction="rtl"`:
 
 Sometimes you cannot make both views from the same HTML, because the mobile view needs a different structure than the desktop view. Then put both layouts in the email and hide one of them.
 
-Two layouts make twice as much markup, so first try to make one layout that works at each width. Columns already stack below `theme.breakpoints.mobile`.
+Two layouts make twice as much markup, so first try to make one layout that works at each width. The column patterns above already stack below `theme.breakpoints.mobile`.
 
-- The **default layout** is not hidden. It shows if the email client removes the `<style>` block, so make it the complete layout.
+- The **default layout** is not hidden. It shows if the email client removes the `<style>` block, so make it the complete layout. If it has columns, its section needs `disableResponsiveBehavior`, or the columns stack in exactly the clients this layout exists for.
 - The **mobile layout** is hidden with inline styles. A media query then hides the default layout and shows the mobile layout.
 
 Make a component for each layout, and start it at its `MjmlSection`. Then the call site shows only the switch. Put the hiding styles on a `<div>` around the section: a section becomes a table, and `max-height` does not work on a table.
@@ -353,7 +355,7 @@ Write only `mso-hide: all` on those elements. `display: none` there breaks the t
 
 The media query must cancel each hiding style. `display: block` with `max-height: 0` still shows nothing. `overflow: visible` is also necessary, because Yahoo Mail adds `overflow-x` and `overflow-y` if it finds `max-height`.
 
-Do not put the switch breakpoint below `theme.breakpoints.mobile`. The default layout then stacks its columns before the media query hides it. If you must, add `disableResponsiveBehavior` to its section.
+Do not put the switch breakpoint below `theme.breakpoints.mobile`. The default layout then stacks its columns before the media query hides it.
 
 Do not use a conditional comment (`<!--[if !mso]>`) to hide a layout. MJML puts its own `[if mso]` comments around each section, and their `<![endif]-->` closes your comment too early. `MjmlConditionalComment` selects an email client, not a screen width.
 

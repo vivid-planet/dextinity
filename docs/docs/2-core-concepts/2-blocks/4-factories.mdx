@@ -265,27 +265,6 @@ Values that are already stored are kept as they are.
 The preview image in particular stays part of the block's data either way, since the API's child block is non-nullable.
 :::
 
-Blocks can be found by their tags when searching in the "Add block" drawer.
-The block is tagged "Video" by default, use `tags` to change that:
-
-```tsx title="DamVideoBlock.tsx"
-import { createDamVideoBlock } from "@dextinity/cms-admin";
-import { defineMessage } from "react-intl";
-
-export const DamVideoBlock = createDamVideoBlock({
-    tags: [defineMessage({ id: "blocks.damVideo.tag.backgroundVideo", defaultMessage: "Background video" })],
-});
-```
-
-Pass an override function as the second argument to change the created block, for instance its display name:
-
-```tsx title="DamVideoBlock.tsx"
-export const DamVideoBlock = createDamVideoBlock({}, (block) => ({
-    ...block,
-    displayName: <FormattedMessage id="blocks.backgroundVideo" defaultMessage="Background Video" />,
-}));
-```
-
 ## FinalFormBlock (Admin only)
 
 The FinalFormBlock factory can be used to convert a block's `AdminComponent` API to the Final Form `Field` API.

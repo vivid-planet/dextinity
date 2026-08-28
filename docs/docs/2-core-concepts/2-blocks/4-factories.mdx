@@ -227,6 +227,100 @@ export const FullWidthImageBlock = createCompositeBlock({
 });
 ```
 
+## DamVideoBlock (Admin only)
+
+The DamVideoBlock factory creates a block for a video from the DAM.
+Use it to restrict what editors can set besides the video file itself.
+
+`@dextinity/cms-admin` also exports a ready-made `DamVideoBlock` that is created by the factory using its defaults.
+Only use the factory when those defaults don't fit your site implementation.
+
+### Admin
+
+Use the `createDamVideoBlock` factory:
+
+```tsx title="DamVideoBlock.tsx"
+import { createDamVideoBlock } from "@dextinity/cms-admin";
+
+// For a site that renders no poster image
+export const DamVideoBlock = createDamVideoBlock({ supports: ["controls"] });
+```
+
+`supports` defines what editors can set besides the video file itself:
+
+- `"controls"`: The playback options autoplay, loop and show controls.
+  They are offered together because autoplay and show controls depend on each other: a video with neither can't be played.
+- `"previewImage"`: The poster image shown before playback.
+
+Both are supported by default.
+Leave out what your site implementation doesn't use, so editors aren't offered options that have no effect.
+For instance, an embedded app context that can't autoplay, or a site that only reads the video file's URL:
+
+```tsx title="DamVideoBlock.tsx"
+export const DamVideoBlock = createDamVideoBlock({ supports: [] });
+```
+
+:::note
+
+Leaving out an option only hides it from the editor.
+Values that are already stored are kept as they are.
+The preview image in particular stays part of the block's data either way, since the API's child block is non-nullable.
+:::
+
+Blocks can be found by their tags when searching in the "Add block" drawer.
+The block is tagged "Video" by default, use `tags` to change that:
+
+```tsx title="DamVideoBlock.tsx"
+import { createDamVideoBlock } from "@dextinity/cms-admin";
+import { defineMessage } from "react-intl";
+
+export const DamVideoBlock = createDamVideoBlock({
+    tags: [defineMessage({ id: "blocks.damVideo.tag.backgroundVideo", defaultMessage: "Background video" })],
+});
+```
+
+Pass an override function as the second argument to change the created block, for instance its display name:
+
+```tsx title="DamVideoBlock.tsx"
+export const DamVideoBlock = createDamVideoBlock({}, (block) => ({
+    ...block,
+    displayName: <FormattedMessage id="blocks.backgroundVideo" defaultMessage="Background Video" />,
+}));
+```
+
+### API and Site
+
+There is no factory for API and site, since only the admin's editing UI is configurable.
+Use the `DamVideoBlock` provided by `@dextinity/cms-api`:
+
+```ts title="page-content.block.ts"
+import { createBlocksBlock, DamVideoBlock } from "@dextinity/cms-api";
+
+export const PageContentBlock = createBlocksBlock(
+    {
+        supportedBlocks: {
+            damVideo: DamVideoBlock,
+        },
+    },
+    "PageContent",
+);
+```
+
+And the `DamVideoBlock` component provided by `@dextinity/site-nextjs`:
+
+```tsx title="PageContentBlock.tsx"
+import { BlocksBlock, DamVideoBlock, PropsWithData, SupportedBlocks } from "@dextinity/site-nextjs";
+import { PageContentBlockData } from "@src/blocks.generated";
+
+const supportedBlocks: SupportedBlocks = {
+    damVideo: (props) => <DamVideoBlock data={props} aspectRatio="16x9" />,
+};
+
+export function PageContentBlock({ data }: PropsWithData<PageContentBlockData>) {
+    return <BlocksBlock data={data} supportedBlocks={supportedBlocks} />;
+}
+```
+
 ## FinalFormBlock (Admin only)
 
 The FinalFormBlock factory can be used to convert a block's `AdminComponent` API to the Final Form `Field` API.

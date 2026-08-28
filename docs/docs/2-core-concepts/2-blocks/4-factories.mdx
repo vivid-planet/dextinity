@@ -230,31 +230,19 @@ export const FullWidthImageBlock = createCompositeBlock({
 ## DamVideoBlock (Admin only)
 
 The DamVideoBlock factory creates a block for a video from the DAM.
-Use it to restrict what editors can set besides the video file itself.
+Use `supports` to restrict what editors can set besides the video file itself:
 
-`@dextinity/cms-admin` also exports a ready-made `DamVideoBlock` that is created by the factory using its defaults.
-Only use the factory when those defaults don't fit your site implementation.
+- `"controls"`: The playback options autoplay, loop and show controls.
+- `"previewImage"`: The poster image shown before playback.
 
-Use the `createDamVideoBlock` factory:
+Both are supported by default.
+`@dextinity/cms-admin` exports a ready-made `DamVideoBlock` created with those defaults, use the `createDamVideoBlock` factory to change them:
 
 ```tsx title="DamVideoBlock.tsx"
 import { createDamVideoBlock } from "@dextinity/cms-admin";
 
 // For a site that renders no poster image
 export const DamVideoBlock = createDamVideoBlock({ supports: ["controls"] });
-```
-
-`supports` defines what editors can set besides the video file itself:
-
-- `"controls"`: The playback options autoplay, loop and show controls.
-- `"previewImage"`: The poster image shown before playback.
-
-Both are supported by default.
-Leave out what your site implementation doesn't use, so editors aren't offered options that have no effect.
-For instance, an embedded app context that can't autoplay, or a site that only reads the video file's URL:
-
-```tsx title="DamVideoBlock.tsx"
-export const DamVideoBlock = createDamVideoBlock({ supports: [] });
 ```
 
 :::note

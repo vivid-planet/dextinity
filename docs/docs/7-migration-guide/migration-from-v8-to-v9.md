@@ -58,7 +58,7 @@ It keeps the migration PR focused on runtime changes, and it splits a large, har
     - [Rename GraphQL operations and fragments with redundant kind suffixes](#rename-graphql-operations-and-fragments-with-redundant-kind-suffixes)
 
 5. Defer the violations that can only be fixed in v9.
-   Some symbols are only exported from a package root in v9, so the `/lib` import can't be resolved yet.
+   Some symbols aren't exported from the package root on v8 yet, so the `/lib` import is the only one that resolves — but the new rule forbids it.
    Suppress those inline with a marker comment instead of leaving the lint red:
 
     ```ts

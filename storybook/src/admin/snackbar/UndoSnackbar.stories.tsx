@@ -6,8 +6,11 @@ const UndoSnackbarExample = () => {
     const [chosenOption, setChosenOption] = useState("one");
     const snackbarApi = useSnackbarApi();
 
-    const handleUndo = (prevOption: string) => {
-        setChosenOption(prevOption);
+    // `UndoSnackbar` passes its optional `payload` on to `onUndoClick`
+    const handleUndo = (prevOption?: string) => {
+        if (prevOption !== undefined) {
+            setChosenOption(prevOption);
+        }
     };
 
     const handleChange = (event: MouseEvent<HTMLElement>, newOption: string) => {

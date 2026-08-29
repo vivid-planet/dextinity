@@ -219,8 +219,8 @@ const InfoTooltip = createComponentSlot(Tooltip)<FieldContainerClassKey>({
 })(
     ({ theme }) => css`
         color: ${theme.palette.text.secondary};
-        margin-left: ${theme.spacing(2)};
-        font-size: 12px;
+        margin-left: 4px;
+        font-size: 16px;
     `,
 );
 

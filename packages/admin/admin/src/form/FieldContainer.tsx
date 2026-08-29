@@ -1,7 +1,9 @@
+import { Info } from "@dextinity/admin-icons";
 import { FormControl, FormHelperText, FormLabel, formLabelClasses, inputBaseClasses, svgIconClasses, useThemeProps } from "@mui/material";
 import { type ComponentsOverrides, css, type Theme } from "@mui/material/styles";
-import { type PropsWithChildren, type ReactNode, useEffect, useRef } from "react";
+import { type ComponentProps, isValidElement, type PropsWithChildren, type ReactElement, type ReactNode, useEffect, useRef } from "react";
 
+import { Tooltip } from "../common/Tooltip";
 import { createComponentSlot } from "../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
@@ -9,6 +11,7 @@ export type FieldContainerProps = ThemedComponentBaseProps<{
     root: typeof FormControl;
     innerContainer: "div";
     label: typeof FormLabel;
+    infoTooltip: typeof Tooltip;
     inputContainer: "div";
     error: typeof FormHelperText;
     warning: typeof FormHelperText;
@@ -30,6 +33,10 @@ export type FieldContainerProps = ThemedComponentBaseProps<{
     helperText?: ReactNode;
     secondaryHelperText?: ReactNode;
     helperTextIcon?: ReactNode;
+    infoTooltip?: ReactNode | Omit<ComponentProps<typeof Tooltip>, "children">;
+    iconMapping?: {
+        infoTooltip?: ReactElement;
+    };
 };
 
 export type FieldContainerClassKey =
@@ -44,6 +51,7 @@ export type FieldContainerClassKey =
     | "fieldMarginNever"
     | "fieldMarginOnlyIfNotLast"
     | "label"
+    | "infoTooltip"
     | "inputContainer"
     | "hasError"
     | "error"
@@ -205,6 +213,17 @@ const Label = createComponentSlot(FormLabel)<FieldContainerClassKey, OwnerState>
     `,
 );
 
+const InfoTooltip = createComponentSlot(Tooltip)<FieldContainerClassKey>({
+    componentName: "FormFieldContainer",
+    slotName: "infoTooltip",
+})(
+    ({ theme }) => css`
+        color: ${theme.palette.text.secondary};
+        margin-left: ${theme.spacing(2)};
+        font-size: 12px;
+    `,
+);
+
 const InputContainer = createComponentSlot("div")<FieldContainerClassKey, OwnerState>({
     componentName: "FormFieldContainer",
     slotName: "inputContainer",
@@ -306,6 +325,22 @@ const HelperTextContent = createComponentSlot("span")<FieldContainerClassKey>({
     slotName: "helperTextContent",
 })();
 
+const getInfoTooltipProps = (infoTooltip: FieldContainerProps["infoTooltip"]) => {
+    if (!infoTooltip) {
+        return null;
+    }
+
+    if (isValidElement(infoTooltip) || typeof infoTooltip === "string") {
+        return { title: infoTooltip };
+    }
+
+    if (typeof infoTooltip === "object") {
+        return infoTooltip;
+    }
+
+    return null;
+};
+
 export const FieldContainer = (inProps: PropsWithChildren<FieldContainerProps>) => {
     const {
         variant = "vertical",
@@ -320,6 +355,8 @@ export const FieldContainer = (inProps: PropsWithChildren<FieldContainerProps>) 
         helperText,
         secondaryHelperText,
         helperTextIcon,
+        infoTooltip,
+        iconMapping = {},
         scrollTo = false,
         fieldMargin = "onlyIfNotLast",
         slotProps,
@@ -329,6 +366,9 @@ export const FieldContainer = (inProps: PropsWithChildren<FieldContainerProps>) 
 
     const hasError = !!error;
     const hasWarning = !hasError && !!warning;
+
+    const { infoTooltip: infoTooltipIcon = <Info sx={{ fontSize: "inherit" }} /> } = iconMapping;
+    const infoTooltipProps = getInfoTooltipProps(infoTooltip);
 
     const ref = useRef<HTMLDivElement>(null);
 
@@ -355,6 +395,11 @@ export const FieldContainer = (inProps: PropsWithChildren<FieldContainerProps>) 
             <InnerContainer ownerState={ownerState} {...slotProps?.innerContainer}>
                 <Label ownerState={ownerState} disabled={disabled} {...slotProps?.label}>
                     {label}
+                    {Boolean(infoTooltipProps) && (
+                        <InfoTooltip {...infoTooltipProps} {...slotProps?.infoTooltip}>
+                            {infoTooltipIcon}
+                        </InfoTooltip>
+                    )}
                 </Label>
                 <InputContainer ownerState={ownerState} {...slotProps?.inputContainer}>
                     {children}

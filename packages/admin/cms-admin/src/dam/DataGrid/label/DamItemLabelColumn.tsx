@@ -40,6 +40,11 @@ export interface RenderDamLabelOptions {
     matches?: TextMatch[];
     filterApi: IFilterApi<DamFilter>;
     showLicenseWarnings?: boolean;
+    /**
+     * True while a search is active. Custom labels should pass this to `DamItemLabel`'s `showPath`,
+     * so search results show where the item lives, as they do in the DAM itself.
+     */
+    isSearching: boolean;
 }
 
 interface DamItemLabelColumnProps {
@@ -109,7 +114,12 @@ export const DamItemLabelColumn = ({
     return (
         <DamItemLabelWrapper ref={columnRef} isHovered={hoverApi.isHovered} {...(isFolder(item) && getFolderRootProps())}>
             {renderDamLabel ? (
-                renderDamLabel(item, { matches: matches.get(item.id), filterApi, showLicenseWarnings: damConfig.enableLicenseFeature })
+                renderDamLabel(item, {
+                    matches: matches.get(item.id),
+                    filterApi,
+                    showLicenseWarnings: damConfig.enableLicenseFeature,
+                    isSearching,
+                })
             ) : (
                 <StyledStackLink
                     pageName={isFile(item) ? "edit" : "folder"}

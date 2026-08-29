@@ -86,7 +86,7 @@ export const BaseChooseDamFileDialog = ({
                                             options.filterApi.formApi.change("searchText", undefined);
                                         }}
                                     >
-                                        <DamItemLabel asset={row} matches={options.matches} />
+                                        <DamItemLabel asset={row} matches={options.matches} showPath={options.isSearching} />
                                     </FolderStackLink>
                                 );
                             }}

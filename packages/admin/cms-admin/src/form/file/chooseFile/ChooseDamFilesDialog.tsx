@@ -15,8 +15,8 @@ interface ChooseDamFilesDialogProps {
     allowedMimetypes?: string[];
 }
 
-const FileLabel = ({ file, matches, showLicenseWarnings }: { file: GQLDamFileTableFragment } & RenderDamLabelOptions) => (
-    <DamItemLabel asset={file} matches={matches} showLicenseWarnings={showLicenseWarnings} />
+const FileLabel = ({ file, matches, showLicenseWarnings, isSearching }: { file: GQLDamFileTableFragment } & RenderDamLabelOptions) => (
+    <DamItemLabel asset={file} matches={matches} showLicenseWarnings={showLicenseWarnings} showPath={isSearching} />
 );
 
 export const ChooseDamFilesDialog = ({ onClose, onConfirm, initialFileIds, allowedMimetypes }: ChooseDamFilesDialogProps) => {

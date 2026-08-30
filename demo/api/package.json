@@ -10,6 +10,7 @@
         "check-node-version": "check-node-version --node $(cat ../../.nvmrc)",
         "clean": "rimraf dist",
         "console": "NODE_OPTIONS='--max-old-space-size=256' dotenv -e .env.secrets -e .env.local -e .env -e .env.site-configs -- ts-node --transpile-only -r tsconfig-paths/register src/console.ts",
+        "console:debug": "NODE_OPTIONS='--max-old-space-size=256' dotenv -e .env.secrets -e .env.local -e .env -e .env.site-configs -- node --inspect-wait -r ts-node/register/transpile-only -r tsconfig-paths/register src/console.ts",
         "console:prod": "node dist/console.js",
         "db:migrate": "pnpm console migrate --",
         "db:migrate:prod": "pnpm console:prod migrate --",

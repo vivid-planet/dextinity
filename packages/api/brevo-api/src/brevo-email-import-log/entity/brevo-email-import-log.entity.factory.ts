@@ -58,12 +58,11 @@ export function createBrevoEmailImportLogEntity({ Scope }: { Scope: Type<EmailCa
         @Field(() => Scope)
         scope: typeof Scope;
 
-        @Property({ columnType: "uuid" })
+        @Property({ columnType: "uuid", nullable: true })
         @IsUndefinable()
-        @Field(() => ID)
+        @Field(() => ID, { nullable: true })
         importId?: string = uuid();
 
-        @Property({ columnType: "text" })
         @Field(() => ContactSource)
         @Enum({ items: () => ContactSource })
         contactSource: ContactSource;

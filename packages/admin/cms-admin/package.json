@@ -60,7 +60,7 @@
         "@tiptap/react": "^3.22.3",
         "@tiptap/starter-kit": "^3.22.3",
         "change-case": "^4.1.2",
-        "class-validator": "^0.14.3",
+        "class-validator": "^0.15.1",
         "date-fns": "^4.4.0",
         "final-form-arrays": "^3.1.0",
         "final-form-set-field-touched": "^1.0.1",

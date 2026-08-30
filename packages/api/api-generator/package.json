@@ -52,7 +52,7 @@
         "@nestjs/graphql": "^13.4.0",
         "@types/node": "^24.13.3",
         "@types/pluralize": "^0.0.33",
-        "class-validator": "^0.14.3",
+        "class-validator": "^0.15.1",
         "eslint": "^9.39.4",
         "npm-run-all2": "^8.0.4",
         "prettier": "^3.6.2",
@@ -67,7 +67,7 @@
         "@mikro-orm/core": "^6.0.0",
         "@mikro-orm/postgresql": "^6.0.0",
         "@nestjs/graphql": "^13.0.0",
-        "class-validator": "^0.14.0"
+        "class-validator": "^0.14.0 || ^0.15.0"
     },
     "engines": {
         "node": ">=22.0.0"

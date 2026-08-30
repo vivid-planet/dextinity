@@ -118,11 +118,17 @@ export class AppModule {
                 authModule,
                 UserPermissionsModule.forRootAsync({
                     useFactory: (userService: UserService, accessControlService: AccessControlService) => ({
+                        // Generate ~2000 content scopes across 4 dimensions (domain × language × organization × country)
+                        // to test behavior with a large number of scopes. 2 domains × 2 languages × 25 organizations × 20 countries = 2000.
                         availableContentScopes: config.siteConfigs.flatMap((siteConfig) =>
-                            siteConfig.scope.languages.map((language) => ({
-                                scope: { domain: siteConfig.scope.domain, language },
-                                label: { domain: siteConfig.name },
-                            })),
+                            siteConfig.scope.languages.flatMap((language) =>
+                                Array.from({ length: 25 }, (_, orgIndex) => `organization-${orgIndex + 1}`).flatMap((organization) =>
+                                    Array.from({ length: 20 }, (_, countryIndex) => `country-${countryIndex + 1}`).map((country) => ({
+                                        scope: { domain: siteConfig.scope.domain, language, organization, country },
+                                        label: { domain: siteConfig.name },
+                                    })),
+                                ),
+                            ),
                         ),
                         userService,
                         accessControlService,

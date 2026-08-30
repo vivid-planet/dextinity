@@ -56,15 +56,18 @@ describe("AccessControlService", () => {
             expect(contentScopes).toEqual(UserPermissions.allContentScopes);
         });
 
-        it("should return limited content scopes for non-admin user", () => {
-            const nonAdminUser = staticUsers[1];
+        it("should return a deterministic subset of content scopes for non-admin user", () => {
+            const nonAdminUser = staticUsers[1]; // id "2"
 
             const contentScopes = service.getContentScopesForUser(nonAdminUser);
 
-            expect(contentScopes).toEqual([{ domain: "main", language: "en" }]);
+            // 2 domains × 2 languages × 3 countries, all mapped to the organization derived from the user id.
+            expect(contentScopes).toHaveLength(12);
+            expect(contentScopes).toContainEqual({ domain: "main", language: "en", organization: "organization-2", country: "country-1" });
+            expect(Array.isArray(contentScopes) && contentScopes.every((scope) => scope.organization === "organization-2")).toBe(true);
         });
 
-        it("should return limited content scopes for unknown non-admin user", () => {
+        it("should fall back to the first organization for a user with a non-numeric id", () => {
             const unknownUser: User = {
                 id: "b26d86a7-32bb-4c84-ab9d-d167dddd40ff",
                 name: "Unknown User",
@@ -74,7 +77,8 @@ describe("AccessControlService", () => {
 
             const contentScopes = service.getContentScopesForUser(unknownUser);
 
-            expect(contentScopes).toEqual([{ domain: "main", language: "en" }]);
+            expect(contentScopes).toHaveLength(12);
+            expect(Array.isArray(contentScopes) && contentScopes.every((scope) => scope.organization === "organization-1")).toBe(true);
         });
     });
 });

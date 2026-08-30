@@ -3,6 +3,10 @@ import type { BaseSiteConfig, ExtractPrivateSiteConfig, ExtractPublicSiteConfig 
 export type ContentScope = {
     domain: string;
     language: string;
+    // Additional dimensions used to test behavior with a large number of scopes (see `availableContentScopes` in demo/api app.module.ts).
+    // Optional so existing `{ domain, language }` scope objects keep type-checking.
+    organization?: string;
+    country?: string;
 };
 
 export interface SiteConfig extends BaseSiteConfig {

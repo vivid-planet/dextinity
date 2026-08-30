@@ -64,7 +64,7 @@
         "@nestjs/graphql": "^13.4.0",
         "@nestjs/platform-express": "^11.1.21",
         "@nestjs/testing": "^11.1.21",
-        "@swc/core": "^1.15.40",
+        "@swc/core": "^1.15.46",
         "@types/inquirer": "^8.2.12",
         "@types/lodash.isequal": "^4.5.8",
         "chokidar-cli": "^2.1.0",

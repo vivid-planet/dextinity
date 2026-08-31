@@ -23,9 +23,7 @@ export default ((env) => {
             organization: {
                 name: "Vivid Planet Software GmbH",
                 url: "https://www.vivid-planet.com",
-                // schema.org accepts either a URL or an ImageObject as the logo; this config uses the URL form.
-                // It must point at an image file in a format Google Images supports, at least 112x112px, and crawlable for rich results.
-                logo: "/assets/dextinity-logo.png",
+                logo: "/assets/dextinity-logo.svg",
                 sameAs: ["https://github.com/vivid-planet"],
                 description: "Vivid Planet Software GmbH develops Dextinity, the open-source content management system.",
             },

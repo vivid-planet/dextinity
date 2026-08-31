@@ -68,7 +68,7 @@
         "@types/inquirer": "^8.2.12",
         "@types/lodash.isequal": "^4.5.8",
         "chokidar-cli": "^2.1.0",
-        "eslint": "^9.39.4",
+        "eslint": "^9.39.5",
         "express": "^5.2.1",
         "graphql": "^16.14.2",
         "prettier": "^3.4.2",

@@ -7,7 +7,7 @@ interface Props {
 }
 
 function toAbsoluteUrl(url: string, siteUrl: string): string {
-    return url.startsWith("http") ? url : new URL(url, siteUrl).toString();
+    return new URL(url, siteUrl).toString();
 }
 
 export function OrganizationJsonLd({ siteConfig }: Props) {

@@ -25,7 +25,7 @@ export default ((env) => {
                 url: "https://www.vivid-planet.com",
                 logo: "/assets/dextinity-logo.svg",
                 sameAs: ["https://github.com/vivid-planet"],
-                description: "Vivid Planet Software GmbH develops Dextinity, the open-source content management system.",
+                description: "Vivid Planet Software GmbH develops Dextinity CMS, the open-source content management system.",
             },
         },
     };

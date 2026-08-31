@@ -98,18 +98,20 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
     const [previewElementsData, setPreviewElementsData] = useState<OverlayElementData[]>([]);
 
     const childrenWrapperRef = useRef<HTMLDivElement>(null);
-    const childrenWrapperWidth = childrenWrapperRef.current?.offsetWidth;
-    // `getCombinedPositioningOfElements` measures in document coordinates, so an element's right
-    // edge has to be compared against the wrapper's right edge in those coordinates. The wrapper's
-    // width is that edge only while the wrapper starts at x = 0: with an offset from an ancestor,
-    // such as padding or centering, an element that fills the wrapper loses the offset from its
-    // right edge.
-    const childrenWrapperRight = childrenWrapperRef.current ? childrenWrapperRef.current.getBoundingClientRect().right + window.scrollX : 0;
 
     const recalculatePreviewElementsData = useCallback(() => {
-        if (!childrenWrapperWidth) {
+        const childrenWrapper = childrenWrapperRef.current;
+
+        if (!childrenWrapper?.offsetWidth) {
             return;
         }
+
+        // `getCombinedPositioningOfElements` measures in document coordinates, so an element's right edge has to be compared against the
+        // wrapper's right edge in those coordinates. The wrapper's width is that edge only while the wrapper starts at x = 0: with an offset
+        // from an ancestor, such as padding or centering, an element that fills the wrapper loses the offset from its right edge.
+        // The wrapper is measured here and not during render because the observers below call this without a render in between, so a value
+        // from the render would describe the layout from before the resize, and `isEqual` would block the re-render that refreshes it.
+        const childrenWrapperRight = childrenWrapper.getBoundingClientRect().right + window.scrollX;
 
         const newPreviewElementsData = previewElements
             .map((previewElement) => {
@@ -173,7 +175,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
 
             return newPreviewElementsData;
         });
-    }, [previewElements, childrenWrapperWidth, childrenWrapperRight]);
+    }, [previewElements]);
 
     useEffect(() => {
         if (childrenWrapperRef.current) {

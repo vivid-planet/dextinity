@@ -180,6 +180,7 @@ export { SvgImageBlock } from "./dam/blocks/svg-image.block";
 export { DamVideoBlock } from "./dam/blocks/video/dam-video.block";
 export { DextinityImageResolutionException } from "./dam/common/errors/image-resolution.exception";
 export { damDefaultAcceptedMimetypes } from "./dam/common/mimeTypes/dam-default-accepted-mimetypes";
+export { type DamFileCategory, getDamFileCategory } from "./dam/common/mimeTypes/dam-file-category";
 export { DamConfig } from "./dam/dam.config";
 export { DAM_CONFIG } from "./dam/dam.constants";
 export { DamModule } from "./dam/dam.module";

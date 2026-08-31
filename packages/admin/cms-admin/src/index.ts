@@ -149,6 +149,7 @@ export { JobRuntime } from "./cronJobs/JobRuntime";
 export { DamFileDownloadLinkBlock } from "./dam/blocks/DamFileDownloadLinkBlock";
 export { DamImageBlock } from "./dam/blocks/DamImageBlock";
 export { damDefaultAcceptedMimeTypes } from "./dam/config/damDefaultAcceptedMimeTypes";
+export { type DamFileCategory, getDamFileCategory } from "./dam/config/damFileCategory";
 export { useDamAcceptedMimeTypes } from "./dam/config/useDamAcceptedMimeTypes";
 export { useDamScope } from "./dam/config/useDamScope";
 export { useCurrentDamFolder } from "./dam/CurrentDamFolderProvider";

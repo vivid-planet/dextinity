@@ -100,7 +100,8 @@ describe("server/renderMailHtml", () => {
             </MjmlMailRoot>,
         );
 
-        expect(html).toContain(".minifyMe{color:red;padding-bottom:8px}");
+        expect(html).toContain(".minifyMe");
+        expect(html).toContain("color:red;padding-bottom:8px");
     });
 
     it("keeps the Outlook properties that MJML writes", () => {

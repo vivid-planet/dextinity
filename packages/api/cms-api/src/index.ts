@@ -177,8 +177,7 @@ export { DamFileDownloadLinkBlock } from "./dam/blocks/dam-file-download-link.bl
 export { DamImageBlock } from "./dam/blocks/dam-image.block";
 export { PixelImageBlock } from "./dam/blocks/pixel-image.block";
 export { SvgImageBlock } from "./dam/blocks/svg-image.block";
-export { createDamVideoBlock, type DamVideoBlockSupports } from "./dam/blocks/video/createDamVideoBlock";
-export { DamVideoBlock } from "./dam/blocks/video/dam-video.block";
+export { createDamVideoBlock, DamVideoBlock, type DamVideoBlockSupports } from "./dam/blocks/video/createDamVideoBlock";
 export { DextinityImageResolutionException } from "./dam/common/errors/image-resolution.exception";
 export { damDefaultAcceptedMimetypes } from "./dam/common/mimeTypes/dam-default-accepted-mimetypes";
 export { type DamFileCategory, getDamFileCategory } from "./dam/common/mimeTypes/dam-file-category";

@@ -51,7 +51,7 @@ export interface DamVideoBlockDataInterface extends BlockDataInterface {
     previewImage?: BlockDataInterface;
 }
 
-export interface DamVideoBlockInputInterface extends SimpleBlockInputInterface {
+interface DamVideoBlockInputInterface extends SimpleBlockInputInterface {
     damFileId?: string;
     autoplay?: boolean;
     showControls?: boolean;
@@ -262,3 +262,5 @@ export function createDamVideoBlock(
         },
     });
 }
+
+export const DamVideoBlock = createDamVideoBlock();

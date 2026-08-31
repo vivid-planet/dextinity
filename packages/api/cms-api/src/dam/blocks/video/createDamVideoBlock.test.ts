@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { transformToBlockSave } from "../../../blocks/block";
-import { createDamVideoBlock } from "./createDamVideoBlock";
-import { DamVideoBlock } from "./dam-video.block";
+import { createDamVideoBlock, DamVideoBlock } from "./createDamVideoBlock";
 
 const damFileId = "0a3a4f9c-1b19-4f7e-bd0a-8e0b6b1a2c3d";
 

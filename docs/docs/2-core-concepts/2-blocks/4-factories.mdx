@@ -227,30 +227,62 @@ export const FullWidthImageBlock = createCompositeBlock({
 });
 ```
 
-## DamVideoBlock (Admin only)
+## DamVideoBlock
 
 The DamVideoBlock factory creates a block for a video from the DAM.
-Use `supports` to restrict what editors can set besides the video file itself:
+Use `supports` to restrict what the block offers besides the video file itself:
 
 - `"controls"`: The playback options autoplay, loop and show controls.
 - `"previewImage"`: The poster image shown before playback.
 
 Both are supported by default.
-`@dextinity/cms-admin` exports a ready-made `DamVideoBlock` created with those defaults, use the `createDamVideoBlock` factory to change them:
+`@dextinity/cms-api` and `@dextinity/cms-admin` export a ready-made `DamVideoBlock` created with those defaults.
+Use the `createDamVideoBlock` factory when a site doesn't need all of them, for instance an app integration that only reads the video's URL.
 
-```tsx title="DamVideoBlock.tsx"
-import { createDamVideoBlock } from "@dextinity/cms-admin";
+Give the block a name of its own — `DamVideo` is taken by the exported `DamVideoBlock` — and use that same name and the same `supports` in both the API and the Admin.
 
-// For a site that renders no poster image
-export const DamVideoBlock = createDamVideoBlock({ supports: ["controls"] });
+### API
+
+Use the `createDamVideoBlock` factory:
+
+```ts title="teaser-video.block.ts"
+import { createDamVideoBlock } from "@dextinity/cms-api";
+
+// For a site that only reads the video's URL
+export const TeaserVideoBlock = createDamVideoBlock({ supports: [] }, "TeaserVideo");
 ```
 
-:::note
+Unsupported options are part of neither the block's data nor its input, so they don't show up in `blocks.generated.ts` and aren't stored.
 
-Leaving out an option only hides it from the editor.
-Values that are already stored are kept as they are.
-The preview image in particular stays part of the block's data either way, since the API's child block is non-nullable.
-:::
+### Admin
+
+Use the `createDamVideoBlock` factory:
+
+```tsx title="TeaserVideoBlock.tsx"
+import { createDamVideoBlock } from "@dextinity/cms-admin";
+
+export const TeaserVideoBlock = createDamVideoBlock({ name: "TeaserVideo", supports: [] });
+```
+
+Unsupported options are hidden from the editor.
+Their stored values are kept as long as the API block supports them, so widening `supports` later brings them back.
+
+### Site
+
+Render the video with the fields the block supports:
+
+```tsx title="TeaserVideoBlock.tsx"
+import { PropsWithData } from "@dextinity/site-nextjs";
+import { TeaserVideoBlockData } from "@src/blocks.generated";
+
+export function TeaserVideoBlock({ data: { damFile } }: PropsWithData<TeaserVideoBlockData>) {
+    if (!damFile) {
+        return null;
+    }
+
+    return <video src={damFile.fileUrl} />;
+}
+```
 
 ## FinalFormBlock (Admin only)
 

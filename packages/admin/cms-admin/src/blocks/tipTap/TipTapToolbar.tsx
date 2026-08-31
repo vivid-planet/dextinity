@@ -561,31 +561,23 @@ export const TipTapToolbar = ({
                     />
                 </ToolbarGroup>
             )}
-            {specialChars && (
+            {hasLink && linkBlock && (
                 <ToolbarGroup>
-                    {supports.includes("non-breaking-space") && (
-                        <ToolbarButton
-                            editor={editor}
-                            icon={RteNonBreakingSpace}
-                            tooltip={
-                                <FormattedMessage
-                                    id="dextinity.blocks.tipTapRichText.nonBreakingSpace.tooltip"
-                                    defaultMessage="Insert a non-breaking space"
-                                />
-                            }
-                            onToggle={() => editor.chain().focus().insertContent({ type: "nonBreakingSpace" }).run()}
-                        />
-                    )}
-                    {supports.includes("soft-hyphen") && (
-                        <ToolbarButton
-                            editor={editor}
-                            icon={RteSoftHyphen}
-                            tooltip={
-                                <FormattedMessage id="dextinity.blocks.tipTapRichText.softHyphen.tooltip" defaultMessage="Insert a soft hyphen" />
-                            }
-                            onToggle={() => editor.chain().focus().insertContent({ type: "softHyphen" }).run()}
-                        />
-                    )}
+                    <ToolbarButton
+                        editor={editor}
+                        icon={RteLink}
+                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.link.tooltip" defaultMessage="Link" />}
+                        isActive="link"
+                        disabled={editorState.selectionEmpty && !editorState.isLinkActive}
+                        onToggle={() => setLinkDialogOpen(true)}
+                    />
+                    <ToolbarButton
+                        editor={editor}
+                        icon={RteClearLink}
+                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.removeLink.tooltip" defaultMessage="Remove link" />}
+                        disabled={!editorState.isLinkActive}
+                        onToggle={() => editor.chain().focus().extendMarkRange("link").unsetCmsLink().run()}
+                    />
                 </ToolbarGroup>
             )}
             {hasPlaceholders && (
@@ -625,23 +617,31 @@ export const TipTapToolbar = ({
                     </Menu>
                 </ToolbarGroup>
             )}
-            {hasLink && linkBlock && (
+            {specialChars && (
                 <ToolbarGroup>
-                    <ToolbarButton
-                        editor={editor}
-                        icon={RteLink}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.link.tooltip" defaultMessage="Link" />}
-                        isActive="link"
-                        disabled={editorState.selectionEmpty && !editorState.isLinkActive}
-                        onToggle={() => setLinkDialogOpen(true)}
-                    />
-                    <ToolbarButton
-                        editor={editor}
-                        icon={RteClearLink}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.removeLink.tooltip" defaultMessage="Remove link" />}
-                        disabled={!editorState.isLinkActive}
-                        onToggle={() => editor.chain().focus().extendMarkRange("link").unsetCmsLink().run()}
-                    />
+                    {supports.includes("non-breaking-space") && (
+                        <ToolbarButton
+                            editor={editor}
+                            icon={RteNonBreakingSpace}
+                            tooltip={
+                                <FormattedMessage
+                                    id="dextinity.blocks.tipTapRichText.nonBreakingSpace.tooltip"
+                                    defaultMessage="Insert a non-breaking space"
+                                />
+                            }
+                            onToggle={() => editor.chain().focus().insertContent({ type: "nonBreakingSpace" }).run()}
+                        />
+                    )}
+                    {supports.includes("soft-hyphen") && (
+                        <ToolbarButton
+                            editor={editor}
+                            icon={RteSoftHyphen}
+                            tooltip={
+                                <FormattedMessage id="dextinity.blocks.tipTapRichText.softHyphen.tooltip" defaultMessage="Insert a soft hyphen" />
+                            }
+                            onToggle={() => editor.chain().focus().insertContent({ type: "softHyphen" }).run()}
+                        />
+                    )}
                 </ToolbarGroup>
             )}
             {hasChildBlocks && (

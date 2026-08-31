@@ -91,7 +91,7 @@
         "@types/react-router-dom": "^5.3.3",
         "@vitest/browser": "4.1.8",
         "@vitest/browser-playwright": "4.1.8",
-        "eslint": "^9.39.4",
+        "eslint": "^9.39.5",
         "eslint-plugin-storybook": "^10.3.5",
         "final-form": "^4.20.10",
         "graphql": "^16.14.2",

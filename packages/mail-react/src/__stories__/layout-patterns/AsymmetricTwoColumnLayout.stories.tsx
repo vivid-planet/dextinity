@@ -35,6 +35,11 @@ const fluidColumnWidth = sectionInnerWidth - SMALL_COLUMN_WIDTH;
 registerStyles(
     (theme) => css`
         ${theme.breakpoints.default.belowMediaQuery} {
+            .asymmetricLayoutLeft__smallColumn {
+                width: ${SMALL_COLUMN_WIDTH}px !important;
+                max-width: ${SMALL_COLUMN_WIDTH}px !important;
+            }
+
             .asymmetricLayoutLeft__fluidColumn {
                 width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
                 max-width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
@@ -42,7 +47,9 @@ registerStyles(
         }
 
         ${theme.breakpoints.mobile.belowMediaQuery} {
+            .asymmetricLayoutLeft__smallColumn,
             .asymmetricLayoutLeft__fluidColumn {
+                display: block !important;
                 width: 100% !important;
                 max-width: 100% !important;
             }
@@ -76,7 +83,7 @@ export const SmallColumnLeft: StoryObj = {
                 </MjmlColumn>
             </MjmlSection>
 
-            <MjmlSection indent>
+            <MjmlSection indent disableResponsiveBehavior>
                 <MjmlColumn className="asymmetricLayoutLeft__smallColumn" width={`${SMALL_COLUMN_WIDTH}px`} verticalAlign="middle">
                     <MjmlImage
                         src={`https://picsum.photos/seed/1/${SMALL_COLUMN_WIDTH}/150`}
@@ -113,6 +120,11 @@ export const SmallColumnLeft: StoryObj = {
 registerStyles(
     (theme) => css`
         ${theme.breakpoints.default.belowMediaQuery} {
+            .asymmetricLayoutRight__smallColumn {
+                width: ${SMALL_COLUMN_WIDTH}px !important;
+                max-width: ${SMALL_COLUMN_WIDTH}px !important;
+            }
+
             .asymmetricLayoutRight__fluidColumn {
                 width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
                 max-width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
@@ -120,7 +132,9 @@ registerStyles(
         }
 
         ${theme.breakpoints.mobile.belowMediaQuery} {
+            .asymmetricLayoutRight__smallColumn,
             .asymmetricLayoutRight__fluidColumn {
+                display: block !important;
                 width: 100% !important;
                 max-width: 100% !important;
             }
@@ -154,7 +168,7 @@ export const SmallColumnRight: StoryObj = {
                 </MjmlColumn>
             </MjmlSection>
 
-            <MjmlSection indent>
+            <MjmlSection indent disableResponsiveBehavior>
                 <MjmlColumn
                     className="asymmetricLayoutRight__fluidColumn"
                     width={`${fluidColumnWidth}px`}
@@ -191,6 +205,11 @@ export const SmallColumnRight: StoryObj = {
 registerStyles(
     (theme) => css`
         ${theme.breakpoints.default.belowMediaQuery} {
+            .asymmetricLayoutRtl__smallColumn {
+                width: ${SMALL_COLUMN_WIDTH}px !important;
+                max-width: ${SMALL_COLUMN_WIDTH}px !important;
+            }
+
             .asymmetricLayoutRtl__fluidColumn {
                 width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
                 max-width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
@@ -198,7 +217,9 @@ registerStyles(
         }
 
         ${theme.breakpoints.mobile.belowMediaQuery} {
+            .asymmetricLayoutRtl__smallColumn,
             .asymmetricLayoutRtl__fluidColumn {
+                display: block !important;
                 width: 100% !important;
                 max-width: 100% !important;
             }
@@ -225,16 +246,17 @@ export const ReversedMobileStackOrder: StoryObj = {
                         Small column on the right, stacks on top on mobile
                     </MjmlText>
                     <MjmlText>
-                        Uses <code>direction=&quot;rtl&quot;</code> on the section to visually place the small column on the right on desktop, while
-                        keeping it first in source order so it stacks on top on mobile. A wrapper handles the indentation separately to avoid a 1px
-                        line artifact in Outlook.
+                        Uses <code>direction=&quot;rtl&quot;</code> to visually place the small column on the right on desktop, while keeping it first
+                        in source order so it stacks on top on mobile. The prop goes on the group that
+                        <code>disableResponsiveBehavior</code> adds, because that group writes its own <code>direction</code> and would otherwise
+                        cancel the value of the section. A wrapper handles the indentation separately to avoid a 1px line artifact in Outlook.
                     </MjmlText>
                     <MjmlSpacer height={30} />
                 </MjmlColumn>
             </MjmlSection>
 
             <MjmlWrapper padding={`0 ${sectionIndent}px`} backgroundColor={theme.colors.background.content}>
-                <MjmlSection direction="rtl">
+                <MjmlSection disableResponsiveBehavior slotProps={{ group: { direction: "rtl" } }}>
                     <MjmlColumn className="asymmetricLayoutRtl__smallColumn" width={`${SMALL_COLUMN_WIDTH}px`} verticalAlign="middle">
                         <MjmlImage
                             src={`https://picsum.photos/seed/3/${SMALL_COLUMN_WIDTH}/150`}

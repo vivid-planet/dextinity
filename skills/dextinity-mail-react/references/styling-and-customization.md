@@ -27,6 +27,8 @@ This means:
 
 The base email must look correct with zero CSS from `<style>` blocks. Media queries are layered on top as progressive enhancement for mobile viewports.
 
+MJML's column widths are the exception: they live in a `min-width` media query, not inline. A section with more than one column needs `disableResponsiveBehavior` — see [`layout-patterns.md`](layout-patterns.md) → Column Widths Must Be Inline.
+
 ### Why `!important`?
 
 Email clients inline all styles during processing. Since inline styles have higher CSS specificity than `<style>` block rules, responsive overrides must use `!important` to win. Every property inside a media query override should have `!important`.

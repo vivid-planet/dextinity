@@ -24,6 +24,8 @@ Email styling follows a desktop-first approach where all default styles must be 
 Never rely on `<style>` blocks for your base/desktop layout. Outlook and several other major clients strip or ignore them. Always set default styles inline via MJML component props.
 :::
 
+MJML breaks this rule for column widths: it puts them in a `min-width` media query, so a multi-column section stacks in any client that drops that query — GMX and Web.de, for example. See [Column Widths Must Be Inline](./6-layout-patterns.md#column-widths-must-be-inline).
+
 Media queries, registered via [`registerStyles`](./5-customization.md#registering-responsive-styles), serve as **progressive enhancement** for mobile and responsive behavior. Clients that support media queries also support modern CSS, so properties like `flex` and CSS custom properties are safe to use inside them. Because inline styles take precedence over `<style>` blocks, responsive overrides must use `!important` to take effect. See [Adding Custom Responsive Styles](./5-customization.md#adding-custom-responsive-styles) for details.
 
 ## MJML Components vs HTML Components

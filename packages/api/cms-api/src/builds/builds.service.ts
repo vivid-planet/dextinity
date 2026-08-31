@@ -115,14 +115,21 @@ export class BuildsService {
         autoBuildStatus.hasChangesSinceLastBuild = await this.hasChangesSinceLastBuild();
 
         const cronJobs = await this.buildTemplatesService.getAllowedBuilderCronJobs(user);
-        const cronJob = cronJobs?.[0];
-        if (!cronJob) {
+        if (cronJobs.length === 0) {
             throw new Error("BuildChecker CronJob not found.");
         }
-        autoBuildStatus.lastCheck = cronJob.status?.lastScheduleTime;
 
-        const interval = parser.parseExpression(cronJob.spec?.schedule as string);
-        autoBuildStatus.nextCheck = interval.next().toDate();
+        const lastScheduleTimes = cronJobs.map((cronJob) => cronJob.status?.lastScheduleTime).filter((lastScheduleTime) => lastScheduleTime != null);
+        autoBuildStatus.lastCheck =
+            lastScheduleTimes.length > 0 ? new Date(Math.max(...lastScheduleTimes.map((lastScheduleTime) => lastScheduleTime.getTime()))) : undefined;
+
+        const nextCheckTimes = cronJobs.map((cronJob) =>
+            parser
+                .parseExpression(cronJob.spec?.schedule as string)
+                .next()
+                .toDate(),
+        );
+        autoBuildStatus.nextCheck = new Date(Math.min(...nextCheckTimes.map((nextCheckTime) => nextCheckTime.getTime())));
 
         return autoBuildStatus;
     }

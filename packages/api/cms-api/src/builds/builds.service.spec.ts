@@ -1,14 +1,18 @@
 import { getRepositoryToken } from "@mikro-orm/nestjs";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Test, type TestingModule } from "@nestjs/testing";
+import parser from "cron-parser";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { KubernetesModule } from "../kubernetes/kubernetes.module";
+import type { CurrentUser } from "../user-permissions/dto/current-user";
 import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants";
 import { BuildTemplatesService } from "./build-templates.service";
 import { CONTENT_SCOPE_ANNOTATION } from "./builds.constants";
 import { BuildsService } from "./builds.service";
 import { ChangesSinceLastBuild } from "./entities/changes-since-last-build.entity";
+
+const currentUser = {} as CurrentUser;
 
 const jobMain = {
     metadata: {
@@ -48,6 +52,11 @@ const jobMainGerman = {
 
 const mockedBuildTemplatesService = {
     getAllBuilderCronJobs: vi.fn().mockResolvedValue([jobMainEnglish, jobMainGerman]),
+    getAllowedBuilderCronJobs: vi.fn(),
+};
+
+const mockedChangesRepository = {
+    count: vi.fn().mockResolvedValue(0),
 };
 
 vi.mock("@kubernetes/client-node", () => ({}));
@@ -60,7 +69,7 @@ describe("BuildsService", () => {
             imports: [KubernetesModule.register({ helmRelease: "test" })],
             providers: [
                 BuildsService,
-                { provide: getRepositoryToken(ChangesSinceLastBuild), useValue: {} },
+                { provide: getRepositoryToken(ChangesSinceLastBuild), useValue: mockedChangesRepository },
                 { provide: BuildTemplatesService, useValue: mockedBuildTemplatesService },
                 { provide: ACCESS_CONTROL_SERVICE, useValue: {} },
                 { provide: EntityManager, useValue: {} },
@@ -106,6 +115,45 @@ describe("BuildsService", () => {
             await expect(service.getBuilderCronJobsToStart([{ domain: "tertiary" }])).rejects.toThrow(
                 'Found changes in scope {"domain":"tertiary"} but no matching builder cron job!',
             );
+        });
+    });
+
+    describe("getAutoBuildStatus", () => {
+        it("should use the earliest next scheduled run across all allowed cron jobs", async () => {
+            const hourlyCronJob = { spec: { schedule: "0 * * * *" }, status: {} };
+            const everyFiveMinutesCronJob = { spec: { schedule: "*/5 * * * *" }, status: {} };
+            mockedBuildTemplatesService.getAllowedBuilderCronJobs.mockResolvedValueOnce([hourlyCronJob, everyFiveMinutesCronJob]);
+
+            const expectedNextCheck = parser.parseExpression(everyFiveMinutesCronJob.spec.schedule).next().toDate();
+
+            const autoBuildStatus = await service.getAutoBuildStatus(currentUser);
+
+            expect(autoBuildStatus.nextCheck).toEqual(expectedNextCheck);
+        });
+
+        it("should use the most recent lastScheduleTime across all allowed cron jobs", async () => {
+            const olderCronJob = { spec: { schedule: "0 * * * *" }, status: { lastScheduleTime: new Date("2024-01-01T00:00:00Z") } };
+            const newerCronJob = { spec: { schedule: "0 * * * *" }, status: { lastScheduleTime: new Date("2024-01-02T00:00:00Z") } };
+            mockedBuildTemplatesService.getAllowedBuilderCronJobs.mockResolvedValueOnce([olderCronJob, newerCronJob]);
+
+            const autoBuildStatus = await service.getAutoBuildStatus(currentUser);
+
+            expect(autoBuildStatus.lastCheck).toEqual(newerCronJob.status.lastScheduleTime);
+        });
+
+        it("should leave lastCheck undefined if no cron job has been scheduled yet", async () => {
+            const cronJob = { spec: { schedule: "0 * * * *" }, status: {} };
+            mockedBuildTemplatesService.getAllowedBuilderCronJobs.mockResolvedValueOnce([cronJob]);
+
+            const autoBuildStatus = await service.getAutoBuildStatus(currentUser);
+
+            expect(autoBuildStatus.lastCheck).toBeUndefined();
+        });
+
+        it("should throw an error if no allowed cron job is found", async () => {
+            mockedBuildTemplatesService.getAllowedBuilderCronJobs.mockResolvedValueOnce([]);
+
+            await expect(service.getAutoBuildStatus(currentUser)).rejects.toThrow("BuildChecker CronJob not found.");
         });
     });
 });

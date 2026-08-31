@@ -5,7 +5,7 @@
 Remove `FormMutation`
 
 The component had no usages, neither in Dextinity nor in any project, and its render-prop API predates hooks.
-Call `useMutation` from `@apollo/client` directly instead.
+Call `useMutation` from `@apollo/client` directly instead, combining the two loading and error states the same way the component did.
 
 **Example**
 
@@ -18,4 +18,6 @@ Call `useMutation` from `@apollo/client` directly instead.
 // After
 const [create, { loading: createLoading, error: createError }] = useMutation(createMutation);
 const [update, { loading: updateLoading, error: updateError }] = useMutation(updateMutation);
+
+<MyForm onCreate={create} onUpdate={update} loading={createLoading || updateLoading} error={createError ?? updateError} />;
 ```

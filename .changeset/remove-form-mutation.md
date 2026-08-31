@@ -19,5 +19,5 @@ Call `useMutation` from `@apollo/client` directly instead, combining the two loa
 const [create, { loading: createLoading, error: createError }] = useMutation(createMutation);
 const [update, { loading: updateLoading, error: updateError }] = useMutation(updateMutation);
 
-<MyForm onCreate={create} onUpdate={update} loading={createLoading || updateLoading} error={createError ?? updateError} />;
+<MyForm onCreate={create} onUpdate={update} loading={updateLoading || createLoading} error={updateError ?? createError} />;
 ```

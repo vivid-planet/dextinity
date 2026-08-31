@@ -1,5 +1,5 @@
 import { Logger } from "@nestjs/common";
-import { Args, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
+import { Args, Int, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
 import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
 import { PaginatedResponseFactory } from "../common/pagination/paginated-response.factory";
@@ -106,6 +106,16 @@ export class UserResolver {
             }
         }
         return false;
+    }
+
+    @ResolveField(() => Int, { deprecationReason: "The Permissions column was removed from the users list. Will be removed in the next version." })
+    permissionsCount(): number {
+        return 0;
+    }
+
+    @ResolveField(() => Int, { deprecationReason: "The Scopes column was removed from the users list. Will be removed in the next version." })
+    contentScopesCount(): number {
+        return 0;
     }
 
     @ResolveField(() => Boolean)

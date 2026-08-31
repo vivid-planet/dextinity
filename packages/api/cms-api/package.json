@@ -103,7 +103,7 @@
         "@types/draft-js": "^0.11.20",
         "@types/express": "^5.0.6",
         "@types/html-to-text": "^9.0.4",
-        "@types/inquirer": "^8.2.12",
+        "@types/inquirer": "^8.2.13",
         "@types/lodash.isequal": "^4.5.8",
         "@types/lodash.uniqwith": "^4.5.9",
         "@types/mime": "^2.0.3",

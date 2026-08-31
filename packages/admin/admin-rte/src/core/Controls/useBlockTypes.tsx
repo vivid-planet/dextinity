@@ -44,9 +44,6 @@ const createFeaturesFromBlocktypeMap =
             })),
     ];
 
-// Not `SelectChangeEvent<DraftBlockType>`: the `Select` slot is built with `createComponentSlot`, which does not
-// forward MUI's generic, so its `onChange` is typed with an `unknown` value. Under `strictFunctionTypes` a handler
-// declaring a narrower value is not assignable to it, so the event has to be typed as the slot passes it.
 type BlockChangeEvent = SelectChangeEvent<unknown>;
 
 export interface BlockTypesApi {
@@ -90,9 +87,6 @@ export default function useBlockTypes({
         (e: BlockChangeEvent) => {
             e.preventDefault();
 
-            // `DraftBlockType` is a string, so the `unknown` value has to be narrowed before it can be used as one.
-            // Every block type `MenuItem` is keyed by its block type, so anything else cannot occur and is treated
-            // like the empty selection below.
             const blockType = typeof e.target.value === "string" ? e.target.value : undefined;
 
             if (!blockType) {

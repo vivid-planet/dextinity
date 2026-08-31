@@ -23,8 +23,8 @@ export default ((env) => {
             organization: {
                 name: "Vivid Planet Software GmbH",
                 url: "https://www.vivid-planet.com",
-                // Supported formats are the ones Google Images supports: BMP, GIF, JPEG, PNG, WebP and SVG.
-                // The image must be at least 112x112px and reachable by crawlers (not blocked in robots.txt).
+                // Google ignores the logo for rich results unless it is at least 112x112px, in a format
+                // supported by Google Images, and served from a crawlable URL.
                 logo: "/assets/dextinity-logo.png",
                 sameAs: ["https://github.com/vivid-planet"],
                 description: "Vivid Planet Software GmbH develops Dextinity, the open-source content management system.",

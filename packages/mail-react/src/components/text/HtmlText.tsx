@@ -38,12 +38,6 @@ interface HtmlTextOwnProps {
     bottomSpacing?: boolean;
 }
 
-/**
- * Deliberately without an index signature for the forwarded props: with `strictFunctionTypes`, an `unknown`-valued one
- * makes this signature incompatible with the overloads above. Dropping it is invisible to callers, because TypeScript
- * emits only the overloads of an overloaded function, never its implementation signature. The remaining props are
- * still forwarded; only their types are lost, and just inside this function.
- */
 interface HtmlTextImplementationProps extends HtmlTextOwnProps {
     element?: keyof JSX.IntrinsicElements;
     className?: string;

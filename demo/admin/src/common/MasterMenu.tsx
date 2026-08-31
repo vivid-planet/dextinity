@@ -47,7 +47,6 @@ import ProductsHandmadePage from "@src/products/ProductsPage";
 import { ProductTagsPage as ProductTagsHandmadePage } from "@src/products/tags/ProductTagsPage";
 import { RedirectsPage } from "@src/redirects/RedirectsPage";
 import type { ContentScope } from "@src/site-configs";
-import { EditSiteSettingsPage } from "@src/siteSettings/EditSiteSettingsPage";
 import { EditWelcomeEmailPage } from "@src/welcomeEmail/EditWelcomeEmailPage";
 import { useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -191,15 +190,6 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     route: {
                         path: "/project-snips/footer",
                         component: EditFooterPage,
-                    },
-                    requiredPermission: "pageTree",
-                },
-                {
-                    type: "route",
-                    primary: <FormattedMessage id="menu.project-snips.siteSettings" defaultMessage="Site settings" />,
-                    route: {
-                        path: "/project-snips/site-settings",
-                        component: EditSiteSettingsPage,
                     },
                     requiredPermission: "pageTree",
                 },

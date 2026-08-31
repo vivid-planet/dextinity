@@ -45,7 +45,6 @@
         "@mui/x-date-pickers": "^8.28.7",
         "@mui/x-license": "^8.26.0",
         "change-case": "^5.4.4",
-        "class-validator": "^0.14.3",
         "date-fns": "^4.4.0",
         "dnd-core": "^16.0.1",
         "final-form": "^4.20.10",

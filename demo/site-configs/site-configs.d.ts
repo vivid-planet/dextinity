@@ -12,6 +12,13 @@ export interface SiteConfig extends BaseSiteConfig {
             languages: string[];
         };
         recaptchaSiteKey: string;
+        organization: {
+            name: string;
+            url?: string;
+            logo?: string;
+            sameAs?: string[];
+            description?: string;
+        };
     };
 }
 

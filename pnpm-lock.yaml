@@ -107,9 +107,6 @@ importers:
       change-case:
         specifier: ^5.4.4
         version: 5.4.4
-      class-validator:
-        specifier: ^0.14.3
-        version: 0.14.3
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0

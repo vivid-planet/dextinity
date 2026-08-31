@@ -1014,7 +1014,6 @@ type Mutation {
   saveLink(attachedPageTreeNodeId: ID, id: ID!, input: LinkInput!, lastUpdatedAt: DateTime): Link!
   savePage(attachedPageTreeNodeId: ID, input: PageInput!, lastUpdatedAt: DateTime, pageId: ID!): Page!
   savePredefinedPage(attachedPageTreeNodeId: ID!, id: ID!, input: PredefinedPageInput!, lastUpdatedAt: DateTime): PredefinedPage!
-  saveSiteSettings(input: SiteSettingsInput!, scope: SiteSettingsScopeInput!): SiteSettings!
   saveWelcomeEmail(input: WelcomeEmailInput!, scope: WelcomeEmailScopeInput!): WelcomeEmail!
   sendBrevoEmailCampaignNow(id: ID!): Boolean!
   sendBrevoEmailCampaignToTestEmails(data: SendTestEmailCampaignArgs!, id: ID!): Boolean!
@@ -1186,12 +1185,6 @@ input OneToManyFilter {
   isAnyOf: [ID!]
   search: String
 }
-
-"""Organization root block data"""
-scalar OrganizationBlockData @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
-
-"""Organization root block input"""
-scalar OrganizationBlockInput @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
 
 type Page implements DocumentInterface {
   content: PageContentBlockData!
@@ -2042,7 +2035,6 @@ type Query {
   redirectSourceAvailable(scope: RedirectScopeInput!, source: String!): Boolean!
   redirects(active: Boolean, query: String, scope: RedirectScopeInput!, sortColumnName: String, sortDirection: SortDirection! = ASC, type: RedirectGenerationType): [Redirect!]! @deprecated(reason: "Use paginatedRedirects instead. Will be removed in the next version.")
   sitePreviewJwt(includeInvisible: Boolean!, path: String!, scope: JSONObject!): String!
-  siteSettings(scope: SiteSettingsScopeInput!): SiteSettings
   topMenu(scope: PageTreeNodeScopeInput!): [PageTreeNode!]!
   userPermissionsAvailableContentScopes: [ContentScopeWithLabel!]!
   userPermissionsAvailablePermissions: [String!]!
@@ -2169,29 +2161,6 @@ scalar SeoBlockData @specifiedBy(url: "http://www.ecma-international.org/publica
 
 """Seo root block input"""
 scalar SeoBlockInput @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
-
-type SiteSettings {
-  createdAt: DateTime!
-  dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0, sort: [DependencySort!]): PaginatedDependencies!
-  id: ID!
-  organization: OrganizationBlockData!
-  scope: SiteSettingsScope!
-  updatedAt: DateTime!
-}
-
-input SiteSettingsInput {
-  organization: OrganizationBlockInput!
-}
-
-type SiteSettingsScope {
-  domain: String!
-  language: String!
-}
-
-input SiteSettingsScopeInput {
-  domain: String!
-  language: String!
-}
 
 enum SlugAvailability {
   Available

@@ -23,7 +23,6 @@ export default ((env) => {
             organization: {
                 name: "Vivid Planet Software GmbH",
                 url: "https://www.vivid-planet.com",
-                // Relative paths are resolved against the site URL, absolute URLs are used as they are.
                 // Supported formats are the ones Google Images supports: BMP, GIF, JPEG, PNG, WebP and SVG.
                 // The image must be at least 112x112px and reachable by crawlers (not blocked in robots.txt).
                 logo: "/assets/dextinity-logo.png",

@@ -150,7 +150,20 @@ export const ReadOnly: Story = {
     },
 };
 
-const BoldOnlyBlock = createTipTapRichTextBlock({ supports: ["bold"] });
+const BoldOnlyBlock = createTipTapRichTextBlock({
+    supports: {
+        history: false,
+        italic: false,
+        strike: false,
+        sub: false,
+        sup: false,
+        heading: false,
+        orderedList: false,
+        unorderedList: false,
+        nonBreakingSpace: false,
+        softHyphen: false,
+    },
+});
 
 function BoldOnlyStory() {
     const [state, setState] = useState<TipTapRichTextBlockState>(BoldOnlyBlock.defaultValues());
@@ -344,7 +357,17 @@ export const Placeholders: StoryObj<typeof PlaceholdersStory> = {
 };
 
 const PlaceholdersWithContentBlock = createTipTapRichTextBlock({
-    supports: ["bold", "italic"],
+    supports: {
+        history: false,
+        strike: false,
+        sub: false,
+        sup: false,
+        heading: false,
+        orderedList: false,
+        unorderedList: false,
+        nonBreakingSpace: false,
+        softHyphen: false,
+    },
     placeholders: [
         { name: "firstName", label: "First Name" },
         { name: "lastName", label: "Last Name" },
@@ -567,7 +590,15 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
 };
 
 const ListTextBlockStylesBlock = createTipTapRichTextBlock({
-    supports: ["bold", "ordered-list", "unordered-list", "heading"],
+    supports: {
+        history: false,
+        italic: false,
+        strike: false,
+        sub: false,
+        sup: false,
+        nonBreakingSpace: false,
+        softHyphen: false,
+    },
     textBlockStyles: [
         {
             name: "intro",

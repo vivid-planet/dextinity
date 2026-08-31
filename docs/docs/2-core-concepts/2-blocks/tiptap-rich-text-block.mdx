@@ -49,18 +49,39 @@ Most features of the Draft.js `RichTextBlock` have a direct equivalent in the Ti
 | Draft.js `RichTextBlock`                        | TipTap Rich Text Block                                                                               |
 | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `createRichTextBlock`                           | `createTipTapRichTextBlock`                                                                          |
-| `rte.supports` (`SupportedThings[]`)            | `supports` (`TipTapSupports[]`)                                                                      |
+| `rte.supports` (`SupportedThings[]`)            | `supports` (`TipTapSupports`)                                                                        |
 | `bold`, `italic`, `strikethrough`, `sub`, `sup` | `bold`, `italic`, `strike`, `sub`, `sup`                                                             |
 | `header-one` … `header-six`                     | `heading` support + the [text-block-type select](#text-block-type-and-styling-selects) (Heading 1–6) |
-| `ordered-list`, `unordered-list`                | `ordered-list`, `unordered-list`                                                                     |
+| `ordered-list`, `unordered-list`                | `orderedList`, `unorderedList`                                                                       |
 | `history`                                       | `history` (Admin only)                                                                               |
-| `link`, `links-remove`                          | pass a `link` block (automatically enables `link` support)                                           |
-| `non-breaking-space`, `soft-hyphen`             | `non-breaking-space`, `soft-hyphen`                                                                  |
+| `link`, `links-remove`                          | pass a `link` block (`link` support is enabled by default)                                           |
+| `non-breaking-space`, `soft-hyphen`             | `nonBreakingSpace`, `softHyphen`                                                                     |
 | `rte.blocktypeMap` (custom block types)         | [`textBlockStyles`](#text-block-type-and-styling-selects) + the styling select                       |
 | `rte.customInlineStyles`                        | [`inlineStyles`](#text-block-type-and-styling-selects) + the inline style select                     |
 | `rte.listLevelMax`                              | `listLevelMax`                                                                                       |
 | `rte.maxBlocks`                                 | `maxTextBlocks`                                                                                      |
 | Site rendering with `redraft` + `Renderers`     | Site rendering with `renderTipTapRichText` + `nodeMapping`/`markMapping`                             |
+
+### Enabling and disabling features
+
+Unlike `rte.supports`, which is an array listing everything that is allowed, `supports` is an object of booleans that is merged into the defaults.
+To remove a single feature, disable just that one — all other features keep their default:
+
+```ts title="tip-tap-rich-text.block.ts"
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    supports: { heading: false },
+});
+```
+
+The available features are `bold`, `italic`, `underline`, `strike`, `sub`, `sup`, `heading`, `orderedList`, `unorderedList`, `nonBreakingSpace`, `softHyphen`, `link` and (Admin only) `history`.
+All of them are enabled by default, except `underline`.
+
+:::warning
+
+`supports` must be configured identically on the API and in the Admin.
+The API builds its validation schema from it, so content using a feature that is only enabled in the Admin is rejected when saving.
+
+:::
 
 ### Setup
 
@@ -247,7 +268,7 @@ Beyond replacing the old block, the TipTap Rich Text Block adds capabilities the
 
 The editor toolbar offers two dropdowns to structure and style text blocks:
 
-1. **Text block type** — the semantic type of the current block: _Default_ (paragraph) or _Heading 1_ … _Heading 6_. Shown when `heading` is in `supports`.
+1. **Text block type** — the semantic type of the current block: _Default_ (paragraph) or _Heading 1_ … _Heading 6_. Shown when `heading` is enabled in `supports`.
 2. **Styling** — a named style applied to the current text block (`textBlockStyles`). This decouples semantics ("this is a paragraph") from appearance ("small paragraph"), so editors pick a type _and_ a style independently.
 
 There is a matching **inline style** dropdown for `inlineStyles`, which applies named styles to a text selection.

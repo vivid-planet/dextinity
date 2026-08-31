@@ -26,34 +26,43 @@ import { createListLevelMaxExtension, getListNestingDepthFromJson, trimListNesti
 import { TextBlockStyleContext } from "./TextBlockStyleContext";
 import { TipTapToolbar } from "./TipTapToolbar";
 
-export type TipTapSupports =
-    | "history"
-    | "bold"
-    | "italic"
-    | "underline"
-    | "strike"
-    | "sub"
-    | "sup"
-    | "heading"
-    | "ordered-list"
-    | "unordered-list"
-    | "non-breaking-space"
-    | "soft-hyphen"
-    | "link";
+export interface TipTapSupports {
+    history?: boolean;
+    bold?: boolean;
+    italic?: boolean;
+    underline?: boolean;
+    strike?: boolean;
+    sub?: boolean;
+    sup?: boolean;
+    heading?: boolean;
+    orderedList?: boolean;
+    unorderedList?: boolean;
+    nonBreakingSpace?: boolean;
+    softHyphen?: boolean;
+    link?: boolean;
+}
 
-const defaultSupports: TipTapSupports[] = [
-    "history",
-    "heading",
-    "bold",
-    "italic",
-    "strike",
-    "sub",
-    "sup",
-    "ordered-list",
-    "unordered-list",
-    "non-breaking-space",
-    "soft-hyphen",
-];
+export type ResolvedTipTapSupports = Required<TipTapSupports>;
+
+const defaultSupports: ResolvedTipTapSupports = {
+    history: true,
+    bold: true,
+    italic: true,
+    underline: false,
+    strike: true,
+    sub: true,
+    sup: true,
+    heading: true,
+    orderedList: true,
+    unorderedList: true,
+    nonBreakingSpace: true,
+    softHyphen: true,
+    link: true,
+};
+
+function resolveSupports(supports: TipTapSupports = {}): ResolvedTipTapSupports {
+    return { ...defaultSupports, ...supports };
+}
 
 export type { JSONContent as TipTapRichTextBlockContent } from "@tiptap/core";
 
@@ -117,7 +126,11 @@ export interface TipTapChildBlock {
 }
 
 interface TipTapRichTextBlockFactoryOptions {
-    supports?: TipTapSupports[];
+    /**
+     * Enables/disables individual editor features. The passed values are merged into the defaults,
+     * so a single feature can be turned off without repeating all others, e.g. `{ heading: false }`.
+     */
+    supports?: TipTapSupports;
     textBlockStyles?: TipTapTextBlockStyle[];
     inlineStyles?: TipTapInlineStyle[];
     placeholders?: TipTapPlaceholder[];
@@ -351,7 +364,7 @@ const TipTapEditor = ({
 }: {
     state: TipTapRichTextBlockState;
     updateState: React.Dispatch<React.SetStateAction<TipTapRichTextBlockState>>;
-    supports: TipTapSupports[];
+    supports: ResolvedTipTapSupports;
     textBlockStyles: TipTapTextBlockStyle[];
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
@@ -364,7 +377,7 @@ const TipTapEditor = ({
 }) => {
     const hasTextBlockStyles = textBlockStyles.length > 0;
     const hasInlineStyles = inlineStyles.length > 0;
-    const hasLink = supports.includes("link") && !!linkBlock;
+    const hasLink = supports.link && !!linkBlock;
     const hasPlaceholders = placeholders.length > 0;
     const childBlockEntries = Object.values(childBlocks);
     const hasBlockChildBlocks = childBlockEntries.some((childBlock) => childBlock.display === "block");
@@ -374,34 +387,28 @@ const TipTapEditor = ({
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
-                bold: supports.includes("bold") ? {} : false,
-                italic: supports.includes("italic") ? {} : false,
-                underline: supports.includes("underline") ? {} : false,
-                strike: supports.includes("strike") ? {} : false,
-                heading: supports.includes("heading")
-                    ? hasTextBlockStyles
-                        ? false
-                        : headingLevels
-                          ? { levels: headingLevels as HeadingLevel[] }
-                          : {}
-                    : false,
+                bold: supports.bold ? {} : false,
+                italic: supports.italic ? {} : false,
+                underline: supports.underline ? {} : false,
+                strike: supports.strike ? {} : false,
+                heading: supports.heading ? (hasTextBlockStyles ? false : headingLevels ? { levels: headingLevels as HeadingLevel[] } : {}) : false,
                 paragraph: hasTextBlockStyles ? false : undefined,
-                orderedList: supports.includes("ordered-list") ? {} : false,
-                bulletList: supports.includes("unordered-list") ? {} : false,
+                orderedList: supports.orderedList ? {} : false,
+                bulletList: supports.unorderedList ? {} : false,
                 blockquote: false,
                 code: false,
                 codeBlock: false,
                 link: false,
             }),
             ...(hasTextBlockStyles ? [TextBlockStyleParagraph] : []),
-            ...(hasTextBlockStyles && supports.includes("heading")
+            ...(hasTextBlockStyles && supports.heading
                 ? [TextBlockStyleHeading.configure(headingLevels ? { levels: headingLevels as HeadingLevel[] } : {})]
                 : []),
             ...(hasInlineStyles ? [InlineStyleMark] : []),
-            ...(supports.includes("sup") ? [Superscript] : []),
-            ...(supports.includes("sub") ? [Subscript] : []),
-            ...(supports.includes("non-breaking-space") ? [NonBreakingSpace] : []),
-            ...(supports.includes("soft-hyphen") ? [SoftHyphen] : []),
+            ...(supports.sup ? [Superscript] : []),
+            ...(supports.sub ? [Subscript] : []),
+            ...(supports.nonBreakingSpace ? [NonBreakingSpace] : []),
+            ...(supports.softHyphen ? [SoftHyphen] : []),
             ...(hasPlaceholders ? [Placeholder] : []),
             ...(hasLink ? [CmsLink] : []),
             ...(hasBlockChildBlocks ? [CmsBlock] : []),
@@ -493,7 +500,7 @@ type TipTapRichTextBlockInterface = BlockInterface<TipTapRichTextBlockData, TipT
  * @experimental
  */
 export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOptions): TipTapRichTextBlockInterface => {
-    let supports = options?.supports ?? defaultSupports;
+    const supports = resolveSupports(options?.supports);
     const textBlockStyles = options?.textBlockStyles ?? [];
     const inlineStyles = options?.inlineStyles ?? [];
     const placeholders = options?.placeholders ?? [];
@@ -512,11 +519,6 @@ export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOp
             headingLevels.some((level) => !Number.isInteger(level) || level < 1 || level > 6))
     ) {
         throw new Error("headingLevels must be a non-empty array of unique integers between 1 and 6");
-    }
-
-    // Auto-enable link support when a link block is provided
-    if (linkBlock && !supports.includes("link")) {
-        supports = [...supports, "link"];
     }
 
     const sharedEditorProps = {

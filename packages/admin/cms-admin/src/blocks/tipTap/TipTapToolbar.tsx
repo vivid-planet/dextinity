@@ -39,10 +39,10 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
 import type {
+    ResolvedTipTapSupports,
     TipTapChildBlock,
     TipTapInlineStyle,
     TipTapPlaceholder,
-    TipTapSupports,
     TipTapTextBlockStyle,
     TipTapTextBlockType,
 } from "./createTipTapRichTextBlock";
@@ -168,7 +168,7 @@ export const TipTapToolbar = ({
     headingLevels = [1, 2, 3, 4, 5, 6],
 }: {
     editor: Editor;
-    supports: TipTapSupports[];
+    supports: ResolvedTipTapSupports;
     textBlockStyles: TipTapTextBlockStyle[];
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
@@ -183,11 +183,11 @@ export const TipTapToolbar = ({
     const [childBlockAnchorEl, setChildBlockAnchorEl] = useState<null | HTMLElement>(null);
     const [insertChildBlock, setInsertChildBlock] = useState<({ key: string } & TipTapChildBlock) | null>(null);
     const [linkDialogOpen, setLinkDialogOpen] = useState(false);
-    const hasInlineFormatButtons = (["bold", "italic", "underline", "strike"] as const).some((s) => supports.includes(s));
-    const moreOptions = (["sub", "sup"] as const).some((s) => supports.includes(s));
-    const lists = (["ordered-list", "unordered-list"] as const).some((s) => supports.includes(s));
-    const specialChars = (["non-breaking-space", "soft-hyphen"] as const).some((s) => supports.includes(s));
-    const hasLink = supports.includes("link") && !!linkBlock;
+    const hasInlineFormatButtons = supports.bold || supports.italic || supports.underline || supports.strike;
+    const moreOptions = supports.sub || supports.sup;
+    const lists = supports.orderedList || supports.unorderedList;
+    const specialChars = supports.nonBreakingSpace || supports.softHyphen;
+    const hasLink = supports.link && !!linkBlock;
     const hasPlaceholders = placeholders.length > 0;
     const hasInlineStyles = inlineStyles.length > 0;
     const hasChildBlocks = Object.keys(childBlocks).length > 0;
@@ -342,7 +342,7 @@ export const TipTapToolbar = ({
                 px: "6px",
             }}
         >
-            {supports.includes("history") && (
+            {supports.history && (
                 <ToolbarGroup>
                     <ToolbarButton
                         editor={editor}
@@ -360,7 +360,7 @@ export const TipTapToolbar = ({
                     />
                 </ToolbarGroup>
             )}
-            {supports.includes("heading") && (
+            {supports.heading && (
                 <ToolbarGroup>
                     <FormControl sx={selectFormControlSx}>
                         <Select
@@ -436,7 +436,7 @@ export const TipTapToolbar = ({
             )}
             {(hasInlineFormatButtons || moreOptions) && (
                 <ToolbarGroup>
-                    {supports.includes("bold") && (
+                    {supports.bold && (
                         <ToolbarButton
                             editor={editor}
                             icon={RteBold}
@@ -445,7 +445,7 @@ export const TipTapToolbar = ({
                             onToggle={() => editor.chain().focus().toggleBold().run()}
                         />
                     )}
-                    {supports.includes("italic") && (
+                    {supports.italic && (
                         <ToolbarButton
                             editor={editor}
                             icon={RteItalic}
@@ -454,7 +454,7 @@ export const TipTapToolbar = ({
                             onToggle={() => editor.chain().focus().toggleItalic().run()}
                         />
                     )}
-                    {supports.includes("underline") && (
+                    {supports.underline && (
                         <ToolbarButton
                             editor={editor}
                             icon={RteUnderlined}
@@ -463,7 +463,7 @@ export const TipTapToolbar = ({
                             onToggle={() => editor.chain().focus().toggleUnderline().run()}
                         />
                     )}
-                    {supports.includes("strike") && (
+                    {supports.strike && (
                         <ToolbarButton
                             editor={editor}
                             icon={RteStrikethrough}
@@ -490,7 +490,7 @@ export const TipTapToolbar = ({
                                 </Box>
                             </Tooltip>
                             <Menu open={Boolean(moreAnchorEl)} anchorEl={moreAnchorEl} onClose={handleMoreClose}>
-                                {supports.includes("sup") && (
+                                {supports.sup && (
                                     <MenuItem
                                         selected={editor.isActive("superscript")}
                                         onMouseDown={(e) => {
@@ -505,7 +505,7 @@ export const TipTapToolbar = ({
                                         </ListItemIcon>
                                     </MenuItem>
                                 )}
-                                {supports.includes("sub") && (
+                                {supports.sub && (
                                     <MenuItem
                                         selected={editor.isActive("subscript")}
                                         onMouseDown={(e) => {
@@ -527,7 +527,7 @@ export const TipTapToolbar = ({
             )}
             {lists && (
                 <ToolbarGroup>
-                    {supports.includes("ordered-list") && (
+                    {supports.orderedList && (
                         <ToolbarButton
                             editor={editor}
                             icon={RteOl}
@@ -536,7 +536,7 @@ export const TipTapToolbar = ({
                             onToggle={() => editor.chain().focus().toggleOrderedList().run()}
                         />
                     )}
-                    {supports.includes("unordered-list") && (
+                    {supports.unorderedList && (
                         <ToolbarButton
                             editor={editor}
                             icon={RteUl}
@@ -619,7 +619,7 @@ export const TipTapToolbar = ({
             )}
             {specialChars && (
                 <ToolbarGroup>
-                    {supports.includes("non-breaking-space") && (
+                    {supports.nonBreakingSpace && (
                         <ToolbarButton
                             editor={editor}
                             icon={RteNonBreakingSpace}
@@ -632,7 +632,7 @@ export const TipTapToolbar = ({
                             onToggle={() => editor.chain().focus().insertContent({ type: "nonBreakingSpace" }).run()}
                         />
                     )}
-                    {supports.includes("soft-hyphen") && (
+                    {supports.softHyphen && (
                         <ToolbarButton
                             editor={editor}
                             icon={RteSoftHyphen}

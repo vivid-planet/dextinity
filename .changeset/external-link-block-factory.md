@@ -4,7 +4,7 @@
 
 Add `createExternalLinkBlock` factory
 
-The `ExternalLinkBlock` always offers editors "Open in new window" and "No follow", even where neither has any effect — an internal application that is always embedded in an iframe, for instance. Pass what the editor should be offered via `supports`; anything left out isn't rendered in the admin component. `ExternalLinkBlock` is now created from the factory with defaults and still exported next to it, so this is non-breaking.
+The `ExternalLinkBlock` lets editors enter a URL and offers two options besides it: "Open in new window" and "No follow". Where an option has no effect — an internal application that is always embedded in an iframe, for instance — the factory leaves it out. Pass what the editor should be offered via `supports`; anything left out isn't rendered in the admin component. `ExternalLinkBlock` is now created from the factory with defaults and still exported next to it, so this is non-breaking.
 
 **Example**
 
@@ -23,13 +23,13 @@ Values that are already stored are kept as they are, the editor just can't chang
 
 **Pairing with an API block of your own**
 
-`supports` is about the editor, not about the data. To pair the block with an API block created by `createExternalLinkBlock` from `@dextinity/cms-api`, which has fewer fields, use `fields` and `name` instead:
+`supports` is about the editor, not about the data: the block still carries and sends every field. To pair it with an API block that has fewer fields, use `fields` and `name` instead, matching that block exactly:
 
 ```tsx
 export const UrlLinkBlock = createExternalLinkBlock({ fields: [], name: "UrlLink" });
 ```
 
-`fields` decides which options the block's data has, `supports` which of those the editor may set, defaulting to `fields`. Both must match the API block exactly: sending a field it doesn't have is rejected by validation, and so is omitting one it has. Two rules are checked at creation time and throw if broken: `supports` has to be a subset of `fields`, and a reduced `fields` needs a `name` of its own — a block with fewer fields must not keep passing itself off as `ExternalLink`, not least because the block clipboard matches on the name.
+`fields` decides which options the block's data has, `supports` which of those the editor may set, defaulting to `fields`. Both must line up with the API block: sending a field it doesn't have is rejected by validation, and so is omitting one it has. Two rules are checked at creation time and throw if broken: `supports` has to be a subset of `fields`, and a reduced `fields` needs a `name` of its own — a block with fewer fields must not keep passing itself off as `ExternalLink`, not least because the block clipboard matches on the name.
 
 **Redirects no longer offer "Open in new window" and "No follow"**
 

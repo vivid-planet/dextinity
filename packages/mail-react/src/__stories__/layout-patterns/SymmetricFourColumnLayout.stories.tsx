@@ -28,7 +28,7 @@ const theme = createTheme({
 registerStyles(
     (theme) => css`
         ${theme.breakpoints.default.belowMediaQuery} {
-            .symmetricFourColumnsSection > table > tbody > tr > td {
+            .symmetricFourColumnsSection > table > tbody > tr > td > div {
                 display: flex !important;
                 flex-direction: column !important;
                 gap: 20px !important;
@@ -62,7 +62,7 @@ export const Default: StoryObj = {
             const innerColumnWidth = `${((contentWidthPerColumn + columnGap) / availableContentWidth) * 100}%`;
 
             return (
-                <MjmlSection indent className="symmetricFourColumnsSection">
+                <MjmlSection indent disableResponsiveBehavior className="symmetricFourColumnsSection">
                     <MjmlColumn width={outerColumnWidth} paddingRight={halfColumnGap} className="symmetricFourColumnsSection__column">
                         <MjmlText variant="subheading" bottomSpacing>
                             First

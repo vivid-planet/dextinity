@@ -2819,6 +2819,9 @@ importers:
       '@dextinity/eslint-config':
         specifier: workspace:*
         version: link:../packages/eslint-config
+      '@dextinity/mail-react':
+        specifier: workspace:*
+        version: link:../packages/mail-react
       '@faker-js/faker':
         specifier: ^10.4.0
         version: 10.4.0

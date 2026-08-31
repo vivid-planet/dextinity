@@ -25,9 +25,10 @@ export function MailRendererDecorator(Story: () => React.JSX.Element, context: {
         console.warn("MJML warning:", warning);
     }
 
-    const html = globals.usePublicImageUrls ? replaceImagesWithPublicUrl(rawHtml) : rawHtml;
+    const usePublicImageUrls = Boolean(globals.usePublicImageUrls);
+    const html = usePublicImageUrls ? replaceImagesWithPublicUrl(rawHtml) : rawHtml;
 
-    emit(RENDER_RESULT_EVENT, { html, mjmlWarnings });
+    emit(RENDER_RESULT_EVENT, { html, mjmlWarnings, usePublicImageUrls });
 
     return <div dangerouslySetInnerHTML={{ __html: html }} />;
 }

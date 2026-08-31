@@ -91,7 +91,9 @@ const halfGap = columnGap / 2;
 
 On mobile, reset the gap padding so content stretches full-width, and add a vertical margin between the stacked columns. Column padding compiles to an inner `<td>`, so target it via `.className > table > tbody > tr > td`.
 
-→ For complete two-column patterns (equal-width and fixed+fluid) with responsive styles, CSS targeting rules, and the `direction="rtl"` technique for controlling mobile stack order, read [`references/layout-patterns.md`](references/layout-patterns.md).
+Set `disableResponsiveBehavior` on **every** section with more than one column. It wraps the columns in an `MjmlGroup`, which is what makes MJML write their widths inline; without it the widths exist only in a `min-width` media query, and clients that drop that query — GMX and Web.de, for example — show the columns stacked. The group never stacks by itself, so write the mobile stacking into `registerStyles`, and target the column container one level deeper (`… > td > div`).
+
+→ For complete patterns — two columns, three or more, fixed+fluid — with responsive styles, CSS targeting rules, the stacking strategies, and the `direction="rtl"` technique for controlling mobile stack order, read [`references/layout-patterns.md`](references/layout-patterns.md).
 
 ### Ending Tags
 
@@ -115,6 +117,8 @@ Email styling follows a **desktop-first** approach:
 
 Never rely on `<style>` blocks for base/desktop layout. Set all default styles inline via MJML component props.
 
+MJML breaks this rule for column widths: it puts them in a `min-width` media query, so a multi-column section stacks in any client that drops that query — GMX and Web.de, for example. See [Multi-Column Layouts](#multi-column-layouts).
+
 ### Prefer Theme Breakpoints
 
 Always use `theme.breakpoints.*.belowMediaQuery` inside `registerStyles` instead of hardcoding media query values. This keeps responsive styles in sync with the theme configuration. If a breakpoint value is needed repeatedly but doesn't exist in the theme, add it via `createBreakpoint` and module augmentation rather than duplicating raw media queries. Reserve hardcoded media queries for genuinely one-off values.
@@ -125,7 +129,9 @@ Always use `theme.breakpoints.*.belowMediaQuery` inside `registerStyles` instead
 
 Sometimes you cannot make both views from the same HTML, because the mobile view needs a different structure than the desktop view. Then put both layouts in the email and hide one of them: inline styles hide the mobile layout, and a media query in `registerStyles` switches the two.
 
-Two layouts make twice as much markup, so first try to make one layout that works at each width. Columns already stack on mobile.
+Two layouts make twice as much markup, so first try to make one layout that works at each width. The column patterns already stack on mobile.
+
+The default layout is the one that shows when the `<style>` block is gone, so if it has columns its section needs `disableResponsiveBehavior` as well.
 
 → For the hiding styles, the extra step classic Outlook needs, and what to avoid, read [`references/layout-patterns.md`](references/layout-patterns.md) → Breakpoint Content Switch.
 

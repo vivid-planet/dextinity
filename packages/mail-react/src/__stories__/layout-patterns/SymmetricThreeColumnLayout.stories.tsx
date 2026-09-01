@@ -30,7 +30,7 @@ registerStyles(
         ${theme.breakpoints.default.belowMediaQuery} {
             .symmetricThreeColumnsSection > table > tbody > tr > td > div {
                 display: flex !important;
-                gap: 20px !important;
+                column-gap: 20px !important;
             }
 
             .symmetricThreeColumnsSection__column {
@@ -55,6 +55,11 @@ registerStyles(
                 flex: none !important;
                 width: 100% !important;
                 max-width: 100% !important;
+                margin-bottom: 20px !important;
+            }
+
+            .symmetricThreeColumnsSection__column--last {
+                margin-bottom: 0 !important;
             }
         }
     `,
@@ -95,7 +100,11 @@ export const Default: StoryObj = {
                             Numquam aut voluptas numquam aspernatur. Consequatur quidem omnis dolorem natus quis soluta. Est recusandae delectus.
                         </MjmlText>
                     </MjmlColumn>
-                    <MjmlColumn width={outerColumnWidth} paddingLeft={halfColumnGap} className="symmetricThreeColumnsSection__column">
+                    <MjmlColumn
+                        width={outerColumnWidth}
+                        paddingLeft={halfColumnGap}
+                        className="symmetricThreeColumnsSection__column symmetricThreeColumnsSection__column--last"
+                    >
                         <MjmlText variant="subheading" bottomSpacing>
                             Third column
                         </MjmlText>
@@ -142,7 +151,7 @@ registerStyles(
         ${theme.breakpoints.default.belowMediaQuery} {
             .neverStackingThreeColumnsSection > table > tbody > tr > td > div {
                 display: flex !important;
-                gap: 20px !important;
+                column-gap: 20px !important;
             }
 
             .neverStackingThreeColumnsSection__column {

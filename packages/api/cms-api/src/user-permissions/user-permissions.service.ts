@@ -5,7 +5,6 @@ import { Inject, Injectable, Optional } from "@nestjs/common";
 import { isFuture, isPast } from "date-fns";
 import { Request } from "express";
 import isEqual from "lodash.isequal";
-import uniqWith from "lodash.uniqwith";
 import getUuid from "uuid-by-string";
 
 import { AbstractAccessControlService } from "./access-control.service";
@@ -75,7 +74,7 @@ export class UserPermissionsService {
                     ]),
                 ),
             }));
-        return uniqWith(contentScopesWithLabel, (value: ContentScopeWithLabel, other: ContentScopeWithLabel) => isEqual(value.scope, other.scope));
+        return contentScopesWithLabel;
     }
 
     async getAvailablePermissions(): Promise<Permission[]> {
@@ -220,7 +219,7 @@ export class UserPermissionsService {
             }
         }
 
-        return uniqWith(contentScopes, isEqual);
+        return contentScopes;
     }
 
     async getImpersonatedUser(authenticatedUser: User, request: Request): Promise<User | undefined> {
@@ -265,7 +264,7 @@ export class UserPermissionsService {
                 const contentScopes = userPermission.overrideContentScopes ? userPermission.contentScopes : userContentScopes;
                 const existingPermission = acc.find((p) => p.permission === userPermission.permission);
                 if (existingPermission) {
-                    existingPermission.contentScopes = uniqWith([...existingPermission.contentScopes, ...contentScopes], isEqual);
+                    existingPermission.contentScopes = [...existingPermission.contentScopes, ...contentScopes];
                 } else {
                     acc.push({
                         permission: userPermission.permission,

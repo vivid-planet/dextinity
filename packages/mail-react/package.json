@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/mail-react",
-    "version": "10.2.0",
+    "version": "10.3.0",
     "description": "Utilities for building HTML emails with React",
     "license": "BSD-2-Clause",
     "type": "module",

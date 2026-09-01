@@ -78,8 +78,8 @@ All of them are enabled by default, except `underline`.
 
 :::warning
 
-`supports` must be configured identically on the API and in the Admin.
-The API builds its validation schema from it, so content using a feature that is only enabled in the Admin is rejected when saving.
+The shared feature flags must be configured identically on the API and in the Admin; only `history` is Admin-only and has no API counterpart.
+The API builds its validation schema from those flags, so content using a feature that is only enabled in the Admin is rejected when saving.
 
 :::
 

@@ -265,7 +265,7 @@ There is one factory per layer, and they do different things. Pick by how far th
 | Effect      | Hides the field from the editor (`supports`)   | Removes the field from the block entirely |
 | Block name  | `ExternalLink`, own one required with `fields` | Mandatory, must be your own               |
 | Granularity | Per usage site                                 | Per block                                 |
-| Stored data | Untouched, keeps its default                   | Untouched, lingers untyped                |
+| Stored data | Untouched                                      | Untouched, lingers untyped                |
 
 The admin factory can do both: `supports` hides a field the block still has, `fields` takes it out of the block's data to
 match an API block of your own. Either way the name promises a field set, so the API factory always needs one of its own,
@@ -299,13 +299,11 @@ block and site component under that same name.
 
 Two things to be aware of before reaching for this:
 
-- **Stored values are not deleted.** Removing a field takes it out of the contract, not out the database. Values already
+- **Stored values are not deleted.** Removing a field takes it out of the contract, not out of the database. Values already
   stored under that block name stay in its JSON, untyped, until a migration removes them.
-- **Switching an existing usage site needs a migration.** Replacing `external: ExternalLinkBlock` with your own block
-  changes the key of the surrounding `OneOfBlock`, so stored content still carries `activeType: "external"` and no longer
-  resolves. That migration belongs on the surrounding link block, not on the new block — a new block starts at migration
-  version 0 and never sees data stored under a different name. Using the new block only in new usage sites needs no
-  migration at all.
+- **Swapping the block at an existing usage site needs no migration on its own.** A `OneOfBlock` resolves by the key it's
+  registered under (for instance `external`), not by the block's name, so replacing `external: ExternalLinkBlock` with your
+  own block keeps working — the new block just doesn't read fields it doesn't have.
 
 ### Admin
 
@@ -340,7 +338,6 @@ the default in content.
 
 Values that are already stored are kept as they are, the editor just can't change them anymore.
 A field left out of `supports` stays part of the block's data, so the API block and the site component are unaffected.
-It also keeps its default — it isn't forced to a different value.
 To always open external links in a new tab, do so in the site implementation instead.
 
 #### Pairing with an API block of your own

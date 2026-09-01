@@ -25,6 +25,7 @@ import {
     FormControl,
     inputBaseClasses,
     ListItemIcon,
+    ListItemText,
     Menu,
     MenuItem,
     Select,
@@ -544,14 +545,12 @@ export const TipTapToolbar = ({
                                                 onMouseDown={() => runMenuItemAction(item.onToggle)}
                                                 onClick={(e) => handleMenuItemKeyboardActivate(e, item.onToggle)}
                                             >
-                                                <Box component="span" sx={{ flexGrow: 1 }}>
-                                                    {item.label}
-                                                </Box>
                                                 {Icon && (
-                                                    <ListItemIcon sx={{ justifyContent: "flex-end" }}>
+                                                    <ListItemIcon>
                                                         <Icon />
                                                     </ListItemIcon>
                                                 )}
+                                                <ListItemText>{item.label}</ListItemText>
                                             </MenuItem>
                                         );
                                     })}

@@ -1,7 +1,7 @@
 import { BaseTranslationDialog, greyPalette, useContentTranslationService } from "@dextinity/admin";
 import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { Extension } from "@tiptap/core";
+import { Extension, type Extensions, generateHTML, generateJSON } from "@tiptap/core";
 import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
@@ -313,21 +313,123 @@ function collectLinkMarksData(content: JSONContent): unknown[] {
     return results;
 }
 
-async function translateTextNodesAsync(content: JSONContent, translate: (text: string) => Promise<string>): Promise<JSONContent> {
-    if (!content || typeof content !== "object") {
-        return content;
-    }
-    const result = { ...content };
+interface ExternalizedBlockData {
+    id: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: any;
+}
 
-    if (typeof result.text === "string" && result.text.trim().length > 0) {
-        result.text = await translate(result.text);
-    }
+// Link marks and child block nodes can carry arbitrary non-string `data` (link targets, block state).
+// HTML serialization only round-trips string attribute values, so this data is swapped for a
+// placeholder id before serializing and restored by id afterward. It never enters the translated HTML.
+function externalizeBlockDataForHtml(content: JSONContent): { content: JSONContent; externalized: ExternalizedBlockData[] } {
+    const externalized: ExternalizedBlockData[] = [];
 
-    if (Array.isArray(result.content)) {
-        result.content = await Promise.all(result.content.map((child) => translateTextNodesAsync(child, translate)));
-    }
+    let result = mapLinkMarksData(content, (data) => {
+        const id = `placeholder-${externalized.length}`;
+        externalized.push({ id, data });
+        return id;
+    });
+
+    result = mapCmsBlockNodesData(result, (blockType, data) => {
+        const id = `placeholder-${externalized.length}`;
+        externalized.push({ id, data });
+        return id;
+    });
+
+    return { content: result, externalized };
+}
+
+function restoreBlockDataFromHtml(content: JSONContent, externalized: ExternalizedBlockData[]): JSONContent {
+    const dataById = new Map(externalized.map((item) => [item.id, item.data]));
+
+    let result = mapLinkMarksData(content, (id) => (typeof id === "string" && dataById.has(id) ? dataById.get(id) : id));
+    result = mapCmsBlockNodesData(result, (blockType, id) => (typeof id === "string" && dataById.has(id) ? dataById.get(id) : id));
 
     return result;
+}
+
+// Translates a field's content as a single HTML document (like the Draft.js rich text block does),
+// instead of translating each text node in isolation. This keeps sentence context across marks (bold,
+// links, ...) intact and results in one translation request per field instead of one per text node.
+async function translateTipTapContentAsync(
+    content: JSONContent,
+    translate: (text: string) => Promise<string>,
+    extensions: Extensions,
+): Promise<JSONContent> {
+    const { content: sanitizedContent, externalized } = externalizeBlockDataForHtml(content);
+    const html = generateHTML(sanitizedContent, extensions);
+    const translatedHtml = await translate(html);
+    const translatedContent = generateJSON(translatedHtml, extensions) as JSONContent;
+    return restoreBlockDataFromHtml(translatedContent, externalized);
+}
+
+function buildTipTapExtensions({
+    supports,
+    textBlockStyles,
+    inlineStyles,
+    placeholders,
+    linkBlock,
+    childBlocks,
+    maxTextBlocks,
+    listLevelMax,
+    headingLevels,
+}: {
+    supports: TipTapSupports[];
+    textBlockStyles: TipTapTextBlockStyle[];
+    inlineStyles: TipTapInlineStyle[];
+    placeholders: TipTapPlaceholder[];
+    linkBlock?: BlockInterface & LinkBlockInterface;
+    childBlocks: Record<string, TipTapChildBlock>;
+    maxTextBlocks?: number;
+    listLevelMax?: number;
+    headingLevels?: number[];
+}): Extensions {
+    const hasTextBlockStyles = textBlockStyles.length > 0;
+    const hasInlineStyles = inlineStyles.length > 0;
+    const hasLink = supports.includes("link") && !!linkBlock;
+    const hasPlaceholders = placeholders.length > 0;
+    const childBlockEntries = Object.values(childBlocks);
+    const hasBlockChildBlocks = childBlockEntries.some((childBlock) => childBlock.display === "block");
+    const hasInlineChildBlocks = childBlockEntries.some((childBlock) => childBlock.display === "inline");
+
+    return [
+        StarterKit.configure({
+            bold: supports.includes("bold") ? {} : false,
+            italic: supports.includes("italic") ? {} : false,
+            underline: supports.includes("underline") ? {} : false,
+            strike: supports.includes("strike") ? {} : false,
+            heading: supports.includes("heading")
+                ? hasTextBlockStyles
+                    ? false
+                    : headingLevels
+                      ? { levels: headingLevels as HeadingLevel[] }
+                      : {}
+                : false,
+            paragraph: hasTextBlockStyles ? false : undefined,
+            orderedList: supports.includes("ordered-list") ? {} : false,
+            bulletList: supports.includes("unordered-list") ? {} : false,
+            blockquote: false,
+            code: false,
+            codeBlock: false,
+            link: false,
+        }),
+        ...(hasTextBlockStyles ? [TextBlockStyleParagraph] : []),
+        ...(hasTextBlockStyles && supports.includes("heading")
+            ? [TextBlockStyleHeading.configure(headingLevels ? { levels: headingLevels as HeadingLevel[] } : {})]
+            : []),
+        ...(hasInlineStyles ? [InlineStyleMark] : []),
+        ...(supports.includes("sup") ? [Superscript] : []),
+        ...(supports.includes("sub") ? [Subscript] : []),
+        ...(supports.includes("non-breaking-space") ? [NonBreakingSpace] : []),
+        ...(supports.includes("soft-hyphen") ? [SoftHyphen] : []),
+        ...(hasPlaceholders ? [Placeholder] : []),
+        ...(hasLink ? [CmsLink] : []),
+        ...(hasBlockChildBlocks ? [CmsBlock] : []),
+        ...(hasInlineChildBlocks ? [CmsInlineBlock] : []),
+        ...(maxTextBlocks !== undefined ? [createMaxTextBlocksExtension(maxTextBlocks)] : []),
+        ...(listLevelMax !== undefined ? [createListLevelMaxExtension(listLevelMax)] : []),
+    ];
 }
 
 const ReadOnlyContent = styled("div")({
@@ -371,53 +473,22 @@ const TipTapEditor = ({
     readOnly,
     disableContentTranslation,
 }: TipTapEditorProps) => {
-    const hasTextBlockStyles = textBlockStyles.length > 0;
-    const hasInlineStyles = inlineStyles.length > 0;
-    const hasLink = supports.includes("link") && !!linkBlock;
-    const hasPlaceholders = placeholders.length > 0;
-    const childBlockEntries = Object.values(childBlocks);
-    const hasBlockChildBlocks = childBlockEntries.some((childBlock) => childBlock.display === "block");
-    const hasInlineChildBlocks = childBlockEntries.some((childBlock) => childBlock.display === "inline");
     const childBlocksByKey: Record<string, BlockInterface> = Object.fromEntries(Object.entries(childBlocks).map(([key, { block }]) => [key, block]));
 
+    const extensions = buildTipTapExtensions({
+        supports,
+        textBlockStyles,
+        inlineStyles,
+        placeholders,
+        linkBlock,
+        childBlocks,
+        maxTextBlocks,
+        listLevelMax,
+        headingLevels,
+    });
+
     const editor = useEditor({
-        extensions: [
-            StarterKit.configure({
-                bold: supports.includes("bold") ? {} : false,
-                italic: supports.includes("italic") ? {} : false,
-                underline: supports.includes("underline") ? {} : false,
-                strike: supports.includes("strike") ? {} : false,
-                heading: supports.includes("heading")
-                    ? hasTextBlockStyles
-                        ? false
-                        : headingLevels
-                          ? { levels: headingLevels as HeadingLevel[] }
-                          : {}
-                    : false,
-                paragraph: hasTextBlockStyles ? false : undefined,
-                orderedList: supports.includes("ordered-list") ? {} : false,
-                bulletList: supports.includes("unordered-list") ? {} : false,
-                blockquote: false,
-                code: false,
-                codeBlock: false,
-                link: false,
-            }),
-            ...(hasTextBlockStyles ? [TextBlockStyleParagraph] : []),
-            ...(hasTextBlockStyles && supports.includes("heading")
-                ? [TextBlockStyleHeading.configure(headingLevels ? { levels: headingLevels as HeadingLevel[] } : {})]
-                : []),
-            ...(hasInlineStyles ? [InlineStyleMark] : []),
-            ...(supports.includes("sup") ? [Superscript] : []),
-            ...(supports.includes("sub") ? [Subscript] : []),
-            ...(supports.includes("non-breaking-space") ? [NonBreakingSpace] : []),
-            ...(supports.includes("soft-hyphen") ? [SoftHyphen] : []),
-            ...(hasPlaceholders ? [Placeholder] : []),
-            ...(hasLink ? [CmsLink] : []),
-            ...(hasBlockChildBlocks ? [CmsBlock] : []),
-            ...(hasInlineChildBlocks ? [CmsInlineBlock] : []),
-            ...(maxTextBlocks !== undefined ? [createMaxTextBlocksExtension(maxTextBlocks)] : []),
-            ...(listLevelMax !== undefined ? [createListLevelMaxExtension(listLevelMax)] : []),
-        ],
+        extensions,
         content: state.tipTapContent,
         editable: !readOnly,
         onUpdate: ({ editor }) => {
@@ -471,7 +542,7 @@ const TipTapEditor = ({
 
     async function handleTranslateClick() {
         const original = editor.getJSON();
-        const translated = await translateTextNodesAsync(original, translationContext.translate);
+        const translated = await translateTipTapContentAsync(original, translationContext.translate, extensions);
         if (translationContext.showApplyTranslationDialog) {
             setTranslationDialogState({ original, translated });
         } else {
@@ -621,6 +692,8 @@ export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOp
         disableContentTranslation,
     };
 
+    const tipTapExtensions = buildTipTapExtensions(sharedEditorProps);
+
     const TipTapRichTextBlock: TipTapRichTextBlockInterface = {
         ...createBlockSkeleton(),
 
@@ -717,7 +790,7 @@ export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOp
         },
 
         translateContent: async (state, translate) => {
-            let content = await translateTextNodesAsync(state.tipTapContent, translate);
+            let content = await translateTipTapContentAsync(state.tipTapContent, translate, tipTapExtensions);
             if (linkBlock?.translateContent) {
                 const translateLinkContent = linkBlock.translateContent;
                 content = await mapLinkMarksDataAsync(content, (data) => translateLinkContent(data, translate));

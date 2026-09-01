@@ -2266,12 +2266,12 @@ enum UserPermissionSource {
 }
 
 type UserPermissionsUser {
-  contentScopesCount: Int!
+  contentScopesCount: Int! @deprecated(reason: "The Scopes column was removed from the users list. Will be removed in the next version.")
   email: String!
   id: String!
   impersonationAllowed: Boolean!
   name: String!
-  permissionsCount: Int!
+  permissionsCount: Int! @deprecated(reason: "The Permissions column was removed from the users list. Will be removed in the next version.")
 }
 
 input UserPermissionsUserFilter {

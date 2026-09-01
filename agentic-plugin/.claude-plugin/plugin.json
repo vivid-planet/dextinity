@@ -1,0 +1,7 @@
+{
+    "name": "comet",
+    "description": "Comet DXP Claude Code plugin — provides agent skills for working with Comet libraries (blocks, mail-react, etc.).",
+    "version": "1.0.0",
+    "homepage": "https://github.com/vivid-planet/comet",
+    "repository": "https://github.com/vivid-planet/comet.git"
+}

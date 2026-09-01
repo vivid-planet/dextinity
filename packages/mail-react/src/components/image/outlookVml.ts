@@ -7,8 +7,8 @@ interface GenerateOutlookImageVmlOptions {
     width: string | number | undefined;
     height: string | number | undefined;
     borderRadius: CSSProperties["borderRadius"];
-    alt?: string;
-    href?: string;
+    alt?: string | null;
+    href?: string | null;
 }
 
 type OutlookVmlShape = { name: "v:roundrect"; radius: number } | { name: "v:oval" };
@@ -113,15 +113,19 @@ function formatPixels(value: string | number | undefined): string | undefined {
     return typeof value === "number" ? `${value}px` : value;
 }
 
-function formatAttributes(attributes: Record<string, string | undefined>): string {
+function formatAttributes(attributes: Record<string, string | null | undefined>): string {
     return joinDefinedEntries(attributes, (name, value) => `${name}="${escapeAttributeValue(value)}"`, " ");
 }
 
-function joinDefinedEntries(entries: Record<string, string | undefined>, format: (name: string, value: string) => string, separator: string): string {
+function joinDefinedEntries(
+    entries: Record<string, string | null | undefined>,
+    format: (name: string, value: string) => string,
+    separator: string,
+): string {
     const formatted: string[] = [];
 
     for (const [name, value] of Object.entries(entries)) {
-        if (value !== undefined) {
+        if (value !== undefined && value !== null) {
             formatted.push(format(name, value));
         }
     }

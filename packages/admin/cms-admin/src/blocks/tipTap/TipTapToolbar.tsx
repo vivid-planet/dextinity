@@ -291,7 +291,7 @@ export const TipTapToolbar = ({
         (style) => !style.appliesTo || style.appliesTo.includes(editorState.activeTipTapTextBlockType),
     );
     // Without bold/italic/underline/strike buttons to fold behind it, a "..." menu just for superscript/subscript/inline
-    // styles adds an extra click for no space savings, so show them as individual buttons instead (matches the old RTE).
+    // styles adds an extra click for no space savings, so show them as individual buttons instead
     const showMoreOptionsAsButtons = !hasInlineFormatButtons && applicableInlineStyles.every((style) => style.icon);
 
     const handleTextBlockTypeChange = (e: SelectChangeEvent) => {

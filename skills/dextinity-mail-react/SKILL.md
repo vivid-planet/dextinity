@@ -19,25 +19,28 @@ Before implementing any visual technique — even things that seem basic like ro
 
 Keep these open during email development:
 
-| Resource                       | What it's for                                                                    | URL                                  |
-| ------------------------------ | -------------------------------------------------------------------------------- | ------------------------------------ |
-| **Can I email**                | Check CSS/HTML feature support across email clients (like caniuse.com for email) | https://www.caniemail.com/           |
-| **MJML Documentation**         | Full reference for all MJML tags and their attributes                            | https://documentation.mjml.io/       |
-| **Litmus Blog & Resources**    | Email development best practices, testing guides, client quirks                  | https://www.litmus.com/blog/         |
-| **Campaign Monitor CSS Guide** | Comprehensive CSS support tables per email client                                | https://www.campaignmonitor.com/css/ |
-| **Bulletproof Backgrounds**    | VML-based background image generator for Outlook                                 | https://www.backgrounds.cm/          |
-| **Bulletproof Buttons**        | VML-based rounded button generator for Outlook                                   | https://www.buttons.cm/              |
+| Resource                       | What it's for                                                                    | URL                                                      |
+| ------------------------------ | -------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| **Can I email**                | Check CSS/HTML feature support across email clients (like caniuse.com for email) | https://www.caniemail.com/                               |
+| **Gmail CSS support**          | Google's own list of the CSS properties and selectors Gmail applies              | https://developers.google.com/workspace/gmail/design/css |
+| **MJML Documentation**         | Full reference for all MJML tags and their attributes                            | https://documentation.mjml.io/                           |
+| **Litmus Blog & Resources**    | Email development best practices, testing guides, client quirks                  | https://www.litmus.com/blog/                             |
+| **Campaign Monitor CSS Guide** | Comprehensive CSS support tables per email client                                | https://www.campaignmonitor.com/css/                     |
+| **Bulletproof Backgrounds**    | VML-based background image generator for Outlook                                 | https://www.backgrounds.cm/                              |
+| **Bulletproof Buttons**        | VML-based rounded button generator for Outlook                                   | https://www.buttons.cm/                                  |
 
 ### The Research Habit
 
 When implementing any visual feature:
 
-1. Check [Can I email](https://www.caniemail.com/) for the CSS properties involved
+1. Check [Can I email](https://www.caniemail.com/) for the CSS properties and selectors involved
 2. If the property isn't supported in Outlook, search for VML workarounds or provide a graceful fallback (skipping border-radius is generally acceptable)
 3. Test in Storybook with the MJML Warnings panel open
 4. When uncertain, consult the Litmus blog or Campaign Monitor guide for known patterns
 
 This applies to seemingly simple things: `border-radius`, `background-image`, `flexbox`, `gap`, custom fonts — all have partial or no support in major email clients.
+
+For which selectors reach which clients, see [`styling-and-customization.md`](references/styling-and-customization.md) → Selectors That Reach Every Client.
 
 ### Library Documentation
 

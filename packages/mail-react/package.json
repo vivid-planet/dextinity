@@ -43,7 +43,7 @@
     "dependencies": {
         "@faire/mjml-react": "^3.5.4",
         "clsx": "^2.1.1",
-        "mjml": "^4.18.0",
+        "mjml": "^5.0.0",
         "mjml-browser": "^4.18.0",
         "redraft": "^0.10.2"
     },

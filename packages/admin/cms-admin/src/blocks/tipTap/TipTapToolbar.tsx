@@ -544,7 +544,9 @@ export const TipTapToolbar = ({
                                                 onMouseDown={() => runMenuItemAction(item.onToggle)}
                                                 onClick={(e) => handleMenuItemKeyboardActivate(e, item.onToggle)}
                                             >
-                                                {item.label}
+                                                <Box component="span" sx={{ flexGrow: 1 }}>
+                                                    {item.label}
+                                                </Box>
                                                 {Icon && (
                                                     <ListItemIcon sx={{ justifyContent: "flex-end" }}>
                                                         <Icon />

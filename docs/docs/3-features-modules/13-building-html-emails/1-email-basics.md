@@ -5,7 +5,7 @@ title: Email Basics
 Email clients don't share a rendering engine the way web browsers do. The most constrained major client — Outlook on Windows (2007–2019) — uses Microsoft Word to render HTML, supporting only a fraction of modern CSS. While Outlook's global market share is small, it dominates in enterprise and B2B environments. This shapes every aspect of email development: table-based layouts (handled by MJML), inline styles for the base rendering, and responsive styles layered on top as progressive enhancement.
 
 :::tip
-For researching support across clients, [Can I email](https://www.caniemail.com/scoreboard/) and the [Litmus blog](https://www.litmus.com/blog/) are invaluable resources.
+For researching support across clients, [Can I email](https://www.caniemail.com/scoreboard/), [Google's Gmail CSS support](https://developers.google.com/workspace/gmail/design/css) and the [Litmus blog](https://www.litmus.com/blog/) are invaluable resources.
 :::
 
 ## MJML Fundamentals

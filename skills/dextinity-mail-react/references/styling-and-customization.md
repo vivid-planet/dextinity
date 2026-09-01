@@ -7,18 +7,21 @@ Deep dive into the desktop-first styling model, `registerStyles`, BEM naming, cu
 1. [Desktop-First Styling Model](#desktop-first-styling-model)
 2. [The `css` Helper](#the-css-helper)
 3. [Registering Responsive Styles](#registering-responsive-styles)
-4. [BEM Class Naming Convention](#bem-class-naming-convention)
-5. [Custom Component Pattern](#custom-component-pattern)
-6. [The `belowMediaQuery` Pattern](#the-belowmediaquery-pattern)
-7. [Overriding Built-In Components](#overriding-built-in-components)
-8. [Forwarding Props via `slotProps`](#forwarding-props-via-slotprops)
-9. [MJML Table Structure](#mjml-table-structure)
+4. [Selectors That Reach Every Client](#selectors-that-reach-every-client)
+5. [BEM Class Naming Convention](#bem-class-naming-convention)
+6. [Custom Component Pattern](#custom-component-pattern)
+7. [The `belowMediaQuery` Pattern](#the-belowmediaquery-pattern)
+8. [Overriding Built-In Components](#overriding-built-in-components)
+9. [Forwarding Props via `slotProps`](#forwarding-props-via-slotprops)
+10. [MJML Table Structure](#mjml-table-structure)
 
 ---
 
 ## Desktop-First Styling Model
 
 Email clients that lack CSS support are almost exclusively desktop clients (Outlook 2007–2019, older Lotus Notes). Mobile email clients — Apple Mail, Gmail app, Outlook mobile — all support `<style>` blocks and media queries.
+
+Reading a `<style>` block is not the same as applying everything in it. Gmail reads the block and then drops each rule whose selector it does not take — see [Selectors That Reach Every Client](#selectors-that-reach-every-client).
 
 This means:
 
@@ -103,6 +106,32 @@ registerStyles(css`
 - Duplicate registrations with the same function/string reference overwrite (stored in a `Map`)
 - Theme-aware entries always resolve against the **root theme** from `MjmlMailRoot` — nested `ThemeProvider` scopes do not affect them
 - Optional second argument: partial `MjmlStyle` props (forwarded to the underlying `<mj-style>`)
+
+---
+
+## Selectors That Reach Every Client
+
+Gmail applies class, element and id selectors, and descendant and child combinators. It drops the whole rule for a pseudo-class or a pseudo-element, and of the attribute selectors it applies only `[class~="value"]`. Its mobile webmail is narrower still: no combinators, no attribute selectors, and no media queries, so no responsive rule reaches it.
+
+`:hover` is the exception, but only in Gmail's desktop webmail and its Android app, and not there on a non-Google account. Its iOS app and mobile webmail drop it, so keep state styles decorative.
+
+Where a rule depends on an item's position, set a modifier class while rendering instead of using a positional selector:
+
+```tsx
+<td className={`stackedList__item ${isLastItem ? "stackedList__item--last" : ""}`}>
+```
+
+```css
+.stackedList__item {
+    margin-bottom: 24px !important;
+}
+
+.stackedList__item--last {
+    margin-bottom: 0 !important;
+}
+```
+
+A flex `gap` does not stand in for this — see [`layout-patterns.md`](layout-patterns.md) → Multi-Column Symmetric Layouts.
 
 ---
 

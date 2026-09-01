@@ -162,6 +162,32 @@ registerStyles(
 Always use `!important` in media query overrides. Without it, the email client's inlined styles will take precedence and your responsive styles won't apply.
 :::
 
+### Selectors That Reach Every Client
+
+Gmail applies class, element and id selectors, and descendant and child combinators. It drops the whole rule for a pseudo-class or a pseudo-element, and of the attribute selectors it applies only `[class~="value"]`. Its mobile webmail is narrower still: no combinators, no attribute selectors, and no media queries, so no responsive rule reaches it.
+
+`:hover` is the exception, but only in Gmail's desktop webmail and its Android app, and not there on a non-Google account. Its iOS app and mobile webmail drop it, so keep state styles decorative.
+
+Where a rule depends on an item's position, set a modifier class while rendering:
+
+```css
+/* Gmail drops this. */
+.stackedList__item:not(:last-child) {
+    margin-bottom: 24px !important;
+}
+
+/* Gmail applies this. Set `--last` on the final item while rendering. */
+.stackedList__item {
+    margin-bottom: 24px !important;
+}
+
+.stackedList__item--last {
+    margin-bottom: 0 !important;
+}
+```
+
+A flex `gap` does not stand in for this — see [Multi-Column Symmetric Layouts](./6-layout-patterns.md#multi-column-symmetric-layouts).
+
 ### CSS Class Name Conventions
 
 The built-in components apply stable CSS class names that you can target in your own `registerStyles` calls:

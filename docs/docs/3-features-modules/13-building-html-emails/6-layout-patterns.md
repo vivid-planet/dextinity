@@ -292,7 +292,7 @@ Outer columns get a width accounting for half-gap padding; inner columns are wid
         <MjmlText>Second</MjmlText>
     </MjmlColumn>
     <MjmlColumn
-        className="threeColumnsSection__column"
+        className="threeColumnsSection__column threeColumnsSection__column--last"
         width={outerColumnWidth}
         paddingLeft={halfColumnGap}
     >
@@ -311,13 +311,15 @@ Below the desktop breakpoint, the compensated inline widths no longer make sense
 
 The one design decision is **when to collapse to a stack** — and that's per-component. A dense 3-column row might need to stack at mobile; a 4-column row would be too cramped below the default breakpoint.
 
+The horizontal gap is `column-gap` rather than the `gap` shorthand, and the stacked gap is a margin that `threeColumnsSection__column--last` clears on the final column, because Gmail applies `column-gap` and not `row-gap`. The shorthand would set both, so the stack would space itself in every client except Gmail.
+
 ```ts
 registerStyles(
     (theme) => css`
         ${theme.breakpoints.default.belowMediaQuery} {
             .threeColumnsSection > table > tbody > tr > td > div {
                 display: flex !important;
-                gap: 20px !important;
+                column-gap: 20px !important;
             }
             .threeColumnsSection__column {
                 flex: 1 1 0% !important;
@@ -339,6 +341,10 @@ registerStyles(
                 flex: none !important;
                 width: 100% !important;
                 max-width: 100% !important;
+                margin-bottom: 20px !important;
+            }
+            .threeColumnsSection__column--last {
+                margin-bottom: 0 !important;
             }
         }
     `,

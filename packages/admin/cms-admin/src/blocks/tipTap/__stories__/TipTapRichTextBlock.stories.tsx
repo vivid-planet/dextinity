@@ -6,7 +6,7 @@ import { type HTMLAttributes, type PropsWithChildren, type ReactNode, useState }
 import { expect, waitFor, within } from "storybook/test";
 
 import { createBlockSkeleton } from "../../helpers/createBlockSkeleton";
-import { BlockCategory, type BlockInterface } from "../../types";
+import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "../../types";
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "../createTipTapRichTextBlock";
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
@@ -1546,6 +1546,94 @@ export const TranslationPreservesChildBlockData: StoryObj<typeof TranslationChil
                     // Without externalizing it first, this object would come back as the literal string
                     // "[object Object]" — HTML attribute serialization stringifies non-string values.
                     expect(cmsBlockNode.attrs.data).toEqual({ nested: { value: "keep me" } });
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};
+
+interface FalsyDataLinkBlockState {
+    url: string;
+}
+
+const FalsyDataLinkBlock: BlockInterface<FalsyDataLinkBlockState, FalsyDataLinkBlockState, FalsyDataLinkBlockState> & LinkBlockInterface = {
+    ...createBlockSkeleton(),
+    name: "FalsyDataLink",
+    displayName: "Link",
+    category: BlockCategory.Other,
+    defaultValues: () => ({ url: "" }),
+    AdminComponent: () => null,
+    previewContent: () => [],
+};
+
+const TranslationFalsyLinkDataBlock = createTipTapRichTextBlock({ supports: [], link: FalsyDataLinkBlock });
+
+const translationFalsyLinkDataInitialState: TipTapRichTextBlockState = {
+    tipTapContent: {
+        type: "doc",
+        content: [
+            {
+                type: "paragraph",
+                content: [
+                    { type: "text", text: "Before " },
+                    // `false` is a valid (if unusual) value for a link mark's `data`: `setCmsLink`'s `data` is
+                    // typed as `any`, so nothing rules it out even though the link dialog never produces it.
+                    { type: "text", marks: [{ type: "link", attrs: { data: false } }], text: "link" },
+                    { type: "text", text: " after" },
+                ],
+            },
+        ],
+    },
+};
+
+function TranslationFalsyLinkDataStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(translationFalsyLinkDataInitialState);
+
+    return (
+        <ContentTranslationServiceProvider enabled translate={identityTranslate}>
+            <StoryWrapper state={state}>
+                <TranslationFalsyLinkDataBlock.AdminComponent state={state} updateState={setState} />
+            </StoryWrapper>
+        </ContentTranslationServiceProvider>
+    );
+}
+
+export const TranslationPreservesFalsyLinkData: StoryObj<typeof TranslationFalsyLinkDataStory> = {
+    render: () => <TranslationFalsyLinkDataStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Editor is ready with a translate button", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                    // Translate, Link and Remove Link — the toolbar always renders translate first.
+                    expect(canvas.getAllByRole("button")).toHaveLength(3);
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("Translating leaves the link mark's `false` data untouched instead of turning it into a string", async () => {
+            const [translateButton] = canvas.getAllByRole("button");
+            await userEvent.click(translateButton);
+
+            await waitFor(
+                () => {
+                    const editor = canvas.getByRole("textbox");
+                    expect(editor).toHaveTextContent("Before link after");
+                },
+                { timeout: 3000 },
+            );
+
+            await waitFor(
+                () => {
+                    const state = JSON.parse(canvas.getByText(/"tipTapContent"/).textContent ?? "{}");
+
+                    const paragraph = state.tipTapContent.content[0];
+
+                    const linkTextNode = paragraph.content.find((node: any) => node.marks?.some((mark: any) => mark.type === "link"));
+                    // Without unconditional externalization, `false` would come back as the string "false".
+                    expect(linkTextNode.marks[0].attrs.data).toBe(false);
                 },
                 { timeout: 3000 },
             );

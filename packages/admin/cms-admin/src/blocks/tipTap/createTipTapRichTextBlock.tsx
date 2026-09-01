@@ -319,17 +319,41 @@ interface ExternalizedBlockData {
     data: any;
 }
 
+// Unlike mapLinkMarksData (used elsewhere to skip marks that have no link data at all), this
+// externalizes every link mark's data unconditionally, including falsy values (null, false, 0, "").
+// setCmsLink's data is typed as `any`, so a falsy value isn't ruled out even though the only current
+// caller (TipTapLinkDialog) always passes a populated object.
+function externalizeLinkMarksForHtml(content: JSONContent, externalized: ExternalizedBlockData[]): JSONContent {
+    if (!content || typeof content !== "object") {
+        return content;
+    }
+    const result = { ...content };
+
+    if (Array.isArray(result.marks)) {
+        result.marks = result.marks.map((mark) => {
+            if (mark.type === "link") {
+                const id = `placeholder-${externalized.length}`;
+                externalized.push({ id, data: mark.attrs?.data });
+                return { ...mark, attrs: { ...mark.attrs, data: id } };
+            }
+            return mark;
+        });
+    }
+
+    if (Array.isArray(result.content)) {
+        result.content = result.content.map((child) => externalizeLinkMarksForHtml(child, externalized));
+    }
+
+    return result;
+}
+
 // Link marks and child block nodes can carry arbitrary non-string `data` (link targets, block state).
 // HTML serialization only round-trips string attribute values, so this data is swapped for a
 // placeholder id before serializing and restored by id afterward. It never enters the translated HTML.
 function externalizeBlockDataForHtml(content: JSONContent): { content: JSONContent; externalized: ExternalizedBlockData[] } {
     const externalized: ExternalizedBlockData[] = [];
 
-    let result = mapLinkMarksData(content, (data) => {
-        const id = `placeholder-${externalized.length}`;
-        externalized.push({ id, data });
-        return id;
-    });
+    let result = externalizeLinkMarksForHtml(content, externalized);
 
     result = mapCmsBlockNodesData(result, (blockType, data) => {
         const id = `placeholder-${externalized.length}`;

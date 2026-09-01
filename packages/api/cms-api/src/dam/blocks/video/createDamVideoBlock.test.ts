@@ -46,6 +46,16 @@ describe("createDamVideoBlock", () => {
         expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, autoplay: true, previewImage: {}, $$version: 1 });
     });
 
+    it("should add a preview image to data from before the exported block had one", () => {
+        expect(transformToBlockSave(DamVideoBlock.blockDataFactory({ damFileId }))).toEqual({ damFileId, previewImage: {}, $$version: 1 });
+    });
+
+    it("should not migrate data of a block created by the factory", () => {
+        const block = createDamVideoBlock({}, "UnmigratedVideo");
+
+        expect(transformToBlockSave(block.blockDataFactory({ damFileId }))).toEqual({ damFileId, $$version: 1 });
+    });
+
     it("should reject a name that is already registered", () => {
         expect(() => createDamVideoBlock({ supports: [] })).toThrow(/already registered/);
     });

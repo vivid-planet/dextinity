@@ -11,6 +11,7 @@ import {
     createBlock,
     type ExtractBlockInput,
     getRegisteredBlocks,
+    type MigrateOptions,
     type SimpleBlockInputInterface,
 } from "../../../blocks/block";
 import { ChildBlock } from "../../../blocks/decorators/child-block";
@@ -60,9 +61,23 @@ interface DamVideoBlockInputInterface extends SimpleBlockInputInterface {
 }
 
 export function createDamVideoBlock(
-    { supports = defaultSupports }: CreateDamVideoBlockOptions = {},
+    options: CreateDamVideoBlockOptions = {},
     name = "DamVideo",
 ): Block<BlockDataInterface, DamVideoBlockInputInterface> {
+    // A block created by the factory has no data from an earlier version, so it starts at version 1 without migrations.
+    return createDamVideoBlockWithMigrations({ ...options, name, migrations: [] });
+}
+
+interface CreateDamVideoBlockWithMigrationsOptions extends CreateDamVideoBlockOptions {
+    name: string;
+    migrations: MigrateOptions["migrations"];
+}
+
+function createDamVideoBlockWithMigrations({
+    supports = defaultSupports,
+    name,
+    migrations,
+}: CreateDamVideoBlockWithMigrationsOptions): Block<BlockDataInterface, DamVideoBlockInputInterface> {
     if (getRegisteredBlocks().some((block) => block.name === name)) {
         throw new Error(
             `A block named "${name}" is already registered. @dextinity/cms-api exports a ready-made DamVideoBlock, so a block created with createDamVideoBlock needs its own name, for instance createDamVideoBlock({ supports: [] }, "TeaserVideo").`,
@@ -254,9 +269,12 @@ export function createDamVideoBlock(
         blockMeta: new Meta(DamVideoBlockData),
         migrate: {
             version: 1,
-            migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration]),
+            migrations,
         },
     });
 }
 
-export const DamVideoBlock = createDamVideoBlock();
+export const DamVideoBlock = createDamVideoBlockWithMigrations({
+    name: "DamVideo",
+    migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration]),
+});

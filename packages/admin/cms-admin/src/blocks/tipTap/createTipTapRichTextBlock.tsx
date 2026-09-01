@@ -1,4 +1,4 @@
-import { BaseTranslationDialog, greyPalette, useContentTranslationService } from "@dextinity/admin";
+import { BaseTranslationDialog, greyPalette, useContentTranslationService, useErrorDialog } from "@dextinity/admin";
 import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Extension, type Extensions, generateHTML, generateJSON } from "@tiptap/core";
@@ -535,18 +535,42 @@ const TipTapEditor = ({
     const translationContext = useContentTranslationService();
     const canTranslate = translationContext.enabled && !disableContentTranslation;
     const [translationDialogState, setTranslationDialogState] = useState<{ original: JSONContent; translated: JSONContent } | null>(null);
+    const errorDialog = useErrorDialog();
 
     if (!editor) {
         return null;
     }
 
     async function handleTranslateClick() {
-        const original = editor.getJSON();
-        const translated = await translateTipTapContentAsync(original, translationContext.translate, extensions);
-        if (translationContext.showApplyTranslationDialog) {
-            setTranslationDialogState({ original, translated });
-        } else {
-            editor.commands.setContent(translated);
+        try {
+            const original = editor.getJSON();
+            let translated = await translateTipTapContentAsync(original, translationContext.translate, extensions);
+            if (linkBlock?.translateContent) {
+                const translateLinkContent = linkBlock.translateContent;
+                translated = await mapLinkMarksDataAsync(translated, (data) => translateLinkContent(data, translationContext.translate));
+            }
+            if (Object.keys(childBlocks).length > 0) {
+                translated = await mapCmsBlockNodesDataAsync(translated, async (blockType, data) => {
+                    const childBlock = childBlocksByKey[blockType];
+                    return childBlock?.translateContent ? childBlock.translateContent(data, translationContext.translate) : data;
+                });
+            }
+            if (translationContext.showApplyTranslationDialog) {
+                setTranslationDialogState({ original, translated });
+            } else {
+                editor.commands.setContent(translated);
+            }
+        } catch (error) {
+            errorDialog?.showError({
+                title: <FormattedMessage id="dextinity.translator.error.title" defaultMessage="Translation failed" />,
+                userMessage: (
+                    <FormattedMessage
+                        id="dextinity.translator.error.message"
+                        defaultMessage="An error occurred while translating the content. Please try again."
+                    />
+                ),
+                error: error instanceof Error ? error.message : "Translation failed",
+            });
         }
     }
 

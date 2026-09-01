@@ -292,7 +292,7 @@ Outer columns get a width accounting for half-gap padding; inner columns are wid
         <MjmlText>Second</MjmlText>
     </MjmlColumn>
     <MjmlColumn
-        className="threeColumnsSection__column"
+        className="threeColumnsSection__column threeColumnsSection__column--last"
         width={outerColumnWidth}
         paddingLeft={halfColumnGap}
     >

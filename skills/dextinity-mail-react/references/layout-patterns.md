@@ -134,7 +134,7 @@ Three columns shown; for four or more, repeat the middle-column.
     <MjmlColumn className="multiColumnSection__column" width={innerColumnWidth} paddingLeft={halfColumnGap} paddingRight={halfColumnGap}>
         …
     </MjmlColumn>
-    <MjmlColumn className="multiColumnSection__column" width={outerColumnWidth} paddingLeft={halfColumnGap}>
+    <MjmlColumn className="multiColumnSection__column multiColumnSection__column--last" width={outerColumnWidth} paddingLeft={halfColumnGap}>
         …
     </MjmlColumn>
 </MjmlSection>

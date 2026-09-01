@@ -15,7 +15,8 @@ export enum UserPermissions {
     allPermissions = "all-permissions",
 }
 
-export type Users = [User[], number];
+export type UserListItem = Pick<User, "id" | "name" | "email">;
+export type Users = [UserListItem[], number];
 
 export type SystemUser = string;
 

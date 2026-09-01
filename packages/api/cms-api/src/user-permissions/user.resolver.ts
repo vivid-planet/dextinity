@@ -8,9 +8,9 @@ import { RequiredPermission } from "./decorators/required-permission.decorator";
 import { CurrentUser } from "./dto/current-user";
 import { FindUsersArgs, PermissionFilter } from "./dto/paginated-user-list";
 import { UserPermissionsUser } from "./dto/user";
-import { User } from "./interfaces/user";
 import { UserContentScopesLoaderService } from "./user-content-scopes-loader.service";
 import { UserPermissionsService } from "./user-permissions.service";
+import { UserListItem } from "./user-permissions.types";
 
 @ObjectType()
 class UserPermissionPaginatedUserList extends PaginatedResponseFactory.create(UserPermissionsUser) {}
@@ -40,9 +40,9 @@ export class UserResolver {
         if (permissionAndFilters && permissionAndFilters.length > 0) {
             await this.userService.warmupHasPermissionCache();
             // If a permission filter is provided, we need to get all users and filter them
-            const filteredUsers: User[] = [];
+            const filteredUsers: UserListItem[] = [];
             let offset = 0;
-            let users: User[] = [];
+            let users: UserListItem[] = [];
             do {
                 [users] = await this.userService.findUsers({ filter: args.filter, sort: args.sort, offset, limit: 100 });
                 for (let i = 0; i < users.length; i++) {
@@ -55,8 +55,8 @@ export class UserResolver {
             return new UserPermissionPaginatedUserList(filteredUsers.slice(args.offset, args.offset + args.limit), filteredUsers.length);
         } else if (permissionOrFilters && permissionOrFilters.length > 0) {
             await this.userService.warmupHasPermissionCache();
-            const matchedUsers = new Set<User>();
-            let users: User[] = [];
+            const matchedUsers = new Set<UserListItem>();
+            let users: UserListItem[] = [];
             // Add all users that match other than permission filters
             if (args.filter?.or?.some((f) => !f.permission)) {
                 let offset = 0;
@@ -86,12 +86,13 @@ export class UserResolver {
         }
     }
 
-    async permissionAndFiltersApplies(user: User, filters: PermissionFilter[]): Promise<boolean> {
+    async permissionAndFiltersApplies(user: UserListItem, filters: PermissionFilter[]): Promise<boolean> {
+        const fullUser = await this.userService.findUserOrThrow(user.id);
         for (const filter of filters) {
             if (
-                (filter.equal && !(await this.userService.hasPermission(user, filter.equal))) ||
-                (filter.isAnyOf && !(await this.userService.hasPermission(user, filter.isAnyOf))) ||
-                (filter.notEqual && (await this.userService.hasPermission(user, filter.notEqual)))
+                (filter.equal && !(await this.userService.hasPermission(fullUser, filter.equal))) ||
+                (filter.isAnyOf && !(await this.userService.hasPermission(fullUser, filter.isAnyOf))) ||
+                (filter.notEqual && (await this.userService.hasPermission(fullUser, filter.notEqual)))
             ) {
                 return false;
             }
@@ -99,12 +100,13 @@ export class UserResolver {
         return true;
     }
 
-    async permissionOrFiltersApplies(user: User, filters: PermissionFilter[]): Promise<boolean> {
+    async permissionOrFiltersApplies(user: UserListItem, filters: PermissionFilter[]): Promise<boolean> {
+        const fullUser = await this.userService.findUserOrThrow(user.id);
         for (const filter of filters) {
             if (
-                (filter.equal && (await this.userService.hasPermission(user, filter.equal))) ||
-                (filter.isAnyOf && (await this.userService.hasPermission(user, filter.isAnyOf))) ||
-                (filter.notEqual && !(await this.userService.hasPermission(user, filter.notEqual)))
+                (filter.equal && (await this.userService.hasPermission(fullUser, filter.equal))) ||
+                (filter.isAnyOf && (await this.userService.hasPermission(fullUser, filter.isAnyOf))) ||
+                (filter.notEqual && !(await this.userService.hasPermission(fullUser, filter.notEqual)))
             ) {
                 return true;
             }

@@ -25,6 +25,7 @@ import {
     UserPermissions,
     UserPermissionsOptions,
     UserPermissionsUserServiceInterface,
+    Users,
 } from "./user-permissions.types";
 
 @Injectable()
@@ -125,7 +126,7 @@ export class UserPermissionsService {
         throw new Error("For this functionality you need to define `findUserOrThrow` (or the deprecated `getUser`) in the userService.");
     }
 
-    async findUsers(args: FindUsersArgs): Promise<[User[], number]> {
+    async findUsers(args: FindUsersArgs): Promise<Users> {
         if (!this.userService) {
             throw new Error("For this functionality you need to define the userService in the UserPermissionsModule.");
         }

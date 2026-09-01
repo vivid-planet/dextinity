@@ -247,8 +247,10 @@ export const TipTapToolbar = ({
                 activeTipTapTextBlockType,
                 activeTextBlockStyle: (attrs.textBlockStyle as string) ?? "",
                 activeInlineStyle,
-                canUndo: e.can().undo(),
-                canRedo: e.can().redo(),
+                // The undo/redo commands only exist while the UndoRedo extension is registered,
+                // which follows `supports.history`.
+                canUndo: supports.history ? e.can().undo() : false,
+                canRedo: supports.history ? e.can().redo() : false,
                 canIndent,
                 canDedent: e.can().liftListItem("listItem"),
                 isBoldActive: e.isActive("bold"),

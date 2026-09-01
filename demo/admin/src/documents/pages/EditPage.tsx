@@ -22,6 +22,7 @@ import {
     DependentsList,
     openSitePreviewWindow,
     PageName,
+    PageStateProvider,
     TranslateContentMenuItem,
     useBlockContext,
     useBlockPreview,
@@ -138,7 +139,7 @@ const usePage = createUsePage({
 
 export const EditPage = ({ id }: Props) => {
     const intl = useIntl();
-    const { pageState, rootBlocksApi, hasChanges, loading, dialogs, pageSaveButton, handleSavePage, translateContent } = usePage({
+    const { pageState, setPageState, rootBlocksApi, hasChanges, loading, dialogs, pageSaveButton, handleSavePage, translateContent } = usePage({
         pageId: id,
     });
 
@@ -180,143 +181,145 @@ export const EditPage = ({ id }: Props) => {
     }
 
     return (
-        <ContentGenerationConfigProvider
-            seo={{
-                getRelevantContent: () => {
-                    if (!pageState || !pageState.document) {
-                        return [];
-                    }
-
-                    return PageContentBlock.extractTextContents?.(pageState.document.content, { includeInvisibleContent: false }) ?? [];
-                },
-            }}
-        >
-            {hasChanges && (
-                <RouterPrompt
-                    message={(location) => {
-                        if (location.pathname.startsWith(match.url)) {
-                            return true;
-                        } //we navigated within our self
-                        return intl.formatMessage({
-                            id: "editPage.discardChanges",
-                            defaultMessage: "Discard unsaved changes?",
-                        });
-                    }}
-                    saveAction={async () => {
-                        try {
-                            await handleSavePage();
-                            return true;
-                        } catch {
-                            return false;
+        <PageStateProvider pageState={pageState} setPageState={setPageState}>
+            <ContentGenerationConfigProvider
+                seo={{
+                    getRelevantContent: () => {
+                        if (!pageState || !pageState.document) {
+                            return [];
                         }
-                    }}
-                />
-            )}
-            <Toolbar scopeIndicator={<ContentScopeIndicator />}>
-                <ToolbarItem>
-                    <IconButton onClick={stackApi?.goBack} size="large">
-                        <ArrowLeft />
-                    </IconButton>
-                </ToolbarItem>
-                <PageName pageId={id} />
-                <FillSpace />
-                <ToolbarActions>
-                    <Stack direction="row" spacing={1}>
-                        <CrudMoreActionsMenu
-                            overallActions={[
-                                {
-                                    label: <FormattedMessage id="pages.pages.page.edit.preview" defaultMessage="Site preview" />,
-                                    icon: <Preview />,
-                                    disabled: !pageState,
-                                    onClick: () => {
-                                        openSitePreviewWindow(pageState.path, contentScopeMatch.url);
+
+                        return PageContentBlock.extractTextContents?.(pageState.document.content, { includeInvisibleContent: false }) ?? [];
+                    },
+                }}
+            >
+                {hasChanges && (
+                    <RouterPrompt
+                        message={(location) => {
+                            if (location.pathname.startsWith(match.url)) {
+                                return true;
+                            } //we navigated within our self
+                            return intl.formatMessage({
+                                id: "editPage.discardChanges",
+                                defaultMessage: "Discard unsaved changes?",
+                            });
+                        }}
+                        saveAction={async () => {
+                            try {
+                                await handleSavePage();
+                                return true;
+                            } catch {
+                                return false;
+                            }
+                        }}
+                    />
+                )}
+                <Toolbar scopeIndicator={<ContentScopeIndicator />}>
+                    <ToolbarItem>
+                        <IconButton onClick={stackApi?.goBack} size="large">
+                            <ArrowLeft />
+                        </IconButton>
+                    </ToolbarItem>
+                    <PageName pageId={id} />
+                    <FillSpace />
+                    <ToolbarActions>
+                        <Stack direction="row" spacing={1}>
+                            <CrudMoreActionsMenu
+                                overallActions={[
+                                    {
+                                        label: <FormattedMessage id="pages.pages.page.edit.preview" defaultMessage="Site preview" />,
+                                        icon: <Preview />,
+                                        disabled: !pageState,
+                                        onClick: () => {
+                                            openSitePreviewWindow(pageState.path, contentScopeMatch.url);
+                                        },
                                     },
-                                },
-                                <TranslateContentMenuItem key="translate" translateContent={translateContent} disabled={!pageState?.document} />,
-                            ]}
-                        />
-                        {pageSaveButton}
-                    </Stack>
-                </ToolbarActions>
-            </Toolbar>
-            <MainContent disablePaddingBottom>
-                <BlockPreviewWithTabs previewUrl={previewUrl} previewState={previewState} previewApi={previewApi}>
-                    {[
-                        {
-                            key: "content",
-                            label: (
-                                <BlockAdminTabLabel isValid={rootBlocksApi.content.isValid}>
-                                    <FormattedMessage id="generic.blocks" defaultMessage="Blocks" />
-                                </BlockAdminTabLabel>
-                            ),
-                            content: (
-                                <BlockAdminComponentRoot
-                                    title={intl.formatMessage({ id: "pages.pages.page.edit.pageBlocks.title", defaultMessage: "Page" })}
-                                >
-                                    {rootBlocksApi.content.adminUI}
-                                </BlockAdminComponentRoot>
-                            ),
-                        },
-                        {
-                            key: "stage",
-                            label: (
-                                <BlockAdminTabLabel isValid={rootBlocksApi.stage.isValid}>
-                                    <FormattedMessage id="pages.page.edit.stage" defaultMessage="Stage" />
-                                </BlockAdminTabLabel>
-                            ),
-                            content: (
-                                <BlockAdminComponentRoot
-                                    title={intl.formatMessage({ id: "pages.pages.page.edit.stage.title", defaultMessage: "Stage" })}
-                                >
-                                    {rootBlocksApi.stage.adminUI}
-                                </BlockAdminComponentRoot>
-                            ),
-                        },
-                        {
-                            key: "config",
-                            label: (
-                                <BlockAdminTabLabel isValid={rootBlocksApi.seo.isValid}>
-                                    <FormattedMessage id="pages.pages.page.edit.config" defaultMessage="Config" />
-                                </BlockAdminTabLabel>
-                            ),
-                            content: rootBlocksApi.seo.adminUI,
-                        },
-                        {
-                            key: "dependents",
-                            label: (
-                                <BlockAdminTabLabel isValid={rootBlocksApi.seo.isValid}>
-                                    <FormattedMessage id="pages.pages.page.edit.dependents" defaultMessage="Dependents" />
-                                </BlockAdminTabLabel>
-                            ),
-                            content: (
-                                <DependentsList
-                                    query={pageTreeNodeDependentsQuery}
-                                    variables={{
-                                        id,
-                                    }}
-                                />
-                            ),
-                        },
-                        {
-                            key: "dependencies",
-                            label: (
-                                <BlockAdminTabLabel isValid={rootBlocksApi.seo.isValid}>
-                                    <FormattedMessage id="pages.pages.page.edit.dependencies" defaultMessage="Dependencies" />
-                                </BlockAdminTabLabel>
-                            ),
-                            content: (
-                                <DependenciesList
-                                    query={pageTreeNodeDependenciesQuery}
-                                    variables={{
-                                        id: pageState.document.id,
-                                    }}
-                                />
-                            ),
-                        },
-                    ]}
-                </BlockPreviewWithTabs>
-            </MainContent>
-            {dialogs}
-        </ContentGenerationConfigProvider>
+                                    <TranslateContentMenuItem key="translate" translateContent={translateContent} disabled={!pageState?.document} />,
+                                ]}
+                            />
+                            {pageSaveButton}
+                        </Stack>
+                    </ToolbarActions>
+                </Toolbar>
+                <MainContent disablePaddingBottom>
+                    <BlockPreviewWithTabs previewUrl={previewUrl} previewState={previewState} previewApi={previewApi}>
+                        {[
+                            {
+                                key: "content",
+                                label: (
+                                    <BlockAdminTabLabel isValid={rootBlocksApi.content.isValid}>
+                                        <FormattedMessage id="generic.blocks" defaultMessage="Blocks" />
+                                    </BlockAdminTabLabel>
+                                ),
+                                content: (
+                                    <BlockAdminComponentRoot
+                                        title={intl.formatMessage({ id: "pages.pages.page.edit.pageBlocks.title", defaultMessage: "Page" })}
+                                    >
+                                        {rootBlocksApi.content.adminUI}
+                                    </BlockAdminComponentRoot>
+                                ),
+                            },
+                            {
+                                key: "stage",
+                                label: (
+                                    <BlockAdminTabLabel isValid={rootBlocksApi.stage.isValid}>
+                                        <FormattedMessage id="pages.page.edit.stage" defaultMessage="Stage" />
+                                    </BlockAdminTabLabel>
+                                ),
+                                content: (
+                                    <BlockAdminComponentRoot
+                                        title={intl.formatMessage({ id: "pages.pages.page.edit.stage.title", defaultMessage: "Stage" })}
+                                    >
+                                        {rootBlocksApi.stage.adminUI}
+                                    </BlockAdminComponentRoot>
+                                ),
+                            },
+                            {
+                                key: "config",
+                                label: (
+                                    <BlockAdminTabLabel isValid={rootBlocksApi.seo.isValid}>
+                                        <FormattedMessage id="pages.pages.page.edit.config" defaultMessage="Config" />
+                                    </BlockAdminTabLabel>
+                                ),
+                                content: rootBlocksApi.seo.adminUI,
+                            },
+                            {
+                                key: "dependents",
+                                label: (
+                                    <BlockAdminTabLabel isValid={rootBlocksApi.seo.isValid}>
+                                        <FormattedMessage id="pages.pages.page.edit.dependents" defaultMessage="Dependents" />
+                                    </BlockAdminTabLabel>
+                                ),
+                                content: (
+                                    <DependentsList
+                                        query={pageTreeNodeDependentsQuery}
+                                        variables={{
+                                            id,
+                                        }}
+                                    />
+                                ),
+                            },
+                            {
+                                key: "dependencies",
+                                label: (
+                                    <BlockAdminTabLabel isValid={rootBlocksApi.seo.isValid}>
+                                        <FormattedMessage id="pages.pages.page.edit.dependencies" defaultMessage="Dependencies" />
+                                    </BlockAdminTabLabel>
+                                ),
+                                content: (
+                                    <DependenciesList
+                                        query={pageTreeNodeDependenciesQuery}
+                                        variables={{
+                                            id: pageState.document.id,
+                                        }}
+                                    />
+                                ),
+                            },
+                        ]}
+                    </BlockPreviewWithTabs>
+                </MainContent>
+                {dialogs}
+            </ContentGenerationConfigProvider>
+        </PageStateProvider>
     );
 };

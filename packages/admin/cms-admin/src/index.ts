@@ -198,6 +198,7 @@ export { useFormSaveConflict } from "./form/useFormSaveConflict";
 export { createEditPageNode } from "./pages/createEditPageNode";
 export { createUsePage, type PageState } from "./pages/createUsePage";
 export { PagesPage } from "./pages/pagesPage/PagesPage";
+export { type PageStateApi, PageStateProvider, usePageState } from "./pages/PageStateContext";
 export type { AllCategories } from "./pages/pageTree/PageTreeContext";
 export { useCopyPastePages } from "./pages/pageTree/useCopyPastePages";
 export { PageTreeSelect } from "./pages/pageTreeSelect/PageTreeSelect";

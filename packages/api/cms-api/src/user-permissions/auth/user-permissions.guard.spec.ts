@@ -5,6 +5,8 @@ import { ModuleRef, Reflector } from "@nestjs/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { DISABLE_DEXTINITY_GUARDS_METADATA_KEY } from "../../auth/decorators/disable-dextinity-guards.decorator";
+import { DextinityValidationException } from "../../common/errors/validation.exception";
+import { PageTreeService } from "../../page-tree/page-tree.service";
 import { AbstractAccessControlService } from "../access-control.service";
 import { ContentScopeService } from "../content-scope.service";
 import { AFFECTED_ENTITY_METADATA_KEY, AffectedEntityMeta } from "../decorators/affected-entity.decorator";
@@ -26,6 +28,18 @@ const permissions = {
 class TestEntity extends BaseEntity {
     @PrimaryKey()
     id: number;
+}
+
+@Entity()
+class TestEntityWithUuidType extends BaseEntity {
+    @PrimaryKey({ type: "uuid" })
+    id: string;
+}
+
+@Entity()
+class TestEntityWithUuidColumnType extends BaseEntity {
+    @PrimaryKey({ columnType: "uuid" })
+    id: string;
 }
 
 class AccessControlService extends AbstractAccessControlService {}
@@ -81,10 +95,10 @@ describe("UserPermissionsGuard", () => {
             }),
         });
     };
-    const mockAffectedEntityValues = (values: { id: number; [key: string]: unknown }[]) => {
+    const mockAffectedEntityValues = (values: { id: number | string; [key: string]: unknown }[]) => {
         orm.em.getRepository = vi
             .fn()
-            .mockReturnValue({ findOneOrFail: vi.fn().mockImplementation((id: number) => values.find((v) => v.id === id)) });
+            .mockReturnValue({ findOneOrFail: vi.fn().mockImplementation((id: number | string) => values.find((v) => v.id === id)) });
     };
 
     beforeEach(async () => {
@@ -92,7 +106,7 @@ describe("UserPermissionsGuard", () => {
         orm = await MikroORM.init(
             defineConfig({
                 dbName: "test-db",
-                entities: [TestEntity],
+                entities: [TestEntity, TestEntityWithUuidType, TestEntityWithUuidColumnType],
                 connect: false,
                 allowGlobalContext: true,
             }),
@@ -432,6 +446,159 @@ describe("UserPermissionsGuard", () => {
                 }),
             ),
         ).toBe(false);
+    });
+
+    it("allows user by affected entity with uuid primary key and valid uuid id", async () => {
+        mockAnnotations({
+            requiredPermission: {
+                requiredPermission: [permissions.p1],
+                options: { skipScopeCheck: false },
+            },
+            affectedEntities: [{ entity: TestEntityWithUuidType, options: { idArg: "id" } }],
+        });
+        mockAffectedEntityValues([{ id: "7c0774c6-b482-4d75-b120-9c50e600e2a9", scope: { a: "a" } }]);
+        expect(
+            await guard.canActivate(
+                mockContext({
+                    userPermissions: [{ permission: permissions.p1, contentScopes: [{ a: "a" }] }],
+                    args: { id: "7c0774c6-b482-4d75-b120-9c50e600e2a9" },
+                }),
+            ),
+        ).toBe(true);
+    });
+
+    it("fails for malformed uuid id of affected entity with uuid primary key", async () => {
+        mockAnnotations({
+            requiredPermission: {
+                requiredPermission: [permissions.p1],
+                options: { skipScopeCheck: false },
+            },
+            affectedEntities: [{ entity: TestEntityWithUuidType, options: { idArg: "id" } }],
+        });
+        mockAffectedEntityValues([]);
+        await expect(
+            guard.canActivate(
+                mockContext({
+                    userPermissions: [{ permission: permissions.p1, contentScopes: [{ a: "a" }] }],
+                    args: { id: "not-a-uuid" },
+                }),
+            ),
+        ).rejects.toThrowError(DextinityValidationException);
+    });
+
+    it("fails for malformed uuid id of affected entity with uuid column type", async () => {
+        mockAnnotations({
+            requiredPermission: {
+                requiredPermission: [permissions.p1],
+                options: { skipScopeCheck: false },
+            },
+            affectedEntities: [{ entity: TestEntityWithUuidColumnType, options: { idArg: "id" } }],
+        });
+        mockAffectedEntityValues([]);
+        await expect(
+            guard.canActivate(
+                mockContext({
+                    userPermissions: [{ permission: permissions.p1, contentScopes: [{ a: "a" }] }],
+                    args: { id: "not-a-uuid" },
+                }),
+            ),
+        ).rejects.toThrowError(DextinityValidationException);
+    });
+
+    it("fails for one malformed uuid id among multiple ids of affected entity with uuid primary key", async () => {
+        mockAnnotations({
+            requiredPermission: {
+                requiredPermission: [permissions.p1],
+                options: { skipScopeCheck: false },
+            },
+            affectedEntities: [{ entity: TestEntityWithUuidType, options: { idArg: "id" } }],
+        });
+        mockAffectedEntityValues([{ id: "7c0774c6-b482-4d75-b120-9c50e600e2a9", scope: { a: "a" } }]);
+        await expect(
+            guard.canActivate(
+                mockContext({
+                    userPermissions: [{ permission: permissions.p1, contentScopes: [{ a: "a" }] }],
+                    args: { id: ["7c0774c6-b482-4d75-b120-9c50e600e2a9", "not-a-uuid"] },
+                }),
+            ),
+        ).rejects.toThrowError(DextinityValidationException);
+    });
+
+    it("does not apply uuid validation for affected entity without uuid primary key", async () => {
+        mockAnnotations({
+            requiredPermission: {
+                requiredPermission: [permissions.p1],
+                options: { skipScopeCheck: false },
+            },
+            affectedEntities: [{ entity: TestEntity, options: { idArg: "id" } }],
+        });
+        mockAffectedEntityValues([{ id: "not-a-uuid", scope: { a: "a" } }]);
+        expect(
+            await guard.canActivate(
+                mockContext({
+                    userPermissions: [{ permission: permissions.p1, contentScopes: [{ a: "a" }] }],
+                    args: { id: "not-a-uuid" },
+                }),
+            ),
+        ).toBe(true);
+    });
+
+    it("allows user by affected entity with valid uuid pageTreeNodeId", async () => {
+        const pageTreeService = {
+            createReadApi: () => ({
+                getNode: (id: string) => ({ id, scope: { a: "a" } }),
+            }),
+        } as unknown as PageTreeService;
+        const guardWithPageTree = new UserPermissionsGuard(
+            reflector,
+            new ContentScopeService(reflector, orm, moduleRef, pageTreeService),
+            accessControlService,
+            {},
+        );
+        mockAnnotations({
+            requiredPermission: {
+                requiredPermission: [permissions.p1],
+                options: { skipScopeCheck: false },
+            },
+            affectedEntities: [{ entity: TestEntity, options: { pageTreeNodeIdArg: "pageTreeNodeId" } }],
+        });
+        expect(
+            await guardWithPageTree.canActivate(
+                mockContext({
+                    userPermissions: [{ permission: permissions.p1, contentScopes: [{ a: "a" }] }],
+                    args: { pageTreeNodeId: "7c0774c6-b482-4d75-b120-9c50e600e2a9" },
+                }),
+            ),
+        ).toBe(true);
+    });
+
+    it("fails for malformed uuid pageTreeNodeId", async () => {
+        const pageTreeService = {
+            createReadApi: () => ({
+                getNode: () => undefined,
+            }),
+        } as unknown as PageTreeService;
+        const guardWithPageTree = new UserPermissionsGuard(
+            reflector,
+            new ContentScopeService(reflector, orm, moduleRef, pageTreeService),
+            accessControlService,
+            {},
+        );
+        mockAnnotations({
+            requiredPermission: {
+                requiredPermission: [permissions.p1],
+                options: { skipScopeCheck: false },
+            },
+            affectedEntities: [{ entity: TestEntity, options: { pageTreeNodeIdArg: "pageTreeNodeId" } }],
+        });
+        await expect(
+            guardWithPageTree.canActivate(
+                mockContext({
+                    userPermissions: [{ permission: permissions.p1, contentScopes: [{ a: "a" }] }],
+                    args: { pageTreeNodeId: "not-a-uuid" },
+                }),
+            ),
+        ).rejects.toThrowError(DextinityValidationException);
     });
 
     it("allows user by scoped entity", async () => {

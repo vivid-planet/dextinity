@@ -1,5 +1,12 @@
 # @comet/mail-react
 
+## 10.3.0
+
+### Patch Changes
+
+- f3f00f2: Fix crash when a rounded pixel-image block has no alt text or link
+- b873623: Minify the registered styles, so Gmail is less likely to drop a mail's CSS
+
 ## 10.2.0
 
 ### Minor Changes

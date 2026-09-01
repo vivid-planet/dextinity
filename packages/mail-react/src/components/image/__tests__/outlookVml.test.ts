@@ -37,4 +37,10 @@ describe("generateOutlookImageVml", () => {
 
         expect(vml).toContain(`src="image.jpg&quot; onerror=&quot;alert(1)"`);
     });
+
+    it.each(["alt", "href"])("builds the shape when %s is null", (attribute) => {
+        const vml = generateOutlookImageVml({ ...image, borderRadius: 20, [attribute]: null });
+
+        expect(vml).toContain("<v:roundrect ");
+    });
 });

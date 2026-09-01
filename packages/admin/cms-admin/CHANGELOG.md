@@ -1,5 +1,92 @@
 # @comet/cms-admin
 
+## 10.3.0
+
+### Minor Changes
+
+- 504c97f: Expose `setPageState` in the `usePage` hook returned by `createUsePage`
+
+    Until now, the page state could only be read, so features that modify a page's content had to be built into `createUsePage` itself (like `translateContent`).
+    `setPageState` allows applications to change the page's content programmatically, for instance, to apply changes suggested by an assistant.
+    The changes are applied locally only, `handleSavePage` persists them.
+
+    Additionally, the `PageState` type is exported now.
+
+    **Example**
+
+    ```tsx
+    const { pageState, setPageState } = usePage({ pageId: id });
+
+    const applySuggestedHtmlTitle = (htmlTitle: string) => {
+        setPageState((pageState) => {
+            if (!pageState?.document) {
+                return pageState;
+            }
+
+            return {
+                ...pageState,
+                document: {
+                    ...pageState.document,
+                    seo: { ...pageState.document.seo, htmlTitle },
+                },
+            };
+        });
+    };
+    ```
+
+- ddea65d: Remove the "Permissions" and "Scopes" columns from the user permissions users list
+
+    The users list now shows the name, the email and the row actions. The `permissionsCount` and `contentScopesCount` fields of `UserPermissionsUser` are deprecated and now return `0`. They will be removed in the next major version.
+
+- 66cb98a: DAM: Allow replacing a file with a file of the same category instead of the same mimetype
+
+    Previously, "Replace File" only accepted a file with the exact same mimetype, so a JPEG couldn't be replaced by a WebP even though both are pixel images. Now a file can be replaced by any file of the same category:
+
+    | Category     | Examples             |
+    | ------------ | -------------------- |
+    | `pixelImage` | JPEG, PNG, WebP      |
+    | `svgImage`   | SVG                  |
+    | `audio`      | MP3, OGG, WAV        |
+    | `video`      | MP4, WebM, QuickTime |
+    | `document`   | PDF, DOCX, VTT, ZIP  |
+
+    SVG images and pixel images remain separate categories.
+
+    Files in the `document` category still require the exact same mimetype, since their purposes vary too much: a VTT file is a video's subtitles, whereas a PDF is a download, so replacing one with the other must not be possible.
+
+    The file's usages stay unchanged. Only the extension of the file's name is adjusted to match the new file (for instance, `photo.jpg` becomes `photo.webp`). If a file with that name already exists in the same folder, a counter is appended to keep the name unique (for instance, `photo-2.webp`), and the Admin shows a snackbar informing about the new name.
+
+    The new `getDamFileCategory` helper is exported from both packages:
+
+    ```ts
+    import { getDamFileCategory } from "@dextinity/cms-api"; // or "@dextinity/cms-admin"
+
+    getDamFileCategory("image/webp"); // "pixelImage"
+    getDamFileCategory("image/svg+xml"); // "svgImage"
+    ```
+
+### Patch Changes
+
+- 12be273: Fix the block list not marking the block that is hovered in a block preview
+
+    `HoverPreviewComponent` built the block's route from `useRouteMatch`, which does not see the path of a `SubRoute`. Below a `SaveBoundary` the route therefore missed that segment and never matched the route the preview reports, so hovering a block in the preview left its list entry unmarked, and hovering a list entry left the block in the preview unmarked. The route is now built from `useSubRoutePrefix`, the prefix the block routes in `BlockPreviewContext` already use.
+
+- 876887b: Fix order of `link` and special character (`nonBreakingSpace`, `softHyphen`) buttons in the TipTap rich text block toolbar
+
+    They were swapped; `link` now appears before the special character buttons.
+
+- 0c211e9: Stop deduplicating content scopes in the user permissions API
+
+    `UserPermissionsService.getAvailableContentScopes()`, `getContentScopes()` and `getPermissionsAndContentScopes()` no longer deduplicate their content scopes. Deduplication only mattered for how the scopes are displayed, so it now happens in the admin where the lists are rendered. This also removes the `lodash.uniqwith` dependency.
+
+    Projects that consume `UserPermissionsPublicService` or the `currentUser` / `availableContentScopes` GraphQL fields directly and rely on the scopes being unique should deduplicate them on their side.
+
+- Updated dependencies [4d6408f]
+    - @dextinity/admin@10.3.0
+    - @dextinity/admin-date-time@10.3.0
+    - @dextinity/admin-rte@10.3.0
+    - @dextinity/admin-icons@10.3.0
+
 ## 10.2.0
 
 ### Minor Changes

@@ -95,6 +95,8 @@ registerStyles(
 );
 ```
 
+The margin sits on `.twoColumnsSection__leftColumn`, a class the section writes on every render. `.column:not(.column--last)` says the same thing and reads better, and Gmail drops it, taking the gap with it — see [`styling-and-customization.md`](styling-and-customization.md) → Selectors That Reach Every Client.
+
 For three or more equal-width columns, see [Multi-Column Symmetric Layouts](#multi-column-symmetric-layouts-3-columns).
 
 ---
@@ -156,7 +158,7 @@ All three strategies share the same flex reset on the `MjmlGroup` `<div>` that d
 ${theme.breakpoints.default.belowMediaQuery} {
     .multiColumnSection > table > tbody > tr > td > div {
         display: flex !important;
-        gap: 20px !important;
+        column-gap: 20px !important;
     }
     .multiColumnSection__column {
         flex: 1 1 0% !important;
@@ -178,11 +180,17 @@ ${theme.breakpoints.mobile.belowMediaQuery} {
         flex: none !important;
         width: 100% !important;
         max-width: 100% !important;
+        margin-bottom: 20px !important;
+    }
+    .multiColumnSection__column--last {
+        margin-bottom: 0 !important;
     }
 }
 ```
 
-**Strategy B** — collapse the two blocks: put `flex-direction: column` and `width: 100%` in the `default.belowMediaQuery` block and drop the `mobile.belowMediaQuery` block.
+The horizontal gap is `column-gap` rather than the `gap` shorthand, and the stacked gap is a margin that `multiColumnSection__column--last` clears on the final column, because Gmail applies `column-gap` and not `row-gap`. The shorthand would set both, so the stack would space itself in every client except Gmail.
+
+**Strategy B** — collapse the two blocks: put `flex-direction: column`, `width: 100%` and both margin rules in the `default.belowMediaQuery` block, drop the `mobile.belowMediaQuery` block, and drop `column-gap`, which a stack never uses.
 
 **Strategy C** — keep Strategy A's `default.belowMediaQuery` block and drop the `mobile.belowMediaQuery` block. The columns then hold their flex widths at every viewport.
 

@@ -114,8 +114,6 @@ export function createDamVideoBlock(
 
         previewImage?: ExtractBlockInput<typeof PixelImageBlock>;
 
-        // Built by hand instead of via `blockInputToData` so that unsupported options are not stored,
-        // even when the admin still submits them because it is configured with a wider `supports`.
         transformToBlockData(): BlockDataInterface {
             const data = new DamVideoBlockData();
 
@@ -135,8 +133,6 @@ export function createDamVideoBlock(
         }
     }
 
-    // The decorators are applied by hand because which fields exist depends on `supports`.
-    // Their order defines the order of the fields in the block meta, so keep data and input in sync.
     if (supportsControls) {
         for (const field of ["autoplay", "showControls", "loop"] as const) {
             BlockField({ type: "boolean", nullable: true })(DamVideoBlockData.prototype, field);

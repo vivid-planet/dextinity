@@ -53,6 +53,15 @@ function scopeHash(scope: ScopeInterface | undefined): string {
     return JSON.stringify(scope);
 }
 
+interface ChildNodesKey {
+    scope: ScopeInterface | undefined;
+    parentId: string | null;
+}
+
+function childNodesKey({ scope, parentId }: ChildNodesKey): string {
+    return `${scopeHash(scope)}|${parentId ?? ""}`;
+}
+
 export function createReadApi(
     {
         pageTreeNodeRepository,
@@ -95,6 +104,58 @@ export function createReadApi(
         });
     });
 
+    // Batches "children of node X" lookups happening in the same tick into one query per scope. Without batching,
+    // walking a tree (menus, getDescendants, resolving a path segment by segment) causes one query per node.
+    const childNodesLoader = new DataLoader<ChildNodesKey, PageTreeNodeInterface[], string>(
+        async (keys) => {
+            return tracer.startActiveSpan("live query PageTree loadChildNodes", async (span) => {
+                span.setAttribute("keys count", keys.length);
+
+                const keysByScope = new Map<string, { scope: ScopeInterface | undefined; parentIds: Array<string | null> }>();
+                for (const key of keys) {
+                    const hash = scopeHash(key.scope);
+                    const group = keysByScope.get(hash) ?? { scope: key.scope, parentIds: [] };
+                    group.parentIds.push(key.parentId);
+                    keysByScope.set(hash, group);
+                }
+
+                const childNodesByKey = new Map<string, PageTreeNodeInterface[]>();
+                await Promise.all(
+                    Array.from(keysByScope.values()).map(async ({ scope, parentIds }) => {
+                        const qb = pageTreeNodeRepository.createQueryBuilder().where({ visibility: visibilityFilter });
+                        if (scope) {
+                            qb.andWhere({ scope });
+                        }
+
+                        // `parentId: null` (root nodes) can't be expressed inside `$in`, so it becomes its own condition
+                        const ids = parentIds.filter((parentId): parentId is string => parentId !== null);
+                        const parentConditions: Array<{ parentId: { $in: string[] } | null }> = [];
+                        if (ids.length > 0) {
+                            parentConditions.push({ parentId: { $in: ids } });
+                        }
+                        if (parentIds.includes(null)) {
+                            parentConditions.push({ parentId: null });
+                        }
+                        qb.andWhere({ $or: parentConditions });
+                        qb.orderBy({ pos: "ASC" });
+
+                        for (const node of await qb.getResultList()) {
+                            nodesById.set(node.id, node);
+                            const key = childNodesKey({ scope, parentId: node.parentId });
+                            const childNodes = childNodesByKey.get(key) ?? [];
+                            childNodes.push(node);
+                            childNodesByKey.set(key, childNodes);
+                        }
+                    }),
+                );
+
+                span.end();
+                return keys.map((key) => childNodesByKey.get(childNodesKey(key)) ?? []);
+            });
+        },
+        { cacheKeyFn: childNodesKey },
+    );
+
     const queryNodes = async (
         scope: ScopeInterface | undefined,
         where: PageTreeNodeFilterOptions,
@@ -118,6 +179,9 @@ export function createReadApi(
             }
 
             return nodes;
+        } else if (where.parentId !== undefined && sort === undefined && limit === undefined && offset === undefined) {
+            // Children of a node are batchable; the remaining filters are applied in memory, as for preloaded nodes
+            return filterPreloadedNodes(await childNodesLoader.load({ scope, parentId: where.parentId }), where);
         } else {
             return tracer.startActiveSpan("live query PageTree queryNodes", async (span) => {
                 span.setAttribute("scope", JSON.stringify(scope));
@@ -384,17 +448,12 @@ export function createReadApi(
         },
 
         async getDescendants(node: PageTreeNodeInterface): Promise<PageTreeNodeInterface[]> {
-            const descendants: PageTreeNodeInterface[] = [];
-
             const childNodes = await this.getChildNodes(node);
 
-            descendants.push(...childNodes);
+            // Descend into all children at once so each level of the tree is loaded in a single query
+            const descendantsPerChildNode = await Promise.all(childNodes.map((childNode) => this.getDescendants(childNode)));
 
-            for (const childNode of childNodes) {
-                descendants.push(...(await this.getDescendants(childNode)));
-            }
-
-            return descendants;
+            return [...childNodes, ...descendantsPerChildNode.flat()];
         },
 
         async getFirstNodeByAttachedPageId(pageId: string): Promise<PageTreeNodeInterface | null> {

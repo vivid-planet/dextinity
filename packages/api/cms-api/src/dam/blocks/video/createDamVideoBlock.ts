@@ -87,15 +87,22 @@ function createDamVideoBlockWithMigrations({
     const supportsControls = supports.includes("controls");
     const supportsPreviewImage = supports.includes("previewImage");
 
+    const unsupportedFields = [...(supportsControls ? [] : ["autoplay", "showControls", "loop"]), ...(supportsPreviewImage ? [] : ["previewImage"])];
+    const isSupported = (field: BlockMetaField) => !unsupportedFields.includes(field.name);
+
     class DamVideoBlockData extends BlockData {
         damFileId?: string;
 
+        @BlockField({ type: "boolean", nullable: true })
         autoplay?: boolean;
 
+        @BlockField({ type: "boolean", nullable: true })
         showControls?: boolean;
 
+        @BlockField({ type: "boolean", nullable: true })
         loop?: boolean;
 
+        @ChildBlock(PixelImageBlock)
         previewImage?: BlockDataInterface;
 
         async transformToPlain() {
@@ -119,15 +126,28 @@ function createDamVideoBlockWithMigrations({
     }
 
     class DamVideoBlockInput extends BlockInput {
-        damFileId?: string;
-
+        @IsBoolean()
+        @IsOptional()
+        @BlockField({ type: "boolean", nullable: true })
         autoplay?: boolean;
 
+        @IsBoolean()
+        @IsOptional()
+        @BlockField({ type: "boolean", nullable: true })
         showControls?: boolean;
 
+        @IsBoolean()
+        @IsOptional()
+        @BlockField({ type: "boolean", nullable: true })
         loop?: boolean;
 
+        @ChildBlockInput(PixelImageBlock)
         previewImage?: ExtractBlockInput<typeof PixelImageBlock>;
+
+        @IsUUID()
+        @IsOptional()
+        @BlockField({ type: "string", nullable: true })
+        damFileId?: string;
 
         transformToBlockData(): BlockDataInterface {
             const data = new DamVideoBlockData();
@@ -148,29 +168,10 @@ function createDamVideoBlockWithMigrations({
         }
     }
 
-    if (supportsControls) {
-        for (const field of ["autoplay", "showControls", "loop"] as const) {
-            BlockField({ type: "boolean", nullable: true })(DamVideoBlockData.prototype, field);
-
-            IsBoolean()(DamVideoBlockInput.prototype, field);
-            IsOptional()(DamVideoBlockInput.prototype, field);
-            BlockField({ type: "boolean", nullable: true })(DamVideoBlockInput.prototype, field);
-        }
-    }
-
-    if (supportsPreviewImage) {
-        ChildBlock(PixelImageBlock)(DamVideoBlockData.prototype, "previewImage");
-        ChildBlockInput(PixelImageBlock)(DamVideoBlockInput.prototype, "previewImage");
-    }
-
-    IsUUID()(DamVideoBlockInput.prototype, "damFileId");
-    IsOptional()(DamVideoBlockInput.prototype, "damFileId");
-    BlockField({ type: "string", nullable: true })(DamVideoBlockInput.prototype, "damFileId");
-
     class Meta extends AnnotationBlockMeta {
         get fields(): BlockMetaField[] {
             return [
-                ...super.fields,
+                ...super.fields.filter(isSupported),
                 {
                     name: "damFile",
                     kind: BlockMetaFieldKind.NestedObject,
@@ -264,9 +265,16 @@ function createDamVideoBlockWithMigrations({
         }
     }
 
+    class InputMeta extends AnnotationBlockMeta {
+        get fields(): BlockMetaField[] {
+            return super.fields.filter(isSupported);
+        }
+    }
+
     return createBlock(DamVideoBlockData, DamVideoBlockInput, {
         name,
         blockMeta: new Meta(DamVideoBlockData),
+        blockInputMeta: new InputMeta(DamVideoBlockInput),
         migrate: {
             version: 1,
             migrations,

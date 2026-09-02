@@ -39,6 +39,20 @@ describe("createDamVideoBlock", () => {
         expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, $$version: 1 });
     });
 
+    it("should create input for a block without a preview image", () => {
+        const block = createDamVideoBlock({ supports: ["controls"] }, "InputWithoutPreviewImage");
+        const input = block.blockInputFactory({ damFileId, autoplay: true });
+
+        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, autoplay: true, $$version: 1 });
+    });
+
+    it("should create input for a block that supports nothing but the file", () => {
+        const block = createDamVideoBlock({ supports: [] }, "InputWithFileOnly");
+        const input = block.blockInputFactory({ damFileId });
+
+        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, $$version: 1 });
+    });
+
     it("should store the supported options", () => {
         const block = createDamVideoBlock({}, "StoringFullVideo");
         const input = block.blockInputFactory({ damFileId, autoplay: true, previewImage: {} });

@@ -87,7 +87,7 @@ function createDamVideoBlockWithMigrations({
     const supportsControls = supports.includes("controls");
     const supportsPreviewImage = supports.includes("previewImage");
 
-    const unsupportedFields = [...(supportsControls ? [] : ["autoplay", "showControls", "loop"]), ...(supportsPreviewImage ? [] : ["previewImage"])];
+    const unsupportedFields = supportsControls ? [] : ["autoplay", "showControls", "loop"];
     const isSupported = (field: BlockMetaField) => !unsupportedFields.includes(field.name);
 
     class DamVideoBlockData extends BlockData {
@@ -102,7 +102,6 @@ function createDamVideoBlockWithMigrations({
         @BlockField({ type: "boolean", nullable: true })
         loop?: boolean;
 
-        @ChildBlock(PixelImageBlock)
         previewImage?: BlockDataInterface;
 
         async transformToPlain() {
@@ -141,12 +140,8 @@ function createDamVideoBlockWithMigrations({
         @BlockField({ type: "boolean", nullable: true })
         loop?: boolean;
 
-        @ChildBlockInput(PixelImageBlock)
         previewImage?: ExtractBlockInput<typeof PixelImageBlock>;
 
-        @IsUUID()
-        @IsOptional()
-        @BlockField({ type: "string", nullable: true })
         damFileId?: string;
 
         transformToBlockData(): BlockDataInterface {
@@ -167,6 +162,17 @@ function createDamVideoBlockWithMigrations({
             return data;
         }
     }
+
+    // The child block decorators reject a missing preview image, so they may only be applied when it is
+    // supported. damFileId follows, because the block meta lists the fields in the order they are applied.
+    if (supportsPreviewImage) {
+        ChildBlock(PixelImageBlock)(DamVideoBlockData.prototype, "previewImage");
+        ChildBlockInput(PixelImageBlock)(DamVideoBlockInput.prototype, "previewImage");
+    }
+
+    IsUUID()(DamVideoBlockInput.prototype, "damFileId");
+    IsOptional()(DamVideoBlockInput.prototype, "damFileId");
+    BlockField({ type: "string", nullable: true })(DamVideoBlockInput.prototype, "damFileId");
 
     class Meta extends AnnotationBlockMeta {
         get fields(): BlockMetaField[] {

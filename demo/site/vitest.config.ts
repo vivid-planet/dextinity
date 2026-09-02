@@ -7,6 +7,6 @@ export default defineConfig({
         environment: "jsdom",
         exclude: [".next/**", "dist/**", "node_modules/**"],
         reporters: ["default", "junit"],
-        outputFile: { junit: "./junit.xml" },
+        outputFile: { junit: "./junit-unit.xml" },
     },
 });

@@ -64,19 +64,20 @@ export function createDamVideoBlock(
     options: CreateDamVideoBlockOptions = {},
     name = "DamVideo",
 ): Block<BlockDataInterface, DamVideoBlockInputInterface> {
-    // A block created by the factory has no data from an earlier version, so it starts at version 1 without migrations.
-    return createDamVideoBlockWithMigrations({ ...options, name, migrations: [] });
+    // A block created by the factory has no data from an earlier version, so it needs no migrations - and
+    // no version either, like every other block without them.
+    return createDamVideoBlockWithMigrations({ ...options, name });
 }
 
 interface CreateDamVideoBlockWithMigrationsOptions extends CreateDamVideoBlockOptions {
     name: string;
-    migrations: MigrateOptions["migrations"];
+    migrate?: MigrateOptions;
 }
 
 function createDamVideoBlockWithMigrations({
     supports = defaultSupports,
     name,
-    migrations,
+    migrate,
 }: CreateDamVideoBlockWithMigrationsOptions): Block<BlockDataInterface, DamVideoBlockInputInterface> {
     if (getRegisteredBlocks().some((block) => block.name === name)) {
         throw new Error(
@@ -285,14 +286,14 @@ function createDamVideoBlockWithMigrations({
         name,
         blockMeta: new Meta(DamVideoBlockData),
         blockInputMeta: new InputMeta(DamVideoBlockInput),
-        migrate: {
-            version: 1,
-            migrations,
-        },
+        migrate,
     });
 }
 
 export const DamVideoBlock = createDamVideoBlockWithMigrations({
     name: "DamVideo",
-    migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration]),
+    migrate: {
+        version: 1,
+        migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration]),
+    },
 });

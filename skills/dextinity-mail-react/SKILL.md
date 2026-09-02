@@ -170,11 +170,27 @@ Outlook calculates line-height using its own rules, causing unexpected vertical 
 
 ### No CSS `background-image` in Outlook
 
-Outlook ignores `background-image` entirely. Use a VML-based workaround for Outlook support, or provide a `background-color` fallback for graceful degradation. See [Bulletproof Backgrounds](https://www.backgrounds.cm/).
+Classic Outlook ignores `background-image` entirely. Use a VML-based workaround for Outlook support, or provide a `background-color` fallback for graceful degradation. See [Bulletproof Backgrounds](https://www.backgrounds.cm/).
 
 ### No CSS `border-radius` in Outlook
 
-Outlook ignores `border-radius` — rounded corners render as sharp rectangles. `MjmlImage` and `HtmlImage` cover images: their `borderRadius` prop also renders a VML shape for Outlook, as long as `width` and `height` are given in pixels and the radius is given in pixels or as `"50%"`. Everything else, buttons included, needs the workaround by hand — VML `v:roundrect` in conditional comments (`<!--[if mso]>`). See [Bulletproof Buttons](https://www.buttons.cm/) and the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
+Classic Outlook ignores `border-radius` entirely — rounded corners on buttons, containers, or any other element render as sharp rectangles.
+
+`MjmlImage` and `HtmlImage` handle images for you, as long as `width` and `height` are given in pixels and `borderRadius` is a single pixel value or `"50%"`. Other values — a percentage width, `1em`, `16px 4px` — leave the image square in Outlook.
+
+Everything else, buttons and containers included, needs a VML `v:roundrect` written by hand, inside a conditional comment. Give the shape a fixed pixel `width` and `height` — it cannot be fluid:
+
+```html
+<!--[if mso]>
+    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="18%" stroked="f" style="width:200px;height:44px;">
+        <center>Button label</center>
+    </v:roundrect>
+<![endif]-->
+```
+
+Set `arcsize` to the corner radius divided by the shorter side, capped at `50%` — `8px` on a `44px`-high button gives `18%`. Do not take the value from the VML specification; it is twice what Outlook needs.
+
+See the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
 
 ---
 

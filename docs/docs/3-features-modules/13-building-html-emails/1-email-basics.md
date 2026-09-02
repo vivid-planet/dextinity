@@ -70,8 +70,29 @@ Outlook calculates line-height using its own rules, which can cause unexpected v
 
 ### No CSS `background-image` in Outlook
 
-Desktop Outlook ignores the CSS `background-image` property entirely. If your design uses background images, you need a [VML](https://learn.microsoft.com/en-us/windows/win32/vml/web-workshop---specs---standards----introduction-to-vector-markup-language--vml-)-based workaround for Outlook support, or accept graceful degradation by always providing a `background-color` fallback. Campaign Monitor's [Bulletproof Background Images](https://www.backgrounds.cm/) generator can help produce the necessary VML markup.
+Classic Outlook ignores the CSS `background-image` property entirely. If your design uses background images, you need a [VML](https://learn.microsoft.com/en-us/windows/win32/vml/web-workshop---specs---standards----introduction-to-vector-markup-language--vml-)-based workaround for Outlook support, or accept graceful degradation by always providing a `background-color` fallback. Campaign Monitor's [Bulletproof Background Images](https://www.backgrounds.cm/) generator can help produce the necessary VML markup.
 
 ### No CSS `border-radius` in Outlook
 
-Desktop Outlook ignores CSS `border-radius` entirely — rounded corners on buttons, containers, or any other element will render as sharp rectangles. `MjmlImage` and `HtmlImage` cover images: their `borderRadius` prop also renders VML for Outlook, as long as `width` and `height` are given in pixels and the radius is given in pixels or as `"50%"`. For everything else the standard workaround is [VML](https://learn.microsoft.com/en-us/windows/win32/vml/web-workshop---specs---standards----introduction-to-vector-markup-language--vml-) (Vector Markup Language) wrapped in conditional comments (`<!--[if mso]>`): a `v:roundrect` element with an `arcsize` attribute provides rounded corners that Outlook's Word-based engine can render. Campaign Monitor's [Bulletproof Email Buttons](https://www.buttons.cm/) generator and the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach) are good starting points for this technique.
+Classic Outlook ignores CSS `border-radius` entirely — rounded corners on buttons, containers, or any other element render as sharp rectangles.
+
+`MjmlImage` and `HtmlImage` handle images for you, as long as `width` and `height` are given in pixels and `borderRadius` is a single pixel value or `"50%"`. Other values — a percentage width, `1em`, `16px 4px` — leave the image square in Outlook.
+
+Everything else, buttons and containers included, needs a [VML](https://learn.microsoft.com/en-us/windows/win32/vml/web-workshop---specs---standards----introduction-to-vector-markup-language--vml-) (Vector Markup Language) `v:roundrect` written by hand, inside a conditional comment. Give the shape a fixed pixel `width` and `height` — it cannot be fluid:
+
+```html
+<!--[if mso]>
+    <v:roundrect
+        xmlns:v="urn:schemas-microsoft-com:vml"
+        arcsize="18%"
+        stroked="f"
+        style="width:200px;height:44px;"
+    >
+        <center>Button label</center>
+    </v:roundrect>
+<![endif]-->
+```
+
+Set `arcsize` to the corner radius divided by the shorter side, capped at `50%` — `8px` on a `44px`-high button gives `18%`. Do not take the value from the VML specification; it is twice what Outlook needs.
+
+Campaign Monitor's [Bulletproof Email Buttons](https://www.buttons.cm/) generator and the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach) are good starting points for this technique.

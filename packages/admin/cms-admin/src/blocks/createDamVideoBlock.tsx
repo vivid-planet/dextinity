@@ -43,7 +43,8 @@ interface DamVideoBlockFactoryOptions {
      * that only reads the file's URL.
      *
      * Values that are already stored are kept as they are, the editor just can't change them anymore.
-     * The preview image is always part of the block's data, leaving it out only hides it from the editor.
+     * Whether an option is part of the block's data at all is decided by the API block, so use the same
+     * `supports` there.
      * @default ["controls", "previewImage"]
      */
     supports?: DamVideoBlockSupports[];

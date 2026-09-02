@@ -38,13 +38,3 @@ export class PageTreeNodeScope {
     language: string;
 }
 ```
-
-Places that used a scope value where a `string` is expected (for instance a language passed to a translation service) now need an explicit conversion:
-
-```ts
-// Before
-transformToSlug(name, scope.language);
-
-// After
-transformToSlug(name, String(scope.language));
-```

@@ -1240,6 +1240,14 @@ const InlineStylesBlock = createTipTapRichTextBlock({
             icon: RteHighlight,
             element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
         },
+        {
+            name: "tag",
+            label: "Tag",
+            icon: Tag,
+            element: (props: HTMLAttributes<HTMLElement>) => (
+                <span style={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: 4 }} {...props} />
+            ),
+        },
     ],
 });
 
@@ -1267,16 +1275,17 @@ export const InlineStyles: StoryObj<typeof InlineStylesStory> = {
                 );
 
                 expect(canvas.queryByRole("button", { name: "More options" })).not.toBeInTheDocument();
-                expect(canvas.getAllByRole("button")).toHaveLength(3);
+                expect(canvas.getAllByRole("button")).toHaveLength(4);
             },
         );
 
-        const [superscriptButton, subscriptButton, highlightButton] = canvas.getAllByRole("button");
+        const [superscriptButton, subscriptButton, highlightButton, tagButton] = canvas.getAllByRole("button");
 
-        await step("Highlight button is enabled even without a selection, like superscript/subscript", async () => {
+        await step("Highlight and tag buttons are enabled even without a selection, like superscript/subscript", async () => {
             expect(superscriptButton).toBeEnabled();
             expect(subscriptButton).toBeEnabled();
             expect(highlightButton).toBeEnabled();
+            expect(tagButton).toBeEnabled();
         });
 
         await step("Type text and select it", async () => {
@@ -1334,6 +1343,28 @@ export const InlineStyles: StoryObj<typeof InlineStylesStory> = {
             await userEvent.click(highlightButton);
             await waitFor(() => {
                 expect(document.querySelector("[data-inline-style]")).toBeNull();
+            });
+        });
+
+        await step("Subscript and 'Highlight' can be active at the same time — each is its own button, no menu to reopen in between", async () => {
+            await userEvent.click(subscriptButton);
+            await userEvent.click(highlightButton);
+
+            await waitFor(() => {
+                expect(document.querySelector("sub")).toHaveTextContent("hello");
+                expect(document.querySelector('[data-inline-style="highlight"]')).toHaveTextContent("hello");
+            });
+        });
+
+        await step("Switching to 'Tag' replaces 'Highlight' (both share the same inline-style mark) but leaves subscript untouched", async () => {
+            await userEvent.click(tagButton);
+
+            await waitFor(() => {
+                expect(document.querySelector('[data-inline-style="highlight"]')).toBeNull();
+                const tagEl = document.querySelector('[data-inline-style="tag"]');
+                expect(tagEl).toBeTruthy();
+                expect(tagEl).toHaveTextContent("hello");
+                expect(document.querySelector("sub")).toHaveTextContent("hello");
             });
         });
     },

@@ -506,7 +506,9 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                             return;
                                         }
 
-                                        return <block.AdminComponent state={match.props} updateState={createUpdateSubBlocksFn(itemId)} />;
+                                        return (
+                                            <block.AdminComponent key={itemId} state={match.props} updateState={createUpdateSubBlocksFn(itemId)} />
+                                        );
                                     }}
                                 </StackSwitchApiContext.Consumer>
                             )}

@@ -106,10 +106,9 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
             return;
         }
 
-        // `getCombinedPositioningOfElements` measures in document coordinates, so the comparisons below need the wrapper's right edge in
-        // those coordinates. Its width is that edge only while the wrapper starts at `x = 0`; an offset from an ancestor, such as padding
-        // or centering, shifts it. Measuring here and not during render keeps the value current: the observers below recompute without a
-        // render in between, so a value read during render would still describe the layout from before the resize.
+        // The comparisons below are in document coordinates, so they need the wrapper's right edge in those coordinates, not its width,
+        // which is that edge only while the wrapper starts at `x = 0`. Measured here and not during render because the observers recompute
+        // without a render in between.
         const childrenWrapperRight = childrenWrapper.getBoundingClientRect().right + window.scrollX;
 
         const newPreviewElementsData = previewElements

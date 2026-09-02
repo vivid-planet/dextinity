@@ -9,10 +9,29 @@ All warnings are shown in **one central place** inside a **grid in the admin pan
 
 In this grid, you can:
 
-- See **all warnings that concern you** (meaning you have the necessary scope permissions).
+- See the **warnings of the currently selected scope**. Warnings without a scope (e.g., DAM warnings) and warnings with a partial scope (e.g., only `domain`) are also shown. Switching the scope automatically updates the displayed warnings.
 - Click on an action to **jump directly to the issue** and fix it.
 
 ![Warnings Grid](images/warnings-grid.png)
+
+:::tip
+
+Use the `showAllScopes` prop on `WarningsPage` and `LatestWarningsDashboardWidget` to display the warnings of all scopes the user is allowed to access instead:
+
+```tsx
+<LatestWarningsDashboardWidget showAllScopes />
+```
+
+For `WarningsPage`, the masterMenu entry needs a `render` function instead of `component` to pass the prop:
+
+```tsx
+route: {
+    path: "/system/warnings",
+    render: () => <WarningsPage showAllScopes />,
+}
+```
+
+:::
 
 The Warning Module operates through two main mechanisms:
 

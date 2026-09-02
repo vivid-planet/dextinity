@@ -65,9 +65,12 @@ function parsePixelLength(value: string | number | undefined): number | null {
     return pixels !== null && Number.isFinite(pixels) && pixels > 0 ? pixels : null;
 }
 
-/** VML measures `arcsize` against half the shorter side, so an equal radius needs a different value per aspect ratio. */
+/**
+ * Classic Outlook measures `arcsize` against the whole shorter side and draws no more than half of
+ * it, although ECMA-376 Part 4 says half the shorter side.
+ */
 function calculateArcsize(radius: number, width: number, height: number): string {
-    const fraction = Math.min(radius / (Math.min(width, height) / 2), 1);
+    const fraction = Math.min(radius / Math.min(width, height), 0.5);
 
     return `${Math.round(fraction * 100)}%`;
 }

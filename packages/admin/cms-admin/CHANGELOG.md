@@ -1,5 +1,27 @@
 # @comet/cms-admin
 
+## 8.31.0
+
+### Minor Changes
+
+- f3907cc: Remove the "Permissions" and "Scopes" columns from the user permissions users list
+
+    The users list now shows the name, the email and the row actions. The `permissionsCount` and `contentScopesCount` fields of `UserPermissionsUser` are deprecated and now return `0`. They will be removed in the next major version.
+
+### Patch Changes
+
+- 8b5f06f: Stop deduplicating content scopes in the user permissions API
+
+    `UserPermissionsService.getAvailableContentScopes()`, `getContentScopes()` and `getPermissionsAndContentScopes()` no longer deduplicate their content scopes. Deduplication only mattered for how the scopes are displayed, so it now happens in the admin where the lists are rendered. This also removes the `lodash.uniqwith` dependency.
+
+    Projects that consume `UserPermissionsPublicService` or the `currentUser` / `availableContentScopes` GraphQL fields directly and rely on the scopes being unique should deduplicate them on their side.
+
+- Updated dependencies [be2d64f]
+    - @comet/admin@8.31.0
+    - @comet/admin-date-time@8.31.0
+    - @comet/admin-rte@8.31.0
+    - @comet/admin-icons@8.31.0
+
 ## 8.30.1
 
 ### Patch Changes

@@ -188,17 +188,29 @@ export class UserPermissionsService {
         user,
         availableContentScopes,
         includeContentScopesManual,
+        representAllContentScopesAsWildcard = false,
     }: {
         user: User;
         availableContentScopes: ContentScope[];
         includeContentScopesManual: boolean;
+        representAllContentScopesAsWildcard?: boolean;
     }): Promise<ContentScope[]> {
         const contentScopes: ContentScope[] = [];
 
         if (this.accessControlService.getContentScopesForUser) {
             const userContentScopes = await this.accessControlService.getContentScopesForUser(user);
             if (userContentScopes === UserPermissions.allContentScopes) {
-                contentScopes.push(...availableContentScopes);
+                if (representAllContentScopesAsWildcard) {
+                    // For the current user, represent access to all content scopes as a single scope that grants any
+                    // value ("*") of every available dimension, so that the wildcard is preserved for content scope
+                    // checks and permission comparison (impersonation) instead of being expanded to concrete scopes.
+                    const dimensions = new Set(availableContentScopes.flatMap((contentScope) => Object.keys(contentScope)));
+                    contentScopes.push(Object.fromEntries([...dimensions].map((dimension) => [dimension, "*"])));
+                } else {
+                    // For other uses (e.g. the content scopes list in the user permissions panel), expand access to all
+                    // content scopes to the concrete available scopes.
+                    contentScopes.push(...availableContentScopes);
+                }
             } else {
                 contentScopes.push(...userContentScopes);
             }
@@ -221,7 +233,7 @@ export class UserPermissionsService {
                 try {
                     const user = await this.getUser(request?.cookies["comet-impersonate-user-id"]);
                     if (
-                        await AbstractAccessControlService.isEqualOrMorePermissions(
+                        AbstractAccessControlService.isEqualOrMorePermissions(
                             await this.getPermissionsAndContentScopes(authenticatedUser),
                             await this.getPermissionsAndContentScopes(user),
                         )
@@ -249,7 +261,13 @@ export class UserPermissionsService {
     }
 
     async getPermissionsAndContentScopes(user: User): Promise<CurrentUserPermission[]> {
-        const userContentScopes = await this.getContentScopes(user);
+        const availableContentScopes = (await this.getAvailableContentScopes()).map((cs) => cs.scope);
+        const userContentScopes = await this.filterContentScopesForUser({
+            user,
+            availableContentScopes,
+            includeContentScopesManual: true,
+            representAllContentScopesAsWildcard: true,
+        });
         return (await this.getPermissions(user))
             .filter((p) => (!p.validFrom || isPast(p.validFrom)) && (!p.validTo || isFuture(p.validTo)))
             .reduce((acc: CurrentUser["permissions"], userPermission) => {

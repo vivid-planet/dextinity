@@ -1,5 +1,5 @@
 ---
-"@dextinity/admin": patch
+"@comet/admin": patch
 ---
 
 Show the GraphQL error messages in the error dialog again

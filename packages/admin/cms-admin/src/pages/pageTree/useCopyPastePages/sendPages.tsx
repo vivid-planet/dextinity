@@ -61,7 +61,7 @@ interface SendPagesDependencies {
     scope: ContentScope;
     documentTypes: PageTreeConfig["documentTypes"];
     apiUrl: string;
-    damScope: Record<string, unknown>;
+    damScope: ContentScope;
     currentCategory: string;
     damBasePath: string;
 }
@@ -96,7 +96,7 @@ export async function sendPages(
     updateProgress(0, <FormattedMessage id="dextinity.pages.paste.analyzingPages" defaultMessage="analyzing pages" />);
     {
         let progressPages = 0;
-        const sourceScopes: Record<string, unknown>[] = [];
+        const sourceScopes: ContentScope[] = [];
         for (const sourcePage of pages) {
             const documentType = documentTypes[sourcePage.documentType];
             if (!documentType) {
@@ -341,7 +341,7 @@ function unhandledDependenciesFromDocument(
         existingReplacements,
         hasDamScope = false,
         targetDamScope,
-    }: { existingReplacements: ReplaceDependencyObject[]; hasDamScope?: boolean; targetDamScope: Record<string, unknown> },
+    }: { existingReplacements: ReplaceDependencyObject[]; hasDamScope?: boolean; targetDamScope: ContentScope },
 ) {
     const unhandledDependencies = documentType.dependencies(document).filter((dependency) => {
         if (isDamFileDependency(dependency)) {
@@ -391,7 +391,7 @@ function fileDependenciesFromDocument(documentType: DocumentInterface, document:
 
 function isDamFileDependency(
     dependency: BlockDependency,
-): dependency is BlockDependency & { data: { damFile: GQLDamFile & { scope?: Record<string, unknown> } } } {
+): dependency is BlockDependency & { data: { damFile: GQLDamFile & { scope?: ContentScope } } } {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return dependency.targetGraphqlObjectType === "DamFile" && dependency.data && (dependency.data as any).damFile;
 }

@@ -44,7 +44,7 @@ export function createBlacklistedContactsEntity({ Scope }: { Scope: Type<EmailCa
 
         @Embedded(() => Scope)
         @Field(() => Scope)
-        scope: typeof Scope;
+        scope: EmailCampaignScopeInterface;
     }
 
     return BrevoBlacklistedContacts;

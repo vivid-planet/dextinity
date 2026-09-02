@@ -72,7 +72,7 @@ export class BrevoConfigEntityFactory {
 
             @Embedded(() => Scope)
             @Field(() => Scope)
-            scope: typeof Scope;
+            scope: EmailCampaignScopeInterface;
         }
 
         return BrevoConfig;

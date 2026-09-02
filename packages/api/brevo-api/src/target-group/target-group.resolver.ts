@@ -85,7 +85,7 @@ export function createTargetGroupsResolver({
         @Mutation(() => BrevoTargetGroup)
         async createBrevoTargetGroup(
             @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope))
-            scope: typeof Scope,
+            scope: EmailCampaignScopeInterface,
             @Args("input", { type: () => TargetGroupInput }, new DynamicDtoValidationPipe(TargetGroupInput)) input: TargetGroupInputInterface,
         ): Promise<TargetGroupInterface> {
             const brevoId = await this.brevoApiContactsService.createBrevoContactList(input.title, scope);

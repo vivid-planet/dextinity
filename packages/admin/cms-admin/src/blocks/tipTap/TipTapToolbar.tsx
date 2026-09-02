@@ -295,6 +295,50 @@ export const TipTapToolbar = ({
     // styles adds an extra click for no space savings, so show them as individual buttons instead
     const showMoreOptionsAsButtons = !hasInlineFormatButtons && inlineStyles.every((style) => style.icon);
 
+    const moreOptionsItems: {
+        key: string;
+        icon?: ForwardRefExoticComponent<Omit<SvgIconProps, "ref"> & RefAttributes<SVGSVGElement>>;
+        label: ReactNode;
+        isActive: boolean;
+        onToggle: () => void;
+    }[] = [
+        ...(supports.includes("sup")
+            ? [
+                  {
+                      key: "superscript",
+                      icon: RteSup,
+                      label: <FormattedMessage id="dextinity.blocks.tipTapRichText.superscript.label" defaultMessage="Superscript" />,
+                      isActive: editorState.isSuperscriptActive,
+                      onToggle: () => editor.chain().focus().toggleSuperscript().run(),
+                  },
+              ]
+            : []),
+        ...(supports.includes("sub")
+            ? [
+                  {
+                      key: "subscript",
+                      icon: RteSub,
+                      label: <FormattedMessage id="dextinity.blocks.tipTapRichText.subscript.label" defaultMessage="Subscript" />,
+                      isActive: editorState.isSubscriptActive,
+                      onToggle: () => editor.chain().focus().toggleSubscript().run(),
+                  },
+              ]
+            : []),
+        ...applicableInlineStyles.map((style) => ({
+            key: style.name,
+            icon: style.icon,
+            label: style.label,
+            isActive: editorState.activeInlineStyles[style.name],
+            onToggle: () => {
+                if (editorState.activeInlineStyles[style.name]) {
+                    editor.chain().focus().unsetInlineStyle().run();
+                } else {
+                    editor.chain().focus().setInlineStyle({ type: style.name }).run();
+                }
+            },
+        })),
+    ];
+
     const handleTextBlockTypeChange = (e: SelectChangeEvent) => {
         const value = e.target.value;
         if (value === "paragraph") {
@@ -450,41 +494,15 @@ export const TipTapToolbar = ({
                     {(moreOptions || applicableInlineStyles.length > 0) &&
                         (showMoreOptionsAsButtons ? (
                             <>
-                                {supports.includes("sup") && (
+                                {moreOptionsItems.map((item) => (
                                     <ToolbarButton
-                                        editor={editor}
-                                        icon={RteSup}
-                                        tooltip={
-                                            <FormattedMessage id="dextinity.blocks.tipTapRichText.superscript.label" defaultMessage="Superscript" />
-                                        }
-                                        isActive="superscript"
-                                        onToggle={() => editor.chain().focus().toggleSuperscript().run()}
-                                    />
-                                )}
-                                {supports.includes("sub") && (
-                                    <ToolbarButton
-                                        editor={editor}
-                                        icon={RteSub}
-                                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.subscript.label" defaultMessage="Subscript" />}
-                                        isActive="subscript"
-                                        onToggle={() => editor.chain().focus().toggleSubscript().run()}
-                                    />
-                                )}
-                                {applicableInlineStyles.map((style) => (
-                                    <ToolbarButton
-                                        key={style.name}
+                                        key={item.key}
                                         editor={editor}
                                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- guaranteed by showMoreOptionsAsButtons
-                                        icon={style.icon!}
-                                        tooltip={style.label}
-                                        isActive={editorState.activeInlineStyles[style.name]}
-                                        onToggle={() => {
-                                            if (editorState.activeInlineStyles[style.name]) {
-                                                editor.chain().focus().unsetInlineStyle().run();
-                                            } else {
-                                                editor.chain().focus().setInlineStyle({ type: style.name }).run();
-                                            }
-                                        }}
+                                        icon={item.icon!}
+                                        tooltip={item.label}
+                                        isActive={item.isActive}
+                                        onToggle={item.onToggle}
                                     />
                                 ))}
                             </>
@@ -517,47 +535,16 @@ export const TipTapToolbar = ({
                                     </Box>
                                 </Tooltip>
                                 <Menu open={Boolean(moreAnchorEl)} anchorEl={moreAnchorEl} onClose={handleMoreClose}>
-                                    {supports.includes("sup") && (
-                                        <MenuItem
-                                            selected={editor.isActive("superscript")}
-                                            onMouseDown={() => runMenuItemAction(() => editor.chain().focus().toggleSuperscript().run())}
-                                            onClick={(e) => handleMenuItemKeyboardActivate(e, () => editor.chain().focus().toggleSuperscript().run())}
-                                        >
-                                            <FormattedMessage id="dextinity.blocks.tipTapRichText.superscript.label" defaultMessage="Superscript" />
-                                            <ListItemIcon sx={{ justifyContent: "flex-end" }}>
-                                                <RteSup />
-                                            </ListItemIcon>
-                                        </MenuItem>
-                                    )}
-                                    {supports.includes("sub") && (
-                                        <MenuItem
-                                            selected={editor.isActive("subscript")}
-                                            onMouseDown={() => runMenuItemAction(() => editor.chain().focus().toggleSubscript().run())}
-                                            onClick={(e) => handleMenuItemKeyboardActivate(e, () => editor.chain().focus().toggleSubscript().run())}
-                                        >
-                                            <FormattedMessage id="dextinity.blocks.tipTapRichText.subscript.label" defaultMessage="Subscript" />
-                                            <ListItemIcon sx={{ justifyContent: "flex-end" }}>
-                                                <RteSub />
-                                            </ListItemIcon>
-                                        </MenuItem>
-                                    )}
-                                    {applicableInlineStyles.map((style) => {
-                                        const toggleInlineStyle = () => {
-                                            if (editorState.activeInlineStyles[style.name]) {
-                                                editor.chain().focus().unsetInlineStyle().run();
-                                            } else {
-                                                editor.chain().focus().setInlineStyle({ type: style.name }).run();
-                                            }
-                                        };
-                                        const Icon = style.icon;
+                                    {moreOptionsItems.map((item) => {
+                                        const Icon = item.icon;
                                         return (
                                             <MenuItem
-                                                key={style.name}
-                                                selected={editorState.activeInlineStyles[style.name]}
-                                                onMouseDown={() => runMenuItemAction(toggleInlineStyle)}
-                                                onClick={(e) => handleMenuItemKeyboardActivate(e, toggleInlineStyle)}
+                                                key={item.key}
+                                                selected={item.isActive}
+                                                onMouseDown={() => runMenuItemAction(item.onToggle)}
+                                                onClick={(e) => handleMenuItemKeyboardActivate(e, item.onToggle)}
                                             >
-                                                {style.label}
+                                                {item.label}
                                                 {Icon && (
                                                     <ListItemIcon sx={{ justifyContent: "flex-end" }}>
                                                         <Icon />

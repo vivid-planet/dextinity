@@ -815,6 +815,145 @@ export const MaxTextBlocks: StoryObj<typeof MaxTextBlocksStory> = {
     },
 };
 
+const InlineStylesBlock = createTipTapRichTextBlock({
+    supports: ["heading", "sub", "sup"],
+    inlineStyles: [
+        {
+            name: "highlight",
+            label: "Highlight",
+            icon: RteHighlight,
+            element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
+        },
+        {
+            name: "tag",
+            label: "Tag",
+            icon: Tag,
+            element: (props: HTMLAttributes<HTMLElement>) => (
+                <span style={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: 4 }} {...props} />
+            ),
+        },
+    ],
+});
+
+function InlineStylesStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(InlineStylesBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <InlineStylesBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const InlineStyles: StoryObj<typeof InlineStylesStory> = {
+    render: () => <InlineStylesStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step(
+            "Without bold/italic/underline/strike buttons, superscript/subscript/inline styles render as their own toolbar buttons instead of a 'More options' menu",
+            async () => {
+                await waitFor(
+                    () => {
+                        expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                    },
+                    { timeout: 5000 },
+                );
+
+                expect(canvas.queryByRole("button", { name: "More options" })).not.toBeInTheDocument();
+                expect(canvas.getAllByRole("button")).toHaveLength(4);
+            },
+        );
+
+        const [superscriptButton, subscriptButton, highlightButton, tagButton] = canvas.getAllByRole("button");
+
+        await step("Highlight and tag buttons are enabled even without a selection, like superscript/subscript", async () => {
+            expect(superscriptButton).toBeEnabled();
+            expect(subscriptButton).toBeEnabled();
+            expect(highlightButton).toBeEnabled();
+            expect(tagButton).toBeEnabled();
+        });
+
+        await step("Type text and select it", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("hello");
+
+            await waitFor(
+                () => {
+                    expect(editor).toHaveTextContent("hello");
+                },
+                { timeout: 3000 },
+            );
+
+            // userEvent's Shift+Home isn't supported in contenteditable; use the native Selection API.
+            const range = document.createRange();
+            range.selectNodeContents(editor);
+            const selection = window.getSelection();
+            selection?.removeAllRanges();
+            selection?.addRange(range);
+        });
+
+        await step("Toggle superscript directly from the toolbar button", async () => {
+            await userEvent.click(superscriptButton);
+            await waitFor(() => {
+                expect(document.querySelector("sup")).toHaveTextContent("hello");
+            });
+
+            await userEvent.click(superscriptButton);
+            await waitFor(() => {
+                expect(document.querySelector("sup")).toBeNull();
+            });
+        });
+
+        await step("Toggle subscript directly from the toolbar button", async () => {
+            await userEvent.click(subscriptButton);
+            await waitFor(() => {
+                expect(document.querySelector("sub")).toHaveTextContent("hello");
+            });
+
+            await userEvent.click(subscriptButton);
+            await waitFor(() => {
+                expect(document.querySelector("sub")).toBeNull();
+            });
+        });
+
+        await step("Toggle the 'Highlight' inline style directly from the toolbar button", async () => {
+            await userEvent.click(highlightButton);
+            await waitFor(() => {
+                const styledEl = document.querySelector('[data-inline-style="highlight"]');
+                expect(styledEl).toBeTruthy();
+                expect(styledEl).toHaveTextContent("hello");
+            });
+
+            await userEvent.click(highlightButton);
+            await waitFor(() => {
+                expect(document.querySelector("[data-inline-style]")).toBeNull();
+            });
+        });
+
+        await step("Subscript and 'Highlight' can be active at the same time — each is its own button, no menu to reopen in between", async () => {
+            await userEvent.click(subscriptButton);
+            await userEvent.click(highlightButton);
+
+            await waitFor(() => {
+                expect(document.querySelector("sub")).toHaveTextContent("hello");
+                expect(document.querySelector('[data-inline-style="highlight"]')).toHaveTextContent("hello");
+            });
+        });
+
+        await step("Switching to 'Tag' replaces 'Highlight' (both share the same inline-style mark) but leaves subscript untouched", async () => {
+            await userEvent.click(tagButton);
+
+            await waitFor(() => {
+                expect(document.querySelector('[data-inline-style="highlight"]')).toBeNull();
+                const tagEl = document.querySelector('[data-inline-style="tag"]');
+                expect(tagEl).toBeTruthy();
+                expect(tagEl).toHaveTextContent("hello");
+                expect(document.querySelector("sub")).toHaveTextContent("hello");
+            });
+        });
+    },
+};
+
 const InlineStylesMoreOptionsBlock = createTipTapRichTextBlock({
     inlineStyles: [
         {
@@ -933,6 +1072,67 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesMoreOptionsSto
                 },
                 { timeout: 3000 },
             );
+        });
+    },
+};
+
+const CombinedStylesBlock = createTipTapRichTextBlock({
+    textBlockStyles: [
+        {
+            name: "intro",
+            label: "Intro Text",
+            appliesTo: ["paragraph"],
+            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
+        },
+    ],
+    inlineStyles: [
+        {
+            name: "highlight",
+            label: "Highlight",
+            icon: RteHighlight,
+            element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
+        },
+        {
+            name: "tag",
+            label: "Tag",
+            icon: Tag,
+            element: (props: HTMLAttributes<HTMLElement>) => (
+                <span style={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: 4 }} {...props} />
+            ),
+        },
+    ],
+});
+
+function CombinedStylesStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(CombinedStylesBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <CombinedStylesBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const CombinedTextBlockAndInlineStyles: StoryObj<typeof CombinedStylesStory> = {
+    render: () => <CombinedStylesStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Editor is ready with the text block style dropdown and the inline styles in the More options menu", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+
+            // Heading select + text block style select — inline styles live in the "More options" menu, not a dropdown.
+            const comboboxes = canvas.getAllByRole("combobox");
+            expect(comboboxes.length).toBeGreaterThanOrEqual(2);
+
+            await userEvent.click(canvas.getByRole("button", { name: "More options" }));
+            await waitFor(() => {
+                expect(within(document.body).getByRole("menuitem", { name: "Highlight" })).toBeInTheDocument();
+                expect(within(document.body).getByRole("menuitem", { name: "Tag" })).toBeInTheDocument();
+            });
         });
     },
 };
@@ -1081,67 +1281,6 @@ export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
     },
 };
 
-const CombinedStylesBlock = createTipTapRichTextBlock({
-    textBlockStyles: [
-        {
-            name: "intro",
-            label: "Intro Text",
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
-        },
-    ],
-    inlineStyles: [
-        {
-            name: "highlight",
-            label: "Highlight",
-            icon: RteHighlight,
-            element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
-        },
-        {
-            name: "tag",
-            label: "Tag",
-            icon: Tag,
-            element: (props: HTMLAttributes<HTMLElement>) => (
-                <span style={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: 4 }} {...props} />
-            ),
-        },
-    ],
-});
-
-function CombinedStylesStory() {
-    const [state, setState] = useState<TipTapRichTextBlockState>(CombinedStylesBlock.defaultValues());
-
-    return (
-        <StoryWrapper state={state}>
-            <CombinedStylesBlock.AdminComponent state={state} updateState={setState} />
-        </StoryWrapper>
-    );
-}
-
-export const CombinedTextBlockAndInlineStyles: StoryObj<typeof CombinedStylesStory> = {
-    render: () => <CombinedStylesStory />,
-    play: async ({ canvas, userEvent, step }) => {
-        await step("Editor is ready with the text block style dropdown and the inline styles in the More options menu", async () => {
-            await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
-                },
-                { timeout: 5000 },
-            );
-
-            // Heading select + text block style select — inline styles live in the "More options" menu, not a dropdown.
-            const comboboxes = canvas.getAllByRole("combobox");
-            expect(comboboxes.length).toBeGreaterThanOrEqual(2);
-
-            await userEvent.click(canvas.getByRole("button", { name: "More options" }));
-            await waitFor(() => {
-                expect(within(document.body).getByRole("menuitem", { name: "Highlight" })).toBeInTheDocument();
-                expect(within(document.body).getByRole("menuitem", { name: "Tag" })).toBeInTheDocument();
-            });
-        });
-    },
-};
-
 // Simulates the surrounding admin UI, which scrolls the block's container rather than the block itself.
 const ScrollableContainer = styled("div")({
     height: 250,
@@ -1227,145 +1366,6 @@ export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
                 },
                 { timeout: 5000 },
             );
-        });
-    },
-};
-
-const InlineStylesBlock = createTipTapRichTextBlock({
-    supports: ["heading", "sub", "sup"],
-    inlineStyles: [
-        {
-            name: "highlight",
-            label: "Highlight",
-            icon: RteHighlight,
-            element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
-        },
-        {
-            name: "tag",
-            label: "Tag",
-            icon: Tag,
-            element: (props: HTMLAttributes<HTMLElement>) => (
-                <span style={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: 4 }} {...props} />
-            ),
-        },
-    ],
-});
-
-function InlineStylesStory() {
-    const [state, setState] = useState<TipTapRichTextBlockState>(InlineStylesBlock.defaultValues());
-
-    return (
-        <StoryWrapper state={state}>
-            <InlineStylesBlock.AdminComponent state={state} updateState={setState} />
-        </StoryWrapper>
-    );
-}
-
-export const InlineStyles: StoryObj<typeof InlineStylesStory> = {
-    render: () => <InlineStylesStory />,
-    play: async ({ canvas, userEvent, step }) => {
-        await step(
-            "Without bold/italic/underline/strike buttons, superscript/subscript/inline styles render as their own toolbar buttons instead of a 'More options' menu",
-            async () => {
-                await waitFor(
-                    () => {
-                        expect(canvas.getByRole("textbox")).toBeInTheDocument();
-                    },
-                    { timeout: 5000 },
-                );
-
-                expect(canvas.queryByRole("button", { name: "More options" })).not.toBeInTheDocument();
-                expect(canvas.getAllByRole("button")).toHaveLength(4);
-            },
-        );
-
-        const [superscriptButton, subscriptButton, highlightButton, tagButton] = canvas.getAllByRole("button");
-
-        await step("Highlight and tag buttons are enabled even without a selection, like superscript/subscript", async () => {
-            expect(superscriptButton).toBeEnabled();
-            expect(subscriptButton).toBeEnabled();
-            expect(highlightButton).toBeEnabled();
-            expect(tagButton).toBeEnabled();
-        });
-
-        await step("Type text and select it", async () => {
-            const editor = canvas.getByRole("textbox");
-            await userEvent.click(editor);
-            await userEvent.keyboard("hello");
-
-            await waitFor(
-                () => {
-                    expect(editor).toHaveTextContent("hello");
-                },
-                { timeout: 3000 },
-            );
-
-            // userEvent's Shift+Home isn't supported in contenteditable; use the native Selection API.
-            const range = document.createRange();
-            range.selectNodeContents(editor);
-            const selection = window.getSelection();
-            selection?.removeAllRanges();
-            selection?.addRange(range);
-        });
-
-        await step("Toggle superscript directly from the toolbar button", async () => {
-            await userEvent.click(superscriptButton);
-            await waitFor(() => {
-                expect(document.querySelector("sup")).toHaveTextContent("hello");
-            });
-
-            await userEvent.click(superscriptButton);
-            await waitFor(() => {
-                expect(document.querySelector("sup")).toBeNull();
-            });
-        });
-
-        await step("Toggle subscript directly from the toolbar button", async () => {
-            await userEvent.click(subscriptButton);
-            await waitFor(() => {
-                expect(document.querySelector("sub")).toHaveTextContent("hello");
-            });
-
-            await userEvent.click(subscriptButton);
-            await waitFor(() => {
-                expect(document.querySelector("sub")).toBeNull();
-            });
-        });
-
-        await step("Toggle the 'Highlight' inline style directly from the toolbar button", async () => {
-            await userEvent.click(highlightButton);
-            await waitFor(() => {
-                const styledEl = document.querySelector('[data-inline-style="highlight"]');
-                expect(styledEl).toBeTruthy();
-                expect(styledEl).toHaveTextContent("hello");
-            });
-
-            await userEvent.click(highlightButton);
-            await waitFor(() => {
-                expect(document.querySelector("[data-inline-style]")).toBeNull();
-            });
-        });
-
-        await step("Subscript and 'Highlight' can be active at the same time — each is its own button, no menu to reopen in between", async () => {
-            await userEvent.click(subscriptButton);
-            await userEvent.click(highlightButton);
-
-            await waitFor(() => {
-                expect(document.querySelector("sub")).toHaveTextContent("hello");
-                expect(document.querySelector('[data-inline-style="highlight"]')).toHaveTextContent("hello");
-            });
-        });
-
-        await step("Switching to 'Tag' replaces 'Highlight' (both share the same inline-style mark) but leaves subscript untouched", async () => {
-            await userEvent.click(tagButton);
-
-            await waitFor(() => {
-                expect(document.querySelector('[data-inline-style="highlight"]')).toBeNull();
-                const tagEl = document.querySelector('[data-inline-style="tag"]');
-                expect(tagEl).toBeTruthy();
-                expect(tagEl).toHaveTextContent("hello");
-                expect(document.querySelector("sub")).toHaveTextContent("hello");
-            });
         });
     },
 };

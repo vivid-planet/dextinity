@@ -1,0 +1,39 @@
+.scrollContainer {
+    opacity: 0;
+    transition:
+        opacity var(--animation-duration, 500ms) ease-in-out var(--animation-delay, 0ms),
+        transform var(--animation-transform-duration, 1000ms) cubic-bezier(0.22, 1, 0.36, 1) var(--animation-delay, 0ms);
+}
+
+.fullHeight {
+    height: 100%;
+}
+
+.fromLeft {
+    transform: translate3d(-40px, 0, 0);
+}
+
+.fromRight {
+    transform: translate3d(40px, 0, 0);
+}
+
+.fromTop {
+    transform: translate3d(0, -40px, 0);
+}
+
+.fromBottom {
+    transform: translate3d(0, 40px, 0);
+}
+
+.animate {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .scrollContainer {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+        transition: none;
+    }
+}

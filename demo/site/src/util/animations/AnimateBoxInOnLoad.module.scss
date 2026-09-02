@@ -1,0 +1,78 @@
+@keyframes fade-in-from-left {
+    from {
+        opacity: 0;
+        transform: translate3d(-30px, 0, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes fade-in-from-right {
+    from {
+        opacity: 0;
+        transform: translate3d(30px, 0, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes fade-in-from-top {
+    from {
+        opacity: 0;
+        transform: translate3d(0, -30px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes fade-in-from-bottom {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 30px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.root {
+    animation-duration: var(--animation-duration, 0.8s);
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: both;
+    animation-delay: var(--animation-delay, 0ms);
+}
+
+.fromLeft {
+    animation-name: fade-in-from-left;
+}
+
+.fromRight {
+    animation-name: fade-in-from-right;
+}
+
+.fromTop {
+    animation-name: fade-in-from-top;
+}
+
+.fromBottom {
+    animation-name: fade-in-from-bottom;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .root {
+        animation: none;
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}

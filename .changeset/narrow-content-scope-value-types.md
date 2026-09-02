@@ -17,14 +17,15 @@ Scope dimensions are now typed as `string | number | null | undefined`:
 
 **Migration**
 
-TypeScript only gives classes an index signature when it is declared explicitly, so scope classes in your application need one:
+TypeScript only gives classes an index signature when it is declared explicitly, so scope classes in your application need one.
+It can be narrower than the interface, so a scope with only string dimensions declares `[key: string]: string`:
 
 ```ts
 @Embeddable()
 @ObjectType("PageTreeNodeScope")
 @InputType("PageTreeNodeScopeInput")
 export class PageTreeNodeScope {
-    [key: string]: string | number | null | undefined;
+    [key: string]: string;
 
     @Property({ columnType: "text" })
     @Field()

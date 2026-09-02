@@ -6,7 +6,7 @@ import { IsString } from "class-validator";
 @ObjectType()
 @InputType("EmailCampaignContentScopeInput")
 export class EmailCampaignContentScope {
-    [key: string]: string | number | null | undefined;
+    [key: string]: string;
 
     @Property({ columnType: "text" })
     @Field()

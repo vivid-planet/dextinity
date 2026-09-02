@@ -1,7 +1,7 @@
 import { IsString, MaxLength } from "class-validator";
 
 export class EmailContactSubscribeScope {
-    [key: string]: string | number | null | undefined;
+    [key: string]: string;
 
     @IsString()
     @MaxLength(64)

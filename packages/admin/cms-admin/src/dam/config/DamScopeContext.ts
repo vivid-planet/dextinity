@@ -1,3 +1,5 @@
 import { createContext } from "react";
 
-export const DamScopeContext = createContext<Record<string, unknown>>({});
+import type { ContentScope } from "../../contentScope/Provider";
+
+export const DamScopeContext = createContext<ContentScope>({});

@@ -180,7 +180,7 @@ export function createFileEntity({ Scope, Folder }: { Scope?: Type<DamScopeInter
         class DamFile extends FileBase {
             @Embedded(() => Scope)
             @Field(() => Scope)
-            scope: typeof Scope;
+            scope: DamScopeInterface;
         }
         return DamFile;
     } else {

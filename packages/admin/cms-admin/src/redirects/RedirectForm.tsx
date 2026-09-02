@@ -24,6 +24,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { createFinalFormBlock } from "../blocks/form/createFinalFormBlock";
 import type { BlockInterface, BlockState } from "../blocks/types";
 import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
+import type { ContentScope } from "../contentScope/Provider";
 import type { GQLRedirectSourceType } from "../graphql.generated";
 import type { GQLRedirectSourceAvailableQuery, GQLRedirectSourceAvailableQueryVariables } from "./RedirectForm.generated";
 import { redirectDetailQuery } from "./RedirectForm.gql";
@@ -42,7 +43,7 @@ interface Props {
     id?: string;
     mode: "edit" | "add";
     linkBlock: BlockInterface;
-    scope: Record<string, unknown>;
+    scope: ContentScope;
 }
 
 export interface FormValues {

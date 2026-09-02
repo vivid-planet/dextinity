@@ -43,7 +43,7 @@ export function createFoldersResolver({
 
         @Query(() => [Folder])
         async damFoldersFlat(
-            @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: typeof Scope,
+            @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: DamScopeInterface,
         ): Promise<FolderInterface[]> {
             return this.foldersService.findAllFlat(nonEmptyScopeOrNothing(scope));
         }
@@ -75,7 +75,7 @@ export function createFoldersResolver({
         @SkipBuild()
         async createDamFolder(
             @Args("input", { type: () => CreateFolderInput }) input: CreateFolderInput,
-            @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: typeof Scope,
+            @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: DamScopeInterface,
         ): Promise<FolderInterface> {
             return this.foldersService.create(input, nonEmptyScopeOrNothing(scope));
         }
@@ -95,7 +95,7 @@ export function createFoldersResolver({
         async moveDamFolders(
             @Args("folderIds", { type: () => [ID] }) folderIds: string[],
             @Args("targetFolderId", { type: () => ID, nullable: true }) targetFolderId: string,
-            @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: typeof Scope,
+            @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: DamScopeInterface,
         ): Promise<FolderInterface[]> {
             return this.foldersService.moveBatch({ folderIds, targetFolderId }, nonEmptyScopeOrNothing(scope));
         }

@@ -97,7 +97,7 @@ export class RedirectEntityFactory {
             class Redirect extends RedirectBase {
                 @Embedded(() => RedirectScope)
                 @Field(() => RedirectScope)
-                scope: typeof RedirectScope;
+                scope: RedirectScopeInterface;
             }
             return Redirect;
         } else {

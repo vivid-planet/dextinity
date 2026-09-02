@@ -7,6 +7,8 @@ import { IsString } from "class-validator";
 @InputType("PageTreeNodeScopeInput") // name must not be changed in the app
 // @TODO: disguise @ObjectType("PageTreeContentScope") and @InputType("PageTreeContentScopeInput") decorators under a custom decorator: f.i. @PageTreeNodeScope
 export class PageTreeNodeScope {
+    [key: string]: string;
+
     @Property({ columnType: "text" })
     @Field()
     @IsString()

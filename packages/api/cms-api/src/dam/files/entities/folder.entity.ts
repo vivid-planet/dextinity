@@ -119,7 +119,7 @@ export function createFolderEntity({ Scope }: { Scope?: Type<DamScopeInterface> 
         class DamFolder extends FolderBase {
             @Embedded(() => Scope)
             @Field(() => Scope)
-            scope: typeof Scope;
+            scope: DamScopeInterface;
 
             @Field(() => DamFolder, { nullable: true })
             parent: DamFolder | null;

@@ -73,7 +73,7 @@ export function createBrevoConfigResolver({
         @Query(() => [BrevoApiSender], { nullable: true })
         async brevoSenders(
             @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope))
-            scope: typeof Scope,
+            scope: EmailCampaignScopeInterface,
         ): Promise<Array<BrevoApiSender> | undefined> {
             const senders = await this.brevoSenderApiService.getSenders(scope);
             return senders;
@@ -83,7 +83,7 @@ export function createBrevoConfigResolver({
         @Query(() => [BrevoApiEmailTemplate], { nullable: true })
         async brevoDoubleOptInTemplates(
             @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope))
-            scope: typeof Scope,
+            scope: EmailCampaignScopeInterface,
         ): Promise<Array<BrevoApiEmailTemplate> | undefined> {
             const { templates } = await this.brevoTransactionalEmailsApiService.getEmailTemplates(scope);
             const doubleOptInTemplates = templates?.filter((template) => template.tag === "optin" && template.isActive);
@@ -94,7 +94,7 @@ export function createBrevoConfigResolver({
         @RequiredPermission("brevoNewsletter")
         async isBrevoConfigDefined(
             @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope))
-            scope: typeof Scope,
+            scope: EmailCampaignScopeInterface,
         ): Promise<boolean> {
             const brevoConfig = await this.repository.findOne({ scope });
             return !!brevoConfig;
@@ -103,7 +103,7 @@ export function createBrevoConfigResolver({
         @Query(() => BrevoConfig, { nullable: true })
         async brevoConfig(
             @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope))
-            scope: typeof Scope,
+            scope: EmailCampaignScopeInterface,
         ): Promise<BrevoConfigInterface | null> {
             const brevoConfig = await this.repository.findOne({ scope });
             return brevoConfig;
@@ -112,7 +112,7 @@ export function createBrevoConfigResolver({
         @Mutation(() => BrevoConfig)
         async createBrevoConfig(
             @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope))
-            scope: typeof Scope,
+            scope: EmailCampaignScopeInterface,
             @Args("input", { type: () => BrevoConfigInput }) input: BrevoConfigInput,
         ): Promise<BrevoConfigInterface> {
             if (!(await this.brevoIsValidSender({ email: input.senderMail, name: input.senderName, scope }))) {

@@ -21,7 +21,7 @@ export function createFindCopiesOfFileInScopeArgs({ Scope, hasNonEmptyScope }: {
 
         @Field(() => Scope, { defaultValue: hasNonEmptyScope ? undefined : {} })
         @ValidateNested()
-        scope: typeof Scope;
+        scope: DamScopeInterface;
 
         @Field(() => ImageCropAreaInput, { nullable: true })
         @ValidateNested()

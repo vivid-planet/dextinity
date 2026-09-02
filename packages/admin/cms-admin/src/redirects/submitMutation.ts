@@ -3,6 +3,7 @@ import type { ApolloError } from "@apollo/client/errors";
 import type { FetchResult } from "@apollo/client/link/core";
 
 import type { BlockInterface } from "../blocks/types";
+import type { ContentScope } from "../contentScope/Provider";
 import type { GQLRedirectInput } from "../graphql.generated";
 import {
     createRedirectMutation,
@@ -28,7 +29,7 @@ export const useSubmitMutation = (
     mode: "edit" | "add",
     id: string | undefined,
     linkBlock: BlockInterface,
-    scope: Record<string, unknown>,
+    scope: ContentScope,
 ): [
     (values: FormValues) => Promise<FetchResult<GQLCreateRedirectMutation | GQLUpdateRedirectMutation>>,
     { loading: boolean; error: ApolloError | undefined },

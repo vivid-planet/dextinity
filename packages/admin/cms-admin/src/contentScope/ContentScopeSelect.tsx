@@ -60,8 +60,11 @@ export function ContentScopeSelect({
     if (searchable) {
         filteredOptions = options.filter((option) => {
             return (
-                Object.values(option.scope).some((value) => value.toLowerCase().includes(searchValue.toLowerCase())) ||
-                Object.values(option.label || []).some((value) => value?.toLowerCase().includes(searchValue.toLowerCase()))
+                Object.values(option.scope).some((value) =>
+                    String(value ?? "")
+                        .toLowerCase()
+                        .includes(searchValue.toLowerCase()),
+                ) || Object.values(option.label || []).some((value) => value?.toLowerCase().includes(searchValue.toLowerCase()))
             );
         });
     }
@@ -71,12 +74,13 @@ export function ContentScopeSelect({
     if (groupBy) {
         if (hasMultipleDimensions) {
             for (const option of filteredOptions) {
-                const groupForOption = groups.find((group) => group.value === option.scope[groupBy]);
+                const groupValue = String(option.scope[groupBy] ?? "");
+                const groupForOption = groups.find((group) => group.value === groupValue);
 
                 if (groupForOption) {
                     groupForOption.options.push(option);
                 } else {
-                    groups.push({ value: option.scope[groupBy], label: option.label ? option.label[groupBy] : undefined, options: [option] });
+                    groups.push({ value: groupValue, label: option.label ? option.label[groupBy] : undefined, options: [option] });
                 }
             }
         } else {
@@ -125,7 +129,7 @@ export function ContentScopeSelect({
     if (!renderSelectedOption) {
         renderSelectedOption = (option) => {
             return Object.keys(option.scope)
-                .map((key) => humanReadableLabel({ label: option.label ? option.label[key] : undefined, value: option.scope[key] }))
+                .map((key) => humanReadableLabel({ label: option.label ? option.label[key] : undefined, value: String(option.scope[key] ?? "") }))
                 .join(" / ");
         };
     }

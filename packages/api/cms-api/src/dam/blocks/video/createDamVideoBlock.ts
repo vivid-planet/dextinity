@@ -142,6 +142,8 @@ function createDamVideoBlockWithMigrations({
 
         previewImage?: ExtractBlockInput<typeof PixelImageBlock>;
 
+        @IsOptional()
+        @IsUUID()
         damFileId?: string;
 
         transformToBlockData(): BlockDataInterface {
@@ -163,16 +165,11 @@ function createDamVideoBlockWithMigrations({
         }
     }
 
-    // The child block decorators reject a missing preview image, so they may only be applied when it is
-    // supported. damFileId follows, because the block meta lists the fields in the order they are applied.
+    // The child block decorators reject a missing preview image, so they may only be applied when it is supported.
     if (supportsPreviewImage) {
         ChildBlock(PixelImageBlock)(DamVideoBlockData.prototype, "previewImage");
         ChildBlockInput(PixelImageBlock)(DamVideoBlockInput.prototype, "previewImage");
     }
-
-    IsUUID()(DamVideoBlockInput.prototype, "damFileId");
-    IsOptional()(DamVideoBlockInput.prototype, "damFileId");
-    BlockField({ type: "string", nullable: true })(DamVideoBlockInput.prototype, "damFileId");
 
     class Meta extends AnnotationBlockMeta {
         get fields(): BlockMetaField[] {
@@ -273,7 +270,14 @@ function createDamVideoBlockWithMigrations({
 
     class InputMeta extends AnnotationBlockMeta {
         get fields(): BlockMetaField[] {
-            return super.fields.filter(isSupported);
+            return [
+                ...super.fields.filter(isSupported),
+                {
+                    name: "damFileId",
+                    kind: BlockMetaFieldKind.String,
+                    nullable: true,
+                },
+            ];
         }
     }
 

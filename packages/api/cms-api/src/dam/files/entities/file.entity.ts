@@ -96,6 +96,7 @@ export function createFileEntity({ Scope, Folder }: { Scope?: Type<DamScopeInter
             joinColumn: "copyOfId",
             nullable: true,
         })
+        @Index()
         copyOf?: FileInterface;
 
         @OneToMany(FILE_ENTITY, (file: FileInterface) => file.copyOf)

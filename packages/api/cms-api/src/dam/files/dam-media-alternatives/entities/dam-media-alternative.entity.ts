@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, Enum, ManyToOne, PrimaryKey, Property, Ref } from "@mikro-orm/core";
+import { BaseEntity, Entity, Enum, Index, ManyToOne, PrimaryKey, Property, Ref } from "@mikro-orm/core";
 import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
@@ -35,6 +35,7 @@ export class DamMediaAlternative extends BaseEntity {
         deleteRule: "cascade",
         ref: true,
     })
+    @Index()
     for: Ref<FileInterface>;
 
     @ManyToOne({
@@ -43,5 +44,6 @@ export class DamMediaAlternative extends BaseEntity {
         deleteRule: "cascade",
         ref: true,
     })
+    @Index()
     alternative: Ref<FileInterface>;
 }

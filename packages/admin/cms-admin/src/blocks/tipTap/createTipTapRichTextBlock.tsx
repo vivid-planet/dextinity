@@ -643,6 +643,7 @@ const TipTapEditor = ({
                                 childBlocks,
                                 maxTextBlocks,
                                 listLevelMax,
+                                headingLevels,
                             }}
                         />
                     )}
@@ -660,7 +661,15 @@ interface TipTapContentTranslationDialogProps {
     onApplyTranslation: (content: JSONContent) => void;
     editorProps: Pick<
         TipTapEditorProps,
-        "supports" | "textBlockStyles" | "inlineStyles" | "placeholders" | "linkBlock" | "childBlocks" | "maxTextBlocks" | "listLevelMax"
+        | "supports"
+        | "textBlockStyles"
+        | "inlineStyles"
+        | "placeholders"
+        | "linkBlock"
+        | "childBlocks"
+        | "maxTextBlocks"
+        | "listLevelMax"
+        | "headingLevels"
     >;
 }
 

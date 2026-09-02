@@ -1350,6 +1350,61 @@ export const TranslationWithApplyDialog: StoryObj<typeof TranslationStory> = {
     },
 };
 
+const TranslationHeadingLevelsBlock = createTipTapRichTextBlock({ supports: ["heading"], headingLevels: [2, 3] });
+
+function TranslationHeadingLevelsStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(translationInitialState);
+
+    return (
+        <TranslationProvider showApplyTranslationDialog>
+            <StoryWrapper state={state}>
+                <TranslationHeadingLevelsBlock.AdminComponent state={state} updateState={setState} />
+            </StoryWrapper>
+        </TranslationProvider>
+    );
+}
+
+export const TranslationRespectsHeadingLevels: StoryObj<typeof TranslationHeadingLevelsStory> = {
+    render: () => <TranslationHeadingLevelsStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Editor is ready with a translate button", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("button")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("Open the translation review dialog", async () => {
+            await userEvent.click(canvas.getByRole("button"));
+
+            await waitFor(
+                () => {
+                    expect(within(document.body).getByRole("dialog")).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("The translated-side heading dropdown only offers Heading 2-3, matching the block's headingLevels", async () => {
+            const dialog = within(document.body).getByRole("dialog");
+            await userEvent.click(within(dialog).getByRole("combobox"));
+
+            await waitFor(
+                () => {
+                    const body = within(document.body);
+                    expect(body.getByText("Heading 2")).toBeInTheDocument();
+                    expect(body.getByText("Heading 3")).toBeInTheDocument();
+                    expect(body.queryByText("Heading 1")).not.toBeInTheDocument();
+                    expect(body.queryByText("Heading 4")).not.toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};
+
 const NoTranslateBlock = createTipTapRichTextBlock({ supports: [], disableContentTranslation: true });
 
 function NoTranslateStory() {

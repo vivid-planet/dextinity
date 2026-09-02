@@ -1,6 +1,6 @@
 {
     "name": "@comet/admin-icons",
-    "version": "8.30.1",
+    "version": "8.31.0",
     "description": "A collection of icons for Comet Admin",
     "repository": {
         "directory": "packages/admin/admin-icons",

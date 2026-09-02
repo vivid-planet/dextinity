@@ -1,6 +1,6 @@
 {
     "name": "@comet/admin-color-picker",
-    "version": "8.30.1",
+    "version": "8.31.0",
     "description": "Comet Admin Color Picker component",
     "repository": {
         "directory": "packages/admin/admin-color-picker",

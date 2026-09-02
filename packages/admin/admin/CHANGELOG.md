@@ -1,5 +1,15 @@
 # @comet/admin
 
+## 8.31.0
+
+### Patch Changes
+
+- be2d64f: Show the GraphQL error messages in the error dialog again
+
+    `createErrorDialogApolloLink` only passed the message of network errors to the `ErrorDialog`.
+    For GraphQL errors, the dialog showed "Unknown error" instead of the actual messages (e.g., the message of a `BadRequestException` thrown by the API).
+    - @comet/admin-icons@8.31.0
+
 ## 8.30.1
 
 ### Patch Changes

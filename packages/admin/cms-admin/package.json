@@ -1,6 +1,6 @@
 {
     "name": "@comet/cms-admin",
-    "version": "8.30.1",
+    "version": "8.31.0",
     "description": "Comet CMS Admin package",
     "repository": {
         "directory": "packages/admin/cms-admin",

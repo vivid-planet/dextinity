@@ -1,5 +1,7 @@
 # @comet/admin-generator
 
+## 8.31.0
+
 ## 8.30.1
 
 ## 8.30.0

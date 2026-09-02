@@ -13,6 +13,7 @@ Values that were stored before an option was left out are kept and saved again, 
 - `"previewImage"` — the poster image
 
 `DamVideoBlock` is now created from the factory with both supported and still exported next to it, so this is non-breaking. Since it occupies the block name `DamVideo`, a block created with the factory needs a name of its own.
+The name is passed as the second parameter, the same `nameOrOptions` the other block factories take, so it can carry a `migrate` option as well.
 
 **Example**
 

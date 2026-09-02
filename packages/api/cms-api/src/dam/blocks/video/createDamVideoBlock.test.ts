@@ -1,7 +1,21 @@
 import { describe, expect, it } from "vitest";
 
 import { transformToBlockSave } from "../../../blocks/block";
+import { BlockMigration } from "../../../blocks/migrations/BlockMigration";
+import type { BlockMigrationInterface } from "../../../blocks/migrations/types";
+import { typeSafeBlockMigrationPipe } from "../../../blocks/migrations/typeSafeBlockMigrationPipe";
 import { createDamVideoBlock, DamVideoBlock } from "./createDamVideoBlock";
+
+class AddLoopMigration
+    extends BlockMigration<(from: { damFileId?: string }) => { damFileId?: string; loop: boolean }>
+    implements BlockMigrationInterface
+{
+    public readonly toVersion = 1;
+
+    protected migrate(props: { damFileId?: string }) {
+        return { ...props, loop: true };
+    }
+}
 
 const damFileId = "0a3a4f9c-1b19-4f7e-bd0a-8e0b6b1a2c3d";
 
@@ -68,6 +82,15 @@ describe("createDamVideoBlock", () => {
         const block = createDamVideoBlock({}, "UnmigratedVideo");
 
         expect(transformToBlockSave(block.blockDataFactory({ damFileId }))).toEqual({ damFileId });
+    });
+
+    it("should apply migrations passed to the factory", () => {
+        const block = createDamVideoBlock(
+            {},
+            { name: "MigratedVideo", migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([AddLoopMigration]) } },
+        );
+
+        expect(transformToBlockSave(block.blockDataFactory({ damFileId }))).toEqual({ damFileId, loop: true, $$version: 1 });
     });
 
     it("should reject a name that is already registered", () => {

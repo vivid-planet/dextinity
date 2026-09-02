@@ -124,7 +124,7 @@ export const ContactFormBlock = withPreview(
         return (
             <PageLayout grid>
                 <Script src={`https://www.google.com/recaptcha/enterprise.js?render=${recaptchaSiteKey}`} />
-                <AnimateBoxInOnScroll direction="bottom" offset={300}>
+                <AnimateBoxInOnScroll direction="bottom" offset={300} className={styles.formWrapper}>
                     <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
                         <TextField
                             name="name"

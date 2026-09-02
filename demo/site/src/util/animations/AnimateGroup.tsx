@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 const breakpoints = {
     xs: 0,
@@ -14,6 +14,8 @@ interface AnimateGroupContextValue {
     visible: boolean;
     onVisible: () => void;
     disabled: boolean;
+    /** False until the breakpoint has been measured on the client. Children must not report visibility before that. */
+    initialized: boolean;
 }
 
 const AnimateGroupContext = createContext<AnimateGroupContextValue | null>(null);
@@ -48,19 +50,41 @@ function isInDisabledRange(width: number, ranges: Array<[number, number]>) {
 
 export function AnimateGroup({ children, disabledBreakpoints = [] }: { children: ReactNode; disabledBreakpoints?: BreakpointKey[] }) {
     const [visible, setVisible] = useState(false);
-    const onVisible = useCallback(() => setVisible(true), []);
-    const [disableAnimateGroup, setDisableAnimateGroup] = useState(false);
+    // null until measured: the width is only known on the client, and rendering it into the markup would break hydration.
+    const [disabled, setDisabled] = useState<boolean | null>(null);
+    const disabledRef = useRef<boolean | null>(null);
+
+    const onVisible = useCallback(() => {
+        // Ignore reports until the breakpoint is known, and while the group is disabled. Child effects run before the
+        // effect below, so an initially visible child would otherwise force every sibling visible at a disabled breakpoint.
+        if (disabledRef.current !== false) {
+            return;
+        }
+        setVisible(true);
+    }, []);
+
+    // The prop defaults to a new array on every render, so key the effect on its content instead of its identity.
+    const disabledBreakpointsKey = disabledBreakpoints.join(",");
+    const ranges = useMemo(
+        () => getDisabledRanges(disabledBreakpointsKey ? (disabledBreakpointsKey.split(",") as BreakpointKey[]) : []),
+        [disabledBreakpointsKey],
+    );
 
     useEffect(() => {
         function checkDisabledBreakpoints() {
-            const width = window.innerWidth;
-            const ranges = getDisabledRanges(disabledBreakpoints);
-            setDisableAnimateGroup(isInDisabledRange(width, ranges));
+            const isDisabled = isInDisabledRange(window.innerWidth, ranges);
+            disabledRef.current = isDisabled;
+            setDisabled(isDisabled);
         }
         checkDisabledBreakpoints();
         window.addEventListener("resize", checkDisabledBreakpoints);
         return () => window.removeEventListener("resize", checkDisabledBreakpoints);
-    }, [disabledBreakpoints]);
+    }, [ranges]);
 
-    return <AnimateGroupContext.Provider value={{ visible, onVisible, disabled: disableAnimateGroup }}>{children}</AnimateGroupContext.Provider>;
+    const value = useMemo(
+        () => ({ visible, onVisible, disabled: disabled ?? false, initialized: disabled !== null }),
+        [visible, onVisible, disabled],
+    );
+
+    return <AnimateGroupContext.Provider value={value}>{children}</AnimateGroupContext.Provider>;
 }

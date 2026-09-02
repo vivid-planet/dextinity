@@ -36,6 +36,7 @@ export function AnimateBoxInOnScroll({
     const animateGroup = useAnimateGroup();
     const refScrollContainer = useRef<HTMLDivElement | null>(null);
     const [triggerAnimation, setTriggerAnimation] = useState<boolean>(false);
+    const [visibleOnMount, setVisibleOnMount] = useState<boolean>(false);
     const { previewType } = usePreview();
     const windowSize = useWindowSize();
     const scrollSpeed = useGlobalScrollSpeed();
@@ -43,6 +44,8 @@ export function AnimateBoxInOnScroll({
     const groupForceVisible = animateGroup?.visible ?? false;
     const groupOnVisible = animateGroup?.onVisible;
     const groupDisabled = animateGroup?.disabled ?? false;
+    // Without a group there is nothing to wait for; with one, the breakpoint has to be measured first.
+    const groupInitialized = animateGroup?.initialized ?? true;
 
     // When AnimateGroup is used and disabled in some breakpoints,
     // the delay should be 0 to avoid raised delay on elements below each other
@@ -63,13 +66,19 @@ export function AnimateBoxInOnScroll({
         if (rect.top < window.innerHeight && rect.bottom > 0) {
             setTriggerAnimation(true);
             onChange?.(true);
-            if (!groupDisabled) {
-                groupOnVisible?.();
-            }
+            setVisibleOnMount(true);
         }
         // Mount-only: only the initial-in-view state should trigger this; re-running on prop changes would re-fire the animation.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    // Reporting to the group is deferred until it has measured its breakpoint. Child effects run before the group's,
+    // so notifying from the mount effect above would force the whole group visible even at a disabled breakpoint.
+    useEffect(() => {
+        if (visibleOnMount && groupInitialized && !groupDisabled) {
+            groupOnVisible?.();
+        }
+    }, [visibleOnMount, groupInitialized, groupDisabled, groupOnVisible]);
 
     useEffect(() => {
         const scrollContainer = refScrollContainer.current;

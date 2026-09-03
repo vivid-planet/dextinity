@@ -13,5 +13,9 @@ reviews:
                   FAIL if the PR touches authentication, authorization, DB migrations,
                   CI workflow files, or secret or credential handling, changes public API,
                   or deletes tests.
-                  FAIL if total changed lines exceed 300.
+                  FAIL if the PR adds or modifies more than 300 lines of hand-written source.
+                  When counting those lines, ignore deleted lines, and ignore changes to
+                  tests (*.spec.*, *.test.*, __snapshots__/), docs (docs/, *.md,
+                  .changeset/) and generated output (**/generated/, schema.gql,
+                  block-meta.json, pnpm-lock.yaml).
                   Otherwise PASS.

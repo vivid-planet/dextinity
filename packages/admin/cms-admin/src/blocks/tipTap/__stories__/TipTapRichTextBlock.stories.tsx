@@ -150,7 +150,7 @@ export const ReadOnly: Story = {
     },
 };
 
-const BoldOnlyBlock = createTipTapRichTextBlock({ supports: ["bold"] });
+const BoldOnlyBlock = createTipTapRichTextBlock({ supports: ["paragraph", "bold"] });
 
 function BoldOnlyStory() {
     const [state, setState] = useState<TipTapRichTextBlockState>(BoldOnlyBlock.defaultValues());
@@ -344,7 +344,7 @@ export const Placeholders: StoryObj<typeof PlaceholdersStory> = {
 };
 
 const PlaceholdersWithContentBlock = createTipTapRichTextBlock({
-    supports: ["bold", "italic"],
+    supports: ["paragraph", "bold", "italic"],
     placeholders: [
         { name: "firstName", label: "First Name" },
         { name: "lastName", label: "Last Name" },
@@ -567,7 +567,7 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
 };
 
 const ListTextBlockStylesBlock = createTipTapRichTextBlock({
-    supports: ["bold", "ordered-list", "unordered-list", "heading"],
+    supports: ["paragraph", "bold", "ordered-list", "unordered-list", "heading"],
     textBlockStyles: [
         {
             name: "intro",
@@ -1246,6 +1246,157 @@ export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
                     expect(firstParagraph.getBoundingClientRect().top).toBeLessThan(paragraphTopBeforeScroll);
                 },
                 { timeout: 5000 },
+            );
+        });
+    },
+};
+
+const HeadingOnlyBlock = createTipTapRichTextBlock({
+    supports: ["history", "heading", "bold", "italic"],
+    headingLevels: [2, 3, 4],
+    defaultHeadingLevel: 3,
+});
+
+function HeadingOnlyStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(HeadingOnlyBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <HeadingOnlyBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const HeadingOnly: StoryObj<typeof HeadingOnlyStory> = {
+    render: () => <HeadingOnlyStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Editor starts with a heading of the default level", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 3 })).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("Text block type dropdown only offers headings, no paragraph", async () => {
+            await userEvent.click(canvas.getByRole("combobox"));
+
+            await waitFor(
+                () => {
+                    const body = within(document.body);
+                    expect(body.getAllByRole("option").map((option) => option.textContent)).toEqual(["Heading 2", "Heading 3", "Heading 4"]);
+                },
+                { timeout: 3000 },
+            );
+
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
+        });
+
+        await step("Selected heading level is applied", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 2 })).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Keyboard shortcut switches the heading level instead of toggling to a paragraph", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Alt>}4{/Alt}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 4 })).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Typing into the heading works", async () => {
+            await userEvent.keyboard("Headline");
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 4 })).toHaveTextContent("Headline");
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};
+
+const HeadingOnlyWithTextBlockStylesBlock = createTipTapRichTextBlock({
+    supports: ["heading", "bold"],
+    headingLevels: [2, 3, 4],
+    defaultHeadingLevel: 3,
+    textBlockStyles: [
+        {
+            name: "headline550",
+            label: "Size 550",
+            appliesTo: ["heading-2", "heading-3", "heading-4"],
+            element: (props: HTMLAttributes<HTMLElement>) => <h2 style={{ fontSize: 40, lineHeight: 1.2 }} {...props} />,
+        },
+    ],
+});
+
+function HeadingOnlyWithTextBlockStylesStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(HeadingOnlyWithTextBlockStylesBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <HeadingOnlyWithTextBlockStylesBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const HeadingOnlyWithTextBlockStyles: StoryObj<typeof HeadingOnlyWithTextBlockStylesStory> = {
+    render: () => <HeadingOnlyWithTextBlockStylesStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Editor starts with a heading of the default level", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 3 })).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("Applying a text block style keeps the heading", async () => {
+            const comboboxes = canvas.getAllByRole("combobox");
+            expect(comboboxes[0]).toHaveTextContent("Heading 3");
+            await userEvent.click(comboboxes[1]);
+
+            await waitFor(
+                () => {
+                    expect(within(document.body).getByRole("option", { name: "Size 550" })).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+
+            await userEvent.click(within(document.body).getByRole("option", { name: "Size 550" }));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByText("Size 550")).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Typing into the styled heading works", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("Headline");
+
+            await waitFor(
+                () => {
+                    expect(editor).toHaveTextContent("Headline");
+                },
+                { timeout: 3000 },
             );
         });
     },

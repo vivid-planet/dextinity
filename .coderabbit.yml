@@ -3,3 +3,15 @@ reviews:
     auto_review:
         enabled: false
     high_level_summary_in_walkthrough: true
+    request_changes_workflow: true
+    pre_merge_checks:
+        override_requested_reviewers_only: true # author can't dismiss failing checks
+        custom_checks:
+            - name: "Requires human review"
+              mode: "error"
+              instructions: |
+                  FAIL if the PR touches authentication, authorization, DB migrations,
+                  CI workflow files, or secret or credential handling, changes public API,
+                  or deletes tests.
+                  FAIL if total changed lines exceed 300.
+                  Otherwise PASS.

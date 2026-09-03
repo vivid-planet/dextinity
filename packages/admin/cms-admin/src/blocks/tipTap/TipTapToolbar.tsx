@@ -19,6 +19,7 @@ import {
     RteUl,
     RteUnderlined,
     RteUndo,
+    Translate,
 } from "@dextinity/admin-icons";
 import {
     Box,
@@ -166,6 +167,8 @@ export const TipTapToolbar = ({
     childBlocks,
     listLevelMax,
     headingLevels = [1, 2, 3, 4, 5, 6],
+    canTranslate,
+    onTranslateClick,
 }: {
     editor: Editor;
     supports: TipTapSupports[];
@@ -176,6 +179,8 @@ export const TipTapToolbar = ({
     childBlocks: Record<string, TipTapChildBlock>;
     listLevelMax?: number;
     headingLevels?: number[];
+    canTranslate?: boolean;
+    onTranslateClick?: () => void;
 }) => {
     const intl = useIntl();
     const [moreAnchorEl, setMoreAnchorEl] = useState<null | HTMLElement>(null);
@@ -432,6 +437,16 @@ export const TipTapToolbar = ({
                             ))}
                         </Select>
                     </FormControl>
+                </ToolbarGroup>
+            )}
+            {canTranslate && (
+                <ToolbarGroup>
+                    <ToolbarButton
+                        editor={editor}
+                        icon={Translate}
+                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.translate.tooltip" defaultMessage="Translate" />}
+                        onToggle={() => onTranslateClick?.()}
+                    />
                 </ToolbarGroup>
             )}
             {(hasInlineFormatButtons || moreOptions) && (

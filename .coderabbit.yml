@@ -2,3 +2,4 @@
 reviews:
     auto_review:
         enabled: false
+    high_level_summary_in_walkthrough: true

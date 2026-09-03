@@ -1695,3 +1695,74 @@ export const TranslationPreservesFalsyLinkData: StoryObj<typeof TranslationFalsy
         });
     },
 };
+
+const TranslationPlaceholderBlock = createTipTapRichTextBlock({
+    supports: [],
+    placeholders: [{ name: "firstName", label: "First Name" }],
+});
+
+const translationPlaceholderInitialState: TipTapRichTextBlockState = {
+    tipTapContent: {
+        type: "doc",
+        content: [
+            {
+                type: "paragraph",
+                content: [
+                    { type: "text", text: "Hello " },
+                    { type: "placeholder", attrs: { name: "firstName" } },
+                    { type: "text", text: ", welcome." },
+                ],
+            },
+        ],
+    },
+};
+
+function TranslationPlaceholderStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(translationPlaceholderInitialState);
+
+    return (
+        <ContentTranslationServiceProvider enabled translate={identityTranslate}>
+            <StoryWrapper state={state}>
+                <TranslationPlaceholderBlock.AdminComponent state={state} updateState={setState} />
+            </StoryWrapper>
+        </ContentTranslationServiceProvider>
+    );
+}
+
+export const TranslationPreservesPlaceholders: StoryObj<typeof TranslationPlaceholderStory> = {
+    render: () => <TranslationPlaceholderStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Editor is ready with a translate button", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                    // Translate and Insert placeholder — the toolbar always renders translate first.
+                    expect(canvas.getAllByRole("button")).toHaveLength(2);
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("Translating reconstructs the placeholder from its data-name attribute, not its rendered {{name}} text", async () => {
+            const [translateButton] = canvas.getAllByRole("button");
+            await userEvent.click(translateButton);
+
+            await waitFor(
+                () => {
+                    const editor = canvas.getByRole("textbox");
+                    expect(within(editor).getByText("{{firstName}}")).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+
+            await waitFor(
+                () => {
+                    const state = JSON.parse(canvas.getByText(/"tipTapContent"/).textContent ?? "{}");
+                    const paragraph = state.tipTapContent.content[0];
+                    expect(paragraph.content).toContainEqual({ type: "placeholder", attrs: { name: "firstName" } });
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};

@@ -4,8 +4,13 @@ reviews:
         enabled: false
     high_level_summary_in_walkthrough: true
     request_changes_workflow: true
+    # We don't use GitHub issues and CodeRabbit has no access to Jira, so there is never a linked issue to assess or relate.
+    assess_linked_issues: false
+    related_issues: false
     pre_merge_checks:
         override_requested_reviewers_only: true # author can't dismiss failing checks
+        issue_assessment:
+            mode: "off"
         custom_checks:
             - name: "Requires human review"
               mode: "error"

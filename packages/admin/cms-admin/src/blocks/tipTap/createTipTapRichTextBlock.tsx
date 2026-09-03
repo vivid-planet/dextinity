@@ -28,7 +28,7 @@ import { TipTapToolbar } from "./TipTapToolbar";
 
 export type { JSONContent as TipTapRichTextBlockContent } from "@tiptap/core";
 
-export interface TipTapHeadingOptions {
+interface TipTapHeadingOptions {
     /**
      * Limits the selectable heading levels (1-6). Defaults to all levels ([1, 2, 3, 4, 5, 6]).
      * Must be a non-empty array of unique integers between 1 and 6, otherwise an error is thrown.
@@ -36,7 +36,7 @@ export interface TipTapHeadingOptions {
     levels?: number[];
 }
 
-export interface TipTapLinkOptions {
+interface TipTapLinkOptions {
     /**
      * Link block used for links inside the rich text.
      */
@@ -173,7 +173,7 @@ export interface TipTapChildBlock {
     display: "block" | "inline";
 }
 
-export interface TipTapRichTextBlockFactoryOptions {
+interface TipTapRichTextBlockFactoryOptions {
     /**
      * Enables undo/redo. Defaults to `true`.
      */

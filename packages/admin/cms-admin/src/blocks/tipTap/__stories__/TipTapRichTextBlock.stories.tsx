@@ -887,9 +887,13 @@ export const InlineStyles: StoryObj<typeof InlineStylesStory> = {
             // userEvent's Shift+Home isn't supported in contenteditable; use the native Selection API.
             const range = document.createRange();
             range.selectNodeContents(editor);
+            const selectionChanged = new Promise<void>((resolve) => document.addEventListener("selectionchange", () => resolve(), { once: true }));
             const selection = window.getSelection();
             selection?.removeAllRanges();
             selection?.addRange(range);
+
+            // jsdom fires `selectionchange` asynchronously, and TipTap only picks up the selection once that event fires.
+            await selectionChanged;
         });
 
         await step("Toggle superscript directly from the toolbar button", async () => {

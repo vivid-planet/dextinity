@@ -106,7 +106,7 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
 
     describe("with link block", () => {
         const LinkBlock = createLinkBlock({ supportedBlocks: { external: ExternalLinkBlock } }, "MigratedRichTextLink");
-        const block = createTipTapRichTextBlock({ link: LinkBlock, migrateFromDraftJs: true }, "MigratedRichTextWithLink");
+        const block = createTipTapRichTextBlock({ link: { block: LinkBlock }, migrateFromDraftJs: true }, "MigratedRichTextWithLink");
 
         it("converts DraftJS LINK entity to a link mark and a child block", () => {
             const data = block.blockDataFactory({

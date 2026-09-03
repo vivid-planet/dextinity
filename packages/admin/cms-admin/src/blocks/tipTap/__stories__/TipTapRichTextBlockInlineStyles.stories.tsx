@@ -34,7 +34,14 @@ const config: Meta<typeof InlineStylesBlockStory> = {
 export default config;
 
 const InlineStylesBlock = createTipTapRichTextBlock({
-    supports: ["heading", "sub", "sup"],
+    history: false,
+    bold: false,
+    italic: false,
+    strike: false,
+    orderedList: false,
+    unorderedList: false,
+    nonBreakingSpace: false,
+    softHyphen: false,
     inlineStyles: [
         {
             name: "highlight",

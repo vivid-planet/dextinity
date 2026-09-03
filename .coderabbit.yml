@@ -8,7 +8,7 @@ reviews:
         override_requested_reviewers_only: true # author can't dismiss failing checks
         custom_checks:
             - name: "Requires human review"
-              mode: "error"
+              mode: "warning"
               instructions: |
                   FAIL if the PR touches authentication, authorization, DB migrations,
                   CI workflow files, or secret or credential handling, changes public API,

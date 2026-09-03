@@ -7,14 +7,25 @@ import { useForm, useFormState } from "react-final-form";
 import { FormattedMessage } from "react-intl";
 
 import { BlockAdminComponentSection } from "../../blocks/common/BlockAdminComponentSection";
+import { formatAspectRatio, parseAspectRatio } from "../../common/image/aspectRatio";
 import { ChooseFocalPoint } from "../../common/image/ChooseFocalPoint";
+import { createInitialCrop, fullImageCrop } from "../../common/image/createInitialCrop";
 import type { EditImageFormValues } from "./EditFile";
 
 interface Props {
     disabled?: boolean;
+    /**
+     * Locks the crop area to a fixed aspect ratio, e.g. `"16x9"`, `"16/9"`, `"16:9"` or `16 / 9`.
+     */
+    aspectRatio?: string | number;
+    /**
+     * The image's dimensions in pixels. Needed to reset the crop area to a fixed aspect ratio, because the crop area is
+     * stored as a percentage of each axis.
+     */
+    image?: { width: number; height: number };
 }
 
-export function CropSettingsFields({ disabled }: Props): JSX.Element {
+export function CropSettingsFields({ disabled, aspectRatio, image }: Props): JSX.Element {
     const form = useForm<EditImageFormValues>();
     const {
         values: { focalPoint },
@@ -31,6 +42,9 @@ export function CropSettingsFields({ disabled }: Props): JSX.Element {
     const showChooseManualFocusPointButtons = focalPoint !== "SMART";
     const showResetCropAreaButton = focalPoint !== "SMART";
 
+    const aspect = aspectRatio !== undefined ? parseAspectRatio(aspectRatio) : undefined;
+    const resetCrop = image !== undefined ? createInitialCrop({ aspect, image }) : fullImageCrop;
+
     const Container = disabled ? DisabledFormSection : "div";
 
     return (
@@ -40,10 +54,18 @@ export function CropSettingsFields({ disabled }: Props): JSX.Element {
                     fullWidth
                     helperText={
                         <>
-                            <FormattedMessage
-                                id="dextinity.dam.file.croppingInfoText"
-                                defaultMessage="Cropping selects the maximum visible area. Depending on the aspect ratio, the image may be cropped further on the page."
-                            />
+                            {aspectRatio === undefined ? (
+                                <FormattedMessage
+                                    id="dextinity.dam.file.croppingInfoText"
+                                    defaultMessage="Cropping selects the maximum visible area. Depending on the aspect ratio, the image may be cropped further on the page."
+                                />
+                            ) : (
+                                <FormattedMessage
+                                    id="dextinity.dam.file.croppingInfoTextFixedAspectRatio"
+                                    defaultMessage="Cropping is locked to the {aspectRatio} aspect ratio the image is displayed in, so the page shows exactly the selected area."
+                                    values={{ aspectRatio: formatAspectRatio(aspectRatio) }}
+                                />
+                            )}
                             <br />
                             <br />
                             <FormattedMessage
@@ -88,13 +110,7 @@ export function CropSettingsFields({ disabled }: Props): JSX.Element {
                             <Button
                                 startIcon={<Reset />}
                                 onClick={() => {
-                                    onChange({
-                                        ...value,
-                                        width: 100,
-                                        height: 100,
-                                        x: 0,
-                                        y: 0,
-                                    });
+                                    onChange({ ...value, ...resetCrop });
                                 }}
                                 variant="outlined"
                             >

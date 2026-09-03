@@ -24,6 +24,8 @@ import type { ChangeEvent } from "react";
 import { Form } from "react-final-form";
 import { FormattedMessage } from "react-intl";
 
+import { formatAspectRatio, parseAspectRatio } from "../../common/image/aspectRatio";
+import { createInitialCrop } from "../../common/image/createInitialCrop";
 import { ImageCrop } from "../../common/image/ImageCrop";
 import { useContentScope } from "../../contentScope/Provider";
 import { CropSettingsFields } from "../../dam/FileForm/CropSettingsFields";
@@ -62,6 +64,10 @@ interface Props {
     };
     onSubmit: (cropArea: CropArea | undefined) => void;
     inheritedDamSettings?: { cropArea: CropArea };
+    /**
+     * Locks the crop area to a fixed aspect ratio, e.g. `"16x9"`, `"16/9"`, `"16:9"` or `16 / 9`.
+     */
+    aspectRatio?: string | number;
 }
 
 const DialogContent = styled(MuiDialogContent)`
@@ -71,7 +77,8 @@ const DialogContent = styled(MuiDialogContent)`
     padding-left: 40px;
 `;
 
-export function EditImageDialog({ image, initialValues, onSubmit, onClose, inheritedDamSettings, damFileId }: Props) {
+export function EditImageDialog({ image, initialValues, onSubmit, onClose, inheritedDamSettings, damFileId, aspectRatio }: Props) {
+    const aspect = aspectRatio !== undefined ? parseAspectRatio(aspectRatio) : undefined;
     const contentScope = useContentScope();
     const apolloClient = useApolloClient();
     const { entityDependencyMap } = useDependenciesConfig();
@@ -110,12 +117,7 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
             initialValues={{
                 useInheritedDamSettings: initialValues.useInheritedDamSettings,
                 focalPoint: initialValues.cropArea?.focalPoint ?? "SMART",
-                crop: {
-                    width: initialValues.cropArea?.width ?? 100,
-                    height: initialValues.cropArea?.height ?? 100,
-                    x: initialValues.cropArea?.x ?? 0,
-                    y: initialValues.cropArea?.y ?? 0,
-                },
+                crop: createInitialCrop({ cropArea: initialValues.cropArea, aspect, image }),
             }}
             initialValuesEqual={isEqual}
         >
@@ -159,7 +161,7 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                             </Grid>
                         </DialogTitle>
                         <DialogContent>
-                            <ImageCrop src={image.url} style={imageStyle} disabled={values.useInheritedDamSettings} />
+                            <ImageCrop src={image.url} style={imageStyle} disabled={values.useInheritedDamSettings} aspect={aspect} />
                             <div>
                                 {inheritedDamSettings !== undefined && (
                                     <>
@@ -177,6 +179,15 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                                                         />
                                                     }
                                                     type="checkbox"
+                                                    helperText={
+                                                        aspectRatio !== undefined && (
+                                                            <FormattedMessage
+                                                                id="dextinity.blocks.image.useInheritedDamSettings.fixedAspectRatioHint"
+                                                                defaultMessage="The crop area in the DAM has no fixed aspect ratio. Turning this on drops the {aspectRatio} aspect ratio for this image."
+                                                                values={{ aspectRatio: formatAspectRatio(aspectRatio) }}
+                                                            />
+                                                        )
+                                                    }
                                                 >
                                                     {({ input: { checked, onChange } }) => <YesNoSwitch checked={checked} onChange={onChange} />}
                                                 </Field>
@@ -214,7 +225,11 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                                     </>
                                 )}
                                 <Box padding={8}>
-                                    <CropSettingsFields disabled={inheritedDamSettings === undefined ? false : values.useInheritedDamSettings} />
+                                    <CropSettingsFields
+                                        disabled={inheritedDamSettings === undefined ? false : values.useInheritedDamSettings}
+                                        aspectRatio={aspectRatio}
+                                        image={image}
+                                    />
                                 </Box>
                             </div>
                         </DialogContent>

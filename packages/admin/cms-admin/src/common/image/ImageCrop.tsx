@@ -10,6 +10,8 @@ const focalPoints: GQLFocalPoint[] = ["CENTER", "NORTHEAST", "NORTHWEST", "SOUTH
 
 type ImageCropProps = {
     src: string;
+    /** Locks the crop area to this ratio, e.g. `16 / 9`. Unconstrained when undefined. */
+    aspect?: ReactCropProps["aspect"];
     disabled?: ReactCropProps["disabled"];
     style?: ReactCropProps["style"];
 };

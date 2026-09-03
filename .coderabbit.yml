@@ -15,9 +15,16 @@ reviews:
             - name: "Requires human review"
               mode: "error"
               instructions: |
-                  FAIL if the PR touches authentication, authorization, DB migrations,
-                  CI workflow files, or secret or credential handling, changes public API,
-                  or deletes tests.
+                  FAIL if the PR touches one of the following:
+                      - authentication
+                      - authorization
+                      - DB migrations
+                      - CI workflow files
+                      - secret or credential handling
+                      - changes public API
+                      - deletes tests
+                      - coderabbit config
+                      
                   FAIL if the PR adds or modifies more than 300 lines of hand-written source.
                   When counting those lines, ignore deleted lines, and ignore changes to
                   tests (*.spec.*, *.test.*, __snapshots__/), docs (docs/, *.md,

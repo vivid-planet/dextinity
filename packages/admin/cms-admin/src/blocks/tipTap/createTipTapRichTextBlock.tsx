@@ -476,6 +476,7 @@ const TipTapEditor = ({
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
+                undoRedo: features.history ? {} : false,
                 bold: features.bold ? {} : false,
                 italic: features.italic ? {} : false,
                 underline: features.underline ? {} : false,

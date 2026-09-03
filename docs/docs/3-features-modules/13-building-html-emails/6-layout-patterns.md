@@ -173,9 +173,16 @@ To place the small column on the right instead, swap the column order and move t
 
 Fixed-width columns create an overflow problem between the desktop `bodyWidth` and the mobile stacking breakpoint — the total fixed width can exceed the viewport. The solution uses two `belowMediaQuery` breakpoints stacked via CSS cascade order.
 
-Inside a group a pixel width is written inline as a percentage of the section, so the fixed column also needs its pixel width back below `bodyWidth`, where the section is narrower:
+Inside a group a pixel width is written inline as a percentage of the section, so the fixed column also needs its pixel width back below `bodyWidth`, where the section is narrower.
+
+The fluid column takes the space the fixed column leaves. A `calc()` expresses that directly, but some clients drop every declaration that contains one — see [No CSS `calc()`](./1-email-basics.md#no-css-calc). To cover them, repeat the width as a plain percentage in the same rule, before the `calc()`. Clients that support `calc()` apply the later declaration; the rest keep the percentage.
+
+The percentage cannot adapt, so pick one that fits the narrowest section the media query reaches — the section at the mobile breakpoint — and round it down. If the fixed column and the percentage together are even a fraction of a pixel wider than the section, the fluid column drops onto its own line.
 
 ```ts
+const narrowestSectionInnerWidth = theme.breakpoints.mobile.value - 2 * sectionIndent;
+const fluidColumnFallbackWidth = `${Math.floor(((narrowestSectionInnerWidth - SMALL_COLUMN_WIDTH) / narrowestSectionInnerWidth) * 100)}%`;
+
 registerStyles(
     (theme) => css`
         ${theme.breakpoints.default.belowMediaQuery} {
@@ -185,6 +192,8 @@ registerStyles(
             }
 
             .imageTextLayout__fluidColumn {
+                width: ${fluidColumnFallbackWidth} !important;
+                max-width: ${fluidColumnFallbackWidth} !important;
                 width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
                 max-width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
             }

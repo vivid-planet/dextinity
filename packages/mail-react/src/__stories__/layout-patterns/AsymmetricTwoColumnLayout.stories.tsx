@@ -32,6 +32,10 @@ const sectionIndent = getDefaultFromResponsiveValue(theme.sizes.contentIndentati
 const sectionInnerWidth = theme.sizes.bodyWidth - 2 * sectionIndent;
 const fluidColumnWidth = sectionInnerWidth - SMALL_COLUMN_WIDTH;
 
+// Yahoo Mail and Outlook.com drop the calc() below, so this percentage takes over there. Floored, so the two columns never total more than the section.
+const narrowestSectionInnerWidth = theme.breakpoints.mobile.value - 2 * sectionIndent;
+const fluidColumnFallbackWidth = `${Math.floor(((narrowestSectionInnerWidth - SMALL_COLUMN_WIDTH) / narrowestSectionInnerWidth) * 100)}%`;
+
 registerStyles(
     (theme) => css`
         ${theme.breakpoints.default.belowMediaQuery} {
@@ -41,6 +45,8 @@ registerStyles(
             }
 
             .asymmetricLayoutLeft__fluidColumn {
+                width: ${fluidColumnFallbackWidth} !important;
+                max-width: ${fluidColumnFallbackWidth} !important;
                 width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
                 max-width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
             }
@@ -126,6 +132,8 @@ registerStyles(
             }
 
             .asymmetricLayoutRight__fluidColumn {
+                width: ${fluidColumnFallbackWidth} !important;
+                max-width: ${fluidColumnFallbackWidth} !important;
                 width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
                 max-width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
             }
@@ -211,6 +219,8 @@ registerStyles(
             }
 
             .asymmetricLayoutRtl__fluidColumn {
+                width: ${fluidColumnFallbackWidth} !important;
+                max-width: ${fluidColumnFallbackWidth} !important;
                 width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
                 max-width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
             }

@@ -96,3 +96,27 @@ Everything else, buttons and containers included, needs a [VML](https://learn.mi
 Set `arcsize` to the corner radius divided by the shorter side, capped at `50%` — `8px` on a `44px`-high button gives `18%`. Do not take the value from the VML specification; it is twice what Outlook needs.
 
 Campaign Monitor's [Bulletproof Email Buttons](https://www.buttons.cm/) generator and the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach) are good starting points for this technique.
+
+### No CSS `calc()`
+
+Yahoo Mail (webmail and both mobile apps) and Outlook.com drop every declaration whose value contains a `calc()`, single-unit expressions such as `calc(300px - 200px)` included. The declaration disappears, so the element keeps the value the `calc()` was meant to override — a plausible wrong width rather than no width, which makes the defect hard to recognize.
+
+Where an element has to fill the space next to a fixed-width one, let the table compute the width: the fixed cells get their pixel width, and the flexible cell gets `width="100%"`, so the table gives it whatever the fixed cells leave — [Good Email Code](https://www.goodemailcode.com/email-code/columns.html) has the markup. It needs no arithmetic and holds in every client, classic Outlook included.
+
+Where a `calc()` is unavoidable, put a plain value before it in the same rule. A client that drops the `calc()` keeps the first declaration:
+
+```css
+.fluidColumn {
+    width: 40% !important;
+    width: calc(100% - 192px) !important;
+}
+```
+
+Choose that fallback so the row still fits at the narrowest viewport the media query covers, otherwise the columns wrap. The [asymmetric two-column layout](./6-layout-patterns.md#two-breakpoint-responsive-behavior) uses this fallback.
+
+### `height` Becomes `min-height` in Yahoo Mail
+
+Yahoo Mail rewrites `height` into `min-height`. `min-height` is only a lower limit — it can make an element taller, never shorter — and on a `<td>` it does nothing at all. That leads to two failures:
+
+- An `<img>` that a media query shrinks with `height` keeps its original size. Use `max-height` instead.
+- A row whose height comes only from `height` on a `<td>` collapses to nothing, and the cell's background disappears with it. Put the height on a `<div>` inside the cell, or use padding.

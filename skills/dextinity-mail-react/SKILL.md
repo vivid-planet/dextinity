@@ -192,6 +192,28 @@ Set `arcsize` to the corner radius divided by the shorter side, capped at `50%` 
 
 See the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
 
+### No CSS `calc()`
+
+Yahoo Mail (webmail and both mobile apps) and Outlook.com drop every declaration whose value contains a `calc()`, single-unit expressions such as `calc(300px - 200px)` included. The declaration disappears, so the element keeps the value the `calc()` was meant to override — a plausible wrong width rather than no width.
+
+Where an element has to fill the space next to a fixed-width one, let the table compute the width: the fixed cells get their pixel width, and the flexible cell gets `width="100%"`, so the table gives it whatever the fixed cells leave ([Good Email Code](https://www.goodemailcode.com/email-code/columns.html)). Where a `calc()` is unavoidable, put a plain value before it in the same rule, chosen so the row still fits at the narrowest viewport the media query covers:
+
+```css
+.fluidColumn {
+    width: 40% !important;
+    width: calc(100% - 192px) !important;
+}
+```
+
+The asymmetric two-column layout in [`references/layout-patterns.md`](references/layout-patterns.md) uses this fallback.
+
+### `height` Becomes `min-height` in Yahoo Mail
+
+Yahoo Mail rewrites `height` into `min-height`, which is only a lower limit — it can make an element taller, never shorter — and does nothing at all on a `<td>`:
+
+- An `<img>` that a media query shrinks with `height` keeps its original size — use `max-height`.
+- A row whose height comes only from `height` on a `<td>` collapses to nothing, and the cell's background disappears with it — put the height on a `<div>` inside the cell, or use padding.
+
 ---
 
 ## Theme Setup & Type-Safety

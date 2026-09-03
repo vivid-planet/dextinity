@@ -236,9 +236,16 @@ To place the small column on the right, swap column order and move padding to `p
 
 Fixed-width columns overflow between `bodyWidth` and the mobile stacking breakpoint. Use two stacked `belowMediaQuery` blocks — the later one overrides the earlier via cascade order.
 
-Inside a group a pixel width is written inline as a percentage of the section, so the fixed column also needs its pixel width back below `bodyWidth`, where the section is narrower:
+Inside a group a pixel width is written inline as a percentage of the section, so the fixed column also needs its pixel width back below `bodyWidth`, where the section is narrower.
+
+The fluid column takes the space the fixed column leaves. A `calc()` expresses that directly, but some clients drop every declaration that contains one — see [No CSS `calc()`](../SKILL.md#no-css-calc). Repeat the width as a plain percentage in the same rule, before the `calc()`: clients that support `calc()` apply the later declaration, the rest keep the percentage.
+
+Pick a percentage that fits the narrowest section the media query reaches — the section at the mobile breakpoint — and round it down, so the fixed column and the percentage never total more than the section.
 
 ```ts
+const narrowestSectionInnerWidth = theme.breakpoints.mobile.value - 2 * sectionIndent;
+const fluidColumnFallbackWidth = `${Math.floor(((narrowestSectionInnerWidth - SMALL_COLUMN_WIDTH) / narrowestSectionInnerWidth) * 100)}%`;
+
 registerStyles(
     (theme) => css`
         ${theme.breakpoints.default.belowMediaQuery} {
@@ -248,6 +255,8 @@ registerStyles(
             }
 
             .imageTextLayout__fluidColumn {
+                width: ${fluidColumnFallbackWidth} !important;
+                max-width: ${fluidColumnFallbackWidth} !important;
                 width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
                 max-width: calc(100% - ${SMALL_COLUMN_WIDTH}px) !important;
             }

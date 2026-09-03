@@ -276,6 +276,8 @@ registerStyles(
 
 This keeps responsive styles in sync with the theme's breakpoint configuration.
 
+Two client behaviors matter for responsive overrides: Yahoo Mail and Outlook.com drop any declaration that contains a [`calc()`](../SKILL.md#no-css-calc), and Yahoo Mail rewrites [`height` into `min-height`](../SKILL.md#height-becomes-min-height-in-yahoo-mail).
+
 ---
 
 ## Overriding Built-In Components

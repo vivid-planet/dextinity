@@ -133,8 +133,30 @@ import CropAreaDamSiteAspectRatios from "./images/crop-area-dam-site-aspect-rati
 <figcaption>The crop area is set only to consider the astronaut's helmet</figcaption>
 </figure>
 
+## Fixed aspect ratio in an image block
+
+The crop area in the DAM has no aspect ratio constraint, because the same file can be used at several aspect ratios.
+An image block that is always rendered at one aspect ratio can constrain its own crop area, so that editors drag a rectangle of the shape the site displays.
+`createDamImageBlock` and `createPixelImageBlock` take that aspect ratio:
+
+```tsx title="TeaserBlock.tsx"
+const TeaserImageBlock = createDamImageBlock({ aspectRatio: "16x9" });
+```
+
+`aspectRatio` accepts a number, or a string in `16x9`, `16/9` or `16:9` notation, so it can be written the same way as the site's `aspectRatio` prop.
+
+The crop dialog then opens with the largest 16:9 rectangle in the middle of the image, and "Reset crop area" restores it.
+A crop area an editor has already set keeps its position and only its shape is corrected.
+The image field and the crop dialog name the aspect ratio, so editors see it before they crop.
+
+Two settings ignore `aspectRatio`:
+
+-   The smart focus point stores no crop area, so imgproxy picks the region and the admin shows no crop rectangle. The image in the site still has the requested aspect ratio.
+-   "Use inherited DAM settings" makes the block use the DAM file's crop area, which has no aspect ratio constraint. `aspectRatio` applies to the block's own crop area only, and the crop dialog warns about it next to the switch.
+
 ## Summary
 
 -   The same image in the DAM can be cropped differently in the site based on the aspect ratio.
 -   Editors can control the image area displayed using the DAM's focus point and crop area features.
 -   The site can specify the aspect ratio by setting the `resizeWidth` and `resizeHeight` parameters in the image URL template.
+-   An image block that is always rendered at one aspect ratio can lock its crop area to that aspect ratio.

@@ -116,14 +116,18 @@ Do not use an aspect ratio string that is not in `allowedImageAspectRatios`; the
 
 ### Usage Pattern
 
+When the site renders the image at a single aspect ratio, pass it to `createDamImageBlock` (or `createPixelImageBlock`) too, so the crop area in the admin matches the shape the site displays:
+
 ```ts
 // API
 @ChildBlock(DamImageBlock)
 image: BlockDataInterface;
 
 // Admin
+const MyImageBlock = createDamImageBlock({ aspectRatio: "16x9" });
+
 image: {
-    block: DamImageBlock,
+    block: MyImageBlock,
     title: <FormattedMessage id="myBlock.image" defaultMessage="Image" />,
 },
 

@@ -1350,6 +1350,36 @@ export const TranslationWithApplyDialog: StoryObj<typeof TranslationStory> = {
     },
 };
 
+const NoTranslateBlock = createTipTapRichTextBlock({ supports: [], disableContentTranslation: true });
+
+function NoTranslateStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(translationInitialState);
+
+    return (
+        <TranslationProvider>
+            <StoryWrapper state={state}>
+                <NoTranslateBlock.AdminComponent state={state} updateState={setState} />
+            </StoryWrapper>
+        </TranslationProvider>
+    );
+}
+
+export const TranslationDisabled: StoryObj<typeof NoTranslateStory> = {
+    render: () => <NoTranslateStory />,
+    play: async ({ canvas, step }) => {
+        await step("Translate button does not render, even though the translation context is enabled", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+
+            expect(canvas.queryByRole("button")).not.toBeInTheDocument();
+        });
+    },
+};
+
 const TranslationHeadingLevelsBlock = createTipTapRichTextBlock({ supports: ["heading"], headingLevels: [2, 3] });
 
 function TranslationHeadingLevelsStory() {
@@ -1401,36 +1431,6 @@ export const TranslationRespectsHeadingLevels: StoryObj<typeof TranslationHeadin
                 },
                 { timeout: 3000 },
             );
-        });
-    },
-};
-
-const NoTranslateBlock = createTipTapRichTextBlock({ supports: [], disableContentTranslation: true });
-
-function NoTranslateStory() {
-    const [state, setState] = useState<TipTapRichTextBlockState>(translationInitialState);
-
-    return (
-        <TranslationProvider>
-            <StoryWrapper state={state}>
-                <NoTranslateBlock.AdminComponent state={state} updateState={setState} />
-            </StoryWrapper>
-        </TranslationProvider>
-    );
-}
-
-export const TranslationDisabled: StoryObj<typeof NoTranslateStory> = {
-    render: () => <NoTranslateStory />,
-    play: async ({ canvas, step }) => {
-        await step("Translate button does not render, even though the translation context is enabled", async () => {
-            await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
-                },
-                { timeout: 5000 },
-            );
-
-            expect(canvas.queryByRole("button")).not.toBeInTheDocument();
         });
     },
 };
@@ -1763,6 +1763,70 @@ export const TranslationPreservesPlaceholders: StoryObj<typeof TranslationPlaceh
                 },
                 { timeout: 3000 },
             );
+        });
+    },
+};
+
+// `translate` is typed as an unconstrained (text: string) => Promise<string>, so nothing in the type
+// system rules out an implementation like this one, which mangles the HTML itself instead of only the
+// human-readable text. It stands in for any non-HTML-aware translator someone could plug in.
+const corruptingTranslate = async (html: string): Promise<string> => html.toUpperCase();
+
+const TranslationRejectsCorruptingTranslateBlock = createTipTapRichTextBlock({ supports: [], link: FalsyDataLinkBlock });
+
+const translationCorruptionInitialState: TipTapRichTextBlockState = {
+    tipTapContent: {
+        type: "doc",
+        content: [
+            {
+                type: "paragraph",
+                content: [
+                    { type: "text", text: "Before " },
+                    { type: "text", marks: [{ type: "link", attrs: { data: { url: "https://example.com" } } }], text: "link" },
+                    { type: "text", text: " after" },
+                ],
+            },
+        ],
+    },
+};
+
+function TranslationRejectsCorruptingTranslateStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(translationCorruptionInitialState);
+
+    return (
+        <ContentTranslationServiceProvider enabled translate={corruptingTranslate}>
+            <StoryWrapper state={state}>
+                <TranslationRejectsCorruptingTranslateBlock.AdminComponent state={state} updateState={setState} />
+            </StoryWrapper>
+        </ContentTranslationServiceProvider>
+    );
+}
+
+export const TranslationRejectsCorruptingTranslate: StoryObj<typeof TranslationRejectsCorruptingTranslateStory> = {
+    render: () => <TranslationRejectsCorruptingTranslateStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Editor is ready with a translate button", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                    // Translate, Link and Remove Link — the toolbar always renders translate first.
+                    expect(canvas.getAllByRole("button")).toHaveLength(3);
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("A translate function that mangles HTML markup is rejected instead of silently corrupting the link data", async () => {
+            const [translateButton] = canvas.getAllByRole("button");
+            await userEvent.click(translateButton);
+
+            // There is no visible error UI in this Storybook setup (no <ErrorDialog/> mounted), so the
+            // only observable signal is the absence of a state change. Give the rejected translate()
+            // call time to run and confirm it did not apply anyway.
+            await new Promise((resolve) => setTimeout(resolve, 500));
+
+            const state = JSON.parse(canvas.getByText(/"tipTapContent"/).textContent ?? "{}");
+            expect(state.tipTapContent).toEqual(translationCorruptionInitialState.tipTapContent);
         });
     },
 };

@@ -384,6 +384,18 @@ async function translateTipTapContentAsync(
     const { content: sanitizedContent, externalized } = externalizeBlockDataForHtml(content);
     const html = generateHTML(sanitizedContent, extensions);
     const translatedHtml = await translate(html);
+
+    // `translate` is typed as an unconstrained string transformer, so nothing guarantees the
+    // implementation leaves markup and attribute values alone (a naive one could, e.g., uppercase
+    // the whole HTML string). Verify the placeholder ids survived verbatim before trusting the
+    // result — restoring link/child-block data by a mangled id would otherwise silently corrupt it.
+    const corruptedId = externalized.find((item) => !translatedHtml.includes(item.id));
+    if (corruptedId) {
+        throw new Error(
+            "Translation result is missing an expected placeholder id. The translate function must preserve HTML markup and attribute values unchanged, translating only text content.",
+        );
+    }
+
     const translatedContent = generateJSON(translatedHtml, extensions) as JSONContent;
     return restoreBlockDataFromHtml(translatedContent, externalized);
 }

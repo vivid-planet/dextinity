@@ -1,6 +1,7 @@
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { DynamicModule, Global, Module, Type, ValueProvider } from "@nestjs/common";
+import { TypeMetadataStorage } from "@nestjs/graphql";
 
 import { DependenciesResolverFactory } from "../dependencies/dependencies.resolver.factory";
 import { DependentsResolverFactory } from "../dependencies/dependents.resolver.factory";
@@ -87,6 +88,25 @@ export class PageTreeModule {
                   PaginatedPageTreeNodes,
               })
             : null;
+
+        if (Scope) {
+            // Scope validation needs to happen after resolver generation. Otherwise the input type metadata has not been defined yet.
+            const scopeObjectType = TypeMetadataStorage.getObjectTypeMetadataByTarget(Scope);
+
+            if (scopeObjectType?.name !== "PageTreeNodeScope") {
+                throw new Error(
+                    `Invalid object type name for provided page tree scope class. Make sure to decorate the class with @ObjectType("PageTreeNodeScope")`,
+                );
+            }
+
+            const scopeInputType = TypeMetadataStorage.getInputTypeMetadataByTarget(Scope);
+
+            if (scopeInputType?.name !== "PageTreeNodeScopeInput") {
+                throw new Error(
+                    `Invalid input type name for provided page tree scope class. Make sure to decorate the class with @InputType("PageTreeNodeScopeInput")`,
+                );
+            }
+        }
 
         const repositoryProvider = {
             provide: PAGE_TREE_REPOSITORY,

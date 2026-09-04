@@ -53,3 +53,15 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
                   HUSKY: 0 # https://typicode.github.io/husky/#/?id=with-env-variables
+
+            # Catches a silently broken guard on the tag step above: without this, a wrong tag
+            # would go unnoticed again.
+            - name: Verify the release tag
+              if: ${{ steps.changesets.outputs.published == 'true' }}
+              run: |
+                  git fetch --force origin "refs/tags/v$PUBLISHED_VERSION:refs/tags/v$PUBLISHED_VERSION"
+                  TAGGED_SHA=$(git rev-parse "v$PUBLISHED_VERSION^{commit}")
+                  if [ "$TAGGED_SHA" != "$GITHUB_SHA" ]; then
+                      echo "::error::Publishing succeeded, but tag v$PUBLISHED_VERSION points at $TAGGED_SHA instead of the released commit $GITHUB_SHA. Move the tag, then check the condition of the \"Create tag on released commit\" step."
+                      exit 1
+                  fi

@@ -1,5 +1,12 @@
 # @comet/site-nextjs
 
+## 10.4.0
+
+### Patch Changes
+
+- Updated dependencies [0e88bab]
+    - @dextinity/site-react@10.4.0
+
 ## 10.3.0
 
 ### Patch Changes

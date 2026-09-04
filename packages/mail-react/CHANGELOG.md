@@ -1,5 +1,16 @@
 # @comet/mail-react
 
+## 10.4.0
+
+### Patch Changes
+
+- 98c1097: Fix head CSS lost after the first `@media` block in Outlook.com and the Outlook apps for iOS and Android
+
+    These clients stop reading a `<style>` tag at the first `}}`, which minified CSS writes at the end of every `@media` block.
+
+- bb5d22a: Apply the Storybook addon's **"Use public image URLs"** toggle to the Outlook VML image source
+- 583dd13: Fix `borderRadius` on images in classic Outlook, which rounded corners twice as much as the value asked for
+
 ## 10.3.0
 
 ### Patch Changes

@@ -239,7 +239,7 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new ForbiddenException();
             }
 
-            res.setHeader("Content-Disposition", "attachment");
+            res.setHeader("Content-Disposition", `attachment; filename="${this.contentDispositionFilename(file.name)}"`);
             return this.streamFile(file, res, { range, overrideHeaders: { "cache-control": "max-age=31536000, private" } }); // Local caches only (1 year)
         }
 
@@ -264,7 +264,7 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
-            res.setHeader("Content-Disposition", "attachment");
+            res.setHeader("Content-Disposition", `attachment; filename="${this.contentDispositionFilename(file.name)}"`);
             return this.streamFile(file, res, { range, overrideHeaders: { "cache-control": "max-age=31536000, s-maxage=86400, public" } }); // Public cache, 1 year for browsers, 1 day for proxies/cdn's
         }
 
@@ -299,6 +299,13 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
 
         private isValidHash(hash: string, fileParams: FileParams): boolean {
             return hash === this.filesService.createHash(fileParams);
+        }
+
+        // Strips quotes/backslash plus all ASCII control characters (e.g. NUL), which would otherwise make
+        // `res.setHeader` throw `ERR_INVALID_CHAR` below and fail the download.
+        private contentDispositionFilename(filename: string): string {
+            // eslint-disable-next-line no-control-regex
+            return filename.replace(/["\\\x00-\x1F\x7F]/g, "");
         }
 
         private async streamFile(

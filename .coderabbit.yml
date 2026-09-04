@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+reviews:
+    auto_review:
+        enabled: false
+    high_level_summary_in_walkthrough: true
+    request_changes_workflow: true
+    # We don't use GitHub issues and CodeRabbit has no access to Jira, so there is never a linked issue to assess or relate.
+    assess_linked_issues: false
+    related_issues: false
+    pre_merge_checks:
+        override_requested_reviewers_only: true # author can't dismiss failing checks
+        issue_assessment:
+            mode: "off"
+        custom_checks:
+            - name: "Requires human review"
+              mode: "error"
+              instructions: |
+                  FAIL if the PR touches one of the following:
+                      - authentication
+                      - authorization
+                      - DB migrations
+                      - CI workflow files
+                      - secret or credential handling
+                      - changes public API
+                      - deletes tests
+                      - coderabbit config
+                      
+                  FAIL if the PR adds or modifies more than 300 lines of hand-written source.
+                  When counting those lines, ignore deleted lines, and ignore changes to
+                  tests (*.spec.*, *.test.*, __snapshots__/), docs (docs/, *.md,
+                  .changeset/) and generated output (**/generated/, schema.gql,
+                  block-meta.json, pnpm-lock.yaml).
+                  Otherwise PASS.

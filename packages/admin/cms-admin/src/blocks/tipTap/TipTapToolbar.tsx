@@ -25,6 +25,7 @@ import {
     FormControl,
     inputBaseClasses,
     ListItemIcon,
+    ListItemText,
     Menu,
     MenuItem,
     Select,
@@ -92,7 +93,7 @@ const ToolbarButton = ({
     editor: Editor;
     icon: ForwardRefExoticComponent<Omit<SvgIconProps, "ref"> & RefAttributes<SVGSVGElement>>;
     tooltip: ReactNode;
-    isActive?: string;
+    isActive?: string | boolean;
     disabled?: boolean;
     onToggle: () => void;
 }) => (
@@ -107,7 +108,7 @@ const ToolbarButton = ({
             }}
             sx={{
                 ...toolbarButtonSx,
-                ...(isActive && editor.isActive(isActive) ? toolbarButtonSelectedSx : {}),
+                ...((typeof isActive === "string" ? editor.isActive(isActive) : isActive) ? toolbarButtonSelectedSx : {}),
             }}
         >
             <Icon sx={{ fontSize: 15 }} color="inherit" />
@@ -189,7 +190,6 @@ export const TipTapToolbar = ({
     const specialChars = (["non-breaking-space", "soft-hyphen"] as const).some((s) => supports.includes(s));
     const hasLink = supports.includes("link") && !!linkBlock;
     const hasPlaceholders = placeholders.length > 0;
-    const hasInlineStyles = inlineStyles.length > 0;
     const hasChildBlocks = Object.keys(childBlocks).length > 0;
 
     const editorState = useEditorState({
@@ -218,13 +218,6 @@ export const TipTapToolbar = ({
                 return "paragraph";
             })();
             const attrs = e.isActive("heading") ? e.getAttributes("heading") : e.getAttributes("paragraph");
-            const activeInlineStyle = (() => {
-                if (!hasInlineStyles) {
-                    return "";
-                }
-                const inlineStyleAttrs = e.getAttributes("inlineStyle");
-                return (inlineStyleAttrs.type as string) ?? "";
-            })();
 
             // Calculate current list nesting depth for listLevelMax enforcement
             let canIndent = e.can().sinkListItem("listItem");
@@ -246,7 +239,6 @@ export const TipTapToolbar = ({
                 activeTextBlockType,
                 activeTipTapTextBlockType,
                 activeTextBlockStyle: (attrs.textBlockStyle as string) ?? "",
-                activeInlineStyle,
                 canUndo: e.can().undo(),
                 canRedo: e.can().redo(),
                 canIndent,
@@ -261,6 +253,7 @@ export const TipTapToolbar = ({
                 isBulletListActive: e.isActive("bulletList"),
                 isLinkActive: e.isActive("link"),
                 selectionEmpty: e.state.selection.empty,
+                activeInlineStyles: Object.fromEntries(inlineStyles.map((style) => [style.name, e.isActive("inlineStyle", { type: style.name })])),
             };
         },
     });
@@ -268,6 +261,19 @@ export const TipTapToolbar = ({
     const handleMoreClose = () => {
         setMoreAnchorEl(null);
         setTimeout(() => editor.commands.focus(), 0);
+    };
+
+    // Menu items run their action via onMouseDown (before the browser's default focus change collapses the
+    // editor selection) and via onClick guarded to keyboard activation (MouseEvent.detail is 0 there, unlike
+    // for a real pointer click), so both mouse and keyboard users can toggle a menu item.
+    const runMenuItemAction = (action: () => void) => {
+        handleMoreClose();
+        setTimeout(action, 0);
+    };
+    const handleMenuItemKeyboardActivate = (e: MouseEvent, action: () => void) => {
+        if (e.detail === 0) {
+            runMenuItemAction(action);
+        }
     };
 
     const handlePlaceholderClose = () => {
@@ -286,6 +292,53 @@ export const TipTapToolbar = ({
     const applicableInlineStyles = inlineStyles.filter(
         (style) => !style.appliesTo || style.appliesTo.includes(editorState.activeTipTapTextBlockType),
     );
+    // Without bold/italic/underline/strike buttons to fold behind it, a "..." menu just for superscript/subscript/inline
+    // styles adds an extra click for no space savings, so show them as individual buttons instead
+    const showMoreOptionsAsButtons = !hasInlineFormatButtons && inlineStyles.every((style) => style.icon);
+
+    const moreOptionsItems: {
+        key: string;
+        icon?: ForwardRefExoticComponent<Omit<SvgIconProps, "ref"> & RefAttributes<SVGSVGElement>>;
+        label: ReactNode;
+        isActive: boolean;
+        onToggle: () => void;
+    }[] = [
+        ...(supports.includes("sup")
+            ? [
+                  {
+                      key: "superscript",
+                      icon: RteSup,
+                      label: <FormattedMessage id="dextinity.blocks.tipTapRichText.superscript.label" defaultMessage="Superscript" />,
+                      isActive: editorState.isSuperscriptActive,
+                      onToggle: () => editor.chain().focus().toggleSuperscript().run(),
+                  },
+              ]
+            : []),
+        ...(supports.includes("sub")
+            ? [
+                  {
+                      key: "subscript",
+                      icon: RteSub,
+                      label: <FormattedMessage id="dextinity.blocks.tipTapRichText.subscript.label" defaultMessage="Subscript" />,
+                      isActive: editorState.isSubscriptActive,
+                      onToggle: () => editor.chain().focus().toggleSubscript().run(),
+                  },
+              ]
+            : []),
+        ...applicableInlineStyles.map((style) => ({
+            key: style.name,
+            icon: style.icon,
+            label: style.label,
+            isActive: editorState.activeInlineStyles[style.name],
+            onToggle: () => {
+                if (editorState.activeInlineStyles[style.name]) {
+                    editor.chain().focus().unsetInlineStyle().run();
+                } else {
+                    editor.chain().focus().setInlineStyle({ type: style.name }).run();
+                }
+            },
+        })),
+    ];
 
     const handleTextBlockTypeChange = (e: SelectChangeEvent) => {
         const value = e.target.value;
@@ -317,15 +370,6 @@ export const TipTapToolbar = ({
         const value = e.target.value || null;
         const nodeType = editor.isActive("heading") ? "heading" : "paragraph";
         editor.chain().focus().updateAttributes(nodeType, { textBlockStyle: value }).run();
-    };
-
-    const handleInlineStyleChange = (e: SelectChangeEvent) => {
-        const value = e.target.value;
-        if (value) {
-            editor.chain().focus().setInlineStyle({ type: value }).run();
-        } else {
-            editor.chain().focus().unsetInlineStyle().run();
-        }
     };
 
     return (
@@ -410,31 +454,7 @@ export const TipTapToolbar = ({
                     </FormControl>
                 </ToolbarGroup>
             )}
-            {applicableInlineStyles.length > 0 && (
-                <ToolbarGroup>
-                    <FormControl sx={selectFormControlSx}>
-                        <Select
-                            value={editorState.activeInlineStyle}
-                            onChange={handleInlineStyleChange}
-                            displayEmpty
-                            variant="filled"
-                            MenuProps={{ elevation: 1 }}
-                            sx={selectSx}
-                            disabled={editorState.selectionEmpty}
-                        >
-                            <MenuItem value="" dense>
-                                <FormattedMessage id="dextinity.blocks.tipTapRichText.inlineStyle.default" defaultMessage="Default" />
-                            </MenuItem>
-                            {applicableInlineStyles.map((style) => (
-                                <MenuItem key={style.name} value={style.name} dense>
-                                    {style.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </ToolbarGroup>
-            )}
-            {(hasInlineFormatButtons || moreOptions) && (
+            {(hasInlineFormatButtons || moreOptions || applicableInlineStyles.length > 0) && (
                 <ToolbarGroup>
                     {supports.includes("bold") && (
                         <ToolbarButton
@@ -472,57 +492,71 @@ export const TipTapToolbar = ({
                             onToggle={() => editor.chain().focus().toggleStrike().run()}
                         />
                     )}
-                    {moreOptions && (
-                        <>
-                            <Tooltip
-                                title={<FormattedMessage id="dextinity.blocks.tipTapRichText.moreOptions.tooltip" defaultMessage="More options" />}
-                            >
-                                <Box
-                                    component="button"
-                                    type="button"
-                                    onMouseDown={(e: MouseEvent) => {
-                                        e.preventDefault();
-                                        setMoreAnchorEl(e.currentTarget as HTMLElement);
-                                    }}
-                                    sx={toolbarButtonSx}
+                    {(moreOptions || applicableInlineStyles.length > 0) &&
+                        (showMoreOptionsAsButtons ? (
+                            <>
+                                {moreOptionsItems.map((item) => (
+                                    <ToolbarButton
+                                        key={item.key}
+                                        editor={editor}
+                                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- guaranteed by showMoreOptionsAsButtons
+                                        icon={item.icon!}
+                                        tooltip={item.label}
+                                        isActive={item.isActive}
+                                        onToggle={item.onToggle}
+                                    />
+                                ))}
+                            </>
+                        ) : (
+                            <>
+                                <Tooltip
+                                    title={
+                                        <FormattedMessage id="dextinity.blocks.tipTapRichText.moreOptions.tooltip" defaultMessage="More options" />
+                                    }
                                 >
-                                    <MoreHorizontal sx={{ fontSize: 15 }} color="inherit" />
-                                </Box>
-                            </Tooltip>
-                            <Menu open={Boolean(moreAnchorEl)} anchorEl={moreAnchorEl} onClose={handleMoreClose}>
-                                {supports.includes("sup") && (
-                                    <MenuItem
-                                        selected={editor.isActive("superscript")}
-                                        onMouseDown={(e) => {
-                                            handleMoreClose();
-                                            e.persist();
-                                            setTimeout(() => editor.chain().focus().toggleSuperscript().run(), 0);
+                                    <Box
+                                        component="button"
+                                        type="button"
+                                        aria-label={intl.formatMessage({
+                                            id: "dextinity.blocks.tipTapRichText.moreOptions.tooltip",
+                                            defaultMessage: "More options",
+                                        })}
+                                        onMouseDown={(e: MouseEvent) => {
+                                            e.preventDefault();
+                                            setMoreAnchorEl(e.currentTarget as HTMLElement);
                                         }}
-                                    >
-                                        <FormattedMessage id="dextinity.blocks.tipTapRichText.superscript.label" defaultMessage="Superscript" />
-                                        <ListItemIcon sx={{ justifyContent: "flex-end" }}>
-                                            <RteSup />
-                                        </ListItemIcon>
-                                    </MenuItem>
-                                )}
-                                {supports.includes("sub") && (
-                                    <MenuItem
-                                        selected={editor.isActive("subscript")}
-                                        onMouseDown={(e) => {
-                                            handleMoreClose();
-                                            e.persist();
-                                            setTimeout(() => editor.chain().focus().toggleSubscript().run(), 0);
+                                        onClick={(e: MouseEvent) => {
+                                            if (e.detail === 0) {
+                                                setMoreAnchorEl(e.currentTarget as HTMLElement);
+                                            }
                                         }}
+                                        sx={toolbarButtonSx}
                                     >
-                                        <FormattedMessage id="dextinity.blocks.tipTapRichText.subscript.label" defaultMessage="Subscript" />
-                                        <ListItemIcon sx={{ justifyContent: "flex-end" }}>
-                                            <RteSub />
-                                        </ListItemIcon>
-                                    </MenuItem>
-                                )}
-                            </Menu>
-                        </>
-                    )}
+                                        <MoreHorizontal sx={{ fontSize: 15 }} color="inherit" />
+                                    </Box>
+                                </Tooltip>
+                                <Menu open={Boolean(moreAnchorEl)} anchorEl={moreAnchorEl} onClose={handleMoreClose}>
+                                    {moreOptionsItems.map((item) => {
+                                        const Icon = item.icon;
+                                        return (
+                                            <MenuItem
+                                                key={item.key}
+                                                selected={item.isActive}
+                                                onMouseDown={() => runMenuItemAction(item.onToggle)}
+                                                onClick={(e) => handleMenuItemKeyboardActivate(e, item.onToggle)}
+                                            >
+                                                {Icon && (
+                                                    <ListItemIcon>
+                                                        <Icon />
+                                                    </ListItemIcon>
+                                                )}
+                                                <ListItemText>{item.label}</ListItemText>
+                                            </MenuItem>
+                                        );
+                                    })}
+                                </Menu>
+                            </>
+                        ))}
                 </ToolbarGroup>
             )}
             {lists && (
@@ -561,31 +595,23 @@ export const TipTapToolbar = ({
                     />
                 </ToolbarGroup>
             )}
-            {specialChars && (
+            {hasLink && linkBlock && (
                 <ToolbarGroup>
-                    {supports.includes("non-breaking-space") && (
-                        <ToolbarButton
-                            editor={editor}
-                            icon={RteNonBreakingSpace}
-                            tooltip={
-                                <FormattedMessage
-                                    id="dextinity.blocks.tipTapRichText.nonBreakingSpace.tooltip"
-                                    defaultMessage="Insert a non-breaking space"
-                                />
-                            }
-                            onToggle={() => editor.chain().focus().insertContent({ type: "nonBreakingSpace" }).run()}
-                        />
-                    )}
-                    {supports.includes("soft-hyphen") && (
-                        <ToolbarButton
-                            editor={editor}
-                            icon={RteSoftHyphen}
-                            tooltip={
-                                <FormattedMessage id="dextinity.blocks.tipTapRichText.softHyphen.tooltip" defaultMessage="Insert a soft hyphen" />
-                            }
-                            onToggle={() => editor.chain().focus().insertContent({ type: "softHyphen" }).run()}
-                        />
-                    )}
+                    <ToolbarButton
+                        editor={editor}
+                        icon={RteLink}
+                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.link.tooltip" defaultMessage="Link" />}
+                        isActive="link"
+                        disabled={editorState.selectionEmpty && !editorState.isLinkActive}
+                        onToggle={() => setLinkDialogOpen(true)}
+                    />
+                    <ToolbarButton
+                        editor={editor}
+                        icon={RteClearLink}
+                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.removeLink.tooltip" defaultMessage="Remove link" />}
+                        disabled={!editorState.isLinkActive}
+                        onToggle={() => editor.chain().focus().extendMarkRange("link").unsetCmsLink().run()}
+                    />
                 </ToolbarGroup>
             )}
             {hasPlaceholders && (
@@ -625,23 +651,31 @@ export const TipTapToolbar = ({
                     </Menu>
                 </ToolbarGroup>
             )}
-            {hasLink && linkBlock && (
+            {specialChars && (
                 <ToolbarGroup>
-                    <ToolbarButton
-                        editor={editor}
-                        icon={RteLink}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.link.tooltip" defaultMessage="Link" />}
-                        isActive="link"
-                        disabled={editorState.selectionEmpty && !editorState.isLinkActive}
-                        onToggle={() => setLinkDialogOpen(true)}
-                    />
-                    <ToolbarButton
-                        editor={editor}
-                        icon={RteClearLink}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.removeLink.tooltip" defaultMessage="Remove link" />}
-                        disabled={!editorState.isLinkActive}
-                        onToggle={() => editor.chain().focus().extendMarkRange("link").unsetCmsLink().run()}
-                    />
+                    {supports.includes("non-breaking-space") && (
+                        <ToolbarButton
+                            editor={editor}
+                            icon={RteNonBreakingSpace}
+                            tooltip={
+                                <FormattedMessage
+                                    id="dextinity.blocks.tipTapRichText.nonBreakingSpace.tooltip"
+                                    defaultMessage="Insert a non-breaking space"
+                                />
+                            }
+                            onToggle={() => editor.chain().focus().insertContent({ type: "nonBreakingSpace" }).run()}
+                        />
+                    )}
+                    {supports.includes("soft-hyphen") && (
+                        <ToolbarButton
+                            editor={editor}
+                            icon={RteSoftHyphen}
+                            tooltip={
+                                <FormattedMessage id="dextinity.blocks.tipTapRichText.softHyphen.tooltip" defaultMessage="Insert a soft hyphen" />
+                            }
+                            onToggle={() => editor.chain().focus().insertContent({ type: "softHyphen" }).run()}
+                        />
+                    )}
                 </ToolbarGroup>
             )}
             {hasChildBlocks && (

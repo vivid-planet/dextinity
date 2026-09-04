@@ -56,7 +56,7 @@ describe("server/renderMailHtml", () => {
         );
 
         expect(html).toContain(".myComponent");
-        expect(html).toContain("color: red");
+        expect(html).toContain("color:red");
     });
 
     it("includes function-style registered styles resolved with the theme", () => {
@@ -79,7 +79,72 @@ describe("server/renderMailHtml", () => {
         );
 
         expect(html).toContain(".themed");
-        expect(html).toContain("width: 600px");
+        expect(html).toContain("width:600px");
+    });
+
+    it("minifies the registered styles", () => {
+        registerStyles(css`
+            .minifyMe {
+                color: red;
+                padding-bottom: 8px;
+            }
+        `);
+
+        const { html } = renderMailHtml(
+            <MjmlMailRoot>
+                <MjmlSection>
+                    <MjmlColumn>
+                        <MjmlText>Hello</MjmlText>
+                    </MjmlColumn>
+                </MjmlSection>
+            </MjmlMailRoot>,
+        );
+
+        expect(html).toContain(".minifyMe");
+        expect(html).toContain("color:red;padding-bottom:8px");
+    });
+
+    it("writes no two closing braces in a row, which Outlook cuts the head CSS at", () => {
+        registerStyles(css`
+            @media (max-width: 479px) {
+                .firstMediaBlock {
+                    color: red;
+                }
+            }
+            @media (max-width: 599px) {
+                .secondMediaBlock {
+                    color: green;
+                }
+            }
+        `);
+
+        const { html } = renderMailHtml(
+            <MjmlMailRoot>
+                <MjmlSection>
+                    <MjmlColumn>
+                        <MjmlText>Hello</MjmlText>
+                    </MjmlColumn>
+                </MjmlSection>
+            </MjmlMailRoot>,
+        );
+
+        expect(html).not.toContain("}}");
+        expect(html).toContain(".secondMediaBlock{color:green}");
+    });
+
+    it("keeps the Outlook properties that MJML writes", () => {
+        const { html } = renderMailHtml(
+            <MjmlMailRoot>
+                <MjmlSection>
+                    <MjmlColumn>
+                        <MjmlText>Hello</MjmlText>
+                    </MjmlColumn>
+                </MjmlSection>
+            </MjmlMailRoot>,
+        );
+
+        // A minifier would write `0pt` as `0`, which Outlook does not read.
+        expect(html).toContain("mso-table-lspace:0pt");
     });
 
     it("renders the head slot content inside <mj-head>", () => {

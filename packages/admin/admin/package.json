@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/admin",
-    "version": "10.2.0",
+    "version": "10.4.0",
     "description": "Dextinity Admin package",
     "repository": {
         "directory": "packages/admin/admin",

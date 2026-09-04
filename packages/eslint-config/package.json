@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/eslint-config",
-    "version": "10.2.0",
+    "version": "10.4.0",
     "description": "A set of ESLint configurations for Dextinity projects",
     "repository": {
         "directory": "packages/eslint-config",

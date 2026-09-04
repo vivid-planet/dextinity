@@ -27,7 +27,10 @@
         "lint:prettier": "pnpm exec prettier --check '*.{ts,js,json,md,yml,yaml,css,scss}'",
         "lint:style": "pnpm exec stylelint '**/*.{css,scss}'",
         "lint:tsc": "pnpm exec next typegen && tsc --project .",
-        "serve": "NODE_ENV=production node dist/server.js"
+        "serve": "NODE_ENV=production node dist/server.js",
+        "test": "pnpm run test:unit",
+        "test:unit": "vitest --run",
+        "test:watch": "vitest --watch"
     },
     "dependencies": {
         "@base-ui/react": "^1.4.1",
@@ -78,6 +81,7 @@
         "chokidar-cli": "^3.0.0",
         "eslint": "^9.39.4",
         "graphql": "^16.14.2",
+        "jsdom": "^28.1.0",
         "npm-run-all2": "^8.0.4",
         "prettier": "^3.6.2",
         "sass": "^1.90.0",
@@ -85,7 +89,9 @@
         "stylelint": "^16.24.0",
         "stylelint-config-standard-scss": "^16.0.0",
         "typed-scss-modules": "^8.1.1",
-        "typescript": "^5.9.3"
+        "typescript": "^5.9.3",
+        "vite-tsconfig-paths": "^6.0.4",
+        "vitest": "^4.1.8"
     },
     "engines": {
         "node": "24"

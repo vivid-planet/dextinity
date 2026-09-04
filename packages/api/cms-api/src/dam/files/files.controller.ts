@@ -44,6 +44,7 @@ import { FileParams, HashFileParams } from "./dto/file.params";
 import { FileInterface } from "./entities/file.entity";
 import { FilesService } from "./files.service";
 import { FoldersService } from "./folders.service";
+import { createPublicCacheControlHeader, isFileBlockedByExpiredLicense } from "./license.util";
 
 const fileUrl = `:fileId/:filename`;
 
@@ -264,8 +265,15 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
+            if (isFileBlockedByExpiredLicense({ file, config: this.damConfig })) {
+                throw new NotFoundException();
+            }
+
             res.setHeader("Content-Disposition", "attachment");
-            return this.streamFile(file, res, { range, overrideHeaders: { "cache-control": "max-age=31536000, s-maxage=86400, public" } }); // Public cache, 1 year for browsers, 1 day for proxies/cdn's
+            return this.streamFile(file, res, {
+                range,
+                overrideHeaders: { "cache-control": createPublicCacheControlHeader({ file, config: this.damConfig }) },
+            });
         }
 
         @DisableDextinityGuards()
@@ -289,10 +297,14 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
+            if (isFileBlockedByExpiredLicense({ file, config: this.damConfig })) {
+                throw new NotFoundException();
+            }
+
             return this.streamFile(file, res, {
                 range,
                 overrideHeaders: {
-                    "cache-control": "max-age=31536000, s-maxage=86400, public", // Public cache, 1 year for browsers, 1 day for proxies/cdn's
+                    "cache-control": createPublicCacheControlHeader({ file, config: this.damConfig }),
                 },
             });
         }

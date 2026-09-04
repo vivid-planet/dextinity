@@ -15,8 +15,8 @@ export class AccessControlService extends AbstractAccessControlService {
         if (user.isAdmin) {
             return UserPermissions.allContentScopes;
         } else {
-            // Grant access to every language within the "main" domain using a wildcard dimension
-            return [{ domain: "main", language: "*" }];
+            // Grant access to every language and product within the "main" domain using wildcard dimensions
+            return [{ domain: "main", language: "*", product: "*" }];
         }
     }
 }

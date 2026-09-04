@@ -48,7 +48,8 @@ import { TranslationModule } from "@src/translation/translation.module";
 import { Request } from "express";
 
 import { AccessControlService } from "./auth/access-control.service";
-import { AuthModule, SYSTEM_USER_NAME } from "./auth/auth.module";
+import { AuthModule } from "./auth/auth.module";
+import { SYSTEM_USER_NAME } from "./auth/constants";
 import { UserService } from "./auth/user.service";
 import { DamScope } from "./dam/dto/dam-scope";
 import { DamFile } from "./dam/entities/dam-file.entity";

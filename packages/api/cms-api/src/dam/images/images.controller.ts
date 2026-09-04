@@ -32,6 +32,7 @@ import { DamConfig } from "../dam.config";
 import { DAM_CONFIG } from "../dam.constants";
 import { FileInterface } from "../files/entities/file.entity";
 import { FilesService } from "../files/files.service";
+import { createPublicCacheControlHeader, isFileBlockedByExpiredLicense } from "../files/license.util";
 import { DamScopeAccessControlService } from "../scope-access-control.service";
 import { HashImageParams, ImageParams } from "./dto/image.params";
 import { ImagesService } from "./images.service";
@@ -128,8 +129,12 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
+            if (isFileBlockedByExpiredLicense({ file, config: this.config })) {
+                throw new NotFoundException();
+            }
+
             return this.pipeCroppedImage(file, params, accept, res, {
-                "cache-control": "max-age=31536000, s-maxage=86400, public", // Public cache, 1 year for browsers, 1 day for proxies/cdn's
+                "cache-control": createPublicCacheControlHeader({ file, config: this.config }),
             });
         }
 
@@ -149,8 +154,12 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
+            if (isFileBlockedByExpiredLicense({ file, config: this.config })) {
+                throw new NotFoundException();
+            }
+
             return this.pipeCroppedImage(file, params, accept, res, {
-                "cache-control": "max-age=31536000, s-maxage=86400, public", // Public cache, 1 year for browsers, 1 day for proxies/cdn's
+                "cache-control": createPublicCacheControlHeader({ file, config: this.config }),
             });
         }
 

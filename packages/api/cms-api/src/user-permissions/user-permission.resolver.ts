@@ -81,7 +81,6 @@ export class UserPermissionResolver {
         @Args("input", { type: () => UserPermissionOverrideContentScopesInput }) input: UserPermissionOverrideContentScopesInput,
     ): Promise<UserPermission> {
         const permission = await this.getPermission(input.permissionId);
-        await this.service.checkContentScopes(input.contentScopes);
         permission.overrideContentScopes = input.overrideContentScopes;
         permission.contentScopes = input.contentScopes;
         await this.entityManager.persistAndFlush(permission);

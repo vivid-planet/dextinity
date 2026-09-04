@@ -19,25 +19,28 @@ Before implementing any visual technique — even things that seem basic like ro
 
 Keep these open during email development:
 
-| Resource                       | What it's for                                                                    | URL                                  |
-| ------------------------------ | -------------------------------------------------------------------------------- | ------------------------------------ |
-| **Can I email**                | Check CSS/HTML feature support across email clients (like caniuse.com for email) | https://www.caniemail.com/           |
-| **MJML Documentation**         | Full reference for all MJML tags and their attributes                            | https://documentation.mjml.io/       |
-| **Litmus Blog & Resources**    | Email development best practices, testing guides, client quirks                  | https://www.litmus.com/blog/         |
-| **Campaign Monitor CSS Guide** | Comprehensive CSS support tables per email client                                | https://www.campaignmonitor.com/css/ |
-| **Bulletproof Backgrounds**    | VML-based background image generator for Outlook                                 | https://www.backgrounds.cm/          |
-| **Bulletproof Buttons**        | VML-based rounded button generator for Outlook                                   | https://www.buttons.cm/              |
+| Resource                       | What it's for                                                                    | URL                                                      |
+| ------------------------------ | -------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| **Can I email**                | Check CSS/HTML feature support across email clients (like caniuse.com for email) | https://www.caniemail.com/                               |
+| **Gmail CSS support**          | Google's own list of the CSS properties and selectors Gmail applies              | https://developers.google.com/workspace/gmail/design/css |
+| **MJML Documentation**         | Full reference for all MJML tags and their attributes                            | https://documentation.mjml.io/                           |
+| **Litmus Blog & Resources**    | Email development best practices, testing guides, client quirks                  | https://www.litmus.com/blog/                             |
+| **Campaign Monitor CSS Guide** | Comprehensive CSS support tables per email client                                | https://www.campaignmonitor.com/css/                     |
+| **Bulletproof Backgrounds**    | VML-based background image generator for Outlook                                 | https://www.backgrounds.cm/                              |
+| **Bulletproof Buttons**        | VML-based rounded button generator for Outlook                                   | https://www.buttons.cm/                                  |
 
 ### The Research Habit
 
 When implementing any visual feature:
 
-1. Check [Can I email](https://www.caniemail.com/) for the CSS properties involved
+1. Check [Can I email](https://www.caniemail.com/) for the CSS properties and selectors involved
 2. If the property isn't supported in Outlook, search for VML workarounds or provide a graceful fallback (skipping border-radius is generally acceptable)
 3. Test in Storybook with the MJML Warnings panel open
 4. When uncertain, consult the Litmus blog or Campaign Monitor guide for known patterns
 
 This applies to seemingly simple things: `border-radius`, `background-image`, `flexbox`, `gap`, custom fonts — all have partial or no support in major email clients.
+
+For which selectors reach which clients, see [`styling-and-customization.md`](references/styling-and-customization.md) → Selectors That Reach Every Client.
 
 ### Library Documentation
 
@@ -91,7 +94,9 @@ const halfGap = columnGap / 2;
 
 On mobile, reset the gap padding so content stretches full-width, and add a vertical margin between the stacked columns. Column padding compiles to an inner `<td>`, so target it via `.className > table > tbody > tr > td`.
 
-→ For complete two-column patterns (equal-width and fixed+fluid) with responsive styles, CSS targeting rules, and the `direction="rtl"` technique for controlling mobile stack order, read [`references/layout-patterns.md`](references/layout-patterns.md).
+Set `disableResponsiveBehavior` on **every** section with more than one column. It wraps the columns in an `MjmlGroup`, which is what makes MJML write their widths inline; without it the widths exist only in a `min-width` media query, and clients that drop that query — GMX and Web.de, for example — show the columns stacked. The group never stacks by itself, so write the mobile stacking into `registerStyles`, and target the column container one level deeper (`… > td > div`).
+
+→ For complete patterns — two columns, three or more, fixed+fluid — with responsive styles, CSS targeting rules, the stacking strategies, and the `direction="rtl"` technique for controlling mobile stack order, read [`references/layout-patterns.md`](references/layout-patterns.md).
 
 ### Ending Tags
 
@@ -115,6 +120,8 @@ Email styling follows a **desktop-first** approach:
 
 Never rely on `<style>` blocks for base/desktop layout. Set all default styles inline via MJML component props.
 
+MJML breaks this rule for column widths: it puts them in a `min-width` media query, so a multi-column section stacks in any client that drops that query — GMX and Web.de, for example. See [Multi-Column Layouts](#multi-column-layouts).
+
 ### Prefer Theme Breakpoints
 
 Always use `theme.breakpoints.*.belowMediaQuery` inside `registerStyles` instead of hardcoding media query values. This keeps responsive styles in sync with the theme configuration. If a breakpoint value is needed repeatedly but doesn't exist in the theme, add it via `createBreakpoint` and module augmentation rather than duplicating raw media queries. Reserve hardcoded media queries for genuinely one-off values.
@@ -125,7 +132,9 @@ Always use `theme.breakpoints.*.belowMediaQuery` inside `registerStyles` instead
 
 Sometimes you cannot make both views from the same HTML, because the mobile view needs a different structure than the desktop view. Then put both layouts in the email and hide one of them: inline styles hide the mobile layout, and a media query in `registerStyles` switches the two.
 
-Two layouts make twice as much markup, so first try to make one layout that works at each width. Columns already stack on mobile.
+Two layouts make twice as much markup, so first try to make one layout that works at each width. The column patterns already stack on mobile.
+
+The default layout is the one that shows when the `<style>` block is gone, so if it has columns its section needs `disableResponsiveBehavior` as well.
 
 → For the hiding styles, the extra step classic Outlook needs, and what to avoid, read [`references/layout-patterns.md`](references/layout-patterns.md) → Breakpoint Content Switch.
 
@@ -161,11 +170,49 @@ Outlook calculates line-height using its own rules, causing unexpected vertical 
 
 ### No CSS `background-image` in Outlook
 
-Outlook ignores `background-image` entirely. Use a VML-based workaround for Outlook support, or provide a `background-color` fallback for graceful degradation. See [Bulletproof Backgrounds](https://www.backgrounds.cm/).
+Classic Outlook ignores `background-image` entirely. Use a VML-based workaround for Outlook support, or provide a `background-color` fallback for graceful degradation. See [Bulletproof Backgrounds](https://www.backgrounds.cm/).
 
 ### No CSS `border-radius` in Outlook
 
-Outlook ignores `border-radius` — rounded corners render as sharp rectangles. `MjmlImage` and `HtmlImage` cover images: their `borderRadius` prop also renders a VML shape for Outlook, as long as `width` and `height` are given in pixels and the radius is given in pixels or as `"50%"`. Everything else, buttons included, needs the workaround by hand — VML `v:roundrect` in conditional comments (`<!--[if mso]>`). See [Bulletproof Buttons](https://www.buttons.cm/) and the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
+Classic Outlook ignores `border-radius` entirely — rounded corners on buttons, containers, or any other element render as sharp rectangles.
+
+`MjmlImage` and `HtmlImage` handle images for you, as long as `width` and `height` are given in pixels and `borderRadius` is a single pixel value or `"50%"`. Other values — a percentage width, `1em`, `16px 4px` — leave the image square in Outlook.
+
+Everything else, buttons and containers included, needs a VML `v:roundrect` written by hand, inside a conditional comment. Give the shape a fixed pixel `width` and `height` — it cannot be fluid:
+
+```html
+<!--[if mso]>
+    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="18%" stroked="f" style="width:200px;height:44px;">
+        <center>Button label</center>
+    </v:roundrect>
+<![endif]-->
+```
+
+Set `arcsize` to the corner radius divided by the shorter side, capped at `50%` — `8px` on a `44px`-high button gives `18%`. Do not take the value from the VML specification; it is twice what Outlook needs.
+
+See the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
+
+### No CSS `calc()`
+
+Yahoo Mail (webmail and both mobile apps) and Outlook.com drop every declaration whose value contains a `calc()`, single-unit expressions such as `calc(300px - 200px)` included. The declaration disappears, so the element keeps the value the `calc()` was meant to override — a plausible wrong width rather than no width.
+
+Where an element has to fill the space next to a fixed-width one, let the table compute the width: the fixed cells get their pixel width, and the flexible cell gets `width="100%"`, so the table gives it whatever the fixed cells leave ([Good Email Code](https://www.goodemailcode.com/email-code/columns.html)). Where a `calc()` is unavoidable, put a plain value before it in the same rule, chosen so the row still fits at the narrowest viewport the media query covers:
+
+```css
+.fluidColumn {
+    width: 40% !important;
+    width: calc(100% - 192px) !important;
+}
+```
+
+The asymmetric two-column layout in [`references/layout-patterns.md`](references/layout-patterns.md) uses this fallback.
+
+### `height` Becomes `min-height` in Yahoo Mail
+
+Yahoo Mail rewrites `height` into `min-height`, which is only a lower limit — it can make an element taller, never shorter — and does nothing at all on a `<td>`:
+
+- An `<img>` that a media query shrinks with `height` keeps its original size — use `max-height`.
+- A row whose height comes only from `height` on a `<td>` collapses to nothing, and the cell's background disappears with it — put the height on a `<div>` inside the cell, or use padding.
 
 ---
 

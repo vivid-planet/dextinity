@@ -1,5 +1,13 @@
 # @comet/site-react
 
+## 10.4.0
+
+### Patch Changes
+
+- 0e88bab: Fix block preview outlines being cut off when `IFrameBridgeProvider` does not start at the left edge of the page, for instance because of padding or centering
+
+## 10.3.0
+
 ## 10.2.0
 
 ## 10.1.0

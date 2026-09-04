@@ -38,6 +38,22 @@ describe("AbstractAccessControlService", () => {
 
             expect(service.isAllowed(user, "pageTree", { domain: "main", language: undefined })).toBe(true);
         });
+
+        it("should allow any value for a wildcard scope dimension", () => {
+            const user: CurrentUser = {
+                id: "b26d86a7-32bb-4c84-ab9d-d167dddd40ff",
+                name: "User",
+                email: "user@example.com",
+                permissions: [{ permission: "pageTree", contentScopes: [{ domain: "main", language: "*" }] }],
+            };
+
+            expect(service.isAllowed(user, "pageTree", { domain: "main", language: "en" })).toBe(true);
+            expect(service.isAllowed(user, "pageTree", { domain: "main", language: "de" })).toBe(true);
+            expect(service.isAllowed(user, "pageTree", { domain: "main" })).toBe(true);
+
+            // The wildcard only applies to its dimension, other dimensions must still match
+            expect(service.isAllowed(user, "pageTree", { domain: "secondary", language: "en" })).toBe(false);
+        });
     });
 
     describe("isEqualOrMorePermissions", () => {
@@ -123,6 +139,66 @@ describe("AbstractAccessControlService", () => {
                 AbstractAccessControlService.isEqualOrMorePermissions(
                     [{ permission: permissions.p1, contentScopes: [{ domain: "main" }] }],
                     [{ permission: permissions.p1, contentScopes: [{ domain: "main" }] }],
+                ),
+            ).toBe(true);
+        });
+
+        it("should treat a wildcard scope dimension as covering any concrete value", () => {
+            // A user with a wildcard scope can impersonate a user with a concrete value for that dimension
+            expect(
+                AbstractAccessControlService.isEqualOrMorePermissions(
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "main", language: "*" }] }],
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "main", language: "en" }] }],
+                ),
+            ).toBe(true);
+            expect(
+                AbstractAccessControlService.isEqualOrMorePermissions(
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "*", language: "*" }] }],
+                    [
+                        {
+                            permission: permissions.p1,
+                            contentScopes: [
+                                { domain: "main", language: "en" },
+                                { domain: "secondary", language: "de" },
+                            ],
+                        },
+                    ],
+                ),
+            ).toBe(true);
+
+            // A concrete value does not cover a wildcard, which grants broader access
+            expect(
+                AbstractAccessControlService.isEqualOrMorePermissions(
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "main", language: "en" }] }],
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "main", language: "*" }] }],
+                ),
+            ).toBe(false);
+
+            // The wildcard only applies to its dimension, other dimensions must still match
+            expect(
+                AbstractAccessControlService.isEqualOrMorePermissions(
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "main", language: "*" }] }],
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "secondary", language: "en" }] }],
+                ),
+            ).toBe(false);
+        });
+
+        it("should let a user with wildcards for all dimensions cover any scope", () => {
+            // A user with access to all content scopes is represented with a wildcard per dimension (see
+            // getPermissionsAndContentScopes) and can therefore impersonate any other user.
+            expect(
+                AbstractAccessControlService.isEqualOrMorePermissions(
+                    [{ permission: permissions.p1, contentScopes: [{ domain: "*", language: "*" }] }],
+                    [
+                        {
+                            permission: permissions.p1,
+                            contentScopes: [
+                                { domain: "main", language: "en" },
+                                { domain: "main", language: "*" },
+                                { domain: "secondary", language: "de" },
+                            ],
+                        },
+                    ],
                 ),
             ).toBe(true);
         });

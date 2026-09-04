@@ -7,8 +7,8 @@ interface GenerateOutlookImageVmlOptions {
     width: string | number | undefined;
     height: string | number | undefined;
     borderRadius: CSSProperties["borderRadius"];
-    alt?: string;
-    href?: string;
+    alt?: string | null;
+    href?: string | null;
 }
 
 type OutlookVmlShape = { name: "v:roundrect"; radius: number } | { name: "v:oval" };
@@ -65,9 +65,12 @@ function parsePixelLength(value: string | number | undefined): number | null {
     return pixels !== null && Number.isFinite(pixels) && pixels > 0 ? pixels : null;
 }
 
-/** VML measures `arcsize` against half the shorter side, so an equal radius needs a different value per aspect ratio. */
+/**
+ * Classic Outlook measures `arcsize` against the whole shorter side and draws no more than half of
+ * it, although ECMA-376 Part 4 says half the shorter side.
+ */
 function calculateArcsize(radius: number, width: number, height: number): string {
-    const fraction = Math.min(radius / (Math.min(width, height) / 2), 1);
+    const fraction = Math.min(radius / Math.min(width, height), 0.5);
 
     return `${Math.round(fraction * 100)}%`;
 }
@@ -113,15 +116,19 @@ function formatPixels(value: string | number | undefined): string | undefined {
     return typeof value === "number" ? `${value}px` : value;
 }
 
-function formatAttributes(attributes: Record<string, string | undefined>): string {
+function formatAttributes(attributes: Record<string, string | null | undefined>): string {
     return joinDefinedEntries(attributes, (name, value) => `${name}="${escapeAttributeValue(value)}"`, " ");
 }
 
-function joinDefinedEntries(entries: Record<string, string | undefined>, format: (name: string, value: string) => string, separator: string): string {
+function joinDefinedEntries(
+    entries: Record<string, string | null | undefined>,
+    format: (name: string, value: string) => string,
+    separator: string,
+): string {
     const formatted: string[] = [];
 
     for (const [name, value] of Object.entries(entries)) {
-        if (value !== undefined) {
+        if (value !== undefined && value !== null) {
             formatted.push(format(name, value));
         }
     }

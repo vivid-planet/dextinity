@@ -1,5 +1,5 @@
 import { greyPalette } from "@dextinity/admin";
-import { Box } from "@mui/material";
+import { Box, type SvgIconProps } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Extension } from "@tiptap/core";
 import type { Level as HeadingLevel } from "@tiptap/extension-heading";
@@ -7,7 +7,7 @@ import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import { EditorContent, type JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { type ComponentType, type HTMLAttributes, type ReactNode, useEffect } from "react";
+import { type ComponentType, type ForwardRefExoticComponent, type HTMLAttributes, type ReactNode, type RefAttributes, useEffect } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
@@ -88,6 +88,10 @@ export interface TipTapInlineStyle {
      */
     appliesTo?: TipTapTextBlockType[];
     element: ComponentType<HTMLAttributes<HTMLElement>>;
+    /**
+     * Displayed next to the label in the toolbar's "More options" menu, matching Superscript/Subscript.
+     */
+    icon?: ForwardRefExoticComponent<Omit<SvgIconProps, "ref"> & RefAttributes<SVGSVGElement>>;
 }
 
 export interface TipTapRichTextBlockState {

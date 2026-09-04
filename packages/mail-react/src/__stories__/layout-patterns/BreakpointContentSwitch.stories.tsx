@@ -89,7 +89,7 @@ registerStyles(
 
 function MailHeaderDefaultLayout({ className }: { className?: string }): ReactNode {
     return (
-        <MjmlSection indent className={className}>
+        <MjmlSection indent disableResponsiveBehavior className={className}>
             <MjmlColumn width="120px" verticalAlign="middle">
                 <MjmlImage src="https://picsum.photos/seed/4/240/80" alt="Logo" align="left" width={120} />
             </MjmlColumn>

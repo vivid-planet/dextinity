@@ -301,8 +301,11 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
             return hash === this.filesService.createHash(fileParams);
         }
 
+        // Strips quotes/backslash plus all ASCII control characters (e.g. NUL), which would otherwise make
+        // `res.setHeader` throw `ERR_INVALID_CHAR` below and fail the download.
         private contentDispositionFilename(filename: string): string {
-            return filename.replace(/[\r\n"\\]/g, "");
+            // eslint-disable-next-line no-control-regex
+            return filename.replace(/["\\\x00-\x1F\x7F]/g, "");
         }
 
         private async streamFile(

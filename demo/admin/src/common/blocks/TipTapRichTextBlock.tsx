@@ -8,7 +8,7 @@ import { FormattedMessage } from "react-intl";
 import { LinkBlock } from "./LinkBlock";
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
-    link: LinkBlock,
+    link: { block: LinkBlock },
     childBlocks: {
         productPrice: { block: ProductPriceBlock, display: "inline" },
         productTeaser: { block: ProductTeaserBlock, display: "block" },

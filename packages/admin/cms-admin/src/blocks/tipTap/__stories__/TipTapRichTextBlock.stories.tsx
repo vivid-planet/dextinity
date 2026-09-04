@@ -150,7 +150,18 @@ export const ReadOnly: Story = {
     },
 };
 
-const BoldOnlyBlock = createTipTapRichTextBlock({ supports: ["bold"] });
+const BoldOnlyBlock = createTipTapRichTextBlock({
+    history: false,
+    italic: false,
+    strike: false,
+    sub: false,
+    sup: false,
+    heading: false,
+    orderedList: false,
+    unorderedList: false,
+    nonBreakingSpace: false,
+    softHyphen: false,
+});
 
 function BoldOnlyStory() {
     const [state, setState] = useState<TipTapRichTextBlockState>(BoldOnlyBlock.defaultValues());
@@ -344,7 +355,15 @@ export const Placeholders: StoryObj<typeof PlaceholdersStory> = {
 };
 
 const PlaceholdersWithContentBlock = createTipTapRichTextBlock({
-    supports: ["bold", "italic"],
+    history: false,
+    strike: false,
+    sub: false,
+    sup: false,
+    heading: false,
+    orderedList: false,
+    unorderedList: false,
+    nonBreakingSpace: false,
+    softHyphen: false,
     placeholders: [
         { name: "firstName", label: "First Name" },
         { name: "lastName", label: "Last Name" },
@@ -567,7 +586,13 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
 };
 
 const ListTextBlockStylesBlock = createTipTapRichTextBlock({
-    supports: ["bold", "ordered-list", "unordered-list", "heading"],
+    history: false,
+    italic: false,
+    strike: false,
+    sub: false,
+    sup: false,
+    nonBreakingSpace: false,
+    softHyphen: false,
     textBlockStyles: [
         {
             name: "intro",
@@ -889,7 +914,7 @@ export const ListLevelMax: StoryObj<typeof ListLevelMaxStory> = {
     },
 };
 
-const HeadingLevelsBlock = createTipTapRichTextBlock({ headingLevels: [2, 3, 4] });
+const HeadingLevelsBlock = createTipTapRichTextBlock({ heading: { levels: [2, 3, 4] } });
 
 function HeadingLevelsStory() {
     const [state, setState] = useState<TipTapRichTextBlockState>(HeadingLevelsBlock.defaultValues());

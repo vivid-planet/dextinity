@@ -4,7 +4,7 @@ import { forwardRef, Inject, Injectable, Optional } from "@nestjs/common";
 import { createHmac } from "crypto";
 import exifr from "exifr";
 import { createReadStream } from "fs";
-import { basename, extname, parse } from "path";
+import { basename, extname } from "path";
 import probe from "probe-image-size";
 import * as rimraf from "rimraf";
 
@@ -610,7 +610,7 @@ export class FilesService {
     }
 
     async createFileUrl(file: FileInterface, { previewDamUrls = false }: { previewDamUrls?: boolean }): Promise<string> {
-        const filename = parse(file.name).name;
+        const filename = file.name;
 
         const baseUrl = [`/${this.config.basePath}/files`];
 
@@ -641,7 +641,7 @@ export class FilesService {
     }
 
     async createFileDownloadUrl(file: FileInterface, { previewDamUrls = false }: { previewDamUrls?: boolean }): Promise<string> {
-        const filename = parse(file.name).name;
+        const filename = file.name;
 
         const baseUrl = [`/dam/files/download`];
 

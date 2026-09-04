@@ -41,6 +41,21 @@ jobs:
                   cd packages/admin/admin
                   echo "PUBLISHED_VERSION=$(pnpm pkg get version | sed -r 's/"//g')" >> $GITHUB_ENV
 
+            # dotansimha/changesets-action creates the GitHub release without passing
+            # target_commitish, so GitHub places the tag on the default branch (main) instead of
+            # the released commit. That's wrong for every release that doesn't run on main.
+            # Creating the tag upfront fixes it: GitHub ignores target_commitish when the tag
+            # already exists.
+            - name: Create tag on released commit
+              if: ${{ contains(github.event.head_commit.message, 'Version Packages') }}
+              run: |
+                  if git ls-remote --exit-code --tags origin "v$PUBLISHED_VERSION" > /dev/null; then
+                      echo "Tag v$PUBLISHED_VERSION already exists"
+                  else
+                      git tag "v$PUBLISHED_VERSION" "$GITHUB_SHA"
+                      git push origin "v$PUBLISHED_VERSION"
+                  fi
+
             - name: Create Release Pull Request or Publish to npm
               id: changesets
               uses: dotansimha/changesets-action@v1.5.2

@@ -6,6 +6,6 @@ export default defineConfig({
     test: {
         exclude: ["dist/**", "node_modules/**"],
         reporters: ["default", "junit"],
-        outputFile: { junit: "./junit.xml" },
+        outputFile: { junit: "./junit-unit.xml" },
     },
 });

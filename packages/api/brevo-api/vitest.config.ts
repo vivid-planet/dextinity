@@ -11,6 +11,6 @@ export default defineConfig({
         environment: "node",
         setupFiles: ["./vitest.setup.ts"],
         reporters: ["default", "junit"],
-        outputFile: { junit: "./junit.xml" },
+        outputFile: { junit: "./junit-unit.xml" },
     },
 });

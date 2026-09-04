@@ -1,5 +1,57 @@
 # @comet/cms-admin
 
+## 10.4.0
+
+### Minor Changes
+
+- 4b9ead5: Add `icon` option to `TipTapInlineStyle`
+
+    Custom inline styles shown in the rich text toolbar's "More options" menu can now specify an `icon`, displayed next to the label the same way Superscript/Subscript already are:
+
+    ```tsx
+    createTipTapRichTextBlock({
+        inlineStyles: [
+            {
+                name: "highlight",
+                label: <FormattedMessage id="..." defaultMessage="Highlight" />,
+                icon: RteHighlight,
+                element: (props) => <span style={{ backgroundColor: "#fff3cd" }} {...props} />,
+            },
+        ],
+    });
+    ```
+
+    `icon` is optional; menu items without one keep rendering as before.
+
+- 4b9ead5: Move custom TipTap inline styles into the toolbar's "More options" menu
+
+    Custom `inlineStyles` (e.g. a project-specific "Uppercase" style) used to render as their own always-visible dropdown in the rich text toolbar. They now appear as toggleable menu items inside the "More options" ("...") menu, next to Superscript/Subscript, matching how the previous Draft.js-based rich text editor exposed custom inline styles as toolbar toggles rather than a separate dropdown.
+
+- a00f0b2: Support wildcard values for content scope dimensions in `getContentScopesForUser`
+
+    `getContentScopesForUser` can now use the wildcard value `"*"` as the value of a content scope dimension to grant access to any value for that dimension. The wildcard is matched during the content scope check, so it does not need to be part of `availableContentScopes`.
+
+    **Example**
+
+    ```ts
+    getContentScopesForUser(user: User): ContentScopesForUser {
+        // Grant access to every language within the "main" domain
+        return [{ domain: "main", language: "*" }];
+    }
+    ```
+
+    For users with access to all content scopes, `currentUser.permissions[].contentScopes` now returns a single wildcard scope (e.g. `[{ domain: "*", language: "*" }]`) instead of the enumerated `availableContentScopes`. The default `isAllowed` and `currentUser.allowedContentScopes` handle the wildcard; a custom `isAllowed` must treat `"*"` as matching any value of a dimension.
+
+### Patch Changes
+
+- b6cbbd9: Move icons to the start of the TipTap "More options" menu items
+
+    Superscript, Subscript, and custom inline-style menu items placed their icon directly after the label using a custom flexbox layout, so the icon's horizontal position varied with the label's length. They now use MUI's `ListItemIcon`/`ListItemText` with the icon leading the label, matching MUI's own menu item convention.
+    - @dextinity/admin@10.4.0
+    - @dextinity/admin-date-time@10.4.0
+    - @dextinity/admin-icons@10.4.0
+    - @dextinity/admin-rte@10.4.0
+
 ## 10.3.0
 
 ### Minor Changes

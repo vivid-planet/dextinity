@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/cms-admin",
-    "version": "10.3.0",
+    "version": "10.4.0",
     "description": "Dextinity CMS Admin package",
     "repository": {
         "directory": "packages/admin/cms-admin",

@@ -2,6 +2,7 @@
 import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { StandaloneHeadingBlockData } from "@src/blocks.generated";
 import { PageLayout } from "@src/layout/PageLayout";
+import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import clsx from "clsx";
 
 import { HeadingBlock } from "./HeadingBlock";
@@ -12,9 +13,11 @@ type StandaloneHeadingBlockProps = PropsWithData<StandaloneHeadingBlockData>;
 export const StandaloneHeadingBlock = withPreview(
     ({ data: { heading, textAlignment } }: StandaloneHeadingBlockProps) => {
         return (
-            <div className={clsx(styles.root, textAlignment === "center" && styles.rootCenter)}>
-                <HeadingBlock data={heading} />
-            </div>
+            <AnimateBoxInOnScroll direction="bottom">
+                <div className={clsx(styles.root, textAlignment === "center" && styles.rootCenter)}>
+                    <HeadingBlock data={heading} />
+                </div>
+            </AnimateBoxInOnScroll>
         );
     },
     { label: "Heading" },

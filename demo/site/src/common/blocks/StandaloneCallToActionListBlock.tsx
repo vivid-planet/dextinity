@@ -2,6 +2,7 @@
 import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { StandaloneCallToActionListBlockData } from "@src/blocks.generated";
 import { PageLayout } from "@src/layout/PageLayout";
+import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import clsx from "clsx";
 
 import { CallToActionListBlock } from "./CallToActionListBlock";
@@ -12,9 +13,11 @@ type StandaloneCallToActionListBlockProps = PropsWithData<StandaloneCallToAction
 export const StandaloneCallToActionListBlock = withPreview(
     ({ data: { callToActionList, alignment } }: StandaloneCallToActionListBlockProps) => {
         return (
-            <div className={clsx(styles.root, styles[`root--${alignment}`])}>
-                <CallToActionListBlock data={callToActionList} />
-            </div>
+            <AnimateBoxInOnScroll direction="bottom" offset={300}>
+                <div className={clsx(styles.root, styles[`root--${alignment}`])}>
+                    <CallToActionListBlock data={callToActionList} />
+                </div>
+            </AnimateBoxInOnScroll>
         );
     },
     { label: "CallToActionList" },

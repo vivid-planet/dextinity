@@ -1,5 +1,8 @@
-.form {
+.formWrapper {
     grid-column: 2 / -2;
+}
+
+.form {
     display: flex;
     flex-direction: column;
     gap: 20px;

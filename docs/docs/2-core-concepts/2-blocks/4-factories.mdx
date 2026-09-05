@@ -252,6 +252,116 @@ Values that are already stored are kept as they are.
 The preview image in particular stays part of the block's data either way, since the API's child block is non-nullable.
 :::
 
+## ExternalLinkBlock
+
+The `ExternalLinkBlock` lets editors enter a URL and offers two options besides it: "Open in new window" and "No follow".
+Where an option has no meaning — an internal application that is always embedded in an iframe, or redirects, where neither
+option affects the resulting HTTP redirect — the `createExternalLinkBlock` factory leaves it out.
+
+There is one factory per layer, and they do different things. Pick by how far the option should disappear:
+
+|             | `@dextinity/cms-admin`                         | `@dextinity/cms-api`                      |
+| ----------- | ---------------------------------------------- | ----------------------------------------- |
+| Effect      | Hides the field from the editor (`supports`)   | Removes the field from the block entirely |
+| Block name  | `ExternalLink`, own one required with `fields` | Mandatory, must be your own               |
+| Granularity | Per usage site                                 | Per block                                 |
+| Stored data | Untouched                                      | Untouched, lingers untyped                |
+
+The admin factory can do both: `supports` hides a field the block still has, `fields` takes it out of the block's data to
+match an API block of your own. Either way the name promises a field set, so the API factory always needs one of its own,
+and the admin factory needs one as soon as `fields` leaves an option out — it throws otherwise.
+
+The same admin block name may appear more than once, as the core itself does with `supports: []` in the redirects form next
+to the default in content. What makes that safe is that those blocks share one data shape, not that admin blocks go
+unregistered: the block clipboard decides whether copied content fits where it is pasted by comparing block names, so two
+blocks sharing a name have to be interchangeable.
+
+### API
+
+Use the `createExternalLinkBlock` factory. Unlike in the admin, the block name is **mandatory**:
+
+```ts title="url-link.block.ts"
+import { createExternalLinkBlock } from "@dextinity/cms-api";
+
+export const UrlLinkBlock = createExternalLinkBlock({ supports: [] }, "UrlLink");
+```
+
+An option left out here doesn't exist at all: it is absent from `block-meta.json` and from the generated
+`UrlLinkBlockData` / `UrlLinkBlockInput` types, and sending it as input is rejected by validation.
+
+That is also why the name is mandatory. A block's field set is part of what its name promises: the name is what ties stored
+data, the generated types, the admin block and the site component together, so one name means one field set. Two blocks
+registered under the same name would produce two identically named interfaces in `blocks.generated.ts`. A block created with
+a reduced field set is therefore a block of its own, not a variant of `ExternalLinkBlock`, and it needs a matching admin
+block and site component under that same name.
+
+`ExternalLinkBlock` is unchanged and keeps all three fields, so nothing existing is affected.
+
+Two things to be aware of before reaching for this:
+
+- **Stored values are not deleted.** Removing a field takes it out of the contract, not out of the database. Values already
+  stored under that block name stay in its JSON, untyped, until a migration removes them.
+- **Swapping the block at an existing usage site needs no migration on its own.** A `OneOfBlock` resolves by the key it's
+  registered under (for instance `external`), not by the block's name, so replacing `external: ExternalLinkBlock` with your
+  own block keeps working — the new block just doesn't read fields it doesn't have.
+
+### Admin
+
+Use the `createExternalLinkBlock` factory:
+
+```tsx title="ExternalLinkBlock.tsx"
+import { createExternalLinkBlock } from "@dextinity/cms-admin";
+
+export const ExternalLinkBlock = createExternalLinkBlock({ supports: ["openInNewWindow"] });
+```
+
+`supports` lists what the editor may set besides the URL. The example above offers "Open in new window" but not "No follow";
+pass `supports: []` to offer neither, so that only the URL can be entered.
+
+Pass the resulting block to `createLinkBlock` as the `external` target; everything built on that link block
+(`createTextLinkBlock`, `createImageLinkBlock`, rich text links, …) picks it up automatically.
+
+```tsx title="LinkBlock.tsx"
+import { createExternalLinkBlock, createLinkBlock, InternalLinkBlock } from "@dextinity/cms-admin";
+
+export const LinkBlock = createLinkBlock({
+    supportedBlocks: {
+        internal: InternalLinkBlock,
+        external: createExternalLinkBlock({ supports: [] }),
+    },
+});
+```
+
+You can create as many differently configured blocks as you like, because they all share one data shape. That is what makes
+the admin factory work per usage site — the core itself uses it that way, with `supports: []` in the redirects form next to
+the default in content.
+
+Values that are already stored are kept as they are, the editor just can't change them anymore.
+A field left out of `supports` stays part of the block's data, so the API block and the site component are unaffected.
+To always open external links in a new tab, do so in the site implementation instead.
+
+#### Pairing with an API block of your own
+
+`supports` is about the editor, not about the data, so it can't pair the block with an API block that has fewer fields —
+the block would still send the fields the API block doesn't have, and validation rejects that. Use `fields` and `name` for
+that, matching what you passed to the API factory:
+
+```tsx title="UrlLinkBlock.tsx"
+import { createExternalLinkBlock } from "@dextinity/cms-admin";
+
+export const UrlLinkBlock = createExternalLinkBlock({ fields: [], name: "UrlLink" });
+```
+
+`fields` decides which options the block's data has, `supports` which of those the editor may set, and it defaults to
+`fields`. So `fields: []` alone already means the editor sees only the URL. Two rules are checked at creation time and
+throw if broken: `supports` has to be a subset of `fields` — the editor can't set an option the block doesn't have — and a
+reduced `fields` needs a `name` of its own, so that a block with fewer fields can't keep passing itself off as
+`ExternalLink`.
+
+Both must line up with the API block exactly: sending a field it doesn't have is rejected, and so is omitting one it has.
+Leave `fields` and `name` alone unless you created your own API block; the `ExternalLinkBlock` shipped by the API has all
+of them.
+
 ## FinalFormBlock (Admin only)
 
 The FinalFormBlock factory can be used to convert a block's `AdminComponent` API to the Final Form `Field` API.
@@ -362,6 +472,9 @@ export const LinkBlock = createLinkBlock({
     },
 });
 ```
+
+To hide the "Open in new window" or "No follow" option from editors, pass an `external` block created with
+[`createExternalLinkBlock`](#externallinkblock) instead of `ExternalLinkBlock`.
 
 ### Site
 

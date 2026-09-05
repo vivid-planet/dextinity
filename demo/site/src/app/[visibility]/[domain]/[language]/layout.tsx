@@ -5,6 +5,7 @@ import { Header } from "@src/layout/header/Header";
 import { headerFragment } from "@src/layout/header/Header.fragment";
 import { TopNavigation } from "@src/layout/topNavigation/TopNavigation";
 import { topMenuPageTreeNodeFragment } from "@src/layout/topNavigation/TopNavigation.fragment";
+import { OrganizationJsonLd } from "@src/organization/OrganizationJsonLd";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { IntlProvider } from "@src/util/IntlProvider";
 import { loadMessages } from "@src/util/loadMessages";
@@ -63,6 +64,7 @@ export default async function Layout({ children, params }: LayoutProps<"/[visibi
 
     return (
         <IntlProvider locale={language} messages={messages}>
+            <OrganizationJsonLd siteConfig={siteConfig} />
             <TopNavigation data={topMenu} />
             <Header header={header} />
             {children}

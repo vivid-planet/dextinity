@@ -33,12 +33,18 @@ const defaultSupports: DamVideoBlockSupports[] = ["controls", "previewImage"];
 
 interface DamVideoBlockFactoryOptions {
     /**
+     * The block's name. Must match the name of the block created with `createDamVideoBlock` in the API.
+     * @default "DamVideo"
+     */
+    name?: string;
+    /**
      * What the editor can set besides the video file itself. Leave out anything the site implementation
      * doesn't use, for instance `["controls"]` for a site that renders no poster image, or `[]` for a site
      * that only reads the file's URL.
      *
      * Values that are already stored are kept as they are, the editor just can't change them anymore.
-     * The preview image is always part of the block's data, leaving it out only hides it from the editor.
+     * Whether an option is part of the block's data at all is decided by the API block, so use the same
+     * `supports` there.
      * @default ["controls", "previewImage"]
      */
     supports?: DamVideoBlockSupports[];
@@ -47,6 +53,7 @@ interface DamVideoBlockFactoryOptions {
 
 export const createDamVideoBlock = (
     {
+        name = "DamVideo",
         supports = defaultSupports,
         tags = [defineMessage({ id: "dextinity.damVideoBlock.tag.video", defaultMessage: "Video" })],
     }: DamVideoBlockFactoryOptions = {},
@@ -57,7 +64,7 @@ export const createDamVideoBlock = (
     const DamVideoBlock: BlockInterface<DamVideoBlockData, DamVideoBlockState, DamVideoBlockInput> = {
         ...createBlockSkeleton(),
 
-        name: "DamVideo",
+        name,
 
         displayName: <FormattedMessage id="dextinity.blocks.damVideo" defaultMessage="Video (CMS Asset)" />,
 

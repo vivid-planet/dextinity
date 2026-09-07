@@ -34,7 +34,7 @@ const config: Meta<typeof InlineStylesBlockStory> = {
 export default config;
 
 const InlineStylesBlock = createTipTapRichTextBlock({
-    history: false,
+    undoRedoButtons: false,
     bold: false,
     italic: false,
     strike: false,

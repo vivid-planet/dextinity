@@ -40,7 +40,7 @@ interface TipTapHeadingOptions {
  * The block's options with the defaults applied and the heading levels validated.
  */
 export interface TipTapResolvedOptions {
-    history: boolean;
+    undoRedoButtons: boolean;
     bold: boolean;
     italic: boolean;
     underline: boolean;
@@ -66,7 +66,7 @@ function isValidHeadingLevels(headingLevels: number[]): headingLevels is Heading
 }
 
 function resolveTipTapOptions({
-    history = true,
+    undoRedoButtons = true,
     bold = true,
     italic = true,
     underline = false,
@@ -87,7 +87,7 @@ function resolveTipTapOptions({
     }
 
     return {
-        history,
+        undoRedoButtons,
         bold,
         italic,
         underline,
@@ -168,9 +168,9 @@ export interface TipTapChildBlock {
 
 interface TipTapRichTextBlockFactoryOptions {
     /**
-     * Enables undo/redo. Defaults to `true`.
+     * Shows the undo/redo buttons in the toolbar. The keyboard shortcuts work regardless. Defaults to `true`.
      */
-    history?: boolean;
+    undoRedoButtons?: boolean;
     /**
      * Enables bold text. Defaults to `true`.
      */

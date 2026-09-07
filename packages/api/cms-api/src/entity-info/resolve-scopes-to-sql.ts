@@ -4,15 +4,30 @@ import { isEntityScopeMapping, type ScopedEntityMeta, type SingleEntityScopeMapp
 import { resolveFieldToSql } from "./resolve-field-to-sql";
 
 /**
+ * SQL expression used when an entity's scope cannot be determined (no scope at all, or a `@ScopedEntity` that cannot
+ * be converted to SQL).
+ */
+export const NO_SCOPES_SQL = "NULL::jsonb";
+
+/**
  * Resolves the scope(s) of an entity to a SQL expression returning a `jsonb` array of scopes (or `NULL::jsonb`).
  *
  * The scopes are taken from (in order of precedence):
  * 1. a `scope` property on the entity (simple case)
  * 2. a SQL-convertible `@ScopedEntity` mapping (string field path, object mapping, or an array of these for multiple scopes)
  *
- * A callback or service `@ScopedEntity` cannot be converted to SQL and therefore throws.
+ * A callback or service `@ScopedEntity` cannot be converted to SQL. Depending on `onUnsupported`, this either throws
+ * (default) or resolves to `NULL::jsonb`, which is used where a missing scope must not break the view creation.
  */
-export function resolveScopesToSql({ metadata, scopedEntity }: { metadata: EntityMetadata; scopedEntity: ScopedEntityMeta | undefined }): string {
+export function resolveScopesToSql({
+    metadata,
+    scopedEntity,
+    onUnsupported = "throw",
+}: {
+    metadata: EntityMetadata;
+    scopedEntity: ScopedEntityMeta | undefined;
+    onUnsupported?: "throw" | "null";
+}): string {
     const scopeProp = metadata.props.find((prop) => prop.name === "scope");
     if (scopeProp) {
         return `jsonb_build_array(${scopePropertyToJsonbSql(scopeProp, metadata.tableName)})`;
@@ -20,6 +35,10 @@ export function resolveScopesToSql({ metadata, scopedEntity }: { metadata: Entit
 
     if (scopedEntity) {
         if (!isEntityScopeMapping(scopedEntity)) {
+            if (onUnsupported === "null") {
+                return NO_SCOPES_SQL;
+            }
+
             throw new Error(
                 `Entity "${metadata.className}" uses a @ScopedEntity callback or service that cannot be converted to SQL, which the FullTextSearchModule requires. ` +
                     `Use the field-path string (e.g. @ScopedEntity("company.scope")) or the object mapping (e.g. @ScopedEntity({ companyId: "company.id" })) variant instead.`,
@@ -30,7 +49,7 @@ export function resolveScopesToSql({ metadata, scopedEntity }: { metadata: Entit
         return `jsonb_build_array(${scopeSqls.join(", ")})`;
     }
 
-    return "NULL::jsonb";
+    return NO_SCOPES_SQL;
 }
 
 function resolveScopeMappingToSql(mapping: SingleEntityScopeMapping, metadata: EntityMetadata, tableName: string): string {

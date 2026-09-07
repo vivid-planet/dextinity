@@ -131,8 +131,10 @@ export class DependenciesService {
                         blockIndex."targetId",
                         ei_root."name"                                                              "rootName",
                         ei_root."secondaryInformation"                                              "rootSecondaryInformation",
+                        ei_root."scopes"->0                                                         "rootScope",
                         ei_target."name"                                                            "targetName",
-                        ei_target."secondaryInformation"                                            "targetSecondaryInformation"
+                        ei_target."secondaryInformation"                                            "targetSecondaryInformation",
+                        ei_target."scopes"->0                                                       "targetScope"
                     FROM (
                         ${indexSelects.join("\n UNION ALL \n")}
                     ) blockIndex
@@ -443,6 +445,7 @@ export class DependenciesService {
         Object.assign(result, entity);
         result.name = context === "dependents" ? entity.rootName : entity.targetName;
         result.secondaryInformation = context === "dependents" ? entity.rootSecondaryInformation : entity.targetSecondaryInformation;
+        result.scope = context === "dependents" ? entity.rootScope : entity.targetScope;
         return result;
     }
 }

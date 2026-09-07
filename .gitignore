@@ -34,3 +34,5 @@ junit-storybook.xml
 # Build output of @dextinity/agent-features (copied from the skills/ and rules/ folders at the repository root)
 /packages/agent-features/skills/
 /packages/agent-features/rules/
+# Playwright CLI output (may contain credentials)
+.playwright-cli/

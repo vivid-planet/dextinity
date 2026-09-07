@@ -1,4 +1,4 @@
-import { BaseTranslationDialog, greyPalette, useContentTranslationService, useErrorDialog } from "@dextinity/admin";
+import { greyPalette, useContentTranslationService, useErrorDialog } from "@dextinity/admin";
 import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Extension, type Extensions } from "@tiptap/core";
@@ -25,6 +25,7 @@ import { TextBlockStyleParagraph } from "./extensions/TextBlockStyleParagraph";
 import { InlineStyleContext } from "./InlineStyleContext";
 import { createListLevelMaxExtension, getListNestingDepthFromJson, trimListNesting } from "./listLevelMaxHelpers";
 import { TextBlockStyleContext } from "./TextBlockStyleContext";
+import { TipTapContentTranslationDialog } from "./TipTapContentTranslationDialog";
 import { TipTapToolbar } from "./TipTapToolbar";
 
 export type TipTapSupports =
@@ -392,7 +393,7 @@ const ReadOnlyContent = styled("div")({
     },
 });
 
-interface TipTapEditorProps {
+export interface TipTapEditorProps {
     state: TipTapRichTextBlockState;
     updateState: React.Dispatch<React.SetStateAction<TipTapRichTextBlockState>>;
     supports: TipTapSupports[];
@@ -408,7 +409,7 @@ interface TipTapEditorProps {
     disableContentTranslation?: boolean;
 }
 
-const TipTapEditor = ({
+export const TipTapEditor = ({
     state,
     updateState,
     supports,
@@ -578,55 +579,6 @@ const TipTapEditor = ({
         </TextBlockStyleContext.Provider>
     );
 };
-
-interface TipTapContentTranslationDialogProps {
-    open: boolean;
-    onClose: () => void;
-    originalContent: JSONContent;
-    translatedContent: JSONContent;
-    onApplyTranslation: (content: JSONContent) => void;
-    editorProps: Pick<
-        TipTapEditorProps,
-        | "supports"
-        | "textBlockStyles"
-        | "inlineStyles"
-        | "placeholders"
-        | "linkBlock"
-        | "childBlocks"
-        | "maxTextBlocks"
-        | "listLevelMax"
-        | "headingLevels"
-    >;
-}
-
-const TipTapContentTranslationDialog = ({
-    open,
-    onClose,
-    originalContent,
-    translatedContent,
-    onApplyTranslation,
-    editorProps,
-}: TipTapContentTranslationDialogProps) => (
-    <BaseTranslationDialog
-        open={open}
-        onClose={onClose}
-        originalText={originalContent}
-        translatedText={translatedContent}
-        onApplyTranslation={onApplyTranslation}
-        renderOriginalText={(content) => <TipTapEditor state={{ tipTapContent: content }} updateState={() => {}} {...editorProps} readOnly />}
-        renderTranslatedText={(content, onChange) => (
-            <TipTapEditor
-                state={{ tipTapContent: content }}
-                updateState={(next) => {
-                    const nextState = typeof next === "function" ? next({ tipTapContent: content }) : next;
-                    onChange(nextState.tipTapContent);
-                }}
-                {...editorProps}
-                disableContentTranslation
-            />
-        )}
-    />
-);
 
 type TipTapRichTextBlockInterface = BlockInterface<TipTapRichTextBlockData, TipTapRichTextBlockState, TipTapRichTextBlockInput> &
     ReadOnlyBlockRenderInterface<TipTapRichTextBlockState>;

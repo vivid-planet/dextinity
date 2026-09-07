@@ -37,9 +37,9 @@ interface TipTapHeadingOptions {
 }
 
 /**
- * The enabled features, resolved from the block's options.
+ * The block's options with the defaults applied and the heading levels validated.
  */
-export interface TipTapFeatures {
+export interface TipTapResolvedOptions {
     history: boolean;
     bold: boolean;
     italic: boolean;
@@ -65,7 +65,7 @@ function isValidHeadingLevels(headingLevels: number[]): headingLevels is Heading
     );
 }
 
-function resolveTipTapFeatures({
+function resolveTipTapOptions({
     history = true,
     bold = true,
     italic = true,
@@ -79,7 +79,7 @@ function resolveTipTapFeatures({
     nonBreakingSpace = true,
     softHyphen = true,
     link,
-}: TipTapRichTextBlockFactoryOptions = {}): TipTapFeatures {
+}: TipTapRichTextBlockFactoryOptions = {}): TipTapResolvedOptions {
     const headingLevels = (heading !== false && heading !== true ? heading.levels : undefined) ?? allHeadingLevels;
 
     if (!isValidHeadingLevels(headingLevels)) {
@@ -434,7 +434,7 @@ const ReadOnlyContent = styled("div")({
 const TipTapEditor = ({
     state,
     updateState,
-    features,
+    resolvedOptions,
     textBlockStyles,
     inlineStyles,
     placeholders,
@@ -446,7 +446,7 @@ const TipTapEditor = ({
 }: {
     state: TipTapRichTextBlockState;
     updateState: React.Dispatch<React.SetStateAction<TipTapRichTextBlockState>>;
-    features: TipTapFeatures;
+    resolvedOptions: TipTapResolvedOptions;
     textBlockStyles: TipTapTextBlockStyle[];
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
@@ -458,7 +458,7 @@ const TipTapEditor = ({
 }) => {
     const hasTextBlockStyles = textBlockStyles.length > 0;
     const hasInlineStyles = inlineStyles.length > 0;
-    const hasLink = features.link && !!linkBlock;
+    const hasLink = resolvedOptions.link && !!linkBlock;
     const hasPlaceholders = placeholders.length > 0;
     const childBlockEntries = Object.values(childBlocks);
     const hasBlockChildBlocks = childBlockEntries.some((childBlock) => childBlock.display === "block");
@@ -468,26 +468,26 @@ const TipTapEditor = ({
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
-                bold: features.bold ? {} : false,
-                italic: features.italic ? {} : false,
-                underline: features.underline ? {} : false,
-                strike: features.strike ? {} : false,
-                heading: features.heading && !hasTextBlockStyles ? { levels: features.heading.levels } : false,
+                bold: resolvedOptions.bold ? {} : false,
+                italic: resolvedOptions.italic ? {} : false,
+                underline: resolvedOptions.underline ? {} : false,
+                strike: resolvedOptions.strike ? {} : false,
+                heading: resolvedOptions.heading && !hasTextBlockStyles ? { levels: resolvedOptions.heading.levels } : false,
                 paragraph: hasTextBlockStyles ? false : undefined,
-                orderedList: features.orderedList ? {} : false,
-                bulletList: features.unorderedList ? {} : false,
+                orderedList: resolvedOptions.orderedList ? {} : false,
+                bulletList: resolvedOptions.unorderedList ? {} : false,
                 blockquote: false,
                 code: false,
                 codeBlock: false,
                 link: false,
             }),
             ...(hasTextBlockStyles ? [TextBlockStyleParagraph] : []),
-            ...(hasTextBlockStyles && features.heading ? [TextBlockStyleHeading.configure({ levels: features.heading.levels })] : []),
+            ...(hasTextBlockStyles && resolvedOptions.heading ? [TextBlockStyleHeading.configure({ levels: resolvedOptions.heading.levels })] : []),
             ...(hasInlineStyles ? [InlineStyleMark] : []),
-            ...(features.sup ? [Superscript] : []),
-            ...(features.sub ? [Subscript] : []),
-            ...(features.nonBreakingSpace ? [NonBreakingSpace] : []),
-            ...(features.softHyphen ? [SoftHyphen] : []),
+            ...(resolvedOptions.sup ? [Superscript] : []),
+            ...(resolvedOptions.sub ? [Subscript] : []),
+            ...(resolvedOptions.nonBreakingSpace ? [NonBreakingSpace] : []),
+            ...(resolvedOptions.softHyphen ? [SoftHyphen] : []),
             ...(hasPlaceholders ? [Placeholder] : []),
             ...(hasLink ? [CmsLink] : []),
             ...(hasBlockChildBlocks ? [CmsBlock] : []),
@@ -554,7 +554,7 @@ const TipTapEditor = ({
                         <Box sx={{ border: `1px solid ${greyPalette[100]}`, borderTopWidth: 0, backgroundColor: "white", borderRadius: "2px" }}>
                             <TipTapToolbar
                                 editor={editor}
-                                features={features}
+                                resolvedOptions={resolvedOptions}
                                 textBlockStyles={textBlockStyles}
                                 inlineStyles={inlineStyles}
                                 placeholders={placeholders}
@@ -578,7 +578,7 @@ type TipTapRichTextBlockInterface = BlockInterface<TipTapRichTextBlockData, TipT
  * @experimental
  */
 export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOptions = {}): TipTapRichTextBlockInterface => {
-    const features = resolveTipTapFeatures(options);
+    const resolvedOptions = resolveTipTapOptions(options);
     const textBlockStyles = options.textBlockStyles ?? [];
     const inlineStyles = options.inlineStyles ?? [];
     const placeholders = options.placeholders ?? [];
@@ -590,7 +590,7 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
     const listLevelMax = options.listLevelMax;
 
     const sharedEditorProps = {
-        features,
+        resolvedOptions,
         textBlockStyles,
         inlineStyles,
         placeholders,

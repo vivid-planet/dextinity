@@ -48,9 +48,9 @@ interface TipTapHeadingOptions {
 }
 
 /**
- * The enabled features, resolved from the block's options.
+ * The block's options with the defaults applied and the heading levels validated.
  */
-export interface TipTapFeatures {
+export interface TipTapResolvedOptions {
     bold: boolean;
     italic: boolean;
     underline: boolean;
@@ -211,7 +211,7 @@ export interface CreateTipTapRichTextBlockOptions {
     migrateFromDraftJs?: boolean | { textBlockStyleMap?: Record<string, string | TextBlockStyleMapping>; inlineStyleMap?: Record<string, string> };
 }
 
-export function resolveTipTapFeatures({
+export function resolveTipTapOptions({
     bold = true,
     italic = true,
     underline = false,
@@ -224,7 +224,7 @@ export function resolveTipTapFeatures({
     nonBreakingSpace = true,
     softHyphen = true,
     link,
-}: CreateTipTapRichTextBlockOptions = {}): TipTapFeatures {
+}: CreateTipTapRichTextBlockOptions = {}): TipTapResolvedOptions {
     const headingLevels = (heading !== false && heading !== true ? heading.levels : undefined) ?? allHeadingLevels;
 
     if (!isValidHeadingLevels(headingLevels)) {
@@ -248,14 +248,14 @@ export function resolveTipTapFeatures({
 }
 
 function buildExtensions({
-    features,
+    resolvedOptions,
     textBlockStyles,
     inlineStyles,
     placeholders,
     hasBlockChildBlocks,
     hasInlineChildBlocks,
 }: {
-    features: TipTapFeatures;
+    resolvedOptions: TipTapResolvedOptions;
     textBlockStyles: TipTapTextBlockStyle[];
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
@@ -267,28 +267,28 @@ function buildExtensions({
     const hasPlaceholders = placeholders.length > 0;
     return [
         StarterKit.configure({
-            bold: features.bold ? {} : false,
-            italic: features.italic ? {} : false,
-            underline: features.underline ? {} : false,
-            strike: features.strike ? {} : false,
-            heading: features.heading && !hasTextBlockStyles ? { levels: features.heading.levels } : false,
+            bold: resolvedOptions.bold ? {} : false,
+            italic: resolvedOptions.italic ? {} : false,
+            underline: resolvedOptions.underline ? {} : false,
+            strike: resolvedOptions.strike ? {} : false,
+            heading: resolvedOptions.heading && !hasTextBlockStyles ? { levels: resolvedOptions.heading.levels } : false,
             paragraph: hasTextBlockStyles ? false : undefined,
-            orderedList: features.orderedList ? {} : false,
-            bulletList: features.unorderedList ? {} : false,
+            orderedList: resolvedOptions.orderedList ? {} : false,
+            bulletList: resolvedOptions.unorderedList ? {} : false,
             blockquote: false,
             code: false,
             codeBlock: false,
             link: false,
         }),
         ...(hasTextBlockStyles ? [TextBlockStyleParagraph] : []),
-        ...(hasTextBlockStyles && features.heading ? [TextBlockStyleHeading.configure({ levels: features.heading.levels })] : []),
+        ...(hasTextBlockStyles && resolvedOptions.heading ? [TextBlockStyleHeading.configure({ levels: resolvedOptions.heading.levels })] : []),
         ...(hasInlineStyles ? [InlineStyleMark] : []),
-        ...(features.sup ? [Superscript] : []),
-        ...(features.sub ? [Subscript] : []),
-        ...(features.nonBreakingSpace ? [NonBreakingSpace] : []),
-        ...(features.softHyphen ? [SoftHyphen] : []),
+        ...(resolvedOptions.sup ? [Superscript] : []),
+        ...(resolvedOptions.sub ? [Subscript] : []),
+        ...(resolvedOptions.nonBreakingSpace ? [NonBreakingSpace] : []),
+        ...(resolvedOptions.softHyphen ? [SoftHyphen] : []),
         ...(hasPlaceholders ? [Placeholder] : []),
-        ...(features.link ? [CmsLink] : []),
+        ...(resolvedOptions.link ? [CmsLink] : []),
         ...(hasBlockChildBlocks ? [CmsBlock] : []),
         ...(hasInlineChildBlocks ? [CmsInlineBlock] : []),
     ];
@@ -629,15 +629,15 @@ export function createTipTapRichTextBlock(
     const blockName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
     const baseMigrate = typeof nameOrOptions !== "string" && nameOrOptions.migrate ? nameOrOptions.migrate : { migrations: [], version: 0 };
 
-    const features = resolveTipTapFeatures(options);
-    const headingLevels = features.heading ? features.heading.levels : [];
+    const resolvedOptions = resolveTipTapOptions(options);
+    const headingLevels = resolvedOptions.heading ? resolvedOptions.heading.levels : [];
     const childBlocks: Record<string, Block> = Object.fromEntries(Object.entries(childBlocksConfig).map(([key, { block }]) => [key, block]));
     const childBlockConfigs = Object.values(childBlocksConfig);
     const hasChildBlocks = childBlockConfigs.length > 0;
     const hasBlockChildBlocks = childBlockConfigs.some(({ display }) => display === "block");
     const hasInlineChildBlocks = childBlockConfigs.some(({ display }) => display === "inline");
     const extensions = buildExtensions({
-        features,
+        resolvedOptions,
         textBlockStyles,
         inlineStyles,
         placeholders,
@@ -666,7 +666,7 @@ export function createTipTapRichTextBlock(
               migrations: [
                   buildDraftJsToTipTapMigration({
                       schema,
-                      features,
+                      resolvedOptions,
                       link: LinkBlock,
                       maxTextBlocks,
                       listLevelMax,

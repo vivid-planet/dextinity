@@ -1,7 +1,7 @@
 import type { JSONContent } from "@tiptap/core";
 
 import type { Block } from "../../block";
-import type { TipTapFeatures } from "../createTipTapRichTextBlock";
+import type { TipTapResolvedOptions } from "../createTipTapRichTextBlock";
 
 interface DraftJsInlineStyleRange {
     style: string;
@@ -57,7 +57,7 @@ interface TextBlockStyleMapping {
 }
 
 interface ConvertOptions {
-    features: TipTapFeatures;
+    resolvedOptions: TipTapResolvedOptions;
     link?: Block;
     /**
      * Maps DraftJS block types (e.g. custom `paragraph-small`) to a TipTap `textBlockStyle`
@@ -81,15 +81,15 @@ interface ConvertOptions {
     listLevelMax?: number;
 }
 
-type TipTapMarkFeature = "bold" | "italic" | "underline" | "strike" | "sup" | "sub";
+type TipTapMarkOption = "bold" | "italic" | "underline" | "strike" | "sup" | "sub";
 
-const INLINE_STYLE_TO_MARK: Record<string, { mark: string; feature: TipTapMarkFeature }> = {
-    BOLD: { mark: "bold", feature: "bold" },
-    ITALIC: { mark: "italic", feature: "italic" },
-    UNDERLINE: { mark: "underline", feature: "underline" },
-    STRIKETHROUGH: { mark: "strike", feature: "strike" },
-    SUP: { mark: "superscript", feature: "sup" },
-    SUB: { mark: "subscript", feature: "sub" },
+const INLINE_STYLE_TO_MARK: Record<string, { mark: string; option: TipTapMarkOption }> = {
+    BOLD: { mark: "bold", option: "bold" },
+    ITALIC: { mark: "italic", option: "italic" },
+    UNDERLINE: { mark: "underline", option: "underline" },
+    STRIKETHROUGH: { mark: "strike", option: "strike" },
+    SUP: { mark: "superscript", option: "sup" },
+    SUB: { mark: "subscript", option: "sub" },
 };
 
 const HEADER_TYPE_TO_LEVEL: Record<string, number> = {
@@ -127,13 +127,13 @@ interface InlineSegment {
 function buildInlineContent({
     block,
     entityMap,
-    features,
+    resolvedOptions,
     hasLink,
     inlineStyleMap,
 }: {
     block: DraftJsBlock;
     entityMap: Record<string, DraftJsEntity>;
-    features: TipTapFeatures;
+    resolvedOptions: TipTapResolvedOptions;
     hasLink: boolean;
     inlineStyleMap: Record<string, string>;
 }): JSONContent[] {
@@ -184,7 +184,7 @@ function buildInlineContent({
         for (const range of styleRanges) {
             if (range.start <= start && range.end >= end) {
                 const mapping = INLINE_STYLE_TO_MARK[range.style];
-                if (mapping && features[mapping.feature]) {
+                if (mapping && resolvedOptions[mapping.option]) {
                     if (!marks.some((mark) => mark.type === mapping.mark)) {
                         marks.push({ type: mapping.mark });
                     }
@@ -213,7 +213,7 @@ function buildInlineContent({
         segments.push({ text: segmentText, marks });
     }
 
-    return segments.flatMap((segment) => splitAtomChars(segment.text, segment.marks, features));
+    return segments.flatMap((segment) => splitAtomChars(segment.text, segment.marks, resolvedOptions));
 }
 
 const NBSP_CHAR = "\u00a0";
@@ -231,8 +231,8 @@ function makeTextNode(text: string, marks: NonNullable<JSONContent["marks"]>): J
 // RTE persists non-breaking-spaces and soft-hyphens) becomes a dedicated TipTap atom node
 // when the corresponding feature is supported. Otherwise the characters are preserved as-is
 // inside the surrounding text node.
-function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, features: TipTapFeatures): JSONContent[] {
-    const { nonBreakingSpace, softHyphen } = features;
+function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, resolvedOptions: TipTapResolvedOptions): JSONContent[] {
+    const { nonBreakingSpace, softHyphen } = resolvedOptions;
 
     if ((!nonBreakingSpace && !softHyphen) || (!text.includes(NBSP_CHAR) && !text.includes(SOFT_HYPHEN_CHAR))) {
         return text.length === 0 ? [] : [makeTextNode(text, marks)];
@@ -294,9 +294,9 @@ function makeListItem(inlineContent: JSONContent[]): JSONContent {
 
 type ListType = "orderedList" | "bulletList";
 
-const LIST_BLOCK_TYPE_TO_LIST: Record<string, { listType: ListType; feature: "orderedList" | "unorderedList" }> = {
-    "unordered-list-item": { listType: "bulletList", feature: "unorderedList" },
-    "ordered-list-item": { listType: "orderedList", feature: "orderedList" },
+const LIST_BLOCK_TYPE_TO_LIST: Record<string, { listType: ListType; option: "orderedList" | "unorderedList" }> = {
+    "unordered-list-item": { listType: "bulletList", option: "unorderedList" },
+    "ordered-list-item": { listType: "orderedList", option: "orderedList" },
 };
 
 interface OpenList {
@@ -316,7 +316,7 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
         return makeEmptyDoc();
     }
 
-    const features = options.features;
+    const resolvedOptions = options.resolvedOptions;
     const hasLink = !!options.link;
     const textBlockStyleMap = options.textBlockStyleMap ?? {};
     const inlineStyleMap = options.inlineStyleMap ?? {};
@@ -374,10 +374,10 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
     };
 
     for (const block of draftContent.blocks) {
-        const inlineContent = buildInlineContent({ block, entityMap, features, hasLink, inlineStyleMap });
+        const inlineContent = buildInlineContent({ block, entityMap, resolvedOptions, hasLink, inlineStyleMap });
 
         const listMapping = LIST_BLOCK_TYPE_TO_LIST[block.type];
-        if (listMapping && features[listMapping.feature]) {
+        if (listMapping && resolvedOptions[listMapping.option]) {
             addListItem(listMapping.listType, block.depth ?? 0, inlineContent);
             continue;
         }
@@ -390,7 +390,7 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
 
         topLevel.push(
             makeTextBlockNode(inlineContent, {
-                headingLevel: headingLevel !== undefined && features.heading !== false ? headingLevel : undefined,
+                headingLevel: headingLevel !== undefined && resolvedOptions.heading !== false ? headingLevel : undefined,
                 textBlockStyle: mapping?.textBlockStyle,
             }),
         );

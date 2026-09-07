@@ -1,39 +1,110 @@
-.scrollContainer {
-    opacity: 0;
-    transition:
-        opacity var(--animation-duration, 500ms) ease-in-out var(--animation-delay, 0ms),
-        transform var(--animation-transform-duration, 1000ms) cubic-bezier(0.22, 1, 0.36, 1) var(--animation-delay, 0ms);
+@keyframes animate-box-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
-.fullHeight {
-    height: 100%;
+@keyframes animate-box-in-from-left {
+    from {
+        opacity: 0;
+        transform: translate3d(-40px, 0, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes animate-box-in-from-right {
+    from {
+        opacity: 0;
+        transform: translate3d(40px, 0, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes animate-box-in-from-top {
+    from {
+        opacity: 0;
+        transform: translate3d(0, -40px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes animate-box-in-from-bottom {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 40px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.scrollContainer {
+    /*
+     * `animation-delay` has no effect on a progress-based timeline, so the stagger is a shift of the animation
+     * range instead. `--animation-stagger` is set per box; `--animation-stagger-step` lets an AnimateGroup drop
+     * the stagger at a breakpoint by setting it to 0.
+     */
+    --animation-range-shift: calc(1% * var(--animation-stagger, 0) * var(--animation-stagger-step, 8));
+
+    animation-name: animate-box-in;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: both;
+
+    /*
+     * An AnimateGroup sets `--animation-group-timeline` to its own named timeline so that its members reveal
+     * together; on their own, boxes run on their own view progress timeline.
+     */
+    animation-timeline: var(--animation-group-timeline, view());
+    animation-range: entry var(--animation-range-shift) entry calc(var(--animation-range-end, 60%) + var(--animation-range-shift));
+
+    /*
+     * Only used where `animation-timeline` is not supported: the declaration above is dropped there, the animation
+     * falls back to the document timeline and every box fades in once on load instead of on scroll.
+     */
+    animation-duration: 500ms;
 }
 
 .fromLeft {
-    transform: translate3d(-40px, 0, 0);
+    animation-name: animate-box-in-from-left;
 }
 
 .fromRight {
-    transform: translate3d(40px, 0, 0);
+    animation-name: animate-box-in-from-right;
 }
 
 .fromTop {
-    transform: translate3d(0, -40px, 0);
+    animation-name: animate-box-in-from-top;
 }
 
 .fromBottom {
-    transform: translate3d(0, 40px, 0);
+    animation-name: animate-box-in-from-bottom;
 }
 
-.animate {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
+/* A box can be tabbed into before it has been revealed, for instance inside an accordion panel that was just opened. */
+.scrollContainer:focus-within {
+    animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
     .scrollContainer {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-        transition: none;
+        animation: none;
     }
 }

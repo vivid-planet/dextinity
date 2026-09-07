@@ -1,0 +1,51 @@
+@use "@src/styles/variables" as *;
+
+/*
+ * Members of a group run on the group's view progress timeline instead of their own, so they reveal together
+ * regardless of where each of them sits in the viewport.
+ */
+.animateGroup {
+    timeline-scope: --animate-group;
+    view-timeline-name: --animate-group;
+
+    --animation-group-timeline: --animate-group;
+}
+
+/*
+ * Opting out per breakpoint: members fall back to their own timeline and lose the stagger. Needed where a layout
+ * stacks on small screens and the group would otherwise reveal items that are still far below the fold.
+ */
+@mixin disabled {
+    --animation-group-timeline: view();
+    --animation-stagger-step: 0;
+}
+
+@media (max-width: ($breakpoint-sm - 1px)) {
+    .animateGroupDisabledXs {
+        @include disabled;
+    }
+}
+
+@media (min-width: $breakpoint-sm) and (max-width: ($breakpoint-md - 1px)) {
+    .animateGroupDisabledSm {
+        @include disabled;
+    }
+}
+
+@media (min-width: $breakpoint-md) and (max-width: ($breakpoint-lg - 1px)) {
+    .animateGroupDisabledMd {
+        @include disabled;
+    }
+}
+
+@media (min-width: $breakpoint-lg) and (max-width: ($breakpoint-xl - 1px)) {
+    .animateGroupDisabledLg {
+        @include disabled;
+    }
+}
+
+@media (min-width: $breakpoint-xl) {
+    .animateGroupDisabledXl {
+        @include disabled;
+    }
+}

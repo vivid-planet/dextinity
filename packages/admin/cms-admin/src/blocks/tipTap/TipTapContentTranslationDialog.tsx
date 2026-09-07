@@ -38,7 +38,7 @@ export const TipTapContentTranslationDialog = ({
                     onChange(nextState.tipTapContent);
                 }}
                 {...editorProps}
-                disableContentTranslation
+                resolvedOptions={{ ...editorProps.resolvedOptions, contentTranslation: false }}
             />
         )}
     />

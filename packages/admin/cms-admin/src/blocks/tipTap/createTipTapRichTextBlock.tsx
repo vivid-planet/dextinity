@@ -63,6 +63,7 @@ export interface TipTapResolvedOptions {
     nonBreakingSpace: boolean;
     softHyphen: boolean;
     link: boolean;
+    contentTranslation: boolean;
 }
 
 const allHeadingLevels: HeadingLevel[] = [1, 2, 3, 4, 5, 6];
@@ -89,6 +90,7 @@ function resolveTipTapOptions({
     nonBreakingSpace = true,
     softHyphen = true,
     link,
+    contentTranslation = true,
 }: TipTapRichTextBlockFactoryOptions = {}): TipTapResolvedOptions {
     const headingLevels = (heading !== false && heading !== true ? heading.levels : undefined) ?? allHeadingLevels;
 
@@ -110,6 +112,7 @@ function resolveTipTapOptions({
         nonBreakingSpace,
         softHyphen,
         link: !!link,
+        contentTranslation,
     };
 }
 
@@ -230,6 +233,11 @@ interface TipTapRichTextBlockFactoryOptions {
      * Enables links by passing the link block that is used for them. Disabled by default.
      */
     link?: BlockInterface & LinkBlockInterface;
+    /**
+     * Shows the in-toolbar "Translate" button. Defaults to `true`. Set to `false` to hide it, e.g.
+     * to avoid a nested translate button when this block is rendered inside another translation UI.
+     */
+    contentTranslation?: boolean;
     textBlockStyles?: TipTapTextBlockStyle[];
     inlineStyles?: TipTapInlineStyle[];
     placeholders?: TipTapPlaceholder[];
@@ -253,11 +261,6 @@ interface TipTapRichTextBlockFactoryOptions {
      * A value of 1 means only a flat list (no nesting), 2 allows one level of sub-lists, etc.
      */
     listLevelMax?: number;
-    /**
-     * Hides the in-toolbar "Translate" button, e.g. to avoid a nested translate button when this
-     * block is rendered inside another translation UI.
-     */
-    disableContentTranslation?: boolean;
 }
 
 function getPlainTextFromContent(content: JSONContent): string {
@@ -499,7 +502,6 @@ export interface TipTapEditorProps {
     maxTextBlocks?: number;
     listLevelMax?: number;
     readOnly?: boolean;
-    disableContentTranslation?: boolean;
 }
 
 export const TipTapEditor = ({
@@ -514,7 +516,6 @@ export const TipTapEditor = ({
     maxTextBlocks,
     listLevelMax,
     readOnly,
-    disableContentTranslation,
 }: TipTapEditorProps) => {
     const childBlocksByKey: Record<string, BlockInterface> = Object.fromEntries(Object.entries(childBlocks).map(([key, { block }]) => [key, block]));
 
@@ -575,7 +576,7 @@ export const TipTapEditor = ({
     }, [readOnly, editor, state.tipTapContent]);
 
     const translationContext = useContentTranslationService();
-    const canTranslate = translationContext.enabled && !disableContentTranslation;
+    const canTranslate = translationContext.enabled && resolvedOptions.contentTranslation;
     const [translationDialogState, setTranslationDialogState] = useState<{ original: JSONContent; translated: JSONContent } | null>(null);
     const errorDialog = useErrorDialog();
 
@@ -680,7 +681,6 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
     const hasChildBlocks = Object.keys(childBlocks).length > 0;
     const maxTextBlocks = options.maxTextBlocks;
     const listLevelMax = options.listLevelMax;
-    const disableContentTranslation = options.disableContentTranslation;
 
     const sharedEditorProps = {
         resolvedOptions,
@@ -691,7 +691,6 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
         childBlocks,
         maxTextBlocks,
         listLevelMax,
-        disableContentTranslation,
     };
 
     const tipTapExtensions = buildTipTapExtensions({

@@ -71,13 +71,18 @@ export async function POST(request: NextRequest, context: RouteContext<"/[visibi
     ].filter(Boolean);
 
     try {
-        await mailerTransport.sendMail({
+        const { rejected } = await mailerTransport.sendMail({
             from: fromEmail,
             to: process.env.MAILER_SEND_ALL_MAILS_TO || toEmail,
             replyTo: email,
             subject: "Contact form inquiry",
             text: `${details.join("\n")}\n\n${message}`,
         });
+
+        if (rejected.length > 0) {
+            console.error("The mail server rejected the contact form inquiry for", rejected);
+            return NextResponse.json({ error: "Something went wrong processing the contact form" }, { status: 500 });
+        }
 
         return NextResponse.json(
             { success: true },

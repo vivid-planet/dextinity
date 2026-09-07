@@ -162,6 +162,8 @@ registerStyles(
 Always use `!important` in media query overrides. Without it, the email client's inlined styles will take precedence and your responsive styles won't apply.
 :::
 
+Two client behaviors matter for responsive overrides: Yahoo Mail and Outlook.com drop any declaration that contains a [`calc()`](./1-email-basics.md#no-css-calc), and Yahoo Mail rewrites [`height` into `min-height`](./1-email-basics.md#height-becomes-min-height-in-yahoo-mail).
+
 ### Selectors That Reach Every Client
 
 Gmail applies class, element and id selectors, and descendant and child combinators. It drops the whole rule for a pseudo-class or a pseudo-element, and of the attribute selectors it applies only `[class~="value"]`. Its mobile webmail is narrower still: no combinators, no attribute selectors, and no media queries, so no responsive rule reaches it.

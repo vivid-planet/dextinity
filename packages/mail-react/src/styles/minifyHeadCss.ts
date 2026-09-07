@@ -13,5 +13,15 @@ export function minifyHeadCss(css: string): string {
         throw new Error(`The registered styles do not parse, so they cannot be minified: ${parseErrors.join("; ")}`);
     }
 
-    return syntax.generate(syntax.compress(styleSheet).ast);
+    return separateConsecutiveClosingBraces(syntax.generate(syntax.compress(styleSheet).ast));
+}
+
+/**
+ * Outlook.com and the Outlook apps for iOS and Android drop everything that follows the first `}}`
+ * of a `<style>` tag.
+ *
+ * @see https://github.com/hteumeuleu/email-bugs/issues/92
+ */
+function separateConsecutiveClosingBraces(css: string): string {
+    return css.replace(/\}(?=\})/g, "} ");
 }

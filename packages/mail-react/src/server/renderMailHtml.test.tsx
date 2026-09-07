@@ -104,6 +104,34 @@ describe("server/renderMailHtml", () => {
         expect(html).toContain("color:red;padding-bottom:8px");
     });
 
+    it("writes no two closing braces in a row, which Outlook cuts the head CSS at", () => {
+        registerStyles(css`
+            @media (max-width: 479px) {
+                .firstMediaBlock {
+                    color: red;
+                }
+            }
+            @media (max-width: 599px) {
+                .secondMediaBlock {
+                    color: green;
+                }
+            }
+        `);
+
+        const { html } = renderMailHtml(
+            <MjmlMailRoot>
+                <MjmlSection>
+                    <MjmlColumn>
+                        <MjmlText>Hello</MjmlText>
+                    </MjmlColumn>
+                </MjmlSection>
+            </MjmlMailRoot>,
+        );
+
+        expect(html).not.toContain("}}");
+        expect(html).toContain(".secondMediaBlock{color:green}");
+    });
+
     it("keeps the Outlook properties that MJML writes", () => {
         const { html } = renderMailHtml(
             <MjmlMailRoot>

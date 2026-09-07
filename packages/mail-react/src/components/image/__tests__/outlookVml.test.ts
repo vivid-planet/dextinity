@@ -5,16 +5,16 @@ import { generateOutlookImageVml } from "../outlookVml.js";
 const image = { src: "image.jpg", width: 400, height: 200 };
 
 describe("generateOutlookImageVml", () => {
-    it("measures arcsize against the shorter side, not the width", () => {
+    it("measures arcsize against the whole shorter side", () => {
         const vml = generateOutlookImageVml({ ...image, borderRadius: 20 });
 
-        expect(vml).toContain(`arcsize="20%"`);
+        expect(vml).toContain(`arcsize="10%"`);
     });
 
     it("caps arcsize at a fully rounded side", () => {
         const vml = generateOutlookImageVml({ ...image, borderRadius: 999 });
 
-        expect(vml).toContain(`arcsize="100%"`);
+        expect(vml).toContain(`arcsize="50%"`);
     });
 
     it("draws an oval for a fully rounded radius", () => {

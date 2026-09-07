@@ -1,5 +1,17 @@
 # @comet/admin-generator
 
+## 10.4.0
+
+### Patch Changes
+
+- Updated dependencies [4b9ead5]
+- Updated dependencies [4b9ead5]
+- Updated dependencies [b6cbbd9]
+- Updated dependencies [a00f0b2]
+    - @dextinity/cms-admin@10.4.0
+    - @dextinity/admin@10.4.0
+    - @dextinity/admin-icons@10.4.0
+
 ## 10.3.0
 
 ### Patch Changes

@@ -28,6 +28,24 @@ import { TipTapToolbar } from "./TipTapToolbar";
 
 export type { JSONContent as TipTapRichTextBlockContent } from "@tiptap/core";
 
+/**
+ * Mirrors the shape `@dextinity/cli`'s `generate-block-types` emits for `TipTapRichTextBlock` fields.
+ * `@tiptap/core`'s own `JSONContent` types a node's `type` as optional (to allow building up partial
+ * content), but by the time `state2Output` runs, every node in the document is fully formed.
+ */
+export interface TipTapRichTextBlockOutputMark {
+    type: string;
+    attrs?: Record<string, unknown>;
+}
+
+export interface TipTapRichTextBlockOutputNode {
+    type: string;
+    attrs?: Record<string, unknown>;
+    content?: TipTapRichTextBlockOutputNode[];
+    marks?: TipTapRichTextBlockOutputMark[];
+    text?: string;
+}
+
 interface TipTapHeadingOptions {
     /**
      * Limits the selectable heading levels (1-6). Defaults to all levels ([1, 2, 3, 4, 5, 6]).
@@ -149,7 +167,7 @@ interface TipTapRichTextBlockData {
 }
 
 interface TipTapRichTextBlockInput {
-    tipTapContent: JSONContent;
+    tipTapContent: TipTapRichTextBlockOutputNode;
 }
 
 export interface TipTapPlaceholder {
@@ -630,11 +648,11 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
             if (hasChildBlocks) {
                 content = mapCmsBlockNodesData(content, (blockType, data) => childBlocksByKey[blockType]?.state2Output(data) ?? data);
             }
-            return { tipTapContent: content };
+            return { tipTapContent: content as TipTapRichTextBlockOutputNode };
         },
 
         output2State: async ({ tipTapContent }, context) => {
-            let content = tipTapContent ?? emptyContent;
+            let content: JSONContent = tipTapContent ?? emptyContent;
             if (linkBlock) {
                 content = await mapLinkMarksDataAsync(content, (data) => linkBlock.output2State(data, context));
             }

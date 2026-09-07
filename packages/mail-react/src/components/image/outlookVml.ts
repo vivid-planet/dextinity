@@ -28,11 +28,14 @@ export function generateOutlookImageVml({ src, width, height, borderRadius, alt,
         return null;
     }
 
+    const declaredWidth = subtractReservedStroke(widthInPixels);
+    const declaredHeight = subtractReservedStroke(heightInPixels);
+
     const attributes = formatAttributes({
         "xmlns:v": "urn:schemas-microsoft-com:vml",
-        arcsize: shape.name === "v:roundrect" ? calculateArcsize(shape.radius, widthInPixels, heightInPixels) : undefined,
+        arcsize: shape.name === "v:roundrect" ? calculateArcsize(shape.radius, declaredWidth, declaredHeight) : undefined,
         stroked: "f",
-        style: `width:${widthInPixels}px;height:${heightInPixels}px;`,
+        style: `width:${declaredWidth}px;height:${declaredHeight}px;`,
         href,
         alt,
     });
@@ -63,6 +66,11 @@ function parsePixelLength(value: string | number | undefined): number | null {
     }
 
     return pixels !== null && Number.isFinite(pixels) && pixels > 0 ? pixels : null;
+}
+
+/** Classic Outlook lays a shape out one pixel wider and taller than the size it declares. */
+function subtractReservedStroke(lengthInPixels: number): number {
+    return Math.max(lengthInPixels - 1, 1);
 }
 
 /**

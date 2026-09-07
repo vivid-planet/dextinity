@@ -151,7 +151,7 @@ export const ReadOnly: Story = {
 };
 
 const BoldOnlyBlock = createTipTapRichTextBlock({
-    history: false,
+    undoRedoButtons: false,
     italic: false,
     strike: false,
     sub: false,
@@ -355,7 +355,7 @@ export const Placeholders: StoryObj<typeof PlaceholdersStory> = {
 };
 
 const PlaceholdersWithContentBlock = createTipTapRichTextBlock({
-    history: false,
+    undoRedoButtons: false,
     strike: false,
     sub: false,
     sup: false,
@@ -586,7 +586,7 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
 };
 
 const ListTextBlockStylesBlock = createTipTapRichTextBlock({
-    history: false,
+    undoRedoButtons: false,
     italic: false,
     strike: false,
     sub: false,

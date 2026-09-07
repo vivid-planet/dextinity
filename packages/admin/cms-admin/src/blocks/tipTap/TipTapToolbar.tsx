@@ -385,7 +385,7 @@ export const TipTapToolbar = ({
                 px: "6px",
             }}
         >
-            {resolvedOptions.history && (
+            {resolvedOptions.undoRedoButtons && (
                 <ToolbarGroup>
                     <ToolbarButton
                         editor={editor}

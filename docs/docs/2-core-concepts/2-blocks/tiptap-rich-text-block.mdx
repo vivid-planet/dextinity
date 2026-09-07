@@ -53,7 +53,7 @@ Most features of the Draft.js `RichTextBlock` have a direct equivalent in the Ti
 | `bold`, `italic`, `strikethrough`, `sub`, `sup` | `bold`, `italic`, `strike`, `sub`, `sup`                                                     |
 | `header-one` … `header-six`                     | `heading` + the [text-block-type select](#text-block-type-and-styling-selects) (Heading 1–6) |
 | `ordered-list`, `unordered-list`                | `orderedList`, `unorderedList`                                                               |
-| `history`                                       | `history` (Admin only)                                                                       |
+| `history`                                       | `undoRedoButtons` (Admin only)                                                               |
 | `link`, `links-remove`                          | `link` (pass the link block)                                                                 |
 | `non-breaking-space`, `soft-hyphen`             | `nonBreakingSpace`, `softHyphen`                                                             |
 | `rte.blocktypeMap` (custom block types)         | [`textBlockStyles`](#text-block-type-and-styling-selects) + the styling select               |
@@ -169,7 +169,7 @@ Every editor feature has its own option in the root options object, similar to [
 | `unorderedList`    | `true`  | API + Admin  |
 | `nonBreakingSpace` | `true`  | API + Admin  |
 | `softHyphen`       | `true`  | API + Admin  |
-| `history`          | `true`  | Admin only   |
+| `undoRedoButtons`  | `true`  | Admin only   |
 
 `heading` can be configured further by passing an options object instead of `true`, which limits the allowed `levels`.
 

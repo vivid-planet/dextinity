@@ -6,12 +6,12 @@ import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "../
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "./createTipTapRichTextBlock";
 
 describe("createTipTapRichTextBlock", () => {
-    it("should throw for invalid headingLevels instead of silently creating a broken heading", () => {
-        expect(() => createTipTapRichTextBlock({ headingLevels: [] })).toThrow();
-        expect(() => createTipTapRichTextBlock({ headingLevels: [0, 2, 3] })).toThrow();
-        expect(() => createTipTapRichTextBlock({ headingLevels: [1, 7] })).toThrow();
-        expect(() => createTipTapRichTextBlock({ headingLevels: [1, 1, 2] })).toThrow();
-        expect(() => createTipTapRichTextBlock({ headingLevels: [1.5, 2] })).toThrow();
+    it("should throw for invalid heading levels instead of silently creating a broken heading", () => {
+        expect(() => createTipTapRichTextBlock({ heading: { levels: [] } })).toThrow();
+        expect(() => createTipTapRichTextBlock({ heading: { levels: [0, 2, 3] } })).toThrow();
+        expect(() => createTipTapRichTextBlock({ heading: { levels: [1, 7] } })).toThrow();
+        expect(() => createTipTapRichTextBlock({ heading: { levels: [1, 1, 2] } })).toThrow();
+        expect(() => createTipTapRichTextBlock({ heading: { levels: [1.5, 2] } })).toThrow();
     });
 
     describe("translateContent", () => {
@@ -34,9 +34,9 @@ describe("createTipTapRichTextBlock", () => {
         }
 
         it("sends the whole field as a single HTML request and keeps a mark's context intact", async () => {
-            // `supports: []` isn't enough here: the bold mark in the seeded content needs the bold
-            // extension registered to be recognized when parsing the translated HTML back.
-            const block = createTipTapRichTextBlock({ supports: ["bold"] });
+            // Bold is enabled by default, which is what the bold mark in the seeded content needs to
+            // be recognized when parsing the translated HTML back.
+            const block = createTipTapRichTextBlock();
             const state: TipTapRichTextBlockState = {
                 tipTapContent: {
                     type: "doc",
@@ -85,7 +85,6 @@ describe("createTipTapRichTextBlock", () => {
             };
 
             const block = createTipTapRichTextBlock({
-                supports: [],
                 childBlocks: { structured: { block: structuredChildBlock, display: "block" } },
             });
             const state: TipTapRichTextBlockState = {
@@ -123,7 +122,7 @@ describe("createTipTapRichTextBlock", () => {
                     previewContent: () => [],
                 };
 
-            const block = createTipTapRichTextBlock({ supports: [], link: falsyDataLinkBlock });
+            const block = createTipTapRichTextBlock({ link: falsyDataLinkBlock });
             const state: TipTapRichTextBlockState = {
                 tipTapContent: {
                     type: "doc",
@@ -152,7 +151,6 @@ describe("createTipTapRichTextBlock", () => {
 
         it("reconstructs a placeholder from its data-name attribute, not its rendered {{name}} text", async () => {
             const block = createTipTapRichTextBlock({
-                supports: [],
                 placeholders: [{ name: "firstName", label: "First Name" }],
             });
             const state: TipTapRichTextBlockState = {
@@ -193,7 +191,7 @@ describe("createTipTapRichTextBlock", () => {
                     previewContent: () => [],
                 };
 
-            const block = createTipTapRichTextBlock({ supports: [], link: falsyDataLinkBlock });
+            const block = createTipTapRichTextBlock({ link: falsyDataLinkBlock });
             const state: TipTapRichTextBlockState = {
                 tipTapContent: {
                     type: "doc",

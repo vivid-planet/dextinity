@@ -5,6 +5,12 @@ import { generateOutlookImageVml } from "../outlookVml.js";
 const image = { src: "image.jpg", width: 400, height: 200 };
 
 describe("generateOutlookImageVml", () => {
+    it("declares the shape a pixel smaller than the image, to leave room for the stroke Outlook reserves", () => {
+        const vml = generateOutlookImageVml({ ...image, borderRadius: 20 });
+
+        expect(vml).toContain(`style="width:399px;height:199px;"`);
+    });
+
     it("measures arcsize against the whole shorter side", () => {
         const vml = generateOutlookImageVml({ ...image, borderRadius: 20 });
 

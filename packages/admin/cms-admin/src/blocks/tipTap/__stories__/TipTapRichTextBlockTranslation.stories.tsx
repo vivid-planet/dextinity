@@ -31,8 +31,20 @@ export default config;
 
 const uppercaseTranslate = async (text: string): Promise<string> => text.toUpperCase();
 
-// No `supports` means only the translate button renders, so it's the toolbar's sole (and thus unambiguous) button.
-const TranslationBlock = createTipTapRichTextBlock({ supports: [] });
+// Disabling every other feature makes the translate button the toolbar's sole (and thus unambiguous) button.
+const TranslationBlock = createTipTapRichTextBlock({
+    undoRedoButtons: false,
+    bold: false,
+    italic: false,
+    strike: false,
+    sub: false,
+    sup: false,
+    heading: false,
+    orderedList: false,
+    unorderedList: false,
+    nonBreakingSpace: false,
+    softHyphen: false,
+});
 
 const translationInitialState: TipTapRichTextBlockState = {
     tipTapContent: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "Hello world" }] }] },
@@ -125,7 +137,19 @@ export const TranslationWithApplyDialog: StoryObj<typeof TranslationStory> = {
     },
 };
 
-const TranslationHeadingLevelsBlock = createTipTapRichTextBlock({ supports: ["heading"], headingLevels: [2, 3] });
+const TranslationHeadingLevelsBlock = createTipTapRichTextBlock({
+    undoRedoButtons: false,
+    bold: false,
+    italic: false,
+    strike: false,
+    sub: false,
+    sup: false,
+    heading: { levels: [2, 3] },
+    orderedList: false,
+    unorderedList: false,
+    nonBreakingSpace: false,
+    softHyphen: false,
+});
 
 function TranslationHeadingLevelsStory() {
     const [state, setState] = useState<TipTapRichTextBlockState>(translationInitialState);

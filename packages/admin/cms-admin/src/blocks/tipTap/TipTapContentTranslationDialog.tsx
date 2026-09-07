@@ -11,15 +11,7 @@ interface TipTapContentTranslationDialogProps {
     onApplyTranslation: (content: JSONContent) => void;
     editorProps: Pick<
         TipTapEditorProps,
-        | "supports"
-        | "textBlockStyles"
-        | "inlineStyles"
-        | "placeholders"
-        | "linkBlock"
-        | "childBlocks"
-        | "maxTextBlocks"
-        | "listLevelMax"
-        | "headingLevels"
+        "resolvedOptions" | "textBlockStyles" | "inlineStyles" | "placeholders" | "linkBlock" | "childBlocks" | "maxTextBlocks" | "listLevelMax"
     >;
 }
 

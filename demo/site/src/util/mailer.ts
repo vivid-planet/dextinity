@@ -11,5 +11,6 @@ export const mailerTransport = createTransport({
     host: process.env.MAILER_HOST,
     port,
     secure: port === 465,
+    requireTLS: port !== 465 && Boolean(user),
     auth: user ? { user, pass: process.env.MAILER_PASSWORD } : undefined,
 });

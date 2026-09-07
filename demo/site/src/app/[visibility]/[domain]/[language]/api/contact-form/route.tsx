@@ -73,7 +73,7 @@ export async function POST(request: NextRequest, context: RouteContext<"/[visibi
     try {
         await mailerTransport.sendMail({
             from: fromEmail,
-            to: process.env.MAILER_SEND_ALL_MAILS_TO ?? toEmail,
+            to: process.env.MAILER_SEND_ALL_MAILS_TO || toEmail,
             replyTo: email,
             subject: "Contact form inquiry",
             text: `${details.join("\n")}\n\n${message}`,

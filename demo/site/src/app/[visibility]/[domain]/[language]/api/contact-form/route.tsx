@@ -4,6 +4,17 @@ import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+const fromEmail = process.env.CONTACT_FORM_FROM_EMAIL;
+const toEmail = process.env.CONTACT_FORM_TO_EMAIL;
+
+if (!fromEmail) {
+    throw new Error("Missing CONTACT_FORM_FROM_EMAIL environment variable");
+}
+
+if (!toEmail) {
+    throw new Error("Missing CONTACT_FORM_TO_EMAIL environment variable");
+}
+
 const queryValidationSchema = z.object({
     name: z.string(),
     company: z.string().optional(),
@@ -61,8 +72,8 @@ export async function POST(request: NextRequest, context: RouteContext<"/[visibi
 
     try {
         await mailerTransport.sendMail({
-            from: process.env.CONTACT_FORM_FROM_EMAIL,
-            to: process.env.CONTACT_FORM_TO_EMAIL,
+            from: fromEmail,
+            to: process.env.MAILER_SEND_ALL_MAILS_TO ?? toEmail,
             replyTo: email,
             subject: "Contact form inquiry",
             text: `${details.join("\n")}\n\n${message}`,

@@ -1,5 +1,5 @@
 ---
-"@comet/cms-api": patch
+"@dextinity/cms-api": patch
 ---
 
 Validate the GraphQL type names of a custom `PageTreeNode` scope passed to `PageTreeModule.forRoot()`

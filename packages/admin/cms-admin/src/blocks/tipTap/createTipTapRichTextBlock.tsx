@@ -36,13 +36,6 @@ interface TipTapHeadingOptions {
     levels?: number[];
 }
 
-interface TipTapLinkOptions {
-    /**
-     * Link block used for links inside the rich text.
-     */
-    block: BlockInterface & LinkBlockInterface;
-}
-
 /**
  * The enabled features, resolved from the block's options.
  */
@@ -85,7 +78,7 @@ function resolveTipTapFeatures({
     unorderedList = true,
     nonBreakingSpace = true,
     softHyphen = true,
-    link = false,
+    link,
 }: TipTapRichTextBlockFactoryOptions = {}): TipTapFeatures {
     const headingLevels = (heading !== false && heading !== true ? heading.levels : undefined) ?? allHeadingLevels;
 
@@ -106,7 +99,7 @@ function resolveTipTapFeatures({
         unorderedList,
         nonBreakingSpace,
         softHyphen,
-        link: link !== false,
+        link: !!link,
     };
 }
 
@@ -224,10 +217,9 @@ interface TipTapRichTextBlockFactoryOptions {
      */
     softHyphen?: boolean;
     /**
-     * Enables links by passing the link block that is used for them (`{ block: LinkBlock }`).
-     * Disabled by default.
+     * Enables links by passing the link block that is used for them. Disabled by default.
      */
-    link?: false | TipTapLinkOptions;
+    link?: BlockInterface & LinkBlockInterface;
     textBlockStyles?: TipTapTextBlockStyle[];
     inlineStyles?: TipTapInlineStyle[];
     placeholders?: TipTapPlaceholder[];
@@ -590,7 +582,7 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
     const textBlockStyles = options.textBlockStyles ?? [];
     const inlineStyles = options.inlineStyles ?? [];
     const placeholders = options.placeholders ?? [];
-    const linkBlock = options.link ? options.link.block : undefined;
+    const linkBlock = options.link;
     const childBlocks = options.childBlocks ?? {};
     const childBlocksByKey: Record<string, BlockInterface> = Object.fromEntries(Object.entries(childBlocks).map(([key, { block }]) => [key, block]));
     const hasChildBlocks = Object.keys(childBlocks).length > 0;

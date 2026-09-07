@@ -47,13 +47,6 @@ interface TipTapHeadingOptions {
     levels?: number[];
 }
 
-interface TipTapLinkOptions {
-    /**
-     * Link block used for links inside the rich text.
-     */
-    block: Block;
-}
-
 /**
  * The enabled features, resolved from the block's options.
  */
@@ -170,10 +163,9 @@ export interface CreateTipTapRichTextBlockOptions {
      */
     softHyphen?: boolean;
     /**
-     * Enables links by passing the link block that is used for them (`{ block: LinkBlock }`).
-     * Disabled by default.
+     * Enables links by passing the link block that is used for them. Disabled by default.
      */
-    link?: false | TipTapLinkOptions;
+    link?: Block;
     textBlockStyles?: TipTapTextBlockStyle[];
     inlineStyles?: TipTapInlineStyle[];
     placeholders?: TipTapPlaceholder[];
@@ -231,7 +223,7 @@ export function resolveTipTapFeatures({
     unorderedList = true,
     nonBreakingSpace = true,
     softHyphen = true,
-    link = false,
+    link,
 }: CreateTipTapRichTextBlockOptions = {}): TipTapFeatures {
     const headingLevels = (heading !== false && heading !== true ? heading.levels : undefined) ?? allHeadingLevels;
 
@@ -251,7 +243,7 @@ export function resolveTipTapFeatures({
         unorderedList,
         nonBreakingSpace,
         softHyphen,
-        link: link !== false,
+        link: !!link,
     };
 }
 
@@ -628,7 +620,7 @@ export function createTipTapRichTextBlock(
         inlineStyles = [],
         placeholders = [],
         indexSearchText = true,
-        link,
+        link: LinkBlock,
         childBlocks: childBlocksConfig = {},
         maxTextBlocks,
         listLevelMax,
@@ -639,7 +631,6 @@ export function createTipTapRichTextBlock(
 
     const features = resolveTipTapFeatures(options);
     const headingLevels = features.heading ? features.heading.levels : [];
-    const LinkBlock = link ? link.block : undefined;
     const childBlocks: Record<string, Block> = Object.fromEntries(Object.entries(childBlocksConfig).map(([key, { block }]) => [key, block]));
     const childBlockConfigs = Object.values(childBlocksConfig);
     const hasChildBlocks = childBlockConfigs.length > 0;

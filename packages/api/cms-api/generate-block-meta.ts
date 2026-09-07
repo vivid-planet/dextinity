@@ -37,7 +37,7 @@ async function generateBlockMeta(): Promise<void> {
     createTableBlock({ richText: RichTextBlock });
 
     // Create TipTapRichTextBlock for block types generation in client libraries
-    createTipTapRichTextBlock({ link: { block: LinkBlock } });
+    createTipTapRichTextBlock({ link: LinkBlock });
 
     const metaJson = getBlocksMeta();
     await fs.writeFile("block-meta.json", JSON.stringify(metaJson, null, 4));

@@ -759,7 +759,7 @@ describe("createTipTapRichTextBlock validation", () => {
 
     describe("schema with link block", () => {
         const LinkBlock = createLinkBlock({ supportedBlocks: { external: ExternalLinkBlock } }, "TestLink");
-        const block = createTipTapRichTextBlock({ link: { block: LinkBlock } }, "TestWithLink");
+        const block = createTipTapRichTextBlock({ link: LinkBlock }, "TestWithLink");
 
         it("should accept text with a valid link mark", async () => {
             const input = block.blockInputFactory({

@@ -7,7 +7,7 @@ import { Heading1ToHeading2Migration } from "./tip-tap-rich-text/migrations/2-he
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock(
     {
-        link: { block: LinkBlock },
+        link: LinkBlock,
         childBlocks: {
             productPrice: { block: ProductPriceBlock, display: "inline" },
             productTeaser: { block: ProductTeaserBlock, display: "block" },

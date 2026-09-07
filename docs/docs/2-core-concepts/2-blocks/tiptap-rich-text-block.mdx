@@ -54,7 +54,7 @@ Most features of the Draft.js `RichTextBlock` have a direct equivalent in the Ti
 | `header-one` … `header-six`                     | `heading` + the [text-block-type select](#text-block-type-and-styling-selects) (Heading 1–6) |
 | `ordered-list`, `unordered-list`                | `orderedList`, `unorderedList`                                                               |
 | `history`                                       | `history` (Admin only)                                                                       |
-| `link`, `links-remove`                          | `link: { block: LinkBlock }`                                                                 |
+| `link`, `links-remove`                          | `link` (pass the link block)                                                                 |
 | `non-breaking-space`, `soft-hyphen`             | `nonBreakingSpace`, `softHyphen`                                                             |
 | `rte.blocktypeMap` (custom block types)         | [`textBlockStyles`](#text-block-type-and-styling-selects) + the styling select               |
 | `rte.customInlineStyles`                        | [`inlineStyles`](#text-block-type-and-styling-selects) + the inline style select             |
@@ -73,7 +73,7 @@ import { createTipTapRichTextBlock } from "@dextinity/cms-admin";
 
 import { LinkBlock } from "./LinkBlock";
 
-export const TipTapRichTextBlock = createTipTapRichTextBlock({ link: { block: LinkBlock } });
+export const TipTapRichTextBlock = createTipTapRichTextBlock({ link: LinkBlock });
 ```
 
 In the Admin, the style and placeholder options additionally carry rendering information (`label` and `element`) that is used to preview them in the editor — see [Text block type and styling selects](#text-block-type-and-styling-selects).
@@ -87,14 +87,14 @@ import { createTipTapRichTextBlock } from "@dextinity/cms-api";
 
 import { LinkBlock } from "./link.block";
 
-export const TipTapRichTextBlock = createTipTapRichTextBlock({ link: { block: LinkBlock } });
+export const TipTapRichTextBlock = createTipTapRichTextBlock({ link: LinkBlock });
 ```
 
 The factory accepts additional Block Options such as the block name, like the old one:
 
 ```ts title="tip-tap-rich-text.block.ts"
 export const TipTapRichTextBlock = createTipTapRichTextBlock(
-    { link: { block: LinkBlock } },
+    { link: LinkBlock },
     { name: "TipTapRichText" },
 );
 ```
@@ -169,10 +169,11 @@ Every editor feature has its own option in the root options object, similar to [
 | `unorderedList`    | `true`  | API + Admin  |
 | `nonBreakingSpace` | `true`  | API + Admin  |
 | `softHyphen`       | `true`  | API + Admin  |
-| `link`             | `false` | API + Admin  |
 | `history`          | `true`  | Admin only   |
 
-Features that can be configured further take an options object instead of `true`: `heading` accepts the allowed `levels`, `link` takes the `block` used for links (passing it enables links).
+`heading` can be configured further by passing an options object instead of `true`, which limits the allowed `levels`.
+
+Links are the exception to the boolean options: `link` takes the link block that is used for links, and passing it enables the feature. Links are disabled by default.
 
 ```ts title="tip-tap-rich-text.block.ts"
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
@@ -182,7 +183,8 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
     underline: true,
     // Configure a feature
     heading: { levels: [2, 3] },
-    link: { block: LinkBlock },
+    // Enable links by passing the link block
+    link: LinkBlock,
 });
 ```
 
@@ -194,7 +196,7 @@ Existing content stored by the Draft.js `RichTextBlock` (`{ draftContent: { bloc
 
 ```ts title="tip-tap-rich-text.block.ts"
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
-    link: { block: LinkBlock },
+    link: LinkBlock,
     // highlight-next-line
     migrateFromDraftJs: true,
 });
@@ -224,7 +226,7 @@ If the old block used custom block types (via `blocktypeMap`) or custom inline s
 
 ```ts title="tip-tap-rich-text.block.ts"
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
-    link: { block: LinkBlock },
+    link: LinkBlock,
     textBlockStyles: [{ name: "paragraph200", appliesTo: ["paragraph"] }],
     inlineStyles: [{ name: "highlight" }],
     // highlight-start
@@ -263,7 +265,7 @@ import { createTipTapRichTextBlock, typeSafeBlockMigrationPipe } from "@dextinit
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock(
     {
-        link: { block: LinkBlock },
+        link: LinkBlock,
         migrateFromDraftJs: true,
     },
     {
@@ -294,7 +296,7 @@ Styles are configured on the API (`name` + optional `appliesTo`) and in the Admi
 
 ```ts title="tip-tap-rich-text.block.ts (API)"
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
-    link: { block: LinkBlock },
+    link: LinkBlock,
     textBlockStyles: [
         { name: "paragraph300", appliesTo: ["paragraph"] },
         { name: "paragraph200", appliesTo: ["paragraph"] },
@@ -309,7 +311,7 @@ import type { HTMLAttributes } from "react";
 import { FormattedMessage } from "react-intl";
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
-    link: { block: LinkBlock },
+    link: LinkBlock,
     textBlockStyles: [
         {
             name: "paragraph300",
@@ -379,7 +381,7 @@ The same configuration is used on the API and in the Admin:
 import { createTipTapRichTextBlock } from "@dextinity/cms-api";
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
-    link: { block: LinkBlock },
+    link: LinkBlock,
     childBlocks: {
         productPrice: { block: ProductPriceBlock, display: "inline" },
         productTeaser: { block: ProductTeaserBlock, display: "block" },
@@ -391,7 +393,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
 import { createTipTapRichTextBlock } from "@dextinity/cms-admin";
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
-    link: { block: LinkBlock },
+    link: LinkBlock,
     childBlocks: {
         productPrice: { block: ProductPriceBlock, display: "inline" },
         productTeaser: { block: ProductTeaserBlock, display: "block" },

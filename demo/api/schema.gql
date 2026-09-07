@@ -77,16 +77,6 @@ type AutoBuildStatus {
   nextCheck: DateTime!
 }
 
-input AzureAiTranslationBatchInput {
-  targetLanguage: String!
-  texts: [String!]!
-}
-
-input AzureAiTranslationInput {
-  targetLanguage: String!
-  text: String!
-}
-
 """
 The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
@@ -1957,8 +1947,6 @@ input ProductVariantUpdateInput {
 
 type Query {
   autoBuildStatus: AutoBuildStatus!
-  azureAiTranslate(input: AzureAiTranslationInput!): String!
-  azureAiTranslateBatch(input: AzureAiTranslationBatchInput!): [String!]!
   blockPreviewJwt(includeInvisible: Boolean!, scope: JSONObject!, url: String!): String!
   brevoConfig(scope: EmailCampaignContentScopeInput!): BrevoConfig
   brevoContact(id: Int!, scope: EmailCampaignContentScopeInput!): BrevoContact!

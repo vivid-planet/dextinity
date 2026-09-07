@@ -1,3 +1,4 @@
+import { mailerTransport } from "@src/util/mailer";
 import { assessRecaptchaToken } from "@src/util/recaptcha/assessRecaptchaToken";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { type NextRequest, NextResponse } from "next/server";
@@ -7,10 +8,10 @@ const queryValidationSchema = z.object({
     name: z.string(),
     company: z.string().optional(),
     email: z.string().email(),
-    phone: z.string().optional(),
+    phoneNumber: z.string().optional(),
     subject: z.string(),
     message: z.string(),
-    privacyConsent: z.boolean(),
+    privacyConsent: z.literal(true),
     recaptchaToken: z.string(),
     attachments: z.array(z.uuid()).default([]),
 });
@@ -47,7 +48,26 @@ export async function POST(request: NextRequest, context: RouteContext<"/[visibi
         });
     }
 
+    const { name, company, email, phoneNumber, subject, message, attachments } = validationResult.data;
+
+    const details = [
+        `Name: ${name}`,
+        company && `Company: ${company}`,
+        `Email: ${email}`,
+        phoneNumber && `Phone number: ${phoneNumber}`,
+        `Subject: ${subject}`,
+        attachments.length > 0 && `Attachments: ${attachments.join(", ")}`,
+    ].filter(Boolean);
+
     try {
+        await mailerTransport.sendMail({
+            from: process.env.CONTACT_FORM_FROM_EMAIL,
+            to: process.env.CONTACT_FORM_TO_EMAIL,
+            replyTo: email,
+            subject: "Contact form inquiry",
+            text: `${details.join("\n")}\n\n${message}`,
+        });
+
         return NextResponse.json(
             { success: true },
             {

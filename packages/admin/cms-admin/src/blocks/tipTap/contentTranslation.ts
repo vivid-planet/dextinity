@@ -75,7 +75,7 @@ interface TranslateTipTapContentOptions {
 // links, ...) intact and results in one translation request per field instead of one per text node.
 // Link and child-block data is opaque to HTML translation (see externalizeBlockDataForHtml), so once
 // restored it's run through the block's own translateContent separately.
-export async function translateTipTapContentAsync(
+export async function translateTipTapContent(
     content: JSONContent,
     translate: (text: string) => Promise<string>,
     { extensions, linkBlock, childBlocksByKey }: TranslateTipTapContentOptions,

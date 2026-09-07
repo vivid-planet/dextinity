@@ -13,7 +13,7 @@ import { FormattedMessage } from "react-intl";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface, type ReadOnlyBlockRenderInterface } from "../types";
 import { ChildBlocksContext } from "./ChildBlocksContext";
-import { translateTipTapContentAsync } from "./contentTranslation";
+import { translateTipTapContent } from "./contentTranslation";
 import { CmsBlock, CmsInlineBlock } from "./extensions/CmsBlock";
 import { CmsLink } from "./extensions/CmsLink";
 import { InlineStyleMark } from "./extensions/InlineStyleMark";
@@ -495,7 +495,7 @@ export const TipTapEditor = ({
     async function handleTranslateClick() {
         try {
             const original = editor.getJSON();
-            const translated = await translateTipTapContentAsync(original, translationContext.translate, {
+            const translated = await translateTipTapContent(original, translationContext.translate, {
                 extensions,
                 linkBlock,
                 childBlocksByKey,
@@ -719,7 +719,7 @@ export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOp
         },
 
         translateContent: async (state, translate) => {
-            const content = await translateTipTapContentAsync(state.tipTapContent, translate, {
+            const content = await translateTipTapContent(state.tipTapContent, translate, {
                 extensions: tipTapExtensions,
                 linkBlock,
                 childBlocksByKey,

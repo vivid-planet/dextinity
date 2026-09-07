@@ -219,7 +219,7 @@ export function mapLinkMarksData(content: JSONContent, fn: (data: any) => any): 
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function mapLinkMarksDataAsync(content: JSONContent, fn: (data: any) => Promise<any>): Promise<JSONContent> {
+export async function mapLinkMarksDataAsync(content: JSONContent, fn: (data: any) => Promise<any>): Promise<JSONContent> {
     if (!content || typeof content !== "object") {
         return content;
     }
@@ -262,7 +262,7 @@ export function mapCmsBlockNodesData(content: JSONContent, fn: (blockType: strin
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function mapCmsBlockNodesDataAsync(content: JSONContent, fn: (blockType: string, data: any) => Promise<any>): Promise<JSONContent> {
+export async function mapCmsBlockNodesDataAsync(content: JSONContent, fn: (blockType: string, data: any) => Promise<any>): Promise<JSONContent> {
     if (!content || typeof content !== "object") {
         return content;
     }
@@ -495,17 +495,11 @@ export const TipTapEditor = ({
     async function handleTranslateClick() {
         try {
             const original = editor.getJSON();
-            let translated = await translateTipTapContentAsync(original, translationContext.translate, extensions);
-            if (linkBlock?.translateContent) {
-                const translateLinkContent = linkBlock.translateContent;
-                translated = await mapLinkMarksDataAsync(translated, (data) => translateLinkContent(data, translationContext.translate));
-            }
-            if (Object.keys(childBlocks).length > 0) {
-                translated = await mapCmsBlockNodesDataAsync(translated, async (blockType, data) => {
-                    const childBlock = childBlocksByKey[blockType];
-                    return childBlock?.translateContent ? childBlock.translateContent(data, translationContext.translate) : data;
-                });
-            }
+            const translated = await translateTipTapContentAsync(original, translationContext.translate, {
+                extensions,
+                linkBlock,
+                childBlocksByKey,
+            });
             if (translationContext.showApplyTranslationDialog) {
                 setTranslationDialogState({ original, translated });
             } else {
@@ -725,17 +719,11 @@ export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOp
         },
 
         translateContent: async (state, translate) => {
-            let content = await translateTipTapContentAsync(state.tipTapContent, translate, tipTapExtensions);
-            if (linkBlock?.translateContent) {
-                const translateLinkContent = linkBlock.translateContent;
-                content = await mapLinkMarksDataAsync(content, (data) => translateLinkContent(data, translate));
-            }
-            if (hasChildBlocks) {
-                content = await mapCmsBlockNodesDataAsync(content, async (blockType, data) => {
-                    const childBlock = childBlocksByKey[blockType];
-                    return childBlock?.translateContent ? childBlock.translateContent(data, translate) : data;
-                });
-            }
+            const content = await translateTipTapContentAsync(state.tipTapContent, translate, {
+                extensions: tipTapExtensions,
+                linkBlock,
+                childBlocksByKey,
+            });
             return { tipTapContent: content };
         },
     };

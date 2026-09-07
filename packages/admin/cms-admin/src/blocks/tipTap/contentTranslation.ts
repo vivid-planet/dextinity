@@ -1,7 +1,8 @@
 import { type Extensions, generateHTML, generateJSON } from "@tiptap/core";
 import type { JSONContent } from "@tiptap/react";
 
-import { mapCmsBlockNodesData, mapLinkMarksData } from "./createTipTapRichTextBlock";
+import type { BlockInterface, LinkBlockInterface } from "../types";
+import { mapCmsBlockNodesData, mapCmsBlockNodesDataAsync, mapLinkMarksData, mapLinkMarksDataAsync } from "./createTipTapRichTextBlock";
 
 interface ExternalizedBlockData {
     id: string;
@@ -63,13 +64,21 @@ function restoreBlockDataFromHtml(content: JSONContent, externalized: Externaliz
     return result;
 }
 
+interface TranslateTipTapContentOptions {
+    extensions: Extensions;
+    linkBlock?: BlockInterface & LinkBlockInterface;
+    childBlocksByKey?: Record<string, BlockInterface>;
+}
+
 // Translates a field's content as a single HTML document (like the Draft.js rich text block does),
 // instead of translating each text node in isolation. This keeps sentence context across marks (bold,
 // links, ...) intact and results in one translation request per field instead of one per text node.
+// Link and child-block data is opaque to HTML translation (see externalizeBlockDataForHtml), so once
+// restored it's run through the block's own translateContent separately.
 export async function translateTipTapContentAsync(
     content: JSONContent,
     translate: (text: string) => Promise<string>,
-    extensions: Extensions,
+    { extensions, linkBlock, childBlocksByKey }: TranslateTipTapContentOptions,
 ): Promise<JSONContent> {
     const { content: sanitizedContent, externalized } = externalizeBlockDataForHtml(content);
     const html = generateHTML(sanitizedContent, extensions);
@@ -87,5 +96,18 @@ export async function translateTipTapContentAsync(
     }
 
     const translatedContent = generateJSON(translatedHtml, extensions) as JSONContent;
-    return restoreBlockDataFromHtml(translatedContent, externalized);
+    let result = restoreBlockDataFromHtml(translatedContent, externalized);
+
+    if (linkBlock?.translateContent) {
+        const translateLinkContent = linkBlock.translateContent;
+        result = await mapLinkMarksDataAsync(result, (data) => translateLinkContent(data, translate));
+    }
+    if (childBlocksByKey && Object.keys(childBlocksByKey).length > 0) {
+        result = await mapCmsBlockNodesDataAsync(result, async (blockType, data) => {
+            const childBlock = childBlocksByKey[blockType];
+            return childBlock?.translateContent ? childBlock.translateContent(data, translate) : data;
+        });
+    }
+
+    return result;
 }

@@ -6,8 +6,8 @@ import { FormattedMessage } from "react-intl";
 import { useHistory } from "react-router";
 
 import { type ContentScope, useContentScope } from "../contentScope/Provider";
-import { isScopePartOf } from "../contentScope/utils/isScopePartOf";
 import { useDependenciesConfig } from "./dependenciesConfig";
+import { resolveDependencyScope } from "./resolveDependencyScope";
 import type { DependencyInterface } from "./types";
 
 interface DependencyActionsProps {
@@ -39,9 +39,9 @@ export const DependencyActions = ({ graphqlObjectType, id, rootColumnName, jsonP
         return <FormattedMessage id="dextinity.dependencies.dataGrid.cannotLoadUrl" defaultMessage="Cannot determine URL" />;
     }
 
-    const isScopeAllowed = scope === undefined || contentScope.values.some(({ scope: allowedScope }) => isScopePartOf(scope, allowedScope));
+    const scopeToOpen = scope && resolveDependencyScope({ scope, activeScope: contentScope.scope, availableScopes: contentScope.values });
 
-    if (!isScopeAllowed) {
+    if (scope !== undefined && scopeToOpen === undefined) {
         return (
             <Tooltip
                 title={
@@ -71,9 +71,7 @@ export const DependencyActions = ({ graphqlObjectType, id, rootColumnName, jsonP
             id,
         });
 
-        // A scope can be incomplete (e.g. a DAM file scoped by domain only), therefore it is merged into the active
-        // scope instead of replacing it.
-        const scopeUrl = scope ? contentScope.createUrl({ ...contentScope.scope, ...scope }) : contentScope.match.url;
+        const scopeUrl = scopeToOpen ? contentScope.createUrl(scopeToOpen) : contentScope.match.url;
 
         return scopeUrl + path;
     };

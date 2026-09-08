@@ -25,6 +25,7 @@ import { useContentScope } from "../contentScope/Provider";
 import { DataGrid } from "../dataGrid/DataGrid";
 import { useDependenciesConfig } from "../dependencies/dependenciesConfig";
 import { getDisplayNameString } from "../dependencies/getDisplayNameString";
+import { useWarningsScopes } from "./useWarningsScopes";
 import { WarningActions } from "./WarningActions";
 import { WarningMessage } from "./WarningMessage";
 import { useWarningsConfig } from "./warningsConfig";
@@ -77,7 +78,11 @@ function WarningsGridToolbar() {
     );
 }
 
-export function WarningsGrid() {
+export interface WarningsGridProps {
+    showAllScopes?: boolean;
+}
+
+export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
     const intl = useIntl();
     const dataGridProps = {
         ...useDataGridRemote({ initialFilter: { items: [{ field: "status", operator: "is", value: "open" }] } }),
@@ -86,7 +91,7 @@ export function WarningsGrid() {
     const { messages: warningMessages } = useWarningsConfig();
     const { entityDependencyMap } = useDependenciesConfig();
     const { values: scopeValues } = useContentScope();
-    const scopes = scopeValues.map((item) => item.scope);
+    const scopes = useWarningsScopes(showAllScopes);
 
     const scopeValueOptions = scopeValues.map((item) => {
         const label: string[] = [];
@@ -168,6 +173,8 @@ export function WarningsGrid() {
             headerName: intl.formatMessage({ id: "dextinity.warning.scope", defaultMessage: "Scope" }),
             type: "singleSelect",
             sortable: false,
+            // Only the current scope is queried, so filtering by any other scope would return an empty grid.
+            filterable: showAllScopes,
             valueOptions: scopeValueOptions,
             valueFormatter: (value) => {
                 if (typeof value === "object" && value !== null) {
@@ -202,8 +209,10 @@ export function WarningsGrid() {
         // Create a custom filter model by transforming the filterModel's items
         const customFilterModel = {
             ...filterModel,
-            items:
-                filterModel?.items.map((item) => {
+            items: (filterModel?.items ?? [])
+                // A scope filter can still come from the URL, even though the column isn't filterable.
+                .filter((item) => showAllScopes || item.field !== "scope")
+                .map((item) => {
                     if (item.field === "scope") {
                         if (typeof item.value === "string") {
                             return { ...item, value: JSON.parse(item.value) };
@@ -215,7 +224,7 @@ export function WarningsGrid() {
                     }
 
                     return item;
-                }) ?? [],
+                }),
         };
 
         return muiGridFilterToGql(columns, customFilterModel);

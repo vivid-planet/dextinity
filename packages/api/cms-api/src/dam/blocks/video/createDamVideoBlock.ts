@@ -1,3 +1,4 @@
+import { Expose, Transform } from "class-transformer";
 import { IsBoolean, IsOptional, IsUUID } from "class-validator";
 
 import {
@@ -11,17 +12,19 @@ import {
     createBlock,
     type ExtractBlockInput,
     getRegisteredBlocks,
+    isBlockDataInterface,
     type SimpleBlockInputInterface,
 } from "../../../blocks/block";
 import { ChildBlock } from "../../../blocks/decorators/child-block";
 import { ChildBlockInput } from "../../../blocks/decorators/child-block-input";
 import { AnnotationBlockMeta, BlockField } from "../../../blocks/decorators/field";
 import type { BlockFactoryNameOrOptions } from "../../../blocks/factories/types";
+import { typeSafeBlockMigrationPipe } from "../../../blocks/migrations/typeSafeBlockMigrationPipe";
 import { DamFileAiContentType } from "../../files/entities/ai-content-type.enum";
 import { FILE_ENTITY } from "../../files/entities/file.entity";
 import { PixelImageBlock } from "../pixel-image.block";
 import { DamVideoBlockTransformerService } from "./dam-video-block-transformer.service";
-import { buildAddPreviewImageMigration } from "./migrations/1-add-preview-image.migration";
+import { AddPreviewImageMigration } from "./migrations/1-add-preview-image.migration";
 
 /**
  * What the block stores besides the video file itself:
@@ -32,9 +35,6 @@ import { buildAddPreviewImageMigration } from "./migrations/1-add-preview-image.
 export type DamVideoBlockSupports = "controls" | "previewImage";
 
 const defaultSupports: DamVideoBlockSupports[] = ["controls", "previewImage"];
-
-// Belongs to the factory's own migration, so a block created by it starts its migrations with 2.
-const reservedVersion = 1;
 
 interface CreateDamVideoBlockOptions {
     /**
@@ -67,7 +67,7 @@ export function createDamVideoBlock(
     nameOrOptions: BlockFactoryNameOrOptions = "DamVideo",
 ): Block<DamVideoBlockDataInterface, DamVideoBlockInputInterface> {
     const name = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
-    const baseMigrate = typeof nameOrOptions === "string" ? undefined : nameOrOptions.migrate;
+    const migrate = typeof nameOrOptions === "string" ? undefined : nameOrOptions.migrate;
 
     if (getRegisteredBlocks().some((block) => block.name === name)) {
         throw new Error(
@@ -77,27 +77,6 @@ export function createDamVideoBlock(
 
     const supportsControls = supports.includes("controls");
     const supportsPreviewImage = supports.includes("previewImage");
-
-    if (baseMigrate) {
-        if (baseMigrate.version === reservedVersion) {
-            throw new Error(`version=${reservedVersion} is reserved for createDamVideoBlock, start own migrations with ${reservedVersion + 1}.`);
-        }
-
-        for (const migration of baseMigrate.migrations) {
-            if (new migration().toVersion === reservedVersion) {
-                throw new Error(
-                    `toVersion=${reservedVersion} is reserved for createDamVideoBlock, start own migrations with ${reservedVersion + 1}.`,
-                );
-            }
-        }
-    }
-
-    // The factory brings its own migration, so a block it creates migrates existing content even when the
-    // caller passes no migrations of its own.
-    const migrate = {
-        version: baseMigrate && baseMigrate.version > reservedVersion ? baseMigrate.version : reservedVersion,
-        migrations: [buildAddPreviewImageMigration({ supportsPreviewImage }), ...(baseMigrate?.migrations ?? [])],
-    };
 
     const unsupportedFields = supportsControls ? [] : ["autoplay", "showControls", "loop"];
     const isSupported = (field: BlockMetaField) => !unsupportedFields.includes(field.name);
@@ -181,6 +160,15 @@ export function createDamVideoBlock(
     if (supportsPreviewImage) {
         ChildBlock(PixelImageBlock)(DamVideoBlockData.prototype, "previewImage");
         ChildBlockInput(PixelImageBlock)(DamVideoBlockInput.prototype, "previewImage");
+
+        // Default a missing preview image to an empty one, so content that was stored before the block had
+        // one loads as a child block. `Expose` is what makes the transform run when the stored data has no
+        // preview image at all, `ChildBlock` alone leaves it undefined.
+        Expose()(DamVideoBlockData.prototype, "previewImage");
+        Transform(({ value }) => (isBlockDataInterface(value) ? value : PixelImageBlock.blockDataFactory(value ?? {})), { toClassOnly: true })(
+            DamVideoBlockData.prototype,
+            "previewImage",
+        );
     }
 
     class Meta extends AnnotationBlockMeta {
@@ -301,4 +289,13 @@ export function createDamVideoBlock(
     });
 }
 
-export const DamVideoBlock = createDamVideoBlock({}, "DamVideo");
+export const DamVideoBlock = createDamVideoBlock(
+    {},
+    {
+        name: "DamVideo",
+        migrate: {
+            version: 1,
+            migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration]),
+        },
+    },
+);

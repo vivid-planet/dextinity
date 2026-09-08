@@ -10,18 +10,10 @@ class AddLoopMigration
     extends BlockMigration<(from: { damFileId?: string }) => { damFileId?: string; loop: boolean }>
     implements BlockMigrationInterface
 {
-    public readonly toVersion = 2;
-
-    protected migrate(props: { damFileId?: string }) {
-        return { ...props, loop: true };
-    }
-}
-
-class ReservedVersionMigration extends BlockMigration<(from: { damFileId?: string }) => { damFileId?: string }> implements BlockMigrationInterface {
     public readonly toVersion = 1;
 
     protected migrate(props: { damFileId?: string }) {
-        return props;
+        return { ...props, loop: true };
     }
 }
 
@@ -58,28 +50,28 @@ describe("createDamVideoBlock", () => {
         const block = createDamVideoBlock({ supports: [] }, "StoringFileOnlyVideo");
         const input = block.blockInputFactory({ damFileId, autoplay: true, showControls: true, loop: true, previewImage: {} });
 
-        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, $$version: 1 });
+        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId });
     });
 
     it("should create input for a block without a preview image", () => {
         const block = createDamVideoBlock({ supports: ["controls"] }, "InputWithoutPreviewImage");
         const input = block.blockInputFactory({ damFileId, autoplay: true });
 
-        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, autoplay: true, $$version: 1 });
+        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, autoplay: true });
     });
 
     it("should create input for a block that supports nothing but the file", () => {
         const block = createDamVideoBlock({ supports: [] }, "InputWithFileOnly");
         const input = block.blockInputFactory({ damFileId });
 
-        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, $$version: 1 });
+        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId });
     });
 
     it("should store the supported options", () => {
         const block = createDamVideoBlock({}, "StoringFullVideo");
         const input = block.blockInputFactory({ damFileId, autoplay: true, previewImage: {} });
 
-        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, autoplay: true, previewImage: {}, $$version: 1 });
+        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, autoplay: true, previewImage: {} });
     });
 
     it("should require a preview image in the input when it is supported", () => {
@@ -93,83 +85,74 @@ describe("createDamVideoBlock", () => {
     });
 });
 
-describe("createDamVideoBlock migrations", () => {
-    // Content stored before the block gained its preview image: neither a version nor a preview image.
-    const legacyData = { damFileId, autoplay: true, showControls: true, loop: false };
+describe("createDamVideoBlock preview image default", () => {
+    it("should default a missing preview image to an empty one", () => {
+        const block = createDamVideoBlock({}, "DefaultingPreviewImage");
+        const data = block.blockDataFactory({ damFileId, autoplay: true });
 
+        expect(data.previewImage?.constructor.name).toBe("PixelImageBlockData");
+        expect(data.childBlocksInfo().map((child) => child.name)).toEqual(["PixelImage"]);
+        expect(transformToBlockSave(data)).toEqual({ damFileId, autoplay: true, previewImage: {} });
+    });
+
+    it("should default a preview image of content that is past the block's migrations", () => {
+        // Content stored while the preview image wasn't supported: no migration reaches it, because its
+        // version is already the block's latest.
+        const block = createDamVideoBlock({}, { name: "DefaultingPastMigrations", migrate: { version: 1, migrations: [AddLoopMigration] } });
+        const data = block.blockDataFactory({ damFileId, autoplay: true, $$version: 1 });
+
+        expect(data.previewImage?.constructor.name).toBe("PixelImageBlockData");
+        expect(transformToBlockSave(data)).toEqual({ damFileId, autoplay: true, previewImage: {}, $$version: 1 });
+    });
+
+    it("should keep a stored preview image", () => {
+        const block = createDamVideoBlock({}, "KeepingPreviewImage");
+
+        expect(transformToBlockSave(block.blockDataFactory({ damFileId, previewImage: { damFileId } }))).toEqual({
+            damFileId,
+            previewImage: { damFileId },
+        });
+    });
+
+    it("should not add a preview image to a block that doesn't support one", () => {
+        const block = createDamVideoBlock({ supports: ["controls"] }, "NoDefaultWithoutSupport");
+
+        expect(transformToBlockSave(block.blockDataFactory({ damFileId, autoplay: true }))).toEqual({ damFileId, autoplay: true });
+    });
+
+    it("should default the preview image only once", () => {
+        const block = createDamVideoBlock({}, "DefaultingOnlyOnce");
+        const once = transformToBlockSave(block.blockDataFactory({ damFileId }));
+
+        expect(transformToBlockSave(block.blockDataFactory(once))).toEqual(once);
+    });
+});
+
+describe("createDamVideoBlock migrations", () => {
     it("should add a preview image to data from before the exported block had one", () => {
         expect(transformToBlockSave(DamVideoBlock.blockDataFactory({ damFileId }))).toEqual({ damFileId, previewImage: {}, $$version: 1 });
     });
 
-    it("should migrate and version data of a block created by the factory", () => {
-        const block = createDamVideoBlock({}, "MigratedByTheFactory");
-
-        expect(transformToBlockSave(block.blockDataFactory(legacyData))).toEqual({ ...legacyData, previewImage: {}, $$version: 1 });
-    });
-
-    it("should read the migrated preview image as a child block", () => {
-        const block = createDamVideoBlock({}, "MigratedPreviewImageIsAChildBlock");
-        const data = block.blockDataFactory(legacyData);
-
-        expect(data.previewImage?.constructor.name).toBe("PixelImageBlockData");
-        expect(data.childBlocksInfo().map((child) => child.name)).toEqual(["PixelImage"]);
-    });
-
-    it("should keep a preview image that was stored without a version", () => {
-        const block = createDamVideoBlock({}, "KeepingAnUnversionedPreviewImage");
-        const data = block.blockDataFactory({ damFileId, previewImage: { damFileId } });
-
-        expect(transformToBlockSave(data)).toEqual({ damFileId, previewImage: { damFileId }, $$version: 1 });
-    });
-
-    it("should only version data of a block that doesn't support a preview image", () => {
-        const block = createDamVideoBlock({ supports: ["controls"] }, "VersionedWithoutPreviewImage");
-
-        expect(transformToBlockSave(block.blockDataFactory(legacyData))).toEqual({ ...legacyData, $$version: 1 });
-    });
-
-    it("should migrate only once", () => {
-        const block = createDamVideoBlock({}, "MigratingOnlyOnce");
-        const migrated = transformToBlockSave(block.blockDataFactory(legacyData));
-
-        expect(transformToBlockSave(block.blockDataFactory(migrated))).toEqual(migrated);
-    });
-
-    it("should apply migrations passed to the factory after its own", () => {
-        const block = createDamVideoBlock(
-            {},
-            { name: "MigratedVideo", migrate: { version: 2, migrations: typeSafeBlockMigrationPipe([AddLoopMigration]) } },
-        );
-
-        expect(transformToBlockSave(block.blockDataFactory({ damFileId }))).toEqual({ damFileId, previewImage: {}, loop: true, $$version: 2 });
-    });
-
-    it("should apply a migration passed to the factory to data that is already at the reserved version", () => {
-        const block = createDamVideoBlock(
-            {},
-            { name: "MigratedVideoFromVersionOne", migrate: { version: 2, migrations: typeSafeBlockMigrationPipe([AddLoopMigration]) } },
-        );
-
-        expect(transformToBlockSave(block.blockDataFactory({ damFileId, previewImage: {}, $$version: 1 }))).toEqual({
+    it("should keep a preview image that the exported block stored without a version", () => {
+        expect(transformToBlockSave(DamVideoBlock.blockDataFactory({ damFileId, previewImage: { damFileId } }))).toEqual({
             damFileId,
-            previewImage: {},
-            loop: true,
-            $$version: 2,
+            previewImage: { damFileId },
+            $$version: 1,
         });
     });
 
-    it("should reject a version that is reserved for the factory", () => {
-        expect(() =>
-            createDamVideoBlock({}, { name: "ReservedVersion", migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([AddLoopMigration]) } }),
-        ).toThrow(/version=1 is reserved for createDamVideoBlock/);
+    it("should neither migrate nor version data of a block created by the factory", () => {
+        const block = createDamVideoBlock({ supports: [] }, "UnmigratedVideo");
+
+        expect(transformToBlockSave(block.blockDataFactory({ damFileId }))).toEqual({ damFileId });
     });
 
-    it("should reject a migration whose version is reserved for the factory", () => {
-        expect(() =>
-            createDamVideoBlock(
-                {},
-                { name: "ReservedToVersion", migrate: { version: 2, migrations: typeSafeBlockMigrationPipe([ReservedVersionMigration]) } },
-            ),
-        ).toThrow(/toVersion=1 is reserved for createDamVideoBlock/);
+    it("should apply migrations passed to the factory", () => {
+        const block = createDamVideoBlock(
+            { supports: [] },
+            { name: "MigratedVideo", migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([AddLoopMigration]) } },
+        );
+
+        expect(transformToBlockSave(block.blockDataFactory({ damFileId }))).toEqual({ damFileId, loop: true, $$version: 1 });
     });
 });

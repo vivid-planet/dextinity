@@ -1,5 +1,43 @@
 # @comet/cms-api
 
+## 8.32.0
+
+### Minor Changes
+
+- 714a54a: Allow declaring content scope dimensions at runtime
+
+    Add an optional `availableContentScopeDimensions` option to the `UserPermissionsModule` to declare the content scope dimensions (with optional labels). When omitted, the dimensions are derived from the keys of `availableContentScopes`.
+
+    A content scope may hold any value (including the `"*"` wildcard) for a dimension that is not part of `availableContentScopes`. Content scopes are no longer validated against `availableContentScopes`; access is enforced per request by `isAllowed`, which compares the requested scope against the user's granted scopes.
+
+    **Example**
+
+    ```ts
+    UserPermissionsModule.forRootAsync({
+        useFactory: () => ({
+            availableContentScopes: [ ... ],
+            availableContentScopeDimensions: [{ name: "domain", label: "Domain (Website)" }, { name: "language" }, { name: "product" }],
+            // ...
+        }),
+        // ...
+    });
+    ```
+
+- ea11743: Support wildcard values for content scope dimensions in `getContentScopesForUser`
+
+    `getContentScopesForUser` can now use the wildcard value `"*"` as the value of a content scope dimension to grant access to any value for that dimension. The wildcard is matched during the content scope check, so it does not need to be part of `availableContentScopes`.
+
+    **Example**
+
+    ```ts
+    getContentScopesForUser(user: User): ContentScopesForUser {
+        // Grant access to every language within the "main" domain
+        return [{ domain: "main", language: "*" }];
+    }
+    ```
+
+    For users with access to all content scopes, `currentUser.permissions[].contentScopes` now returns a single wildcard scope (e.g. `[{ domain: "*", language: "*" }]`) instead of the enumerated `availableContentScopes`. The default `isAllowed` and `currentUser.allowedContentScopes` handle the wildcard; a custom `isAllowed` must treat `"*"` as matching any value of a dimension.
+
 ## 8.31.0
 
 ### Minor Changes

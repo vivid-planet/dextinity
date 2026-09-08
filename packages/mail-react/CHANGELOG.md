@@ -1,5 +1,13 @@
 # @comet/mail-react
 
+## 10.5.0
+
+### Patch Changes
+
+- 82dfa79: Fix rounded images rendering a pixel too large in classic Outlook
+
+    Two images side by side made their section wider than the body width. Affects `MjmlImage`, `HtmlImage`, `MjmlPixelImageBlock` and `HtmlPixelImageBlock`.
+
 ## 10.4.0
 
 ### Patch Changes

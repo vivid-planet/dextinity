@@ -1,4 +1,5 @@
 import { greyPalette } from "@dextinity/admin";
+import type { TipTapNode } from "@dextinity/cli";
 import { Box, type SvgIconProps } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Extension } from "@tiptap/core";
@@ -27,24 +28,6 @@ import { TextBlockStyleContext } from "./TextBlockStyleContext";
 import { TipTapToolbar } from "./TipTapToolbar";
 
 export type { JSONContent as TipTapRichTextBlockContent } from "@tiptap/core";
-
-/**
- * Mirrors the shape `@dextinity/cli`'s `generate-block-types` emits for `TipTapRichTextBlock` fields.
- * `@tiptap/core`'s own `JSONContent` types a node's `type` as optional (to allow building up partial
- * content), but by the time `state2Output` runs, every node in the document is fully formed.
- */
-export interface TipTapRichTextBlockOutputMark {
-    type: string;
-    attrs?: Record<string, unknown>;
-}
-
-export interface TipTapRichTextBlockOutputNode {
-    type: string;
-    attrs?: Record<string, unknown>;
-    content?: TipTapRichTextBlockOutputNode[];
-    marks?: TipTapRichTextBlockOutputMark[];
-    text?: string;
-}
 
 interface TipTapHeadingOptions {
     /**
@@ -167,7 +150,7 @@ interface TipTapRichTextBlockData {
 }
 
 interface TipTapRichTextBlockInput {
-    tipTapContent: TipTapRichTextBlockOutputNode;
+    tipTapContent: TipTapNode;
 }
 
 export interface TipTapPlaceholder {
@@ -648,7 +631,7 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
             if (hasChildBlocks) {
                 content = mapCmsBlockNodesData(content, (blockType, data) => childBlocksByKey[blockType]?.state2Output(data) ?? data);
             }
-            return { tipTapContent: content as TipTapRichTextBlockOutputNode };
+            return { tipTapContent: content as TipTapNode };
         },
 
         output2State: async ({ tipTapContent }, context) => {

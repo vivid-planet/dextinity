@@ -7,6 +7,21 @@ import type { BlockMeta, BlockMetaField } from "../BlockMeta";
 let content = "";
 let isTipTapNodeTypeUsed = false;
 
+export interface TipTapMark {
+    type: string;
+    attrs?: Record<string, unknown>;
+}
+
+export interface TipTapNode {
+    type: string;
+    attrs?: Record<string, unknown>;
+    content?: TipTapNode[];
+    marks?: TipTapMark[];
+    text?: string;
+}
+
+// Generated files must stay self-contained (no runtime dependency on @dextinity/cli), so this
+// duplicates the shape of TipTapMark/TipTapNode above as a string. Keep both in sync.
 const tipTapNodeType = `export interface TipTapMark {
     type: string;
     attrs?: Record<string, unknown>;

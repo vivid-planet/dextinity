@@ -300,3 +300,98 @@ export async function POST(
     // Process the form submission...
 }
 ```
+
+## Protecting file uploads
+
+A file upload cannot follow the pattern above. Reading the reCAPTCHA token from the request body means calling
+`request.formData()`, which buffers the entire file in the site's heap before the token is even looked at. Every
+request — including those from bots with an invalid token — then costs as much memory as the file is large, which
+makes the route an easy way to exhaust the site's memory.
+
+Send the reCAPTCHA token in a request header instead, so the route can reject the request before reading the body:
+
+```tsx title="src/common/components/form/FileUploadField.tsx"
+const recaptchaToken = await getRecaptchaToken("file_upload", recaptchaSiteKey);
+
+const body = new FormData();
+body.append("file", file, file.name);
+
+const response = await fetch(`/${language}/api/file-upload`, {
+    method: "POST",
+    headers: {
+        "x-recaptcha-token": recaptchaToken,
+        "x-file-type": file.type,
+    },
+    body,
+});
+```
+
+In the route, validate everything that is available in the headers first, then pipe the body straight through to the
+API instead of parsing it. Because `Content-Length` may be missing or forged, count the bytes flowing through the
+stream as a second barrier:
+
+```ts title="src/app/.../api/file-upload/route.ts"
+// The multipart envelope (boundaries and part headers) adds a few hundred bytes on top of the file itself.
+const multipartOverheadBytes = 4 * 1024;
+const maxRequestSizeBytes = maxFileSizeBytes + multipartOverheadBytes;
+
+const createSizeLimitedStream = (maxSizeBytes: number, onLimitExceeded: () => void) => {
+    let bytesRead = 0;
+
+    return new TransformStream<Uint8Array, Uint8Array>({
+        transform(chunk, controller) {
+            bytesRead += chunk.byteLength;
+
+            if (bytesRead > maxSizeBytes) {
+                onLimitExceeded();
+                controller.error(new Error("File exceeds the maximum size"));
+                return;
+            }
+
+            controller.enqueue(chunk);
+        },
+    });
+};
+
+export async function POST(
+    request: NextRequest,
+    context: RouteContext<"/[visibility]/[domain]/[language]/api/file-upload">,
+) {
+    if (Number(request.headers.get("content-length")) > maxRequestSizeBytes) {
+        return NextResponse.json({ message: "File too large" }, { status: 413 });
+    }
+
+    const recaptchaToken = request.headers.get("x-recaptcha-token");
+    // Validate the token, the file type and the presence of the body before touching the upload...
+
+    let sizeLimitExceeded = false;
+
+    const body = requestBody.pipeThrough(
+        createSizeLimitedStream(maxRequestSizeBytes, () => {
+            sizeLimitExceeded = true;
+        }),
+    );
+
+    // duplex is required when streaming a request body, but is not part of the fetch types yet.
+    const requestInit: RequestInit & { duplex: "half" } = {
+        method: "POST",
+        // The original content type carries the multipart boundary, so the API can separate the fields itself.
+        headers: { "content-type": request.headers.get("content-type") ?? "" },
+        body,
+        duplex: "half",
+    };
+
+    const uploadResponse = await fetch(
+        `${process.env.API_URL_INTERNAL}/file-uploads/upload`,
+        requestInit,
+    );
+
+    // Handle the response, and turn a rejected stream into a 413 when sizeLimitExceeded is set...
+}
+```
+
+The route no longer sees the parsed file, so it cannot validate the file's contents. That validation belongs to the
+API anyway: `FileUploadsModule` checks the size and the mime type of the uploaded file. Pass its `4xx` rejections
+through to the user, so a rejected file does not surface as a generic error.
+
+See `FileUploadField` and the `api/file-upload` route in the demo site for a full implementation.

@@ -73,7 +73,7 @@ export function renderTipTapRichText({ content, nodeMapping, markMapping }: Rend
     };
 
     const renderNode = (node: TipTapNode, parent: TipTapNode | undefined): ReactNode => {
-        if (node.type === "text") {
+        if (!node.type || node.type === "text") {
             return applyMarks(node.text ?? "", node);
         }
 
@@ -86,7 +86,7 @@ export function renderTipTapRichText({ content, nodeMapping, markMapping }: Rend
             return <>{renderedChildren}</>;
         }
 
-        const handler = node.type ? mergedNodeMapping[node.type] : undefined;
+        const handler = mergedNodeMapping[node.type];
         const rendered = handler ? handler({ node, parent, children: renderedChildren }) : <>{renderedChildren}</>;
         return applyMarks(rendered, node);
     };

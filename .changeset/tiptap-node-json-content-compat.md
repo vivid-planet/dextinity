@@ -6,7 +6,7 @@
 
 Make the generated `TipTapNode` type compatible with TipTap's `JSONContent`
 
-`TipTapNode["type"]` is optional now, matching `JSONContent["type"]`. Both types can be used interchangeably, so no cast is needed when passing a rich text block's content to a TipTap utility or when rendering a `JSONContent` value with `renderTipTapRichText`.
+`TipTapNode["type"]` is optional now, matching `JSONContent["type"]`. Both types can be used interchangeably, so no cast is needed when passing a rich text block's content to a TipTap utility or when rendering a `JSONContent` value with `renderTipTapRichText`. `renderTipTapRichText` renders a node without a `type` as a text node.
 
 **Example**
 

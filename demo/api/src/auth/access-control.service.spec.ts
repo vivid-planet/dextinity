@@ -61,7 +61,7 @@ describe("AccessControlService", () => {
 
             const contentScopes = service.getContentScopesForUser(nonAdminUser);
 
-            expect(contentScopes).toEqual([{ domain: "main", language: "en" }]);
+            expect(contentScopes).toEqual([{ domain: "main", language: "*" }]);
         });
 
         it("should return limited content scopes for unknown non-admin user", () => {
@@ -74,7 +74,7 @@ describe("AccessControlService", () => {
 
             const contentScopes = service.getContentScopesForUser(unknownUser);
 
-            expect(contentScopes).toEqual([{ domain: "main", language: "en" }]);
+            expect(contentScopes).toEqual([{ domain: "main", language: "*" }]);
         });
     });
 });

@@ -254,6 +254,32 @@ export const TeaserVideoBlock = createDamVideoBlock({ supports: [] }, "TeaserVid
 
 Unsupported options are part of neither the block's data nor its input, so they don't show up in `blocks.generated.ts` and aren't stored for new content.
 Values that were stored before an option was left out are kept: the block loads them and saves them again, so narrowing `supports` doesn't remove them from existing content.
+Note that such a value is no longer treated as a child block, so a preview image kept this way isn't part of the block index either.
+
+#### Migrations
+
+The factory brings its own migration for the preview image the block gained after its first release.
+It runs for every block the factory creates, so replacing a block a project already has migrates content that was stored before the preview image existed.
+
+That migration occupies version 1, so own migrations start with 2.
+The factory throws when a passed `version` or `toVersion` is 1:
+
+```ts title="teaser-video.block.ts"
+import { createDamVideoBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
+
+export const TeaserVideoBlock = createDamVideoBlock(
+    { supports: ["controls"] },
+    { name: "TeaserVideo", migrate: { version: 2, migrations: typeSafeBlockMigrationPipe([AddSomethingMigration]) } },
+);
+```
+
+Run `migrateBlocks` to write the migrated data back:
+
+```bash
+pnpm console migrateBlocks
+```
+
+Without it the migration still applies whenever a block is loaded, it just isn't persisted until the content is saved.
 
 ### Admin
 

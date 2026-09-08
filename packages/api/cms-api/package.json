@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/cms-api",
-    "version": "10.4.0",
+    "version": "10.5.0",
     "description": "Dextinity CMS API package",
     "repository": {
         "directory": "packages/api/cms-api",

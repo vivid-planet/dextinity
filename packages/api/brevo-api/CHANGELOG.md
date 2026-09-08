@@ -1,5 +1,18 @@
 # @comet/brevo-api
 
+## 10.5.0
+
+### Patch Changes
+
+- 72d0ba7: Replace `axios` with the native `fetch` API when requesting the email campaign content from the frontend
+
+    This removes the `@nestjs/axios` and `axios` dependencies from the package.
+
+- Updated dependencies [f4d091f]
+- Updated dependencies [0be2f59]
+- Updated dependencies [02bba49]
+    - @dextinity/cms-api@10.5.0
+
 ## 10.4.0
 
 ### Patch Changes

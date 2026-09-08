@@ -1,6 +1,6 @@
 ---
-"@dextinity/cms-api": minor
-"@dextinity/cms-admin": minor
+"@comet/cms-api": minor
+"@comet/cms-admin": minor
 ---
 
 Support wildcard values for content scope dimensions in `getContentScopesForUser`

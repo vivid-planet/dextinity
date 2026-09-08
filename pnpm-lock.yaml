@@ -572,6 +572,9 @@ importers:
       next:
         specifier: ^16.2.10
         version: 16.2.11(@babel/core@7.29.7(supports-color@8.1.1))(@opentelemetry/api@1.9.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.93.0)
+      nodemailer:
+        specifier: ^10.0.0
+        version: 10.0.0
       react:
         specifier: ^19.2.6
         version: 19.2.6
@@ -14102,6 +14105,10 @@ packages:
 
   node-releases@2.0.36:
     resolution: {integrity: sha512-TdC8FSgHz8Mwtw9g5L4gR/Sh9XhSP/0DEkQxfEFXOpiul5IiHgHan2VhYYb6agDSfp4KuvltmGApc8HMgUrIkA==}
+
+  nodemailer@10.0.0:
+    resolution: {integrity: sha512-wdv+hXBg0iIPIOf108FaZyTxqjQpCvQeAJt9pHHTooPy/y3vQtI9eiImM9AIVKR3e/0FeMA1oueNfBjFJcaK+Q==}
+    engines: {node: '>=20.0.0'}
 
   nodemailer@8.0.5:
     resolution: {integrity: sha512-0PF8Yb1yZuQfQbq+5/pZJrtF6WQcjTd5/S4JOHs9PGFxuTqoB/icwuB44pOdURHJbRKX1PPoJZtY7R4VUoCC8w==}
@@ -31954,6 +31961,8 @@ snapshots:
   node-machine-id@1.1.12: {}
 
   node-releases@2.0.36: {}
+
+  nodemailer@10.0.0: {}
 
   nodemailer@8.0.5: {}
 

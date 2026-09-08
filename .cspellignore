@@ -53,6 +53,7 @@ retryable
 mjml
 autonumber
 colorpicker
+datagrid
 datetimerangepickerfield
 datetimerangepicker
 inlinealert

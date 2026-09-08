@@ -256,30 +256,31 @@ Unsupported options are part of neither the block's data nor its input, so they 
 Values that were stored before an option was left out are kept: the block loads them and saves them again, so narrowing `supports` doesn't remove them from existing content.
 Note that such a value is no longer treated as a child block, so a preview image kept this way isn't part of the block index either.
 
-#### Migrations
+#### Preview image of existing content
 
-The factory brings its own migration for the preview image the block gained after its first release.
-It runs for every block the factory creates, so replacing a block a project already has migrates content that was stored before the preview image existed.
+A block that supports the preview image defaults a missing one to an empty preview image when it loads content.
+So replacing a block a project already has works without a migration: content stored before the preview image existed loads as a child block instead of leaving the field undefined.
 
-That migration occupies version 1, so own migrations start with 2.
-The factory throws when a passed `version` or `toVersion` is 1:
+The default applies on read, which also covers content that no migration reaches — for instance content stored while `supports` left the preview image out, before it was widened to include it.
+
+Run `migrateBlocks` to write the defaulted data back:
+
+```bash
+pnpm console migrateBlocks
+```
+
+Without it the default still applies whenever a block is loaded, it just isn't persisted until the content is saved.
+
+Own migrations are passed via `migrate` and start with version 1, like for any other block:
 
 ```ts title="teaser-video.block.ts"
 import { createDamVideoBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
 
 export const TeaserVideoBlock = createDamVideoBlock(
     { supports: ["controls"] },
-    { name: "TeaserVideo", migrate: { version: 2, migrations: typeSafeBlockMigrationPipe([AddSomethingMigration]) } },
+    { name: "TeaserVideo", migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([AddSomethingMigration]) } },
 );
 ```
-
-Run `migrateBlocks` to write the migrated data back:
-
-```bash
-pnpm console migrateBlocks
-```
-
-Without it the migration still applies whenever a block is loaded, it just isn't persisted until the content is saved.
 
 ### Admin
 

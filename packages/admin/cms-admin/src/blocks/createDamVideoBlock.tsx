@@ -133,6 +133,8 @@ export const createDamVideoBlock = (
                 });
             }
 
+            dependencies.push(...(PixelImageBlock.dependencies?.(state.previewImage) ?? []));
+
             return dependencies;
         },
 
@@ -143,6 +145,8 @@ export const createDamVideoBlock = (
             if (replacement) {
                 clonedOutput.damFileId = replacement.replaceWithId;
             }
+
+            clonedOutput.previewImage = PixelImageBlock.replaceDependenciesInOutput(output.previewImage, replacements);
 
             return clonedOutput;
         },

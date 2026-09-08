@@ -17,12 +17,11 @@ import { ChildBlock } from "../../../blocks/decorators/child-block";
 import { ChildBlockInput } from "../../../blocks/decorators/child-block-input";
 import { AnnotationBlockMeta, BlockField } from "../../../blocks/decorators/field";
 import type { BlockFactoryNameOrOptions } from "../../../blocks/factories/types";
-import { typeSafeBlockMigrationPipe } from "../../../blocks/migrations/typeSafeBlockMigrationPipe";
 import { DamFileAiContentType } from "../../files/entities/ai-content-type.enum";
 import { FILE_ENTITY } from "../../files/entities/file.entity";
 import { PixelImageBlock } from "../pixel-image.block";
 import { DamVideoBlockTransformerService } from "./dam-video-block-transformer.service";
-import { AddPreviewImageMigration } from "./migrations/1-add-preview-image.migration";
+import { buildAddPreviewImageMigration } from "./migrations/1-add-preview-image.migration";
 
 /**
  * What the block stores besides the video file itself:
@@ -33,6 +32,9 @@ import { AddPreviewImageMigration } from "./migrations/1-add-preview-image.migra
 export type DamVideoBlockSupports = "controls" | "previewImage";
 
 const defaultSupports: DamVideoBlockSupports[] = ["controls", "previewImage"];
+
+// Belongs to the factory's own migration, so a block created by it starts its migrations with 2.
+const reservedVersion = 1;
 
 interface CreateDamVideoBlockOptions {
     /**
@@ -63,9 +65,9 @@ interface DamVideoBlockInputInterface extends SimpleBlockInputInterface {
 export function createDamVideoBlock(
     { supports = defaultSupports }: CreateDamVideoBlockOptions = {},
     nameOrOptions: BlockFactoryNameOrOptions = "DamVideo",
-): Block<BlockDataInterface, DamVideoBlockInputInterface> {
+): Block<DamVideoBlockDataInterface, DamVideoBlockInputInterface> {
     const name = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
-    const migrate = typeof nameOrOptions === "string" ? undefined : nameOrOptions.migrate;
+    const baseMigrate = typeof nameOrOptions === "string" ? undefined : nameOrOptions.migrate;
 
     if (getRegisteredBlocks().some((block) => block.name === name)) {
         throw new Error(
@@ -75,6 +77,27 @@ export function createDamVideoBlock(
 
     const supportsControls = supports.includes("controls");
     const supportsPreviewImage = supports.includes("previewImage");
+
+    if (baseMigrate) {
+        if (baseMigrate.version === reservedVersion) {
+            throw new Error(`version=${reservedVersion} is reserved for createDamVideoBlock, start own migrations with ${reservedVersion + 1}.`);
+        }
+
+        for (const migration of baseMigrate.migrations) {
+            if (new migration().toVersion === reservedVersion) {
+                throw new Error(
+                    `toVersion=${reservedVersion} is reserved for createDamVideoBlock, start own migrations with ${reservedVersion + 1}.`,
+                );
+            }
+        }
+    }
+
+    // The factory brings its own migration, so a block it creates migrates existing content even when the
+    // caller passes no migrations of its own.
+    const migrate = {
+        version: baseMigrate && baseMigrate.version > reservedVersion ? baseMigrate.version : reservedVersion,
+        migrations: [buildAddPreviewImageMigration({ supportsPreviewImage }), ...(baseMigrate?.migrations ?? [])],
+    };
 
     const unsupportedFields = supportsControls ? [] : ["autoplay", "showControls", "loop"];
     const isSupported = (field: BlockMetaField) => !unsupportedFields.includes(field.name);
@@ -278,13 +301,4 @@ export function createDamVideoBlock(
     });
 }
 
-export const DamVideoBlock = createDamVideoBlock(
-    {},
-    {
-        name: "DamVideo",
-        migrate: {
-            version: 1,
-            migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration]),
-        },
-    },
-);
+export const DamVideoBlock = createDamVideoBlock({}, "DamVideo");

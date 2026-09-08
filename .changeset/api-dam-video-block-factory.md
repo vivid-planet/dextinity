@@ -25,3 +25,16 @@ export const TeaserVideoBlock = createDamVideoBlock({ supports: [] }, "TeaserVid
 ```
 
 Use the same `supports` and the same name for the Admin block.
+
+**Migrations**
+
+The factory brings its own migration, so a block created by it migrates content that was stored before the block had a preview image — even when no `migrate` is passed. This matters when the factory replaces a block that a project already has: without it, content that was never migrated keeps no preview image although the block declares one.
+
+That migration occupies version 1, so own migrations start with 2. The factory throws when a passed `version` or `toVersion` is 1.
+
+```ts
+export const TeaserVideoBlock = createDamVideoBlock(
+    { supports: ["controls"] },
+    { name: "TeaserVideo", migrate: { version: 2, migrations: typeSafeBlockMigrationPipe([AddSomethingMigration]) } },
+);
+```

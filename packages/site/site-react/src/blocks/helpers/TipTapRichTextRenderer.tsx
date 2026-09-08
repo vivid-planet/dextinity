@@ -86,7 +86,7 @@ export function renderTipTapRichText({ content, nodeMapping, markMapping }: Rend
             return <>{renderedChildren}</>;
         }
 
-        const handler = mergedNodeMapping[node.type];
+        const handler = node.type ? mergedNodeMapping[node.type] : undefined;
         const rendered = handler ? handler({ node, parent, children: renderedChildren }) : <>{renderedChildren}</>;
         return applyMarks(rendered, node);
     };

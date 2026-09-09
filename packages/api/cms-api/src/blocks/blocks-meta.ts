@@ -1,4 +1,4 @@
-import { BlockMetaFieldKind, type BlockMetaInterface, getRegisteredBlocks } from "./block";
+import { type Block, BlockMetaFieldKind, type BlockMetaInterface, getRegisteredBlocks } from "./block";
 
 type BlockMetaField =
     | {
@@ -108,8 +108,8 @@ function extractFromBlockMeta(blockMeta: BlockMetaInterface): BlockMetaField[] {
     });
 }
 
-export function getBlocksMeta(): BlockMeta[] {
-    return getRegisteredBlocks()
+export function getBlocksMeta(blocks: Block[] = getRegisteredBlocks()): BlockMeta[] {
+    return [...blocks]
         .sort((blockA, blockB) => blockA.name.localeCompare(blockB.name))
         .map((block) => {
             const meta: BlockMeta = {

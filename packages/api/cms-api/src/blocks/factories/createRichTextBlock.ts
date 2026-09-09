@@ -205,6 +205,7 @@ export function createRichTextBlock<LinkBlock extends Block>(
         blockInputFactory: decorateBlockInputFactory,
         blockMeta: new AnnotationBlockMeta(RichTextBlockData),
         blockInputMeta: new AnnotationBlockMeta(RichTextBlockInput),
+        referencedBlocks: [LinkBlock],
     };
 
     registerBlock(RichTextBlock);

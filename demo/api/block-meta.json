@@ -2261,25 +2261,6 @@
         ]
     },
     {
-        "name": "NewsletterImage",
-        "fields": [
-            {
-                "name": "image",
-                "kind": "Block",
-                "block": "PixelImage",
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "image",
-                "kind": "Block",
-                "block": "PixelImage",
-                "nullable": false
-            }
-        ]
-    },
-    {
         "name": "NewsLink",
         "fields": [
             {
@@ -3313,23 +3294,6 @@
                         }
                     ]
                 },
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "Space",
-        "fields": [
-            {
-                "name": "height",
-                "kind": "Number",
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "height",
-                "kind": "Number",
                 "nullable": false
             }
         ]

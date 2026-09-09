@@ -3,6 +3,7 @@
 import { usePreview } from "@dextinity/site-nextjs";
 import { useAnimateGroup } from "@src/util/animations/AnimateGroup";
 import { useGlobalScrollSpeed } from "@src/util/animations/useGlobalScrollSpeed";
+import { useScrolledToPageBottom } from "@src/util/animations/useScrolledToPageBottom";
 import { useWindowSize } from "@src/util/useWindowSize";
 import clsx from "clsx";
 import { type PropsWithChildren, useEffect, useRef, useState } from "react";
@@ -33,6 +34,7 @@ export function AnimateBoxInOnScroll({
     const { previewType } = usePreview();
     const windowSize = useWindowSize();
     const scrollSpeed = useGlobalScrollSpeed();
+    const scrolledToPageBottom = useScrolledToPageBottom();
 
     const groupForceVisible = animateGroup?.visible ?? false;
     const groupOnVisible = animateGroup?.onVisible;
@@ -63,6 +65,18 @@ export function AnimateBoxInOnScroll({
         // Mount-only: only the initial-in-view state should trigger this; re-running on prop changes would re-fire the animation.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    // The bottom rootMargin below is negative, so the trigger line sits above the viewport bottom. A block that only
+    // ever reaches that band — the last one above a short footer — would never intersect and stay hidden for good.
+    useEffect(() => {
+        if (!scrolledToPageBottom || previewType === "BlockPreview") {
+            return;
+        }
+        setTriggerAnimation(true);
+        if (!groupDisabled) {
+            groupOnVisible?.();
+        }
+    }, [scrolledToPageBottom, previewType, groupDisabled, groupOnVisible]);
 
     // Reporting to the group is deferred until it has measured its breakpoint. Child effects run before the group's,
     // so notifying from the mount effect above would force the whole group visible even at a disabled breakpoint.

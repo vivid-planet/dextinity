@@ -111,7 +111,6 @@ import {
     type PropsWithData,
     renderTipTapRichText,
     type TipTapMarkHandler,
-    type TipTapNode,
     type TipTapNodeHandler,
 } from "@dextinity/site-nextjs";
 import { LinkBlockData, TipTapRichTextBlockData } from "@src/blocks.generated";
@@ -131,7 +130,7 @@ const markMapping: Record<string, TipTapMarkHandler> = {
 };
 
 export function TipTapRichTextBlock({ data }: PropsWithData<TipTapRichTextBlockData>) {
-    const content = data.tipTapContent as TipTapNode;
+    const content = data.tipTapContent;
     return (
         <PreviewSkeleton
             title="RichText"
@@ -148,7 +147,8 @@ export function TipTapRichTextBlock({ data }: PropsWithData<TipTapRichTextBlockD
 
 :::note
 
-The generated type `TipTapRichTextBlockData.tipTapContent` is `unknown` on the site. Cast it to `TipTapNode` before passing it to `renderTipTapRichText`.
+`TipTapNode` is structurally compatible with TipTap's own `JSONContent` type.
+A `JSONContent` value can be rendered with `renderTipTapRichText`, and the block data can be passed to TipTap utilities such as `generateHTML()` — no cast needed in either direction.
 
 :::
 

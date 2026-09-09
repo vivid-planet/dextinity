@@ -74,7 +74,9 @@ export function AnimateBoxInOnScroll({
 
     useEffect(() => {
         const scrollContainer = refScrollContainer.current;
-        if (!scrollContainer || previewType === "BlockPreview") {
+        // Once the animation has run the element never reverts, so it does not need to stay observed. Without this the
+        // observer of every already-animated box is torn down and rebuilt on each scroll-speed and viewport change.
+        if (!scrollContainer || previewType === "BlockPreview" || triggerAnimation) {
             return;
         }
 
@@ -108,7 +110,7 @@ export function AnimateBoxInOnScroll({
                 observer.unobserve(scrollContainer);
             }
         };
-    }, [offset, previewType, direction, windowSize, scrollSpeed, groupOnVisible, groupDisabled]);
+    }, [offset, previewType, direction, windowSize, scrollSpeed, groupOnVisible, groupDisabled, triggerAnimation]);
 
     // Set CSS variable for delay and duration
     const style = {

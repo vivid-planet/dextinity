@@ -5,10 +5,6 @@
         transform var(--animation-transform-duration, 1000ms) cubic-bezier(0.22, 1, 0.36, 1) var(--animation-delay, 0ms);
 }
 
-.fullHeight {
-    height: 100%;
-}
-
 .fromLeft {
     transform: translate3d(-40px, 0, 0);
 }

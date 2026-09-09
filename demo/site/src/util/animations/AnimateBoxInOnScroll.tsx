@@ -5,20 +5,17 @@ import { useAnimateGroup } from "@src/util/animations/AnimateGroup";
 import { useGlobalScrollSpeed } from "@src/util/animations/useGlobalScrollSpeed";
 import { useWindowSize } from "@src/util/useWindowSize";
 import clsx from "clsx";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type PropsWithChildren, useEffect, useRef, useState } from "react";
 
 import styles from "./AnimateBoxInOnScroll.module.scss";
 
+const animationDuration = 500;
+
 interface AnimateBoxInOnScrollProps {
     direction?: "top" | "right" | "bottom" | "left";
-    children: ReactNode;
     offset?: number;
     delay?: number;
-    duration?: number;
-    fullHeight?: boolean;
-    onChange?: (inView: boolean) => void;
     className?: string;
-    innerClassName?: string;
 }
 
 export function AnimateBoxInOnScroll({
@@ -26,13 +23,9 @@ export function AnimateBoxInOnScroll({
     direction = undefined,
     offset = 200,
     delay = 0,
-    duration = 500,
-    fullHeight = false,
-    onChange,
     className,
-    innerClassName,
     ...props
-}: AnimateBoxInOnScrollProps) {
+}: PropsWithChildren<AnimateBoxInOnScrollProps>) {
     const animateGroup = useAnimateGroup();
     const refScrollContainer = useRef<HTMLDivElement | null>(null);
     const [triggerAnimation, setTriggerAnimation] = useState<boolean>(false);
@@ -53,7 +46,7 @@ export function AnimateBoxInOnScroll({
 
     // Dynamic delay and animation duration for speedup animation on faster scrolling
     const dynamicDelay = scrollSpeed > 4 ? effectiveDelay / (scrollSpeed / 4) : effectiveDelay;
-    const dynamicAnimationDuration = scrollSpeed > 4 ? Math.min(duration / (scrollSpeed / 4), 200) : duration;
+    const dynamicAnimationDuration = scrollSpeed > 4 ? Math.min(animationDuration / (scrollSpeed / 4), 200) : animationDuration;
 
     // Show immediately if element is already in view on page load
     useEffect(() => {
@@ -65,7 +58,6 @@ export function AnimateBoxInOnScroll({
         const rect = scrollContainer.getBoundingClientRect();
         if (rect.top < window.innerHeight && rect.bottom > 0) {
             setTriggerAnimation(true);
-            onChange?.(true);
             setVisibleOnMount(true);
         }
         // Mount-only: only the initial-in-view state should trigger this; re-running on prop changes would re-fire the animation.
@@ -97,7 +89,6 @@ export function AnimateBoxInOnScroll({
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         setTriggerAnimation(true);
-                        onChange?.(entry.isIntersecting);
                         if (!groupDisabled) {
                             groupOnVisible?.();
                         }
@@ -117,7 +108,7 @@ export function AnimateBoxInOnScroll({
                 observer.unobserve(scrollContainer);
             }
         };
-    }, [offset, previewType, direction, windowSize, onChange, scrollSpeed, groupOnVisible, groupDisabled]);
+    }, [offset, previewType, direction, windowSize, scrollSpeed, groupOnVisible, groupDisabled]);
 
     // Set CSS variable for delay and duration
     const style = {
@@ -136,13 +127,11 @@ export function AnimateBoxInOnScroll({
                 }}
                 className={clsx(
                     styles.scrollContainer,
-                    fullHeight && styles.fullHeight,
                     direction === "left" && styles.fromLeft,
                     direction === "right" && styles.fromRight,
                     direction === "top" && styles.fromTop,
                     direction === "bottom" && styles.fromBottom,
                     (previewType === "BlockPreview" || triggerAnimation || groupForceVisible) && styles.animate,
-                    innerClassName,
                 )}
                 style={style}
                 {...props}

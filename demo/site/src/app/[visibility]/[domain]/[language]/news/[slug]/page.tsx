@@ -1,11 +1,13 @@
 export const dynamic = "error";
 
-import { gql } from "@dextinity/site-nextjs";
+import { gql, JsonLd } from "@dextinity/site-nextjs";
 import type { GQLNewsContentScopeInput } from "@src/graphql.generated";
 import type { VisibilityParam } from "@src/middleware/domainRewrite";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { setVisibilityParam } from "@src/util/ServerContext";
+import { buildArticle } from "@src/util/structuredData/buildArticle";
 import { notFound } from "next/navigation";
+import type { Article } from "schema-dts";
 
 import { Content } from "./content";
 import { fragment } from "./fragment";
@@ -14,6 +16,7 @@ import type { GQLNewsDetailPageQuery, GQLNewsDetailPageQueryVariables } from "./
 export default async function NewsDetailPage({ params }: PageProps<"/[visibility]/[domain]/[language]/news/[slug]">) {
     const { domain, language, slug, visibility } = await params;
     setVisibilityParam(visibility as VisibilityParam);
+    const scope = { domain, language };
     const graphqlFetch = createGraphQLFetch();
 
     const data = await graphqlFetch<GQLNewsDetailPageQuery, GQLNewsDetailPageQueryVariables>(
@@ -26,12 +29,17 @@ export default async function NewsDetailPage({ params }: PageProps<"/[visibility
             }
             ${fragment}
         `,
-        { slug, scope: { domain: domain, language: language } as GQLNewsContentScopeInput },
+        { slug, scope: scope as GQLNewsContentScopeInput },
     );
 
     if (data.newsBySlug === null) {
         notFound();
     }
 
-    return <Content news={data.newsBySlug} />;
+    return (
+        <>
+            <JsonLd<Article> data={buildArticle({ news: data.newsBySlug, scope })} />
+            <Content news={data.newsBySlug} />
+        </>
+    );
 }

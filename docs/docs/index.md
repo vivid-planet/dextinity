@@ -44,3 +44,20 @@ You can build two types of applications with Dextinity:
 :::note
 This terms are used throughout the documentation as some concepts heavily differ between this two types.
 :::
+
+## An Ode to Dextinity
+
+> Headless by design, yet never headstrong,<br />
+> a page tree that grows where the blocks belong.<br />
+> Twelve factors deep and cloud-native at heart,<br />
+> each microservice a replaceable part.<br />
+>
+> TypeScript everywhere, from schema to view,<br />
+> so the compiler catches the bugs before you.<br />
+> Mobile first, on-premise, and free to extend —<br />
+> infrastructure as code from beginning to end.<br />
+>
+> Content or data, whichever you need,<br />
+> Dextinity bends to the shape of the deed.<br />
+> Not off-the-shelf, but crafted with care:<br />
+> the DX you dreamed of is finally there.

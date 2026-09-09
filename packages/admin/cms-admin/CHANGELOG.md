@@ -1,5 +1,26 @@
 # @comet/cms-admin
 
+## 10.5.1
+
+### Patch Changes
+
+- d800488: Fix the DAM video block losing its playback settings when no video file is selected
+
+    `output2State` dropped `autoplay`, `loop` and `showControls` when the block had no `damFileId`, so the stored playback settings were reset as soon as the video file was removed.
+
+- 9cbbd61: Track the preview image of the video blocks as a block dependency
+
+    `createDamVideoBlock`, `YouTubeVideoBlock` and `VimeoVideoBlock` didn't report the DAM file used as preview image as a dependency, so it showed no usages and its ID wasn't remapped when copying pages between scopes, leaving a dangling reference.
+    The blocks now delegate to `PixelImageBlock` for the preview image. `createDamVideoBlock` merges the result with the dependency of its own video file.
+
+- 97fd75d: Implement `extractTextContents` in the SEO block
+
+    The SEO block only extracted the text contents of the Open Graph image, so its own texts (HTML title, meta description, Open Graph title and description) were missing wherever block text contents are used, e.g., for SEO text generation.
+    - @dextinity/admin@10.5.1
+    - @dextinity/admin-date-time@10.5.1
+    - @dextinity/admin-icons@10.5.1
+    - @dextinity/admin-rte@10.5.1
+
 ## 10.5.0
 
 ### Minor Changes

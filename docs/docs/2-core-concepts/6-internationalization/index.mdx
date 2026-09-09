@@ -11,7 +11,7 @@ The following page describes core translation concepts. We use [FormatJS](https:
 
 ## Masking strings
 
-All strings that should be translated must be masked using [`<FormattedMessage />`](https://formatjs.io/docs/react-intl/components#formattedmessage) or, if not possible, [`intl.formatMessage()`](https://formatjs.io/docs/react-intl/api#formatmessage). To ensure that all strings are translated we use [`@calm/eslint-plugin-react-intl`](https://www.npmjs.com/package/@calm/eslint-plugin-react-intl).
+All strings that should be translated must be masked using [`<FormattedMessage />`](https://formatjs.io/docs/react-intl/components#formattedmessage) or, if not possible, [`intl.formatMessage()`](https://formatjs.io/docs/react-intl/api#formatmessage). To ensure that all strings are translated we use the [`react/jsx-no-literals`](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-no-literals.md) ESLint rule.
 
 A stable and unique ID must be used to identify the string. IDs must be named camelCase with dots representing hierarchy. Dextinity's own messages are prefixed with `dextinity.`, so don't use that prefix in your application to prevent clashes.
 

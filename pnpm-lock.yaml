@@ -2343,9 +2343,6 @@ importers:
 
   packages/eslint-config:
     dependencies:
-      '@calm/eslint-plugin-react-intl':
-        specifier: ^1.4.1
-        version: 1.4.1
       '@dextinity/eslint-plugin':
         specifier: workspace:*
         version: link:../eslint-plugin
@@ -4046,11 +4043,6 @@ packages:
 
   '@cacheable/utils@2.3.3':
     resolution: {integrity: sha512-JsXDL70gQ+1Vc2W/KUFfkAJzgb4puKwwKehNLuB+HrNKWf91O736kGfxn4KujXCCSuh6mRRL4XEB0PkAFjWS0A==}
-
-  '@calm/eslint-plugin-react-intl@1.4.1':
-    resolution: {integrity: sha512-J3Tj03JwlV6CPENBqEt64M+Z+k49cNcHUBRYY67Wx9l960NOKhqlRCPUrE85zRqOXqO0cYUrcgrvb0wHAWMpKA==}
-    engines: {node: '>=0.10.0'}
-    deprecated: This package is no longer actively maintained by Calm. It remains available for compatibility with existing consumers, but new projects should avoid depending on it.
 
   '@changesets/apply-release-plan@7.1.1':
     resolution: {integrity: sha512-9qPCm/rLx/xoOFXIHGB229+4GOL76S4MC+7tyOuTsR6+1jYlfFDQORdvwR5hDA6y4FL2BPt3qpbcQIS+dW85LA==}
@@ -15734,10 +15726,6 @@ packages:
   require-main-filename@2.0.0:
     resolution: {integrity: sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg==}
 
-  requireindex@1.1.0:
-    resolution: {integrity: sha512-LBnkqsDE7BZKvqylbmn7lTIVdpx4K/QCduRATpO5R+wtPmky/a8pN1bO2D6wXppn1497AJF9mNjqAXr6bdl9jg==}
-    engines: {node: '>=0.10.5'}
-
   requires-port@1.0.0:
     resolution: {integrity: sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==}
 
@@ -19432,10 +19420,6 @@ snapshots:
     dependencies:
       hashery: 1.4.0
       keyv: 5.6.0
-
-  '@calm/eslint-plugin-react-intl@1.4.1':
-    dependencies:
-      requireindex: 1.1.0
 
   '@changesets/apply-release-plan@7.1.1':
     dependencies:
@@ -33947,8 +33931,6 @@ snapshots:
   require-like@0.1.2: {}
 
   require-main-filename@2.0.0: {}
-
-  requireindex@1.1.0: {}
 
   requires-port@1.0.0: {}
 

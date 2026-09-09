@@ -9,15 +9,13 @@ import styles from "./AnimateBoxInOnLoad.module.scss";
 interface AnimateBoxInOnLoadProps {
     direction?: "top" | "right" | "bottom" | "left";
     delay?: number;
-    duration?: number;
 }
 
-export function AnimateBoxInOnLoad({ children, direction = "bottom", delay = 0, duration }: PropsWithChildren<AnimateBoxInOnLoadProps>) {
+export function AnimateBoxInOnLoad({ children, direction = "bottom", delay = 0 }: PropsWithChildren<AnimateBoxInOnLoadProps>) {
     const { previewType } = usePreview();
 
     const style = {
         "--animation-delay": `${delay}ms`,
-        ...(duration != null && { "--animation-duration": `${duration}ms` }),
     } as React.CSSProperties;
 
     return (

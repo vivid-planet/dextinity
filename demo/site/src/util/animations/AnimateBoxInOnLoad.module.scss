@@ -47,7 +47,7 @@
 }
 
 .root {
-    animation-duration: var(--animation-duration, 0.8s);
+    animation-duration: 0.8s;
     animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
     animation-fill-mode: both;
     animation-delay: var(--animation-delay, 0ms);

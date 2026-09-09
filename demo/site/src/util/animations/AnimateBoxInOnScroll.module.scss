@@ -26,7 +26,7 @@
     transform: translate3d(0, 0, 0);
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce), print {
     .scrollContainer {
         opacity: 1;
         transform: translate3d(0, 0, 0);

@@ -69,7 +69,7 @@
     animation-name: fade-in-from-bottom;
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce), print {
     .root {
         animation: none;
         opacity: 1;

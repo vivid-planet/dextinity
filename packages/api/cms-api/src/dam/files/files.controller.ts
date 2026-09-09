@@ -216,6 +216,7 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new ForbiddenException();
             }
 
+            res.setHeader("Content-Disposition", createContentDisposition(file.name, { type: "inline" }));
             return this.streamFile(file, res, { range, overrideHeaders: { "cache-control": "max-age=31536000, private" } }); // Local caches only (1 year)
         }
 
@@ -290,6 +291,7 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
+            res.setHeader("Content-Disposition", createContentDisposition(file.name, { type: "inline" }));
             return this.streamFile(file, res, {
                 range,
                 overrideHeaders: {

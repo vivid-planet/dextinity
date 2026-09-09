@@ -9,7 +9,7 @@ import { TeaserItemBlock } from "./TeaserItemBlock";
 
 export const TeaserBlock = withPreview(
     ({ data }: PropsWithData<TeaserBlockData>) => (
-        <AnimateGroup>
+        <AnimateGroup disabledBreakpoints={["xs", "sm"]}>
             <PageLayout grid>
                 <div className={styles.pageLayoutContent}>
                     <div className={styles.itemWrapper}>

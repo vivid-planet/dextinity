@@ -70,11 +70,14 @@ export function ProductHighlightsGrid() {
             type: "actions",
             align: "right",
             pinned: "right",
-            width: 84,
+            width: 184,
             renderCell: (params) => {
                 return (
                     <>
                         <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                            <EditIcon />
+                        </IconButton>
+                        <IconButton color="primary" component={StackLink} pageName="edit2" payload={params.row.id}>
                             <EditIcon />
                         </IconButton>
                         <CrudContextMenu

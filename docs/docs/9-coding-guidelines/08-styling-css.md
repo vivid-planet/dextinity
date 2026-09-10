@@ -125,24 +125,9 @@ const spacingValues: SpacingValues = {
 
 :::
 
-## Modern CSS3 Stuff / Browser Support
+## CSS
 
-Check support with [CanIUse.com](https://caniuse.com).
-
-Relevant value: **“All Users/Europe”**
-
-![CanIUse](./images/can-i-use.png)
-
-### Frontend/Site
-
-Anything with a usage share of **>= 93%** can be used freely.
-
-Anything with a usage share of **>= 90%** can be used if the basic functionality is ensured. This means: The site must still work if this feature is not supported, but styling may
-slightly differ or behavior may not feel perfect. Depending on the feature or deviation in behavior, this threshold may be lower. The final decision lies with the responsible stylist.
-
-### Admin
-
-Everything supported by Chrome, Firefox, and Safari can be used.
+For the browsers we support and the rules on modern features, see [Browser Support](./03-browser-support.md).
 
 ### Grid and Flex
 

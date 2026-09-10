@@ -96,11 +96,11 @@ export function renderTipTapRichText({ content, nodeMapping, markMapping }: Rend
 
 // An empty text block renders nothing, no matter which type it has. A heading-only block starts
 // out with an empty heading, just like a regular rich text block starts out with an empty paragraph.
-const emptyableTextBlockTypes = ["paragraph", "heading"];
+const isEmptyableTextBlock = (node: TipTapNode): boolean => node.type === "paragraph" || node.type === "heading";
 
 export function hasTipTapRichTextContent(content: TipTapNode | null | undefined): boolean {
     if (!content?.content || !Array.isArray(content.content)) {
         return false;
     }
-    return content.content.some((node) => !emptyableTextBlockTypes.includes(node.type) || (Array.isArray(node.content) && node.content.length > 0));
+    return content.content.some((node) => !isEmptyableTextBlock(node) || (Array.isArray(node.content) && node.content.length > 0));
 }

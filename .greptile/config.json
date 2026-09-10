@@ -1,4 +1,5 @@
 {
+    "skipReview": "AUTOMATIC",
     "autoApprove": {
         "enabled": true
     }

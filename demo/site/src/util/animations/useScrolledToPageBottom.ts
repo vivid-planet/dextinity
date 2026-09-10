@@ -29,9 +29,10 @@ export function useScrolledToPageBottom() {
         }
         listeners.add(setScrolledToPageBottom);
 
-        // check() only notifies on change, so seed this subscriber with the current value.
-        isScrolledToPageBottom = measure();
+        // check() only notifies on change, so seed this subscriber with the shared value. Measuring into the shared
+        // value here instead would leave subscribers that are already mounted on a stale one, with no notification.
         setScrolledToPageBottom(isScrolledToPageBottom);
+        check();
 
         return () => {
             listeners.delete(setScrolledToPageBottom);

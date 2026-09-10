@@ -3,6 +3,7 @@
     "autoApprove": {
         "enabled": true
     },
+    "instructions": "The files referenced in .greptile/files.json are this repository's coding guidelines. Treat them as binding and flag violations in review comments. The frontmatter of those files (description, applyTo, paths, globs, alwaysApply) is metadata for other tools, not a rule to review against.",
     "ignorePatterns": [
         "pnpm-lock.yaml",
         "**/CHANGELOG.md",

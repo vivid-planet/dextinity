@@ -4,7 +4,7 @@ import { Injectable } from "@nestjs/common";
 import { registerDecorator, ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
 import { basename, extname } from "path";
 
-import { slugifyFilename } from "../../../file-utils/files.utils";
+import { isValidFileExtension, slugifyFilename } from "../../../file-utils/files.utils";
 import { UpdateFileInput } from "../../files/dto/file.input";
 import { UpdateDamFileArgs } from "../../files/dto/update-dam-file.args";
 import { FILE_ENTITY, FileInterface } from "../../files/entities/file.entity";
@@ -42,6 +42,11 @@ export class HasValidFilenameConstraint implements ValidatorConstraintInterface 
 
         if (newExtension.length === 0) {
             this.errorMessage = `Filename ${newFilename} has no extension`;
+            return false;
+        }
+
+        if (!isValidFileExtension(newExtension)) {
+            this.errorMessage = `Filename ${newFilename} has an unsupported extension`;
             return false;
         }
 

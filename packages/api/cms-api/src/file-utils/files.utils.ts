@@ -10,6 +10,7 @@ import stream from "stream";
 import { promisify } from "util";
 import { v4 as uuid } from "uuid";
 
+import { DextinityValidationException } from "../common/errors/validation.exception";
 import type { FileUploadInput } from "./file-upload.input";
 import { FILE_UPLOAD_FIELD } from "./files.constants";
 
@@ -21,8 +22,23 @@ export async function calculateFileHash(filePath: string): Promise<string> {
     return hash.digest("hex");
 }
 
+// Extensions are never run through `slugify()` (only the base filename is), so they must be constrained
+// separately. Without this, a client-supplied extension containing e.g. "?" or "#" would end up unencoded
+// in DAM file URLs and break the hash-signed URL scheme (see PHSB2C-13924 follow-up).
+const VALID_FILE_EXTENSION_REGEXP = /^\.[a-zA-Z0-9]+$/;
+
+export function isValidFileExtension(extension: string): boolean {
+    const extensionWithDot = extension.startsWith(".") ? extension : `.${extension}`;
+    return VALID_FILE_EXTENSION_REGEXP.test(extensionWithDot);
+}
+
 export function slugifyFilename(filename: string, extension: string): string {
     const extensionWithDot = extension.startsWith(".") ? extension : `.${extension}`;
+
+    if (!isValidFileExtension(extensionWithDot)) {
+        throw new DextinityValidationException(`Unsupported file extension: ${extensionWithDot}`);
+    }
+
     return `${slugify(filename)}${extensionWithDot}`;
 }
 

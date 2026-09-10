@@ -1,6 +1,9 @@
 {
     "skipReview": "AUTOMATIC",
     "autoApprove": {
-        "enabled": true
+        "enabled": true,
+        "filters": {
+            "includeAuthors": ["VPS-Obi", "VPS-thodax", "nsams", "fraxachun"]
+        }
     }
 }

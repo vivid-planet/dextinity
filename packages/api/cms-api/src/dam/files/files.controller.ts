@@ -18,7 +18,7 @@ import {
 } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
-import contentDisposition from "content-disposition";
+import { create as createContentDisposition } from "content-disposition";
 import { Response } from "express";
 import { OutgoingHttpHeaders } from "http";
 import { basename, extname } from "path";
@@ -240,7 +240,7 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new ForbiddenException();
             }
 
-            res.setHeader("Content-Disposition", contentDisposition(file.name));
+            res.setHeader("Content-Disposition", createContentDisposition(file.name));
             return this.streamFile(file, res, { range, overrideHeaders: { "cache-control": "max-age=31536000, private" } }); // Local caches only (1 year)
         }
 
@@ -265,7 +265,7 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
-            res.setHeader("Content-Disposition", contentDisposition(file.name));
+            res.setHeader("Content-Disposition", createContentDisposition(file.name));
             return this.streamFile(file, res, { range, overrideHeaders: { "cache-control": "max-age=31536000, s-maxage=86400, public" } }); // Public cache, 1 year for browsers, 1 day for proxies/cdn's
         }
 

@@ -1,0 +1,52 @@
+{
+    "files": [
+        {
+            "path": "AGENTS.md",
+            "description": "Repository layout, packages, demo application, linting and changeset workflow"
+        },
+        {
+            "path": "CONTRIBUTING.md",
+            "description": "Branching (main vs. next), pull request expectations and changeset writing guidelines"
+        },
+        {
+            "path": "rules/coding-guidelines/general.instructions.md",
+            "description": "General coding guidelines that apply to all code"
+        },
+        {
+            "path": "rules/coding-guidelines/naming.instructions.md",
+            "description": "Naming conventions"
+        },
+        {
+            "path": "rules/coding-guidelines/typescript.instructions.md",
+            "description": "TypeScript conventions"
+        },
+        {
+            "path": "rules/coding-guidelines/react.instructions.md",
+            "description": "React conventions for admin, site and storybook code"
+        },
+        {
+            "path": "rules/coding-guidelines/api-nestjs.instructions.md",
+            "description": "NestJS service/resolver layering, MikroORM, GraphQL and ACL rules for api code"
+        },
+        {
+            "path": "rules/coding-guidelines/postgresql.instructions.md",
+            "description": "PostgreSQL and database migration rules"
+        },
+        {
+            "path": "rules/coding-guidelines/styling.instructions.md",
+            "description": "CSS and styling rules"
+        },
+        {
+            "path": "rules/coding-guidelines/security.instructions.md",
+            "description": "Secure and privacy-friendly development rules"
+        },
+        {
+            "path": "rules/coding-guidelines/libraries.instructions.md",
+            "description": "Criteria for adding or replacing npm packages"
+        },
+        {
+            "path": "rules/coding-guidelines/git.instructions.md",
+            "description": "Git, commit message and pull request rules"
+        }
+    ]
+}

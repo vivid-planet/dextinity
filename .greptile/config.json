@@ -1,5 +1,76 @@
 {
     "autoApprove": {
         "enabled": true
-    }
+    },
+    "ignorePatterns": "pnpm-lock.yaml\n**/CHANGELOG.md\nCHANGELOG.old.md\n**/__snapshots__/**\n**/lang/**\n",
+    "rules": [
+        {
+            "id": "changeset-required",
+            "rule": "User-facing changes to a package in packages/ (public API in src/index.ts, bug fixes, visual changes) need a changeset in .changeset/. Flag such changes when no changeset is added. Do not ask for a changeset for docs-only, demo-only, storybook-only or internal changes (build setup, workflows, refactorings without behavior change). Changesets must name the affected @dextinity/* packages, use the correct bump type and start with an imperative title without a trailing period.",
+            "severity": "medium"
+        },
+        {
+            "id": "public-api-changes",
+            "rule": "Exports from a package's src/index.ts are public API. Flag removed or renamed exports, changed prop/parameter types and new required props as breaking: they belong in a PR targeting the next branch with a major changeset, not in a patch/minor PR targeting main.",
+            "scope": ["packages/**/src/index.ts"],
+            "severity": "high"
+        },
+        {
+            "id": "generated-files-are-generated",
+            "rule": "Files under generated/ as well as schema.gql and block-meta.json are produced by api-generator and admin-generator. Flag edits to them that have no corresponding change in their source (entity decorators and @Crud* generators for the api, *.dextinityGen.tsx config files for the admin) — they must be regenerated, not hand-edited. Do not report style or naming issues inside generated output.",
+            "scope": ["**/generated/**", "**/schema.gql", "**/block-meta.json"],
+            "severity": "medium"
+        },
+        {
+            "id": "api-layering",
+            "rule": "Resolvers and controllers are the transport layer and stay thin. Services must not accept GraphQL InputTypes, must be usable from console jobs, and must not read process.env (allowed only in entry points such as main.ts). Inject EntityManager directly instead of repositories via @InjectRepository, and prefer entityManager.create(Entity, data) over new Entity(). Only warnings and errors are logged by default.",
+            "scope": ["packages/api/**/*.ts", "demo/api/**/*.ts"],
+            "severity": "medium"
+        },
+        {
+            "id": "api-access-control",
+            "rule": "ACL checks belong in a dedicated ACL service or inline in the resolver/controller — never inside shared business services, which also run from console jobs without an authenticated user. Access must be denied by default, checked on every access, and covered by unit tests. Flag new queries, mutations and endpoints that expose data without a scope or permission check.",
+            "scope": ["packages/api/**/*.ts", "demo/api/**/*.ts"],
+            "severity": "high"
+        },
+        {
+            "id": "api-entity-conventions",
+            "rule": "MikroORM entities: IDs use type: \"uuid\", strings use columnType: \"text\" (never varchar(n)), timestamps use columnType: \"timestamp with time zone\", JSON uses jsonb. Avoid DB-level defaults — set the default in TypeScript instead. GraphQL enum keys and values must be identical and PascalCase.",
+            "scope": ["packages/api/**/*.ts", "demo/api/**/*.ts"],
+            "severity": "medium"
+        },
+        {
+            "id": "input-validation-and-randomness",
+            "rule": "Validate input as precisely as possible: prefer IsUrl, IsEmail, IsUUID, IsEnum over IsString, and canonicalize values (lowercase emails, normalize URLs) before comparing them. Generate tokens, IDs, secrets and nonces only with node:crypto — never Math.random.",
+            "severity": "high"
+        },
+        {
+            "id": "react-conventions",
+            "rule": "Do not define components, constants or styled components inside a component function — they are recreated on every render. Do not use the array index as key. Do not use && for conditional rendering on numbers (use > 0 or a ternary). One logical component per file, file name equal to component name, colocated GraphQL fragments for the data a component needs.",
+            "scope": ["packages/admin/**/*.tsx", "packages/site/**/*.tsx", "storybook/**/*.tsx", "demo/admin/**/*.tsx", "demo/site/**/*.tsx"],
+            "severity": "medium"
+        },
+        {
+            "id": "admin-translations-and-styling",
+            "rule": "User-facing text in admin packages must go through react-intl (FormattedMessage or intl.formatMessage) with a stable dextinity.* message id and a defaultMessage — no hard-coded strings. Style with the theme, component slots and Emotion/styled instead of inline styles or hard-coded values.",
+            "scope": ["packages/admin/**/*.tsx", "packages/admin/**/*.ts"],
+            "severity": "medium"
+        },
+        {
+            "id": "typescript-and-naming",
+            "rule": "Use named exports (default exports only when technically required), an options object instead of several parameters, async/await instead of callbacks, for...of loops, and default arguments instead of short-circuiting. Name booleans with an is/has/should prefix and in affirmative form, and avoid non-obvious abbreviations. Do not use exceptions for flow control.",
+            "severity": "low"
+        },
+        {
+            "id": "new-dependencies",
+            "rule": "Question new npm dependencies: check whether the repo already has a go-to solution, whether the package is maintained, compatible with the stack and acceptable in bundle size and license, and whether it overlaps with an existing library. Dependency changes in packages/ also affect consumers, so flag additions that could be avoided.",
+            "scope": ["**/package.json"],
+            "severity": "medium"
+        },
+        {
+            "id": "pr-scope",
+            "rule": "Keep pull requests small and focused on one change. Flag unrelated fixes, refactorings or drive-by changes that should go into a follow-up PR. Changes to api, admin and site that belong to the same feature may stay in one PR.",
+            "severity": "low"
+        }
+    ]
 }

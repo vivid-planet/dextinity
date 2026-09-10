@@ -2,5 +2,6 @@
     "skipReview": "AUTOMATIC",
     "autoApprove": {
         "enabled": true
-    }
+    },
+    "excludeAuthors": ["vivid-planet-bot", "github-actions[bot]", "renovate[bot]"]
 }

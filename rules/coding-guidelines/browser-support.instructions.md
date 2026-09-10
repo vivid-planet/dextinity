@@ -23,6 +23,6 @@ Everything we build for the web must work in these browsers:
 ## Modern features
 
 - Verify features via [caniuse.com](https://caniuse.com) against **All Users / Europe**.
-- **Site / frontend**: ≥93% usage → free to use. 90–93% → only if basic functionality still works without the feature; minor visual/behavioral degradation is acceptable. Below that → check with a stylist.
+- **Site / frontend**: ≥93% usage → free to use. 90–93% → only if basic functionality still works without the feature; minor visual/behavioral degradation is acceptable. Below that → check with a developer.
 - **Admin**: anything supported by the current version of the browsers above can be used.
 - HTML emails are not browsers — email clients support far less. For emails, follow the `dextinity-mail-react` skill instead.

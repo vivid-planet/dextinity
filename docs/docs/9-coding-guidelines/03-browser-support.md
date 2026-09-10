@@ -22,7 +22,7 @@ Relevant value: **`All Users/Europe`**
 Anything with a usage share of **>= 93%** can be used freely.
 
 Anything with a usage share of **>= 90%** can be used if the basic functionality still works. This means: The site must still work if this feature is not supported, but styling may
-slightly differ or behavior may not feel perfect. Depending on the feature or deviation in behavior, this threshold may be lower. The final decision lies with the responsible stylist.
+slightly differ or behavior may not feel perfect. Depending on the feature or deviation in behavior, this threshold may be lower. The final decision lies with the responsible developer.
 
 ### Admin
 

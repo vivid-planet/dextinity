@@ -179,7 +179,7 @@ export interface TipTapChildBlock {
     display: "block" | "inline";
 }
 
-export interface TipTapRichTextBlockFactoryOptions {
+interface TipTapRichTextBlockFactoryOptions {
     /**
      * Shows the undo/redo buttons in the toolbar. The keyboard shortcuts work regardless. Defaults to `true`.
      */
@@ -661,6 +661,7 @@ export const TipTapEditor = ({
                                 childBlocks,
                                 maxTextBlocks,
                                 listLevelMax,
+                                minHeight,
                             }}
                         />
                     )}

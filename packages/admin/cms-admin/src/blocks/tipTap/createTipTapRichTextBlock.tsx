@@ -179,7 +179,7 @@ export interface TipTapChildBlock {
     display: "block" | "inline";
 }
 
-interface TipTapRichTextBlockFactoryOptions {
+export interface TipTapRichTextBlockFactoryOptions {
     /**
      * Shows the undo/redo buttons in the toolbar. The keyboard shortcuts work regardless. Defaults to `true`.
      */
@@ -261,6 +261,10 @@ interface TipTapRichTextBlockFactoryOptions {
      * A value of 1 means only a flat list (no nesting), 2 allows one level of sub-lists, etc.
      */
     listLevelMax?: number;
+    /**
+     * Minimum height (in px) of the editor's content area. Defaults to `200`.
+     */
+    minHeight?: number;
 }
 
 function getPlainTextFromContent(content: JSONContent): string {
@@ -501,6 +505,7 @@ export interface TipTapEditorProps {
     childBlocks: Record<string, TipTapChildBlock>;
     maxTextBlocks?: number;
     listLevelMax?: number;
+    minHeight?: number;
     readOnly?: boolean;
 }
 
@@ -515,6 +520,7 @@ export const TipTapEditor = ({
     childBlocks,
     maxTextBlocks,
     listLevelMax,
+    minHeight = 200,
     readOnly,
 }: TipTapEditorProps) => {
     const childBlocksByKey: Record<string, BlockInterface> = Object.fromEntries(Object.entries(childBlocks).map(([key, { block }]) => [key, block]));
@@ -633,7 +639,7 @@ export const TipTapEditor = ({
                                 canTranslate={canTranslate}
                                 onTranslateClick={handleTranslateClick}
                             />
-                            <Box sx={{ "& .tiptap": { minHeight: 200, p: "20px", outline: "none" } }}>{editorNode}</Box>
+                            <Box sx={{ "& .tiptap": { minHeight, p: "20px", outline: "none" } }}>{editorNode}</Box>
                         </Box>
                     )}
                     {translationDialogState && (
@@ -681,6 +687,7 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
     const hasChildBlocks = Object.keys(childBlocks).length > 0;
     const maxTextBlocks = options.maxTextBlocks;
     const listLevelMax = options.listLevelMax;
+    const minHeight = options.minHeight;
 
     const sharedEditorProps = {
         resolvedOptions,
@@ -691,6 +698,7 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
         childBlocks,
         maxTextBlocks,
         listLevelMax,
+        minHeight,
     };
 
     const tipTapExtensions = buildTipTapExtensions({

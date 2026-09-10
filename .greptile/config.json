@@ -3,7 +3,7 @@
     "autoApprove": {
         "enabled": true
     },
-    "excludeAuthors": ["vivid-planet-bot", "github-actions[bot]", "renovate[bot]"]
+    "excludeAuthors": ["vivid-planet-bot", "github-actions[bot]", "renovate[bot]"],
     "ignorePatterns": [
         "pnpm-lock.yaml",
         "**/CHANGELOG.md",

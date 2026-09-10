@@ -3,13 +3,5 @@
     "autoApprove": {
         "enabled": true
     },
-    "ignorePatterns": [
-        "pnpm-lock.yaml",
-        "**/CHANGELOG.md",
-        "CHANGELOG.old.md",
-        "**/__snapshots__/**",
-        "**/generated/**",
-        "**/schema.gql",
-        "**/block-meta.json"
-    ]
+    "ignorePatterns": "pnpm-lock.yaml\n**/CHANGELOG.md\nCHANGELOG.old.md\n**/__snapshots__/**\n**/generated/**\n**/schema.gql\n**/block-meta.json"
 }

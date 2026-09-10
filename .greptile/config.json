@@ -1,16 +1,11 @@
 {
     "skipReview": "AUTOMATIC",
     "autoApprove": {
-        "enabled": true
+        "enabled": true,
+        "filters": {
+            "includeAuthors": ["VPS-Obi", "VPS-thodax", "nsams", "fraxachun"]
+        }
     },
     "instructions": "The files referenced in .greptile/files.json are this repository's coding guidelines. Treat them as binding and flag violations in review comments. The frontmatter of those files (description, applyTo, paths, globs, alwaysApply) is metadata for other tools, not a rule to review against.",
-    "ignorePatterns": [
-        "pnpm-lock.yaml",
-        "**/CHANGELOG.md",
-        "CHANGELOG.old.md",
-        "**/__snapshots__/**",
-        "**/generated/**",
-        "**/schema.gql",
-        "**/block-meta.json"
-    ]
+    "ignorePatterns": "pnpm-lock.yaml\n**/CHANGELOG.md\nCHANGELOG.old.md\n**/__snapshots__/**\n**/generated/**\n**/schema.gql\n**/block-meta.json"
 }

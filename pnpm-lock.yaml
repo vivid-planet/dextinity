@@ -2077,6 +2077,9 @@ importers:
       base64url:
         specifier: ^3.0.1
         version: 3.0.1
+      content-disposition:
+        specifier: ^1.0.1
+        version: 1.0.1
       cron-parser:
         specifier: ^3.5.0
         version: 3.5.0
@@ -2207,6 +2210,9 @@ importers:
       '@swc/core':
         specifier: ^1.15.40
         version: 1.15.41
+      '@types/content-disposition':
+        specifier: ^0.5.9
+        version: 0.5.9
       '@types/draft-js':
         specifier: ^0.11.20
         version: 0.11.20

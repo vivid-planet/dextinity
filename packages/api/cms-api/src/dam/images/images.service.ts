@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Inject, Injectable } from "@nestjs/common";
 import { createHmac } from "crypto";
+import { parse } from "path";
 
 import { FocalPoint } from "../../file-utils/focal-point.enum";
 import { DamConfig } from "../dam.config";
@@ -23,7 +24,7 @@ export class ImagesService {
 
     createUrlTemplate({ file, cropArea }: ImageInterface, { previewDamUrls = false }: { previewDamUrls?: boolean }): string {
         const imageCropArea = cropArea !== undefined ? cropArea : file.image!.cropArea;
-        const filename = file.name;
+        const filename = parse(file.name).name;
 
         const baseUrl = [`/${this.config.basePath}/images`];
         if (previewDamUrls) {

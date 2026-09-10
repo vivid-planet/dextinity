@@ -6,6 +6,7 @@ import {
     ForbiddenException,
     Get,
     Headers,
+    HttpStatus,
     Inject,
     Logger,
     NotFoundException,
@@ -266,6 +267,10 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
+            if (await this.redirectToCanonicalUrlIfFilenameStale(params, file, res, (f) => this.filesService.createFileDownloadUrl(f, {}))) {
+                return;
+            }
+
             res.setHeader("Content-Disposition", createContentDisposition(file.name));
             return this.streamFile(file, res, { range, overrideHeaders: { "cache-control": "max-age=31536000, s-maxage=86400, public" } }); // Public cache, 1 year for browsers, 1 day for proxies/cdn's
         }
@@ -291,6 +296,10 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
+            if (await this.redirectToCanonicalUrlIfFilenameStale(params, file, res, (f) => this.filesService.createFileUrl(f, {}))) {
+                return;
+            }
+
             res.setHeader("Content-Disposition", createContentDisposition(file.name, { type: "inline" }));
             return this.streamFile(file, res, {
                 range,
@@ -302,6 +311,24 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
 
         private isValidHash(hash: string, fileParams: FileParams): boolean {
             return hash === this.filesService.createHash(fileParams);
+        }
+
+        // Requested with a filename that no longer matches the file (e.g. an extension-less URL from before file
+        // extensions were added to DAM file URLs). The hash still validates because it was signed for that filename,
+        // so permanently redirect to the current canonical URL instead of serving under the stale one.
+        private async redirectToCanonicalUrlIfFilenameStale(
+            params: FileParams,
+            file: FileInterface,
+            res: Response,
+            createCanonicalUrl: (file: FileInterface) => Promise<string>,
+        ): Promise<boolean> {
+            if (params.filename === file.name) {
+                return false;
+            }
+
+            res.setHeader("Cache-Control", "max-age=31536000, s-maxage=86400, public"); // Public cache, 1 year for browsers, 1 day for proxies/cdn's
+            res.redirect(HttpStatus.MOVED_PERMANENTLY, await createCanonicalUrl(file));
+            return true;
         }
 
         private async streamFile(

@@ -2,5 +2,14 @@
     "skipReview": "AUTOMATIC",
     "autoApprove": {
         "enabled": true
-    }
+    },
+    "ignorePatterns": [
+        "pnpm-lock.yaml",
+        "**/CHANGELOG.md",
+        "CHANGELOG.old.md",
+        "**/__snapshots__/**",
+        "**/generated/**",
+        "**/schema.gql",
+        "**/block-meta.json"
+    ]
 }

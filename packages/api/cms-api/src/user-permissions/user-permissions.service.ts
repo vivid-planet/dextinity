@@ -235,13 +235,17 @@ export class UserPermissionsService {
         }
 
         if (includeContentScopesManual) {
-            const entity = await this.contentScopeRepository.findOne({ userId: user.id });
-            if (entity) {
-                contentScopes.push(...entity.contentScopes);
-            }
+            contentScopes.push(...(await this.getManualContentScopesForUser(user)));
         }
 
         return contentScopes;
+    }
+
+    // The manually assigned content scopes as persisted, independent of the rule-based ones. Needed to distinguish a scope
+    // that is both manually assigned and granted by a rule (which cannot be derived from the union and the rule-based scopes).
+    async getManualContentScopesForUser(user: User): Promise<ContentScope[]> {
+        const entity = await this.contentScopeRepository.findOne({ userId: user.id });
+        return entity?.contentScopes ?? [];
     }
 
     async getImpersonatedUser(authenticatedUser: User, request: Request): Promise<User | undefined> {

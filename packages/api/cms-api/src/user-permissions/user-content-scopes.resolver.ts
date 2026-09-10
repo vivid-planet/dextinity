@@ -47,6 +47,11 @@ export class UserContentScopesResolver {
         });
     }
 
+    @Query(() => [GraphQLJSONObject])
+    async userPermissionsManualContentScopes(@Args("userId", { type: () => String }) userId: string): Promise<ContentScope[]> {
+        return this.userService.getManualContentScopesForUser(await this.userService.findUserOrThrow(userId));
+    }
+
     @Query(() => [ContentScopeWithLabel])
     async userPermissionsAvailableContentScopes(): Promise<ContentScopeWithLabel[]> {
         return this.userService.getAvailableContentScopes();

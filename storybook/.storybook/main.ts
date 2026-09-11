@@ -16,6 +16,7 @@ const config: StorybookConfig = {
             },
         },
         "@storybook/addon-vitest",
+        { name: "@dextinity/mail-react/storybook", options: { disablePreviewAnnotations: true } },
     ],
 
     env: (config) => ({

@@ -52,8 +52,8 @@ type UserPermissionsUser {
   id: String!
   name: String!
   email: String!
-  permissionsCount: Int!
-  contentScopesCount: Int!
+  permissionsCount: Int! @deprecated(reason: "The Permissions column was removed from the users list. Will be removed in the next version.")
+  contentScopesCount: Int! @deprecated(reason: "The Scopes column was removed from the users list. Will be removed in the next version.")
   impersonationAllowed: Boolean!
 }
 

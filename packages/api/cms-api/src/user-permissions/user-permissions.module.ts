@@ -10,7 +10,6 @@ import { UserContentScopes } from "./entities/user-content-scopes.entity";
 import { UserPermission } from "./entities/user-permission.entity";
 import { UserResolver } from "./user.resolver";
 import { UserContentScopesResolver } from "./user-content-scopes.resolver";
-import { UserContentScopesLoaderService } from "./user-content-scopes-loader.service";
 import { UserPermissionResolver } from "./user-permission.resolver";
 import { ACCESS_CONTROL_SERVICE, USER_PERMISSIONS_OPTIONS, USER_PERMISSIONS_USER_SERVICE } from "./user-permissions.constants";
 import { UserPermissionsPublicService } from "./user-permissions.public.service";
@@ -33,7 +32,6 @@ import {
         UserResolver,
         UserPermissionResolver,
         UserContentScopesResolver,
-        UserContentScopesLoaderService,
         ContentScopeService,
         {
             provide: APP_GUARD,

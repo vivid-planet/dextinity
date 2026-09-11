@@ -41,6 +41,21 @@ jobs:
                   cd packages/admin/admin
                   echo "PUBLISHED_VERSION=$(pnpm pkg get version | sed -r 's/"//g')" >> $GITHUB_ENV
 
+            # dotansimha/changesets-action creates the GitHub release without passing
+            # target_commitish, so GitHub places the tag on the default branch (main) instead of
+            # the released commit. That's wrong for every release that doesn't run on main.
+            # Creating the tag upfront fixes it: GitHub ignores target_commitish when the tag
+            # already exists.
+            - name: Create tag on released commit
+              if: ${{ contains(github.event.head_commit.message, 'Version Packages') }}
+              run: |
+                  if git ls-remote --exit-code --tags origin "v$PUBLISHED_VERSION" > /dev/null; then
+                      echo "Tag v$PUBLISHED_VERSION already exists"
+                  else
+                      git tag "v$PUBLISHED_VERSION" "$GITHUB_SHA"
+                      git push origin "v$PUBLISHED_VERSION"
+                  fi
+
             - name: Create Release Pull Request or Publish to npm
               id: changesets
               uses: dotansimha/changesets-action@v1.5.2
@@ -54,3 +69,15 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
                   HUSKY: 0 # https://typicode.github.io/husky/#/?id=with-env-variables
+
+            # Catches a silently broken guard on the tag step above: without this, a wrong tag
+            # would go unnoticed again.
+            - name: Verify the release tag
+              if: ${{ steps.changesets.outputs.published == 'true' }}
+              run: |
+                  git fetch --force origin "refs/tags/v$PUBLISHED_VERSION:refs/tags/v$PUBLISHED_VERSION"
+                  TAGGED_SHA=$(git rev-parse "v$PUBLISHED_VERSION^{commit}")
+                  if [ "$TAGGED_SHA" != "$GITHUB_SHA" ]; then
+                      echo "::error::Publishing succeeded, but tag v$PUBLISHED_VERSION points at $TAGGED_SHA instead of the released commit $GITHUB_SHA. Move the tag, then check the condition of the \"Create tag on released commit\" step."
+                      exit 1
+                  fi

@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/cms-api",
-    "version": "10.2.0",
+    "version": "10.5.1",
     "description": "Dextinity CMS API package",
     "repository": {
         "directory": "packages/api/cms-api",
@@ -54,6 +54,7 @@
         "@tiptap/pm": "^3.22.3",
         "@tiptap/starter-kit": "^3.22.3",
         "base64url": "^3.0.1",
+        "content-disposition": "^3.0.0",
         "cron-parser": "^3.5.0",
         "dataloader": "^2.2.3",
         "date-fns": "^4.4.0",
@@ -69,7 +70,6 @@
         "jszip": "^3.10.1",
         "jwks-rsa": "^3.2.2",
         "lodash.isequal": "^4.5.0",
-        "lodash.uniqwith": "^4.5.0",
         "mime": "^3.0.0",
         "mime-db": "^1.54.0",
         "multer": "^2.1.1",
@@ -105,7 +105,6 @@
         "@types/html-to-text": "^9.0.4",
         "@types/inquirer": "^8.2.12",
         "@types/lodash.isequal": "^4.5.8",
-        "@types/lodash.uniqwith": "^4.5.9",
         "@types/mime": "^2.0.3",
         "@types/mime-db": "^1.43.6",
         "@types/multer": "^2.1.0",

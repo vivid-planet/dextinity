@@ -98,19 +98,25 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
     const [previewElementsData, setPreviewElementsData] = useState<OverlayElementData[]>([]);
 
     const childrenWrapperRef = useRef<HTMLDivElement>(null);
-    const childrenWrapperWidth = childrenWrapperRef.current?.offsetWidth;
 
     const recalculatePreviewElementsData = useCallback(() => {
-        if (!childrenWrapperWidth) {
+        const childrenWrapper = childrenWrapperRef.current;
+
+        if (!childrenWrapper?.offsetWidth) {
             return;
         }
+
+        // The comparisons below are in document coordinates, so they need the wrapper's right edge in those coordinates, not its width,
+        // which is that edge only while the wrapper starts at `x = 0`. Measured here and not during render because the observers recompute
+        // without a render in between.
+        const childrenWrapperRight = childrenWrapper.getBoundingClientRect().right + window.scrollX;
 
         const newPreviewElementsData = previewElements
             .map((previewElement) => {
                 const childNodes = getRecursiveChildrenOfPreviewElement(previewElement.element);
                 const positioning = getCombinedPositioningOfElements(childNodes);
 
-                const isRenderedOutsideOfViewportWidth = positioning.left > childrenWrapperWidth;
+                const isRenderedOutsideOfViewportWidth = positioning.left > childrenWrapperRight;
 
                 if (isRenderedOutsideOfViewportWidth) {
                     // TODO: Simply return `null` here after updating to typescript 5+
@@ -126,7 +132,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
                     };
                 }
 
-                const spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport = positioning.left + positioning.width - childrenWrapperWidth;
+                const spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport = positioning.left + positioning.width - childrenWrapperRight;
                 const tooWideForPreviewViewportByPixels =
                     spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport > 0 ? spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport : 0;
 
@@ -167,7 +173,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
 
             return newPreviewElementsData;
         });
-    }, [previewElements, childrenWrapperWidth]);
+    }, [previewElements]);
 
     useEffect(() => {
         if (childrenWrapperRef.current) {

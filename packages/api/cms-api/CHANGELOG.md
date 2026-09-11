@@ -1,5 +1,142 @@
 # @comet/cms-api
 
+## 10.5.1
+
+### Patch Changes
+
+- 9d150e6: Fix scope validation in `PageTreeModule.forRoot` and `DamModule.register` rejecting correctly decorated scope classes
+
+    `@InputType()` doesn't register its metadata immediately, it only queues the registration until a GraphQL schema is built. Since the scope is validated while the module is being defined, the queued registration hadn't run yet and a scope class decorated with `@InputType("PageTreeNodeScopeInput")` could be rejected with:
+
+    ```
+    Error: Invalid input type name for provided page tree scope class.
+    Make sure to decorate the class with @InputType("PageTreeNodeScopeInput")
+    ```
+
+    The queued registrations are now executed before the scope is validated.
+
+## 10.5.0
+
+### Minor Changes
+
+- f4d091f: Allow declaring content scope dimensions at runtime
+
+    Add an optional `availableContentScopeDimensions` option to the `UserPermissionsModule` to declare the content scope dimensions (with optional labels). When omitted, the dimensions are derived from the keys of `availableContentScopes`.
+
+    A content scope may hold any value (including the `"*"` wildcard) for a dimension that is not part of `availableContentScopes`. Content scopes are no longer validated against `availableContentScopes`; access is enforced per request by `isAllowed`, which compares the requested scope against the user's granted scopes.
+
+    **Example**
+
+    ```ts
+    UserPermissionsModule.forRootAsync({
+        useFactory: () => ({
+            availableContentScopes: [ ... ],
+            availableContentScopeDimensions: [{ name: "domain", label: "Domain (Website)" }, { name: "language" }, { name: "product" }],
+            // ...
+        }),
+        // ...
+    });
+    ```
+
+- 0be2f59: Replace the TipTap Rich Text Block's `supports` array with one option per feature
+
+    `createTipTapRichTextBlock` now takes a single root options object with one option per editor feature, similar to TipTap's `StarterKit` configuration. Feature-specific options move into a nested options object of the feature they belong to, so `headingLevels` becomes `heading: { levels: [...] }`.
+
+    Every feature is enabled by default (except `underline`) and is disabled by passing `false`, so a configuration only has to state what deviates from the defaults instead of repeating every supported feature. Links stay the exception: they are enabled by passing the link block as `link`.
+
+    **Example**
+
+    ```ts
+    // Before
+    createTipTapRichTextBlock({
+        supports: ["bold", "italic", "strike", "sub", "sup", "heading", "ordered-list", "unordered-list"],
+        headingLevels: [2, 3],
+    });
+
+    // After
+    createTipTapRichTextBlock({
+        nonBreakingSpace: false,
+        softHyphen: false,
+        heading: { levels: [2, 3] },
+    });
+    ```
+
+    The features are named after their option: `bold`, `italic`, `underline`, `strike`, `sub`, `sup`, `heading`, `orderedList`, `unorderedList`, `nonBreakingSpace`, `softHyphen` and `link`. Additionally, `undoRedoButtons` (Admin only) shows or hides the undo/redo buttons in the toolbar; the keyboard shortcuts work regardless. The document-level limits `maxTextBlocks` and `listLevelMax` are unchanged.
+
+### Patch Changes
+
+- 02bba49: Validate the GraphQL type names of a custom `PageTreeNode` scope passed to `PageTreeModule.forRoot()`
+
+    `PageTreeModule.forRoot()` now throws an error at startup if the provided `Scope` class isn't decorated with `@ObjectType("PageTreeNodeScope")` and `@InputType("PageTreeNodeScopeInput")`, mirroring the existing validation for `DamModule`'s `Scope` option. This prevents runtime GraphQL schema errors caused by an accidentally renamed scope type.
+
+## 10.4.0
+
+### Minor Changes
+
+- a00f0b2: Support wildcard values for content scope dimensions in `getContentScopesForUser`
+
+    `getContentScopesForUser` can now use the wildcard value `"*"` as the value of a content scope dimension to grant access to any value for that dimension. The wildcard is matched during the content scope check, so it does not need to be part of `availableContentScopes`.
+
+    **Example**
+
+    ```ts
+    getContentScopesForUser(user: User): ContentScopesForUser {
+        // Grant access to every language within the "main" domain
+        return [{ domain: "main", language: "*" }];
+    }
+    ```
+
+    For users with access to all content scopes, `currentUser.permissions[].contentScopes` now returns a single wildcard scope (e.g. `[{ domain: "*", language: "*" }]`) instead of the enumerated `availableContentScopes`. The default `isAllowed` and `currentUser.allowedContentScopes` handle the wildcard; a custom `isAllowed` must treat `"*"` as matching any value of a dimension.
+
+## 10.3.0
+
+### Minor Changes
+
+- 0c211e9: Stop deduplicating content scopes in the user permissions API
+
+    `UserPermissionsService.getAvailableContentScopes()`, `getContentScopes()` and `getPermissionsAndContentScopes()` no longer deduplicate their content scopes. Deduplication only mattered for how the scopes are displayed, so it now happens in the admin where the lists are rendered. This also removes the `lodash.uniqwith` dependency.
+
+    Projects that consume `UserPermissionsPublicService` or the `currentUser` / `availableContentScopes` GraphQL fields directly and rely on the scopes being unique should deduplicate them on their side.
+
+- ddea65d: Remove the "Permissions" and "Scopes" columns from the user permissions users list
+
+    The users list now shows the name, the email and the row actions. The `permissionsCount` and `contentScopesCount` fields of `UserPermissionsUser` are deprecated and now return `0`. They will be removed in the next major version.
+
+- 66cb98a: DAM: Allow replacing a file with a file of the same category instead of the same mimetype
+
+    Previously, "Replace File" only accepted a file with the exact same mimetype, so a JPEG couldn't be replaced by a WebP even though both are pixel images. Now a file can be replaced by any file of the same category:
+
+    | Category     | Examples             |
+    | ------------ | -------------------- |
+    | `pixelImage` | JPEG, PNG, WebP      |
+    | `svgImage`   | SVG                  |
+    | `audio`      | MP3, OGG, WAV        |
+    | `video`      | MP4, WebM, QuickTime |
+    | `document`   | PDF, DOCX, VTT, ZIP  |
+
+    SVG images and pixel images remain separate categories.
+
+    Files in the `document` category still require the exact same mimetype, since their purposes vary too much: a VTT file is a video's subtitles, whereas a PDF is a download, so replacing one with the other must not be possible.
+
+    The file's usages stay unchanged. Only the extension of the file's name is adjusted to match the new file (for instance, `photo.jpg` becomes `photo.webp`). If a file with that name already exists in the same folder, a counter is appended to keep the name unique (for instance, `photo-2.webp`), and the Admin shows a snackbar informing about the new name.
+
+    The new `getDamFileCategory` helper is exported from both packages:
+
+    ```ts
+    import { getDamFileCategory } from "@dextinity/cms-api"; // or "@dextinity/cms-admin"
+
+    getDamFileCategory("image/webp"); // "pixelImage"
+    getDamFileCategory("image/svg+xml"); // "svgImage"
+    ```
+
+### Patch Changes
+
+- 3ffe174: Throw a validation error for malformed UUID id args in `@AffectedEntity`
+
+    The permission check loads affected entities before input validation (e.g., `@IsUUID()`) runs, because guards execute before pipes. A malformed UUID therefore reached PostgreSQL, which failed with `invalid input syntax for type uuid` and surfaced as an internal server error.
+
+    Now id args for entities with a UUID primary key (and `pageTreeNodeIdArg` values) are validated upfront, and a `DextinityValidationException` is thrown for malformed UUIDs.
+
 ## 10.2.0
 
 ### Minor Changes

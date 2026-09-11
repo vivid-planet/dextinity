@@ -2,6 +2,7 @@ import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { DynamicModule, Global, Module, Type, ValueProvider } from "@nestjs/common";
 
+import { validateScopeTypeNames } from "../common/helper/scope-type-names.helper";
 import { DependenciesResolverFactory } from "../dependencies/dependencies.resolver.factory";
 import { DependentsResolverFactory } from "../dependencies/dependents.resolver.factory";
 import { DocumentInterface } from "../document/dto/document-interface";
@@ -87,6 +88,10 @@ export class PageTreeModule {
                   PaginatedPageTreeNodes,
               })
             : null;
+
+        if (Scope) {
+            validateScopeTypeNames(Scope, { label: "page tree", objectTypeName: "PageTreeNodeScope", inputTypeName: "PageTreeNodeScopeInput" });
+        }
 
         const repositoryProvider = {
             provide: PAGE_TREE_REPOSITORY,

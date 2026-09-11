@@ -1,0 +1,11 @@
+{
+    "skipReview": "AUTOMATIC",
+    "autoApprove": {
+        "enabled": true,
+        "filters": {
+            "includeAuthors": ["VPS-Obi", "VPS-thodax", "nsams", "fraxachun"]
+        }
+    },
+    "excludeAuthors": ["vivid-planet-bot", "github-actions[bot]", "renovate[bot]"],
+    "ignorePatterns": "pnpm-lock.yaml\n**/CHANGELOG.md\nCHANGELOG.old.md\n**/__snapshots__/**\n**/generated/**\n**/schema.gql\n**/block-meta.json"
+}

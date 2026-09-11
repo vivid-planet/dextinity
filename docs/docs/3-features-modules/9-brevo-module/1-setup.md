@@ -4,12 +4,9 @@ title: Brevo Setup
 
 # Setup
 
-:::caution
-This documentation refers to Brevo v3 or higher.
-Make sure that your project uses Dextinity v7.0 or later.
-:::
+The Brevo Module provides two packages: `@dextinity/brevo-api` and `@dextinity/brevo-admin`. Please check the [latest Dextinity release](https://github.com/vivid-planet/dextinity/releases).
 
-The Brevo Module provides three packages: `brevo-api`, `brevo-admin`, and the optional `brevo-mail-rendering` package. Please check the latest release [here](https://github.com/vivid-planet/comet-brevo-module/releases).
+Email campaigns are not rendered by the Brevo Module itself. Their content is rendered by your site, which the API requests before the campaign is sent to Brevo, see [Email Rendering](#email-rendering). We recommend [`@dextinity/mail-react`](../13-building-html-emails/index.md) for building the markup. Double opt-in mails are not affected: they are rendered by Brevo from a Brevo template.
 
 ## API
 
@@ -18,8 +15,12 @@ The Brevo Module provides three packages: `brevo-api`, `brevo-admin`, and the op
 To add the Brevo API package, add the following to your `package.json` dependencies and install:
 
 ```json
-"@vivid-planet/comet-brevo-api": "^3.0.0"
+"@dextinity/brevo-api": "^10.0.0"
 ```
+
+:::caution
+Use the same version range as for the other `@dextinity/*` packages in your project.
+:::
 
 ### Config
 
@@ -47,20 +48,96 @@ ecgRtrList: {
 
 See the table below for information on how to find the config values and what they are used for:
 
-| Config Key                    | Description                                                                                                                      |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `brevo.apiKey`                | Your Brevo API key. Find it in your [Brevo account settings](https://app.brevo.com/settings/keys/api).                           |
-| `brevo.redirectUrlForImport`  | The URL in your app to redirect to after importing contacts. Set this to a route in your application.                            |
-| `campaign.url`                | The URL where the campaign is rendered, used both for admin preview and for generating the final HTML before it’s sent to Brevo. |
-| `campaign.basicAuth.username` | Username for HTTP Basic Auth if your campaign frontend is protected. Set this yourself if needed.                                |
-| `campaign.basicAuth.password` | Password for HTTP Basic Auth if your campaign frontend is protected. Set this yourself if needed.                                |
-| `ecgRtrList.apiKey`           | API key for the ECG RTR List integration. Obtain this from the respective service or your administrator.                         |
+| Config Key                    | Description                                                                                                                                                                                                            |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `brevo.apiKey`                | Your Brevo API key. Find it in your [Brevo account settings](https://app.brevo.com/settings/keys/api).                                                                                                                 |
+| `brevo.redirectUrlForImport`  | The URL in your app to redirect to after importing contacts. Set this to a route in your application.                                                                                                                  |
+| `campaign.url`                | The URL of the render endpoint in your site. The API calls it to generate the final HTML before the campaign is sent to Brevo. The admin preview does not use this value, it is resolved by the `BrevoConfigProvider`. |
+| `campaign.basicAuth.username` | Username for HTTP Basic Auth if your campaign frontend is protected. Set this yourself if needed.                                                                                                                      |
+| `campaign.basicAuth.password` | Password for HTTP Basic Auth if your campaign frontend is protected. Set this yourself if needed.                                                                                                                      |
+| `ecgRtrList.apiKey`           | API key for the ECG RTR List integration. Obtain this from the respective service or your administrator.                                                                                                               |
+
+### Scope and entities
+
+Email campaigns and target groups are scoped. Define the scope of your project as an embeddable, for example:
+
+```typescript title="api/src/brevo/email-campaign/email-campaign-content-scope.ts"
+import { Embeddable, Property } from "@mikro-orm/core";
+import { Field, InputType, ObjectType } from "@nestjs/graphql";
+import { IsString } from "class-validator";
+
+@Embeddable()
+@ObjectType()
+@InputType("EmailCampaignContentScopeInput")
+export class EmailCampaignContentScope {
+    @Property({ columnType: "text" })
+    @Field()
+    @IsString()
+    domain: string;
+
+    @Property({ columnType: "text" })
+    @Field()
+    @IsString()
+    language: string;
+}
+```
+
+The entities of the Brevo Module are created in your project using entity factories, since they depend on project-specific types such as the scope or the filter attributes:
+
+```typescript title="api/src/brevo/target-group/entity/target-group.entity.ts"
+import { createTargetGroupEntity } from "@dextinity/brevo-api";
+import { BrevoContactFilterAttributes } from "@src/brevo/brevo-contact/dto/brevo-contact-attributes";
+import { EmailCampaignContentScope } from "@src/brevo/email-campaign/email-campaign-content-scope";
+
+export const TargetGroup = createTargetGroupEntity({
+    Scope: EmailCampaignContentScope,
+    BrevoFilterAttributes: BrevoContactFilterAttributes,
+});
+```
+
+```typescript title="api/src/brevo/email-campaign/entities/email-campaign.entity.ts"
+import { createEmailCampaignEntity } from "@dextinity/brevo-api";
+import { EmailCampaignContentBlock } from "@src/brevo/email-campaign/blocks/email-campaign-content.block";
+import { EmailCampaignContentScope } from "@src/brevo/email-campaign/email-campaign-content-scope";
+import { TargetGroup } from "@src/brevo/target-group/entity/target-group.entity";
+
+export const EmailCampaign = createEmailCampaignEntity({
+    EmailCampaignContentBlock,
+    Scope: EmailCampaignContentScope,
+    TargetGroup,
+});
+```
+
+`EmailCampaignContentBlock` is a `BlocksBlock` containing the blocks that can be used in a campaign. `NewsletterImageBlock` is provided by `@dextinity/brevo-api`:
+
+```typescript title="api/src/brevo/email-campaign/blocks/email-campaign-content.block.ts"
+import { NewsletterImageBlock } from "@dextinity/brevo-api";
+import { createBlocksBlock } from "@dextinity/cms-api";
+
+import { EmailCampaignRichTextBlock } from "./email-campaign-rich-text.block";
+
+export const EmailCampaignContentBlock = createBlocksBlock(
+    {
+        supportedBlocks: {
+            text: EmailCampaignRichTextBlock,
+            image: NewsletterImageBlock,
+        },
+    },
+    {
+        name: "EmailCampaignContent",
+    },
+);
+```
+
+:::caution
+Don't forget to generate and run a migration after adding the entities.
+:::
 
 ### Register module
 
 To use the Brevo Module in your project, you need to register it in your main `AppModule`.  
 If your configuration varies by scope, pass the `scope` to the `resolveConfig` function to use the appropriate values for each scope.  
-You can also register additional entities or features you want to use later on (see the section [Optional Brevo Features](http://localhost:3300/docs/features-modules/brevo-module/features/)).
+You can also register additional entities (see [Optional entities](#optional-entities)) or features you want to use later on (see the section [Optional Brevo Features](./2-features/index.md)).
 
 Example implementation:
 
@@ -89,6 +166,9 @@ BrevoModule.register({
         EmailCampaign,
         TargetGroup,
     },
+    ecgRtrList: {
+        apiKey: config.ecgRtrList.apiKey,
+    },
     emailCampaigns: {
         EmailCampaignContentBlock,
         Scope: EmailCampaignContentScope,
@@ -102,6 +182,76 @@ BrevoModule.register({
     },
 }),
 ```
+
+:::caution
+Contacts can be imported via CSV. Therefore, the Brevo Module requires `text/csv` to be part of the `acceptedMimeTypes` of the `FileUploadsModule`.
+The application fails to start otherwise.
+:::
+
+`frontend` can also be a function receiving the scope, if the campaign is rendered by a different site per scope:
+
+```typescript
+emailCampaigns: {
+    EmailCampaignContentBlock,
+    Scope: EmailCampaignContentScope,
+    frontend: (scope: EmailCampaignContentScope) => {
+        const siteConfig = config.siteConfigs.find((siteConfig) => siteConfig.scope.domain === scope.domain);
+
+        if (!siteConfig) {
+            throw new Error(`No site config found for scope ${scope.domain}`);
+        }
+
+        return {
+            url: `${siteConfig.url}/api/render-brevo-email-campaign`,
+            basicAuth: {
+                username: config.campaign.basicAuth.username,
+                password: config.campaign.basicAuth.password,
+            },
+        };
+    },
+},
+```
+
+### Optional entities
+
+Besides `EmailCampaign` and `TargetGroup`, two optional entities can be registered. They are created with factories from `@dextinity/brevo-api` as well and only need the scope:
+
+```typescript title="api/src/brevo/blacklisted-contacts/entity/blacklisted-contacts.entity.ts"
+import { createBlacklistedContactsEntity } from "@dextinity/brevo-api";
+import { EmailCampaignContentScope } from "@src/brevo/email-campaign/email-campaign-content-scope";
+
+export const BlacklistedContacts = createBlacklistedContactsEntity({
+    Scope: EmailCampaignContentScope,
+});
+```
+
+```typescript title="api/src/brevo/brevo-email-import-log/entity/brevo-email-import-log.entity.ts"
+import { createBrevoEmailImportLogEntity } from "@dextinity/brevo-api";
+import { EmailCampaignContentScope } from "@src/brevo/email-campaign/email-campaign-content-scope";
+
+export const BrevoEmailImportLog = createBrevoEmailImportLogEntity({
+    Scope: EmailCampaignContentScope,
+});
+```
+
+Pass them to `BrevoModule.register` to enable them:
+
+```typescript
+brevo: {
+    // ...
+    BlacklistedContacts,
+    BrevoEmailImportLog,
+},
+```
+
+| Entity                | Description                                                                                                                                                  |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `BlacklistedContacts` | Stores the hashed email address of contacts that were deleted, so they cannot be added again without giving their consent.                                   |
+| `BrevoEmailImportLog` | Logs every contact that was added without a double opt-in, together with the responsible user and the source of the contact (manual creation or CSV import). |
+
+:::caution
+Both entities are required for [Add contacts without sending double opt-in](./2-features/contacts-without-doi.md). Without them, adding contacts without a double opt-in fails at runtime.
+:::
 
 ### Brevo Contact Attributes
 
@@ -179,8 +329,35 @@ export class BrevoContactFilterAttributes {
 To add the Brevo Admin package, add the following to your `package.json` dependencies and install:
 
 ```json
-"@vivid-planet/comet-brevo-admin": "^3.0.0"
+"@dextinity/brevo-admin": "^10.0.0"
 ```
+
+### BrevoConfigProvider
+
+The admin pages of the Brevo Module read their configuration from the `BrevoConfigProvider`. Add it to your `App.tsx`:
+
+```tsx title="admin/src/App.tsx"
+import { BrevoConfigProvider } from "@dextinity/brevo-admin";
+
+<BrevoConfigProvider
+    value={{
+        scopeParts: ["domain", "language"],
+        apiUrl: config.apiUrl,
+        resolvePreviewUrlForScope: (scope: ContentScope) => {
+            return `${config.campaignUrl}/block-preview/${scope.domain}/${scope.language}/brevo-email-campaign`;
+        },
+    }}
+>
+    {/* Other providers and the MasterLayout */}
+</BrevoConfigProvider>;
+```
+
+| Value                           | Description                                                                                                  |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `apiUrl`                        | The URL of your API. Used for uploading the CSV file when importing contacts.                                |
+| `scopeParts`                    | The parts of the content scope the Brevo Module is scoped by. Must match the scope registered in the API.    |
+| `resolvePreviewUrlForScope`     | Returns the URL of the block preview in your site. This is used to render the campaign preview in the admin. |
+| `allowAddingContactsWithoutDoi` | Optional. See [Add contacts without sending double opt-in](./2-features/contacts-without-doi.md).            |
 
 ### BrevoContactsPageAttributesConfig
 
@@ -446,7 +623,7 @@ const branchOptions: Array<{ label: React.ReactNode; value: GQLBrevoContactBranc
 
 export const additionalPageTreeNodeFieldsFragment = {
     fragment: gql`
-        fragment TargetGroupFilters on TargetGroup {
+        fragment TargetGroupFilters on BrevoTargetGroup {
             filters {
                 SALUTATION
                 BRANCH
@@ -777,26 +954,69 @@ Brevo must be configured using the `BrevoConfigPage` in your admin interface.
 | Allowed Redirection URL   | Defines the pattern for valid redirection URLs used when creating or importing contacts. Only URLs starting with this value will be accepted.                                                                           |
 | Unsubscription Page ID    | The 24-digit ID of your configured unsubscription page. Go to [Brevo Unsubscription Pages](https://app.brevo.com/campaign/pages/unsubscription), add or edit a page, and copy the ID from the page URL into the config. |
 
-## Mail Rendering
+## Email Rendering
 
-The optional **Brevo Mail Rendering** package provides frontend components for rendering newsletters in your application.
+The Brevo Module does not render emails itself. The content of an email campaign is rendered by your site and requested by the API before the campaign is sent to Brevo. Use [`@dextinity/mail-react`](../13-building-html-emails/index.md) to build the email markup.
 
-:::caution
-The mail rendering package is currently a work in progress.
-At the moment, it only includes the `NewsletterImageBlock`, which is optimized for displaying images in newsletter campaigns.
-Additional blocks and features will be added in future releases.
+:::info
+There is no dedicated mail rendering package anymore. The former `@comet/brevo-mail-rendering` package was removed, see the [migration guide](./3-migration-guide/migration-from-brevo-v3-to-v8.md).
+Its only block, `NewsletterImageBlock`, is still provided by the module: the block definition by `@dextinity/brevo-api` and the admin block by `@dextinity/brevo-admin`. Only the site-side rendering of the block lives in your project.
 :::
 
 ### Installation
 
-To add the Brevo Mail Rendering package, add the following to your `package.json` dependencies and install:
+To add `@dextinity/mail-react` to your site, add the following to your `package.json` dependencies and install:
 
 ```json
-"@vivid-planet/comet-brevo-mail-rendering": "^3.0.0"
+"@dextinity/mail-react": "^10.0.0"
 ```
 
-### Register blocks
+### Render the campaign content
 
-To use a block from the package, register it in your `NewsletterContentBlock` (or any `BlocksBlock` you use for creating email campaigns).  
-Make sure to register the block in your API, admin, and site projects.  
-For detailed instructions on working with blocks in Dextinity, see https://cms-docs.dextinity.com/docs/core-concepts/blocks/your-first-block
+Implement a site component for every block registered in your `EmailCampaignContentBlock`, then render the block data to HTML using `renderMailHtml`. For detailed instructions on working with blocks in Dextinity, see [Your first block](../../2-core-concepts/2-blocks/1-your-first-block.mdx). Everything regarding the email markup itself — theme, base components, block components, and layout patterns — is covered in [Building HTML Emails](../13-building-html-emails/index.md).
+
+```tsx title="site/src/brevo/EmailCampaignMail.tsx"
+import { type Config, MjmlMailRoot } from "@dextinity/mail-react";
+import type { EmailCampaignContentBlockData } from "@src/blocks.generated";
+import { EmailCampaignContentBlock } from "@src/brevo/blocks/EmailCampaignContentBlock";
+import { theme } from "@src/mail/theme";
+
+type EmailCampaignMailProps = {
+    content: EmailCampaignContentBlockData;
+    config: Config;
+};
+
+export const EmailCampaignMail = ({ content, config }: EmailCampaignMailProps) => (
+    <MjmlMailRoot theme={theme} config={config}>
+        <EmailCampaignContentBlock content={content} />
+    </MjmlMailRoot>
+);
+```
+
+This is a minimal example without localization: it renders `MjmlMailRoot` directly and only needs the block data and the mail config.
+Depending on your project, the component also wraps the content in your site's own mail root and provides the contexts your block components rely on, for instance an `IntlProvider` for translations.
+See Demo's [`EmailCampaignMail`](https://github.com/vivid-planet/dextinity/blob/main/demo/site/src/brevo/EmailCampaignMail.tsx) for such an implementation.
+
+Render that component to HTML with `renderMailHtml` from `@dextinity/mail-react/server`, passing the mail config of the campaign's scope:
+
+```tsx
+import { renderMailHtml } from "@dextinity/mail-react/server";
+
+const { html } = renderMailHtml(
+    <EmailCampaignMail content={content} config={getMailConfig(scope)} />,
+);
+```
+
+:::caution
+`MjmlMailRoot` requires a `config` as soon as the campaign contains pixel-image blocks — `NewsletterImageBlock` as well as any block built on `MjmlPixelImageBlock` or `HtmlPixelImageBlock`.
+See [Pixel-image blocks](../13-building-html-emails/3-blocks.md#configuration) for how to build it.
+:::
+
+Your site must provide two endpoints:
+
+- **The render endpoint**, configured as `emailCampaigns.frontend.url` in the API. The API sends the campaign's `id`, `title`, `content` and `scope` to it via `POST` and expects the final email HTML in return. Protect it with the basic auth credentials configured in `emailCampaigns.frontend.basicAuth`.
+  See [`demo/site/src/pages/api/render-brevo-email-campaign.tsx`](https://github.com/vivid-planet/dextinity/blob/main/demo/site/src/pages/api/render-brevo-email-campaign.tsx).
+- **The block preview**, configured as `resolvePreviewUrlForScope` in the `BrevoConfigProvider`. It renders the campaign preview shown in the admin.
+  See [`demo/site/src/app/block-preview/[domain]/[language]/brevo-email-campaign`](https://github.com/vivid-planet/dextinity/tree/main/demo/site/src/app/block-preview/%5Bdomain%5D/%5Blanguage%5D/brevo-email-campaign).
+
+Both render the same component, which is where the campaign content is turned into MJML. In Demo, this is [`EmailCampaignMail`](https://github.com/vivid-planet/dextinity/blob/main/demo/site/src/brevo/EmailCampaignMail.tsx).

@@ -1,5 +1,6 @@
 import { type EntityRepository, NotFoundError, type QueryBuilder } from "@mikro-orm/postgresql";
 import opentelemetry from "@opentelemetry/api";
+import DataLoader from "dataloader";
 import { compareAsc, compareDesc, isEqual } from "date-fns";
 
 import { SortDirection } from "../common/sorting/sort-direction.enum";
@@ -76,6 +77,24 @@ export function createReadApi(
 
     const preloadedNodes = new Map<string, PageTreeNodeInterface[]>();
     const nodesById = new Map<string, PageTreeNodeInterface>();
+
+    // Batches all node loads happening in the same tick into a single query. Without batching, concurrently resolved
+    // blocks (BlocksBlock, ListBlock, …) containing internal links cause one query per link and per path segment.
+    const nodeLoader = new DataLoader<string, PageTreeNodeInterface | null>(async (ids) => {
+        return tracer.startActiveSpan("live query PageTree loadNodes", async (span) => {
+            span.setAttribute("ids count", ids.length);
+            const nodes = await pageTreeNodeRepository.find({ id: { $in: [...ids] }, visibility: { $in: visibilityFilter } });
+
+            const loadedNodesById = new Map(nodes.map((node) => [node.id, node]));
+            for (const node of nodes) {
+                nodesById.set(node.id, node);
+            }
+
+            span.end();
+            return ids.map((id) => loadedNodesById.get(id) ?? null);
+        });
+    });
+
     const queryNodes = async (
         scope: ScopeInterface | undefined,
         where: PageTreeNodeFilterOptions,
@@ -262,21 +281,11 @@ export function createReadApi(
 
         async getNode(id) {
             await waitForPreloadDone();
-            if (nodesById.has(id)) {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                return nodesById.get(id)!;
-            } else {
-                return tracer.startActiveSpan("live query PageTree getNode", async (span) => {
-                    span.setAttribute("where id", id);
-                    const queryFilter = { id, visibility: { $in: visibilityFilter } };
-                    const node = await pageTreeNodeRepository.findOne(queryFilter);
-                    if (node) {
-                        nodesById.set(id, node);
-                    }
-                    span.end();
-                    return node ?? null;
-                });
+            const preloadedNode = nodesById.get(id);
+            if (preloadedNode) {
+                return preloadedNode;
             }
+            return nodeLoader.load(id);
         },
 
         async getNodeOrFail(id) {
@@ -290,32 +299,15 @@ export function createReadApi(
         },
 
         async getNodesByIds(ids) {
-            await waitForPreloadDone();
-            const missingIds: string[] = [];
-
-            for (const id of ids) {
-                if (!nodesById.has(id)) {
-                    missingIds.push(id);
-                }
-            }
-
-            if (missingIds.length > 0) {
-                await tracer.startActiveSpan("live query PageTree getNodesByIds", async (span) => {
-                    span.setAttribute("ids count", missingIds.length);
-                    const nodes = await pageTreeNodeRepository.find({ id: { $in: missingIds }, visibility: { $in: visibilityFilter } });
-                    for (const node of nodes) {
-                        nodesById.set(node.id, node);
-                    }
-                    span.end();
-                });
-            }
+            const nodes = await Promise.all(ids.map((id) => this.getNode(id)));
 
             // Return in the same order as input ids, throw if any not found
-            return ids.map((id) => {
-                const node = nodesById.get(id);
+            return nodes.map((node, index) => {
                 if (!node) {
                     throw new NotFoundError(
-                        `Cannot find PageTreeNode with ID ${id} and visibility ${Array.isArray(visibility) ? visibility.join(" or ") : visibility}`,
+                        `Cannot find PageTreeNode with ID ${ids[index]} and visibility ${
+                            Array.isArray(visibility) ? visibility.join(" or ") : visibility
+                        }`,
                     );
                 }
                 return node;

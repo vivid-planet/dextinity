@@ -1,5 +1,12 @@
 # @comet/admin-color-picker
 
+## 10.6.0
+
+### Patch Changes
+
+- @dextinity/admin@10.6.0
+- @dextinity/admin-icons@10.6.0
+
 ## 10.5.1
 
 ### Patch Changes

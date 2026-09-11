@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/agent-features",
-    "version": "10.5.1",
+    "version": "10.6.0",
     "description": "Agent features (skills and rules) for Dextinity projects",
     "repository": {
         "directory": "packages/agent-features",

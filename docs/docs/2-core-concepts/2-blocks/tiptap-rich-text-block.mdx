@@ -52,6 +52,7 @@ Most features of the Draft.js `RichTextBlock` have a direct equivalent in the Ti
 | `rte.supports` (`SupportedThings[]`)            | one option per feature ([Features](#features))                                               |
 | `bold`, `italic`, `strikethrough`, `sub`, `sup` | `bold`, `italic`, `strike`, `sub`, `sup`                                                     |
 | `header-one` … `header-six`                     | `heading` + the [text-block-type select](#text-block-type-and-styling-selects) (Heading 1–6) |
+| `rte.standardBlockType`                         | [`heading: { defaultLevel }`](#heading-only-blocks)                                          |
 | `ordered-list`, `unordered-list`                | `orderedList`, `unorderedList`                                                               |
 | `history`                                       | `undoRedoButtons` (Admin only)                                                               |
 | `link`, `links-remove`                          | `link` (pass the link block)                                                                 |
@@ -164,6 +165,7 @@ Every editor feature has its own option in the root options object, similar to [
 | `strike`           | `true`  | API + Admin  |
 | `sub`              | `true`  | API + Admin  |
 | `sup`              | `true`  | API + Admin  |
+| `paragraph`        | `true`  | API + Admin  |
 | `heading`          | `true`  | API + Admin  |
 | `orderedList`      | `true`  | API + Admin  |
 | `unorderedList`    | `true`  | API + Admin  |
@@ -171,7 +173,7 @@ Every editor feature has its own option in the root options object, similar to [
 | `softHyphen`       | `true`  | API + Admin  |
 | `undoRedoButtons`  | `true`  | Admin only   |
 
-`heading` can be configured further by passing an options object instead of `true`, which limits the allowed `levels`.
+`heading` can be configured further by passing an options object instead of `true`, which limits the allowed `levels` and sets the `defaultLevel` of new headings. Turning `paragraph` off results in a [heading-only block](#heading-only-blocks).
 
 Links are the exception to the boolean options: `link` takes the link block that is used for links, and passing it enables the feature. Links are disabled by default.
 
@@ -365,6 +367,39 @@ const nodeMapping: Record<string, TipTapNodeHandler> = {
     ),
 };
 ```
+
+### Heading-only blocks
+
+Turning the `paragraph` feature off leaves a block that only holds headings — the TipTap equivalent of the Draft.js pattern of a `RichTextBlock` restricted to `header-*` block types with a `standardBlockType`, for instance the headline part of a heading block:
+
+```ts title="tip-tap-headline.block.ts (API)"
+export const TipTapHeadlineBlock = createTipTapRichTextBlock(
+    {
+        paragraph: false,
+        heading: { levels: [2, 3, 4], defaultLevel: 3 },
+        maxTextBlocks: 1,
+    },
+    { name: "TipTapHeadline" },
+);
+```
+
+```tsx title="TipTapHeadlineBlock.tsx (Admin)"
+export const TipTapHeadlineBlock = createTipTapRichTextBlock({
+    paragraph: false,
+    heading: { levels: [2, 3, 4], defaultLevel: 3 },
+    maxTextBlocks: 1,
+});
+```
+
+The editor starts with an H3, the text block type select only offers _Heading 2_ – _Heading 4_, and `Mod-Alt-2/3/4` switch between them (levels outside `levels` have no shortcut). `defaultLevel` also applies to a block that keeps its paragraphs: it is the level a new heading gets, and defaults to the lowest allowed level.
+
+Lists are disabled in a heading-only block, because a list item's content starts with a paragraph. Enabling one explicitly (`orderedList: true`) throws, as does turning off `paragraph` and `heading` together — that would leave no text block type at all.
+
+:::caution Existing content
+
+The API rejects content that the configuration doesn't allow: a heading level outside the allowed `levels`, or a paragraph in a block without the `paragraph` feature. Narrowing these options for a block that already holds content therefore requires a [migration](./5-migrations.mdx). For content coming from the Draft.js block, the built-in [`migrateFromDraftJs`](#migrating-existing-content) migration already converts Draft.js blocks without a heading level into a heading with `defaultLevel`.
+
+:::
 
 ### Child blocks
 

@@ -111,8 +111,12 @@ const TEXT_BLOCK_TYPE_TO_HEADING_LEVEL: Record<TipTapTextBlockStyleTargetType, n
     "heading-6": 6,
 };
 
-function makeEmptyDoc(): JSONContent {
-    return { type: "doc", content: [{ type: "paragraph" }] };
+/**
+ * Builds a document with a single empty text block, matching the target schema's default text block
+ * type (a paragraph, or a heading for a heading-only schema).
+ */
+export function buildEmptyTipTapDoc(resolvedOptions: TipTapResolvedOptions): JSONContent {
+    return { type: "doc", content: [makeTextBlockNode([], { resolvedOptions })] };
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -264,8 +268,15 @@ function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, 
 
 function makeTextBlockNode(
     inlineContent: JSONContent[],
-    { headingLevel, textBlockStyle }: { headingLevel?: number; textBlockStyle?: string } = {},
+    {
+        headingLevel: explicitHeadingLevel,
+        textBlockStyle,
+        resolvedOptions,
+    }: { headingLevel?: number; textBlockStyle?: string; resolvedOptions: TipTapResolvedOptions },
 ): JSONContent {
+    // A heading-only schema has no paragraph to fall back to.
+    const headingLevel =
+        explicitHeadingLevel ?? (resolvedOptions.paragraph || resolvedOptions.heading === false ? undefined : resolvedOptions.heading.defaultLevel);
     const node: JSONContent = { type: headingLevel !== undefined ? "heading" : "paragraph" };
 
     const attrs: JSONContent["attrs"] = {};
@@ -285,10 +296,10 @@ function makeTextBlockNode(
     return node;
 }
 
-function makeListItem(inlineContent: JSONContent[]): JSONContent {
+function makeListItem(inlineContent: JSONContent[], resolvedOptions: TipTapResolvedOptions): JSONContent {
     return {
         type: "listItem",
-        content: [makeTextBlockNode(inlineContent)],
+        content: [makeTextBlockNode(inlineContent, { resolvedOptions })],
     };
 }
 
@@ -312,11 +323,12 @@ function normalizeTextBlockStyleMapping(mapping: string | TextBlockStyleMapping 
 }
 
 export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined | null, options: ConvertOptions): JSONContent {
+    const resolvedOptions = options.resolvedOptions;
+
     if (!draftContent || !Array.isArray(draftContent.blocks) || draftContent.blocks.length === 0) {
-        return makeEmptyDoc();
+        return buildEmptyTipTapDoc(resolvedOptions);
     }
 
-    const resolvedOptions = options.resolvedOptions;
     const hasLink = !!options.link;
     const textBlockStyleMap = options.textBlockStyleMap ?? {};
     const inlineStyleMap = options.inlineStyleMap ?? {};
@@ -370,7 +382,7 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
             openLists.push({ type: listType, items: [] });
         }
 
-        openLists[openLists.length - 1].items.push(makeListItem(inlineContent));
+        openLists[openLists.length - 1].items.push(makeListItem(inlineContent, resolvedOptions));
     };
 
     for (const block of draftContent.blocks) {
@@ -390,6 +402,7 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
 
         topLevel.push(
             makeTextBlockNode(inlineContent, {
+                resolvedOptions,
                 headingLevel: headingLevel !== undefined && resolvedOptions.heading !== false ? headingLevel : undefined,
                 textBlockStyle: mapping?.textBlockStyle,
             }),
@@ -399,27 +412,24 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
     flushLists();
 
     if (topLevel.length === 0) {
-        return makeEmptyDoc();
+        return buildEmptyTipTapDoc(resolvedOptions);
     }
 
     return { type: "doc", content: topLevel };
 }
 
-export function buildStrippedTipTapDoc(draftContent: DraftJsContent | undefined | null): JSONContent {
+export function buildStrippedTipTapDoc(draftContent: DraftJsContent | undefined | null, resolvedOptions: TipTapResolvedOptions): JSONContent {
     if (!draftContent || !Array.isArray(draftContent.blocks) || draftContent.blocks.length === 0) {
-        return makeEmptyDoc();
+        return buildEmptyTipTapDoc(resolvedOptions);
     }
 
     const content: JSONContent[] = draftContent.blocks.map((block) => {
         const text = block.text ?? "";
-        if (text.length === 0) {
-            return { type: "paragraph" };
-        }
-        return { type: "paragraph", content: [{ type: "text", text }] };
+        return makeTextBlockNode(text.length === 0 ? [] : [{ type: "text", text }], { resolvedOptions });
     });
 
     if (content.length === 0) {
-        return makeEmptyDoc();
+        return buildEmptyTipTapDoc(resolvedOptions);
     }
 
     return { type: "doc", content };

@@ -1,5 +1,5 @@
 import { type Extensions, getSchema, type JSONContent } from "@tiptap/core";
-import type { Level as HeadingLevel } from "@tiptap/extension-heading";
+import { Heading, type Level as HeadingLevel } from "@tiptap/extension-heading";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
@@ -45,6 +45,11 @@ interface TipTapHeadingOptions {
      * Content with a heading level outside this set will be rejected during validation.
      */
     levels?: number[];
+    /**
+     * Heading level used for headings that don't specify one. Defaults to the lowest allowed level.
+     * Must be one of `levels`, otherwise an error is thrown.
+     */
+    defaultLevel?: number;
 }
 
 /**
@@ -57,7 +62,8 @@ export interface TipTapResolvedOptions {
     strike: boolean;
     sub: boolean;
     sup: boolean;
-    heading: false | { levels: HeadingLevel[] };
+    paragraph: boolean;
+    heading: false | { levels: HeadingLevel[]; defaultLevel: HeadingLevel };
     orderedList: boolean;
     unorderedList: boolean;
     nonBreakingSpace: boolean;
@@ -104,6 +110,10 @@ interface TipTapInlineStyle {
 
 const allHeadingLevels: HeadingLevel[] = [1, 2, 3, 4, 5, 6];
 
+// TipTap's own priority for the paragraph extension, which makes the paragraph the schema's first
+// block node and therefore ProseMirror's default block type.
+const paragraphPriority = 1000;
+
 function isValidHeadingLevels(headingLevels: number[]): headingLevels is HeadingLevel[] {
     return (
         headingLevels.length > 0 &&
@@ -142,8 +152,16 @@ export interface CreateTipTapRichTextBlockOptions {
      */
     sup?: boolean;
     /**
+     * Enables paragraphs. Defaults to `true`.
+     *
+     * Pass `false` for a heading-only block (e.g. a headline): content containing a paragraph is
+     * rejected during validation. Requires headings, and disables lists, because a list item's
+     * content starts with a paragraph.
+     */
+    paragraph?: boolean;
+    /**
      * Enables headings. Defaults to `true` (all levels).
-     * Pass an options object to limit the allowed heading `levels`.
+     * Pass an options object to limit the allowed heading `levels` or to set the `defaultLevel`.
      */
     heading?: boolean | TipTapHeadingOptions;
     /**
@@ -218,17 +236,34 @@ export function resolveTipTapOptions({
     strike = true,
     sub = true,
     sup = true,
+    paragraph = true,
     heading = true,
-    orderedList = true,
-    unorderedList = true,
+    orderedList,
+    unorderedList,
     nonBreakingSpace = true,
     softHyphen = true,
     link,
 }: CreateTipTapRichTextBlockOptions = {}): TipTapResolvedOptions {
-    const headingLevels = (heading !== false && heading !== true ? heading.levels : undefined) ?? allHeadingLevels;
+    const headingOptions = heading !== false && heading !== true ? heading : {};
+    const headingLevels = headingOptions.levels ?? allHeadingLevels;
 
     if (!isValidHeadingLevels(headingLevels)) {
         throw new Error("heading levels must be a non-empty array of unique integers between 1 and 6");
+    }
+
+    if (headingOptions.defaultLevel !== undefined && !headingLevels.includes(headingOptions.defaultLevel as HeadingLevel)) {
+        throw new Error(`heading defaultLevel must be one of the allowed levels (${headingLevels.join(", ")})`);
+    }
+
+    const defaultHeadingLevel = (headingOptions.defaultLevel ?? Math.min(...headingLevels)) as HeadingLevel;
+
+    if (!paragraph) {
+        if (heading === false) {
+            throw new Error("paragraph: false requires headings, otherwise no text block type is left");
+        }
+        if (orderedList || unorderedList) {
+            throw new Error("Lists require paragraphs, because a list item's content starts with a paragraph");
+        }
     }
 
     return {
@@ -238,13 +273,44 @@ export function resolveTipTapOptions({
         strike,
         sub,
         sup,
-        heading: heading === false ? false : { levels: headingLevels },
-        orderedList,
-        unorderedList,
+        paragraph,
+        heading: heading === false ? false : { levels: headingLevels, defaultLevel: defaultHeadingLevel },
+        // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
+        orderedList: orderedList ?? paragraph,
+        unorderedList: unorderedList ?? paragraph,
         nonBreakingSpace,
         softHyphen,
         link: !!link,
     };
+}
+
+/**
+ * Sets the default heading level and, for heading-only blocks, makes the heading the schema's
+ * default block type (the position paragraphs would otherwise take, by priority).
+ */
+function buildHeadingExtension({
+    base,
+    levels,
+    defaultLevel,
+    hasParagraph,
+}: {
+    base: typeof Heading;
+    levels: HeadingLevel[];
+    defaultLevel: HeadingLevel;
+    hasParagraph: boolean;
+}) {
+    return base
+        .extend({
+            ...(hasParagraph ? {} : { priority: paragraphPriority }),
+            addAttributes() {
+                return {
+                    ...this.parent?.(),
+                    // `rendered: false` keeps TipTap from adding a `level` HTML attribute, the level is the tag name.
+                    level: { default: defaultLevel, rendered: false },
+                };
+            },
+        })
+        .configure({ levels });
 }
 
 function buildExtensions({
@@ -271,17 +337,30 @@ function buildExtensions({
             italic: resolvedOptions.italic ? {} : false,
             underline: resolvedOptions.underline ? {} : false,
             strike: resolvedOptions.strike ? {} : false,
-            heading: resolvedOptions.heading && !hasTextBlockStyles ? { levels: resolvedOptions.heading.levels } : false,
-            paragraph: hasTextBlockStyles ? false : undefined,
+            // The heading extension is added separately below to set the default heading level.
+            heading: false,
+            paragraph: resolvedOptions.paragraph && !hasTextBlockStyles ? undefined : false,
             orderedList: resolvedOptions.orderedList ? {} : false,
             bulletList: resolvedOptions.unorderedList ? {} : false,
+            // A list item's content starts with a paragraph, so lists cannot exist without one.
+            listItem: resolvedOptions.paragraph ? undefined : false,
+            listKeymap: resolvedOptions.paragraph ? undefined : false,
             blockquote: false,
             code: false,
             codeBlock: false,
             link: false,
         }),
-        ...(hasTextBlockStyles ? [TextBlockStyleParagraph] : []),
-        ...(hasTextBlockStyles && resolvedOptions.heading ? [TextBlockStyleHeading.configure({ levels: resolvedOptions.heading.levels })] : []),
+        ...(resolvedOptions.paragraph && hasTextBlockStyles ? [TextBlockStyleParagraph] : []),
+        ...(resolvedOptions.heading
+            ? [
+                  buildHeadingExtension({
+                      base: hasTextBlockStyles ? TextBlockStyleHeading : Heading,
+                      levels: resolvedOptions.heading.levels,
+                      defaultLevel: resolvedOptions.heading.defaultLevel,
+                      hasParagraph: resolvedOptions.paragraph,
+                  }),
+              ]
+            : []),
         ...(hasInlineStyles ? [InlineStyleMark] : []),
         ...(resolvedOptions.sup ? [Superscript] : []),
         ...(resolvedOptions.sub ? [Subscript] : []),

@@ -6,9 +6,10 @@ import type { Link } from "react-router-dom";
 
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import { getElementOuterWidth } from "../../utils/getElementOuterWidth";
 import { useObservedWidth } from "../../utils/useObservedWidth";
 import { useStackApi } from "../Api";
-import { getElementOuterWidth, useItemsToRender } from "./utils";
+import { useItemsToRender } from "./utils";
 
 export type StackBreadcrumbsClassKey =
     | "root"

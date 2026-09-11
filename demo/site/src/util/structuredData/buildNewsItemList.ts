@@ -1,6 +1,6 @@
 import type { ContentScope } from "@src/site-configs";
 import { createSitePath } from "@src/util/createSitePath";
-import { getSiteConfigForDomain } from "@src/util/getSiteConfigs";
+import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import type { ItemList, WithContext } from "schema-dts";
 
 type NewsItemListEntry = {

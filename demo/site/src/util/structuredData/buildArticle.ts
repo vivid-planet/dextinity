@@ -1,7 +1,7 @@
 import type { DamImageBlockData } from "@src/blocks.generated";
 import type { ContentScope } from "@src/site-configs";
 import { createSitePath } from "@src/util/createSitePath";
-import { getSiteConfigForDomain } from "@src/util/getSiteConfigs";
+import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import type { Article, WithContext } from "schema-dts";
 
 import { damImageToAbsoluteUrl } from "./damImageToAbsoluteUrl";

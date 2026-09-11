@@ -1,9 +1,6 @@
 import { previewParams } from "@dextinity/site-nextjs/server";
+import type { PublicSiteConfig } from "@src/site-configs";
 import { headers } from "next/headers";
-
-import { getSiteConfigs } from "./getSiteConfigs";
-
-export { getSiteConfigForDomain, getSiteConfigs } from "./getSiteConfigs";
 
 export function getHostByHeaders(headers: Headers) {
     const host = headers.get("x-forwarded-host") ?? headers.get("host");
@@ -11,6 +8,14 @@ export function getHostByHeaders(headers: Headers) {
         throw new Error("Could not evaluate host");
     }
     return host;
+}
+
+export function getSiteConfigForDomain(domain: string) {
+    const siteConfig = getSiteConfigs().find((siteConfig) => siteConfig.scope.domain === domain);
+    if (!siteConfig) {
+        throw new Error(`SiteConfig not found for domain ${domain}`);
+    }
+    return siteConfig;
 }
 
 export async function getSiteConfigForHost(host: string) {
@@ -22,6 +27,18 @@ export async function getSiteConfigForHost(host: string) {
         }
     }
     return getSiteConfigs().find((siteConfig) => siteConfig.domains.main === host || siteConfig.domains.preliminary === host);
+}
+
+let siteConfigs: PublicSiteConfig[];
+export function getSiteConfigs() {
+    if (!siteConfigs) {
+        const json = process.env.PUBLIC_SITE_CONFIGS;
+        if (!json) {
+            throw new Error("process.env.PUBLIC_SITE_CONFIGS must be set.");
+        }
+        siteConfigs = JSON.parse(atob(json)) as PublicSiteConfig[];
+    }
+    return siteConfigs;
 }
 
 // Used for getting SiteConfig in server-components where params is not available (e.g. sitemap, not-found - see https://github.com/vercel/next.js/discussions/43179)

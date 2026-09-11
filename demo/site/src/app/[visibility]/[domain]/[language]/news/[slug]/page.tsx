@@ -1,13 +1,12 @@
 export const dynamic = "error";
 
-import { gql, JsonLd } from "@dextinity/site-nextjs";
+import { gql } from "@dextinity/site-nextjs";
 import type { GQLNewsContentScopeInput } from "@src/graphql.generated";
 import type { VisibilityParam } from "@src/middleware/domainRewrite";
+import { NewsArticleJsonLd } from "@src/news/NewsArticleJsonLd";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { setVisibilityParam } from "@src/util/ServerContext";
-import { buildArticle } from "@src/util/structuredData/buildArticle";
 import { notFound } from "next/navigation";
-import type { Article } from "schema-dts";
 
 import { Content } from "./content";
 import { fragment } from "./fragment";
@@ -38,7 +37,7 @@ export default async function NewsDetailPage({ params }: PageProps<"/[visibility
 
     return (
         <>
-            <JsonLd<Article> data={buildArticle({ news: data.newsBySlug, scope })} />
+            <NewsArticleJsonLd news={data.newsBySlug} scope={scope} />
             <Content news={data.newsBySlug} />
         </>
     );

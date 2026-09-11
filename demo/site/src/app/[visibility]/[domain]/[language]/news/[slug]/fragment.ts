@@ -1,11 +1,11 @@
 import { gql } from "@dextinity/site-nextjs";
-import { newsArticleStructuredDataFragment } from "@src/util/structuredData/buildArticle";
+import { newsArticleJsonLdFragment } from "@src/news/NewsArticleJsonLd";
 
 export const fragment = gql`
     fragment NewsDetailPage on News {
-        ...NewsArticleStructuredData
+        ...NewsArticleJsonLd
         createdAt
         content
     }
-    ${newsArticleStructuredDataFragment}
+    ${newsArticleJsonLdFragment}
 `;

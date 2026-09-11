@@ -72,7 +72,7 @@ export interface IProps
     }> {
     disabled?: boolean;
     selected?: boolean;
-    onButtonClick?: (e: MouseEvent) => void;
+    onButtonClick?: (e: MouseEvent<HTMLButtonElement>) => void;
     icon?: ForwardRefExoticComponent<Omit<SvgIconProps, "ref"> & RefAttributes<SVGSVGElement>>;
 
     /** @deprecated use icon instead */

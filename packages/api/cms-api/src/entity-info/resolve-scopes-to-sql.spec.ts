@@ -144,5 +144,12 @@ describe("resolveScopesToSql", () => {
                 /cannot be converted to SQL/,
             );
         });
+
+        it("returns NULL::jsonb instead of throwing when onUnsupported is null", () => {
+            expect(resolveScopesToSql({ metadata: metadataFor("NewsComment"), scopedEntity: () => ({}), onUnsupported: "null" })).toBe("NULL::jsonb");
+            expect(resolveScopesToSql({ metadata: metadataFor("NewsComment"), scopedEntity: NewsCommentScopeService, onUnsupported: "null" })).toBe(
+                "NULL::jsonb",
+            );
+        });
     });
 });

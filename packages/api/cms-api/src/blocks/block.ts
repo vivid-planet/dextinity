@@ -259,6 +259,11 @@ export type Block<BlockType extends BlockDataInterface = BlockDataInterface, Blo
     blockInputFactory: BlockInputFactory<BlockInputType>;
     blockMeta: BlockMetaInterface;
     blockInputMeta: BlockMetaInterface;
+    /**
+     * Blocks that are used by this block but aren't visible in its meta, e.g., the link block embedded in rich text content.
+     * Required to determine the blocks an application uses (see `getUsedBlocks`).
+     */
+    referencedBlocks?: Block[];
 };
 
 const blocks: Block[] = [];

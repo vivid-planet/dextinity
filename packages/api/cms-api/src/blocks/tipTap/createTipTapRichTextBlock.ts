@@ -796,6 +796,7 @@ export function createTipTapRichTextBlock(
         blockInputFactory: decorateBlockInputFactory,
         blockMeta: new AnnotationBlockMeta(TipTapRichTextBlockData),
         blockInputMeta: new AnnotationBlockMeta(TipTapRichTextBlockInput),
+        referencedBlocks: LinkBlock ? [LinkBlock] : undefined,
     };
 
     registerBlock(TipTapRichTextBlock);

@@ -6,16 +6,16 @@ interface From {
     autoplay?: boolean;
     showControls?: boolean;
     loop?: boolean;
+    previewImage?: unknown;
 }
 
-interface To extends From {
-    previewImage: unknown;
-}
+type To = From;
 
 export class AddPreviewImageMigration extends BlockMigration<(from: From) => To> implements BlockMigrationInterface {
     public readonly toVersion = 1;
 
     protected migrate(props: From): To {
-        return { ...props, previewImage: {} };
+        // Keep the preview image of data that has one but was never versioned.
+        return { ...props, previewImage: props.previewImage ?? {} };
     }
 }

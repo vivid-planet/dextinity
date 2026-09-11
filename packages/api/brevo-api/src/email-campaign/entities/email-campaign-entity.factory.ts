@@ -1,4 +1,13 @@
-import { Block, BlockDataInterface, DocumentInterface, RootBlock, RootBlockDataScalar, RootBlockType } from "@dextinity/cms-api";
+import {
+    Block,
+    BlockDataInterface,
+    DocumentInterface,
+    EntityInfo,
+    RootBlock,
+    RootBlockDataScalar,
+    RootBlockEntity,
+    RootBlockType,
+} from "@dextinity/cms-api";
 import { Collection, Embedded, Entity, Enum, ManyToMany, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
@@ -33,6 +42,8 @@ export function createEmailCampaignEntity({
     Scope: Type<EmailCampaignScopeInterface>;
     TargetGroup: Type<TargetGroupInterface>;
 }): Type<EmailCampaignInterface> {
+    @EntityInfo<EmailCampaignInterface>({ name: "title", secondaryInformation: "subject" })
+    @RootBlockEntity()
     @Entity()
     @ObjectType({
         implements: () => [DocumentInterface],

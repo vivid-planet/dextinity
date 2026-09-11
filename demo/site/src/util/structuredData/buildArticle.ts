@@ -4,7 +4,7 @@ import { createSitePath } from "@src/util/createSitePath";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import type { Article, WithContext } from "schema-dts";
 
-import { damImageToAbsoluteUrl } from "./damImageToAbsoluteUrl";
+import { damImageToAbsoluteUrls } from "./damImageToAbsoluteUrls";
 
 type BuildArticleOptions = {
     news: {
@@ -19,14 +19,14 @@ type BuildArticleOptions = {
 
 export function buildArticle({ news, scope }: BuildArticleOptions): WithContext<Article> {
     const siteConfig = getSiteConfigForDomain(scope.domain);
-    const image = damImageToAbsoluteUrl(news.image, siteConfig.url);
+    const images = damImageToAbsoluteUrls(news.image, siteConfig.url);
     const detailUrl = `${siteConfig.url}${createSitePath({ scope: { language: scope.language }, path: `/news/${news.slug}` })}`;
 
     return {
         "@context": "https://schema.org",
         "@type": "Article",
         headline: news.title,
-        ...(image ? { image } : {}),
+        ...(images.length > 0 ? { image: images } : {}),
         datePublished: news.date,
         dateModified: news.updatedAt,
         mainEntityOfPage: detailUrl,

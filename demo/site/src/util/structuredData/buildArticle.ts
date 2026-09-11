@@ -4,7 +4,6 @@ import { createSitePath } from "@src/util/createSitePath";
 import { getSiteConfigForDomain } from "@src/util/getSiteConfigs";
 import type { Article, WithContext } from "schema-dts";
 
-import { buildOrganizationNode } from "./buildOrganization";
 import { damImageToAbsoluteUrl } from "./damImageToAbsoluteUrl";
 
 type BuildArticleOptions = {
@@ -20,7 +19,6 @@ type BuildArticleOptions = {
 
 export function buildArticle({ news, scope }: BuildArticleOptions): WithContext<Article> {
     const siteConfig = getSiteConfigForDomain(scope.domain);
-    const organization = buildOrganizationNode(siteConfig);
     const image = damImageToAbsoluteUrl(news.image, siteConfig.url);
     const detailUrl = `${siteConfig.url}${createSitePath({ scope: { language: scope.language }, path: `/news/${news.slug}` })}`;
 
@@ -31,8 +29,6 @@ export function buildArticle({ news, scope }: BuildArticleOptions): WithContext<
         ...(image ? { image } : {}),
         datePublished: news.date,
         dateModified: news.updatedAt,
-        author: organization,
-        publisher: organization,
         mainEntityOfPage: detailUrl,
     };
 }

@@ -6,11 +6,11 @@ import type { ItemList, WithContext } from "schema-dts";
 type NewsItemListEntry = {
     title: string;
     slug: string;
-    scope: { language: string };
 };
 
 type BuildNewsItemListOptions = {
     items: NewsItemListEntry[];
+    // All items of a list belong to the same content scope, so the URLs are built from a single scope.
     scope: ContentScope;
 };
 
@@ -24,7 +24,7 @@ export function buildNewsItemList({ items, scope }: BuildNewsItemListOptions): W
             "@type": "ListItem",
             position: index + 1,
             name: item.title,
-            url: `${siteUrl}${createSitePath({ scope: { language: item.scope.language }, path: `/news/${item.slug}` })}`,
+            url: `${siteUrl}${createSitePath({ scope: { language: scope.language }, path: `/news/${item.slug}` })}`,
         })),
     };
 }

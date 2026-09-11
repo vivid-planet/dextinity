@@ -3,7 +3,7 @@ import { Document, LinkExternal } from "@dextinity/admin-icons";
 import type { ComponentType, JSX } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { ExternalLinkBlock } from "../blocks/ExternalLinkBlock";
+import { createExternalLinkBlock } from "../blocks/createExternalLinkBlock";
 import { createOneOfBlock } from "../blocks/factories/createOneOfBlock";
 import { InternalLinkBlock } from "../blocks/InternalLinkBlock";
 import type { BlockInterface } from "../blocks/types";
@@ -20,12 +20,12 @@ const RedirectsInternalLinkBlock: typeof InternalLinkBlock = {
     dynamicDisplayName: (state) => state.targetPage?.name ?? InternalLinkBlock.displayName,
 };
 
-const RedirectsExternalLinkBlock: typeof ExternalLinkBlock = {
-    ...ExternalLinkBlock,
-    previewContent: (state) => [...(state.targetUrl ? [{ type: "text" as const, content: ExternalLinkBlock.displayName }] : [])],
+const RedirectsExternalLinkBlock = createExternalLinkBlock({ supports: [] }, (block) => ({
+    ...block,
+    previewContent: (state) => [...(state.targetUrl ? [{ type: "text" as const, content: block.displayName }] : [])],
     icon: (state) => state.targetUrl && <LinkExternal color="primary" />,
-    dynamicDisplayName: (state) => state.targetUrl ?? ExternalLinkBlock.displayName,
-};
+    dynamicDisplayName: (state) => state.targetUrl ?? block.displayName,
+}));
 
 interface RedirectsPageProps {
     redirectPathAfterChange?: string;

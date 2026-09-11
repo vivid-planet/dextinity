@@ -5,7 +5,7 @@ import { PreviewSkeleton } from "../../previewskeleton/PreviewSkeleton";
 
 interface Props {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    block: (props: any) => ReactNode;
+    block: (props: any, index: number) => ReactNode;
     data: {
         blocks: Array<{ key: string; visible: boolean; props: unknown }>;
     };
@@ -18,9 +18,9 @@ export const ListBlock = ({ block: blockFunction, data: { blocks } }: Props) => 
 
     return (
         <>
-            {blocks.map((block) => (
+            {blocks.map((block, index) => (
                 <Fragment key={block.key}>
-                    <ErrorHandlerBoundary>{blockFunction(block.props)}</ErrorHandlerBoundary>
+                    <ErrorHandlerBoundary>{blockFunction(block.props, index)}</ErrorHandlerBoundary>
                 </Fragment>
             ))}
         </>

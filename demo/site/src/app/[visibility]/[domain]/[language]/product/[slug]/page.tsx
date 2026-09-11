@@ -2,6 +2,7 @@ export const dynamic = "error";
 
 import { gql } from "@dextinity/site-nextjs";
 import type { VisibilityParam } from "@src/middleware/domainRewrite";
+import { ProductJsonLd } from "@src/products/ProductJsonLd";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { setVisibilityParam } from "@src/util/ServerContext";
 import { notFound } from "next/navigation";
@@ -11,8 +12,9 @@ import { fragment } from "./fragment";
 import type { GQLProductDetailPageQuery, GQLProductDetailPageQueryVariables } from "./page.generated";
 
 export default async function ProductDetailPage({ params }: PageProps<"/[visibility]/[domain]/[language]/product/[slug]">) {
-    const { slug, visibility } = await params;
+    const { domain, language, slug, visibility } = await params;
     setVisibilityParam(visibility as VisibilityParam);
+    const scope = { domain, language };
     const graphqlFetch = createGraphQLFetch();
 
     const data = await graphqlFetch<GQLProductDetailPageQuery, GQLProductDetailPageQueryVariables>(
@@ -32,5 +34,10 @@ export default async function ProductDetailPage({ params }: PageProps<"/[visibil
         notFound();
     }
 
-    return <Content product={data.productBySlug} />;
+    return (
+        <>
+            <ProductJsonLd product={data.productBySlug} scope={scope} />
+            <Content product={data.productBySlug} />
+        </>
+    );
 }

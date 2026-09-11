@@ -1,4 +1,4 @@
-import { ExtractBlockInputFactoryProps } from "@comet/cms-api";
+import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import { faker } from "@src/db/fixtures/faker";
 import { BackgroundColor as ContentGroupBackgroundColor, ContentBlock, ContentGroupBlock } from "@src/documents/pages/blocks/content-group.block";
@@ -12,6 +12,8 @@ import { TeaserBlockFixtureService } from "../teaser/teaser-block-fixture.servic
 import { KeyFactsBlockFixtureService } from "../text-and-content/key-facts-block-fixture.service";
 import { StandaloneHeadingBlockFixtureService } from "../text-and-content/standalone-heading-block-fixture.service";
 import { StandaloneRichTextBlockFixtureService } from "../text-and-content/standalone-rich-text-block-fixture.service";
+import { TableBlockFixtureService } from "../text-and-content/table-block-fixture.service";
+import { TipTapTableBlockFixtureService } from "../text-and-content/tip-tap-table-block-fixture.service";
 import { AccordionBlockFixtureService } from "./accordion-block-fixture.service";
 import { ColumnsBlockFixtureService } from "./columns-block-fixture.service";
 import { SpaceBlockFixtureService } from "./space-block-fixture.service";
@@ -29,14 +31,15 @@ export class ContentGroupBlockFixtureService {
         private readonly standaloneHeadingBlockFixtureService: StandaloneHeadingBlockFixtureService,
         private readonly standaloneCallToActionListBlockFixtureService: StandaloneCallToActionListBlockFixtureService,
         private readonly standaloneRichTextBlockFixtureService: StandaloneRichTextBlockFixtureService,
+        private readonly tableBlockFixtureService: TableBlockFixtureService,
         private readonly teaserBlockFixtureService: TeaserBlockFixtureService,
+        private readonly tipTapTableBlockFixtureService: TipTapTableBlockFixtureService,
     ) {}
 
     async generateContentGroupContentBlock(): Promise<ExtractBlockInputFactoryProps<typeof ContentBlock>> {
         const blocks: ExtractBlockInputFactoryProps<typeof ContentBlock>["blocks"] = [];
 
-        // TODO: Add table fixture (https://vivid-planet.atlassian.net/browse/COM-2227)
-        const blockCfg: Record<Exclude<(typeof blocks)[number]["type"], "table">, BlockFixture> = {
+        const blockCfg: Record<(typeof blocks)[number]["type"], BlockFixture> = {
             accordion: this.accordionBlockFixtureService,
             anchor: this.anchorBlockFixtureService,
             callToActionList: this.standaloneCallToActionListBlockFixtureService,
@@ -47,7 +50,9 @@ export class ContentGroupBlockFixtureService {
             mediaGallery: this.mediaGalleryBlockFixtureService,
             richtext: this.standaloneRichTextBlockFixtureService,
             space: this.spaceBlockFixtureService,
+            table: this.tableBlockFixtureService,
             teaser: this.teaserBlockFixtureService,
+            tipTapTable: this.tipTapTableBlockFixtureService,
         };
 
         for (const block of Object.entries(blockCfg)) {

@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import { FillSpace, MainContent, StackLink, Toolbar, ToolbarBackButton, ToolbarTitleItem, Tooltip } from "@comet/admin";
-import { List } from "@comet/admin-icons";
+import { FillSpace, MainContent, StackLink, Toolbar, ToolbarBackButton, ToolbarTitleItem, Tooltip } from "@dextinity/admin";
+import { List } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { parseISO } from "date-fns";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -54,7 +54,7 @@ function JobsToolbar(props: { cronJobName: string }) {
             <ToolbarBackButton />
             <ToolbarTitleItem>
                 <FormattedMessage
-                    id="comet.jobs.title"
+                    id="dextinity.jobs.title"
                     defaultMessage="Job runs for {cronJob}"
                     values={{
                         cronJob: data?.kubernetesCronJob.label
@@ -98,20 +98,20 @@ export function JobsGrid(props: JobsGridProps) {
                     columns={[
                         {
                             field: "name",
-                            headerName: intl.formatMessage({ id: "comet.pages.jobs.name", defaultMessage: "Name" }),
+                            headerName: intl.formatMessage({ id: "dextinity.pages.jobs.name", defaultMessage: "Name" }),
                             flex: 2,
                             ...disableFieldOptions,
                         },
                         {
                             field: "status",
-                            headerName: intl.formatMessage({ id: "comet.pages.publisher.status", defaultMessage: "Status" }),
+                            headerName: intl.formatMessage({ id: "dextinity.pages.publisher.status", defaultMessage: "Status" }),
                             flex: 1,
                             ...disableFieldOptions,
                             renderCell: ({ row }) => <JobStatus status={row.status}>{row.status}</JobStatus>,
                         },
                         {
                             field: "runtime",
-                            headerName: intl.formatMessage({ id: "comet.pages.jobs.runtime", defaultMessage: "Runtime" }),
+                            headerName: intl.formatMessage({ id: "dextinity.pages.jobs.runtime", defaultMessage: "Runtime" }),
                             flex: 1,
                             ...disableFieldOptions,
                             valueGetter: (params, row) => {
@@ -134,7 +134,7 @@ export function JobsGrid(props: JobsGridProps) {
                             type: "actions",
                             headerName: "",
                             renderCell: ({ row }) => (
-                                <Tooltip title={<FormattedMessage id="comet.pages.jobs.showLogs" defaultMessage="Show logs" />}>
+                                <Tooltip title={<FormattedMessage id="dextinity.pages.jobs.showLogs" defaultMessage="Show logs" />}>
                                     <IconButton component={StackLink} pageName="logs" payload={row.name}>
                                         <List color="primary" />
                                     </IconButton>

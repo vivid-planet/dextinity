@@ -24,8 +24,8 @@ import {
     useDataGridExcelExport,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Add as AddIcon, Disabled, Edit, Education as EducationIcon, Excel, Online } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Add as AddIcon, Disabled, Edit, Education as EducationIcon, Excel, Online } from "@dextinity/admin-icons";
 import { CircularProgress, IconButton, useTheme } from "@mui/material";
 import {
     DataGridPro,
@@ -145,8 +145,8 @@ export function ProductsGrid() {
                         row.type,
                         row.category?.title,
                         row.inStock
-                            ? intl.formatMessage({ id: "comet.products.product.inStock", defaultMessage: "In stock" })
-                            : intl.formatMessage({ id: "comet.products.product.outOfStock", defaultMessage: "Out of stock" }),
+                            ? intl.formatMessage({ id: "products.product.inStock", defaultMessage: "In stock" })
+                            : intl.formatMessage({ id: "products.product.outOfStock", defaultMessage: "Out of stock" }),
                     ];
                     return <GridCellContent primaryText={row.title} secondaryText={secondaryValues.filter(Boolean).join(" • ")} />;
                 },

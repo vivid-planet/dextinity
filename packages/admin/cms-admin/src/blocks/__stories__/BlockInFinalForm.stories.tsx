@@ -1,4 +1,4 @@
-import { Field, FinalForm, SaveBoundary } from "@comet/admin";
+import { Field, FinalForm, SaveBoundary } from "@dextinity/admin";
 
 import { BlockAdminComponentRoot } from "../common/BlockAdminComponentRoot";
 import { ExternalLinkBlock } from "../ExternalLinkBlock";

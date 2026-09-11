@@ -1,5 +1,5 @@
-import { Favorite } from "@comet/admin-icons";
-import { type IRteOptions, type IRteRef, makeRteApi, Rte } from "@comet/admin-rte";
+import { Favorite } from "@dextinity/admin-icons";
+import { type IRteOptions, type IRteRef, makeRteApi, Rte } from "@dextinity/admin-rte";
 import { Box, Card, CardContent } from "@mui/material";
 import { useRef } from "react";
 
@@ -21,7 +21,7 @@ const rteOptions: IRteOptions = {
 const [useRteApi] = makeRteApi();
 
 export default {
-    title: "@comet/admin-rte",
+    title: "@dextinity/admin-rte",
 };
 
 export const CustomInlineStyles = {

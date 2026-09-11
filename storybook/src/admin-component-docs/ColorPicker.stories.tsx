@@ -1,6 +1,6 @@
-import { FieldContainer } from "@comet/admin";
-import { ColorPicker } from "@comet/admin-color-picker";
-import { ArrowRight } from "@comet/admin-icons";
+import { FieldContainer } from "@dextinity/admin";
+import { ColorPicker } from "@dextinity/admin-color-picker";
+import { ArrowRight } from "@dextinity/admin-icons";
 import { InputAdornment } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 

@@ -347,7 +347,7 @@ export function generateAsyncSelect({
           })()
         : undefined;
     if (filterConfig) {
-        imports.push({ name: "OnChangeField", importPath: "@comet/admin" });
+        imports.push({ name: "OnChangeField", importPath: "@dextinity/admin" });
         finalFormConfig = { subscription: { values: true }, renderProps: { values: true, form: true } };
     }
 
@@ -372,9 +372,9 @@ export function generateAsyncSelect({
         importPath: `./${baseOutputFilename}.generated`,
     });
     if (useAutocomplete) {
-        imports.push({ name: "AsyncAutocompleteField", importPath: "@comet/admin" });
+        imports.push({ name: "AsyncAutocompleteField", importPath: "@dextinity/admin" });
     } else {
-        imports.push({ name: "AsyncSelectField", importPath: "@comet/admin" });
+        imports.push({ name: "AsyncSelectField", importPath: "@dextinity/admin" });
     }
 
     const instanceGqlType = gqlType[0].toLowerCase() + gqlType.substring(1);

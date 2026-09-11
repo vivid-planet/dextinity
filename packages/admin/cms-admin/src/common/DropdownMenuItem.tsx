@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp } from "@comet/admin-icons";
+import { ChevronDown, ChevronUp } from "@dextinity/admin-icons";
 import { ClickAwayListener, Grow, Paper, useTheme } from "@mui/material";
 import { type Dispatch, type ReactElement, type ReactNode, type SetStateAction, useRef, useState } from "react";
 

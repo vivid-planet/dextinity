@@ -44,7 +44,7 @@ export const calculatePartialRanges = (size: number, range: string): { start: nu
 let domPurify: ReturnType<typeof createDOMPurify> | undefined;
 
 // jsdom is heavy (~90 MB resident). It and dompurify are only used for SVG validation, so they're
-// loaded lazily — importing @comet/cms-api doesn't pull them into memory unless an SVG is validated.
+// loaded lazily — importing @dextinity/cms-api doesn't pull them into memory unless an SVG is validated.
 async function getDomPurify(): Promise<ReturnType<typeof createDOMPurify>> {
     if (!domPurify) {
         const [{ JSDOM }, { default: createDOMPurify }] = await Promise.all([import("jsdom"), import("dompurify")]);

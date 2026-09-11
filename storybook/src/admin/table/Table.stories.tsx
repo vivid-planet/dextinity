@@ -1,4 +1,4 @@
-import { Table } from "@comet/admin";
+import { Table } from "@dextinity/admin";
 
 interface IExampleRow {
     id: number;
@@ -10,7 +10,7 @@ interface IExampleRow {
 }
 
 export default {
-    title: "@comet/admin/table",
+    title: "@dextinity/admin/table",
 };
 
 export const _Table = () => {

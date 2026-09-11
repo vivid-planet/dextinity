@@ -1,4 +1,5 @@
 import { Box, chipClasses, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type HTMLAttributes, type ReactNode, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
@@ -53,9 +54,9 @@ export const Default: Story = {
                 { timeout: 5000 },
             );
 
-            // Heading select shows "Default"
+            // Block type select shows "Paragraph"
             expect(canvas.getByRole("combobox")).toBeInTheDocument();
-            expect(canvas.getByText("Default")).toBeInTheDocument();
+            expect(canvas.getByText("Paragraph")).toBeInTheDocument();
 
             // Toolbar has buttons (undo, redo, bold, italic, strike, more, ol, ul, indent, dedent, nbsp, shy)
             const buttons = canvas.getAllByRole("button");
@@ -67,6 +68,84 @@ export const Default: Story = {
             // First two buttons are undo and redo
             expect(buttons[0]).toBeDisabled();
             expect(buttons[1]).toBeDisabled();
+        });
+    },
+};
+
+const ReadOnlyBlock = createTipTapRichTextBlock({
+    textBlockStyles: [
+        {
+            name: "intro",
+            label: "Intro Text",
+            appliesTo: ["paragraph"],
+            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
+        },
+    ],
+});
+
+const readOnlyState: TipTapRichTextBlockState = {
+    tipTapContent: {
+        type: "doc",
+        content: [
+            {
+                type: "heading",
+                attrs: { level: 1 },
+                content: [{ type: "text", text: "Read-only content" }],
+            },
+            {
+                type: "paragraph",
+                attrs: { textBlockStyle: "intro" },
+                content: [
+                    { type: "text", text: "This content is rendered " },
+                    { type: "text", marks: [{ type: "bold" }], text: "read-only" },
+                    { type: "text", text: "." },
+                ],
+            },
+        ],
+    },
+};
+
+export const ReadOnly: Story = {
+    render: () => (
+        <StoryWrapper state={readOnlyState}>
+            <ReadOnlyBlock.ReadOnlyComponent state={readOnlyState} />
+        </StoryWrapper>
+    ),
+    play: async ({ canvas, canvasElement, step }) => {
+        await step("Saved content renders", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 1, name: "Read-only content" })).toBeInTheDocument();
+                    expect(canvas.getByText("read-only")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step(
+            "The block's own text block style is applied — this needs the block's textBlockStyles reaching the read-only renderer",
+            async () => {
+                await waitFor(
+                    () => {
+                        const styledElement = canvasElement.querySelector('[data-text-block-style="intro"]');
+                        expect(styledElement).not.toBeNull();
+                        expect(styledElement).toHaveStyle({ fontStyle: "italic" });
+                    },
+                    { timeout: 3000 },
+                );
+            },
+        );
+
+        await step("No element is editable", async () => {
+            for (const element of Array.from(canvasElement.querySelectorAll("[contenteditable]"))) {
+                expect(element).toHaveAttribute("contenteditable", "false");
+            }
+        });
+
+        await step("No editing toolbar is rendered", async () => {
+            // The editor keeps its textbox role when read-only, so the toolbar's absence is the tell.
+            expect(canvas.queryByRole("combobox")).not.toBeInTheDocument();
+            expect(canvas.queryAllByRole("button")).toHaveLength(0);
         });
     },
 };
@@ -141,7 +220,7 @@ export const TextBlockStyles: StoryObj<typeof TextBlockStylesStory> = {
     render: () => <TextBlockStylesStory />,
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready with text block style dropdown", async () => {
-            // Both heading select and text block style select show "Default"
+            // Block type select shows "Paragraph", text block style select shows "Default"
             await waitFor(
                 () => {
                     const comboboxes = canvas.getAllByRole("combobox");
@@ -150,8 +229,9 @@ export const TextBlockStyles: StoryObj<typeof TextBlockStylesStory> = {
                 { timeout: 5000 },
             );
 
-            const defaults = canvas.getAllByText("Default");
-            expect(defaults.length).toBeGreaterThanOrEqual(2);
+            const comboboxes = canvas.getAllByRole("combobox");
+            expect(comboboxes[0]).toHaveTextContent("Paragraph");
+            expect(comboboxes[1]).toHaveTextContent("Default");
         });
 
         await step("Select text block style 'Intro Text'", async () => {
@@ -960,6 +1040,75 @@ export const ListLevelMax: StoryObj<typeof ListLevelMaxStory> = {
     },
 };
 
+const HeadingLevelsBlock = createTipTapRichTextBlock({ headingLevels: [2, 3, 4] });
+
+function HeadingLevelsStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(HeadingLevelsBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <HeadingLevelsBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
+    render: () => <HeadingLevelsStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Editor is ready", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("Heading dropdown only offers Heading 2-4, not 1, 5 or 6", async () => {
+            const textBlockTypeSelect = canvas.getByRole("combobox");
+            await userEvent.click(textBlockTypeSelect);
+
+            await waitFor(
+                () => {
+                    const body = within(document.body);
+                    expect(body.getByText("Heading 2")).toBeInTheDocument();
+                    expect(body.getByText("Heading 3")).toBeInTheDocument();
+                    expect(body.getByText("Heading 4")).toBeInTheDocument();
+                    expect(body.queryByText("Heading 1")).not.toBeInTheDocument();
+                    expect(body.queryByText("Heading 5")).not.toBeInTheDocument();
+                    expect(body.queryByText("Heading 6")).not.toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+
+            await userEvent.click(within(document.body).getByText("Heading 2"));
+        });
+
+        await step("Selected heading level is applied", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 2 })).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Keyboard shortcut for a disallowed level (Mod-Alt-1) does not apply Heading 1", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Alt>}1{/Alt}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(canvas.queryByRole("heading", { level: 1 })).not.toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};
+
 const CombinedStylesBlock = createTipTapRichTextBlock({
     textBlockStyles: [
         {
@@ -1009,6 +1158,95 @@ export const CombinedTextBlockAndInlineStyles: StoryObj<typeof CombinedStylesSto
             // Heading select + text block style select + inline style select
             const comboboxes = canvas.getAllByRole("combobox");
             expect(comboboxes.length).toBeGreaterThanOrEqual(3);
+        });
+    },
+};
+
+// Simulates the surrounding admin UI, which scrolls the block's container rather than the block itself.
+const ScrollableContainer = styled("div")({
+    height: 250,
+    overflowY: "auto",
+});
+
+const longTextContent: TipTapRichTextBlockState = {
+    tipTapContent: {
+        type: "doc",
+        content: Array.from({ length: 30 }, (_, index) => ({
+            type: "paragraph",
+            content: [{ type: "text", text: `Paragraph ${index + 1}: enough text to make the container scroll past the toolbar.` }],
+        })),
+    },
+};
+
+function StickyToolbarStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(longTextContent);
+
+    return (
+        <ScrollableContainer data-testid="scroll-container">
+            <TipTapRichTextBlock.AdminComponent state={state} updateState={setState} />
+        </ScrollableContainer>
+    );
+}
+
+function findStickyAncestor(element: HTMLElement): HTMLElement {
+    for (let current: HTMLElement | null = element; current; current = current.parentElement) {
+        if (getComputedStyle(current).position === "sticky") {
+            return current;
+        }
+    }
+    throw new Error("No sticky ancestor found");
+}
+
+export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
+    render: () => <StickyToolbarStory />,
+    play: async ({ canvas, canvasElement, step }) => {
+        const getScrollContainer = () => canvasElement.querySelector('[data-testid="scroll-container"]') as HTMLElement | null;
+
+        await step("Editor is ready and the container has more content than fits", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+
+            await waitFor(
+                () => {
+                    const scrollContainer = getScrollContainer();
+                    expect(scrollContainer).not.toBeNull();
+                    expect(scrollContainer!.scrollHeight).toBeGreaterThan(scrollContainer!.clientHeight);
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        const scrollContainer = getScrollContainer()!;
+        const undoButton = canvas.getAllByRole("button")[0];
+        const toolbar = findStickyAncestor(undoButton);
+        const firstParagraph = canvas.getByText("Paragraph 1: enough text to make the container scroll past the toolbar.");
+
+        const toolbarTopBeforeScroll = toolbar.getBoundingClientRect().top;
+        const paragraphTopBeforeScroll = firstParagraph.getBoundingClientRect().top;
+
+        await step("Scroll the container down", async () => {
+            scrollContainer.scrollTop = 300;
+
+            await waitFor(
+                () => {
+                    expect(scrollContainer.scrollTop).toBeGreaterThan(0);
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("Toolbar stays pinned to the top while the content scrolls behind it", async () => {
+            await waitFor(
+                () => {
+                    expect(toolbar.getBoundingClientRect().top).toBe(toolbarTopBeforeScroll);
+                    expect(firstParagraph.getBoundingClientRect().top).toBeLessThan(paragraphTopBeforeScroll);
+                },
+                { timeout: 5000 },
+            );
         });
     },
 };

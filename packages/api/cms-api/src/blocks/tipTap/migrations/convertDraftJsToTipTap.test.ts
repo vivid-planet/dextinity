@@ -6,6 +6,7 @@ import { buildStrippedTipTapDoc, convertDraftJsToTipTap, type DraftJsContent } f
 const defaultSupports = [
     "bold",
     "italic",
+    "underline",
     "strike",
     "sub",
     "sup",
@@ -111,12 +112,72 @@ describe("convertDraftJsToTipTap", () => {
             expect(result.content).toEqual([{ type: "paragraph", attrs: { textBlockStyle: "small" }, content: [{ type: "text", text: "tiny" }] }]);
         });
 
-        it("textBlockStyleMap takes precedence over header mapping", () => {
+        it("keeps the heading level when a header type is mapped to a textBlockStyle", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "header-two", text: "Title" })], entityMap: {} },
+                { supports: [...defaultSupports], textBlockStyleMap: { "header-two": "headline450" } },
+            );
+            expect(result.content).toEqual([
+                { type: "heading", attrs: { level: 2, textBlockStyle: "headline450" }, content: [{ type: "text", text: "Title" }] },
+            ]);
+        });
+
+        it("falls back to a paragraph for a mapped header type when heading is not supported", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "header-two", text: "Title" })], entityMap: {} },
+                { supports: [], textBlockStyleMap: { "header-two": "headline450" } },
+            );
+            expect(result.content).toEqual([
+                { type: "paragraph", attrs: { textBlockStyle: "headline450" }, content: [{ type: "text", text: "Title" }] },
+            ]);
+        });
+
+        it("maps a custom block type to a heading with textBlockStyle via textBlockType", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "headline450", text: "Title" })], entityMap: {} },
+                {
+                    supports: [...defaultSupports],
+                    textBlockStyleMap: { headline450: { textBlockType: "heading-2", textBlockStyle: "headline450" } },
+                },
+            );
+            expect(result.content).toEqual([
+                { type: "heading", attrs: { level: 2, textBlockStyle: "headline450" }, content: [{ type: "text", text: "Title" }] },
+            ]);
+        });
+
+        it("maps a custom block type to a heading without textBlockStyle", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "headline450", text: "Title" })], entityMap: {} },
+                { supports: [...defaultSupports], textBlockStyleMap: { headline450: { textBlockType: "heading-2" } } },
+            );
+            expect(result.content).toEqual([{ type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "Title" }] }]);
+        });
+
+        it("textBlockType overrides the heading level derived from the DraftJS header type", () => {
             const result = convertDraftJsToTipTap(
                 { blocks: [makeBlock({ type: "header-one", text: "Title" })], entityMap: {} },
-                { supports: [...defaultSupports], textBlockStyleMap: { "header-one": "huge" } },
+                { supports: [...defaultSupports], textBlockStyleMap: { "header-one": { textBlockType: "heading-2" } } },
+            );
+            expect(result.content).toEqual([{ type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "Title" }] }]);
+        });
+
+        it("converts a header type to a paragraph when mapped to textBlockType paragraph", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "header-one", text: "Title" })], entityMap: {} },
+                { supports: [...defaultSupports], textBlockStyleMap: { "header-one": { textBlockType: "paragraph", textBlockStyle: "huge" } } },
             );
             expect(result.content).toEqual([{ type: "paragraph", attrs: { textBlockStyle: "huge" }, content: [{ type: "text", text: "Title" }] }]);
+        });
+
+        it("keeps an empty mapped heading without inline content", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "headline450", text: "" })], entityMap: {} },
+                {
+                    supports: [...defaultSupports],
+                    textBlockStyleMap: { headline450: { textBlockType: "heading-2", textBlockStyle: "headline450" } },
+                },
+            );
+            expect(result.content).toEqual([{ type: "heading", attrs: { level: 2, textBlockStyle: "headline450" } }]);
         });
     });
 
@@ -186,12 +247,12 @@ describe("convertDraftJsToTipTap", () => {
             expect(result.content).toEqual([{ type: "paragraph", content: [{ type: "text", text: "a" }] }]);
         });
 
-        it("ignores depth and stays flat", () => {
+        it("keeps a flat list when all items have depth 0", () => {
             const result = convertDraftJsToTipTap(
                 {
                     blocks: [
                         makeBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
-                        makeBlock({ type: "unordered-list-item", text: "b", depth: 2 }),
+                        makeBlock({ type: "unordered-list-item", text: "b", depth: 0 }),
                     ],
                     entityMap: {},
                 },
@@ -199,7 +260,203 @@ describe("convertDraftJsToTipTap", () => {
             );
             const list = result.content?.[0];
             expect(list?.content).toHaveLength(2);
-            expect(list?.content?.[1].content?.[0].content).toEqual([{ type: "text", text: "b" }]);
+            expect(list?.content?.[1].content).toEqual([{ type: "paragraph", content: [{ type: "text", text: "b" }] }]);
+        });
+    });
+
+    describe("list nesting via depth", () => {
+        it("nests a deeper item inside the preceding list item", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
+                        makeBlock({ type: "unordered-list-item", text: "a.1", depth: 1 }),
+                        makeBlock({ type: "unordered-list-item", text: "b", depth: 0 }),
+                    ],
+                    entityMap: {},
+                },
+                { supports: [...defaultSupports] },
+            );
+            expect(result.content).toEqual([
+                {
+                    type: "bulletList",
+                    content: [
+                        {
+                            type: "listItem",
+                            content: [
+                                { type: "paragraph", content: [{ type: "text", text: "a" }] },
+                                {
+                                    type: "bulletList",
+                                    content: [{ type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "a.1" }] }] }],
+                                },
+                            ],
+                        },
+                        { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "b" }] }] },
+                    ],
+                },
+            ]);
+        });
+
+        it("groups consecutive items of the same depth into one sub-list", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
+                        makeBlock({ type: "unordered-list-item", text: "a.1", depth: 1 }),
+                        makeBlock({ type: "unordered-list-item", text: "a.2", depth: 1 }),
+                    ],
+                    entityMap: {},
+                },
+                { supports: [...defaultSupports] },
+            );
+            const subList = result.content?.[0].content?.[0].content?.[1];
+            expect(subList?.type).toBe("bulletList");
+            expect(subList?.content).toHaveLength(2);
+        });
+
+        it("supports multiple nesting levels", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
+                        makeBlock({ type: "unordered-list-item", text: "a.1", depth: 1 }),
+                        makeBlock({ type: "unordered-list-item", text: "a.1.1", depth: 2 }),
+                    ],
+                    entityMap: {},
+                },
+                { supports: [...defaultSupports] },
+            );
+            const level1 = result.content?.[0].content?.[0].content?.[1];
+            const level2 = level1?.content?.[0].content?.[1];
+            expect(level2?.type).toBe("bulletList");
+            expect(level2?.content?.[0].content?.[0].content).toEqual([{ type: "text", text: "a.1.1" }]);
+        });
+
+        it("closes multiple levels when returning to a shallower depth", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
+                        makeBlock({ type: "unordered-list-item", text: "a.1", depth: 1 }),
+                        makeBlock({ type: "unordered-list-item", text: "a.1.1", depth: 2 }),
+                        makeBlock({ type: "unordered-list-item", text: "b", depth: 0 }),
+                    ],
+                    entityMap: {},
+                },
+                { supports: [...defaultSupports] },
+            );
+            const list = result.content?.[0];
+            expect(list?.content).toHaveLength(2);
+            expect(list?.content?.[1].content).toEqual([{ type: "paragraph", content: [{ type: "text", text: "b" }] }]);
+        });
+
+        it("indents only one level at a time when depth jumps", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
+                        makeBlock({ type: "unordered-list-item", text: "a.1", depth: 3 }),
+                    ],
+                    entityMap: {},
+                },
+                { supports: [...defaultSupports] },
+            );
+            const subList = result.content?.[0].content?.[0].content?.[1];
+            expect(subList?.type).toBe("bulletList");
+            expect(subList?.content?.[0].content?.[0].content).toEqual([{ type: "text", text: "a.1" }]);
+        });
+
+        it("places a leading indented item on the top level", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "unordered-list-item", text: "a", depth: 2 })], entityMap: {} },
+                { supports: [...defaultSupports] },
+            );
+            expect(result.content).toEqual([
+                {
+                    type: "bulletList",
+                    content: [{ type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "a" }] }] }],
+                },
+            ]);
+        });
+
+        it("starts a new sub-list when the list type changes at the same depth", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
+                        makeBlock({ type: "unordered-list-item", text: "a.1", depth: 1 }),
+                        makeBlock({ type: "ordered-list-item", text: "a.2", depth: 1 }),
+                    ],
+                    entityMap: {},
+                },
+                { supports: [...defaultSupports] },
+            );
+            const parentItem = result.content?.[0].content?.[0];
+            expect(parentItem?.content?.map((node) => node.type)).toEqual(["paragraph", "bulletList", "orderedList"]);
+        });
+
+        it("nests an ordered sub-list inside an unordered list", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
+                        makeBlock({ type: "ordered-list-item", text: "a.1", depth: 1 }),
+                    ],
+                    entityMap: {},
+                },
+                { supports: [...defaultSupports] },
+            );
+            expect(result.content?.[0].type).toBe("bulletList");
+            expect(result.content?.[0].content?.[0].content?.[1].type).toBe("orderedList");
+        });
+
+        it("closes all levels when a non-list block follows a nested list", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
+                        makeBlock({ type: "unordered-list-item", text: "a.1", depth: 1 }),
+                        makeBlock({ type: "unstyled", text: "after" }),
+                    ],
+                    entityMap: {},
+                },
+                { supports: [...defaultSupports] },
+            );
+            expect(result.content).toHaveLength(2);
+            expect(result.content?.[0].type).toBe("bulletList");
+            expect(result.content?.[1]).toEqual({ type: "paragraph", content: [{ type: "text", text: "after" }] });
+        });
+
+        it("limits nesting to listLevelMax", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
+                        makeBlock({ type: "unordered-list-item", text: "a.1", depth: 1 }),
+                        makeBlock({ type: "unordered-list-item", text: "a.1.1", depth: 2 }),
+                    ],
+                    entityMap: {},
+                },
+                { supports: [...defaultSupports], listLevelMax: 2 },
+            );
+            const subList = result.content?.[0].content?.[0].content?.[1];
+            expect(subList?.content).toHaveLength(2);
+            expect(subList?.content?.[1].content).toEqual([{ type: "paragraph", content: [{ type: "text", text: "a.1.1" }] }]);
+        });
+
+        it("flattens all items when listLevelMax is 1", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
+                        makeBlock({ type: "unordered-list-item", text: "a.1", depth: 1 }),
+                    ],
+                    entityMap: {},
+                },
+                { supports: [...defaultSupports], listLevelMax: 1 },
+            );
+            expect(result.content?.[0].content).toHaveLength(2);
+            expect(result.content?.[0].content?.[1].content).toEqual([{ type: "paragraph", content: [{ type: "text", text: "a.1" }] }]);
         });
     });
 
@@ -289,13 +546,24 @@ describe("convertDraftJsToTipTap", () => {
             expect(segments?.[1].marks).toEqual([{ type: "subscript" }]);
         });
 
-        it("drops UNDERLINE silently", () => {
+        it("maps UNDERLINE to underline", () => {
             const result = convertDraftJsToTipTap(
                 {
                     blocks: [makeBlock({ type: "unstyled", text: "x", inlineStyleRanges: [{ style: "UNDERLINE", offset: 0, length: 1 }] })],
                     entityMap: {},
                 },
                 { supports: [...defaultSupports] },
+            );
+            expect(result.content?.[0].content?.[0].marks).toEqual([{ type: "underline" }]);
+        });
+
+        it("drops UNDERLINE when not in supports", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [makeBlock({ type: "unstyled", text: "x", inlineStyleRanges: [{ style: "UNDERLINE", offset: 0, length: 1 }] })],
+                    entityMap: {},
+                },
+                { supports: ["bold"] },
             );
             expect(result.content?.[0].content).toEqual([{ type: "text", text: "x" }]);
         });

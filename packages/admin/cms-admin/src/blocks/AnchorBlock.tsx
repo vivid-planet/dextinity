@@ -1,4 +1,4 @@
-import { Field, FinalFormInput } from "@comet/admin";
+import { Field, FinalFormInput } from "@dextinity/admin";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import type { AnchorBlockData, AnchorBlockInput } from "../blocks.generated";
@@ -14,7 +14,7 @@ const AnchorBlock: BlockInterface<AnchorBlockData, AnchorBlockData, AnchorBlockI
 
     name: "Anchor",
 
-    displayName: <FormattedMessage id="comet.blocks.anchor.displayName" defaultMessage="Anchor" />,
+    displayName: <FormattedMessage id="dextinity.blocks.anchor.displayName" defaultMessage="Anchor" />,
 
     category: BlockCategory.Navigation,
 
@@ -26,8 +26,8 @@ const AnchorBlock: BlockInterface<AnchorBlockData, AnchorBlockData, AnchorBlockI
                 <BlocksFinalForm<AnchorBlockData> onSubmit={updateState} initialValues={{ name }}>
                     <Field
                         name="name"
-                        label={<FormattedMessage id="comet.blocks.anchor.label" defaultMessage="Anchor" />}
-                        placeholder={intl.formatMessage({ id: "comet.blocks.anchor.placeholder", defaultMessage: "Name" })}
+                        label={<FormattedMessage id="dextinity.blocks.anchor.label" defaultMessage="Anchor" />}
+                        placeholder={intl.formatMessage({ id: "dextinity.blocks.anchor.placeholder", defaultMessage: "Name" })}
                         component={FinalFormInput}
                         fullWidth
                     />

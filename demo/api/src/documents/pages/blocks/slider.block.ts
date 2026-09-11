@@ -8,7 +8,7 @@ import {
     createBlock,
     createListBlock,
     ExtractBlockInput,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { MediaBlock } from "@src/common/blocks/media.block";
 import { RichTextBlock } from "@src/common/blocks/rich-text.block";
 

@@ -1,4 +1,4 @@
-import { gql } from "@comet/site-nextjs";
+import { gql } from "@dextinity/site-nextjs";
 
 export const fragment = gql`
     fragment NewsDetailPage on News {

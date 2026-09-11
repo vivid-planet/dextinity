@@ -1,8 +1,8 @@
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 
-import type { RichTextBlock, RichTextBlockState } from "../../createRichTextBlock";
 import type { TableBlockRowState, TableBlockState } from "../../createTableBlock";
+import type { BlockInterface } from "../../types";
 import { getNewColumn } from "./column";
 import { rteSchema } from "./rteSchema";
 
@@ -17,14 +17,14 @@ export const rowInsertSchema = z.object({
 
 export type RowInsertData = {
     highlighted: boolean;
-    cellValues: RichTextBlockState[];
+    cellValues: unknown[];
 };
 
 export const insertRowDataAtIndex = (
     state: TableBlockState,
     insertData: RowInsertData,
     index: number,
-    RichTextBlock: RichTextBlock,
+    RichTextBlock: BlockInterface,
     newRowId: string = uuid(),
 ): TableBlockState => {
     const updatedColumns = [...state.columns];
@@ -79,7 +79,7 @@ export const deleteRowById = (state: TableBlockState, rowIdToDelete: string): Ta
     };
 };
 
-export const getDuplicatedRowInsertData = (state: TableBlockState, rowId: string, RichTextBlock: RichTextBlock): RowInsertData | null => {
+export const getDuplicatedRowInsertData = (state: TableBlockState, rowId: string, RichTextBlock: BlockInterface): RowInsertData | null => {
     const row = state.rows.find(({ id }) => id === rowId);
     if (!row) {
         return null;
@@ -95,7 +95,7 @@ export const getDuplicatedRowInsertData = (state: TableBlockState, rowId: string
     };
 };
 
-export const getInsertDataFromRowById = (state: TableBlockState, rowId: string, RichTextBlock: RichTextBlock): RowInsertData | null => {
+export const getInsertDataFromRowById = (state: TableBlockState, rowId: string, RichTextBlock: BlockInterface): RowInsertData | null => {
     const row = state.rows.find(({ id }) => id === rowId);
     if (!row) {
         return null;

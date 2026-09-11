@@ -9,7 +9,10 @@ import { HtmlDivider } from "./HtmlDivider.js";
 export type MjmlDividerProps = DividerProps;
 
 /**
- * Themed divider for use inside an `MjmlColumn`.
+ * Themed divider.
+ *
+ * Must be placed within an `MjmlColumn`. For raw HTML context (e.g. inside `MjmlRaw`),
+ * use `HtmlDivider` instead.
  */
 export function MjmlDivider({ variant, height, backgroundColor, backgroundImage, className, style }: MjmlDividerProps): ReactNode {
     const theme = useOptionalTheme();
@@ -17,14 +20,18 @@ export function MjmlDivider({ variant, height, backgroundColor, backgroundImage,
 
     return (
         <MjmlRaw>
-            <HtmlDivider
-                variant={variant}
-                height={height}
-                backgroundColor={backgroundColor}
-                backgroundImage={backgroundImage}
-                className={clsx("mjmlDivider", activeVariant && `mjmlDivider--${activeVariant}`, className)}
-                style={style}
-            />
+            <tr>
+                <td style={{ padding: 0, fontSize: 0, lineHeight: 0, msoLineHeightRule: "exactly" }}>
+                    <HtmlDivider
+                        variant={variant}
+                        height={height}
+                        backgroundColor={backgroundColor}
+                        backgroundImage={backgroundImage}
+                        className={clsx("mjmlDivider", activeVariant && `mjmlDivider--${activeVariant}`, className)}
+                        style={style}
+                    />
+                </td>
+            </tr>
         </MjmlRaw>
     );
 }

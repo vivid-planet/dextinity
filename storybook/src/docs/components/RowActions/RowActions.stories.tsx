@@ -1,5 +1,5 @@
-import { RowActionsItem, RowActionsMenu } from "@comet/admin";
-import { Copy, Delete, Edit, Online, Paste, Settings } from "@comet/admin-icons";
+import { RowActionsItem, RowActionsMenu } from "@dextinity/admin";
+import { Copy, Delete, Edit, Online, Paste, Settings } from "@dextinity/admin-icons";
 import { Divider, Paper } from "@mui/material";
 import type { Meta } from "@storybook/react-vite";
 

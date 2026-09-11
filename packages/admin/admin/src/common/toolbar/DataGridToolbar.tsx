@@ -13,7 +13,7 @@ type OwnerState = {
 };
 
 export const DataGridToolbar = (inProps: DataGridToolbarProps) => {
-    const props = useThemeProps({ props: inProps, name: "CometAdminDataGridToolbar" });
+    const props = useThemeProps({ props: inProps, name: "DextinityAdminDataGridToolbar" });
     const apiRef = useGridApiContext();
     const gridDensity = apiRef.current.state.density;
 
@@ -55,17 +55,17 @@ const Root = createComponentSlot(Toolbar)<DataGridToolbarClassKey, OwnerState>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminDataGridToolbar: DataGridToolbarClassKey;
+        DextinityAdminDataGridToolbar: DataGridToolbarClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminDataGridToolbar: DataGridToolbarProps;
+        DextinityAdminDataGridToolbar: DataGridToolbarProps;
     }
 
     interface Components {
-        CometAdminDataGridToolbar?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminDataGridToolbar"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminDataGridToolbar"];
+        DextinityAdminDataGridToolbar?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminDataGridToolbar"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminDataGridToolbar"];
         };
     }
 }

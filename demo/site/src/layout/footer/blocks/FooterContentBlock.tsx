@@ -1,4 +1,4 @@
-import { type PropsWithData, withPreview } from "@comet/site-nextjs";
+import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { FooterContentBlockData } from "@src/blocks.generated";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";

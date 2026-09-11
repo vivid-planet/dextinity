@@ -6,7 +6,7 @@ import {
     createPersistedQueryGraphQLFetch,
     type GraphQLFetch,
     type SitePreviewData,
-} from "@comet/site-nextjs";
+} from "@dextinity/site-nextjs";
 
 import { getVisibilityParam } from "./ServerContext";
 

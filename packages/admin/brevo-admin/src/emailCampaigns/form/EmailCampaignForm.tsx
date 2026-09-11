@@ -11,8 +11,8 @@ import {
     useFormApiRef,
     useStackApi,
     useStackSwitchApi,
-} from "@comet/admin";
-import { ArrowLeft } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { ArrowLeft } from "@dextinity/admin-icons";
 import {
     BlockAdminComponentRoot,
     BlockAdminTabLabel,
@@ -31,7 +31,7 @@ import {
     useEditState,
     useFormSaveConflict,
     useSaveState,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import { isBefore } from "date-fns";
 import { useMemo } from "react";
@@ -236,7 +236,7 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
                     </IconButton>
                 </ToolbarItem>
                 <ToolbarTitleItem>
-                    <FormattedMessage id="cometBrevoModule.emailCampaigns.EmailCampaign" defaultMessage="Email Campaign" />
+                    <FormattedMessage id="dextinity.emailCampaigns.EmailCampaign" defaultMessage="Email Campaign" />
                 </ToolbarTitleItem>
                 <ToolbarFillSpace />
                 <ToolbarActions>{saveButton}</ToolbarActions>
@@ -248,7 +248,7 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
                             key: "config",
                             label: (
                                 <BlockAdminTabLabel>
-                                    <FormattedMessage id="cometBrevoModule.emailCampaigns.config" defaultMessage="Config" />
+                                    <FormattedMessage id="dextinity.emailCampaigns.config" defaultMessage="Config" />
                                 </BlockAdminTabLabel>
                             ),
                             content: (
@@ -267,7 +267,7 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
                             key: "blocks",
                             label: (
                                 <BlockAdminTabLabel>
-                                    <FormattedMessage id="cometBrevoModule.emailCampaigns.blocks" defaultMessage="Blocks" />
+                                    <FormattedMessage id="dextinity.emailCampaigns.blocks" defaultMessage="Blocks" />
                                 </BlockAdminTabLabel>
                             ),
                             content: (
@@ -287,7 +287,7 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
                             key: "send-manager",
                             label: (
                                 <BlockAdminTabLabel>
-                                    <FormattedMessage id="cometBrevoModule.emailCampaigns.sendManager" defaultMessage="Send manager" />
+                                    <FormattedMessage id="dextinity.emailCampaigns.sendManager" defaultMessage="Send manager" />
                                 </BlockAdminTabLabel>
                             ),
                             content: (

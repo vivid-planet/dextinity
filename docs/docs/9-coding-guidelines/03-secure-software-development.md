@@ -96,4 +96,4 @@ Security components should ideally be developed only once, well tested, maintain
 **Technical measures (examples):**
 
 - Use libraries or proven technologies.
-- Comet offers all necessary tools for authentication / authorization.
+- Dextinity offers all necessary tools for authentication / authorization.

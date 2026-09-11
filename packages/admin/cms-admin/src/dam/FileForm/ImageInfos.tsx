@@ -1,4 +1,4 @@
-import { FormSection, PrettyBytes, Table } from "@comet/admin";
+import { FormSection, PrettyBytes, Table } from "@dextinity/admin";
 import { Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { isDateString } from "class-validator";
@@ -38,7 +38,7 @@ export const ImageInfos = ({ imageInfos: { width, height, fileSize, fileFormat, 
         <>
             <FormSection
                 title={intl.formatMessage({
-                    id: "comet.dam.file.imageInfos",
+                    id: "dextinity.dam.file.imageInfos",
                     defaultMessage: "Image infos",
                 })}
             >
@@ -47,10 +47,10 @@ export const ImageInfos = ({ imageInfos: { width, height, fileSize, fileFormat, 
                     data={[
                         {
                             id: uuid(),
-                            label: intl.formatMessage({ id: "comet.dam.file.widthAndHeight", defaultMessage: "Width and Height" }),
+                            label: intl.formatMessage({ id: "dextinity.dam.file.widthAndHeight", defaultMessage: "Width and Height" }),
                             value: intl.formatMessage(
                                 {
-                                    id: "comet.dam.file.widthAndHeightValue",
+                                    id: "dextinity.dam.file.widthAndHeightValue",
                                     defaultMessage: "{width} x {height} px",
                                 },
                                 {
@@ -61,12 +61,12 @@ export const ImageInfos = ({ imageInfos: { width, height, fileSize, fileFormat, 
                         },
                         {
                             id: uuid(),
-                            label: intl.formatMessage({ id: "comet.dam.file.fileSize", defaultMessage: "File Size" }),
+                            label: intl.formatMessage({ id: "dextinity.dam.file.fileSize", defaultMessage: "File Size" }),
                             value: <PrettyBytes value={fileSize} />,
                         },
                         {
                             id: uuid(),
-                            label: intl.formatMessage({ id: "comet.dam.file.format", defaultMessage: "Format" }),
+                            label: intl.formatMessage({ id: "dextinity.dam.file.format", defaultMessage: "Format" }),
                             value: fileFormat,
                         },
                     ]}
@@ -90,7 +90,7 @@ export const ImageInfos = ({ imageInfos: { width, height, fileSize, fileFormat, 
             {exifRows !== undefined && (
                 <FormSection
                     title={intl.formatMessage({
-                        id: "comet.dam.file.embeddedMetaInfos",
+                        id: "dextinity.dam.file.embeddedMetaInfos",
                         defaultMessage: "Embedded meta infos",
                     })}
                 >

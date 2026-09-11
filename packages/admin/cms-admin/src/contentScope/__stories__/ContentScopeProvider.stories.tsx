@@ -1,4 +1,5 @@
-import { AppHeader, AppHeaderMenuButton, CometLogo, FillSpace, MainContent } from "@comet/admin";
+import { AppHeader, AppHeaderMenuButton, FillSpace, MainContent } from "@dextinity/admin";
+import { DextinityLogo } from "@dextinity/admin-icons";
 import { Typography } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -42,7 +43,7 @@ export const OptionalDimensions: Story = {
             <>
                 <AppHeader position="relative" headerHeight={60}>
                     <AppHeaderMenuButton />
-                    <CometLogo />
+                    <DextinityLogo variant="light" sx={{ fontSize: 34 }} />
                     <FillSpace />
                     <ContentScopeControls />
                 </AppHeader>

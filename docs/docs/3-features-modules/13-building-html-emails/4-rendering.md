@@ -5,8 +5,8 @@ title: Rendering
 In Storybook, the decorator handles MJML-to-HTML conversion automatically. When rendering the final HTML to send, use the `renderMailHtml` function:
 
 ```tsx title="src/emails/MyEmail.tsx"
-import { MjmlMailRoot, MjmlSection, MjmlColumn, MjmlText, createTheme } from "@comet/mail-react";
-import { renderMailHtml } from "@comet/mail-react/server";
+import { MjmlMailRoot, MjmlSection, MjmlColumn, MjmlText, createTheme } from "@dextinity/mail-react";
+import { renderMailHtml } from "@dextinity/mail-react/server";
 
 const theme = createTheme({
     /* your project theme */
@@ -47,7 +47,7 @@ If you are using the [Mail Templates Module](../12-mail-templates-module/index.m
 For browser-based rendering (e.g., admin preview panels), import from the `/client` sub-path instead:
 
 ```ts
-import { renderMailHtml } from "@comet/mail-react/client";
+import { renderMailHtml } from "@dextinity/mail-react/client";
 ```
 
 The API is identical. The only difference is the underlying MJML compiler: `/server` uses `mjml` (requires Node.js), while `/client` uses `mjml-browser` (works without `fs`).

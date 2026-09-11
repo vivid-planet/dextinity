@@ -1,6 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
-import { UndoSnackbar, useSnackbarApi } from "@comet/admin";
-import { ChevronDown } from "@comet/admin-icons";
+import { UndoSnackbar, useSnackbarApi } from "@dextinity/admin";
+import { ChevronDown } from "@dextinity/admin-icons";
 import { Chip, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import { type MouseEvent, useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -75,7 +75,7 @@ const PageVisibility = ({ page }: PageVisibilityProps) => {
             <UndoSnackbar
                 message={
                     <FormattedMessage
-                        id="comet.pagetree.pageVisibilityChanged"
+                        id="dextinity.pagetree.pageVisibilityChanged"
                         defaultMessage="{name} {visibility, select, visible {published} hidden {unpublished} archived {archived} other {unknown}}"
                         values={{
                             name: page.name,
@@ -101,7 +101,7 @@ const PageVisibility = ({ page }: PageVisibilityProps) => {
                 icon={<ChevronDown />}
                 label={
                     <FormattedMessage
-                        id="comet.pages.pages.page.visibility"
+                        id="dextinity.pages.pages.page.visibility"
                         defaultMessage="{visibility, select, visible {Published} hidden {Unpublished} archived {Archived} other {unknown}}"
                         values={{
                             visibility: page.visibility === "Published" ? "visible" : page.visibility === "Unpublished" ? "hidden" : "archived",
@@ -118,19 +118,19 @@ const PageVisibility = ({ page }: PageVisibilityProps) => {
                     <ListItemIcon>
                         <PageVisibilityIcon visibility="Published" disabled={page.visibility === "Published"} />
                     </ListItemIcon>
-                    <FormattedMessage id="comet.pages.pages.page.visibility.published" defaultMessage="Published" />
+                    <FormattedMessage id="dextinity.pages.pages.page.visibility.published" defaultMessage="Published" />
                 </MenuItem>
                 <MenuItem onClick={() => handleVisibilityClick("Unpublished")} disabled={page.visibility === "Unpublished" || page.slug === "home"}>
                     <ListItemIcon>
                         <PageVisibilityIcon visibility="Unpublished" disabled={page.visibility === "Unpublished" || page.slug === "home"} />
                     </ListItemIcon>
-                    <FormattedMessage id="comet.pages.pages.page.visibility.unpublished" defaultMessage="Unpublished" />
+                    <FormattedMessage id="dextinity.pages.pages.page.visibility.unpublished" defaultMessage="Unpublished" />
                 </MenuItem>
                 <MenuItem onClick={() => handleVisibilityClick("Archived")} disabled={page.visibility === "Archived" || page.slug === "home"}>
                     <ListItemIcon>
                         <PageVisibilityIcon visibility="Archived" disabled={page.visibility === "Archived" || page.slug === "home"} />
                     </ListItemIcon>
-                    <FormattedMessage id="comet.pages.pages.page.visibility.archived" defaultMessage="Archived" />
+                    <FormattedMessage id="dextinity.pages.pages.page.visibility.archived" defaultMessage="Archived" />
                 </MenuItem>
             </Menu>
         </>

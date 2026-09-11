@@ -1,4 +1,4 @@
-import { RadioChecked, RadioUnchecked } from "@comet/admin-icons";
+import { RadioChecked, RadioUnchecked } from "@dextinity/admin-icons";
 import { radioClasses, svgIconClasses } from "@mui/material";
 import type { Components } from "@mui/material/styles";
 

@@ -15,7 +15,7 @@ export type TimeRangePickerFieldProps = FieldProps<TimeRange, HTMLInputElement>;
  *
  * Use this component when working with Final Form. For standalone usage, use `TimeRangePicker` instead.
  *
- * - [Storybook](https://storybook.comet-dxp.com/?path=/docs/@comet/admin_components-datetime-timerangepickerfield--docs)
+ * - [Storybook](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/admin_components-datetime-timerangepickerfield--docs)
  */
 export const TimeRangePickerField = (props: TimeRangePickerFieldProps) => {
     return <Field component={FinalFormTimeRangePicker} {...props} />;

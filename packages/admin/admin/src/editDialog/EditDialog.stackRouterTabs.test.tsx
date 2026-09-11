@@ -1,4 +1,4 @@
-import { Add, Edit } from "@comet/admin-icons";
+import { Add, Edit } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { DataGrid, type GridSlotsComponent } from "@mui/x-data-grid";
 import { createMemoryHistory } from "history";

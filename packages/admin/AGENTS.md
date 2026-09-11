@@ -1,26 +1,26 @@
 # Admin Packages
 
-This directory contains all admin-related packages for the Comet framework.
+This directory contains all admin-related packages for the Dextinity framework.
 
 ## Packages
 
 | Package                     | Description                                                              |
 | --------------------------- | ------------------------------------------------------------------------ |
-| `@comet/admin`              | Core admin components and framework (React, MUI, Apollo, Final Form)     |
-| `@comet/admin-babel-preset` | Shared Babel preset for transpiling admin packages                       |
-| `@comet/admin-color-picker` | Color picker form field component                                        |
-| `@comet/admin-date-time`    | Date/time picker form field components                                   |
-| `@comet/admin-icons`        | SVG icon library as React components                                     |
-| `@comet/admin-rte`          | Rich text editor component (Draft.js-based)                              |
-| `@comet/admin-generator`    | CLI tool that generates admin CRUD UIs from GraphQL schemas              |
-| `@comet/cms-admin`          | Admin UI for CMS features (pages, blocks, content management)            |
-| `@comet/brevo-admin`        | Admin UI for Brevo email/marketing integration                           |
+| `@dextinity/admin`              | Core admin components and framework (React, MUI, Apollo, Final Form)     |
+| `@dextinity/admin-babel-preset` | Shared Babel preset for transpiling admin packages                       |
+| `@dextinity/admin-color-picker` | Color picker form field component                                        |
+| `@dextinity/admin-date-time`    | Date/time picker form field components                                   |
+| `@dextinity/admin-icons`        | SVG icon library as React components                                     |
+| `@dextinity/admin-rte`          | Rich text editor component (Draft.js-based)                              |
+| `@dextinity/admin-generator`    | CLI tool that generates admin CRUD UIs from GraphQL schemas              |
+| `@dextinity/cms-admin`          | Admin UI for CMS features (pages, blocks, content management)            |
+| `@dextinity/brevo-admin`        | Admin UI for Brevo email/marketing integration                           |
 
 ## Storybook
 
 There are two Storybook instances relevant to admin packages:
 
-### `@comet/admin` Storybook (package-level)
+### `@dextinity/admin` Storybook (package-level)
 
 Located in `admin/.storybook/`. Contains stories specific to the core admin package.
 
@@ -37,7 +37,7 @@ pnpm run build-storybook
 
 ### Root Storybook (repo-level)
 
-Located in `storybook/` at the repo root. Aggregates stories across multiple Comet packages and references the `@comet/admin` Storybook.
+Located in `storybook/` at the repo root. Aggregates stories across multiple Dextinity packages and references the `@dextinity/admin` Storybook.
 
 - Runs on port **26638**
 
@@ -54,10 +54,10 @@ All packages use **Vitest** as the test framework.
 
 | Package              | Test Environment | Setup File       |
 | -------------------- | ---------------- | ---------------- |
-| `@comet/admin`       | jsdom            | vitest.setup.ts  |
-| `@comet/admin-rte`   | jsdom            | —                |
-| `@comet/admin-generator` | node (default) | —            |
-| `@comet/cms-admin`   | jsdom            | vitest.setup.ts  |
+| `@dextinity/admin`       | jsdom            | vitest.setup.ts  |
+| `@dextinity/admin-rte`   | jsdom            | —                |
+| `@dextinity/admin-generator` | node (default) | —            |
+| `@dextinity/cms-admin`   | jsdom            | vitest.setup.ts  |
 
 The remaining packages (`admin-babel-preset`, `admin-color-picker`, `admin-date-time`, `admin-icons`, `brevo-admin`) do not have tests.
 
@@ -71,10 +71,10 @@ pnpm run test
 pnpm run test:watch
 
 # Run tests from the repo root
-pnpm --filter @comet/admin run test
-pnpm --filter @comet/admin-rte run test
-pnpm --filter @comet/admin-generator run test
-pnpm --filter @comet/cms-admin run test
+pnpm --filter @dextinity/admin run test
+pnpm --filter @dextinity/admin-rte run test
+pnpm --filter @dextinity/admin-generator run test
+pnpm --filter @dextinity/cms-admin run test
 
 # Update snapshots (admin-generator only)
 cd admin-generator && pnpm run test:updateSnapshot

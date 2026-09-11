@@ -1,5 +1,5 @@
 import { type ApolloClient, gql } from "@apollo/client";
-import { LocalErrorScopeApolloContext } from "@comet/admin";
+import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 import { format } from "date-fns";
 
 import type { GQLCreateInboxFolderMutation, GQLCreateInboxFolderMutationVariables } from "./createInboxFolder.generated";

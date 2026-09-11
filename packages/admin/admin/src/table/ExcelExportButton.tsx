@@ -47,7 +47,7 @@ export const ExcelExportButton = ({ onClick, children, exportApi, loadingCompone
             {children != null ? (
                 children
             ) : (
-                <FormattedMessage id="comet.table.excelExportButton" defaultMessage="Export" description="Export Button" />
+                <FormattedMessage id="dextinity.table.excelExportButton" defaultMessage="Export" description="Export Button" />
             )}
         </Button>
     );

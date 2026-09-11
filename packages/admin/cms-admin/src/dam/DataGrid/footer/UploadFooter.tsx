@@ -1,4 +1,4 @@
-import { Upload } from "@comet/admin-icons";
+import { Upload } from "@dextinity/admin-icons";
 import { Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
@@ -30,7 +30,7 @@ export const DamUploadFooter = ({ open, folderName }: DamFooterProps) => {
             <AlignTextAndImage>
                 <UploadIcon />
                 <FormattedMessage
-                    id="comet.dam.footer.dropFilesHereToUpload"
+                    id="dextinity.dam.footer.dropFilesHereToUpload"
                     defaultMessage="Drop files here to upload them to the folder: <strong>{folderName}</strong>"
                     values={{
                         strong: (chunks) => (

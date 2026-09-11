@@ -1,4 +1,4 @@
-import { Master } from "@comet/admin-icons";
+import { Master } from "@dextinity/admin-icons";
 import { Box, Card, CardContent } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useFormState } from "react-final-form";

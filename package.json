@@ -3,19 +3,19 @@
     "private": true,
     "repository": {
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet"
+        "url": "https://github.com/vivid-planet/dextinity"
     },
-    "description": "Comet Monorepo",
+    "description": "Dextinity Monorepo",
     "license": "BSD-2-Clause",
     "scripts": {
-        "create-site-configs-env": "dotenv -e .env.secrets -e .env.local -e .env -- pnpm exec comet inject-site-configs -f demo/site-configs/site-configs.ts -i demo/.env.site-configs.tpl -o demo/.env.site-configs --base64",
-        "build:storybook": "pnpm --recursive --filter '@comet/*admin*' --filter '@comet/eslint-plugin' --filter '@comet/cli' run build && pnpm --filter comet-storybook run build-storybook",
-        "build:packages": "pnpm --recursive --filter '@comet/*' run build",
-        "build:docs": "pnpm build:storybook && pnpm --recursive --filter '@comet/eslint-plugin' --filter '@comet/admin*' --filter '!@comet/admin-generator' --filter 'comet-docs' run build",
+        "create-site-configs-env": "dotenv -e .env.secrets -e .env.local -e .env -- pnpm exec dextinity inject-site-configs -f demo/site-configs/site-configs.ts -i demo/.env.site-configs.tpl -o demo/.env.site-configs --base64",
+        "build:storybook": "pnpm --recursive --filter '@dextinity/*admin*' --filter '@dextinity/eslint-plugin' --filter '@dextinity/cli' run build && pnpm --filter dextinity-storybook run build-storybook",
+        "build:packages": "pnpm --recursive --filter '@dextinity/*' run build",
+        "build:docs": "pnpm build:storybook && pnpm --recursive --filter '@dextinity/eslint-plugin' --filter '@dextinity/admin*' --filter '!@dextinity/admin-generator' --filter 'dextinity-docs' run build",
         "clean": "pnpm --recursive run clean",
         "copy-project-files": "node copy-project-files.js",
         "dev": "pnpm dev:admin && pnpm dev:cms && pnpm dev:mail-react && pnpm dev:brevo && pnpm dev:demo",
-        "dev:admin": "dev-pm start @comet-admin",
+        "dev:admin": "dev-pm start @dextinity-admin",
         "dev:cms": "dev-pm start @cms",
         "dev:cms:admin": "dev-pm start @cms-admin",
         "dev:cms:api": "dev-pm start @cms-api",
@@ -54,17 +54,17 @@
         "browser:demo:admin": "dotenv -- sh -c 'open-cli $ADMIN_URL'",
         "browser:demo:site": "dotenv -- sh -c 'open-cli http://localhost:$SITE_PORT'",
         "browser:demo:jaeger": "dotenv -- sh -c 'open-cli http://localhost:$JAEGER_UI_PORT'",
-        "setup:ci": "pnpm --filter '@comet/cli' --filter '@comet/eslint-plugin' run build && pnpm run create-site-configs-env && pnpm run copy-project-files",
-        "install-agent-features": "pnpm exec comet install-agent-features --config agent-features.json",
-        "setup:download-oauth2-proxy": "dotenv -- sh -c 'pnpm exec comet download-oauth2-proxy -v $OAUTH2_PROXY_VERSION'"
+        "setup:ci": "pnpm --filter '@dextinity/cli' --filter '@dextinity/eslint-plugin' run build && pnpm run create-site-configs-env && pnpm run copy-project-files",
+        "install-agent-features": "pnpm exec dextinity install-agent-features --config agent-features.json",
+        "setup:download-oauth2-proxy": "dotenv -- sh -c 'pnpm exec dextinity download-oauth2-proxy -v $OAUTH2_PROXY_VERSION'"
     },
     "devDependencies": {
-        "@changesets/cli": "^2.31.0",
-        "@comet/cli": "workspace:*",
-        "@comet/dev-oidc-provider": "^1.2.1",
-        "@comet/dev-process-manager": "^3.1.0",
+        "@changesets/cli": "^2.31.1",
+        "@dextinity/cli": "workspace:*",
         "@formatjs/cli": "^6.7.2",
-        "@types/node": "^24.12.4",
+        "@types/node": "^24.13.3",
+        "dev-oidc-provider": "^2.0.0",
+        "dev-process-manager": "^4.0.0",
         "dotenv-cli": "^9.0.0",
         "husky": "^9.1.7",
         "knip": "^5.88.1",
@@ -75,20 +75,9 @@
         "rimraf": "^6.1.2",
         "typescript": "^5.9.3"
     },
-    "packageManager": "pnpm@10.33.4",
+    "packageManager": "pnpm@11.21.0",
     "engines": {
         "node": "24",
-        "pnpm": "10.33.4"
-    },
-    "pnpm": {
-        "peerDependencyRules": {
-            "allowedVersions": {
-                "react-final-form>react": "19",
-                "react-final-form-arrays>react": "19"
-            }
-        },
-        "overrides": {
-            "@apollo/server-plugin-landing-page-graphql-playground>@apollo/server": "^5.1.0"
-        }
+        "pnpm": "11.21.0"
     }
 }

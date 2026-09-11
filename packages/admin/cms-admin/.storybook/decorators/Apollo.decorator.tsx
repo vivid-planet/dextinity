@@ -1,5 +1,5 @@
 import { ApolloClient, ApolloLink, ApolloProvider, createHttpLink, InMemoryCache } from "@apollo/client";
-import { createErrorDialogApolloLink } from "@comet/admin";
+import { createErrorDialogApolloLink } from "@dextinity/admin";
 import type { Decorator } from "@storybook/react-vite";
 
 const apolloClient = new ApolloClient({

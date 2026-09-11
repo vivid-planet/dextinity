@@ -1,4 +1,4 @@
-import { Button } from "@comet/admin";
+import { Button } from "@dextinity/admin";
 import { Collapse } from "@mui/material";
 import type { PropsWithChildren, ReactNode } from "react";
 

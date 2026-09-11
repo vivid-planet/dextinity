@@ -1,4 +1,4 @@
-import { Button, Stack, StackLink, StackPage, StackSwitch, TableDndOrder, TableLocalChanges } from "@comet/admin";
+import { Button, Stack, StackLink, StackPage, StackSwitch, TableDndOrder, TableLocalChanges } from "@dextinity/admin";
 import { Stack as MuiStack } from "@mui/material";
 
 import { dndProviderDecorator } from "../../dnd.decorator";
@@ -11,7 +11,7 @@ interface IRow {
 }
 
 export default {
-    title: "@comet/admin/table",
+    title: "@dextinity/admin/table",
     decorators: [storyRouterDecorator(), dndProviderDecorator()],
 };
 

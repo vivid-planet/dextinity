@@ -6,7 +6,7 @@ import { Tag } from "./Tag";
 export const ArchivedTag = () => {
     return (
         <StyledTag type="info">
-            <FormattedMessage id="comet.pages.dam.tag.archived" defaultMessage="Archived" />
+            <FormattedMessage id="dextinity.pages.dam.tag.archived" defaultMessage="Archived" />
         </StyledTag>
     );
 };

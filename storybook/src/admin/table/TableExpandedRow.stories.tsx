@@ -1,5 +1,5 @@
-import { type ITableHeadRowProps, type ITableRowProps, Table, TableBodyRow, TableColumns, TableHeadColumns } from "@comet/admin";
-import { AddNoCircle } from "@comet/admin-icons";
+import { type ITableHeadRowProps, type ITableRowProps, Table, TableBodyRow, TableColumns, TableHeadColumns } from "@dextinity/admin";
+import { AddNoCircle } from "@dextinity/admin-icons";
 import { IconButton, TableCell } from "@mui/material";
 import TableRow from "@mui/material/TableRow";
 import { useState } from "react";
@@ -46,7 +46,7 @@ function ExampleHeadTableRow<TRow extends IRow>(props: ITableHeadRowProps<TRow>)
 }
 
 export default {
-    title: "@comet/admin/table",
+    title: "@dextinity/admin/table",
 };
 
 export const ExpandedRow = () => {

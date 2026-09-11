@@ -1,4 +1,4 @@
-import { createSpaceBlock } from "@comet/cms-admin";
+import { createSpaceBlock } from "@dextinity/cms-admin";
 import type { SpaceBlockData } from "@src/blocks.generated";
 import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";

@@ -1,4 +1,4 @@
-import { Check } from "@comet/admin-icons";
+import { Check } from "@dextinity/admin-icons";
 import type { ComponentsOverrides } from "@mui/material";
 import { type Theme, useThemeProps } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
@@ -15,7 +15,7 @@ export function OkayButton(inProps: OkayButtonProps) {
         children = <FormattedMessage {...messages.ok} />,
         startIcon = <Check />,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminOkayButton" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminOkayButton" });
 
     return (
         <Root startIcon={startIcon} {...restProps}>
@@ -31,17 +31,17 @@ const Root = createComponentSlot(Button)<OkayButtonClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminOkayButton: OkayButtonClassKey;
+        DextinityAdminOkayButton: OkayButtonClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminOkayButton: OkayButtonProps;
+        DextinityAdminOkayButton: OkayButtonProps;
     }
 
     interface Components {
-        CometAdminOkayButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminOkayButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminOkayButton"];
+        DextinityAdminOkayButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminOkayButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminOkayButton"];
         };
     }
 }

@@ -1,4 +1,4 @@
-import { createListBlock } from "@comet/cms-api";
+import { createListBlock } from "@dextinity/cms-api";
 
 import { TeaserItemBlock } from "./teaser-item.block";
 

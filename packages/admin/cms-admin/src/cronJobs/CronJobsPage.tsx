@@ -1,4 +1,4 @@
-import { MainContent, Stack, StackPage, StackSwitch, StackToolbar, ToolbarAutomaticTitleItem, ToolbarBackButton } from "@comet/admin";
+import { MainContent, Stack, StackPage, StackSwitch, StackToolbar, ToolbarAutomaticTitleItem, ToolbarBackButton } from "@dextinity/admin";
 import { useIntl } from "react-intl";
 
 import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
@@ -10,7 +10,7 @@ export function CronJobsPage() {
     const intl = useIntl();
 
     return (
-        <Stack topLevelTitle={intl.formatMessage({ id: "comet.pages.cronJobs", defaultMessage: "Cron Jobs" })}>
+        <Stack topLevelTitle={intl.formatMessage({ id: "dextinity.pages.cronJobs", defaultMessage: "Cron Jobs" })}>
             <StackSwitch>
                 <StackPage name="grid">
                     <StackToolbar scopeIndicator={<ContentScopeIndicator global />} />

@@ -1,5 +1,5 @@
-import { SplitButton } from "@comet/admin";
-import { Home } from "@comet/admin-icons";
+import { SplitButton } from "@dextinity/admin";
+import { Home } from "@dextinity/admin-icons";
 // eslint-disable-next-line no-restricted-imports
 import { Button, Typography } from "@mui/material";
 import { useState } from "react";

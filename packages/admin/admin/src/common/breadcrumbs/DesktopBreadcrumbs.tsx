@@ -1,4 +1,4 @@
-import { ChevronRight } from "@comet/admin-icons";
+import { ChevronRight } from "@dextinity/admin-icons";
 import { Typography } from "@mui/material";
 import { type ReactNode, type Ref, useEffect, useRef, useState } from "react";
 

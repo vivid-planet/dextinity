@@ -8,8 +8,8 @@ import {
     StackLink,
     useDataGridUrlState,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Add as AddIcon, Edit as EditIcon } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Add as AddIcon, Edit as EditIcon } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { DataGridPro, type GridSlotsComponent } from "@mui/x-data-grid-pro";
 import { FormattedMessage, useIntl } from "react-intl";

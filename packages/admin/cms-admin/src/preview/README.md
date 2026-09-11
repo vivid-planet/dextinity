@@ -1,4 +1,4 @@
-Comet has two different previews:
+Dextinity has two different previews:
 
 ## Block Preview
 

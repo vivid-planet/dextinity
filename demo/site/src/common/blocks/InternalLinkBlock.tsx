@@ -1,5 +1,5 @@
 "use client";
-import type { PropsWithData } from "@comet/site-nextjs";
+import type { PropsWithData } from "@dextinity/site-nextjs";
 import type { InternalLinkBlockData } from "@src/blocks.generated";
 import type { GQLPageTreeNodeScope } from "@src/graphql.generated";
 import { createSitePath } from "@src/util/createSitePath";

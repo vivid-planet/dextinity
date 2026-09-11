@@ -1,4 +1,7 @@
-import { VideoPreviewImage as SiteReactVideoPreviewImage, type VideoPreviewImageProps as SiteReactVideoPreviewImageProps } from "@comet/site-react";
+import {
+    VideoPreviewImage as SiteReactVideoPreviewImage,
+    type VideoPreviewImageProps as SiteReactVideoPreviewImageProps,
+} from "@dextinity/site-react";
 
 import { PixelImageBlock } from "../PixelImageBlock";
 

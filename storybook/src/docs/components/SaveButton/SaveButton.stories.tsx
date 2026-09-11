@@ -1,4 +1,4 @@
-import { SaveButton } from "@comet/admin";
+import { SaveButton } from "@dextinity/admin";
 import { useState } from "react";
 
 export default {

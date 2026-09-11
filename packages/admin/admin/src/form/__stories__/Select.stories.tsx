@@ -1,4 +1,4 @@
-import { Account } from "@comet/admin-icons";
+import { Account } from "@dextinity/admin-icons";
 import { Box, Checkbox, InputAdornment, ListItemIcon, ListItemText, MenuItem } from "@mui/material";
 import { Form } from "react-final-form";
 

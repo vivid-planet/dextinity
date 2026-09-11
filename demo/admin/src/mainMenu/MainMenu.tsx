@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { Loading, Selected, Stack, StackPage, StackSwitch } from "@comet/admin";
+import { Loading, Selected, Stack, StackPage, StackSwitch } from "@dextinity/admin";
 import { useIntl } from "react-intl";
 
 import EditMainMenuItem, { editMainMenuItemFragment, type GQLEditMainMenuItemFragment } from "./components/EditMainMenuItem";

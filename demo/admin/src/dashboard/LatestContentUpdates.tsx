@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { LatestContentUpdatesDashboardWidget, useContentScope } from "@comet/cms-admin";
+import { LatestContentUpdatesDashboardWidget, useContentScope } from "@dextinity/cms-admin";
 import type { GQLLatestContentUpdatesQueryVariables } from "@src/dashboard/LatestContentUpdates.generated";
 import { categoryToUrlParam } from "@src/pageTree/pageTreeCategories";
 

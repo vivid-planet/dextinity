@@ -33,7 +33,7 @@ const getSharedStyles = (theme: Theme, headerHeight: number) => css`
     height: calc(100% - ${headerHeight}px);
     top: ${headerHeight}px;
 
-    .CometAdminMainNavigationItemGroup-root + .CometAdminMainNavigationItem-root {
+    .DextinityAdminMainNavigationItemGroup-root + .DextinityAdminMainNavigationItem-root {
         margin-top: ${theme.spacing(8)};
     }
 `;

@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { AutocompleteField, Table, TableFilterFinalForm, TableQuery, useTableQuery, useTableQueryFilter } from "@comet/admin";
+import { AutocompleteField, Table, TableFilterFinalForm, TableQuery, useTableQuery, useTableQueryFilter } from "@dextinity/admin";
 import { Grid } from "@mui/material";
 import * as qs from "qs";
 
@@ -57,7 +57,7 @@ interface IVariables {
 }
 
 export default {
-    title: "@comet/admin/table",
+    title: "@dextinity/admin/table",
     decorators: [apolloRestStoryDecorator()],
 };
 

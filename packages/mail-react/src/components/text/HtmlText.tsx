@@ -5,8 +5,8 @@ import { registerStyles } from "../../styles/registerStyles.js";
 import { getDefaultOrUndefined } from "../../theme/responsiveValue.js";
 import { useTheme } from "../../theme/ThemeProvider.js";
 import type { TextVariantStyles, Theme, VariantName } from "../../theme/themeTypes.js";
+import { generateResponsiveTextCss } from "./generateResponsiveTextCss.js";
 import { OutlookTextStyleProvider, type OutlookTextStyleValues } from "./OutlookTextStyleContext.js";
-import { generateResponsiveTextCss } from "./textStyles.js";
 
 interface HtmlTextOwnProps {
     /**
@@ -15,7 +15,7 @@ interface HtmlTextOwnProps {
      * Custom variants should be defined in the theme through module augmentation:
      *
      * ```ts
-     * declare module "@comet/mail-react" {
+     * declare module "@dextinity/mail-react" {
      *     interface TextVariants { heading: true; body: true }
      * }
      * ```
@@ -61,6 +61,8 @@ export type HtmlTextProps<E extends keyof JSX.IntrinsicElements = "td"> = HtmlTe
 
 /**
  * Themed text component for use inside MJML ending tags or outside of the MJML context.
+ * Inside `MjmlRaw` in an `MjmlColumn`, place `HtmlText` in a `<tr>` of its own,
+ * and in a `<td>` too when `element` is not the default `td`.
  */
 export function HtmlText<E extends keyof JSX.IntrinsicElements>(
     props: HtmlTextOwnProps & { element: E } & Omit<ComponentPropsWithoutRef<E>, keyof HtmlTextOwnProps | "element">,

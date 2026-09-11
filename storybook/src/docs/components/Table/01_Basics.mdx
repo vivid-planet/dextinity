@@ -13,22 +13,22 @@ import * as BasicsStories from "./01_Basics.stories";
 >
 > \- [MUI Docs](https://mui.com/components/tables/)
 
-The Comet Admin `Table` internally uses [Material UI's `Table` component](https://v4.mui.com/components/tables/) and its [associated components](https://v4.mui.com/components/tables/#api).
+The Dextinity Admin `Table` internally uses [Material UI's `Table` component](https://v4.mui.com/components/tables/) and its [associated components](https://v4.mui.com/components/tables/#api).
 It provides an additional layer of abstraction and adds common table functionalities like [sorting by column](?path=/docs/docs-components-table-sorting--docs) or [pagination](?path=/docs/docs-components-table-pagination--docs).
 
-In the following text, `Table` refers to the Comet Admin Table, while `MuiTable` refers to Material UI's Table.
+In the following text, `Table` refers to the Dextinity Admin Table, while `MuiTable` refers to Material UI's Table.
 
-## Differences between Comet Admin `Table` and `MuiTable`
+## Differences between Dextinity Admin `Table` and `MuiTable`
 
 `MuiTable` is very low-level.
 It's extremely flexible but requires more effort to define and configure.
 If you need common table functionalities like pagination or sorting, you have to implement them yourself from scratch.
 
-Comet Admin `Table` adds a layer of abstraction to `MuiTable`.
+Dextinity Admin `Table` adds a layer of abstraction to `MuiTable`.
 It allows you to define simple tables without writing any additional JSX and also has a lot of configuration options for more complex use cases.
 Additionally, it has common table functionalities built-in, as listed below:
 
-|                                                                                          | Material UI `Table` | Comet Admin `Table` |
+|                                                                                          | Material UI `Table` | Dextinity Admin `Table` |
 | ---------------------------------------------------------------------------------------- | ------------------- | ------------------- |
 | Layer of Abstraction                                                                     | low-level           | higher-level        |
 | [Managing GraphQL Queries](?path=/docs/docs-components-table-tablequery--docs)           | -                   | built-in            |
@@ -38,7 +38,7 @@ Additionally, it has common table functionalities built-in, as listed below:
 | [Excel Export](?path=/docs/docs-components-table-excel-export--docs)                     | -                   | built-in            |
 | [Ordering Rows via Drag and Drop](?path=/docs/docs-components-table-tabledndorder--docs) | -                   | built-in            |
 
-The following example shows the definition of a simple table with `MuiTable` and Comet Admin `Table`.
+The following example shows the definition of a simple table with `MuiTable` and Dextinity Admin `Table`.
 It demonstrates their different layers of abstraction.
 
 With `MuiTable`, you have to write a lot of JSX to define this simple table:
@@ -66,7 +66,7 @@ With `MuiTable`, you have to write a lot of JSX to define this simple table:
   `}
 />
 
-In Comet Admin `Table`, it's sufficient to provide an object containing column definitions:
+In Dextinity Admin `Table`, it's sufficient to provide an object containing column definitions:
 
 <Source
     language="tsx"
@@ -88,7 +88,7 @@ In Comet Admin `Table`, it's sufficient to provide an object containing column d
   `}
 />
 
-However, Comet Admin `Table` is not limited to simple tables.
+However, Dextinity Admin `Table` is not limited to simple tables.
 It has lots of configuration options to handle complex use cases.
 Keep reading to learn more.
 

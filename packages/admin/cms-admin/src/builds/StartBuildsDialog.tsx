@@ -1,5 +1,5 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { Alert, Button, CancelButton, LocalErrorScopeApolloContext } from "@comet/admin";
+import { Alert, Button, CancelButton, LocalErrorScopeApolloContext } from "@dextinity/admin";
 import {
     CircularProgress,
     // eslint-disable-next-line no-restricted-imports
@@ -58,12 +58,12 @@ export function StartBuildsDialog(props: StartBuildsDialogProps) {
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogTitle>
-                <FormattedMessage id="comet.pages.publisher.startBuildsDialog.header" defaultMessage="Start manual builds" />
+                <FormattedMessage id="dextinity.pages.publisher.startBuildsDialog.header" defaultMessage="Start manual builds" />
             </DialogTitle>
             <DialogContent>
                 <Alert severity="info">
                     <FormattedMessage
-                        id="comet.pages.publisher.startBuildsDialog.hint"
+                        id="dextinity.pages.publisher.startBuildsDialog.hint"
                         defaultMessage="Please use this function only in exceptional cases. The more builds you start, the longer it takes until they are completed. If you need to rebuild manually, select only the scopes required."
                     />
                 </Alert>
@@ -74,7 +74,7 @@ export function StartBuildsDialog(props: StartBuildsDialogProps) {
                         {
                             field: "name",
                             headerName: intl.formatMessage({
-                                id: "comet.pages.publisher.startBuildsDialog.buildTemplates.name",
+                                id: "dextinity.pages.publisher.startBuildsDialog.buildTemplates.name",
                                 defaultMessage: "Name",
                             }),
                             flex: 1,
@@ -105,7 +105,7 @@ export function StartBuildsDialog(props: StartBuildsDialogProps) {
                         onClose();
                     }}
                 >
-                    <FormattedMessage id="comet.pages.publisher.startBuildsDialog.button" defaultMessage="Start builds" />
+                    <FormattedMessage id="dextinity.pages.publisher.startBuildsDialog.button" defaultMessage="Start builds" />
                 </Button>
             </DialogActions>
         </Dialog>

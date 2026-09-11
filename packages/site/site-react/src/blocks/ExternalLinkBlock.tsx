@@ -27,7 +27,7 @@ export function ExternalLinkBlock({
             if (preview.previewType === "SitePreview") {
                 // send link to admin to handle external link
                 sendSitePreviewIFrameMessage({
-                    cometType: SitePreviewIFrameMessageType.OpenLink,
+                    dextinityType: SitePreviewIFrameMessageType.OpenLink,
                     data: { link: { openInNewWindow, targetUrl, noFollow } },
                 });
             }

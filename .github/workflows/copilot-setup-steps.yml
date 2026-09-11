@@ -31,135 +31,135 @@ jobs:
             - name: "Library: Clone translations"
               uses: actions/checkout@v6
               with:
-                  repository: vivid-planet/comet-lang
-                  path: "demo/admin/lang/comet-lang"
+                  repository: vivid-planet/dextinity-lang
+                  path: "demo/admin/lang/dextinity-lang"
 
             - name: "Demo Admin: Clone translations"
               uses: actions/checkout@v6
               with:
-                  repository: vivid-planet/comet-demo-lang
-                  path: "demo/admin/lang/comet-demo-lang"
+                  repository: vivid-planet/dextinity-demo-lang
+                  path: "demo/admin/lang/dextinity-demo-lang"
 
             - name: "Demo Site: Clone translations"
               uses: actions/checkout@v6
               with:
-                  repository: vivid-planet/comet-demo-lang
-                  path: "demo/site/lang/comet-demo-lang"
+                  repository: vivid-planet/dextinity-demo-lang
+                  path: "demo/site/lang/dextinity-demo-lang"
 
             - name: "Demo Api: Clone translations"
               uses: actions/checkout@v6
               with:
-                  repository: vivid-planet/comet-demo-lang
-                  path: "demo/api/lang/comet-demo-lang"
+                  repository: vivid-planet/dextinity-demo-lang
+                  path: "demo/api/lang/dextinity-demo-lang"
 
             # Cache build outputs per package (before pnpm install to avoid hashing node_modules)
             # Hash patterns target source and config files, explicitly excluding lib/ build output
-            - name: Cache @comet/cli build
+            - name: Cache @dextinity/cli build
               id: cache-cli
               uses: actions/cache@v4
               with:
                   path: packages/cli/lib
                   key: ${{ runner.os }}-build-cli-${{ hashFiles('packages/cli/src/**', 'packages/cli/bin/**', 'packages/cli/package.json', 'packages/cli/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @comet/eslint-plugin build
+            - name: Cache @dextinity/eslint-plugin build
               id: cache-eslint-plugin
               uses: actions/cache@v4
               with:
                   path: packages/eslint-plugin/lib
                   key: ${{ runner.os }}-build-eslint-plugin-${{ hashFiles('packages/eslint-plugin/src/**', 'packages/eslint-plugin/package.json', 'packages/eslint-plugin/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @comet/admin build
+            - name: Cache @dextinity/admin build
               id: cache-admin
               uses: actions/cache@v4
               with:
                   path: packages/admin/admin/lib
                   key: ${{ runner.os }}-build-admin-${{ hashFiles('packages/admin/admin/src/**', 'packages/admin/admin/package.json', 'packages/admin/admin/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @comet/admin-color-picker build
+            - name: Cache @dextinity/admin-color-picker build
               id: cache-admin-color-picker
               uses: actions/cache@v4
               with:
                   path: packages/admin/admin-color-picker/lib
                   key: ${{ runner.os }}-build-admin-color-picker-${{ hashFiles('packages/admin/admin-color-picker/src/**', 'packages/admin/admin-color-picker/package.json', 'packages/admin/admin-color-picker/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @comet/admin-date-time build
+            - name: Cache @dextinity/admin-date-time build
               id: cache-admin-date-time
               uses: actions/cache@v4
               with:
                   path: packages/admin/admin-date-time/lib
                   key: ${{ runner.os }}-build-admin-date-time-${{ hashFiles('packages/admin/admin-date-time/src/**', 'packages/admin/admin-date-time/package.json', 'packages/admin/admin-date-time/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @comet/admin-generator build
+            - name: Cache @dextinity/admin-generator build
               id: cache-admin-generator
               uses: actions/cache@v4
               with:
                   path: packages/admin/admin-generator/lib
                   key: ${{ runner.os }}-build-admin-generator-${{ hashFiles('packages/admin/admin-generator/src/**', 'packages/admin/admin-generator/bin/**', 'packages/admin/admin-generator/package.json', 'packages/admin/admin-generator/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @comet/admin-icons build
+            - name: Cache @dextinity/admin-icons build
               id: cache-admin-icons
               uses: actions/cache@v4
               with:
                   path: packages/admin/admin-icons/lib
                   key: ${{ runner.os }}-build-admin-icons-${{ hashFiles('packages/admin/admin-icons/src/**', 'packages/admin/admin-icons/icons/**', 'packages/admin/admin-icons/package.json', 'packages/admin/admin-icons/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @comet/admin-rte build
+            - name: Cache @dextinity/admin-rte build
               id: cache-admin-rte
               uses: actions/cache@v4
               with:
                   path: packages/admin/admin-rte/lib
                   key: ${{ runner.os }}-build-admin-rte-${{ hashFiles('packages/admin/admin-rte/src/**', 'packages/admin/admin-rte/package.json', 'packages/admin/admin-rte/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @comet/brevo-admin build
+            - name: Cache @dextinity/brevo-admin build
               id: cache-brevo-admin
               uses: actions/cache@v4
               with:
                   path: packages/admin/brevo-admin/lib
                   key: ${{ runner.os }}-build-brevo-admin-${{ hashFiles('packages/admin/brevo-admin/src/**', 'packages/admin/brevo-admin/package.json', 'packages/admin/brevo-admin/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @comet/cms-admin build
+            - name: Cache @dextinity/cms-admin build
               id: cache-cms-admin
               uses: actions/cache@v4
               with:
                   path: packages/admin/cms-admin/lib
                   key: ${{ runner.os }}-build-cms-admin-${{ hashFiles('packages/admin/cms-admin/src/**', 'packages/admin/cms-admin/package.json', 'packages/admin/cms-admin/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @comet/api-generator build
+            - name: Cache @dextinity/api-generator build
               id: cache-api-generator
               uses: actions/cache@v4
               with:
                   path: packages/api/api-generator/lib
                   key: ${{ runner.os }}-build-api-generator-${{ hashFiles('packages/api/api-generator/src/**', 'packages/api/api-generator/bin/**', 'packages/api/api-generator/package.json', 'packages/api/api-generator/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @comet/brevo-api build
+            - name: Cache @dextinity/brevo-api build
               id: cache-brevo-api
               uses: actions/cache@v4
               with:
                   path: packages/api/brevo-api/lib
                   key: ${{ runner.os }}-build-brevo-api-${{ hashFiles('packages/api/brevo-api/src/**', 'packages/api/brevo-api/package.json', 'packages/api/brevo-api/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @comet/cms-api build
+            - name: Cache @dextinity/cms-api build
               id: cache-cms-api
               uses: actions/cache@v4
               with:
                   path: packages/api/cms-api/lib
                   key: ${{ runner.os }}-build-cms-api-${{ hashFiles('packages/api/cms-api/src/**', 'packages/api/cms-api/package.json', 'packages/api/cms-api/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @comet/mail-react build
+            - name: Cache @dextinity/mail-react build
               id: cache-mail-react
               uses: actions/cache@v4
               with:
                   path: packages/mail-react/lib
                   key: ${{ runner.os }}-build-mail-react-${{ hashFiles('packages/mail-react/src/**', 'packages/mail-react/package.json', 'packages/mail-react/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @comet/site-nextjs build
+            - name: Cache @dextinity/site-nextjs build
               id: cache-site-nextjs
               uses: actions/cache@v4
               with:
                   path: packages/site/site-nextjs/lib
                   key: ${{ runner.os }}-build-site-nextjs-${{ hashFiles('packages/site/site-nextjs/src/**', 'packages/site/site-nextjs/package.json', 'packages/site/site-nextjs/tsconfig*.json', 'pnpm-lock.yaml') }}
 
-            - name: Cache @comet/site-react build
+            - name: Cache @dextinity/site-react build
               id: cache-site-react
               uses: actions/cache@v4
               with:
@@ -170,11 +170,11 @@ jobs:
               with:
                   setup-ci: "false"
 
-            - name: Build @comet/cli and @comet/eslint-plugin (if not cached)
+            - name: Build @dextinity/cli and @dextinity/eslint-plugin (if not cached)
               run: |
                   FILTERS=""
-                  [ "${{ steps.cache-cli.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/cli"
-                  [ "${{ steps.cache-eslint-plugin.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/eslint-plugin"
+                  [ "${{ steps.cache-cli.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/cli"
+                  [ "${{ steps.cache-eslint-plugin.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/eslint-plugin"
                   if [ -n "$FILTERS" ]; then
                       pnpm $FILTERS run build
                   fi
@@ -191,20 +191,20 @@ jobs:
             - name: Build packages (only uncached)
               run: |
                   FILTERS=""
-                  [ "${{ steps.cache-admin.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/admin"
-                  [ "${{ steps.cache-admin-color-picker.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/admin-color-picker"
-                  [ "${{ steps.cache-admin-date-time.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/admin-date-time"
-                  [ "${{ steps.cache-admin-generator.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/admin-generator"
-                  [ "${{ steps.cache-admin-icons.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/admin-icons"
-                  [ "${{ steps.cache-admin-rte.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/admin-rte"
-                  [ "${{ steps.cache-brevo-admin.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/brevo-admin"
-                  [ "${{ steps.cache-cms-admin.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/cms-admin"
-                  [ "${{ steps.cache-api-generator.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/api-generator"
-                  [ "${{ steps.cache-brevo-api.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/brevo-api"
-                  [ "${{ steps.cache-cms-api.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/cms-api"
-                  [ "${{ steps.cache-mail-react.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/mail-react"
-                  [ "${{ steps.cache-site-nextjs.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/site-nextjs"
-                  [ "${{ steps.cache-site-react.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @comet/site-react"
+                  [ "${{ steps.cache-admin.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin"
+                  [ "${{ steps.cache-admin-color-picker.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin-color-picker"
+                  [ "${{ steps.cache-admin-date-time.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin-date-time"
+                  [ "${{ steps.cache-admin-generator.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin-generator"
+                  [ "${{ steps.cache-admin-icons.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin-icons"
+                  [ "${{ steps.cache-admin-rte.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/admin-rte"
+                  [ "${{ steps.cache-brevo-admin.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/brevo-admin"
+                  [ "${{ steps.cache-cms-admin.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/cms-admin"
+                  [ "${{ steps.cache-api-generator.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/api-generator"
+                  [ "${{ steps.cache-brevo-api.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/brevo-api"
+                  [ "${{ steps.cache-cms-api.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/cms-api"
+                  [ "${{ steps.cache-mail-react.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/mail-react"
+                  [ "${{ steps.cache-site-nextjs.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/site-nextjs"
+                  [ "${{ steps.cache-site-react.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/site-react"
                   if [ -n "$FILTERS" ]; then
                       pnpm --recursive $FILTERS run build
                   fi

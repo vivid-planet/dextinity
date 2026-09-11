@@ -1,4 +1,4 @@
-import { useWindowSize } from "@comet/admin";
+import { useWindowSize } from "@dextinity/admin";
 import { Box } from "@mui/material";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 

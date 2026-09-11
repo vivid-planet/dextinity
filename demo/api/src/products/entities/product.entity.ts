@@ -10,7 +10,7 @@ import {
     RootBlock,
     RootBlockEntity,
     RootBlockType,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import {
     BaseEntity,
     Collection,

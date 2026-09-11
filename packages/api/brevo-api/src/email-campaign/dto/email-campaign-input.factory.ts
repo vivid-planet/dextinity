@@ -1,4 +1,4 @@
-import { Block, BlockInputInterface, isBlockInputInterface, IsNullable, IsUndefinable, RootBlockInputScalar } from "@comet/cms-api";
+import { Block, BlockInputInterface, isBlockInputInterface, IsNullable, IsUndefinable, RootBlockInputScalar } from "@dextinity/cms-api";
 import { Type } from "@nestjs/common";
 import { Field, ID, InputType, PartialType } from "@nestjs/graphql";
 import { Transform } from "class-transformer";

@@ -23,7 +23,7 @@ describe("server/renderMailHtml", () => {
     });
 
     it("includes the passed-in text content", () => {
-        const textContent = "Welcome to @comet/mail-react";
+        const textContent = "Welcome to @dextinity/mail-react";
 
         const { html } = renderMailHtml(
             <MjmlMailRoot>
@@ -83,7 +83,7 @@ describe("server/renderMailHtml", () => {
     });
 
     it("renders the head slot content inside <mj-head>", () => {
-        const titleText = "Welcome to Comet";
+        const titleText = "Welcome to Dextinity";
         const { html } = renderMailHtml(
             <MjmlMailRoot head={<MjmlTitle>{titleText}</MjmlTitle>}>
                 <MjmlSection>

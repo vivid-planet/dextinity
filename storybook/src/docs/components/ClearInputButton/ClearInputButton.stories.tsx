@@ -1,5 +1,5 @@
-import { ClearInputButton } from "@comet/admin";
-import { Cut } from "@comet/admin-icons";
+import { ClearInputButton } from "@dextinity/admin";
+import { Cut } from "@dextinity/admin-icons";
 import { Box, InputAdornment, InputBase, Typography } from "@mui/material";
 import { useState } from "react";
 

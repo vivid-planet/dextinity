@@ -10,8 +10,8 @@ import {
     messages,
     SaveBoundary,
     SaveBoundarySaveButton,
-} from "@comet/admin";
-import { Select } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Select } from "@dextinity/admin-icons";
 import {
     // eslint-disable-next-line no-restricted-imports
     Dialog,
@@ -80,13 +80,13 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
     const toolbarSlotProps: ToolbarProps = {
         toolbarAction: (
             <Button startIcon={<Select />} onClick={() => setOpen(true)} variant="primary">
-                <FormattedMessage id="comet.userPermissions.selectScopes" defaultMessage="Assign scopes" />
+                <FormattedMessage id="dextinity.userPermissions.selectScopes" defaultMessage="Assign scopes" />
             </Button>
         ),
     };
 
     return (
-        <FieldSet title={intl.formatMessage({ id: "comet.userPermissions.assignedScopes", defaultMessage: "Assigned Scopes" })} disablePadding>
+        <FieldSet title={intl.formatMessage({ id: "dextinity.userPermissions.assignedScopes", defaultMessage: "Assigned Scopes" })} disablePadding>
             <DataGrid
                 rows={data.userContentScopes}
                 columns={columns}
@@ -108,7 +108,7 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
             >
                 <Dialog open={open} maxWidth="lg">
                     <DialogTitle>
-                        <FormattedMessage id="comet.userScopes.dialog.title" defaultMessage="Select scopes" />
+                        <FormattedMessage id="dextinity.userScopes.dialog.title" defaultMessage="Select scopes" />
                     </DialogTitle>
                     <SelectScopesDialogContent
                         userId={userId}

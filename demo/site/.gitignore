@@ -47,7 +47,7 @@ public/robots.txt
 
 tsconfig.tsbuildinfo
 
-src/comet-config.json
+src/dextinity-config.json
 persisted-queries.json
 
 lang

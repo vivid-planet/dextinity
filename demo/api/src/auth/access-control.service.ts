@@ -1,4 +1,4 @@
-import { AbstractAccessControlService, ContentScopesForUser, Permission, PermissionsForUser, User, UserPermissions } from "@comet/cms-api";
+import { AbstractAccessControlService, ContentScopesForUser, Permission, PermissionsForUser, User, UserPermissions } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()

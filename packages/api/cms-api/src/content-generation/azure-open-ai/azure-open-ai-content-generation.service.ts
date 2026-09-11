@@ -45,7 +45,7 @@ export class AzureOpenAiContentGenerationService implements ContentGenerationSer
     }
 
     private async createClient(config: AzureOpenAiConfig): Promise<AzureOpenAI> {
-        // Imported lazily so importing @comet/cms-api doesn't pull the openai package into
+        // Imported lazily so importing @dextinity/cms-api doesn't pull the openai package into
         // memory unless the content-generation feature is actually used.
         const { AzureOpenAI } = await import("openai");
         return new AzureOpenAI({

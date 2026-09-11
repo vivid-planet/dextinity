@@ -339,6 +339,92 @@ The inline width compensation still needs to be neutralized so columns render at
 /* column rules identical to Responsive Stacking */
 ```
 
+## Breakpoint Content Switch
+
+Sometimes you cannot make both views from the same HTML, because the mobile view needs a different structure than the desktop view. Then put both layouts in the email and hide one of them.
+
+:::tip
+First try to make one layout that works at each width. Two layouts make twice as much markup, and columns already stack below `theme.breakpoints.mobile`.
+:::
+
+The switch has two parts:
+
+- The **default layout** is not hidden. It shows if the email client removes the `<style>` block, so make it the complete layout.
+- The **mobile layout** is hidden with inline styles. A media query then hides the default layout and shows the mobile layout.
+
+### The Pattern
+
+Make a component for each layout, and start it at its `MjmlSection`. Then the call site shows only the switch. Put the hiding styles on a `<div>` around the section: a section becomes a table, and `max-height` does not work on a table.
+
+```tsx
+<MailHeaderDefaultLayout className="mailHeader__defaultLayout" />
+
+<MjmlHtml html={`<div class="mailHeader__mobileLayout" style="display:none;max-height:0;overflow:hidden;font-size:0;line-height:0;">`} />
+<MailHeaderMobileLayout />
+<MjmlHtml html="</div>" />
+```
+
+Each of these properties stops a different email client:
+
+| Property                          | Client                                                        |
+| --------------------------------- | ------------------------------------------------------------- |
+| `display: none`                   | Apple Mail, modern webmail, and the new Outlook               |
+| `max-height: 0; overflow: hidden` | Yahoo Mail and old Gmail, which remove inline `display: none` |
+| `font-size: 0; line-height: 0`    | A client that still shows the text                            |
+| `mso-hide: all` on each element   | Classic Outlook on Windows                                    |
+
+### Hiding in Classic Outlook
+
+Classic Outlook shows both layouts if only the `<div>` has the hiding styles. Add `mso-hide: all` to each element in the mobile layout, and write it inline. `{ inline: true }` tells MJML to write the property into each `style` attribute.
+
+```ts
+registerStyles(
+    css`
+        .mailHeader__mobileLayout,
+        .mailHeader__mobileLayout * {
+            mso-hide: all;
+        }
+    `,
+    { inline: true },
+);
+```
+
+Write only `mso-hide: all` on those elements. `display: none` there breaks the tables, because the media query must then set `display` again on each `<tr>` and `<td>`.
+
+:::warning
+Do not use a conditional comment (`<!--[if !mso]>`) to hide a layout. MJML puts its own `[if mso]` comments around each section, and their `<![endif]-->` closes your comment too early. `MjmlConditionalComment` selects an email client, not a screen width.
+:::
+
+### Showing the Mobile Layout
+
+Put the media query in a second `registerStyles` call, because MJML cannot inline a media query.
+
+```ts
+registerStyles(
+    (theme) => css`
+        ${theme.breakpoints.default.belowMediaQuery} {
+            .mailHeader__defaultLayout {
+                display: none !important;
+            }
+
+            .mailHeader__mobileLayout {
+                display: block !important;
+                max-height: none !important;
+                overflow: visible !important;
+                font-size: inherit !important;
+                line-height: inherit !important;
+            }
+        }
+    `,
+);
+```
+
+:::warning
+The media query must cancel each hiding style. `display: block` with `max-height: 0` still shows nothing. `overflow: visible` is also necessary, because Yahoo Mail adds `overflow-x` and `overflow-y` if it finds `max-height`.
+:::
+
+Do not put the switch breakpoint below `theme.breakpoints.mobile`. The default layout then stacks its columns before the media query hides it. If you must, add `disableResponsiveBehavior` to its section. For `belowMediaQuery`, see [The `belowMediaQuery` Pattern](./5-customization.md#the-belowmediaquery-pattern).
+
 ## Grouping Sections with a Shared Background
 
 When multiple sections need to share a background — for example, a multi-row footer with its own color — wrap them in `MjmlWrapper`. The wrapper owns the background; inner `MjmlSection`s suppress their own theme-default `backgroundColor` so the wrapper's color shows through.

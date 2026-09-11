@@ -1,5 +1,5 @@
-import { StackPage, StackSwitch, StackSwitchApiContext, Tooltip } from "@comet/admin";
-import { Add, Copy, Delete, Invisible, Paste, Visible } from "@comet/admin-icons";
+import { StackPage, StackSwitch, StackSwitchApiContext, Tooltip } from "@dextinity/admin";
+import { Add, Copy, Delete, Invisible, Paste, Visible } from "@dextinity/admin-icons";
 import { Box, Checkbox, FormControlLabel, IconButton, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { FunctionComponent, ReactNode } from "react";
@@ -90,9 +90,9 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
     {
         name,
         block,
-        displayName = <FormattedMessage id="comet.blocks.listBlock.name" defaultMessage="List" />,
-        itemName = <FormattedMessage id="comet.blocks.listBlock.itemName" defaultMessage="block" />,
-        itemsName = <FormattedMessage id="comet.blocks.listBlock.itemsName" defaultMessage="blocks" />,
+        displayName = <FormattedMessage id="dextinity.blocks.listBlock.name" defaultMessage="List" />,
+        itemName = <FormattedMessage id="dextinity.blocks.listBlock.itemName" defaultMessage="block" />,
+        itemsName = <FormattedMessage id="dextinity.blocks.listBlock.itemsName" defaultMessage="blocks" />,
         minVisibleBlocks,
         maxVisibleBlocks,
         createDefaultListEntry,
@@ -307,7 +307,10 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                                                     />
                                                                 }
                                                                 label={
-                                                                    <FormattedMessage id="comet.blocks.list.selectAll" defaultMessage="Select all" />
+                                                                    <FormattedMessage
+                                                                        id="dextinity.blocks.list.selectAll"
+                                                                        defaultMessage="Select all"
+                                                                    />
                                                                 }
                                                             />
                                                         ) : (
@@ -370,13 +373,13 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                                                             title={
                                                                                 showMaxBlocksAllowedMessage ? (
                                                                                     <FormattedMessage
-                                                                                        id="comet.blocks.list.maxVisibleBlocks"
+                                                                                        id="dextinity.blocks.list.maxVisibleBlocks"
                                                                                         defaultMessage="Max. visible blocks allowed: {maxVisibleBlocks}"
                                                                                         values={{ maxVisibleBlocks }}
                                                                                     />
                                                                                 ) : showMinBlocksRequiredMessage ? (
                                                                                     <FormattedMessage
-                                                                                        id="comet.blocks.list.minVisibleBlocks"
+                                                                                        id="dextinity.blocks.list.minVisibleBlocks"
                                                                                         defaultMessage="Min. visible blocks required: {minVisibleBlocks}"
                                                                                         values={{ minVisibleBlocks }}
                                                                                     />
@@ -461,7 +464,7 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                                             <LargeAddButtonIcon />
                                                             <Typography>
                                                                 <FormattedMessage
-                                                                    id="comet.blocks.list.add"
+                                                                    id="dextinity.blocks.list.add"
                                                                     defaultMessage="Add {itemName}"
                                                                     values={{ itemName }}
                                                                 />
@@ -480,7 +483,7 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                                             startIcon={<Add />}
                                                         >
                                                             <FormattedMessage
-                                                                id="comet.blocks.list.add"
+                                                                id="dextinity.blocks.list.add"
                                                                 defaultMessage="Add {itemName}"
                                                                 values={{ itemName }}
                                                             />
@@ -518,7 +521,7 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                 return [
                     {
                         type: "text",
-                        content: <FormattedMessage id="comet.blocks.list.noBlocks" defaultMessage="No {itemsName}" values={{ itemsName }} />,
+                        content: <FormattedMessage id="dextinity.blocks.list.noBlocks" defaultMessage="No {itemsName}" values={{ itemsName }} />,
                     },
                 ];
             }

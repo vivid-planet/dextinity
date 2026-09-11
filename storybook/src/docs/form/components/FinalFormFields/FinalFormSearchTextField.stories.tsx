@@ -1,4 +1,4 @@
-import { Button, Field, FinalForm, FinalFormSearchTextField } from "@comet/admin";
+import { Button, Field, FinalForm, FinalFormSearchTextField } from "@dextinity/admin";
 
 export default {
     title: "Docs/Form/Components/FinalForm Fields/FinalForm Search Text Field",

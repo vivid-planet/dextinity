@@ -1,4 +1,4 @@
-import { Dashboard } from "@comet/admin-icons";
+import { Dashboard } from "@dextinity/admin-icons";
 import { useTheme } from "@mui/material";
 import type { Decorator } from "@storybook/react-vite";
 

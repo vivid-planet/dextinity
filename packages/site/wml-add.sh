@@ -8,8 +8,8 @@ if [ ! -d "$1" ]; then
     echo "error: $1 is not a directory";
     exit 1
 fi
-if [ ! -d "$1/node_modules/@comet" ]; then
-    echo "error: $1 must be a directory that contains node_modules/@comet";
+if [ ! -d "$1/node_modules/@dextinity" ]; then
+    echo "error: $1 must be a directory that contains node_modules/@dextinity";
     exit 1
 fi
 
@@ -21,7 +21,7 @@ custom_realpath() {
     fi
 }
 
-target=$(custom_realpath "$1/node_modules/@comet");
+target=$(custom_realpath "$1/node_modules/@dextinity");
 source=$(custom_realpath "$(dirname "$0")")
 echo $target
 echo $source

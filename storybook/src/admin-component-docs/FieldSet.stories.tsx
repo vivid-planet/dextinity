@@ -1,4 +1,4 @@
-import { FieldSet } from "@comet/admin";
+import { FieldSet } from "@dextinity/admin";
 import { Chip } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 

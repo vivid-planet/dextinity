@@ -14,8 +14,9 @@ export function useSitePreviewIFrameBridge(onReceiveMessage: (message: SitePrevi
             // Check if message is an iframe message from us -> there are more messaging from e.g webpack,etc.
             if (
                 message &&
-                Object.prototype.hasOwnProperty.call(message, "cometType") &&
-                (message.cometType == SitePreviewIFrameMessageType.OpenLink || message.cometType == SitePreviewIFrameMessageType.SitePreviewLocation)
+                Object.prototype.hasOwnProperty.call(message, "dextinityType") &&
+                (message.dextinityType == SitePreviewIFrameMessageType.OpenLink ||
+                    message.dextinityType == SitePreviewIFrameMessageType.SitePreviewLocation)
             ) {
                 onReceiveMessage(message as SitePreviewIFrameMessage);
             }

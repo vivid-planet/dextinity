@@ -1,4 +1,4 @@
-import { FinalForm, NumberField } from "@comet/admin";
+import { FinalForm, NumberField } from "@dextinity/admin";
 
 export default {
     title: "Docs/Form/Components/NumberField",

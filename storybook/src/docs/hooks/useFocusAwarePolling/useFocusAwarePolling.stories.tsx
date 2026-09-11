@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import { Button, useFocusAwarePolling } from "@comet/admin";
-import { Pause, Play } from "@comet/admin-icons";
+import { Button, useFocusAwarePolling } from "@dextinity/admin";
+import { Pause, Play } from "@dextinity/admin-icons";
 import { Typography } from "@mui/material";
 import { useState } from "react";
 

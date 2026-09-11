@@ -20,21 +20,21 @@ jobs:
 
             - uses: ./.github/actions/setup
 
-            - run: pnpm --recursive --filter '@comet/*admin*' --filter '@comet/mail-react' --filter '@comet/eslint-plugin' --filter '@comet/cli' run build
+            - run: pnpm --recursive --filter '@dextinity/*admin*' --filter '@dextinity/mail-react' --filter '@dextinity/eslint-plugin' --filter '@dextinity/cli' run build
 
-            - name: Publish comet-admin to Chromatic
+            - name: Publish dextinity-admin to Chromatic
               uses: chromaui/action@v1
               with:
                   projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_ADMIN }}
                   workingDir: packages/admin/admin
 
-            - name: Publish comet-cms-admin to Chromatic
+            - name: Publish dextinity-cms-admin to Chromatic
               uses: chromaui/action@v1
               with:
                   projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_CMS_ADMIN }}
                   workingDir: packages/admin/cms-admin
 
-            - name: Publish comet-mail-react to Chromatic
+            - name: Publish dextinity-mail-react to Chromatic
               uses: chromaui/action@v1
               with:
                   projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_MAIL_REACT }}

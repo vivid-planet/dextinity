@@ -1,4 +1,4 @@
-import { DamImageBlock } from "@comet/cms-api";
+import { DamImageBlock } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, Logger } from "@nestjs/common";
 import { faker } from "@src/db/fixtures/faker";

@@ -24,10 +24,13 @@ interface PGStatActivity {
 // Advisory lock key for block_index_dependencies refresh deduplication.
 const BLOCK_INDEX_REFRESH_LOCK_KEY = 4201;
 
+type RefreshBlockIndexViewsResult = "refreshed" | "skipped";
+
 @Injectable()
 export class DependenciesService {
     private connection: Connection;
     private readonly logger = new Logger(DependenciesService.name);
+    private runningRefresh?: Promise<RefreshBlockIndexViewsResult>;
 
     constructor(
         private readonly discoverService: DiscoverService,
@@ -87,25 +90,15 @@ export class DependenciesService {
                             indexObj->>'blockname'                                              "blockname",
                             indexObj->>'jsonPath'                                               "jsonPath",
                             indexObj->>'visible'                                                "blockVisible",
-                            COALESCE(ei_root."visible", true)                                   "entityVisible",
-                            ((indexObj->>'visible')::boolean AND COALESCE(ei_root."visible", true))  "visible",
                             targetTableData->>'entityName'                                      "targetEntityName",
                             targetTableData->>'graphqlObjectType'                               "targetGraphqlObjectType",
                             targetTableData->>'tableName'                                       "targetTableName",
                             targetTableData->>'primary'                                         "targetPrimaryKey",
-                            dependenciesObj->>'id'                                              "targetId",
-                            ei_root."name"                                                      "rootName",
-                            ei_root."secondaryInformation"                                      "rootSecondaryInformation",
-                            ei_target."name"                                                    "targetName",
-                            ei_target."secondaryInformation"                                    "targetSecondaryInformation"
+                            dependenciesObj->>'id'                                              "targetId"
                         FROM "${metadata.tableName}"
                         CROSS JOIN LATERAL json_array_elements("${metadata.tableName}"."${column}"->'index') indexObj
                         CROSS JOIN LATERAL json_array_elements(indexObj->'dependencies') dependenciesObj
-                        CROSS JOIN LATERAL json_extract_path('${JSON.stringify(targetEntitiesNameData)}', dependenciesObj->>'targetEntityName') targetTableData
-                        LEFT JOIN "EntityInfo" as ei_root ON ei_root."id" = "${metadata.tableName}"."${primary}"::text
-                            AND ei_root."entityName" = '${metadata.name}'
-                        LEFT JOIN "EntityInfo" as ei_target ON ei_target."id" = dependenciesObj->>'id'
-                            AND ei_target."entityName" = dependenciesObj->>'targetEntityName'`;
+                        CROSS JOIN LATERAL json_extract_path('${JSON.stringify(targetEntitiesNameData)}', dependenciesObj->>'targetEntityName') targetTableData`;
 
             indexSelects.push(select);
         }
@@ -115,7 +108,38 @@ export class DependenciesService {
             return;
         }
 
-        const viewSql = indexSelects.join("\n UNION ALL \n");
+        // Resolve the root and target entity's EntityInfo once over the union of all root blocks.
+        // Joining EntityInfo inside each root block's SELECT instead re-evaluates the EntityInfo
+        // view (a UNION over every entity, including a recursive DAM folder-path CTE) once per root
+        // block, which dominates the refresh cost on large datasets.
+        const viewSql = `SELECT
+                        blockIndex."rootId",
+                        blockIndex."rootEntityName",
+                        blockIndex."rootGraphqlObjectType",
+                        blockIndex."rootTableName",
+                        blockIndex."rootColumnName",
+                        blockIndex."rootPrimaryKey",
+                        blockIndex."blockname",
+                        blockIndex."jsonPath",
+                        blockIndex."blockVisible",
+                        COALESCE(ei_root."visible", true)                                            "entityVisible",
+                        ((blockIndex."blockVisible")::boolean AND COALESCE(ei_root."visible", true)) "visible",
+                        blockIndex."targetEntityName",
+                        blockIndex."targetGraphqlObjectType",
+                        blockIndex."targetTableName",
+                        blockIndex."targetPrimaryKey",
+                        blockIndex."targetId",
+                        ei_root."name"                                                              "rootName",
+                        ei_root."secondaryInformation"                                              "rootSecondaryInformation",
+                        ei_target."name"                                                            "targetName",
+                        ei_target."secondaryInformation"                                            "targetSecondaryInformation"
+                    FROM (
+                        ${indexSelects.join("\n UNION ALL \n")}
+                    ) blockIndex
+                    LEFT JOIN "EntityInfo" as ei_root ON ei_root."id" = blockIndex."rootId"::text
+                        AND ei_root."entityName" = blockIndex."rootEntityName"
+                    LEFT JOIN "EntityInfo" as ei_target ON ei_target."id" = blockIndex."targetId"
+                        AND ei_target."entityName" = blockIndex."targetEntityName"`;
 
         console.time("creating block dependency materialized view");
         await this.connection.execute(`DROP MATERIALIZED VIEW IF EXISTS block_index_dependencies`);
@@ -182,13 +206,13 @@ export class DependenciesService {
      * @param options.force - If true, cancels any running refresh and performs a full synchronous refresh
      * @param options.awaitRefresh - If true, waits for background concurrent refreshes to complete. Intended to be used by CLI commands.
      *
-     * @returns A promise that resolves when the refresh completes (or immediately if skipped or backgrounded)
+     * @returns `"refreshed"` if a refresh was performed (or triggered in the background), `"skipped"` if the views were fresh enough
      */
-    async refreshViews(options?: { force?: boolean; awaitRefresh?: boolean }): Promise<void> {
+    async refreshViews(options?: { force?: boolean; awaitRefresh?: boolean }): Promise<RefreshBlockIndexViewsResult> {
         const knex = this.entityManager.getKnex("write");
 
-        const refresh = async (refreshOptions?: { concurrently: boolean }): Promise<void> => {
-            await knex.transaction(async (trx) => {
+        const refresh = async (refreshOptions?: { concurrently: boolean }): Promise<RefreshBlockIndexViewsResult> => {
+            return knex.transaction(async (trx) => {
                 if (refreshOptions?.concurrently) {
                     // Non-blocking lock: Try to acquire the lock. Only acquire if available.
                     const lockResult = await trx.raw(`SELECT pg_try_advisory_xact_lock(?) AS locked`, [BLOCK_INDEX_REFRESH_LOCK_KEY]);
@@ -196,7 +220,7 @@ export class DependenciesService {
                     if (!lockResult.rows[0]?.locked) {
                         // If another refresh already holds the lock (= a refresh is already in
                         // progress), skip this refresh entirely
-                        return;
+                        return "skipped";
                     }
                 } else {
                     // Blocking lock: Wait until the lock is available (= the currently running
@@ -210,7 +234,7 @@ export class DependenciesService {
                     if (recentRefresh && new Date(recentRefresh.finishedAt) > subMinutes(new Date(), 5)) {
                         // A refresh was completed within the last 5 minutes, which is fresh enough.
                         // Skip this refresh.
-                        return;
+                        return "skipped";
                     }
                 }
 
@@ -224,6 +248,8 @@ export class DependenciesService {
                 await trx("BlockIndexRefresh").where({ id }).update({ finishedAt: new Date() });
 
                 this.logger.log(`Completed block index refresh ${id}`);
+
+                return "refreshed";
             });
         };
 
@@ -253,7 +279,7 @@ export class DependenciesService {
                 await trx("BlockIndexRefresh").insert({ id: uuid(), startedAt: new Date(), finishedAt: new Date() });
             });
 
-            return;
+            return "refreshed";
         }
 
         // Decide refresh strategy based on age of the last completed refresh
@@ -265,29 +291,37 @@ export class DependenciesService {
             .orderBy("finishedAt", "desc")
             .first();
 
-        if (!lastRefresh) {
-            // No prior refresh exists — first-time initialization, must refresh synchronously
-            await refresh();
-            return;
-        }
-
-        const finishedAt = new Date(lastRefresh.finishedAt);
         const now = new Date();
 
-        if (finishedAt > subMinutes(now, 5)) {
+        if (lastRefresh && new Date(lastRefresh.finishedAt) > subMinutes(now, 5)) {
             // Fresh enough (< 5 minutes) — skip refresh entirely
-            return;
-        } else if (finishedAt > subMinutes(now, 15)) {
-            // Moderately stale (5–15 minutes) — refresh concurrently in the background
-            const refreshPromise = refresh({ concurrently: true });
-            if (options?.awaitRefresh) {
-                // Caller wants to wait for the refresh to complete, even if it's concurrent. Only used by CLI command.
-                await refreshPromise;
-            }
-        } else {
-            // Very stale (> 15 minutes) — refresh synchronously, caller waits for fresh data
-            await refresh();
+            return "skipped";
         }
+
+        // Moderately stale (5–15 min): background concurrent refresh, caller doesn't wait.
+        // Very stale (> 15 min) or uninitialized: synchronous refresh, caller waits for fresh data.
+        const runRefreshInBackground = lastRefresh != null && new Date(lastRefresh.finishedAt) > subMinutes(now, 15);
+
+        // Deduplicate parallel refreshes within this instance (e.g. one per DAM "Usages" row): share a
+        // single in-flight refresh so they don't each open a transaction and pile up on the advisory lock.
+        if (!this.runningRefresh) {
+            const runningRefresh = refresh({ concurrently: runRefreshInBackground }).finally(() => {
+                this.runningRefresh = undefined;
+            });
+            this.runningRefresh = runningRefresh;
+            // A backgrounded refresh has no awaiter — log failures instead of leaving an unhandled rejection.
+            runningRefresh.catch((error) => {
+                this.logger.error(`Block index refresh failed: ${error instanceof Error ? error.message : error}`);
+            });
+        }
+
+        if (!runRefreshInBackground || options?.awaitRefresh) {
+            // Wait when synchronous (very stale/uninitialized) or when explicitly requested (CLI awaitRefresh).
+            return this.runningRefresh;
+        }
+
+        // Backgrounded refresh the caller doesn't wait for — the refresh has been triggered.
+        return "refreshed";
     }
 
     async getDependents(

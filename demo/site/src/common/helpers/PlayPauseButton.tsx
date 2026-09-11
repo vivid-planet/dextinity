@@ -1,4 +1,4 @@
-import type { PlayPauseButtonProps } from "@comet/site-nextjs";
+import type { PlayPauseButtonProps } from "@dextinity/site-nextjs";
 import clsx from "clsx";
 import { useIntl } from "react-intl";
 

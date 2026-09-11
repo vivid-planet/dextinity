@@ -1,5 +1,5 @@
-import { RowActionsItem } from "@comet/admin";
-import { Copy, Paste } from "@comet/admin-icons";
+import { RowActionsItem } from "@dextinity/admin";
+import { Copy, Paste } from "@dextinity/admin-icons";
 import { FormattedMessage } from "react-intl";
 
 import { subTreeFromNode, treeMapToArray } from "./treemap/TreeMapUtils";
@@ -27,7 +27,7 @@ export const CopyPasteMenuItem = ({ page }: Props) => {
                     await writeToClipboard(pagesClipboard);
                 }}
             >
-                <FormattedMessage id="comet.pages.pages.page.copy" defaultMessage="Copy" />
+                <FormattedMessage id="dextinity.pages.pages.page.copy" defaultMessage="Copy" />
             </RowActionsItem>
             <RowActionsItem
                 icon={<Paste />}
@@ -38,7 +38,7 @@ export const CopyPasteMenuItem = ({ page }: Props) => {
                     }
                 }}
             >
-                <FormattedMessage id="comet.pages.pages.page.paste" defaultMessage="Paste" />
+                <FormattedMessage id="dextinity.pages.pages.page.paste" defaultMessage="Paste" />
             </RowActionsItem>
         </>
     );

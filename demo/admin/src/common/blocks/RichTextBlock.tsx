@@ -1,4 +1,4 @@
-import { createRichTextBlock } from "@comet/cms-admin";
+import { createRichTextBlock } from "@dextinity/cms-admin";
 import { Typography } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 

@@ -1,4 +1,4 @@
-import { AnchorBlock, BaseBlocksBlockItemData, BaseBlocksBlockItemInput, BlockField, createBlocksBlock, DamImageBlock } from "@comet/cms-api";
+import { AnchorBlock, BaseBlocksBlockItemData, BaseBlocksBlockItemInput, BlockField, createBlocksBlock, DamImageBlock } from "@dextinity/cms-api";
 import { AccordionBlock } from "@src/common/blocks/accordion.block";
 import { ContactFormBlock } from "@src/common/blocks/contact-form.block";
 import { MediaGalleryBlock } from "@src/common/blocks/media-gallery.block";
@@ -11,6 +11,7 @@ import { StandaloneRichTextBlock } from "@src/common/blocks/standalone-rich-text
 import { TableBlock } from "@src/common/blocks/table.block";
 import { TextImageBlock } from "@src/common/blocks/text-image.block";
 import { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block";
+import { TipTapTableBlock } from "@src/common/blocks/tip-tap-table.block";
 import { BillboardTeaserBlock } from "@src/documents/pages/blocks/billboard-teaser.block";
 import { ColumnsBlock } from "@src/documents/pages/blocks/columns.block";
 import { ContentGroupBlock } from "@src/documents/pages/blocks/content-group.block";
@@ -49,6 +50,7 @@ const supportedBlocks = {
     textImage: TextImageBlock,
     fullWidthImage: FullWidthImageBlock,
     table: TableBlock,
+    tipTapTable: TipTapTableBlock,
     tipTapRichText: TipTapRichTextBlock,
     productList: ProductListBlock,
     pageTreeIndex: PageTreeIndexBlock,

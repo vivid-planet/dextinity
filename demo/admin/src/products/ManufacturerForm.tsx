@@ -12,8 +12,8 @@ import {
     TextField,
     useFormApiRef,
     useStackSwitchApi,
-} from "@comet/admin";
-import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { Collapse, Divider } from "@mui/material";
 import type { FormApi } from "final-form";
 import isEqual from "lodash.isequal";

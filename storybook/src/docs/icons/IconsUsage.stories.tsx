@@ -1,4 +1,4 @@
-import { Attachment, Cookie, Error, ThreeDotSaving } from "@comet/admin-icons";
+import { Attachment, Cookie, Error, ThreeDotSaving } from "@dextinity/admin-icons";
 import { Typography } from "@mui/material";
 
 export default {

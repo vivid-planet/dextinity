@@ -1,4 +1,4 @@
-import { BlockData, BlockInput, blockInputToData, createBlock } from "@comet/cms-api";
+import { BlockData, BlockInput, blockInputToData, createBlock } from "@dextinity/cms-api";
 
 class PageTreeIndexBlockData extends BlockData {}
 

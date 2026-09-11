@@ -14,8 +14,8 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
-import { ArrowRight, OpenNewTab, Reload, ThreeDotSaving } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { ArrowRight, OpenNewTab, Reload, ThreeDotSaving } from "@dextinity/admin-icons";
 import { Box, Chip, IconButton } from "@mui/material";
 import type { GridSlotsComponent, GridToolbarProps } from "@mui/x-data-grid";
 import { useMemo, useState } from "react";
@@ -64,7 +64,7 @@ function DependenciesListGridToolbar({ refetch }: DependenciesListGridToolbarPro
         <DataGridToolbar>
             <GridFilterButton />
             <FillSpace />
-            <Tooltip title={<FormattedMessage id="comet.dependencies.dataGrid.reloadTooltip" defaultMessage="Reload" />}>
+            <Tooltip title={<FormattedMessage id="dextinity.dependencies.dataGrid.reloadTooltip" defaultMessage="Reload" />}>
                 <IconButton
                     onClick={async () => {
                         setIsRefetching(true);
@@ -102,7 +102,7 @@ export const DependenciesList = ({ query, variables }: DependenciesListProps) =>
             queryParamsPrefix: "dependencies",
             pageSize,
             initialFilter: {
-                items: [{ field: "visible", operator: "is", value: "true" }],
+                items: [{ field: "visible", operator: "is", value: true }],
             },
         }),
         ...usePersistentColumnState("DependenciesList"),
@@ -112,7 +112,7 @@ export const DependenciesList = ({ query, variables }: DependenciesListProps) =>
         () => [
             {
                 field: "name",
-                headerName: intl.formatMessage({ id: "comet.dependencies.dataGrid.nameAndInfo", defaultMessage: "Name/Info" }),
+                headerName: intl.formatMessage({ id: "dextinity.dependencies.dataGrid.nameAndInfo", defaultMessage: "Name/Info" }),
                 flex: 1,
                 sortBy: "name",
                 renderCell: ({ row }) => (
@@ -121,13 +121,16 @@ export const DependenciesList = ({ query, variables }: DependenciesListProps) =>
             },
             {
                 field: "secondaryInformation",
-                headerName: intl.formatMessage({ id: "comet.dependencies.dataGrid.secondaryInformation", defaultMessage: "Secondary information" }),
+                headerName: intl.formatMessage({
+                    id: "dextinity.dependencies.dataGrid.secondaryInformation",
+                    defaultMessage: "Secondary information",
+                }),
                 sortBy: "secondaryInformation",
                 visible: false,
             },
             {
                 field: "targetGraphqlObjectType",
-                headerName: intl.formatMessage({ id: "comet.dependencies.dataGrid.type", defaultMessage: "Type" }),
+                headerName: intl.formatMessage({ id: "dextinity.dependencies.dataGrid.type", defaultMessage: "Type" }),
                 type: "singleSelect",
                 sortBy: "graphqlObjectType",
                 valueOptions: Object.entries(entityDependencyMap).map(([value, dep]) => ({
@@ -140,7 +143,7 @@ export const DependenciesList = ({ query, variables }: DependenciesListProps) =>
             },
             {
                 field: "visible",
-                headerName: intl.formatMessage({ id: "comet.dependencies.dataGrid.visible", defaultMessage: "Visible" }),
+                headerName: intl.formatMessage({ id: "dextinity.dependencies.dataGrid.visible", defaultMessage: "Visible" }),
                 type: "boolean",
                 visible: false,
                 sortBy: "visible",
@@ -160,7 +163,7 @@ export const DependenciesList = ({ query, variables }: DependenciesListProps) =>
                                 `Cannot load URL because no implementation of DependencyInterface for ${row.targetGraphqlObjectType} was provided via the DependenciesConfig`,
                             );
                         }
-                        return <FormattedMessage id="comet.dependencies.dataGrid.cannotLoadUrl" defaultMessage="Cannot determine URL" />;
+                        return <FormattedMessage id="dextinity.dependencies.dataGrid.cannotLoadUrl" defaultMessage="Cannot determine URL" />;
                     }
 
                     const loadUrl = async () => {
@@ -246,11 +249,11 @@ export const DependenciesList = ({ query, variables }: DependenciesListProps) =>
                 showToolbar
             />
             <Alert
-                title={<FormattedMessage id="comet.dependencies.dependencies.info.title" defaultMessage="What are dependencies?" />}
+                title={<FormattedMessage id="dextinity.dependencies.dependencies.info.title" defaultMessage="What are dependencies?" />}
                 sx={{ marginTop: 4 }}
             >
                 <FormattedMessage
-                    id="comet.dependencies.dependencies.info.content"
+                    id="dextinity.dependencies.dependencies.info.content"
                     defaultMessage="Dependencies are all items that this content references or uses — such as linked pages, embedded files, or other content. Use this list to review what this item depends on."
                 />
             </Alert>

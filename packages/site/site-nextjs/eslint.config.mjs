@@ -1,5 +1,5 @@
 import { defineConfig, globalIgnores } from "eslint/config";
-import eslintConfigNextJs from "@comet/eslint-config/future/nextjs.js";
+import eslintConfigNextJs from "@dextinity/eslint-config/future/nextjs.js";
 
 export default defineConfig([
     globalIgnores(["src/*.generated.ts", "lib/**", "**/*.generated.ts", "block-meta.json"]),
@@ -7,7 +7,7 @@ export default defineConfig([
     {
         rules: {
             "@next/next/no-html-link-for-pages": "off", // disabled because lib has no pages dir
-            "@comet/no-other-module-relative-import": "off",
+            "@dextinity/no-other-module-relative-import": "off",
         },
     },
     {

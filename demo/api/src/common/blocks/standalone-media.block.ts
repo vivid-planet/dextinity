@@ -8,7 +8,7 @@ import {
     ChildBlockInput,
     createBlock,
     ExtractBlockInput,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { MediaBlock } from "@src/common/blocks/media.block";
 import { MediaAspectRatios } from "@src/util/mediaAspectRatios";
 import { IsEnum } from "class-validator";

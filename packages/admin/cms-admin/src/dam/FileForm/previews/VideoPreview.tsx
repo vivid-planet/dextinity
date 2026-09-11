@@ -57,7 +57,7 @@ export const VideoPreview = ({ file }: VideoPreviewProps) => {
                         return <track key={caption.id} src={caption.alternative.fileUrl} kind="captions" srcLang={caption.language} />;
                     })}
                 <FormattedMessage
-                    id="comet.dam.file.unsupportedVideoTag"
+                    id="dextinity.dam.file.unsupportedVideoTag"
                     defaultMessage="Your browser does not support the video element. Please use another browser."
                 />
             </StyledVideo>

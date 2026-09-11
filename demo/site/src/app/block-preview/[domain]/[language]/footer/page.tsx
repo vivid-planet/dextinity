@@ -1,6 +1,6 @@
 "use client";
 
-import { createFetchInMemoryCache, useIFrameBridge } from "@comet/site-nextjs";
+import { createFetchInMemoryCache, useIFrameBridge } from "@dextinity/site-nextjs";
 import type { FooterContentBlockData } from "@src/blocks.generated";
 import { FooterContentBlock } from "@src/layout/footer/blocks/FooterContentBlock";
 import type { ContentScope } from "@src/site-configs";

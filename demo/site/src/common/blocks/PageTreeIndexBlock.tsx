@@ -1,4 +1,4 @@
-import { type PropsWithData, withPreview } from "@comet/site-nextjs";
+import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { PageTreeIndexBlockData } from "@src/blocks.generated";
 import { PageLayout } from "@src/layout/PageLayout";
 import { createSitePath } from "@src/util/createSitePath";

@@ -6,7 +6,7 @@ import {
     DamVideoBlock,
     VimeoVideoBlock,
     YouTubeVideoBlock,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 import { FormattedMessage } from "react-intl";
 
 export const MediaBlock: BlockInterface = createOneOfBlock({

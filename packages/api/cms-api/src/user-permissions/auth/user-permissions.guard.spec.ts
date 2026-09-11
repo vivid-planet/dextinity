@@ -4,7 +4,7 @@ import { ExecutionContext } from "@nestjs/common";
 import { ModuleRef, Reflector } from "@nestjs/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { DISABLE_COMET_GUARDS_METADATA_KEY } from "../../auth/decorators/disable-comet-guards.decorator";
+import { DISABLE_DEXTINITY_GUARDS_METADATA_KEY } from "../../auth/decorators/disable-dextinity-guards.decorator";
 import { AbstractAccessControlService } from "../access-control.service";
 import { ContentScopeService } from "../content-scope.service";
 import { AFFECTED_ENTITY_METADATA_KEY, AffectedEntityMeta } from "../decorators/affected-entity.decorator";
@@ -42,7 +42,7 @@ describe("UserPermissionsGuard", () => {
         requiredPermission?: RequiredPermissionMetadata;
         affectedEntities?: AffectedEntityMeta[];
         scopedEntity?: ScopedEntityMeta<TestEntity>;
-        disableCometGuards?: boolean;
+        disableDextinityGuards?: boolean;
         affectedScope?: AffectedScopeMeta;
     }) => {
         reflector.getAllAndOverride = vi.fn().mockImplementation((decorator: string) => {
@@ -55,8 +55,8 @@ describe("UserPermissionsGuard", () => {
             if (decorator === SCOPED_ENTITY_METADATA_KEY) {
                 return annotations.scopedEntity;
             }
-            if (decorator === DISABLE_COMET_GUARDS_METADATA_KEY) {
-                return annotations.disableCometGuards;
+            if (decorator === DISABLE_DEXTINITY_GUARDS_METADATA_KEY) {
+                return annotations.disableDextinityGuards;
             }
             if (decorator === AFFECTED_SCOPE_METADATA_KEY) {
                 return annotations.affectedScope;
@@ -72,7 +72,7 @@ describe("UserPermissionsGuard", () => {
                         ? ({
                               id: "1",
                               name: "Admin",
-                              email: "demo@comet-dxp.com",
+                              email: "demo@dextinity.com",
                               permissions: options.userPermissions,
                           } satisfies CurrentUser)
                         : undefined,
@@ -105,7 +105,7 @@ describe("UserPermissionsGuard", () => {
 
     it("allows bypassing", async () => {
         mockAnnotations({
-            disableCometGuards: true,
+            disableDextinityGuards: true,
         });
         expect(await guard.canActivate(mockContext())).toBe(true);
     });

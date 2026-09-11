@@ -19,7 +19,7 @@ export type DateTimeRangePickerFieldProps = FieldProps<DateTimeRange, HTMLInputE
  *
  * Use this component when working with Final Form. For standalone usage, use `DateTimeRangePicker` instead.
  *
- * - [Storybook](https://storybook.comet-dxp.com/?path=/docs/@comet/admin_components-datetime-datetimerangepickerfield--docs)
+ * - [Storybook](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/admin_components-datetime-datetimerangepickerfield--docs)
  */
 export const DateTimeRangePickerField = (props: DateTimeRangePickerFieldProps) => {
     return <Field component={FinalFormDateTimeRangePicker} {...props} />;

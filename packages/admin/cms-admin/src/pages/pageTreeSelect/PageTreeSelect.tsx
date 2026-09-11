@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { Link } from "@comet/admin-icons";
+import { Link } from "@dextinity/admin-icons";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 
@@ -51,7 +51,7 @@ export function PageTreeSelect({ value, onChange }: PageTreeSelectProps) {
                 <BlockAdminComponentNestedButton onClick={handleButtonClick} displayName={value.name} preview={value.path} />
             ) : (
                 <BlockAdminComponentButton onClick={handleButtonClick} size="large" startIcon={<Link />} disabled={loading}>
-                    <FormattedMessage id="comet.pages.pageTreeSelect.label" defaultMessage="Select Page" />
+                    <FormattedMessage id="dextinity.pages.pageTreeSelect.label" defaultMessage="Select Page" />
                 </BlockAdminComponentButton>
             )}
 

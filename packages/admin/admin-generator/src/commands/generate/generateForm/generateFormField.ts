@@ -197,7 +197,7 @@ export function generateFormField({
     } else if (config.type == "date") {
         imports.push({
             name: "DatePickerField",
-            importPath: "@comet/admin",
+            importPath: "@dextinity/admin",
         });
         code = `
             <DatePickerField
@@ -227,7 +227,7 @@ export function generateFormField({
     } else if (config.type == "dateTime") {
         imports.push({
             name: "DateTimePickerField",
-            importPath: "@comet/admin",
+            importPath: "@dextinity/admin",
         });
         code = `<DateTimePickerField
                 ${required ? "required" : ""}
@@ -369,7 +369,7 @@ export function generateFormField({
         } else {
             imports.push({
                 name: "SelectField",
-                importPath: "@comet/admin",
+                importPath: "@dextinity/admin",
             });
             code = `<SelectField
                             ${required ? "required" : ""}

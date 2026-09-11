@@ -1,7 +1,7 @@
 import { FormattedDate, FormattedTime } from "react-intl";
 
 export default {
-    title: "@comet/admin/react-intl",
+    title: "@dextinity/admin/react-intl",
 };
 
 export const FormatLocalized = {

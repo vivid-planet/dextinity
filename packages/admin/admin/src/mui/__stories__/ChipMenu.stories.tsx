@@ -1,4 +1,4 @@
-import { ChevronDown, Cookie, Domain, Favorite } from "@comet/admin-icons";
+import { ChevronDown, Cookie, Domain, Favorite } from "@dextinity/admin-icons";
 import { Box, Card, CardContent, Chip, ListItemIcon, ListItemText, Menu, MenuItem, Stack, Typography } from "@mui/material";
 import { type MouseEvent, useState } from "react";
 

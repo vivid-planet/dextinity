@@ -1,17 +1,8 @@
 import { cloneElement, isValidElement, type ReactNode } from "react";
 
-export interface TipTapMark {
-    type: string;
-    attrs?: Record<string, unknown>;
-}
+import type { TipTapMark, TipTapNode } from "../../blocks.generated";
 
-export interface TipTapNode {
-    type: string;
-    attrs?: Record<string, unknown>;
-    content?: TipTapNode[];
-    marks?: TipTapMark[];
-    text?: string;
-}
+export type { TipTapMark, TipTapNode };
 
 export interface TipTapNodeHandlerProps {
     node: TipTapNode;
@@ -55,6 +46,7 @@ const defaultTipTapNodeMapping: Record<string, TipTapNodeHandler> = {
 const defaultTipTapMarkMapping: Record<string, TipTapMarkHandler> = {
     bold: ({ children }) => <strong>{children}</strong>,
     italic: ({ children }) => <em>{children}</em>,
+    underline: ({ children }) => <u>{children}</u>,
     strike: ({ children }) => <s>{children}</s>,
     superscript: ({ children }) => <sup>{children}</sup>,
     subscript: ({ children }) => <sub>{children}</sub>,

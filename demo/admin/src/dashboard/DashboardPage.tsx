@@ -1,11 +1,11 @@
-import { MainContent, Stack, Toolbar } from "@comet/admin";
+import { MainContent, Stack, Toolbar } from "@dextinity/admin";
 import {
     ContentScopeIndicator,
     DashboardHeader,
     LatestBuildsDashboardWidget,
     LatestWarningsDashboardWidget,
     useUserPermissionCheck,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 import { Grid } from "@mui/material";
 import { useIntl } from "react-intl";
 

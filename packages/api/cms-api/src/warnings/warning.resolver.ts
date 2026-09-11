@@ -1,11 +1,11 @@
 import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, FindOptions } from "@mikro-orm/postgresql";
+import { EntityManager, EntityRepository, raw } from "@mikro-orm/postgresql";
 import { UnauthorizedException } from "@nestjs/common";
 import { Args, ID, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import isEqual from "lodash.isequal";
 
 import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
-import { gqlArgsToMikroOrmQuery } from "../common/filter/mikro-orm";
+import { gqlArgsToMikroOrmQuery, splitSearchString } from "../common/filter/mikro-orm";
 import { EntityInfoObject } from "../entity-info/entity-info.object";
 import { EntityInfoService } from "../entity-info/entity-info.service";
 import { AffectedEntity } from "../user-permissions/decorators/affected-entity.decorator";
@@ -15,6 +15,7 @@ import { ContentScope } from "../user-permissions/interfaces/content-scope.inter
 import { PaginatedWarnings } from "./dto/paginated-warnings";
 import { WarningsArgs } from "./dto/warnings.args";
 import { Warning } from "./entities/warning.entity";
+import { referencesEntityInfo, remapWarningOrderBy, remapWarningQueryFields, type WarningQuery } from "./warning-query-fields.helper";
 
 @Resolver(() => Warning)
 @RequiredPermission(["warnings"], { skipScopeCheck: true })
@@ -53,8 +54,26 @@ export class WarningResolver {
             filter.and = filter.and.filter((item) => item.scope === undefined);
         }
 
-        const where = gqlArgsToMikroOrmQuery({ search, filter: standardFilter }, this.entityManager.getMetadata(Warning));
+        const where = remapWarningQueryFields(
+            gqlArgsToMikroOrmQuery({ filter: standardFilter }, this.entityManager.getMetadata(Warning)),
+        ) as WarningQuery;
         where.status = { $in: status };
+
+        // Built by hand rather than via `gqlArgsToMikroOrmQuery`'s metadata-derived search, because name /
+        // secondary information aren't Warning columns but come from the joined EntityInfo view.
+        if (search) {
+            where.$and = where.$and ?? [];
+            for (const searchPart of splitSearchString(search)) {
+                where.$and.push({
+                    $or: [
+                        { message: { $ilike: searchPart } },
+                        { sourceInfo: { rootEntityName: { $ilike: searchPart } } },
+                        { "entityInfo.name": { $ilike: searchPart } },
+                        { "entityInfo.secondaryInformation": { $ilike: searchPart } },
+                    ],
+                });
+            }
+        }
 
         // A scope can be for example { domain: "main", language: "en" } but it should also query scopes that are only { domain: "main" }.
         // These additional scopes are calculated here.
@@ -89,17 +108,28 @@ export class WarningResolver {
             }
         }
 
-        const options: FindOptions<Warning> = { offset, limit };
+        const orderBy = remapWarningOrderBy(sort);
 
-        if (sort) {
-            options.orderBy = sort.map((sortItem) => {
-                return {
-                    [sortItem.field]: sortItem.direction,
-                };
+        const queryBuilder = this.entityManager.createQueryBuilder(Warning, "warning").select("warning.*");
+
+        // Join the EntityInfo view only when name / secondary information is used: it's a union over all
+        // entity tables, so an unconditional join would slow the common case (and the count query). It's
+        // keyed by entity name + id from the warning's `sourceInfo`.
+        if (referencesEntityInfo(where) || referencesEntityInfo(orderBy)) {
+            const entityInfoQueryBuilder = this.entityManager.createQueryBuilder(EntityInfoObject, "entityInfo");
+            queryBuilder.leftJoin(entityInfoQueryBuilder, "entityInfo", {
+                "entityInfo.entityName": raw(`"warning"."sourceInfo"->>'rootEntityName'`),
+                "entityInfo.id": raw(`"warning"."sourceInfo"->>'targetId'`),
             });
         }
 
-        const [entities, totalCount] = await this.repository.findAndCount(where, options);
+        queryBuilder.where(where).limit(limit).offset(offset);
+
+        if (orderBy) {
+            queryBuilder.orderBy(orderBy);
+        }
+
+        const [entities, totalCount] = await queryBuilder.getResultAndCount();
         return new PaginatedWarnings(entities, totalCount);
     }
 

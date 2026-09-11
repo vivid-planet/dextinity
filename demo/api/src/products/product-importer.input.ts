@@ -1,4 +1,4 @@
-import { CsvColumn, CsvColumnType } from "@comet/cms-api";
+import { CsvColumn, CsvColumnType } from "@dextinity/cms-api";
 import { Collection, Ref } from "@mikro-orm/core";
 import { camelCase } from "change-case";
 import { IsArray, IsBoolean, IsDate, IsEnum, IsInt, IsOptional, IsString } from "class-validator";

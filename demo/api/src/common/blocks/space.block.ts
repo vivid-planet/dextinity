@@ -1,4 +1,4 @@
-import { createSpaceBlock } from "@comet/cms-api";
+import { createSpaceBlock } from "@dextinity/cms-api";
 
 export enum Spacing {
     d100 = "d100",

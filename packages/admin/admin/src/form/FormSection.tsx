@@ -29,7 +29,7 @@ export interface FormSectionProps
 export function FormSection(inProps: FormSectionProps) {
     const { children, title, disableMarginBottom, disableTypography, slotProps, infoTooltip, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminFormSection",
+        name: "DextinityAdminFormSection",
     });
 
     const ownerState: OwnerState = {
@@ -96,17 +96,17 @@ const Children = createComponentSlot("div")<FormSectionClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFormSection: FormSectionClassKey;
+        DextinityAdminFormSection: FormSectionClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFormSection: FormSectionProps;
+        DextinityAdminFormSection: FormSectionProps;
     }
 
     interface Components {
-        CometAdminFormSection?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFormSection"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFormSection"];
+        DextinityAdminFormSection?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFormSection"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFormSection"];
         };
     }
 }

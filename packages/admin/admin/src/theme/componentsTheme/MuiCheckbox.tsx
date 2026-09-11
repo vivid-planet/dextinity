@@ -1,4 +1,4 @@
-import { CheckboxChecked, CheckboxIndeterminate, CheckboxUnchecked } from "@comet/admin-icons";
+import { CheckboxChecked, CheckboxIndeterminate, CheckboxUnchecked } from "@dextinity/admin-icons";
 import { checkboxClasses, svgIconClasses } from "@mui/material";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";

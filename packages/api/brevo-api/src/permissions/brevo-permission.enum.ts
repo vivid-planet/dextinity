@@ -1,4 +1,4 @@
-import { registerAdditionalPermissions } from "@comet/cms-api";
+import { registerAdditionalPermissions } from "@dextinity/cms-api";
 import { registerEnumType } from "@nestjs/graphql";
 
 export enum BrevoPermission {

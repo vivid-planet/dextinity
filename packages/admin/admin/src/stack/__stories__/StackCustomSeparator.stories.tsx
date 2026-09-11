@@ -1,4 +1,4 @@
-import { CometColor } from "@comet/admin-icons";
+import { DextinityIcon } from "@dextinity/admin-icons";
 import { useContext } from "react";
 import { Redirect, Route, Switch } from "react-router";
 
@@ -23,7 +23,7 @@ function Page1() {
 function Story() {
     return (
         <Stack topLevelTitle="Stack">
-            <StackBreadcrumbs separator={<CometColor />} />
+            <StackBreadcrumbs separator={<DextinityIcon />} />
             <StackSwitch>
                 <StackPage name="page1">
                     <Page1 />

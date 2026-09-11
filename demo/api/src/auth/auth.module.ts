@@ -1,12 +1,12 @@
 import {
-    CometAuthGuard,
     createAuthGuardProviders,
     createAuthResolver,
     createBasicAuthService,
     createJwtAuthService,
     createSitePreviewAuthService,
     createStaticUserAuthService,
-} from "@comet/cms-api";
+    DextinityAuthGuard,
+} from "@dextinity/cms-api";
 import { DynamicModule, Module } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
@@ -33,7 +33,7 @@ export class AuthModule {
                 AccessControlService,
                 {
                     provide: APP_GUARD,
-                    useClass: CometAuthGuard,
+                    useClass: DextinityAuthGuard,
                 },
                 ...createAuthGuardProviders(
                     ...[

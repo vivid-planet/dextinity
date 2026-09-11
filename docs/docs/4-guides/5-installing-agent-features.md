@@ -4,7 +4,7 @@ title: Installing agent features
 
 # Installing agent features
 
-The `npx @comet/cli install-agent-features` command installs [agent skills](https://agentskills.io/) and agent rules into your project — structured, reusable instructions for AI coding agents (such as Claude Code, Cursor, or GitHub Copilot). Skills land in `.agents/skills/` and `.claude/skills/`; rules land in `.agents/rules/`, `.claude/rules/`, `.cursor/rules/`, and `.github/instructions/`. Agents pick them up automatically.
+The `npx @dextinity/cli install-agent-features` command installs [agent skills](https://agentskills.io/) and agent rules into your project — structured, reusable instructions for AI coding agents (such as Claude Code, Cursor, or GitHub Copilot). Skills land in `.agents/skills/` and `.claude/skills/`; rules land in `.agents/rules/`, `.claude/rules/`, `.cursor/rules/`, and `.github/instructions/`. Agents pick them up automatically.
 
 ## Quick start
 
@@ -12,7 +12,7 @@ Add an `agent-features.json` file at the project root containing the external re
 
 ```json
 {
-    "repos": ["https://github.com/vivid-planet/comet.git"]
+    "repos": ["https://github.com/vivid-planet/dextinity.git"]
 }
 ```
 
@@ -21,7 +21,7 @@ Add an `install-agent-features` script to your root `package.json`:
 ```json
 {
     "scripts": {
-        "install-agent-features": "npx @comet/cli install-agent-features"
+        "install-agent-features": "npx @dextinity/cli install-agent-features"
     }
 }
 ```
@@ -75,7 +75,7 @@ Place skill folders inside `skills/` or `agentic-plugin/skills/` and rule files 
 Then run the command to symlink them into the target directories:
 
 ```sh
-npx @comet/cli install-agent-features
+npx @dextinity/cli install-agent-features
 ```
 
 Local skills and rules are **symlinked**, so edits are reflected immediately without re-running the command.
@@ -94,7 +94,7 @@ You can install skills and rules from external git repositories. This allows you
 
 ```json
 {
-    "repos": ["https://github.com/vivid-planet/comet.git", "https://github.com/org/other-features.git#main"]
+    "repos": ["https://github.com/vivid-planet/dextinity.git", "https://github.com/org/other-features.git#main"]
 }
 ```
 
@@ -123,8 +123,8 @@ Installing 1 skill from local skills/...
   Symlinked: code-style
 Installing 1 skill from node_modules some-tool (skills/)...
   Symlinked: tool-docs
-Installing 2 skills from external https://github.com/vivid-planet/comet.git (skills/)...
-  CONFLICT: "code-style" from external https://github.com/vivid-planet/comet.git (skills/) skipped (already installed from a higher-priority source)
+Installing 2 skills from external https://github.com/vivid-planet/dextinity.git (skills/)...
+  CONFLICT: "code-style" from external https://github.com/vivid-planet/dextinity.git (skills/) skipped (already installed from a higher-priority source)
   Copied: api-conventions
 Installing 1 rule from local rules/...
   Symlinked: naming-conventions.md
@@ -157,7 +157,7 @@ These directories should not be committed to your repository as they are created
 Preview what would be installed without making changes:
 
 ```sh
-npx @comet/cli install-agent-features --dry-run
+npx @dextinity/cli install-agent-features --dry-run
 ```
 
 ## For library maintainers: Providing features to consumers

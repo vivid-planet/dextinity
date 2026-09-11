@@ -9,7 +9,7 @@ import {
     ToolbarItem,
     useExportDisplayedTableData,
     VisibleType,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import { Typography } from "@mui/material";
 
 interface IExampleRow extends IRow {
@@ -22,7 +22,7 @@ interface IExampleRow extends IRow {
 }
 
 export default {
-    title: "@comet/admin/table",
+    title: "@dextinity/admin/table",
 };
 
 export const ExportVisibility = () => {

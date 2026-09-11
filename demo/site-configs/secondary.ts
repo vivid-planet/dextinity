@@ -9,7 +9,7 @@ const envToDomainMap: Record<Environment, string> = {
 
 export default ((env) => {
     return {
-        name: "Comet Site Secondary",
+        name: "Dextinity Site Secondary",
         domains: {
             main: envToDomainMap[env],
         },

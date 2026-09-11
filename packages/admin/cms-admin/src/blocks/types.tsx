@@ -171,14 +171,14 @@ export enum BlockCategory {
 export type CustomBlockCategory = { id: string; label: string | ReactElement<MessageDescriptor>; insertBefore?: BlockCategory };
 
 export const blockCategoryLabels = {
-    [BlockCategory.TextAndContent]: <FormattedMessage id="comet.blocks.category.textAndContent" defaultMessage="Text & Content" />,
-    [BlockCategory.Media]: <FormattedMessage id="comet.blocks.category.media" defaultMessage="Media" />,
-    [BlockCategory.Navigation]: <FormattedMessage id="comet.blocks.category.navigation" defaultMessage="Navigation" />,
-    [BlockCategory.Teaser]: <FormattedMessage id="comet.blocks.category.teaser" defaultMessage="Teaser" />,
-    [BlockCategory.StructuredContent]: <FormattedMessage id="comet.blocks.category.structuredContent" defaultMessage="Structured Content" />,
-    [BlockCategory.Layout]: <FormattedMessage id="comet.blocks.category.layout" defaultMessage="Layout" />,
-    [BlockCategory.Form]: <FormattedMessage id="comet.blocks.category.form" defaultMessage="Form" />,
-    [BlockCategory.Other]: <FormattedMessage id="comet.blocks.category.other" defaultMessage="Other" />,
+    [BlockCategory.TextAndContent]: <FormattedMessage id="dextinity.blocks.category.textAndContent" defaultMessage="Text & Content" />,
+    [BlockCategory.Media]: <FormattedMessage id="dextinity.blocks.category.media" defaultMessage="Media" />,
+    [BlockCategory.Navigation]: <FormattedMessage id="dextinity.blocks.category.navigation" defaultMessage="Navigation" />,
+    [BlockCategory.Teaser]: <FormattedMessage id="dextinity.blocks.category.teaser" defaultMessage="Teaser" />,
+    [BlockCategory.StructuredContent]: <FormattedMessage id="dextinity.blocks.category.structuredContent" defaultMessage="Structured Content" />,
+    [BlockCategory.Layout]: <FormattedMessage id="dextinity.blocks.category.layout" defaultMessage="Layout" />,
+    [BlockCategory.Form]: <FormattedMessage id="dextinity.blocks.category.form" defaultMessage="Form" />,
+    [BlockCategory.Other]: <FormattedMessage id="dextinity.blocks.category.other" defaultMessage="Other" />,
 };
 
 export interface LinkBlockInterface<
@@ -186,4 +186,9 @@ export interface LinkBlockInterface<
     State = any,
 > {
     url2State?: (url: string) => State | false;
+}
+
+export interface ReadOnlyBlockRenderInterface<State = unknown> {
+    /** Renders the block's state without an editing UI. */
+    ReadOnlyComponent(props: { state: State }): ReactNode;
 }

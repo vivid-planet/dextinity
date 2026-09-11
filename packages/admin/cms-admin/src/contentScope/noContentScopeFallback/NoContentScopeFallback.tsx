@@ -1,4 +1,4 @@
-import { FullPageAlert } from "@comet/admin";
+import { FullPageAlert } from "@dextinity/admin";
 import { Typography } from "@mui/material";
 import type { FunctionComponent } from "react";
 import { FormattedMessage } from "react-intl";
@@ -12,11 +12,13 @@ export const NoContentScopeFallback: FunctionComponent = () => {
 
     return (
         <FullPageAlert
-            title={<FormattedMessage id="comet.admin.contentScope.noContentScopeError.title" defaultMessage="No access - authorizations missing" />}
+            title={
+                <FormattedMessage id="dextinity.admin.contentScope.noContentScopeError.title" defaultMessage="No access - authorizations missing" />
+            }
             description={
                 <Typography variant="body1" component="span">
                     <FormattedMessage
-                        id="comet.admin.contentScope.noContentScopeError.description"
+                        id="dextinity.admin.contentScope.noContentScopeError.description"
                         defaultMessage="Your account is active, but you do not have access rights."
                     />
                 </Typography>
@@ -25,39 +27,39 @@ export const NoContentScopeFallback: FunctionComponent = () => {
                 <>
                     <Typography variant="subtitle1">
                         <FormattedMessage
-                            id="comet.admin.contentScope.noContentScopeError.help.title"
+                            id="dextinity.admin.contentScope.noContentScopeError.help.title"
                             defaultMessage="You have successfully logged in, but your account is not authorized for any area (scope). Possible reasons:"
                         />
                     </Typography>
                     <Typography variant="list">
                         <Typography variant="listItem">
                             <FormattedMessage
-                                id="comet.admin.contentScope.noContentScopeError.help.reason1"
+                                id="dextinity.admin.contentScope.noContentScopeError.help.reason1"
                                 defaultMessage="Your access has not yet been activated by an administrator."
                             />
                         </Typography>
 
                         <Typography variant="listItem">
                             <FormattedMessage
-                                id="comet.admin.contentScope.noContentScopeError.help.reason2"
+                                id="dextinity.admin.contentScope.noContentScopeError.help.reason2"
                                 defaultMessage="You are not authorized for this environment or this company."
                             />
                         </Typography>
 
                         <Typography variant="listItem">
                             <FormattedMessage
-                                id="comet.admin.contentScope.noContentScopeError.help.reason3"
+                                id="dextinity.admin.contentScope.noContentScopeError.help.reason3"
                                 defaultMessage="There is a technical problem with your access rights."
                             />
                         </Typography>
                     </Typography>
 
                     <Typography variant="subtitle1" marginBottom={2} marginTop={4}>
-                        <FormattedMessage id="comet.admin.contentScope.noContentScopeError.help.whatCanYouDo" defaultMessage="What can you do?" />
+                        <FormattedMessage id="dextinity.admin.contentScope.noContentScopeError.help.whatCanYouDo" defaultMessage="What can you do?" />
                     </Typography>
                     <Typography variant="body1">
                         <FormattedMessage
-                            id="comet.admin.contentScope.noContentScopeError.help.contactAdmin"
+                            id="dextinity.admin.contentScope.noContentScopeError.help.contactAdmin"
                             defaultMessage="Please contact your administrator to check the activation. If you think this is an error, try again later."
                         />
                     </Typography>
@@ -69,7 +71,7 @@ export const NoContentScopeFallback: FunctionComponent = () => {
                         <StopImpersonationButton />
                     ) : (
                         <SignOutButton variant="contained" fullWidth>
-                            <FormattedMessage id="comet.admin.contentScope.noContentScopeError.signOut" defaultMessage="Back to the login page" />
+                            <FormattedMessage id="dextinity.admin.contentScope.noContentScopeError.signOut" defaultMessage="Back to the login page" />
                         </SignOutButton>
                     )}
                 </>

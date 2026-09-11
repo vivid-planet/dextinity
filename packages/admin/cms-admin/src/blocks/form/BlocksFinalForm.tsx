@@ -1,4 +1,4 @@
-import { FinalFormContextProvider, type FinalFormContextProviderProps, renderFinalFormChildren } from "@comet/admin";
+import { FinalFormContextProvider, type FinalFormContextProviderProps, renderFinalFormChildren } from "@dextinity/admin";
 import type { JSX } from "react";
 import { flushSync } from "react-dom";
 import { type AnyObject, Form, type FormProps, type FormRenderProps, FormSpy } from "react-final-form";

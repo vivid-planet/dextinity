@@ -8,7 +8,7 @@ import {
     createBlock,
     ExtractBlockInput,
     PixelImageBlock,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 
 class NewsletterImageBlockData extends BlockData {
     @ChildBlock(PixelImageBlock)

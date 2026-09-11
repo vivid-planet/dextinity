@@ -2,11 +2,11 @@ import { MikroORM } from "@mikro-orm/postgresql";
 import { ExecutionContext, Injectable, Optional } from "@nestjs/common";
 import { ModuleRef, Reflector } from "@nestjs/core";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import isEqual from "lodash.isequal";
 
 import { PageTreeService } from "../page-tree/page-tree.service";
 import { SCOPED_ENTITY_METADATA_KEY, ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator";
 import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
+import { contentScopesAreEqual } from "./content-scopes-are-equal";
 import { AFFECTED_ENTITY_METADATA_KEY, AffectedEntityMeta } from "./decorators/affected-entity.decorator";
 import { AFFECTED_SCOPE_METADATA_KEY, AffectedScopeMeta } from "./decorators/affected-scope.decorator";
 import { getScopesForScopedEntity } from "./get-scopes-for-scoped-entity";
@@ -22,11 +22,7 @@ export class ContentScopeService {
     ) {}
 
     scopesAreEqual(scope1: ContentScope | undefined, scope2: ContentScope | undefined): boolean {
-        // The scopes are cloned because they could be
-        //   - an instance of a class (e.g. DamScope)
-        //   - or a plain object (from a GraphQL input)
-        // Then they are not deeply equal, although they represent the same scope
-        return isEqual({ ...scope1 }, { ...scope2 });
+        return contentScopesAreEqual(scope1, scope2);
     }
 
     async getScopesForPermissionCheck(context: ExecutionContext): Promise<ContentScope[][]> {

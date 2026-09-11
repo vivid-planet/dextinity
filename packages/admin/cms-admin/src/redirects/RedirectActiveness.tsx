@@ -1,5 +1,5 @@
 import { gql, useMutation } from "@apollo/client";
-import { ChevronDown, Invisible, Visible } from "@comet/admin-icons";
+import { ChevronDown, Invisible, Visible } from "@dextinity/admin-icons";
 import { Chip, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import { green } from "@mui/material/colors";
 import { type JSX, type MouseEvent, useState } from "react";
@@ -71,7 +71,7 @@ const RedirectActiveness = ({ redirect }: RedirectActivenessProps): JSX.Element 
                 icon={<ChevronDown />}
                 label={
                     <FormattedMessage
-                        id="comet.pages.redirects.redirect.activeness"
+                        id="dextinity.pages.redirects.redirect.activeness"
                         defaultMessage="{activeness, select, true {activated} other {deactivated} }"
                         values={{ activeness: redirect.active }}
                     />
@@ -87,13 +87,13 @@ const RedirectActiveness = ({ redirect }: RedirectActivenessProps): JSX.Element 
                     <ListItemIcon>
                         <Visible style={{ color: green[500] }} />
                     </ListItemIcon>
-                    <FormattedMessage id="comet.pages.redirects.redirect.activate" defaultMessage="Activate" />
+                    <FormattedMessage id="dextinity.pages.redirects.redirect.activate" defaultMessage="Activate" />
                 </MenuItem>
                 <MenuItem onClick={() => handleActivenessClick(false)} disabled={!redirect.active}>
                     <ListItemIcon>
                         <Invisible />
                     </ListItemIcon>
-                    <FormattedMessage id="comet.pages.redirects.redirect.deactivate" defaultMessage="Deactivate" />
+                    <FormattedMessage id="dextinity.pages.redirects.redirect.deactivate" defaultMessage="Deactivate" />
                 </MenuItem>
             </Menu>
         </>

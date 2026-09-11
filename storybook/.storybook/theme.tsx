@@ -1,10 +1,10 @@
 import { create, type ThemeVars } from "storybook/theming";
 
-import CometLogo from "./assets/comet-logo-header.svg";
+import DextinityLogo from "./assets/dextinity-logo-header.svg";
 
 export default create({
     base: "light",
-    brandTitle: "Comet",
-    brandUrl: "https://github.com/vivid-planet/comet",
-    brandImage: CometLogo,
+    brandTitle: "Dextinity",
+    brandUrl: "https://github.com/vivid-planet/dextinity",
+    brandImage: DextinityLogo,
 }) as ThemeVars;

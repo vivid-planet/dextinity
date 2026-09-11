@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, Check, Close, Delete, MoreVertical } from "@comet/admin-icons";
+import { ArrowDown, ArrowUp, Check, Close, Delete, MoreVertical } from "@dextinity/admin-icons";
 import {
     autocompleteClasses,
     Checkbox,

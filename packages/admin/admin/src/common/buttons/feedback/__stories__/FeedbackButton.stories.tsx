@@ -1,4 +1,4 @@
-import { Add } from "@comet/admin-icons";
+import { Add } from "@dextinity/admin-icons";
 import { Card, CardContent, Stack } from "@mui/material";
 
 import { FeedbackButton } from "../FeedbackButton";

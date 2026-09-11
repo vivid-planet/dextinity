@@ -1,18 +1,18 @@
 import "@fontsource-variable/roboto-flex/full.css";
 
 import { ApolloProvider } from "@apollo/client";
-import { ErrorDialogHandler, MasterLayout, MuiThemeProvider, RouterBrowserRouter, SnackbarProvider } from "@comet/admin";
-import { DateFnsLocaleProvider } from "@comet/admin-date-time";
-import { BrevoConfigProvider } from "@comet/brevo-admin";
+import { ErrorDialogHandler, MasterLayout, MuiThemeProvider, RouterBrowserRouter, SnackbarProvider } from "@dextinity/admin";
+import { DateFnsLocaleProvider } from "@dextinity/admin-date-time";
+import { BrevoConfigProvider } from "@dextinity/brevo-admin";
 import {
     AzureAiTranslatorProvider,
-    CometConfigProvider,
     type ContentScope,
     ContentScopeProvider,
     createDamFileDependency,
     CurrentUserProvider,
+    DextinityConfigProvider,
     SitePreview,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 import { css, Global } from "@emotion/react";
 import { DataGridPro } from "@mui/x-data-grid-pro";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -56,7 +56,7 @@ const GlobalStyle = () => (
 const config = createConfig();
 const apolloClient = createApolloClient(config.apiUrl);
 
-declare module "@comet/cms-admin" {
+declare module "@dextinity/cms-admin" {
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface ContentScope extends BaseContentScope {}
 
@@ -72,7 +72,7 @@ export function App() {
     const theme = useMemo(() => createTheme(muiLocale), [muiLocale]);
 
     return (
-        <CometConfigProvider
+        <DextinityConfigProvider
             {...config}
             graphQLApiUrl={`${config.apiUrl}/graphql`}
             onError={(error, errorInfo) => {
@@ -211,6 +211,6 @@ export function App() {
                     </IntlProvider>
                 </ApolloProvider>
             </BrevoConfigProvider>
-        </CometConfigProvider>
+        </DextinityConfigProvider>
     );
 }

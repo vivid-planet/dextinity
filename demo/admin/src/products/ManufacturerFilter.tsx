@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { ClearInputAdornment } from "@comet/admin";
+import { ClearInputAdornment } from "@dextinity/admin";
 import Autocomplete from "@mui/material/Autocomplete";
 import { type GridFilterInputValueProps, type GridFilterOperator, useGridRootProps } from "@mui/x-data-grid-pro";
 import { type ChangeEvent, useCallback, useState } from "react";

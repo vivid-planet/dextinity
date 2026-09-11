@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import type { DependencyInterface } from "@comet/cms-admin";
+import type { DependencyInterface } from "@dextinity/cms-admin";
 import { categoryToUrlParam } from "@src/pageTree/pageTreeCategories";
 import type { GQLpageTreeNodeDependencyQuery, GQLpageTreeNodeDependencyQueryVariables } from "@src/pageTree/PageTreeNodeDependency.generated";
 import { FormattedMessage } from "react-intl";

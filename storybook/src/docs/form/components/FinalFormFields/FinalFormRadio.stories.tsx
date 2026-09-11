@@ -1,4 +1,4 @@
-import { Button, Field, FieldContainer, FinalForm, FinalFormRadio } from "@comet/admin";
+import { Button, Field, FieldContainer, FinalForm, FinalFormRadio } from "@dextinity/admin";
 import { FormControlLabel } from "@mui/material";
 
 export default {

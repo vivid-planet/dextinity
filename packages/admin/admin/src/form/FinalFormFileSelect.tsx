@@ -21,7 +21,7 @@ export function FinalFormFileSelect(inProps: FinalFormFileSelectProps) {
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminFinalFormFileSelect",
+        name: "DextinityAdminFinalFormFileSelect",
     });
 
     const [tooManyFilesSelected, setTooManyFilesSelected] = useState(false);

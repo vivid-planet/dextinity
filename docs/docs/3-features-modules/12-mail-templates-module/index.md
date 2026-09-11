@@ -5,7 +5,7 @@ This module provides a way to create and manage mail-templates. It allows you to
 **Epic:** https://vivid-planet.atlassian.net/browse/COM-2057
 
 :::tip
-`@comet/mail-react` lets you build responsive, cross-client-compatible HTML emails using MJML-based React components. For the full theme, component, and customization API, see [Building HTML Emails](../13-building-html-emails/index.md).
+`@dextinity/mail-react` lets you build responsive, cross-client-compatible HTML emails using MJML-based React components. For the full theme, component, and customization API, see [Building HTML Emails](../13-building-html-emails/index.md).
 :::
 
 ## Setup
@@ -33,7 +33,7 @@ If you plan to use React components in the mail template, update your `tsconfig.
 
 ```json title="/api/package.json"
 "dependencies": {
-    "@comet/mail-react": "...",
+    "@dextinity/mail-react": "...",
     "react": "^18.3.1"
 }
 ```
@@ -46,8 +46,8 @@ Create class in the module the mail belongs to, e.g. `api/src/my-module/my-custo
 - Use `.tsx` if you want to use React components in the mail template
 
 ```tsx title="/api/src/my-module/my-custom.mail.tsx"
-import { MjmlColumn, MjmlMailRoot, MjmlSection, MjmlText } from "@comet/mail-react";
-import { renderMailHtml } from "@comet/mail-react/server";
+import { MjmlColumn, MjmlMailRoot, MjmlSection, MjmlText } from "@dextinity/mail-react";
+import { renderMailHtml } from "@dextinity/mail-react/server";
 
 @MailTemplate()
 export class MyCustomMail implements MailTemplateInterface<MailProps> {

@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
-import { Alert, Loading } from "@comet/admin";
-import type { ContentScope } from "@comet/cms-admin";
+import { Alert, Loading } from "@dextinity/admin";
+import type { ContentScope } from "@dextinity/cms-admin";
 import { Typography } from "@mui/material";
 import type { PropsWithChildren } from "react";
 import { FormattedMessage } from "react-intl";
@@ -35,7 +35,7 @@ export const SendManagerWrapper = ({ scope, children }: PropsWithChildren<SendMa
             <Typography>
                 <Alert severity="error">
                     <FormattedMessage
-                        id="cometBrevoModule.emailCampaigns.configNotDefined"
+                        id="dextinity.emailCampaigns.configNotDefined"
                         defaultMessage="Brevo configuration is not defined. Please ask an administrator to set it up before sending email campaigns."
                     />
                 </Alert>

@@ -1,4 +1,4 @@
-import { BlocksTransformerService, filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@comet/cms-api";
+import { BlocksTransformerService, filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@dextinity/cms-api";
 import { Brevo } from "@getbrevo/brevo";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, ObjectQuery, wrap } from "@mikro-orm/postgresql";

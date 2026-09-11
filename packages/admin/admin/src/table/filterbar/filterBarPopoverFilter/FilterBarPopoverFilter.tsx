@@ -1,4 +1,4 @@
-import { Check, Reset } from "@comet/admin-icons";
+import { Check, Reset } from "@dextinity/admin-icons";
 // eslint-disable-next-line no-restricted-imports
 import { Button, type ButtonProps, type ComponentsOverrides, Popover as MuiPopover, type Theme } from "@mui/material";
 import { css, useThemeProps } from "@mui/material/styles";
@@ -44,7 +44,7 @@ const PopoverContentContainer = createComponentSlot("div")<FilterBarPopoverFilte
 })(css`
     min-width: 300px;
 
-    .CometAdminFormFieldContainer-root {
+    .DextinityAdminFormFieldContainer-root {
         box-sizing: border-box;
         padding: 20px;
         margin-bottom: 0;
@@ -104,7 +104,7 @@ export function FilterBarPopoverFilter(inProps: PropsWithChildren<FilterBarPopov
         filterBarButtonProps,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminFilterBarPopoverFilter" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminFilterBarPopoverFilter" });
 
     const outerForm = useForm();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -209,17 +209,17 @@ export function FilterBarPopoverFilter(inProps: PropsWithChildren<FilterBarPopov
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFilterBarPopoverFilter: FilterBarPopoverFilterClassKey;
+        DextinityAdminFilterBarPopoverFilter: FilterBarPopoverFilterClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFilterBarPopoverFilter: FilterBarPopoverFilterProps;
+        DextinityAdminFilterBarPopoverFilter: FilterBarPopoverFilterProps;
     }
 
     interface Components {
-        CometAdminFilterBarPopoverFilter?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFilterBarPopoverFilter"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFilterBarPopoverFilter"];
+        DextinityAdminFilterBarPopoverFilter?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFilterBarPopoverFilter"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFilterBarPopoverFilter"];
         };
     }
 }

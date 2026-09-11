@@ -1,4 +1,4 @@
-import { RteClearLink } from "@comet/admin-icons";
+import { RteClearLink } from "@dextinity/admin-icons";
 import { RichUtils } from "draft-js";
 import type { MouseEvent } from "react";
 

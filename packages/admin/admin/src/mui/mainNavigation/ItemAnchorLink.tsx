@@ -1,4 +1,4 @@
-import { LinkExternal } from "@comet/admin-icons";
+import { LinkExternal } from "@dextinity/admin-icons";
 import type { ListItemButtonProps } from "@mui/material";
 import type { HTMLProps } from "react";
 

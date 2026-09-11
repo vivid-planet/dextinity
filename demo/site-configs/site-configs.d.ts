@@ -1,4 +1,4 @@
-import type { BaseSiteConfig, ExtractPrivateSiteConfig, ExtractPublicSiteConfig } from "@comet/cli";
+import type { BaseSiteConfig, ExtractPrivateSiteConfig, ExtractPublicSiteConfig } from "@dextinity/cli";
 
 export type ContentScope = {
     domain: string;

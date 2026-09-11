@@ -38,25 +38,53 @@ interface DraftJsContent {
     entityMap: Record<string, DraftJsEntity>;
 }
 
+type TipTapTextBlockStyleTargetType = "paragraph" | "heading-1" | "heading-2" | "heading-3" | "heading-4" | "heading-5" | "heading-6";
+
+interface TextBlockStyleMapping {
+    /**
+     * TipTap text block type the DraftJS block is converted to. Use this for DraftJS block types
+     * that were rendered as a heading (e.g. a custom `headline450` block type rendered as `<h2>`),
+     * so the semantic tag isn't lost.
+     *
+     * Defaults to the type derived from the DraftJS block type: `header-one`…`header-six` keep
+     * their heading level, all other block types become a paragraph.
+     */
+    textBlockType?: TipTapTextBlockStyleTargetType;
+    /**
+     * TipTap `textBlockStyle` attribute value applied to the converted text block.
+     */
+    textBlockStyle?: string;
+}
+
 interface ConvertOptions {
     supports?: TipTapSupports[];
     link?: Block;
     /**
-     * Maps DraftJS block types (e.g. custom `paragraph-small`) to a TipTap paragraph
-     * `textBlockStyle` attribute value. Matched blocks become `{ type: "paragraph", attrs: { textBlockStyle: ... } }`.
+     * Maps DraftJS block types (e.g. custom `paragraph-small`) to a TipTap `textBlockStyle`
+     * attribute value. Matched blocks become `{ type: "paragraph", attrs: { textBlockStyle: ... } }`.
+     *
+     * Pass a `{ textBlockType, textBlockStyle }` object instead of a plain style name to also
+     * control the text block type, for instance to convert a DraftJS block type that was rendered
+     * as `<h2>` into a TipTap heading with level 2.
      */
-    textBlockStyleMap?: Record<string, string>;
+    textBlockStyleMap?: Record<string, string | TextBlockStyleMapping>;
     /**
      * Maps DraftJS custom inline style names (e.g. `highlight` from a DraftJS `customInlineStyles`
      * configuration) to TipTap `inlineStyle` mark type values.
      * Matched ranges become `{ type: "inlineStyle", attrs: { type: <mappedValue> } }`.
      */
     inlineStyleMap?: Record<string, string>;
+    /**
+     * Limits the nesting depth of the generated lists. Draft.js list items that are indented deeper
+     * are placed on the deepest allowed level instead.
+     */
+    listLevelMax?: number;
 }
 
 const INLINE_STYLE_TO_MARK: Record<string, { mark: string; supports: TipTapSupports }> = {
     BOLD: { mark: "bold", supports: "bold" },
     ITALIC: { mark: "italic", supports: "italic" },
+    UNDERLINE: { mark: "underline", supports: "underline" },
     STRIKETHROUGH: { mark: "strike", supports: "strike" },
     SUP: { mark: "superscript", supports: "sup" },
     SUB: { mark: "subscript", supports: "sub" },
@@ -69,6 +97,16 @@ const HEADER_TYPE_TO_LEVEL: Record<string, number> = {
     "header-four": 4,
     "header-five": 5,
     "header-six": 6,
+};
+
+const TEXT_BLOCK_TYPE_TO_HEADING_LEVEL: Record<TipTapTextBlockStyleTargetType, number | undefined> = {
+    paragraph: undefined,
+    "heading-1": 1,
+    "heading-2": 2,
+    "heading-3": 3,
+    "heading-4": 4,
+    "heading-5": 5,
+    "heading-6": 6,
 };
 
 function makeEmptyDoc(): JSONContent {
@@ -217,19 +255,23 @@ function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, 
     return nodes;
 }
 
-function makeLeafBlockNode(type: "paragraph" | "heading", inlineContent: JSONContent[], headingLevel?: number): JSONContent {
-    const node: JSONContent = { type };
-    if (type === "heading" && headingLevel !== undefined) {
-        node.attrs = { level: headingLevel };
-    }
-    if (inlineContent.length > 0) {
-        node.content = inlineContent;
-    }
-    return node;
-}
+function makeTextBlockNode(
+    inlineContent: JSONContent[],
+    { headingLevel, textBlockStyle }: { headingLevel?: number; textBlockStyle?: string } = {},
+): JSONContent {
+    const node: JSONContent = { type: headingLevel !== undefined ? "heading" : "paragraph" };
 
-function makeParagraphWithTextBlockStyle(inlineContent: JSONContent[], textBlockStyle: string): JSONContent {
-    const node: JSONContent = { type: "paragraph", attrs: { textBlockStyle } };
+    const attrs: JSONContent["attrs"] = {};
+    if (headingLevel !== undefined) {
+        attrs.level = headingLevel;
+    }
+    if (textBlockStyle !== undefined) {
+        attrs.textBlockStyle = textBlockStyle;
+    }
+    if (Object.keys(attrs).length > 0) {
+        node.attrs = attrs;
+    }
+
     if (inlineContent.length > 0) {
         node.content = inlineContent;
     }
@@ -239,8 +281,27 @@ function makeParagraphWithTextBlockStyle(inlineContent: JSONContent[], textBlock
 function makeListItem(inlineContent: JSONContent[]): JSONContent {
     return {
         type: "listItem",
-        content: [makeLeafBlockNode("paragraph", inlineContent)],
+        content: [makeTextBlockNode(inlineContent)],
     };
+}
+
+type ListType = "orderedList" | "bulletList";
+
+const LIST_BLOCK_TYPE_TO_LIST: Record<string, { listType: ListType; supports: TipTapSupports }> = {
+    "unordered-list-item": { listType: "bulletList", supports: "unordered-list" },
+    "ordered-list-item": { listType: "orderedList", supports: "ordered-list" },
+};
+
+interface OpenList {
+    type: ListType;
+    items: JSONContent[];
+}
+
+function normalizeTextBlockStyleMapping(mapping: string | TextBlockStyleMapping | undefined): TextBlockStyleMapping | undefined {
+    if (mapping === undefined) {
+        return undefined;
+    }
+    return typeof mapping === "string" ? { textBlockStyle: mapping } : mapping;
 }
 
 export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined | null, options: ConvertOptions = {}): JSONContent {
@@ -253,58 +314,82 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
     const textBlockStyleMap = options.textBlockStyleMap ?? {};
     const inlineStyleMap = options.inlineStyleMap ?? {};
     const entityMap = draftContent.entityMap ?? {};
+    const maxListLevels = options.listLevelMax !== undefined ? Math.max(options.listLevelMax, 1) : undefined;
 
     const topLevel: JSONContent[] = [];
 
-    let currentListType: "orderedList" | "bulletList" | null = null;
-    let currentListItems: JSONContent[] = [];
+    // Draft.js stores list nesting as a flat sequence of list items carrying a `depth`, while TipTap
+    // nests a sub-list inside the `listItem` it belongs to. The stack holds the lists that are
+    // currently open, from the outermost level to the level the previous list item was placed on.
+    const openLists: OpenList[] = [];
 
-    const flushList = () => {
-        if (currentListType && currentListItems.length > 0) {
-            topLevel.push({ type: currentListType, content: currentListItems });
+    const closeDeepestList = () => {
+        const closedList = openLists.pop();
+        if (!closedList || closedList.items.length === 0) {
+            return;
         }
-        currentListType = null;
-        currentListItems = [];
+
+        const list: JSONContent = { type: closedList.type, content: closedList.items };
+        const parentList = openLists[openLists.length - 1];
+        if (parentList) {
+            const parentItem = parentList.items[parentList.items.length - 1];
+            parentItem.content = [...(parentItem.content ?? []), list];
+        } else {
+            topLevel.push(list);
+        }
+    };
+
+    const flushLists = () => {
+        while (openLists.length > 0) {
+            closeDeepestList();
+        }
+    };
+
+    const addListItem = (listType: ListType, depth: number, inlineContent: JSONContent[]) => {
+        // A list item may only be indented one level deeper than its predecessor, no matter how
+        // large the gap in Draft.js is. `listLevelMax` limits the nesting further.
+        let level = Math.min(Math.max(depth, 0), openLists.length);
+        if (maxListLevels !== undefined) {
+            level = Math.min(level, maxListLevels - 1);
+        }
+
+        while (openLists.length > level + 1) {
+            closeDeepestList();
+        }
+        if (openLists.length === level + 1 && openLists[level].type !== listType) {
+            closeDeepestList();
+        }
+        if (openLists.length === level) {
+            openLists.push({ type: listType, items: [] });
+        }
+
+        openLists[openLists.length - 1].items.push(makeListItem(inlineContent));
     };
 
     for (const block of draftContent.blocks) {
         const inlineContent = buildInlineContent(block, entityMap, supports, hasLink, inlineStyleMap);
 
-        if (block.type === "unordered-list-item" && supports.has("unordered-list")) {
-            if (currentListType !== "bulletList") {
-                flushList();
-                currentListType = "bulletList";
-            }
-            currentListItems.push(makeListItem(inlineContent));
+        const listMapping = LIST_BLOCK_TYPE_TO_LIST[block.type];
+        if (listMapping && supports.has(listMapping.supports)) {
+            addListItem(listMapping.listType, block.depth ?? 0, inlineContent);
             continue;
         }
 
-        if (block.type === "ordered-list-item" && supports.has("ordered-list")) {
-            if (currentListType !== "orderedList") {
-                flushList();
-                currentListType = "orderedList";
-            }
-            currentListItems.push(makeListItem(inlineContent));
-            continue;
-        }
+        flushLists();
 
-        flushList();
+        const mapping = normalizeTextBlockStyleMapping(textBlockStyleMap[block.type]);
+        const headingLevel =
+            mapping?.textBlockType !== undefined ? TEXT_BLOCK_TYPE_TO_HEADING_LEVEL[mapping.textBlockType] : HEADER_TYPE_TO_LEVEL[block.type];
 
-        const mappedTextBlockStyle = textBlockStyleMap[block.type];
-        if (mappedTextBlockStyle !== undefined) {
-            topLevel.push(makeParagraphWithTextBlockStyle(inlineContent, mappedTextBlockStyle));
-            continue;
-        }
-
-        const headerLevel = HEADER_TYPE_TO_LEVEL[block.type];
-        if (headerLevel !== undefined && supports.has("heading")) {
-            topLevel.push(makeLeafBlockNode("heading", inlineContent, headerLevel));
-        } else {
-            topLevel.push(makeLeafBlockNode("paragraph", inlineContent));
-        }
+        topLevel.push(
+            makeTextBlockNode(inlineContent, {
+                headingLevel: headingLevel !== undefined && supports.has("heading") ? headingLevel : undefined,
+                textBlockStyle: mapping?.textBlockStyle,
+            }),
+        );
     }
 
-    flushList();
+    flushLists();
 
     if (topLevel.length === 0) {
         return makeEmptyDoc();
@@ -333,4 +418,4 @@ export function buildStrippedTipTapDoc(draftContent: DraftJsContent | undefined 
     return { type: "doc", content };
 }
 
-export type { ConvertOptions, DraftJsContent };
+export type { ConvertOptions, DraftJsContent, TextBlockStyleMapping };

@@ -30,7 +30,7 @@ To use the Importer module, you'll need to create:
 Create a class that defines the structure of your imported data and decorate its properties with `@CsvColumn`. This defines how CSV columns map to your entity properties.
 
 ```typescript
-import { CsvColumn, CsvColumnType } from "@comet/cms-api";
+import { CsvColumn, CsvColumnType } from "@dextinity/cms-api";
 import { IsString, IsEnum, IsArray, IsOptional, IsBoolean, IsInt, IsDate } from "class-validator";
 
 export class ProductImporterInput {
@@ -84,7 +84,7 @@ import {
     ImporterDataStream,
     ImporterEndPipe,
     ImporterInputClass,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/core";
 import { Logger } from "@nestjs/common";
 import { pipeline, Readable, Transform } from "stream";
@@ -159,7 +159,7 @@ export class ProductImporter {
 You can create custom pipes for pre-processing or persisting your data:
 
 ```typescript
-import { ImporterPipe } from "@comet/cms-api";
+import { ImporterPipe } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/core";
 import { LoggerService } from "@nestjs/common";
 import { Transform, TransformCallback } from "stream";
@@ -209,7 +209,7 @@ This is usually done in a console job.
 After setting up your importer, you can use it like this:
 
 ```typescript
-import { ImporterLocalFileDataStream } from "@comet/cms-api";
+import { ImporterLocalFileDataStream } from "@dextinity/cms-api";
 
 // Create a local file data stream
 const dataStream = new ImporterLocalFileDataStream("/path/to/your/file.csv");

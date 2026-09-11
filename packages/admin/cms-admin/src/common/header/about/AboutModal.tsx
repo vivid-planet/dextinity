@@ -1,4 +1,4 @@
-import { Close, CometDigitalExperienceLogo } from "@comet/admin-icons";
+import { Close, DextinityLogo } from "@dextinity/admin-icons";
 import {
     // eslint-disable-next-line no-restricted-imports
     Dialog,
@@ -23,7 +23,7 @@ interface AboutModalProps {
     logo?: ReactElement;
 }
 
-export function AboutModal({ open, onClose, logo = <CometDigitalExperienceLogo sx={{ width: "300px", height: "84px" }} /> }: AboutModalProps) {
+export function AboutModal({ open, onClose, logo = <DextinityLogo sx={{ fontSize: 68 }} /> }: AboutModalProps) {
     const buildInformation = useBuildInformation();
 
     return (
@@ -32,7 +32,7 @@ export function AboutModal({ open, onClose, logo = <CometDigitalExperienceLogo s
                 <DialogTitle>
                     <DialogTitleContent>
                         <Typography>
-                            <FormattedMessage id="comet.about.dialog.title" defaultMessage="About" />
+                            <FormattedMessage id="dextinity.about.dialog.title" defaultMessage="About" />
                         </Typography>
                         <DialogTitleSpace />
                         <IconButton onClick={onClose} color="inherit" size="large">
@@ -47,7 +47,7 @@ export function AboutModal({ open, onClose, logo = <CometDigitalExperienceLogo s
                         {buildInformation?.number && buildInformation.commitHash && (
                             <Typography>
                                 <FormattedMessage
-                                    id="comet.version.title"
+                                    id="dextinity.version.title"
                                     defaultMessage="{buildNumber} ({commitSha})"
                                     values={{
                                         buildNumber: buildInformation.number,
@@ -63,7 +63,7 @@ export function AboutModal({ open, onClose, logo = <CometDigitalExperienceLogo s
                         )}
                     </VersionContainer>
                     <Typography>
-                        <FormattedMessage id="comet.about.dialog.copyright" defaultMessage="Copyright © Vivid Planet Software GmbH" />
+                        <FormattedMessage id="dextinity.about.dialog.copyright" defaultMessage="Copyright © Vivid Planet Software GmbH" />
                     </Typography>
 
                     <Link href="https://www.vivid-planet.com" target="_blank" underline="hover">

@@ -1,4 +1,4 @@
-import { BaseTranslationDialog } from "@comet/admin";
+import { BaseTranslationDialog } from "@dextinity/admin";
 import type { EditorState } from "draft-js";
 
 import { Rte } from "../Rte";

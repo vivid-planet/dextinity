@@ -4,7 +4,7 @@ import { GraphQLBigInt } from "graphql-scalars";
 import { v4 as uuid } from "uuid";
 
 @ObjectType("FileUpload")
-@Entity({ tableName: "CometFileUpload" })
+@Entity({ tableName: "DextinityFileUpload" })
 export class FileUpload extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt";
 

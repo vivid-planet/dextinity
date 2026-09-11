@@ -93,7 +93,7 @@ function parseRepoUrl(rawUrl: string): { repoUrl: string; ref: string | undefine
 
 function cloneRepo(rawUrl: string, sparsePatterns: string[]): string {
     const { repoUrl, ref } = parseRepoUrl(rawUrl);
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "comet-agent-install-"));
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "dextinity-agent-install-"));
 
     execFileSync("git", ["init", tmpDir], { stdio: "pipe" });
     execFileSync("git", ["-C", tmpDir, "remote", "add", "origin", "--", repoUrl], { stdio: "pipe" });

@@ -1,4 +1,4 @@
-import { messages } from "@comet/admin";
+import { messages } from "@dextinity/admin";
 import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 

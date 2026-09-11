@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { FinalForm, Loading } from "@comet/admin";
+import { FinalForm, Loading } from "@dextinity/admin";
 
 import { editFolderQuery, updateDamFolderMutation } from "./EditFolder.gql";
 import type {

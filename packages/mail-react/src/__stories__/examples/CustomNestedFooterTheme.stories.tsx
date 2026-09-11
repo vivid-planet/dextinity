@@ -8,6 +8,7 @@ import { HtmlText } from "../../components/text/HtmlText.js";
 import { MjmlText } from "../../components/text/MjmlText.js";
 import { createTheme } from "../../theme/createTheme.js";
 import { ThemeProvider } from "../../theme/ThemeProvider.js";
+import type { Theme } from "../../theme/themeTypes.js";
 
 const config: Meta = {
     title: "Examples/CustomNestedFooterTheme",
@@ -31,9 +32,11 @@ export const Default: Story = {
             },
         });
 
-        const footerTheme = structuredClone(theme);
-        footerTheme.colors.background.content = "#2d4a6e";
-        footerTheme.text.color = "#c8d8e9";
+        const footerTheme: Theme = {
+            ...theme,
+            text: { ...theme.text, color: "#c8d8e9" },
+            colors: { ...theme.colors, background: { ...theme.colors.background, content: "#2d4a6e" } },
+        };
 
         return (
             <MjmlMailRoot theme={theme}>

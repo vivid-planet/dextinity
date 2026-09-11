@@ -1,4 +1,4 @@
-import { createComponentSlot, type ThemedComponentBaseProps } from "@comet/admin";
+import { createComponentSlot, type ThemedComponentBaseProps } from "@dextinity/admin";
 import { type ComponentsOverrides, FormControl, type Theme, Typography } from "@mui/material";
 import { css, useThemeProps } from "@mui/material/styles";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
@@ -58,7 +58,7 @@ const Separator = createComponentSlot(Typography)<TimeRangePickerClassKey>({
 );
 
 /**
- * @deprecated Use `TimeRange` from `@comet/admin` instead.
+ * @deprecated Use `TimeRange` from `@dextinity/admin` instead.
  */
 export type TimeRange = {
     start: string;
@@ -87,19 +87,19 @@ export interface TimeRangePickerProps
 type IndividualTimeValue = string | undefined;
 
 /**
- * @deprecated Use `TimeRangePicker` from `@comet/admin` instead.
+ * @deprecated Use `TimeRangePicker` from `@dextinity/admin` instead.
  */
 export const TimeRangePicker = (inProps: TimeRangePickerProps) => {
     const {
         onChange,
         value,
-        separatorText = <FormattedMessage id="comet.dateTime.fromToSeparatorText" defaultMessage="to" />,
+        separatorText = <FormattedMessage id="dextinity.dateTime.fromToSeparatorText" defaultMessage="to" />,
         className,
         sx,
         required,
         slotProps,
         ...propsForBothTimePickers
-    } = useThemeProps({ props: inProps, name: "CometAdminLegacyTimeRangePicker" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminLegacyTimeRangePicker" });
     const intl = useIntl();
 
     const [startTime, setStartTime] = useState<IndividualTimeValue>(value?.start);
@@ -155,7 +155,7 @@ export const TimeRangePicker = (inProps: TimeRangePickerProps) => {
                 <StartTimePicker
                     inputRef={startPickerRef}
                     value={startTime}
-                    placeholder={intl.formatMessage({ id: "comet.timeRangePicker.start", defaultMessage: "Start" })}
+                    placeholder={intl.formatMessage({ id: "dextinity.timeRangePicker.start", defaultMessage: "Start" })}
                     onChange={(time) => onChangeTimeValue(time, "start")}
                     onOpenPopper={() => setStartPickerIsOpen(true)}
                     onClosePopper={() => setStartPickerIsOpen(false)}
@@ -170,7 +170,7 @@ export const TimeRangePicker = (inProps: TimeRangePickerProps) => {
                 <EndTimePicker
                     inputRef={endPickerRef}
                     value={endTime}
-                    placeholder={intl.formatMessage({ id: "comet.timeRangePicker.end", defaultMessage: "End" })}
+                    placeholder={intl.formatMessage({ id: "dextinity.timeRangePicker.end", defaultMessage: "End" })}
                     onChange={(time) => onChangeTimeValue(time, "end")}
                     onOpenPopper={() => setEndPickerIsOpen(true)}
                     onClosePopper={() => setEndPickerIsOpen(false)}
@@ -186,17 +186,17 @@ export const TimeRangePicker = (inProps: TimeRangePickerProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminLegacyTimeRangePicker: TimeRangePickerClassKey;
+        DextinityAdminLegacyTimeRangePicker: TimeRangePickerClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminLegacyTimeRangePicker: TimeRangePickerProps;
+        DextinityAdminLegacyTimeRangePicker: TimeRangePickerProps;
     }
 
     interface Components {
-        CometAdminLegacyTimeRangePicker?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminLegacyTimeRangePicker"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminLegacyTimeRangePicker"];
+        DextinityAdminLegacyTimeRangePicker?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminLegacyTimeRangePicker"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminLegacyTimeRangePicker"];
         };
     }
 }

@@ -1,4 +1,4 @@
-import { Button, Table } from "@comet/admin";
+import { Button, Table } from "@dextinity/admin";
 import { useState } from "react";
 
 interface Person {

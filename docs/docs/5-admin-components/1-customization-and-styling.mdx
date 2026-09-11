@@ -3,13 +3,13 @@ title: Customization and Styling
 sidebar_position: 1
 ---
 
-Comet Admin components are designed to be used similarly to MUI components.
+Dextinity Admin components are designed to be used similarly to MUI components.
 The APIs for styling, theming, overriding props, and replacing icons are similar to MUI.
 
 Following are examples of customizing the `ContentOverflow` component.
 The examples should all be transferable to other components.
 
-For instructions on how to build components that support these features, see [Creating customizable Admin components](/docs/comet-core-development/creating-customizable-admin-components).
+For instructions on how to build components that support these features, see [Creating customizable Admin components](/docs/dextinity-core-development/creating-customizable-admin-components).
 
 ## Commonly used term: Slot
 
@@ -76,9 +76,9 @@ Overriding the styles of a component can be done in the theme using the componen
 In this case, we override the background of the `root` slot and the font styles of the `openDialogIcon` slot.
 
 ```ts
-const theme = createCometTheme({
+const theme = createDextinityTheme({
     components: {
-        CometAdminContentOverflow: {
+        DextinityAdminContentOverflow: {
             styleOverrides: {
                 root: {
                     backgroundColor: "lime",
@@ -99,9 +99,9 @@ Overriding the default props of a component can be done in the theme using the c
 In this case, we replace the `openDialog` icon using the `iconMapping` prop.
 
 ```ts
-const theme = createCometTheme({
+const theme = createDextinityTheme({
     components: {
-        CometAdminContentOverflow: {
+        DextinityAdminContentOverflow: {
             defaultProps: {
                 iconMapping: {
                     openDialog: <Preview fontSize="large" />,

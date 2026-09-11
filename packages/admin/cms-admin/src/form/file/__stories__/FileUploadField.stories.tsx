@@ -1,4 +1,4 @@
-import { Alert, FinalForm } from "@comet/admin";
+import { Alert, FinalForm } from "@dextinity/admin";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { FileUploadField } from "../FileUploadField";

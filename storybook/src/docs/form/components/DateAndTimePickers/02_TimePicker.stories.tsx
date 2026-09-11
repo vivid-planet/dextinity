@@ -1,5 +1,5 @@
-import { Field, FieldContainer } from "@comet/admin";
-import { FinalFormTimePicker, TimePicker } from "@comet/admin-date-time";
+import { Field, FieldContainer } from "@dextinity/admin";
+import { FinalFormTimePicker, TimePicker } from "@dextinity/admin-date-time";
 import { Grid } from "@mui/material";
 import { useState } from "react";
 import { Form } from "react-final-form";

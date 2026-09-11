@@ -19,9 +19,11 @@ export const createErrorDialogApolloLink = (config?: { signInUrl?: string }) => 
         let errorType: ErrorType | undefined;
         let httpStatus: string | undefined;
 
-        if (graphQLErrors) {
+        if (graphQLErrors?.length) {
+            error = graphQLErrors.map(({ message }) => message);
+
             if (graphQLErrors.some((e) => e.extensions?.code === "FORBIDDEN")) {
-                errorType = "unauthenticated"; // Error is triggered by Comet Guard
+                errorType = "unauthenticated"; // Error is triggered by Dextinity Guard
             } else if (graphQLErrors.some((e) => e.extensions?.code === "UNAUTHENTICATED")) {
                 errorType = "unauthorized"; // Error is triggered by UnauthorizedException
             } else {

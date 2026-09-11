@@ -28,8 +28,8 @@ import {
     ToolbarAutomaticTitleItem,
     ToolbarBackButton,
     useEditDialog,
-} from "@comet/admin";
-import { Add, Edit, Html, Select as SelectIcon } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Add, Edit, Html, Select as SelectIcon } from "@dextinity/admin-icons";
 import { Box, DialogContent, IconButton, Typography } from "@mui/material";
 import { DataGrid, type GridRowSelectionModel } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";

@@ -1,4 +1,4 @@
-import { CometColor, Dashboard, LinkExternal, Settings, Sort } from "@comet/admin-icons";
+import { Dashboard, DextinityIcon, DextinityLogo, LinkExternal, Settings, Sort } from "@dextinity/admin-icons";
 import { Card, CardContent, Divider, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { matchPath, Route, Switch, useLocation } from "react-router";
@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 
 import { AppHeader } from "../../../appHeader/AppHeader";
 import { AppHeaderMenuButton } from "../../../appHeader/menuButton/AppHeaderMenuButton";
-import { CometLogo } from "../../../common/CometLogo";
 import { FillSpace } from "../../../common/FillSpace";
 import { MainContent } from "../../../common/MainContent";
 import { useWindowSize } from "../../../helpers/useWindowSize";
@@ -53,11 +52,11 @@ const AppMenu = () => {
                 <MainNavigationItemRouterLink primary="Foo4" to="/foo4" />
             </MainNavigationCollapsibleItem>
             <MainNavigationItemAnchorLink
-                primary="Comet Admin"
+                primary="Dextinity"
                 secondary="View on GitHub"
                 target="_blank"
-                href="https://github.com/vivid-planet/comet"
-                icon={<CometColor />}
+                href="https://github.com/vivid-planet/dextinity"
+                icon={<DextinityIcon />}
                 secondaryAction={<LinkExternal />}
             />
         </MainNavigation>
@@ -67,7 +66,7 @@ const AppMenu = () => {
 const Header = () => (
     <AppHeader>
         <AppHeaderMenuButton />
-        <CometLogo />
+        <DextinityLogo variant="light" sx={{ fontSize: 34 }} />
         <FillSpace />
     </AppHeader>
 );

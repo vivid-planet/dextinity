@@ -1,4 +1,4 @@
-import "@comet/site-react/css";
+import "@dextinity/site-react/css";
 
 export { DamVideoBlock } from "./blocks/DamVideoBlock";
 export { SeoBlock } from "./blocks/factories/SeoBlock";
@@ -12,6 +12,10 @@ export { Image } from "./image/Image";
 export { SitePreviewProvider } from "./sitePreview/SitePreviewProvider";
 export {
     AdminMessageType,
+    type AiContentAltTextPrefixLabels,
+    AiContentDisclosure,
+    type AiContentDisclosureProps,
+    type AiContentType,
     type BlockLoader,
     type BlockLoaderDependencies,
     type BlockLoaderOptions,
@@ -32,6 +36,7 @@ export {
     ErrorHandlerProvider,
     ExternalLinkBlock,
     generateImageUrl,
+    getAiContentAltTextWithPrefix,
     getMaxDimensionsFromArea,
     gql,
     type GraphQLFetch,
@@ -89,4 +94,4 @@ export {
     type VideoPreviewImageProps,
     withPreview,
     type WithPreviewProps,
-} from "@comet/site-react";
+} from "@dextinity/site-react";

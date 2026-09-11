@@ -1,4 +1,4 @@
-import { Check, Error, Info, Warning } from "@comet/admin-icons";
+import { Check, Error, Info, Warning } from "@dextinity/admin-icons";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
 import type { GetMuiComponentTheme } from "./getComponentsTheme";

@@ -1,6 +1,6 @@
-import { FinalForm } from "@comet/admin";
-import { ColorField } from "@comet/admin-color-picker";
-import { ArrowRight } from "@comet/admin-icons";
+import { FinalForm } from "@dextinity/admin";
+import { ColorField } from "@dextinity/admin-color-picker";
+import { ArrowRight } from "@dextinity/admin-icons";
 import { InputAdornment } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 

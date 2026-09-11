@@ -1,4 +1,4 @@
-import { usePreview } from "@comet/site-nextjs";
+import { usePreview } from "@dextinity/site-nextjs";
 import type {
     DamFileDownloadLinkBlockData,
     EmailLinkBlockData,

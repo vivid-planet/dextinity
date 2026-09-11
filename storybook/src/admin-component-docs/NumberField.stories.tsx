@@ -1,4 +1,4 @@
-import { FinalForm, NumberField } from "@comet/admin";
+import { FinalForm, NumberField } from "@dextinity/admin";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { commonFieldComponentArgTypes } from "./utils/commonArgTypes";

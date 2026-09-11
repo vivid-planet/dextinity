@@ -1,4 +1,4 @@
-import { useCookieApi } from "@comet/site-nextjs";
+import { useCookieApi } from "@dextinity/site-nextjs";
 
 import styles from "./CookiePlaceholders.module.scss";
 

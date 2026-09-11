@@ -14,8 +14,8 @@ import {
     ToolbarItem,
     useEditDialog,
     useEditDialogApi,
-} from "@comet/admin";
-import { Edit } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Edit } from "@dextinity/admin-icons";
 import { DialogContent, IconButton, MenuItem, Typography } from "@mui/material";
 import { type FunctionComponent, useRef, useState } from "react";
 import { useLocation } from "react-router";

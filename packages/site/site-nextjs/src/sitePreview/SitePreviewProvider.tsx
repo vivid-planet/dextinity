@@ -1,5 +1,10 @@
 "use client";
-import { PreviewContext, sendSitePreviewIFrameMessage, type SitePreviewIFrameLocationMessage, SitePreviewIFrameMessageType } from "@comet/site-react";
+import {
+    PreviewContext,
+    sendSitePreviewIFrameMessage,
+    type SitePreviewIFrameLocationMessage,
+    SitePreviewIFrameMessageType,
+} from "@dextinity/site-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { type PropsWithChildren, useEffect } from "react";
 
@@ -10,7 +15,7 @@ const SitePreview = ({ children }: PropsWithChildren) => {
     useEffect(() => {
         function sendUpstreamMessage() {
             const message: SitePreviewIFrameLocationMessage = {
-                cometType: SitePreviewIFrameMessageType.SitePreviewLocation,
+                dextinityType: SitePreviewIFrameMessageType.SitePreviewLocation,
                 data: { search: searchParams.toString(), pathname },
             };
             sendSitePreviewIFrameMessage(message);

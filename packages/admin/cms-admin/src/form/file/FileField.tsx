@@ -1,6 +1,6 @@
 import { useApolloClient } from "@apollo/client";
-import { Alert, useSnackbarApi } from "@comet/admin";
-import { Assets, Delete, MoreVertical } from "@comet/admin-icons";
+import { Alert, useSnackbarApi } from "@dextinity/admin";
+import { Assets, Delete, MoreVertical } from "@dextinity/admin-icons";
 import { Box, Divider, Grid, IconButton, List, Snackbar, Typography } from "@mui/material";
 import { type ReactElement, type ReactNode, useState } from "react";
 import type { FieldRenderProps } from "react-final-form";
@@ -95,7 +95,7 @@ const SingleFileField = ({ buttonText, input, allowedMimetypes, preview, menuAct
                     </Box>
                     <Divider />
                     <BlockAdminComponentButton startIcon={<Delete />} onClick={() => input.onChange(undefined)}>
-                        <FormattedMessage id="comet.form.file.empty" defaultMessage="Empty" />
+                        <FormattedMessage id="dextinity.form.file.empty" defaultMessage="Empty" />
                     </BlockAdminComponentButton>
                 </BlockAdminComponentPaper>
                 {showMenu && (
@@ -108,7 +108,7 @@ const SingleFileField = ({ buttonText, input, allowedMimetypes, preview, menuAct
     return (
         <>
             <BlockAdminComponentButton onClick={() => setChooseFileDialogOpen(true)} startIcon={<Assets />} size="large">
-                {buttonText ?? <FormattedMessage id="comet.form.file.chooseFile" defaultMessage="Choose file" />}
+                {buttonText ?? <FormattedMessage id="dextinity.form.file.chooseFile" defaultMessage="Choose file" />}
             </BlockAdminComponentButton>
             <ChooseDamFileDialog
                 open={chooseFileDialogOpen}
@@ -164,7 +164,7 @@ const MultiFileFieldInner = ({ buttonText, input, allowedMimetypes, preview, men
                 <Snackbar autoHideDuration={5000}>
                     <Alert severity="error">
                         <FormattedMessage
-                            id="comet.form.file.failedToLoadSelection"
+                            id="dextinity.form.file.failedToLoadSelection"
                             defaultMessage="Failed to load selected files. Please try again."
                         />
                     </Alert>
@@ -177,7 +177,7 @@ const MultiFileFieldInner = ({ buttonText, input, allowedMimetypes, preview, men
         <>
             {files.length === 0 ? (
                 <BlockAdminComponentButton onClick={() => setDialogOpen(true)} startIcon={<Assets />} size="large">
-                    {buttonText ?? <FormattedMessage id="comet.form.file.chooseFiles" defaultMessage="Choose files" />}
+                    {buttonText ?? <FormattedMessage id="dextinity.form.file.chooseFiles" defaultMessage="Choose files" />}
                 </BlockAdminComponentButton>
             ) : (
                 <BlockAdminComponentPaper disablePadding>
@@ -194,7 +194,7 @@ const MultiFileFieldInner = ({ buttonText, input, allowedMimetypes, preview, men
                     </List>
                     <Divider />
                     <BlockAdminComponentButton startIcon={<Assets />} onClick={() => setDialogOpen(true)}>
-                        <FormattedMessage id="comet.form.file.changeSelectedFiles" defaultMessage="Change selected files" />
+                        <FormattedMessage id="dextinity.form.file.changeSelectedFiles" defaultMessage="Change selected files" />
                     </BlockAdminComponentButton>
                 </BlockAdminComponentPaper>
             )}

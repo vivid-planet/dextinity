@@ -1,4 +1,4 @@
-import { RteNonBreakingSpace } from "@comet/admin-icons";
+import { RteNonBreakingSpace } from "@dextinity/admin-icons";
 import { mergeAttributes, Node } from "@tiptap/core";
 import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 

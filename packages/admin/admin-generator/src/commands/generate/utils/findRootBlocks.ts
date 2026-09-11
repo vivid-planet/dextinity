@@ -2,15 +2,15 @@ import { existsSync } from "fs";
 import type { IntrospectionObjectType, IntrospectionQuery } from "graphql";
 
 const fallbackLibraryBlocks: { [key: string]: string } = {
-    AnchorBlock: "@comet/cms-admin",
-    DamImageBlock: "@comet/cms-admin",
-    DamVideoBlock: "@comet/cms-admin",
-    ExternalLinkBlock: "@comet/cms-admin",
-    InternalLinkBlock: "@comet/cms-admin",
-    PixelImageBlock: "@comet/cms-admin",
-    SpaceBlock: "@comet/cms-admin",
-    SvgImageBlock: "@comet/cms-admin",
-    YouTubeVideoBlock: "@comet/cms-admin",
+    AnchorBlock: "@dextinity/cms-admin",
+    DamImageBlock: "@dextinity/cms-admin",
+    DamVideoBlock: "@dextinity/cms-admin",
+    ExternalLinkBlock: "@dextinity/cms-admin",
+    InternalLinkBlock: "@dextinity/cms-admin",
+    PixelImageBlock: "@dextinity/cms-admin",
+    SpaceBlock: "@dextinity/cms-admin",
+    SvgImageBlock: "@dextinity/cms-admin",
+    YouTubeVideoBlock: "@dextinity/cms-admin",
 };
 
 export function findRootBlocks({ gqlType, targetDirectory }: { gqlType: string; targetDirectory: string }, schema: IntrospectionQuery) {

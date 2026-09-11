@@ -1,7 +1,7 @@
 import { gql, useApolloClient, useQuery } from "@apollo/client";
-import { Field, FinalForm, FinalFormSelect, SaveButton, Tooltip } from "@comet/admin";
-import { Info, Newsletter } from "@comet/admin-icons";
-import { BlockAdminComponentPaper, BlockAdminComponentSectionGroup, useContentScope } from "@comet/cms-admin";
+import { Field, FinalForm, FinalFormSelect, SaveButton, Tooltip } from "@dextinity/admin";
+import { Info, Newsletter } from "@dextinity/admin-icons";
+import { BlockAdminComponentPaper, BlockAdminComponentSectionGroup, useContentScope } from "@dextinity/cms-admin";
 import { Card } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 
@@ -79,9 +79,7 @@ export const TestEmailCampaignForm = ({ id, isSendable = false, isCampaignCreate
         <Card sx={{ mt: 4 }}>
             <BlockAdminComponentPaper>
                 <BlockAdminComponentSectionGroup
-                    title={
-                        <FormattedMessage id="cometBrevoModule.emailCampaigns.testEmailCampaign.title" defaultMessage="Send test email campaign" />
-                    }
+                    title={<FormattedMessage id="dextinity.emailCampaigns.testEmailCampaign.title" defaultMessage="Send test email campaign" />}
                 >
                     <FinalForm<FormProps> mode="edit" onSubmit={submitTestEmails} initialValues={{ testEmails: [] }}>
                         {({ handleSubmit, submitting, values }) => {
@@ -93,14 +91,14 @@ export const TestEmailCampaignForm = ({ id, isSendable = false, isCampaignCreate
                                         label={
                                             <>
                                                 <FormattedMessage
-                                                    id="cometBrevoModule.emailCampaigns.testEmailCampaign.testEmails"
+                                                    id="dextinity.emailCampaigns.testEmailCampaign.testEmails"
                                                     defaultMessage="Email addresses"
                                                 />{" "}
                                                 {isCampaignCreated && (
                                                     <Tooltip
                                                         title={
                                                             <FormattedMessage
-                                                                id="cometBrevoModule.emailCampaigns.testEmails.info"
+                                                                id="dextinity.emailCampaigns.testEmails.info"
                                                                 defaultMessage="Please select a target group and save the campaign before you can send test emails."
                                                             />
                                                         }
@@ -127,7 +125,7 @@ export const TestEmailCampaignForm = ({ id, isSendable = false, isCampaignCreate
                                         }}
                                     >
                                         <FormattedMessage
-                                            id="cometBrevoModule.emailCampaigns.testEmailCampaign.sendText"
+                                            id="dextinity.emailCampaigns.testEmailCampaign.sendText"
                                             defaultMessage="Send test email campaign"
                                         />
                                     </SaveButton>

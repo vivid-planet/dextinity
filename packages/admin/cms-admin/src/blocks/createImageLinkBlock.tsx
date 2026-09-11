@@ -18,16 +18,16 @@ export function createImageLinkBlock(
     return createCompositeBlock(
         {
             name,
-            displayName: <FormattedMessage id="comet.blocks.imageLink" defaultMessage="Image/Link" />,
+            displayName: <FormattedMessage id="dextinity.blocks.imageLink" defaultMessage="Image/Link" />,
             blocks: {
                 link: {
                     block: LinkBlock,
-                    title: <FormattedMessage id="comet.blocks.imageLink.link" defaultMessage="Link" />,
+                    title: <FormattedMessage id="dextinity.blocks.imageLink.link" defaultMessage="Link" />,
                     paper: true,
                 },
                 image: {
                     block: image,
-                    title: <FormattedMessage id="comet.blocks.imageLink.image" defaultMessage="Image" />,
+                    title: <FormattedMessage id="dextinity.blocks.imageLink.image" defaultMessage="Image" />,
                     paper: true,
                 },
             },

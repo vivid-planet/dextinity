@@ -2,12 +2,19 @@
     "$schema": "https://unpkg.com/@changesets/config@2.3.0/schema.json",
     "changelog": "@changesets/cli/changelog",
     "commit": false,
-    "fixed": [["@comet/*"]],
+    "fixed": [["@dextinity/*"]],
     "linked": [],
     "access": "restricted",
     "baseBranch": "main",
     "updateInternalDependencies": "patch",
-    "ignore": ["comet-storybook", "comet-demo-api", "comet-demo-admin", "comet-demo-admin-server", "comet-demo-site", "comet-docs"],
+    "ignore": [
+        "dextinity-storybook",
+        "dextinity-demo-api",
+        "dextinity-demo-admin",
+        "dextinity-demo-admin-server",
+        "dextinity-demo-site",
+        "dextinity-docs"
+    ],
     "snapshot": {
         "useCalculatedVersion": true
     }

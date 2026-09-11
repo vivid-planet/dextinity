@@ -1,9 +1,9 @@
 import { type ArgumentsHost, BadRequestException, HttpException, InternalServerErrorException } from "@nestjs/common";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 
-import { CometEntityNotFoundException } from "./entity-not-found.exception";
+import { DextinityEntityNotFoundException } from "./entity-not-found.exception";
 import { ExceptionFilter } from "./exception.filter";
-import { CometValidationException } from "./validation.exception";
+import { DextinityValidationException } from "./validation.exception";
 
 const graphQLHost = {
     getType: () => "graphql",
@@ -16,30 +16,30 @@ vi.spyOn(console, "error").mockImplementation(() => {
 describe("ExceptionFilter", () => {
     describe("catch", () => {
         describe("graphql", () => {
-            it("returns BadRequestException for CometException", () => {
+            it("returns BadRequestException for DextinityException", () => {
                 const exceptionFilter = new ExceptionFilter(false);
 
-                const returnError = exceptionFilter.catch(new CometEntityNotFoundException("Not found"), graphQLHost);
+                const returnError = exceptionFilter.catch(new DextinityEntityNotFoundException("Not found"), graphQLHost);
 
                 expect(returnError).toBeInstanceOf(BadRequestException);
                 expect((returnError as BadRequestException).getResponse()).toEqual({
                     statusCode: 400,
                     message: "Not found",
-                    error: "CometEntityNotFoundException",
+                    error: "DextinityEntityNotFoundException",
                     validationErrors: [],
                 });
             });
 
-            it("returns BadRequestException for CometValidationException", () => {
+            it("returns BadRequestException for DextinityValidationException", () => {
                 const exceptionFilter = new ExceptionFilter(false);
 
-                const returnError = exceptionFilter.catch(new CometValidationException("Invalid", [{ property: "prop1" }]), graphQLHost);
+                const returnError = exceptionFilter.catch(new DextinityValidationException("Invalid", [{ property: "prop1" }]), graphQLHost);
 
                 expect(returnError).toBeInstanceOf(BadRequestException);
                 expect((returnError as BadRequestException).getResponse()).toEqual({
                     statusCode: 400,
                     message: "Invalid",
-                    error: "CometValidationException",
+                    error: "DextinityValidationException",
                     validationErrors: [
                         {
                             property: "prop1",
@@ -99,32 +99,32 @@ describe("ExceptionFilter", () => {
                 } as unknown as ArgumentsHost;
             });
 
-            it("response status is 400 and json is correct for CometException", () => {
+            it("response status is 400 and json is correct for DextinityException", () => {
                 const exceptionFilter = new ExceptionFilter(false);
 
-                exceptionFilter.catch(new CometEntityNotFoundException("Not found"), httpHost);
+                exceptionFilter.catch(new DextinityEntityNotFoundException("Not found"), httpHost);
 
                 const responseMock = httpHost.switchToHttp().getResponse();
                 expect(responseMock.status).toHaveBeenCalledWith(400);
                 expect(responseMock.json).toHaveBeenCalledWith({
                     statusCode: 400,
                     message: "Not found",
-                    error: "CometEntityNotFoundException",
+                    error: "DextinityEntityNotFoundException",
                     validationErrors: [],
                 });
             });
 
-            it("response status is 400 and json is correct for CometValidationException", () => {
+            it("response status is 400 and json is correct for DextinityValidationException", () => {
                 const exceptionFilter = new ExceptionFilter(false);
 
-                exceptionFilter.catch(new CometValidationException("Invalid", [{ property: "prop1" }]), httpHost);
+                exceptionFilter.catch(new DextinityValidationException("Invalid", [{ property: "prop1" }]), httpHost);
 
                 const responseMock = httpHost.switchToHttp().getResponse();
                 expect(responseMock.status).toHaveBeenCalledWith(400);
                 expect(responseMock.json).toHaveBeenCalledWith({
                     statusCode: 400,
                     message: "Invalid",
-                    error: "CometValidationException",
+                    error: "DextinityValidationException",
                     validationErrors: [
                         {
                             property: "prop1",

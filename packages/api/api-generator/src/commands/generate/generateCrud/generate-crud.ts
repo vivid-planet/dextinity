@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CRUD_GENERATOR_METADATA_KEY, type CrudGeneratorOptions, hasCrudFieldFeature, REQUIRED_PERMISSION_METADATA_KEY } from "@comet/cms-api";
+import { CRUD_GENERATOR_METADATA_KEY, type CrudGeneratorOptions, hasCrudFieldFeature, REQUIRED_PERMISSION_METADATA_KEY } from "@dextinity/cms-api";
 import { type EntityMetadata, ReferenceKind } from "@mikro-orm/postgresql";
 import * as path from "path";
 import { singular } from "pluralize";
@@ -74,7 +74,7 @@ function generateFilterDto({
                     ${prop.name}?: ${enumName}EnumFilter;
                     `;
                 } else if (prop.type === "string" || prop.type === "text") {
-                    imports.push({ name: "StringFilter", importPath: "@comet/cms-api" });
+                    imports.push({ name: "StringFilter", importPath: "@dextinity/cms-api" });
                     return `@Field(() => StringFilter, { nullable: true })
                     @ValidateNested()
                     @IsOptional()
@@ -82,7 +82,7 @@ function generateFilterDto({
                     ${prop.name}?: StringFilter;
                     `;
                 } else if (numberTypes.includes(prop.type)) {
-                    imports.push({ name: "NumberFilter", importPath: "@comet/cms-api" });
+                    imports.push({ name: "NumberFilter", importPath: "@dextinity/cms-api" });
                     return `@Field(() => NumberFilter, { nullable: true })
                     @ValidateNested()
                     @IsOptional()
@@ -90,7 +90,7 @@ function generateFilterDto({
                     ${prop.name}?: NumberFilter;
                     `;
                 } else if (prop.type === "boolean" || prop.type === "BooleanType") {
-                    imports.push({ name: "BooleanFilter", importPath: "@comet/cms-api" });
+                    imports.push({ name: "BooleanFilter", importPath: "@dextinity/cms-api" });
                     return `@Field(() => BooleanFilter, { nullable: true })
                     @ValidateNested()
                     @IsOptional()
@@ -99,7 +99,7 @@ function generateFilterDto({
                     `;
                 } else if (prop.type === "DateType") {
                     // ISO Date without time
-                    imports.push({ name: "DateFilter", importPath: "@comet/cms-api" });
+                    imports.push({ name: "DateFilter", importPath: "@dextinity/cms-api" });
                     return `@Field(() => DateFilter, { nullable: true })
                     @ValidateNested()
                     @IsOptional()
@@ -108,7 +108,7 @@ function generateFilterDto({
                     `;
                 } else if (prop.type === "Date") {
                     // DateTime
-                    imports.push({ name: "DateTimeFilter", importPath: "@comet/cms-api" });
+                    imports.push({ name: "DateTimeFilter", importPath: "@dextinity/cms-api" });
                     return `@Field(() => DateTimeFilter, { nullable: true })
                     @ValidateNested()
                     @IsOptional()
@@ -116,7 +116,7 @@ function generateFilterDto({
                     ${prop.name}?: DateTimeFilter;
                     `;
                 } else if (prop.kind === "m:1") {
-                    imports.push({ name: "ManyToOneFilter", importPath: "@comet/cms-api" });
+                    imports.push({ name: "ManyToOneFilter", importPath: "@dextinity/cms-api" });
                     return `@Field(() => ManyToOneFilter, { nullable: true })
                     @ValidateNested()
                     @IsOptional()
@@ -124,7 +124,7 @@ function generateFilterDto({
                     ${prop.name}?: ManyToOneFilter;
                     `;
                 } else if (prop.kind === "1:m") {
-                    imports.push({ name: "OneToManyFilter", importPath: "@comet/cms-api" });
+                    imports.push({ name: "OneToManyFilter", importPath: "@dextinity/cms-api" });
                     return `@Field(() => OneToManyFilter, { nullable: true })
                     @ValidateNested()
                     @IsOptional()
@@ -132,7 +132,7 @@ function generateFilterDto({
                     ${prop.name}?: OneToManyFilter;
                     `;
                 } else if (prop.kind === "m:n") {
-                    imports.push({ name: "ManyToManyFilter", importPath: "@comet/cms-api" });
+                    imports.push({ name: "ManyToManyFilter", importPath: "@dextinity/cms-api" });
                     return `@Field(() => ManyToManyFilter, { nullable: true })
                     @ValidateNested()
                     @IsOptional()
@@ -140,7 +140,7 @@ function generateFilterDto({
                     ${prop.name}?: ManyToManyFilter;
                     `;
                 } else if (prop.type == "uuid") {
-                    imports.push({ name: "IdFilter", importPath: "@comet/cms-api" });
+                    imports.push({ name: "IdFilter", importPath: "@dextinity/cms-api" });
                     return `@Field(() => IdFilter, { nullable: true })
                     @ValidateNested()
                     @IsOptional()
@@ -181,7 +181,7 @@ export function generateSortDto({ generatorOptions, metadata }: { generatorOptio
     const { classNameSingular } = buildNameVariants(metadata);
     const { crudSortProps } = buildOptions(metadata, generatorOptions);
 
-    const sortOut = `import { SortDirection } from "@comet/cms-api";
+    const sortOut = `import { SortDirection } from "@dextinity/cms-api";
     import { Field, InputType, registerEnumType } from "@nestjs/graphql";
     import { Type } from "class-transformer";
     import { IsEnum } from "class-validator";
@@ -216,7 +216,7 @@ function generatePaginatedDto({ generatorOptions, metadata }: { generatorOptions
     const { targetDirectory } = buildOptions(metadata, generatorOptions);
 
     const paginatedOut = `import { ObjectType } from "@nestjs/graphql";
-    import { PaginatedResponseFactory } from "@comet/cms-api";
+    import { PaginatedResponseFactory } from "@dextinity/cms-api";
 
     import { ${metadata.className} } from "${path.relative(`${targetDirectory}/dto`, metadata.path).replace(/\.ts$/, "")}";
 
@@ -259,7 +259,7 @@ function generateArgsDto({ generatorOptions, metadata }: { generatorOptions: Cru
     const argsOut = `import { ArgsType, Field, IntersectionType, registerEnumType, ID } from "@nestjs/graphql";
     import { Type } from "class-transformer";
     import { IsOptional, IsString, ValidateNested, IsEnum, IsUUID } from "class-validator";
-    ${hasPaging ? `import { OffsetBasedPaginationArgs, SortDirection } from "@comet/cms-api";` : ``}
+    ${hasPaging ? `import { OffsetBasedPaginationArgs, SortDirection } from "@dextinity/cms-api";` : ``}
     ${hasPaging && hasFilterArg ? `import { ${classNameSingular}Filter } from "./${fileNameSingular}.filter";` : ``}
     ${hasPaging && hasSortArg ? `import { ${classNameSingular}Sort, ${classNameSingular}SortField } from "./${fileNameSingular}.sort";` : ``}
 
@@ -437,12 +437,12 @@ function generateService({ generatorOptions, metadata }: { generatorOptions: Cru
 }
 
 function generateEntityImport(targetMetadata: EntityMetadata<any>, relativeTo: string): Imports[0] {
-    const libMatch = targetMetadata.path.match(/(packages\/api|@comet)\/cms-api\/lib\/(.*)/);
+    const libMatch = targetMetadata.path.match(/(packages\/api|@dextinity)\/cms-api\/lib\/(.*)/);
     if (libMatch) {
         // Import from cms-api package
         return {
             name: targetMetadata.className,
-            importPath: "@comet/cms-api",
+            importPath: "@dextinity/cms-api",
         };
     }
     return {
@@ -683,7 +683,7 @@ function generateNestedEntityResolver({ generatorOptions, metadata }: { generato
     imports.push(generateEntityImport(metadata, targetDirectory));
 
     return `
-    import { ${entityHasRequiredPermission ? "" : "RequiredPermission, "}RootBlockDataScalar, BlocksTransformerService } from "@comet/cms-api";
+    import { ${entityHasRequiredPermission ? "" : "RequiredPermission, "}RootBlockDataScalar, BlocksTransformerService } from "@dextinity/cms-api";
     import { Args, ID, Info, Mutation, Query, Resolver, ResolveField, Parent } from "@nestjs/graphql";
     ${generateImportsCode(imports)}
 
@@ -878,8 +878,8 @@ function generateResolver({ generatorOptions, metadata }: { generatorOptions: Cr
             hooksService.validateCreateInput?.options?.includes("currentUser") ||
             hooksService.validateUpdateInput?.options?.includes("currentUser")
         ) {
-            imports.push({ name: "GetCurrentUser", importPath: "@comet/cms-api" });
-            imports.push({ name: "CurrentUser", importPath: "@comet/cms-api" });
+            imports.push({ name: "GetCurrentUser", importPath: "@dextinity/cms-api" });
+            imports.push({ name: "CurrentUser", importPath: "@dextinity/cms-api" });
         }
     }
 
@@ -896,16 +896,16 @@ function generateResolver({ generatorOptions, metadata }: { generatorOptions: Cr
 
     const entityHasRequiredPermission = !!Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, metadata.class);
 
-    imports.push({ name: "SortDirection", importPath: "@comet/cms-api" });
+    imports.push({ name: "SortDirection", importPath: "@dextinity/cms-api" });
     if (!entityHasRequiredPermission) {
-        imports.push({ name: "RequiredPermission", importPath: "@comet/cms-api" });
+        imports.push({ name: "RequiredPermission", importPath: "@dextinity/cms-api" });
     }
-    imports.push({ name: "AffectedEntity", importPath: "@comet/cms-api" });
-    imports.push({ name: "validateNotModified", importPath: "@comet/cms-api" });
-    imports.push({ name: "RootBlockDataScalar", importPath: "@comet/cms-api" });
-    imports.push({ name: "BlocksTransformerService", importPath: "@comet/cms-api" });
-    imports.push({ name: "gqlArgsToMikroOrmQuery", importPath: "@comet/cms-api" });
-    imports.push({ name: "gqlSortToMikroOrmOrderBy", importPath: "@comet/cms-api" });
+    imports.push({ name: "AffectedEntity", importPath: "@dextinity/cms-api" });
+    imports.push({ name: "validateNotModified", importPath: "@dextinity/cms-api" });
+    imports.push({ name: "RootBlockDataScalar", importPath: "@dextinity/cms-api" });
+    imports.push({ name: "BlocksTransformerService", importPath: "@dextinity/cms-api" });
+    imports.push({ name: "gqlArgsToMikroOrmQuery", importPath: "@dextinity/cms-api" });
+    imports.push({ name: "gqlSortToMikroOrmOrderBy", importPath: "@dextinity/cms-api" });
 
     const resolverOut = `import { EntityManager, FindOptions, ObjectQuery, Reference } from "@mikro-orm/postgresql";
     import { Args, ID, Mutation, Query, Resolver, ResolveField, Parent } from "@nestjs/graphql";

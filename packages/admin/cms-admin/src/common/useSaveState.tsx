@@ -1,4 +1,4 @@
-import { messages, SaveButton } from "@comet/admin";
+import { messages, SaveButton } from "@dextinity/admin";
 import { type ComponentProps, type JSX, type ReactNode, useCallback, useState } from "react";
 import { FormattedMessage } from "react-intl";
 

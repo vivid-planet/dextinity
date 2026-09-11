@@ -51,22 +51,22 @@ const getOverridesInterpolation = <PropsName extends keyof ComponentsPropsList>(
 // Overload for standard MUI components
 export function mergeOverrideStyles<ComponentName extends keyof ComponentNameToClassKey & keyof ComponentsPropsList>(
     passedIn?: Partial<OverridesStyleRules<ClassKey<ComponentName>>>,
-    comet?: Partial<OverridesStyleRules<ClassKey<ComponentName>>>,
+    dextinity?: Partial<OverridesStyleRules<ClassKey<ComponentName>>>,
 ): Partial<OverridesStyleRules<ClassKey<ComponentName>>>;
 
 // Overload for components with custom owner state (e.g. MuiPickersTextField from `@mui/x-date-pickers`)
 export function mergeOverrideStyles<TStyleOverrides extends Record<string, any>>(
     passedIn?: Partial<TStyleOverrides>,
-    comet?: Partial<TStyleOverrides>,
+    dextinity?: Partial<TStyleOverrides>,
 ): Partial<TStyleOverrides>;
 
-export function mergeOverrideStyles(passedIn: Record<string, any> = {}, comet: Record<string, any> = {}): Record<string, any> {
-    const mergedOverrides = { ...comet };
+export function mergeOverrideStyles(passedIn: Record<string, any> = {}, dextinity: Record<string, any> = {}): Record<string, any> {
+    const mergedOverrides = { ...dextinity };
 
     Object.keys(passedIn).forEach((classKey: string) => {
         mergedOverrides[classKey] = (props: any) => {
             return deepmerge<StyleOverrideInterpolation>(
-                getOverridesInterpolation(props, comet[classKey]),
+                getOverridesInterpolation(props, dextinity[classKey]),
                 getOverridesInterpolation(props, passedIn[classKey]),
             );
         };

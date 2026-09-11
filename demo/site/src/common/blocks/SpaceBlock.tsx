@@ -1,5 +1,5 @@
 "use client";
-import { type PropsWithData, withPreview } from "@comet/site-nextjs";
+import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { SpaceBlockData } from "@src/blocks.generated";
 
 export const SpaceBlock = withPreview(

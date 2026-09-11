@@ -1,5 +1,5 @@
 // Inspired by https://gist.github.com/erikras/9607902abb1df1e7991c0bd83abdc4b4#file-whenfieldchanges-js
-import { OnChangeField } from "@comet/admin";
+import { OnChangeField } from "@dextinity/admin";
 import { Field } from "react-final-form";
 
 interface Props<TSourceFieldValue, TTargetFieldValue> {

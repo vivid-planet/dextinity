@@ -1,5 +1,5 @@
-import { Alert, Button, messages } from "@comet/admin";
-import { Clear, Delete, OpenNewTab } from "@comet/admin-icons";
+import { Alert, Button, messages } from "@dextinity/admin";
+import { Clear, Delete, OpenNewTab } from "@dextinity/admin-icons";
 import {
     Box,
     // eslint-disable-next-line no-restricted-imports
@@ -24,22 +24,22 @@ function SaveConflictDialog({ open, onClosePressed, onDiscardChangesPressed }: S
         <Dialog open={open} onClose={onClosePressed} maxWidth="md">
             <DialogTitle>
                 <Typography>
-                    <FormattedMessage id="comet.saveConflictDialog.title" defaultMessage="Save Conflict" />
+                    <FormattedMessage id="dextinity.saveConflictDialog.title" defaultMessage="Save Conflict" />
                 </Typography>
             </DialogTitle>
             <DialogContent>
                 <Alert severity="error">
-                    <FormattedMessage id="comet.saveConflictDialog.description1" defaultMessage="There was a conflict while saving" />
+                    <FormattedMessage id="dextinity.saveConflictDialog.description1" defaultMessage="There was a conflict while saving" />
                 </Alert>
 
                 <Stack spacing={2} pt={2}>
                     <Box>
                         <Typography variant="h4" fontWeight="bold">
-                            <FormattedMessage id="comet.saveConflictDialog.whatHappened.heading" defaultMessage="What happened?" />
+                            <FormattedMessage id="dextinity.saveConflictDialog.whatHappened.heading" defaultMessage="What happened?" />
                         </Typography>
                         <Typography py={2}>
                             <FormattedMessage
-                                id="comet.saveConflictDialog.whatHappened.description"
+                                id="dextinity.saveConflictDialog.whatHappened.description"
                                 defaultMessage="Someone else made changes to this page while you were editing it. <strong>You can't save this page.</strong> Otherwise, your changes would overwrite the other changes."
                                 values={{ strong: (chunks) => <strong>{chunks}</strong> }}
                             />
@@ -48,18 +48,18 @@ function SaveConflictDialog({ open, onClosePressed, onDiscardChangesPressed }: S
 
                     <Box>
                         <Typography variant="h4" fontWeight="bold">
-                            <FormattedMessage id="comet.saveConflictDialog.whatCanIDoNow.heading" defaultMessage="What can I do now?" />
+                            <FormattedMessage id="dextinity.saveConflictDialog.whatCanIDoNow.heading" defaultMessage="What can I do now?" />
                         </Typography>
                         <Typography variant="list">
                             <Typography variant="listItem">
                                 <FormattedMessage
-                                    id="comet.saveConflictDialog.whatCanIDoNow.option2"
+                                    id="dextinity.saveConflictDialog.whatCanIDoNow.option2"
                                     defaultMessage="View the other changes in a new tab: You must make your changes again in the new tab."
                                 />
                             </Typography>
                             <Typography variant="listItem">
                                 <FormattedMessage
-                                    id="comet.saveConflictDialog.whatCanIDoNow.option1"
+                                    id="dextinity.saveConflictDialog.whatCanIDoNow.option1"
                                     defaultMessage="Discard your unsaved changes: All your changes will be lost."
                                 />
                             </Typography>
@@ -68,25 +68,25 @@ function SaveConflictDialog({ open, onClosePressed, onDiscardChangesPressed }: S
 
                     <Box>
                         <Typography variant="h4" fontWeight="bold">
-                            <FormattedMessage id="comet.saveConflictDialog.avoidConflicts.heading" defaultMessage="How can I avoid conflicts?" />
+                            <FormattedMessage id="dextinity.saveConflictDialog.avoidConflicts.heading" defaultMessage="How can I avoid conflicts?" />
                         </Typography>
 
                         <Typography variant="list">
                             <Typography variant="listItem">
                                 <FormattedMessage
-                                    id="comet.saveConflictDialog.avoidConflicts.tip1"
+                                    id="dextinity.saveConflictDialog.avoidConflicts.tip1"
                                     defaultMessage="Avoid opening the same page in multiple tabs."
                                 />
                             </Typography>
                             <Typography variant="listItem">
                                 <FormattedMessage
-                                    id="comet.saveConflictDialog.avoidConflicts.tip3"
+                                    id="dextinity.saveConflictDialog.avoidConflicts.tip3"
                                     defaultMessage="Save your changes regularly. Don't leave a page open for a long time with unsaved changes."
                                 />
                             </Typography>
                             <Typography variant="listItem">
                                 <FormattedMessage
-                                    id="comet.saveConflictDialog.avoidConflicts.tip2"
+                                    id="dextinity.saveConflictDialog.avoidConflicts.tip2"
                                     defaultMessage="Avoid editing a page while another user is also editing it."
                                 />
                             </Typography>
@@ -106,7 +106,7 @@ function SaveConflictDialog({ open, onClosePressed, onDiscardChangesPressed }: S
                         onDiscardChangesPressed();
                     }}
                 >
-                    <FormattedMessage id="comet.saveConflictDialog.actionButtons.discardChanges" defaultMessage="Discard your changes" />
+                    <FormattedMessage id="dextinity.saveConflictDialog.actionButtons.discardChanges" defaultMessage="Discard your changes" />
                 </DiscardButton>
                 <Button
                     startIcon={<OpenNewTab />}
@@ -116,7 +116,7 @@ function SaveConflictDialog({ open, onClosePressed, onDiscardChangesPressed }: S
                     }}
                 >
                     <FormattedMessage
-                        id="comet.saveConflictDialog.actionButtons.openCurrentVersionInNewTab"
+                        id="dextinity.saveConflictDialog.actionButtons.openCurrentVersionInNewTab"
                         defaultMessage="View the other changes in a new tab"
                     />
                 </Button>

@@ -1,4 +1,4 @@
-import { AddNoCircle } from "@comet/admin-icons";
+import { AddNoCircle } from "@dextinity/admin-icons";
 import { Component } from "react";
 import { FormattedMessage } from "react-intl";
 

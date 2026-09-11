@@ -16,9 +16,9 @@ import {
     Tooltip,
     useFormApiRef,
     useStackSwitchApi,
-} from "@comet/admin";
-import { Info } from "@comet/admin-icons";
-import { type ContentScope, ContentScopeIndicator, resolveHasSaveConflict, useFormSaveConflict } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { Info } from "@dextinity/admin-icons";
+import { type ContentScope, ContentScopeIndicator, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import type { FormApi } from "final-form";
 import { type ReactElement, type ReactNode, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
@@ -62,9 +62,7 @@ interface FormProps {
 function validateUrl(value: string): ReactNode | undefined {
     const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d{1,5})?(\/[^\s]*)?$/;
     if (!urlPattern.test(value)) {
-        return (
-            <FormattedMessage id="cometBrevoModule.brevoConfig.allowedRedirectionUrl.validationError" defaultMessage="Please enter a valid URL." />
-        );
+        return <FormattedMessage id="dextinity.brevoConfig.allowedRedirectionUrl.validationError" defaultMessage="Please enter a valid URL." />;
     }
     return undefined;
 }
@@ -226,10 +224,7 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
         const validUnsubscriptionPageId = /^[a-zA-Z0-9]{24}$/;
         if (!validUnsubscriptionPageId.test(value)) {
             return (
-                <FormattedMessage
-                    id="cometBrevoModule.brevoConfig.unsubscriptionPageId.validation"
-                    defaultMessage="Must be a 24-digit alphanumeric ID"
-                />
+                <FormattedMessage id="dextinity.brevoConfig.unsubscriptionPageId.validation" defaultMessage="Must be a 24-digit alphanumeric ID" />
             );
         }
         return undefined;
@@ -243,7 +238,7 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
                         {saveConflict.dialogs}
                         <Toolbar scopeIndicator={<ContentScopeIndicator />}>
                             <ToolbarTitleItem>
-                                <FormattedMessage id="cometBrevoModule.brevoConfig.title" defaultMessage="Brevo config" />
+                                <FormattedMessage id="dextinity.brevoConfig.title" defaultMessage="Brevo config" />
                             </ToolbarTitleItem>
                             <FillSpace />
                             <ToolbarActions>
@@ -257,7 +252,7 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
                                 isOptionEqualToValue={(option: Option, value: Option) => option.value === value.value}
                                 options={senderOptions}
                                 name="sender"
-                                label={<FormattedMessage id="cometBrevoModule.brevoConfig.sender" defaultMessage="Sender" />}
+                                label={<FormattedMessage id="dextinity.brevoConfig.sender" defaultMessage="Sender" />}
                                 fullWidth
                                 required
                             />
@@ -267,12 +262,7 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
                                 isOptionEqualToValue={(option: Option, value: Option) => option.value === value.value}
                                 options={doubleOptInTemplateOptions}
                                 name="doubleOptInTemplate"
-                                label={
-                                    <FormattedMessage
-                                        id="cometBrevoModule.brevoConfig.doubleOptInTemplate"
-                                        defaultMessage="Double Opt-in template id"
-                                    />
-                                }
+                                label={<FormattedMessage id="dextinity.brevoConfig.doubleOptInTemplate" defaultMessage="Double Opt-in template id" />}
                                 fullWidth
                                 required
                             />
@@ -281,11 +271,11 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
                                 defaultValue={1}
                                 label={
                                     <>
-                                        <FormattedMessage id="cometBrevoModule.brevoConfig.folderId" defaultMessage="Folder ID" />
+                                        <FormattedMessage id="dextinity.brevoConfig.folderId" defaultMessage="Folder ID" />
                                         <Tooltip
                                             title={
                                                 <FormattedMessage
-                                                    id="cometBrevoModule.brevoConfig.folderId.info"
+                                                    id="dextinity.brevoConfig.folderId.info"
                                                     defaultMessage="By default, the folder ID should be set to 1 unless you have specifically configured another folder in Brevo."
                                                 />
                                             }
@@ -304,14 +294,11 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
                                 name="allowedRedirectionUrl"
                                 label={
                                     <>
-                                        <FormattedMessage
-                                            id="cometBrevoModule.brevoConfig.allowedRedirectionUrl"
-                                            defaultMessage="Allowed redirection URL"
-                                        />
+                                        <FormattedMessage id="dextinity.brevoConfig.allowedRedirectionUrl" defaultMessage="Allowed redirection URL" />
                                         <Tooltip
                                             title={
                                                 <FormattedMessage
-                                                    id="cometBrevoModule.brevoConfig.allowedRedirectionUrl.info"
+                                                    id="dextinity.brevoConfig.allowedRedirectionUrl.info"
                                                     defaultMessage="Defines the schema of a valid redirection URL that is set when creating or importing contacts."
                                                 />
                                             }
@@ -327,12 +314,7 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
                                 fullWidth
                                 name="unsubscriptionPageId"
                                 required
-                                label={
-                                    <FormattedMessage
-                                        id="cometBrevoModule.brevoConfig.unsubscriptionPageId"
-                                        defaultMessage="Unsubscription Page ID"
-                                    />
-                                }
+                                label={<FormattedMessage id="dextinity.brevoConfig.unsubscriptionPageId" defaultMessage="Unsubscription Page ID" />}
                                 validate={validateUnsubscriptionPageId}
                             />
                         </MainContent>

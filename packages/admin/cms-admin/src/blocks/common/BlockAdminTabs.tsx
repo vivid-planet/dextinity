@@ -1,4 +1,4 @@
-import { RouteWithErrorBoundary } from "@comet/admin";
+import { RouteWithErrorBoundary } from "@dextinity/admin";
 import { Tab as MuiTab, type TabProps, Tabs as MuiTabs } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { JSX } from "react";

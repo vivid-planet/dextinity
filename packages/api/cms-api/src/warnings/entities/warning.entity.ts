@@ -15,6 +15,8 @@ import { WarningStatus } from "./warning-status.enum";
 @Index({
     properties: ["updatedAt", "sourceInfo.rootEntityName", "sourceInfo.rootColumnName", "sourceInfo.targetId", "sourceInfo.rootPrimaryKey"],
 })
+// Join keys for the EntityInfo view (warnings grid filter/sort by name/info)
+@Index({ properties: ["sourceInfo.rootEntityName", "sourceInfo.targetId"] })
 export class Warning extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt" | "status";
 

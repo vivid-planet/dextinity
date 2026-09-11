@@ -211,7 +211,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
 
     const onReceiveMessage = useCallback(
         (message: AdminMessage) => {
-            switch (message.cometType) {
+            switch (message.dextinityType) {
                 case AdminMessageType.Block:
                     setBlock(message.data.block);
                     break;
@@ -252,7 +252,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
                 const message = JSON.parse(e.data);
                 // Check if message is an iframe message from us -> there are more messaging from e.g webpack,etc.
                 // eslint-disable-next-line no-prototype-builtins
-                if (message.hasOwnProperty("cometType")) {
+                if (message.hasOwnProperty("dextinityType")) {
                     onReceiveMessage(message as AdminMessage);
                 }
             } catch {
@@ -262,7 +262,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
 
         window.addEventListener("message", handleMessage, false);
 
-        sendMessage({ cometType: IFrameMessageType.Ready });
+        sendMessage({ dextinityType: IFrameMessageType.Ready });
 
         return () => {
             window.removeEventListener("message", handleMessage, false);
@@ -293,10 +293,10 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
             hoveredAdminRoute,
             sendSelectComponent: (adminRoute: string) => {
                 setSelectedAdminRoute(adminRoute);
-                sendMessage({ cometType: IFrameMessageType.SelectComponent, data: { adminRoute } });
+                sendMessage({ dextinityType: IFrameMessageType.SelectComponent, data: { adminRoute } });
             },
             sendHoverComponent: (route: string | null) => {
-                sendMessage({ cometType: IFrameMessageType.HoverComponent, data: { route } });
+                sendMessage({ dextinityType: IFrameMessageType.HoverComponent, data: { route } });
             },
             sendMessage,
             contentScope,

@@ -1,5 +1,5 @@
 import { gql, useApolloClient } from "@apollo/client";
-import { downloadFile } from "@comet/admin";
+import { downloadFile } from "@dextinity/admin";
 import { createContext, type Dispatch, type ReactNode, type SetStateAction, useCallback, useContext, useState } from "react";
 
 import { ConfirmDeleteDialog } from "../../FileActions/ConfirmDeleteDialog";

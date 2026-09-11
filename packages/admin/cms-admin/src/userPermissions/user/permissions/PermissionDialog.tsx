@@ -1,5 +1,5 @@
 import { gql, useApolloClient, useQuery } from "@apollo/client";
-import { CancelButton, DatePickerField, Field, FinalForm, FinalFormSelect, FormSection, Loading, SaveButton, TextField } from "@comet/admin";
+import { CancelButton, DatePickerField, Field, FinalForm, FinalFormSelect, FormSection, Loading, SaveButton, TextField } from "@dextinity/admin";
 import {
     // eslint-disable-next-line no-restricted-imports
     Dialog,
@@ -132,10 +132,10 @@ export const PermissionDialog = ({ userId, permissionId, handleDialogClose }: Fo
                 render={() => (
                     <>
                         <DialogTitle>
-                            <FormattedMessage id="comet.userPermissions.addScopesToPermission" defaultMessage="Add scopes to permission" />
+                            <FormattedMessage id="dextinity.userPermissions.addScopesToPermission" defaultMessage="Add scopes to permission" />
                         </DialogTitle>
                         <DialogContent>
-                            <FormSection title={<FormattedMessage id="comet.userPermissions.setPermission" defaultMessage="Set permission" />}>
+                            <FormSection title={<FormattedMessage id="dextinity.userPermissions.setPermission" defaultMessage="Set permission" />}>
                                 <Field
                                     required
                                     fullWidth
@@ -144,22 +144,22 @@ export const PermissionDialog = ({ userId, permissionId, handleDialogClose }: Fo
                                     options={availablePermissionsData.availablePermissions}
                                     getOptionLabel={(permission: string) => camelCaseToHumanReadable(permission)}
                                     disabled={disabled}
-                                    label={<FormattedMessage id="comet.userPermissions.permission" defaultMessage="Permission" />}
+                                    label={<FormattedMessage id="dextinity.userPermissions.permission" defaultMessage="Permission" />}
                                     variant="horizontal"
                                 />
                             </FormSection>
                             <FormSection
-                                title={<FormattedMessage id="comet.userPermissions.validityDuration" defaultMessage="Validity duration" />}
+                                title={<FormattedMessage id="dextinity.userPermissions.validityDuration" defaultMessage="Validity duration" />}
                                 infoTooltip={{
                                     title: (
                                         <FormattedMessage
-                                            id="comet.userPermission.validityDuration.tooltip.title"
+                                            id="dextinity.userPermission.validityDuration.tooltip.title"
                                             defaultMessage="Validity duration"
                                         />
                                     ),
                                     description: (
                                         <FormattedMessage
-                                            id="comet.userPermission.validityDuration.tooltip.content"
+                                            id="dextinity.userPermission.validityDuration.tooltip.content"
                                             defaultMessage="Leave empty for unlimited validity"
                                         />
                                     ),
@@ -167,29 +167,29 @@ export const PermissionDialog = ({ userId, permissionId, handleDialogClose }: Fo
                             >
                                 <DatePickerField
                                     name="validFrom"
-                                    label={<FormattedMessage id="comet.userPermissions.validFrom" defaultMessage="Valid from" />}
+                                    label={<FormattedMessage id="dextinity.userPermissions.validFrom" defaultMessage="Valid from" />}
                                     fullWidth
                                     disabled={disabled}
                                     variant="horizontal"
                                 />
                                 <DatePickerField
                                     name="validTo"
-                                    label={<FormattedMessage id="comet.userPermissions.validTo" defaultMessage="Valid to" />}
+                                    label={<FormattedMessage id="dextinity.userPermissions.validTo" defaultMessage="Valid to" />}
                                     fullWidth
                                     disabled={disabled}
                                     variant="horizontal"
                                 />
                             </FormSection>
-                            <FormSection title={<FormattedMessage id="comet.userPermissions.documentation" defaultMessage="Documentation" />}>
+                            <FormSection title={<FormattedMessage id="dextinity.userPermissions.documentation" defaultMessage="Documentation" />}>
                                 <TextField
                                     fullWidth
                                     name="reason"
                                     disabled={disabled}
-                                    label={<FormattedMessage id="comet.userPermissions.reason" defaultMessage="Reason" />}
+                                    label={<FormattedMessage id="dextinity.userPermissions.reason" defaultMessage="Reason" />}
                                     disableContentTranslation
                                     variant="horizontal"
                                     placeholder={intl.formatMessage({
-                                        id: "comet.userPermissions.reason.placeholder",
+                                        id: "dextinity.userPermissions.reason.placeholder",
                                         defaultMessage: "Reason why this role is needed",
                                     })}
                                 />
@@ -197,11 +197,11 @@ export const PermissionDialog = ({ userId, permissionId, handleDialogClose }: Fo
                                     fullWidth
                                     name="requestedBy"
                                     disabled={disabled}
-                                    label={<FormattedMessage id="comet.userPermissions.requestedBy" defaultMessage="Requested by" />}
+                                    label={<FormattedMessage id="dextinity.userPermissions.requestedBy" defaultMessage="Requested by" />}
                                     disableContentTranslation
                                     variant="horizontal"
                                     placeholder={intl.formatMessage({
-                                        id: "comet.userPermissions.requestedBy.placeholder",
+                                        id: "dextinity.userPermissions.requestedBy.placeholder",
                                         defaultMessage: "Who has requested this?",
                                     })}
                                 />
@@ -209,11 +209,11 @@ export const PermissionDialog = ({ userId, permissionId, handleDialogClose }: Fo
                                     fullWidth
                                     name="approvedBy"
                                     disabled={disabled}
-                                    label={<FormattedMessage id="comet.userPermissions.approvedBy" defaultMessage="Approved by" />}
+                                    label={<FormattedMessage id="dextinity.userPermissions.approvedBy" defaultMessage="Approved by" />}
                                     disableContentTranslation
                                     variant="horizontal"
                                     placeholder={intl.formatMessage({
-                                        id: "comet.userPermissions.approvedBy.placeholder",
+                                        id: "dextinity.userPermissions.approvedBy.placeholder",
                                         defaultMessage: "Who approved this request?",
                                     })}
                                 />

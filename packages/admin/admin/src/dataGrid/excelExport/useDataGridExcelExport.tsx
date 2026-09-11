@@ -36,8 +36,8 @@ export function useDataGridExcelExport<Row extends GridValidRowModel, GQLQuery, 
     const createExcelExportDownload = useCallback(
         async <Row extends GridValidRowModel>(columns: Array<GridColDef<Row>>, data: Row[], exportOptions: DataGridExcelExportOptions = {}) => {
             const {
-                fileName = intl.formatMessage({ id: "comet.dataGrid.excelExport.defaultFileName", defaultMessage: "ExcelExport" }),
-                worksheetName = intl.formatMessage({ id: "comet.dataGrid.excelExport.defaultWorksheetName", defaultMessage: "Table 1" }),
+                fileName = intl.formatMessage({ id: "dextinity.dataGrid.excelExport.defaultFileName", defaultMessage: "ExcelExport" }),
+                worksheetName = intl.formatMessage({ id: "dextinity.dataGrid.excelExport.defaultWorksheetName", defaultMessage: "Table 1" }),
                 styling,
             } = exportOptions;
             const workbook = generateExcelFile<Row>(columns, data, { worksheetName, styling });

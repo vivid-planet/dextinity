@@ -1,4 +1,4 @@
-import { type DateRange, DateRangePicker, DateRangePickerField, FieldContainer } from "@comet/admin";
+import { type DateRange, DateRangePicker, DateRangePickerField, FieldContainer } from "@dextinity/admin";
 import { Grid } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
@@ -8,7 +8,7 @@ type Story = StoryObj<typeof DateRangePicker>;
 
 const config: Meta<typeof DateRangePicker> = {
     component: DateRangePicker,
-    title: "@comet/admin/dateTime/DateRangePicker",
+    title: "@dextinity/admin/dateTime/DateRangePicker",
 };
 export default config;
 

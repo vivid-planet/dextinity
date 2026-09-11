@@ -1,4 +1,4 @@
-import { Field, FinalForm, FinalFormInput } from "@comet/admin";
+import { Field, FinalForm, FinalFormInput } from "@dextinity/admin";
 
 export default {
     title: "Docs/Form/Components/Field",

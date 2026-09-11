@@ -5,7 +5,7 @@ import {
     ColumnsLayoutPreviewSpacing,
     createBlocksBlock,
     createColumnsBlock,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 import { AccordionBlock } from "@src/common/blocks/AccordionBlock";
 import { MediaGalleryBlock } from "@src/common/blocks/MediaGalleryBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";

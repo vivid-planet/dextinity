@@ -17,9 +17,9 @@ import {
     ToolbarAutomaticTitleItem,
     ToolbarBackButton,
     useStackSwitch,
-} from "@comet/admin";
-import { Add as AddIcon, Edit } from "@comet/admin-icons";
-import { ContentScopeIndicator } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { Add as AddIcon, Edit } from "@dextinity/admin-icons";
+import { ContentScopeIndicator } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import { ProductVariantsGrid } from "@src/products/generator/generated/ProductVariantsGrid";
 import { FormattedMessage, useIntl } from "react-intl";

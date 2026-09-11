@@ -1,4 +1,4 @@
-import { Delete, Download, Excel, Favorite, Move } from "@comet/admin-icons";
+import { Delete, Download, Excel, Favorite, Move } from "@dextinity/admin-icons";
 import { ListItemIcon } from "@mui/material";
 
 import { CrudMoreActionsMenu, CrudMoreActionsMenuItem } from "../CrudMoreActionsMenu";

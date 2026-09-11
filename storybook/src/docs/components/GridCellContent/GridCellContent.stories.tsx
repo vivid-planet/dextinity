@@ -1,5 +1,5 @@
-import { GridCellContent, type GridColDef } from "@comet/admin";
-import { StateFilled } from "@comet/admin-icons";
+import { GridCellContent, type GridColDef } from "@dextinity/admin";
+import { StateFilled } from "@dextinity/admin-icons";
 import { faker } from "@faker-js/faker";
 import { DataGrid } from "@mui/x-data-grid";
 

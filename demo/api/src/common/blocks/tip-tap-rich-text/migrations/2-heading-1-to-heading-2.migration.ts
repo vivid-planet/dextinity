@@ -1,4 +1,4 @@
-import { BlockMigration, type BlockMigrationInterface, type TipTapRichTextBlockContent } from "@comet/cms-api";
+import { BlockMigration, type BlockMigrationInterface, type TipTapRichTextBlockContent } from "@dextinity/cms-api";
 
 interface From {
     tipTapContent: TipTapRichTextBlockContent;

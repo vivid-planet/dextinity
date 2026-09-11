@@ -1,4 +1,4 @@
-import { createComponentSlot, type ThemedComponentBaseProps } from "@comet/admin";
+import { createComponentSlot, type ThemedComponentBaseProps } from "@dextinity/admin";
 import type { ComponentsOverrides } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
 import type { SvgIconProps } from "@mui/material/SvgIcon";
@@ -17,7 +17,7 @@ const Root = createComponentSlot("button")<RteControlButtonClassKey, OwnerState>
         return [ownerState.selected && "selected", Boolean(ownerState.Icon) && "renderAsIcon"];
     },
 })(({ ownerState, theme }) => {
-    const rteTheme = getRteTheme(theme.components?.CometAdminRte?.defaultProps);
+    const rteTheme = getRteTheme(theme.components?.DextinityAdminRte?.defaultProps);
     return css`
         display: flex;
         justify-content: center;
@@ -89,7 +89,7 @@ export function ControlButton(inProps: PropsWithChildren<IProps>) {
         Icon: deprecatedIcon,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminRteControlButton" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminRteControlButton" });
 
     const Icon = icon || deprecatedIcon;
 
@@ -108,12 +108,12 @@ export function ControlButton(inProps: PropsWithChildren<IProps>) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminRteControlButton: RteControlButtonClassKey;
+        DextinityAdminRteControlButton: RteControlButtonClassKey;
     }
 
     interface Components {
-        CometAdminRteControlButton?: {
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminRteControlButton"];
+        DextinityAdminRteControlButton?: {
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminRteControlButton"];
         };
     }
 }

@@ -52,7 +52,7 @@ export const MainNavigationItem = (inProps: MainNavigationItemProps) => {
         isCollapsibleOpen,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminMainNavigationItem" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminMainNavigationItem" });
 
     const { drawerVariant } = useMainNavigation();
 
@@ -99,17 +99,17 @@ export const MainNavigationItem = (inProps: MainNavigationItemProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminMainNavigationItem: MainNavigationItemProps;
+        DextinityAdminMainNavigationItem: MainNavigationItemProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminMainNavigationItem: MainNavigationItemClassKey;
+        DextinityAdminMainNavigationItem: MainNavigationItemClassKey;
     }
 
     interface Components {
-        CometAdminMainNavigationItem?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminMainNavigationItem"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminMainNavigationItem"];
+        DextinityAdminMainNavigationItem?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminMainNavigationItem"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminMainNavigationItem"];
         };
     }
 }

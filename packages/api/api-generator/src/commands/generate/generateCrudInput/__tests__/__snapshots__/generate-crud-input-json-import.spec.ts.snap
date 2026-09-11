@@ -4,7 +4,7 @@ exports[`GenerateCrudInputJsonImport > should generate import for array class pr
 "import { Field, InputType, ID, Int } from "@nestjs/graphql";
 import { Transform, Type } from "class-transformer";
 import { GraphQLJSONObject, GraphQLLocalDate } from "graphql-scalars";
-import { BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@comet/cms-api";
+import { BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
 import {
     IsArray,
     IsBoolean,
@@ -39,7 +39,7 @@ exports[`GenerateCrudInputJsonImport > should generate import for array type pro
 "import { Field, InputType, ID, Int } from "@nestjs/graphql";
 import { Transform, Type } from "class-transformer";
 import { GraphQLJSONObject, GraphQLLocalDate } from "graphql-scalars";
-import { BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@comet/cms-api";
+import { BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
 import {
     IsArray,
     IsBoolean,
@@ -73,7 +73,7 @@ exports[`GenerateCrudInputJsonImport > should generate import for class property
 "import { Field, InputType, ID, Int } from "@nestjs/graphql";
 import { Transform, Type } from "class-transformer";
 import { GraphQLJSONObject, GraphQLLocalDate } from "graphql-scalars";
-import { BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@comet/cms-api";
+import { BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
 import {
     IsArray,
     IsBoolean,
@@ -108,7 +108,7 @@ exports[`GenerateCrudInputJsonImport > should generate import for type property 
 "import { Field, InputType, ID, Int } from "@nestjs/graphql";
 import { Transform, Type } from "class-transformer";
 import { GraphQLJSONObject, GraphQLLocalDate } from "graphql-scalars";
-import { BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@comet/cms-api";
+import { BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
 import {
     IsArray,
     IsBoolean,

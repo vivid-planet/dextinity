@@ -1,4 +1,4 @@
-import { Button, FormSection, useStoredState } from "@comet/admin";
+import { Button, FormSection, useStoredState } from "@dextinity/admin";
 import { InputBase, Stack } from "@mui/material";
 
 export default {
@@ -36,7 +36,7 @@ export const LocalStorage = {
 
 export const SessionStorage = {
     render: () => {
-        const [storedState, setStoredState] = useStoredState<string>("stored_state_stories_session_storage_key", "☄️ Comet", window.sessionStorage);
+        const [storedState, setStoredState] = useStoredState<string>("stored_state_stories_session_storage_key", "Dextinity", window.sessionStorage);
         return (
             <FormSection title={`Stored State: ${storedState}`} disableMarginBottom>
                 <InputBase

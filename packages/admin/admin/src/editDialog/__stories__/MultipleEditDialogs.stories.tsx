@@ -1,4 +1,4 @@
-import { Add, Edit } from "@comet/admin-icons";
+import { Add, Edit } from "@dextinity/admin-icons";
 import { Stack, Typography } from "@mui/material";
 
 import { Button } from "../../common/buttons/Button";

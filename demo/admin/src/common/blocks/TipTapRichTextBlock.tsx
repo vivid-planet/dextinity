@@ -1,4 +1,6 @@
-import { createTipTapRichTextBlock } from "@comet/cms-admin";
+import { createTipTapRichTextBlock } from "@dextinity/cms-admin";
+import { ProductPriceBlock } from "@src/products/blocks/ProductPriceBlock";
+import { ProductTeaserBlock } from "@src/products/blocks/ProductTeaserBlock";
 import type { HTMLAttributes } from "react";
 import { FormattedMessage } from "react-intl";
 
@@ -6,6 +8,10 @@ import { LinkBlock } from "./LinkBlock";
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
     link: LinkBlock,
+    childBlocks: {
+        productPrice: { block: ProductPriceBlock, display: "inline" },
+        productTeaser: { block: ProductTeaserBlock, display: "block" },
+    },
     textBlockStyles: [
         {
             name: "paragraph300",

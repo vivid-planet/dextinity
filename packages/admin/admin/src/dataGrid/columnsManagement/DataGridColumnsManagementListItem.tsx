@@ -1,4 +1,4 @@
-import { PinLeft, PinRight } from "@comet/admin-icons";
+import { PinLeft, PinRight } from "@dextinity/admin-icons";
 import {
     type ComponentsOverrides,
     type IconButton,
@@ -50,7 +50,7 @@ export const DataGridColumnsManagementListItem: FunctionComponent<DataGridColumn
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminDataGridColumnsManagementListItem",
+        name: "DextinityAdminDataGridColumnsManagementListItem",
     });
 
     const apiRef = useGridApiContext<GridApiPro>();
@@ -102,17 +102,17 @@ export const DataGridColumnsManagementListItem: FunctionComponent<DataGridColumn
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminDataGridColumnsManagementListItem: DataGridColumnsManagementListItemProps;
+        DextinityAdminDataGridColumnsManagementListItem: DataGridColumnsManagementListItemProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminDataGridColumnsManagementListItem: DataGridColumnsManagementListItemClassKey;
+        DextinityAdminDataGridColumnsManagementListItem: DataGridColumnsManagementListItemClassKey;
     }
 
     interface Components {
-        CometAdminDataGridColumnsManagementListItem?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminDataGridColumnsManagementListItem"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminDataGridColumnsManagementListItem"];
+        DextinityAdminDataGridColumnsManagementListItem?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminDataGridColumnsManagementListItem"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminDataGridColumnsManagementListItem"];
         };
     }
 }

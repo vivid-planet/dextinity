@@ -1,5 +1,5 @@
-import { AppHeader, AppHeaderButton, AppHeaderDropdown, AppHeaderMenuButton, Button, CometLogo, FillSpace } from "@comet/admin";
-import { Account, Language, Logout, Preview, Snips, SwitchUser, Wrench } from "@comet/admin-icons";
+import { AppHeader, AppHeaderButton, AppHeaderDropdown, AppHeaderMenuButton, Button, FillSpace } from "@dextinity/admin";
+import { Account, DextinityLogo, Language, Logout, Preview, Snips, SwitchUser, Wrench } from "@dextinity/admin-icons";
 import { Avatar, Box, Divider, MenuItem, MenuList, Typography } from "@mui/material";
 import { useState } from "react";
 
@@ -23,7 +23,7 @@ export const Basic = {
         return (
             <AppHeader position="relative" headerHeight={60}>
                 <AppHeaderMenuButton />
-                <CometLogo />
+                <DextinityLogo variant="light" sx={{ fontSize: 34 }} />
 
                 <FillSpace />
 

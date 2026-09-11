@@ -1,4 +1,4 @@
-import { Field, FinalFormInput } from "@comet/admin";
+import { Field, FinalFormInput } from "@dextinity/admin";
 import { FormattedMessage } from "react-intl";
 
 export const ConfigFields = () => {
@@ -9,14 +9,14 @@ export const ConfigFields = () => {
                 fullWidth
                 name="title"
                 component={FinalFormInput}
-                label={<FormattedMessage id="cometBrevoModule.emailCampaigns.title" defaultMessage="Title" />}
+                label={<FormattedMessage id="dextinity.emailCampaigns.title" defaultMessage="Title" />}
             />
             <Field
                 required
                 fullWidth
                 name="subject"
                 component={FinalFormInput}
-                label={<FormattedMessage id="cometBrevoModule.emailCampaigns.subject" defaultMessage="Subject" />}
+                label={<FormattedMessage id="dextinity.emailCampaigns.subject" defaultMessage="Subject" />}
             />
         </>
     );

@@ -1,4 +1,4 @@
-import type { FileWithDamUploadMetadata } from "@comet/cms-admin";
+import type { FileWithDamUploadMetadata } from "@dextinity/cms-admin";
 
 export interface PicsumImage {
     file: FileWithDamUploadMetadata;

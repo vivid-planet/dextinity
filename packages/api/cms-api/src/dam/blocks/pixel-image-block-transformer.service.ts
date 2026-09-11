@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import { BlockContext, BlockTransformerServiceInterface } from "../../blocks/block";
+import { DamFileAiContentType } from "../files/entities/ai-content-type.enum";
 import { FilesService } from "../files/files.service";
 import { ImageCropArea } from "../images/entities/image-crop-area.entity";
 import { ImagesService } from "../images/images.service";
@@ -16,6 +17,7 @@ type TransformResponse = {
         contentHash: string;
         title?: string;
         altText?: string;
+        aiContentType?: DamFileAiContentType;
         archived: boolean;
         scope?: DamScopeInterface;
         importSourceId?: string;
@@ -61,6 +63,7 @@ export class PixelImageBlockTransformerService implements BlockTransformerServic
                 contentHash: file.contentHash,
                 title: file.title,
                 altText: file.altText,
+                aiContentType: file.aiContentType,
                 archived: file.archived,
                 scope: file.scope,
                 importSourceId: file.importSourceId,

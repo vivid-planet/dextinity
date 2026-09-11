@@ -17,7 +17,7 @@ export const globalTypes: GlobalTypes = {
             title: "Theme",
             icon: "paintbrush",
             items: [
-                { value: ThemeOption.Comet, right: "🟩", title: "Comet Theme" },
+                { value: ThemeOption.Dextinity, right: "🟩", title: "Dextinity Theme" },
                 { value: ThemeOption.Mui, right: "🟦", title: "Mui Theme" },
             ],
             dynamicTitle: true,

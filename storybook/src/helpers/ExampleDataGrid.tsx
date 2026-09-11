@@ -1,4 +1,4 @@
-import { type GridColDef, usePersistentColumnState } from "@comet/admin";
+import { type GridColDef, usePersistentColumnState } from "@dextinity/admin";
 import { DataGrid, type DataGridProps } from "@mui/x-data-grid";
 
 export const exampleRows = [

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { createTheme } from "./createTheme.js";
+import { defaultTheme } from "./defaultTheme.js";
 import { getDefaultFromResponsiveValue, getResponsiveOverrides } from "./responsiveValue.js";
 
 describe("createTheme text", () => {
@@ -36,6 +37,15 @@ describe("createTheme text", () => {
         const theme = createTheme();
         expect(theme.text.defaultVariant).toBeUndefined();
         expect(theme.text.variants).toBeUndefined();
+    });
+});
+
+describe("createTheme list", () => {
+    it("shallow-merges list overrides with defaults", () => {
+        const theme = createTheme({ list: { indent: 24 } });
+        expect(theme.list.indent).toBe(24);
+        expect(theme.list.markerGap).toBe(defaultTheme.list.markerGap);
+        expect(theme.list.itemSpacing).toBe(defaultTheme.list.itemSpacing);
     });
 });
 

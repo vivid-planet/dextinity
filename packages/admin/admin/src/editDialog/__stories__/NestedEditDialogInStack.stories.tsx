@@ -1,4 +1,4 @@
-import { Edit } from "@comet/admin-icons";
+import { Edit } from "@dextinity/admin-icons";
 import { DialogContent, IconButton, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 

@@ -7,7 +7,7 @@ import { CopyMailHtmlButton } from "./CopyMailHtmlButton.js";
 import { MjmlWarningsPanel, MjmlWarningsPanelTitle } from "./MjmlWarningsPanel.js";
 import { UsePublicImageUrlsToggle } from "./UsePublicImageUrlsToggle.js";
 
-const ADDON_ID = "comet-mail-react";
+const ADDON_ID = "dextinity-mail-react";
 
 addons.register(ADDON_ID, () => {
     addons.add(`${ADDON_ID}/copy-html`, {

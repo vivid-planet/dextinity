@@ -1,4 +1,4 @@
-import { FileSelectListItem } from "@comet/admin";
+import { FileSelectListItem } from "@dextinity/admin";
 import { Box, Card, CardContent } from "@mui/material";
 import type { Meta } from "@storybook/react-vite";
 

@@ -1,17 +1,8 @@
 import { cloneElement, isValidElement, type ReactNode } from "react";
 
-export interface TipTapMark {
-    type: string;
-    attrs?: Record<string, unknown>;
-}
+import type { TipTapMark, TipTapNode } from "../../blocks.generated";
 
-export interface TipTapNode {
-    type: string;
-    attrs?: Record<string, unknown>;
-    content?: TipTapNode[];
-    marks?: TipTapMark[];
-    text?: string;
-}
+export type { TipTapMark, TipTapNode };
 
 export interface TipTapNodeHandlerProps {
     node: TipTapNode;

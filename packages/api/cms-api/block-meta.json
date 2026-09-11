@@ -1304,6 +1304,25 @@
         ]
     },
     {
+        "name": "TipTapRichText",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
+            }
+        ]
+    },
+    {
         "name": "VimeoVideo",
         "fields": [
             {

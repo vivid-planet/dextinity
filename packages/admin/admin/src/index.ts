@@ -182,7 +182,6 @@ export { FormSection, type FormSectionClassKey, type FormSectionProps } from "./
 export { OnChangeField } from "./form/helpers/OnChangeField";
 export { FinalFormRadio, type FinalFormRadioProps } from "./form/Radio";
 export { FinalFormSwitch, type FinalFormSwitchProps } from "./form/Switch";
-export { FormMutation } from "./FormMutation";
 export { FullPageAlert, type FullPageAlertClassKey, type FullPageAlertProps } from "./fullPageAlert/FullPageAlert";
 export { createComponentSlot } from "./helpers/createComponentSlot";
 export { downloadFile } from "./helpers/downloadFile";

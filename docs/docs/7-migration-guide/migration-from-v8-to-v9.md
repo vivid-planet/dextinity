@@ -17,6 +17,67 @@ Migrate this project from Comet v8 to v9. Follow the migration guide at https://
 
 :::
 
+## Prerequisites
+
+### Upgrade `@comet/eslint-config` to v9 first (recommended)
+
+A large part of the v9 changes are new lint rules, not runtime changes.
+You can adopt them **before** the actual migration by bumping only `@comet/eslint-config` to v9, while all other `@comet/*` packages stay on v8.
+
+Do this in a separate branch and **merge it to `main` before starting the v9 migration**.
+It keeps the migration PR focused on runtime changes, and it splits a large, hard-to-review diff (mostly mechanical autofixes and renames) away from the changes that actually need review.
+
+1. Bump `@comet/eslint-config` in every package that uses it — and only that package:
+
+    ```diff title="api/package.json, admin/package.json, site/package.json"
+    -       "@comet/eslint-config": "^8.0.0",
+    +       "@comet/eslint-config": "9.0.0",
+    ```
+
+    ```sh
+    npm install
+    ```
+
+2. Apply the autofixes in each package (`api`, `admin`, `site`):
+
+    ```sh
+    npm run lint:eslint -- --fix
+    ```
+
+    Commit these separately — they are purely mechanical and can be skimmed during review.
+
+3. Reconcile your project's `eslint.config.mjs` files with the shared config.
+   Projects often carry rules that predate v9 and that `@comet/eslint-config` now ships itself:
+    - **Remove rules that duplicate the shared config** (e.g. a local `@typescript-eslint/consistent-type-imports`). Duplicates drift out of sync over time.
+    - **Remove dead config** — rule options for rules that aren't enabled at all enforce nothing.
+    - **Extend, don't replace, `no-restricted-imports`.** If your config redefines the rule to add a single project-specific restriction, it silently drops all restrictions from `@comet/eslint-config` (including the `@comet/*/lib` pattern). Spread `restrictedImportPaths` and `restrictedImportPatterns` from the shared config and append your own entries.
+
+4. Fix the violations that the new rules surface. The following sections of this guide are pure lint changes and can be done entirely on v8:
+    - [Replace `/lib` imports from `@comet/*` packages](#replace-lib-imports-from-comet-packages)
+    - [Fix dev dependency imports in API source code](#fix-dev-dependency-imports-in-api-source-code)
+    - [Rename GraphQL operations and fragments with redundant kind suffixes](#rename-graphql-operations-and-fragments-with-redundant-kind-suffixes)
+
+5. Defer the violations that can only be fixed in v9.
+   Some symbols aren't exported from the package root on v8 yet, so the `/lib` import is the only one that resolves — but the new rule forbids it.
+   Suppress those inline with a marker comment instead of leaving the lint red:
+
+    ```ts
+    // TODO(comet-v9): import from "@comet/cms-api" once the type is exported from the package root
+    // eslint-disable-next-line no-restricted-imports
+    import { Something } from "@comet/cms-api/lib/some/internal/path";
+    ```
+
+    Grep for the marker (`grep -rn "TODO(comet-v9)"`) during the migration and resolve every occurrence.
+
+6. Verify the lint passes in `root`, `api`, `admin` and `site`, then open a PR and merge it to `main`.
+
+:::note
+
+After this preparation, `@comet/eslint-config` is already on v9.
+The dependency diffs in the sections below still list it for projects that skipped this step — for you, those lines are a no-op.
+
+:::
+
 ## Root
 
 ### Update Comet dependencies

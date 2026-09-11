@@ -1,5 +1,47 @@
 # @comet/cli
 
+## 10.5.1
+
+### Patch Changes
+
+- 3a6c451: Make the generated `TipTapNode` type compatible with TipTap's `JSONContent`
+
+    `TipTapNode["type"]` is optional now, matching `JSONContent["type"]`. Both types can be used interchangeably, so no cast is needed when passing a rich text block's content to a TipTap utility or when rendering a `JSONContent` value with `renderTipTapRichText`. `renderTipTapRichText` renders a node without a `type` as a text node.
+
+    **Example**
+
+    ```ts
+    import { generateHTML } from "@tiptap/core";
+    import type { TipTapRichTextBlockData } from "@src/blocks.generated";
+
+    function renderToHtml(data: TipTapRichTextBlockData) {
+        return generateHTML(data.tipTapContent, extensions);
+    }
+    ```
+
+## 10.5.0
+
+## 10.4.0
+
+## 10.3.0
+
+### Minor Changes
+
+- 7e3a30f: Add `TipTapNode` type to `generate-block-types` output and use it for TipTap rich text blocks
+
+    TipTap rich text blocks were typed as `unknown`, forcing consumers to cast the content before rendering it.
+    They are now typed as `TipTapNode`, which is generated into `blocks.generated.ts` (together with `TipTapMark`) whenever a TipTap rich text block is used.
+
+    **Example**
+
+    ```tsx
+    // Before
+    const content = data.tipTapContent as TipTapNode;
+
+    // After
+    const content = data.tipTapContent;
+    ```
+
 ## 10.2.0
 
 ## 10.1.0

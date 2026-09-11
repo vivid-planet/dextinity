@@ -150,7 +150,18 @@ export const ReadOnly: Story = {
     },
 };
 
-const BoldOnlyBlock = createTipTapRichTextBlock({ supports: ["bold"] });
+const BoldOnlyBlock = createTipTapRichTextBlock({
+    undoRedoButtons: false,
+    italic: false,
+    strike: false,
+    sub: false,
+    sup: false,
+    heading: false,
+    orderedList: false,
+    unorderedList: false,
+    nonBreakingSpace: false,
+    softHyphen: false,
+});
 
 function BoldOnlyStory() {
     const [state, setState] = useState<TipTapRichTextBlockState>(BoldOnlyBlock.defaultValues());
@@ -344,7 +355,15 @@ export const Placeholders: StoryObj<typeof PlaceholdersStory> = {
 };
 
 const PlaceholdersWithContentBlock = createTipTapRichTextBlock({
-    supports: ["bold", "italic"],
+    undoRedoButtons: false,
+    strike: false,
+    sub: false,
+    sup: false,
+    heading: false,
+    orderedList: false,
+    unorderedList: false,
+    nonBreakingSpace: false,
+    softHyphen: false,
     placeholders: [
         { name: "firstName", label: "First Name" },
         { name: "lastName", label: "Last Name" },
@@ -567,7 +586,13 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
 };
 
 const ListTextBlockStylesBlock = createTipTapRichTextBlock({
-    supports: ["bold", "ordered-list", "unordered-list", "heading"],
+    undoRedoButtons: false,
+    italic: false,
+    strike: false,
+    sub: false,
+    sup: false,
+    nonBreakingSpace: false,
+    softHyphen: false,
     textBlockStyles: [
         {
             name: "intro",
@@ -814,157 +839,6 @@ export const MaxTextBlocks: StoryObj<typeof MaxTextBlocksStory> = {
     },
 };
 
-const InlineStylesBlock = createTipTapRichTextBlock({
-    inlineStyles: [
-        {
-            name: "highlight",
-            label: "Highlight",
-            element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
-        },
-        {
-            name: "tag",
-            label: "Tag",
-            element: (props: HTMLAttributes<HTMLElement>) => (
-                <span style={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: 4 }} {...props} />
-            ),
-        },
-    ],
-});
-
-function InlineStylesStory() {
-    const [state, setState] = useState<TipTapRichTextBlockState>(InlineStylesBlock.defaultValues());
-
-    return (
-        <StoryWrapper state={state}>
-            <InlineStylesBlock.AdminComponent state={state} updateState={setState} />
-        </StoryWrapper>
-    );
-}
-
-export const InlineStyles: StoryObj<typeof InlineStylesStory> = {
-    render: () => <InlineStylesStory />,
-    play: async ({ canvas, userEvent, step }) => {
-        await step("Editor is ready", async () => {
-            await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
-                },
-                { timeout: 5000 },
-            );
-
-            // Heading select + inline style select
-            const comboboxes = canvas.getAllByRole("combobox");
-            expect(comboboxes).toHaveLength(2);
-        });
-
-        await step("Type text and select it", async () => {
-            const editor = canvas.getByRole("textbox");
-            await userEvent.click(editor);
-            await userEvent.keyboard("hello");
-
-            await waitFor(
-                () => {
-                    expect(editor).toHaveTextContent("hello");
-                },
-                { timeout: 3000 },
-            );
-
-            // userEvent's Shift+Home isn't supported in contenteditable; use the native Selection API.
-            const range = document.createRange();
-            range.selectNodeContents(editor);
-            const selection = window.getSelection();
-            selection?.removeAllRanges();
-            selection?.addRange(range);
-
-            // Wait for the inline-style dropdown to enable (TipTap picks up selection via the selectionchange event).
-            await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox")[1]).not.toBeDisabled();
-                },
-                { timeout: 3000 },
-            );
-        });
-
-        await step("Apply 'Highlight' inline style", async () => {
-            const inlineStyleSelect = canvas.getAllByRole("combobox")[1];
-            await userEvent.click(inlineStyleSelect);
-
-            await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("option", { name: "Highlight" })).toBeInTheDocument();
-                },
-                { timeout: 3000 },
-            );
-            await userEvent.click(within(document.body).getByRole("option", { name: "Highlight" }));
-
-            await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Highlight");
-                },
-                { timeout: 3000 },
-            );
-        });
-
-        await step("Verify highlight element (from `element` prop) is rendered with its styling", async () => {
-            await waitFor(
-                () => {
-                    const styledEl = document.querySelector('[data-inline-style="highlight"]');
-                    expect(styledEl).toBeTruthy();
-                    expect(styledEl).toHaveTextContent("hello");
-                    expect(styledEl).toHaveStyle({ backgroundColor: "rgb(255, 243, 205)" });
-                },
-                { timeout: 3000 },
-            );
-        });
-
-        await step("Switch to 'Tag' inline style", async () => {
-            const inlineStyleSelect = canvas.getAllByRole("combobox")[1];
-            await userEvent.click(inlineStyleSelect);
-
-            await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("option", { name: "Tag" })).toBeInTheDocument();
-                },
-                { timeout: 3000 },
-            );
-            await userEvent.click(within(document.body).getByRole("option", { name: "Tag" }));
-        });
-
-        await step("Verify tag element replaces the highlight element", async () => {
-            await waitFor(
-                () => {
-                    expect(document.querySelector('[data-inline-style="highlight"]')).toBeNull();
-                    const tagEl = document.querySelector('[data-inline-style="tag"]');
-                    expect(tagEl).toBeTruthy();
-                    expect(tagEl).toHaveTextContent("hello");
-                    expect(tagEl).toHaveStyle({ backgroundColor: "rgb(224, 240, 255)", color: "rgb(0, 102, 204)" });
-                },
-                { timeout: 3000 },
-            );
-        });
-
-        await step("Clear inline style resets to default rendering", async () => {
-            const inlineStyleSelect = canvas.getAllByRole("combobox")[1];
-            await userEvent.click(inlineStyleSelect);
-
-            await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("option", { name: "Default" })).toBeInTheDocument();
-                },
-                { timeout: 3000 },
-            );
-            await userEvent.click(within(document.body).getByRole("option", { name: "Default" }));
-
-            await waitFor(
-                () => {
-                    expect(document.querySelector("[data-inline-style]")).toBeNull();
-                },
-                { timeout: 3000 },
-            );
-        });
-    },
-};
-
 const ListLevelMaxBlock = createTipTapRichTextBlock({ listLevelMax: 2 });
 
 function ListLevelMaxStory() {
@@ -1040,7 +914,7 @@ export const ListLevelMax: StoryObj<typeof ListLevelMaxStory> = {
     },
 };
 
-const HeadingLevelsBlock = createTipTapRichTextBlock({ headingLevels: [2, 3, 4] });
+const HeadingLevelsBlock = createTipTapRichTextBlock({ heading: { levels: [2, 3, 4] } });
 
 function HeadingLevelsStory() {
     const [state, setState] = useState<TipTapRichTextBlockState>(HeadingLevelsBlock.defaultValues());
@@ -1105,59 +979,6 @@ export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
                 },
                 { timeout: 3000 },
             );
-        });
-    },
-};
-
-const CombinedStylesBlock = createTipTapRichTextBlock({
-    textBlockStyles: [
-        {
-            name: "intro",
-            label: "Intro Text",
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
-        },
-    ],
-    inlineStyles: [
-        {
-            name: "highlight",
-            label: "Highlight",
-            element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
-        },
-        {
-            name: "tag",
-            label: "Tag",
-            element: (props: HTMLAttributes<HTMLElement>) => (
-                <span style={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: 4 }} {...props} />
-            ),
-        },
-    ],
-});
-
-function CombinedStylesStory() {
-    const [state, setState] = useState<TipTapRichTextBlockState>(CombinedStylesBlock.defaultValues());
-
-    return (
-        <StoryWrapper state={state}>
-            <CombinedStylesBlock.AdminComponent state={state} updateState={setState} />
-        </StoryWrapper>
-    );
-}
-
-export const CombinedTextBlockAndInlineStyles: StoryObj<typeof CombinedStylesStory> = {
-    render: () => <CombinedStylesStory />,
-    play: async ({ canvas, step }) => {
-        await step("Editor is ready with both text block style and inline style dropdowns", async () => {
-            await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
-                },
-                { timeout: 5000 },
-            );
-
-            // Heading select + text block style select + inline style select
-            const comboboxes = canvas.getAllByRole("combobox");
-            expect(comboboxes.length).toBeGreaterThanOrEqual(3);
         });
     },
 };

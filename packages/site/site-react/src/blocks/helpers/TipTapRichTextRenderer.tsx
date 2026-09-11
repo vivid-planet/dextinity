@@ -73,7 +73,7 @@ export function renderTipTapRichText({ content, nodeMapping, markMapping }: Rend
     };
 
     const renderNode = (node: TipTapNode, parent: TipTapNode | undefined): ReactNode => {
-        if (node.type === "text") {
+        if (!node.type || node.type === "text") {
             return applyMarks(node.text ?? "", node);
         }
 

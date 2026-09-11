@@ -229,6 +229,8 @@ By default, columns in a section stack vertically on mobile. To keep them side-b
 
 This wraps the children in an `MjmlGroup`, preventing the columns from stacking.
 
+The group is also what makes MJML write the column widths inline, so every section with more than one column needs this prop, including sections that are meant to stack. See [Column Widths Must Be Inline](./6-layout-patterns.md#column-widths-must-be-inline).
+
 **CSS class names:** `.mjmlSection`, `.mjmlSection--indented` (when `indent` is set).
 
 ## MjmlWrapper

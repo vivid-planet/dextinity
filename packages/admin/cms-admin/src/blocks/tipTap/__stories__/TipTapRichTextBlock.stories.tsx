@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type HTMLAttributes, type ReactNode, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
-import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "../createTipTapRichTextBlock";
+import { createTipTapRichTextBlock, type TipTapRichTextBlockState, type TipTapTextBlockStyle } from "../createTipTapRichTextBlock";
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
@@ -1163,4 +1163,54 @@ export const RequireTextBlockStyle: StoryObj<typeof RequireTextBlockStyleStory> 
             );
         });
     },
+};
+
+const comparisonTextBlockStyles: TipTapTextBlockStyle[] = [
+    {
+        name: "h2-large",
+        label: "H2 Large",
+        appliesTo: ["heading-2"],
+        element: (p: HTMLAttributes<HTMLElement>) => <Typography sx={{ fontSize: 36, lineHeight: 1.2 }} variant="h2" {...p} />,
+    },
+    {
+        name: "h2-small",
+        label: "H2 Small",
+        appliesTo: ["heading-2"],
+        element: (p: HTMLAttributes<HTMLElement>) => <Typography sx={{ fontSize: 24, lineHeight: 1.2 }} variant="h2" {...p} />,
+    },
+    {
+        name: "intro",
+        label: "Intro Text",
+        appliesTo: ["paragraph"],
+        element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
+    },
+];
+
+const WithoutRequireTextBlockStyleBlock = createTipTapRichTextBlock({ textBlockStyles: comparisonTextBlockStyles });
+const WithRequireTextBlockStyleBlock = createTipTapRichTextBlock({ textBlockStyles: comparisonTextBlockStyles, requireTextBlockStyle: true });
+
+function RequireTextBlockStyleComparisonStory() {
+    const [withoutState, setWithoutState] = useState<TipTapRichTextBlockState>(WithoutRequireTextBlockStyleBlock.defaultValues());
+    const [withState, setWithState] = useState<TipTapRichTextBlockState>(WithRequireTextBlockStyleBlock.defaultValues());
+
+    return (
+        <Box sx={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+            <Box sx={{ flex: 1, minWidth: 320 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    requireTextBlockStyle: false (default) — open the style dropdown, a "Default" entry is offered
+                </Typography>
+                <WithoutRequireTextBlockStyleBlock.AdminComponent state={withoutState} updateState={setWithoutState} />
+            </Box>
+            <Box sx={{ flex: 1, minWidth: 320 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    requireTextBlockStyle: true — no "Default" entry, a style is always assigned
+                </Typography>
+                <WithRequireTextBlockStyleBlock.AdminComponent state={withState} updateState={setWithState} />
+            </Box>
+        </Box>
+    );
+}
+
+export const RequireTextBlockStyleComparison: StoryObj<typeof RequireTextBlockStyleComparisonStory> = {
+    render: () => <RequireTextBlockStyleComparisonStory />,
 };

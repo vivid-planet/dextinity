@@ -5,9 +5,6 @@ import { BreadcrumbsEntry } from "./BreadcrumbsEntry";
 import { BreadcrumbsOverflow } from "./BreadcrumbsOverflow";
 import type { StackBreadcrumbsProps } from "./StackBreadcrumbs";
 
-export const getElementOuterWidth = (element: Element): number =>
-    element.clientWidth + parseFloat(getComputedStyle(element).marginLeft) + parseFloat(getComputedStyle(element).marginRight);
-
 const NUMBER_OF_ITEMS_BEFORE_OVERFLOW_MENU = 1;
 
 const useNumberOfItemsToBeHidden = (

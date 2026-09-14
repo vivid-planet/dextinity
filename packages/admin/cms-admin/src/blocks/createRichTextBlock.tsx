@@ -1,4 +1,4 @@
-import { htmlToState, type IRteOptions, makeRteApi, pasteAndFilterText, Rte, stateToHtml } from "@comet/admin-rte";
+import { htmlToState, type IRteOptions, makeRteApi, pasteAndFilterText, Rte, RteReadOnly, stateToHtml } from "@dextinity/admin-rte";
 import {
     BlockMapBuilder,
     convertFromHTML,
@@ -17,7 +17,7 @@ import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
 import { createCmsLinkToolbarButton } from "./rte/extension/CmsLink/createCmsLinkToolbarButton";
 import { Decorator as CmsLinkDecorator } from "./rte/extension/CmsLink/Decorator";
-import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "./types";
+import { BlockCategory, type BlockInterface, type LinkBlockInterface, type ReadOnlyBlockRenderInterface } from "./types";
 
 export interface RichTextBlockState {
     editorState: EditorState;
@@ -95,14 +95,10 @@ export interface RichTextBlockFactoryOptions {
     tags?: Array<MessageDescriptor | string>;
 }
 
-export type RichTextBlock = BlockInterface<RichTextBlockData, RichTextBlockState>;
+export type RichTextBlock = BlockInterface<RichTextBlockData, RichTextBlockState, RichTextBlockInput> &
+    ReadOnlyBlockRenderInterface<RichTextBlockState>;
 
-export const createRichTextBlock = (
-    options: RichTextBlockFactoryOptions,
-    override?: (
-        block: BlockInterface<RichTextBlockData, RichTextBlockState, RichTextBlockInput>,
-    ) => BlockInterface<RichTextBlockData, RichTextBlockState, RichTextBlockInput>,
-): BlockInterface<RichTextBlockData, RichTextBlockState, RichTextBlockInput> => {
+export const createRichTextBlock = (options: RichTextBlockFactoryOptions, override?: (block: RichTextBlock) => RichTextBlock): RichTextBlock => {
     const CmsLinkToolbarButton = createCmsLinkToolbarButton({ link: options.link });
     const defaultRteOptions: IRteOptions = {
         supports: [
@@ -135,18 +131,20 @@ export const createRichTextBlock = (
     const LinkBlock = options.link;
     const rteOptions = { ...defaultRteOptions, ...(options.rte ?? {}) };
 
-    const RichTextBlock: BlockInterface<RichTextBlockData, RichTextBlockState> = {
+    const RichTextBlock: BlockInterface<RichTextBlockData, RichTextBlockState> & ReadOnlyBlockRenderInterface<RichTextBlockState> = {
         ...createBlockSkeleton(),
 
         name: "RichText",
 
-        displayName: <FormattedMessage id="comet.blocks.richtext" defaultMessage="Rich Text" />,
+        displayName: <FormattedMessage id="dextinity.blocks.richtext" defaultMessage="Rich Text" />,
 
         defaultValues: () => ({ editorState: createEmptyState() }),
 
         category: BlockCategory.TextAndContent,
 
         tags: options.tags,
+
+        ReadOnlyComponent: ({ state }) => <RteReadOnly value={state.editorState} />,
 
         input2State: ({ draftContent }) => {
             return {

@@ -3,10 +3,10 @@ import clsx from "clsx";
 import type { ReactNode } from "react";
 
 import { registerStyles } from "../../styles/registerStyles.js";
-import { getDefaultFromResponsiveValue, getResponsiveOverrides } from "../../theme/responsiveValue.js";
+import { generateResponsiveTokenCss } from "../../styles/responsiveCss.js";
+import { getDefaultFromResponsiveValue } from "../../theme/responsiveValue.js";
 import { useOptionalTheme } from "../../theme/ThemeProvider.js";
 import type { Theme } from "../../theme/themeTypes.js";
-import { css } from "../../utils/css.js";
 import { useIsInsideMjmlWrapper } from "../wrapper/InsideMjmlWrapperContext.js";
 
 export type MjmlSectionProps = Omit<IMjmlSectionProps, "backgroundColor"> & {
@@ -55,26 +55,13 @@ function getIndentProps(theme: Theme | null): Pick<IMjmlSectionProps, "paddingLe
     };
 }
 
-registerStyles((theme) => {
-    const overrides = getResponsiveOverrides(theme.sizes.contentIndentation);
-    if (overrides.length === 0) {
-        return css``;
-    }
-
-    return overrides
-        .map((override) => {
-            const breakpoint = theme.breakpoints[override.breakpointKey];
-            if (!breakpoint) {
-                return "";
-            }
-            return css`
-                ${breakpoint.belowMediaQuery} {
-                    .mjmlSection--indented > table > tbody > tr > td {
-                        padding-left: ${override.value}px !important;
-                        padding-right: ${override.value}px !important;
-                    }
-                }
-            `;
-        })
-        .join("\n");
-});
+registerStyles((theme) =>
+    generateResponsiveTokenCss({
+        breakpoints: theme.breakpoints,
+        selector: ".mjmlSection--indented > table > tbody > tr > td",
+        tokens: [
+            { value: theme.sizes.contentIndentation, cssProperty: "padding-left", unit: "px" },
+            { value: theme.sizes.contentIndentation, cssProperty: "padding-right", unit: "px" },
+        ],
+    }),
+);

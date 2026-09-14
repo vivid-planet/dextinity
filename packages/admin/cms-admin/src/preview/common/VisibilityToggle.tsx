@@ -1,4 +1,4 @@
-import { InvisibleItemHide, InvisibleItemShow } from "@comet/admin-icons";
+import { InvisibleItemHide, InvisibleItemShow } from "@dextinity/admin-icons";
 import { useIntl } from "react-intl";
 
 import { ToggleButton } from "./ToggleButton";
@@ -21,7 +21,7 @@ function VisibilityToggle({ showOnlyVisible, onChange }: Props) {
             onClick={handleToggleVisibilityClick}
             selected={!showOnlyVisible}
             title={intl.formatMessage({
-                id: "comet.preview.showOnlyVisible",
+                id: "dextinity.preview.showOnlyVisible",
                 defaultMessage: "Show only visible blocks",
             })}
         >

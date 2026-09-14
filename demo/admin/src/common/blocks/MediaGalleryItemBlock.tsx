@@ -1,4 +1,4 @@
-import { BlockCategory, createCompositeBlock, createCompositeBlockTextField } from "@comet/cms-admin";
+import { BlockCategory, createCompositeBlock, createCompositeBlockTextField } from "@dextinity/cms-admin";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
 import { FormattedMessage } from "react-intl";
 

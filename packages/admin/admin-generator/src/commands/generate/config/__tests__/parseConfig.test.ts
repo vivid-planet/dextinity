@@ -19,8 +19,8 @@ describe("parseConfig", () => {
                 columns: [],
             });
         `;
-        await fs.writeFile(`${__dirname}/.test1.cometGen.tsx`, configString);
-        const config = await parseConfig(`${__dirname}/.test1.cometGen.tsx`);
+        await fs.writeFile(`${__dirname}/.test1.dextinityGen.tsx`, configString);
+        const config = await parseConfig(`${__dirname}/.test1.dextinityGen.tsx`);
         expect(config.type).toEqual("grid");
     });
 
@@ -40,8 +40,8 @@ describe("parseConfig", () => {
                 columns: [],
             });
         `;
-        await fs.writeFile(`${__dirname}/.test2.cometGen.tsx`, configString);
-        const config = await parseConfig(`${__dirname}/.test2.cometGen.tsx`);
+        await fs.writeFile(`${__dirname}/.test2.dextinityGen.tsx`, configString);
+        const config = await parseConfig(`${__dirname}/.test2.dextinityGen.tsx`);
         expect(config.fragmentName).toEqual("FooBar");
     });
 
@@ -64,8 +64,8 @@ describe("parseConfig", () => {
                 ]
             });
         `;
-        await fs.writeFile(`${__dirname}/.test3.cometGen.tsx`, configString);
-        const config = await parseConfig(`${__dirname}/.test3.cometGen.tsx`);
+        await fs.writeFile(`${__dirname}/.test3.dextinityGen.tsx`, configString);
+        const config = await parseConfig(`${__dirname}/.test3.dextinityGen.tsx`);
         expect(config.columns[0]).toEqual({
             type: "staticSelect",
             name: "type",
@@ -92,8 +92,8 @@ describe("parseConfig", () => {
                 ]
             });
         `;
-        await fs.writeFile(`${__dirname}/.test4.cometGen.tsx`, configString);
-        const config = await parseConfig(`${__dirname}/.test4.cometGen.tsx`);
+        await fs.writeFile(`${__dirname}/.test4.dextinityGen.tsx`, configString);
+        const config = await parseConfig(`${__dirname}/.test4.dextinityGen.tsx`);
         expect(config.columns[0]).toEqual({
             type: "staticSelect",
             name: "type",
@@ -126,8 +126,8 @@ describe("parseConfig", () => {
                 }]
             });
         `;
-        await fs.writeFile(`${__dirname}/.test5.cometGen.tsx`, configString);
-        const config = await parseConfig(`${__dirname}/.test5.cometGen.tsx`);
+        await fs.writeFile(`${__dirname}/.test5.dextinityGen.tsx`, configString);
+        const config = await parseConfig(`${__dirname}/.test5.dextinityGen.tsx`);
         expect(config.fields[0]).toEqual({
             type: "text",
             name: "name",
@@ -153,8 +153,8 @@ describe("parseConfig", () => {
                 }]
             });
         `;
-        await fs.writeFile(`${__dirname}/.test6.cometGen.tsx`, configString);
-        const config = await parseConfig(`${__dirname}/.test6.cometGen.tsx`);
+        await fs.writeFile(`${__dirname}/.test6.dextinityGen.tsx`, configString);
+        const config = await parseConfig(`${__dirname}/.test6.dextinityGen.tsx`);
         expect(config.fields[0].validate).toEqual({ code: "() => true", imports: [] });
     });
 
@@ -162,10 +162,10 @@ describe("parseConfig", () => {
         const configImportString = `
             export const typeValues = ["Cap", "Shirt", "Tie"];
         `;
-        await fs.writeFile(`${__dirname}/.test7-import.cometGen.tsx`, configImportString);
+        await fs.writeFile(`${__dirname}/.test7-import.dextinityGen.tsx`, configImportString);
         const configString = `
             import { defineConfig } from "../../generate-command";
-            import { typeValues } from "./.test7-import.cometGen";
+            import { typeValues } from "./.test7-import.dextinityGen";
             type GQLProduct = {
                 __typename?: "Product";
                 id: string;
@@ -181,8 +181,8 @@ describe("parseConfig", () => {
                 ]
             });
         `;
-        await fs.writeFile(`${__dirname}/.test7.cometGen.tsx`, configString);
-        const config = await parseConfig(`${__dirname}/.test7.cometGen.tsx`);
+        await fs.writeFile(`${__dirname}/.test7.dextinityGen.tsx`, configString);
+        const config = await parseConfig(`${__dirname}/.test7.dextinityGen.tsx`);
         expect(config.columns[0]).toEqual({
             type: "staticSelect",
             name: "type",
@@ -191,7 +191,7 @@ describe("parseConfig", () => {
     });
 
     afterAll(async () => {
-        for await (const file of fs.glob(`${__dirname}/.test*.cometGen.tsx`)) {
+        for await (const file of fs.glob(`${__dirname}/.test*.dextinityGen.tsx`)) {
             await fs.rm(file);
         }
     });

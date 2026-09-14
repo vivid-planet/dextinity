@@ -63,7 +63,7 @@ export class MyEntityModule {}
 
 ## Updating the Grid generator config
 
-In your `.cometGen.ts` file, add the `rowReordering` property to the grid config.
+In your `.dextinityGen.ts` file, add the `rowReordering` property to the grid config.
 
 ```ts
 export const MyEntityGrid: GridConfig<GQLMyEntity> = {

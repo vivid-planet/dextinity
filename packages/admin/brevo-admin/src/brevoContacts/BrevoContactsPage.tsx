@@ -1,5 +1,5 @@
-import { type GridColDef, Stack, StackPage, StackSwitch, StackToolbar } from "@comet/admin";
-import { ContentScopeIndicator, useContentScope } from "@comet/cms-admin";
+import { type GridColDef, Stack, StackPage, StackSwitch, StackToolbar } from "@dextinity/admin";
+import { ContentScopeIndicator, useContentScope } from "@dextinity/cms-admin";
 import type { DocumentNode } from "graphql";
 import type { JSX, ReactNode } from "react";
 import { useIntl } from "react-intl";
@@ -37,7 +37,7 @@ function createBrevoContactsPage({
 
         return (
             <ConfigVerification scope={scope}>
-                <Stack topLevelTitle={intl.formatMessage({ id: "cometBrevoModule.brevoContacts.brevoContacts", defaultMessage: "Contacts" })}>
+                <Stack topLevelTitle={intl.formatMessage({ id: "dextinity.brevoContacts.brevoContacts", defaultMessage: "Contacts" })}>
                     <StackSwitch>
                         <StackPage name="grid">
                             <StackToolbar scopeIndicator={<ContentScopeIndicator scope={scope} />} />
@@ -49,7 +49,7 @@ function createBrevoContactsPage({
                         </StackPage>
                         <StackPage
                             name="edit"
-                            title={intl.formatMessage({ id: "cometBrevoModule.brevoContacts.editBrevoContact", defaultMessage: "Edit contact" })}
+                            title={intl.formatMessage({ id: "dextinity.brevoContacts.editBrevoContact", defaultMessage: "Edit contact" })}
                         >
                             {(selectedId) => (
                                 <BrevoContactForm
@@ -63,7 +63,7 @@ function createBrevoContactsPage({
                         </StackPage>
                         <StackPage
                             name="add"
-                            title={intl.formatMessage({ id: "cometBrevoModule.brevoContacts.addBrevoContact", defaultMessage: "Add contact" })}
+                            title={intl.formatMessage({ id: "dextinity.brevoContacts.addBrevoContact", defaultMessage: "Add contact" })}
                         >
                             <BrevoContactForm
                                 additionalFormFields={additionalFormFields}

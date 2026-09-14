@@ -30,18 +30,18 @@ export const BaseTranslationDialog = <T,>(props: TranslationDialogBaseProps<T>) 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg">
             <DialogTitle>
-                <FormattedMessage id="comet.translator.translation" defaultMessage="Translation" />
+                <FormattedMessage id="dextinity.translator.translation" defaultMessage="Translation" />
             </DialogTitle>
             <DialogContent>
                 <Grid container columnSpacing={4} rowSpacing={2} columns={2} alignItems="center">
                     <Grid size={1}>
                         <Typography variant="subtitle2">
-                            <FormattedMessage id="comet.translator.original" defaultMessage="Original" />
+                            <FormattedMessage id="dextinity.translator.original" defaultMessage="Original" />
                         </Typography>
                     </Grid>
                     <Grid size={1}>
                         <Typography variant="subtitle2">
-                            <FormattedMessage id="comet.translator.translation" defaultMessage="Translation" />
+                            <FormattedMessage id="dextinity.translator.translation" defaultMessage="Translation" />
                         </Typography>
                     </Grid>
                     <Grid size={1}>{renderOriginalText(originalText)}</Grid>

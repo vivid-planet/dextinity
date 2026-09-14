@@ -1,4 +1,4 @@
-import { type IMakeRteApiProps, type IRteApiProps, type IRteOptions, type IRteRef, LinkDecorator, makeRteApi, Rte } from "@comet/admin-rte";
+import { type IMakeRteApiProps, type IRteApiProps, type IRteOptions, type IRteRef, LinkDecorator, makeRteApi, Rte } from "@dextinity/admin-rte";
 import { Box, Card, CardContent, Typography } from "@mui/material";
 import { convertFromRaw, convertToRaw } from "draft-js";
 import { type ReactNode, useRef } from "react";
@@ -102,7 +102,7 @@ export const rteOptions: IRteOptions = {
 const [useRteApi] = makeRteApi<ContentFormat>(makeApiOptions);
 
 export default {
-    title: "@comet/admin-rte",
+    title: "@dextinity/admin-rte",
 
     excludeStories: ["ContentFormat", "defaultContent", "makeApiOptions", "apiOptions", "rteOptions"],
 };

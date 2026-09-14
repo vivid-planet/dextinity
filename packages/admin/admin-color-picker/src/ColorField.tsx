@@ -1,4 +1,4 @@
-import { Field, type FieldProps } from "@comet/admin";
+import { Field, type FieldProps } from "@dextinity/admin";
 
 import { FinalFormColorPicker, type FinalFormColorPickerProps } from "./FinalFormColorPicker";
 

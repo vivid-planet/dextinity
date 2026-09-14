@@ -1,4 +1,4 @@
-import { CrudGenerator } from "@comet/cms-api";
+import { CrudGenerator } from "@dextinity/cms-api";
 import { BaseEntity, Entity, ManyToOne, OptionalProps, PrimaryKey, Property, Ref } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";

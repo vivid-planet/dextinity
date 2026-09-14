@@ -2,7 +2,7 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { Body, Controller, Inject, Post, Type, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { rimraf } from "rimraf";
 
-import { DisableCometGuards } from "../auth/decorators/disable-comet-guards.decorator";
+import { DisableDextinityGuards } from "../auth/decorators/disable-dextinity-guards.decorator";
 import { FileUploadInput } from "../file-utils/file-upload.input";
 import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
 import { FileUploadBody } from "./dto/file-upload.body";
@@ -52,7 +52,7 @@ export function createFileUploadsUploadController(options: { public: boolean }):
     }
 
     if (options.public) {
-        @DisableCometGuards()
+        @DisableDextinityGuards()
         class PublicFileUploadsUploadController extends BaseFileUploadsUploadController {}
 
         return PublicFileUploadsUploadController;

@@ -1,5 +1,5 @@
-import { MasterLayout } from "@comet/admin";
-import { Dashboard } from "@comet/admin-icons";
+import { MasterLayout } from "@dextinity/admin";
+import { Dashboard } from "@dextinity/admin-icons";
 
 import { MasterMenu, type MasterMenuData } from "../MasterMenu";
 import { MasterMenuRoutes } from "../MasterMenuRoutes";

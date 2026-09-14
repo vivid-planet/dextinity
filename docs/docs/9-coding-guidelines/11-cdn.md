@@ -9,7 +9,7 @@ The caching strategy must always be controlled by the origin (i.e., the applicat
 
 - All GET requests (Site and API) must explicitly set a Cache-Control header (see [Cache-Control header - HTTP | MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control)).
 - Caching duration: The lifetime of assets should be chosen appropriately depending on the content (e.g., for static assets with [Cache Buster](https://www.keycdn.com/support/what-is-cache-busting): long validity with `immutable`; for API responses: short validity or `no-store`).
-- Comet: Header setting is already ensured for all routes.
+- Dextinity: Header setting is already ensured for all routes.
 
 ### Background
 

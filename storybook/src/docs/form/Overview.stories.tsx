@@ -1,4 +1,4 @@
-import { Field, FinalForm, FinalFormInput, FormSection, SaveButton } from "@comet/admin";
+import { Field, FinalForm, FinalFormInput, FormSection, SaveButton } from "@dextinity/admin";
 
 export default {
     title: "Docs/Form/Overview",

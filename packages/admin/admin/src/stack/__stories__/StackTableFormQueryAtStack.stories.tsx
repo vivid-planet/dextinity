@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { Edit } from "@comet/admin-icons";
+import { Edit } from "@dextinity/admin-icons";
 import { Grid, IconButton, Typography } from "@mui/material";
 import { useContext } from "react";
 

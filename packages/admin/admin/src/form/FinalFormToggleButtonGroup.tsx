@@ -1,73 +1,115 @@
-import { ButtonBase, Typography, type TypographyProps } from "@mui/material";
-import { css, styled } from "@mui/material/styles";
+import { ButtonBase, Typography } from "@mui/material";
+import { type ComponentsOverrides, css, type Theme, useThemeProps } from "@mui/material/styles";
 import type { ReactNode } from "react";
 import type { FieldRenderProps } from "react-final-form";
 
-export type FinalFormToggleButtonGroupProps<FieldValue> = {
-    options: Array<{ value: FieldValue; label: ReactNode }>;
+import { createComponentSlot } from "../helpers/createComponentSlot";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+
+export type FinalFormToggleButtonGroupClassKey = "root" | "button" | "label" | "selected" | "disabled";
+
+export interface FinalFormToggleButtonGroupProps<FieldValue>
+    extends ThemedComponentBaseProps<{
+        root: "div";
+        button: typeof ButtonBase;
+        label: typeof Typography;
+    }> {
+    options: Array<{ value: FieldValue; label: ReactNode; disabled?: boolean }>;
+    optionsPerRow?: number;
+    disabled?: boolean;
+}
+
+type FinalFormToggleButtonGroupInternalProps<FieldValue> = FieldRenderProps<FieldValue, HTMLDivElement>;
+
+type RootOwnerState = {
     optionsPerRow?: number;
 };
 
-type FinalFormToggleButtonGroupInternalProps<FieldValue> = FieldRenderProps<FieldValue, HTMLDivElement>;
+type ButtonOwnerState = {
+    selected: boolean;
+    disabled: boolean;
+};
 
 /**
  * Final Form-compatible ToggleButtonGroup component.
  *
  * @see {@link ToggleButtonGroupField} – preferred for typical form use. Use this only if no Field wrapper is needed.
  */
-export function FinalFormToggleButtonGroup<FieldValue = unknown>({
-    input: { value, onChange },
-    options,
-    optionsPerRow,
-}: FinalFormToggleButtonGroupProps<FieldValue> & FinalFormToggleButtonGroupInternalProps<FieldValue>) {
+export function FinalFormToggleButtonGroup<FieldValue = unknown>(
+    inProps: FinalFormToggleButtonGroupProps<FieldValue> & FinalFormToggleButtonGroupInternalProps<FieldValue>,
+) {
+    const {
+        input: { value, onChange },
+        meta,
+        options,
+        optionsPerRow,
+        disabled,
+        slotProps,
+        ...restProps
+    } = useThemeProps({ props: inProps, name: "DextinityAdminFinalFormToggleButtonGroup" });
+
     return (
-        <Root $optionsPerRow={optionsPerRow}>
-            {options.map(({ value: optionValue, label }, index) => (
-                <Button key={index} $selected={value === optionValue} onClick={() => onChange(optionValue)} focusRipple>
-                    <Label component="span" variant="body2">
-                        {label}
-                    </Label>
-                </Button>
-            ))}
+        <Root ownerState={{ optionsPerRow }} {...slotProps?.root} {...restProps}>
+            {options.map(({ value: optionValue, label, disabled: optionDisabled }, index) => {
+                const buttonDisabled = Boolean(disabled) || Boolean(optionDisabled);
+
+                return (
+                    <Button
+                        key={index}
+                        ownerState={{ selected: value === optionValue, disabled: buttonDisabled }}
+                        focusRipple
+                        {...slotProps?.button}
+                        onClick={() => onChange(optionValue)}
+                        disabled={buttonDisabled}
+                    >
+                        <Label variant="body2" {...slotProps?.label} variantMapping={{ body2: "span", ...slotProps?.label?.variantMapping }}>
+                            {label}
+                        </Label>
+                    </Button>
+                );
+            })}
         </Root>
     );
 }
 
-const Label = styled(Typography)<{ component: TypographyProps["component"] }>`
-    display: flex;
-    align-items: center;
-`;
+const Root = createComponentSlot("div")<FinalFormToggleButtonGroupClassKey, RootOwnerState>({
+    componentName: "FinalFormToggleButtonGroup",
+    slotName: "root",
+})(
+    ({ theme, ownerState }) => css`
+        display: inline-flex;
+        min-height: 40px;
+        border: 1px solid ${theme.palette.divider};
+        background-color: ${theme.palette.divider};
+        border-radius: 2px;
+        overflow: hidden;
+        gap: 1px;
 
-const Root = styled("div", { shouldForwardProp: (prop) => prop !== "$optionsPerRow" })<{ $optionsPerRow?: number }>`
-    display: inline-flex;
-    min-height: 40px;
-    border: 1px solid ${({ theme }) => theme.palette.divider};
-    background-color: ${({ theme }) => theme.palette.divider};
-    border-radius: 2px;
-    overflow: hidden;
-    gap: 1px;
-
-    ${({ $optionsPerRow }) =>
-        $optionsPerRow &&
+        ${ownerState.optionsPerRow &&
         css`
             display: inline-grid;
-            grid-template-columns: repeat(${$optionsPerRow}, 1fr);
+            grid-template-columns: repeat(${ownerState.optionsPerRow}, 1fr);
         `}
-`;
+    `,
+);
 
-const Button = styled(ButtonBase, { shouldForwardProp: (prop) => prop !== "$selected" })<{ $selected?: boolean }>`
-    padding-left: ${({ theme }) => theme.spacing(3)};
-    padding-right: ${({ theme }) => theme.spacing(3)};
-    padding-top: 9px;
-    padding-bottom: 9px;
-    background-color: ${({ theme }) => theme.palette.background.paper};
+const Button = createComponentSlot(ButtonBase)<FinalFormToggleButtonGroupClassKey, ButtonOwnerState>({
+    componentName: "FinalFormToggleButtonGroup",
+    slotName: "button",
+    classesResolver: ({ selected, disabled }) => [selected && "selected", disabled && "disabled"],
+})(
+    ({ theme, ownerState }) => css`
+        padding-left: ${theme.spacing(3)};
+        padding-right: ${theme.spacing(3)};
+        padding-top: 9px;
+        padding-bottom: 9px;
+        background-color: ${theme.palette.background.paper};
 
-    :hover {
-        background-color: ${({ theme }) => theme.palette.grey[50]};
-    }
+        :hover {
+            background-color: ${theme.palette.grey[50]};
+        }
 
-    ${({ $selected, theme }) =>
-        $selected &&
+        ${ownerState.selected &&
         css`
             color: ${theme.palette.primary.main};
 
@@ -81,4 +123,40 @@ const Button = styled(ButtonBase, { shouldForwardProp: (prop) => prop !== "$sele
                 background-color: ${theme.palette.primary.main};
             }
         `}
-`;
+
+        ${ownerState.disabled &&
+        css`
+            color: ${theme.palette.action.disabled};
+            background-color: ${theme.palette.grey[50]};
+
+            :before {
+                background-color: ${theme.palette.action.disabled};
+            }
+        `}
+    `,
+);
+
+const Label = createComponentSlot(Typography)<FinalFormToggleButtonGroupClassKey>({
+    componentName: "FinalFormToggleButtonGroup",
+    slotName: "label",
+})(css`
+    display: flex;
+    align-items: center;
+`);
+
+declare module "@mui/material/styles" {
+    interface ComponentsPropsList {
+        DextinityAdminFinalFormToggleButtonGroup: FinalFormToggleButtonGroupProps<unknown>;
+    }
+
+    interface ComponentNameToClassKey {
+        DextinityAdminFinalFormToggleButtonGroup: FinalFormToggleButtonGroupClassKey;
+    }
+
+    interface Components {
+        DextinityAdminFinalFormToggleButtonGroup?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFinalFormToggleButtonGroup"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFinalFormToggleButtonGroup"];
+        };
+    }
+}

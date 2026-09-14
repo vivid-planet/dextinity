@@ -8,8 +8,15 @@ import {
     Loading,
     useFormApiRef,
     useStackSwitchApi,
-} from "@comet/admin";
-import { type BlockState, createFinalFormBlock, DamImageBlock, queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import {
+    type BlockState,
+    createFinalFormBlock,
+    DamImageBlock,
+    queryUpdatedAt,
+    resolveHasSaveConflict,
+    useFormSaveConflict,
+} from "@dextinity/cms-admin";
 import type { GQLProductVariantMutationErrorCode } from "@src/graphql.generated";
 import { FORM_ERROR, type FormApi } from "final-form";
 import isEqual from "lodash.isequal";

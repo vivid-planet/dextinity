@@ -1,10 +1,10 @@
-import type { User } from "@comet/cms-api";
+import type { User } from "@dextinity/cms-api";
 
 export const staticUsers: User[] = [
     {
         id: "1",
         name: "Admin",
-        email: "demo@comet-dxp.com",
+        email: "demo@dextinity.com",
         isAdmin: true,
     },
     {

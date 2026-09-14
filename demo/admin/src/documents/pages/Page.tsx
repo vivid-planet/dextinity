@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
-import { messages } from "@comet/admin";
-import { File, FileNotMenu } from "@comet/admin-icons";
+import { messages } from "@dextinity/admin";
+import { File, FileNotMenu } from "@dextinity/admin-icons";
 import {
     createDocumentDependencyMethods,
     createDocumentRootBlocksMethods,
@@ -9,7 +9,7 @@ import {
     type DocumentInterface,
     type InfoTagProps,
     type TranslatableInterface,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 import { Chip } from "@mui/material";
 import type { GQLPageTreeNodeAdditionalFieldsFragment } from "@src/common/EditPageNode";
 import type { GQLPage, GQLPageInput } from "@src/graphql.generated";

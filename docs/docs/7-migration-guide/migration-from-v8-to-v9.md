@@ -12,7 +12,7 @@ This migration guide is designed to be executed by an AI coding agent (e.g., Cla
 **Sample prompt to get started:**
 
 ```
-Migrate this project from Comet v8 to v9. Follow the migration guide at https://docs.comet-dxp.com/docs/migration-guide/migration-from-v8-to-v9 step by step. Work through each section sequentially, making the required changes and running any verification commands. Commit after each major section.
+Migrate this project from Comet v8 to v9. Follow the migration guide at https://cms-docs.dextinity.com/docs/migration-guide/migration-from-v8-to-v9 step by step. Work through each section sequentially, making the required changes and running any verification commands. Commit after each major section.
 ```
 
 :::
@@ -268,15 +268,6 @@ Reinstall dependencies after updating `package.json`:
 npm install
 ```
 
-### Verify lint passes
-
-```sh
-cd api
-npm run lint
-```
-
-Repeat this step, fixing all lint errors, until the lint passes.
-
 ### Rename `RedirectSourceTypeValues` to `RedirectSourceType``
 
 Use `RedirectSourceType` instead of `RedirectSourceTypeValues` from `@comet/cms-api`
@@ -292,6 +283,17 @@ Use `RedirectSourceType` instead of `RedirectSourceTypeValues` from `@comet/cms-
 - const messageId = body.messageId;
 + const { messageId } = await this.brevoTransactionalMailsService.send({ to: [{ email }], subject, htmlContent }, scope);
 ```
+
+<!-- "Verify lint passes" must always be the last step for this service. -->
+
+### Verify lint passes
+
+```sh
+cd api
+npm run lint
+```
+
+Repeat this step, fixing all lint errors, until the lint passes.
 
 ## Admin
 
@@ -811,6 +813,8 @@ const attributesFragment = gql`
 ```
 
 After renaming, re-run code generation to update the `*.generated.ts` files.
+
+<!-- "Verify lint passes" must always be the last step for this service. -->
 
 ### Verify lint passes
 
@@ -1449,15 +1453,6 @@ Similarly, if you import `persistedQueryRoute` directly from `@comet/site-react`
 
 `@comet/eslint-config` v9 adds the `@graphql-eslint/naming-convention` rule. See the [Admin section](#rename-graphql-operations-and-fragments-with-redundant-kind-suffixes) for details and apply the same renames in `site`.
 
-### Verify lint passes
-
-```sh
-cd site
-npm run lint
-```
-
-Repeat this step, fixing all lint errors, until the lint passes.
-
 ### Verify embedded webcomponents still work
 
 If your site embeds third-party **webcomponents** / micro-frontends — typically a block that loads an external `<script>` which mounts a widget provided by another team (forms, product sliders, search or booking widgets, etc.) — the React 19 and `react-intl` v7 upgrades can break them **at runtime even though lint, `tsc`, and the production build all pass**.
@@ -1502,3 +1497,14 @@ Apply it only to the webcomponents that actually break — not every embed reuse
 This is a runtime failure that CI cannot catch — lint, `tsc`, and the build all succeed. Before any production deployment, run the site and manually open **every** page that renders a webcomponent, confirming each one mounts and works. Treat pages containing webcomponents as the highest-risk part of this upgrade, and verify them on a staging/preview environment first.
 
 :::
+
+<!-- "Verify lint passes" must always be the last step for this service. -->
+
+### Verify lint passes
+
+```sh
+cd site
+npm run lint
+```
+
+Repeat this step, fixing all lint errors, until the lint passes.

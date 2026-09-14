@@ -1,4 +1,4 @@
-import { CancelButton, DeleteButton, OkayButton } from "@comet/admin";
+import { CancelButton, DeleteButton, OkayButton } from "@dextinity/admin";
 // eslint-disable-next-line no-restricted-imports
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -52,9 +52,13 @@ export function TipTapLinkDialog({ editor, linkBlock: LinkBlock, onClose }: TipT
         <Dialog onClose={onClose} open={true}>
             <DialogTitle>
                 {isEditing ? (
-                    <FormattedMessage id="comet.blocks.tipTapRichText.editLink" defaultMessage='Edit link "{link}"' values={{ link: selectedText }} />
+                    <FormattedMessage
+                        id="dextinity.blocks.tipTapRichText.editLink"
+                        defaultMessage='Edit link "{link}"'
+                        values={{ link: selectedText }}
+                    />
                 ) : (
-                    <FormattedMessage id="comet.blocks.tipTapRichText.insertLink" defaultMessage="Insert link" />
+                    <FormattedMessage id="dextinity.blocks.tipTapRichText.insertLink" defaultMessage="Insert link" />
                 )}
             </DialogTitle>
             <DialogContent>
@@ -65,7 +69,7 @@ export function TipTapLinkDialog({ editor, linkBlock: LinkBlock, onClose }: TipT
                 <ButtonContainer>
                     {isEditing && (
                         <DeleteButton onClick={handleRemove}>
-                            <FormattedMessage id="comet.blocks.tipTapRichText.removeLink" defaultMessage="Delete Link" />
+                            <FormattedMessage id="dextinity.blocks.tipTapRichText.removeLink" defaultMessage="Delete Link" />
                         </DeleteButton>
                     )}
                     <OkayButton onClick={handleUpdate} />

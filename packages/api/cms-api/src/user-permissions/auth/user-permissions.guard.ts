@@ -3,7 +3,7 @@ import { Reflector } from "@nestjs/core";
 import { GqlContextType, GqlExecutionContext } from "@nestjs/graphql";
 import { TypeMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/type-metadata.storage.js";
 
-import { DISABLE_COMET_GUARDS_METADATA_KEY } from "../../auth/decorators/disable-comet-guards.decorator";
+import { DISABLE_DEXTINITY_GUARDS_METADATA_KEY } from "../../auth/decorators/disable-dextinity-guards.decorator";
 import { getRequestFromExecutionContext } from "../../common/decorators/utils";
 import { ContentScopeService } from "../content-scope.service";
 import { DisablePermissionCheck, REQUIRED_PERMISSION_METADATA_KEY, RequiredPermissionMetadata } from "../decorators/required-permission.decorator";
@@ -40,13 +40,13 @@ export class UserPermissionsGuard implements CanActivate {
             request.contentScopes = this.contentScopeService.getUniqueScopes(requiredContentScopes);
         }
 
-        if (this.getDecorator(context, DISABLE_COMET_GUARDS_METADATA_KEY)) {
+        if (this.getDecorator(context, DISABLE_DEXTINITY_GUARDS_METADATA_KEY)) {
             return true;
         }
 
         const user = this.getUser(context);
         if (!user) {
-            this.logger.debug("Could not get authenticated user. Maybe CometAuthGuard is missing?");
+            this.logger.debug("Could not get authenticated user. Maybe DextinityAuthGuard is missing?");
             return false;
         }
 

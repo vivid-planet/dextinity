@@ -1,4 +1,4 @@
-import { useContentTranslationService } from "@comet/admin";
+import { useContentTranslationService } from "@dextinity/admin";
 import { ButtonGroup } from "@mui/material";
 
 import TranslationToolbarButton from "../translation/ToolbarButton";

@@ -10,7 +10,7 @@ The Full Text Search module is experimental. Its API may change in future releas
 
 ## Introduction
 
-The `FullTextSearchModule` provides a simple, PostgreSQL-native full text search for COMET DXP applications. It uses PostgreSQL's built-in `tsvector` type and full text index — no external search engine required.
+The `FullTextSearchModule` provides a simple, PostgreSQL-native full text search for Dextinity applications. It uses PostgreSQL's built-in `tsvector` type and full text index — no external search engine required.
 
 **This module is not a replacement for Elasticsearch-based search.** It is intentionally simple and suitable for moderate content sizes. Consider it when:
 
@@ -39,7 +39,7 @@ Because both are standard PostgreSQL views (not materialized views), they always
 Import `FullTextSearchModule` in your root `AppModule`:
 
 ```typescript title="app.module.ts"
-import { FullTextSearchModule } from "@comet/cms-api";
+import { FullTextSearchModule } from "@dextinity/cms-api";
 
 @Module({
     imports: [
@@ -58,7 +58,7 @@ Each entity you want to make searchable needs:
 2. The `@EntityInfo` decorator to register the entity with the module.
 
 ```typescript title="news.entity.ts"
-import { EntityInfo, entityToMikroOrmFullText } from "@comet/cms-api";
+import { EntityInfo, entityToMikroOrmFullText } from "@dextinity/cms-api";
 import { FullTextType, Index, Property } from "@mikro-orm/postgresql";
 
 @EntityInfo<News>({
@@ -146,7 +146,7 @@ entityToMikroOrmFullText(
 Text extraction works by traversing the block tree depth-first and calling `searchText()` on each visible block. Built-in blocks such as `createRichTextBlock` already implement this method. For custom blocks, implement `searchText()` on the `BlockData` class to return the text that should be indexed:
 
 ```typescript title="teaser.block.ts"
-import { BlockData, BlockInput, SearchText, blockInputToData, createBlock } from "@comet/cms-api";
+import { BlockData, BlockInput, SearchText, blockInputToData, createBlock } from "@dextinity/cms-api";
 
 class TeaserBlockData extends BlockData {
     @BlockField()
@@ -170,10 +170,10 @@ Child blocks do not need to collect their children's text manually — the trave
 
 #### Search bar in the admin header
 
-`@comet/cms-admin` exports a ready-to-use `SearchHeaderItem` component. Add it to your application's `Header`:
+`@dextinity/cms-admin` exports a ready-to-use `SearchHeaderItem` component. Add it to your application's `Header`:
 
 ```tsx title="MasterHeader.tsx"
-import { BuildEntry, ContentScopeControls, Header, SearchHeaderItem, UserHeaderItem } from "@comet/cms-admin";
+import { BuildEntry, ContentScopeControls, Header, SearchHeaderItem, UserHeaderItem } from "@dextinity/cms-admin";
 
 const MasterHeader = () => {
     return (
@@ -189,13 +189,13 @@ const MasterHeader = () => {
 
 ### Site
 
-Unlike the admin search bar, there is no ready-to-use resolver or block for site search. You need to implement both in your application. Comet does provide the underlying PostgreSQL views (`EntityInfoFullTextObject`) and the GraphQL types (`PaginatedEntityInfo`, `EntityInfoObject`) that you can build on, so the integration is straightforward.
+Unlike the admin search bar, there is no ready-to-use resolver or block for site search. You need to implement both in your application. Dextinity does provide the underlying PostgreSQL views (`EntityInfoFullTextObject`) and the GraphQL types (`PaginatedEntityInfo`, `EntityInfoObject`) that you can build on, so the integration is straightforward.
 
 Site search must also be publicly accessible without user authentication. The built-in `myFullTextSearch` query enforces permission checks and is therefore only suitable for the admin. For site search, you expose a separate resolver that skips permission checks but explicitly restricts the result set to entities whose content is meant to be publicly visible.
 
 #### 1. Create a public resolver
 
-Create a new resolver that uses `EntityInfoFullTextObject` and `PaginatedEntityInfo` from `@comet/cms-api`. Mark it with `@RequiredPermission(DisablePermissionCheck)` to make it accessible without authentication, and explicitly list which entity types may appear in results:
+Create a new resolver that uses `EntityInfoFullTextObject` and `PaginatedEntityInfo` from `@dextinity/cms-api`. Mark it with `@RequiredPermission(DisablePermissionCheck)` to make it accessible without authentication, and explicitly list which entity types may appear in results:
 
 ```typescript title="site-full-text-search.resolver.ts"
 import {
@@ -205,7 +205,7 @@ import {
     EntityInfoObject,
     PaginatedEntityInfo,
     RequiredPermission,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { EntityManager, type FilterQuery } from "@mikro-orm/postgresql";
 import { Args, Int, Query, Resolver } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
@@ -268,7 +268,7 @@ export class SiteFullTextSearchModule {}
 The search UI on the site is rendered by a block placed in the page content. The block itself carries no data — it is just a marker that tells the site to render the search component at that position:
 
 ```typescript title="full-text-search.block.ts"
-import { BlockData, BlockInput, blockInputToData, createBlock } from "@comet/cms-api";
+import { BlockData, BlockInput, blockInputToData, createBlock } from "@dextinity/cms-api";
 
 class FullTextSearchBlockData extends BlockData {}
 
@@ -297,7 +297,7 @@ const supportedBlocks = {
 On the admin side, create a minimal block definition so editors can place the search component on a page:
 
 ```typescript title="FullTextSearchBlock.tsx"
-import { type BlockInterface, createBlockSkeleton } from "@comet/cms-admin";
+import { type BlockInterface, createBlockSkeleton } from "@dextinity/cms-admin";
 import type { FullTextSearchBlockData, FullTextSearchBlockInput } from "@src/blocks.generated";
 import { FormattedMessage } from "react-intl";
 
@@ -317,7 +317,7 @@ Search results do not carry a target URL. Derive the path from the entity type u
 
 ```typescript title="FullTextSearchBlock.tsx"
 "use client";
-import { gql, type PropsWithData, withPreview } from "@comet/site-nextjs";
+import { gql, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { FullTextSearchBlockData } from "@src/blocks.generated";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import Link from "next/link";

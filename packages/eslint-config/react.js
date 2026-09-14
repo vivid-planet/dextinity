@@ -4,20 +4,20 @@ import globals from "globals";
 import formatJs from "eslint-plugin-formatjs";
 import graphqlPlugin from "@graphql-eslint/eslint-plugin";
 import react from "eslint-plugin-react";
-import cometPlugin from "@comet/eslint-plugin";
+import dextinityPlugin from "@dextinity/eslint-plugin";
 import reactHooks from "eslint-plugin-react-hooks";
 
-const cometAdminImportsRestrictedFromMuiMaterial = ["Alert", "Button", "Dialog", "Tooltip"];
+const dextinityAdminImportsRestrictedFromMuiMaterial = ["Alert", "Button", "Dialog", "Tooltip"];
 
 export const restrictedImportPaths = [
-    ...cometAdminImportsRestrictedFromMuiMaterial.map((name) => ({
+    ...dextinityAdminImportsRestrictedFromMuiMaterial.map((name) => ({
         name: "@mui/material",
         importNames: [name],
-        message: `Please use ${name} from @comet/admin instead`,
+        message: `Please use ${name} from @dextinity/admin instead`,
     })),
-    ...cometAdminImportsRestrictedFromMuiMaterial.map((name) => ({
+    ...dextinityAdminImportsRestrictedFromMuiMaterial.map((name) => ({
         name: `@mui/material/${name}`,
-        message: `Please use ${name} from @comet/admin instead`,
+        message: `Please use ${name} from @dextinity/admin instead`,
     })),
     {
         name: "react",
@@ -30,37 +30,37 @@ export const restrictedImportPaths = [
     },
     {
         name: "@mui/icons-material",
-        message: "Please use @comet/admin-icons instead",
+        message: "Please use @dextinity/admin-icons instead",
     },
     {
         name: "@mui/x-data-grid",
         importNames: ["GridColDef"],
-        message: "Please use GridColDef from @comet/admin instead",
+        message: "Please use GridColDef from @dextinity/admin instead",
     },
     {
         name: "@mui/x-data-grid-pro",
         importNames: ["GridColDef"],
-        message: "Please use GridColDef from @comet/admin instead",
+        message: "Please use GridColDef from @dextinity/admin instead",
     },
     {
         name: "@mui/x-data-grid-premium",
         importNames: ["GridColDef"],
-        message: "Please use GridColDef from @comet/admin instead",
+        message: "Please use GridColDef from @dextinity/admin instead",
     },
     {
         name: "@mui/x-data-grid",
         importNames: ["GridToolbarQuickFilter"],
-        message: "Please use GridToolbarQuickFilter from @comet/admin instead",
+        message: "Please use GridToolbarQuickFilter from @dextinity/admin instead",
     },
     {
         name: "@mui/x-data-grid-pro",
         importNames: ["GridToolbarQuickFilter"],
-        message: "Please use GridToolbarQuickFilter from @comet/admin instead",
+        message: "Please use GridToolbarQuickFilter from @dextinity/admin instead",
     },
     {
         name: "@mui/x-data-grid-premium",
         importNames: ["GridToolbarQuickFilter"],
-        message: "Please use GridToolbarQuickFilter from @comet/admin instead",
+        message: "Please use GridToolbarQuickFilter from @dextinity/admin instead",
     },
 ];
 
@@ -152,10 +152,10 @@ const config = [
     },
     {
         plugins: {
-            "@comet": cometPlugin,
+            "@dextinity": dextinityPlugin,
         },
         rules: {
-            "@comet/no-private-sibling-import": "error",
+            "@dextinity/no-private-sibling-import": "error",
         },
     },
     {

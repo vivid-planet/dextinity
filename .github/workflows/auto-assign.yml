@@ -5,6 +5,9 @@ on:
 
 jobs:
     auto-assign:
+        # auto-assign-action has no option to skip pull requests based on their author,
+        # so bot pull requests (Renovate, Copilot, ...) are filtered out here.
+        if: github.event.pull_request.user.type != 'Bot'
         runs-on: ubuntu-latest
         steps:
             - uses: kentaro-m/auto-assign-action@v2.0.2

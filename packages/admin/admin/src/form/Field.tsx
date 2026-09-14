@@ -8,11 +8,11 @@ import { useFinalFormContext } from "./FinalFormContextProvider";
 
 const requiredValidator = (value: any) => {
     if (value === undefined || value === null || value === false || value === "") {
-        return <FormattedMessage id="comet.form.required" defaultMessage="Required" />;
+        return <FormattedMessage id="dextinity.form.required" defaultMessage="Required" />;
     }
     // Check for empty arrays (relevant for multiple select fields)
     if (Array.isArray(value) && value.length === 0) {
-        return <FormattedMessage id="comet.form.required" defaultMessage="Required" />;
+        return <FormattedMessage id="dextinity.form.required" defaultMessage="Required" />;
     }
     return undefined;
 };

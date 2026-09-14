@@ -1,4 +1,4 @@
-import { Add } from "@comet/admin-icons";
+import { Add } from "@dextinity/admin-icons";
 import { Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Paper } from "@mui/material";
 import { useRef, useState } from "react";
 

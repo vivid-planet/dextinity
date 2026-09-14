@@ -1,11 +1,11 @@
 import { gql } from "@apollo/client";
-import { createPagePagingActions, MainContent, Table, TableQuery, useTableQuery, useTableQueryPaging } from "@comet/admin";
+import { createPagePagingActions, MainContent, Table, TableQuery, useTableQuery, useTableQueryPaging } from "@dextinity/admin";
 
 import type { LaunchesPastPagePagingResult } from "../../../.storybook/mocks/handlers";
 import { apolloStoryDecorator } from "../../apollo-story.decorator";
 
 export default {
-    title: "@comet/admin/table",
+    title: "@dextinity/admin/table",
     decorators: [apolloStoryDecorator("/graphql")],
 };
 

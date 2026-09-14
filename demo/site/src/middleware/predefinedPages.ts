@@ -1,4 +1,4 @@
-import { gql } from "@comet/site-nextjs";
+import { gql } from "@dextinity/site-nextjs";
 import { predefinedPagePaths } from "@src/documents/predefinedPages/predefinedPagePaths";
 import { createGraphQLFetchMiddleware } from "@src/util/graphQLClientMiddleware";
 import { getHostByHeaders, getSiteConfigForDomain, getSiteConfigForHost } from "@src/util/siteConfig";

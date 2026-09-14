@@ -1,8 +1,8 @@
-import { useCometConfig } from "../../config/CometConfigContext";
+import { useDextinityConfig } from "../../config/DextinityConfigContext";
 import { type ContentScope, useContentScope } from "../../contentScope/Provider";
 
 export function usePageTreeScope(): Partial<ContentScope> {
-    const { pageTree } = useCometConfig();
+    const { pageTree } = useDextinityConfig();
     const { scope: completeScope } = useContentScope();
 
     if (pageTree?.scopeParts) {

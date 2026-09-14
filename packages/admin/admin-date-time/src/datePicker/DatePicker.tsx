@@ -1,8 +1,8 @@
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
-import { ClearInputAdornment, type InputWithPopperProps } from "@comet/admin";
-import { Calendar as CalendarIcon } from "@comet/admin-icons";
+import { ClearInputAdornment, type InputWithPopperProps } from "@dextinity/admin";
+import { Calendar as CalendarIcon } from "@dextinity/admin-icons";
 import type { ComponentsOverrides } from "@mui/material";
 import { type Theme, useThemeProps } from "@mui/material/styles";
 import { type FormatDateOptions, useIntl } from "react-intl";
@@ -24,7 +24,7 @@ export interface DatePickerProps extends Omit<InputWithPopperProps, "children" |
 }
 
 /**
- * @deprecated Use `DatePicker` from `@comet/admin` instead.
+ * @deprecated Use `DatePicker` from `@dextinity/admin` instead.
  */
 export const DatePicker = (inProps: DatePickerProps) => {
     const {
@@ -39,7 +39,7 @@ export const DatePicker = (inProps: DatePickerProps) => {
         slotProps,
         endAdornment,
         ...inputWithPopperProps
-    } = useThemeProps({ props: inProps, name: "CometAdminLegacyDatePicker" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminLegacyDatePicker" });
     const intl = useIntl();
     const dateFnsLocale = useDateFnsLocale();
     const dateValue = value ? new Date(value) : undefined;
@@ -52,7 +52,7 @@ export const DatePicker = (inProps: DatePickerProps) => {
                     <CalendarIcon />
                 </StartAdornment>
             }
-            placeholder={placeholder ?? intl.formatMessage({ id: "comet.datePicker.selectDate", defaultMessage: "Select date" })}
+            placeholder={placeholder ?? intl.formatMessage({ id: "dextinity.datePicker.selectDate", defaultMessage: "Select date" })}
             {...slotProps?.root}
             {...inputWithPopperProps}
             readOnly
@@ -94,17 +94,17 @@ export const DatePicker = (inProps: DatePickerProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminLegacyDatePicker: DatePickerClassKey;
+        DextinityAdminLegacyDatePicker: DatePickerClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminLegacyDatePicker: DatePickerProps;
+        DextinityAdminLegacyDatePicker: DatePickerProps;
     }
 
     interface Components {
-        CometAdminLegacyDatePicker?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminLegacyDatePicker"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminLegacyDatePicker"];
+        DextinityAdminLegacyDatePicker?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminLegacyDatePicker"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminLegacyDatePicker"];
         };
     }
 }

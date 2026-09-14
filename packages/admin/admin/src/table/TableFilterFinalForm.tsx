@@ -1,4 +1,4 @@
-import { Clear } from "@comet/admin-icons";
+import { Clear } from "@dextinity/admin-icons";
 import { Grid, Typography } from "@mui/material";
 import type { AnyObject } from "final-form";
 import { Component, type ReactNode } from "react";
@@ -59,7 +59,7 @@ export class TableFilterFinalForm<FilterValues = AnyObject> extends Component<Pr
                                                 formRenderProps.form.reset();
                                             }}
                                         >
-                                            <FormattedMessage id="comet.table.tableFilterFinalForm.resetButton" defaultMessage="Reset filter" />
+                                            <FormattedMessage id="dextinity.table.tableFilterFinalForm.resetButton" defaultMessage="Reset filter" />
                                         </Button>
                                     </Grid>
                                 )}

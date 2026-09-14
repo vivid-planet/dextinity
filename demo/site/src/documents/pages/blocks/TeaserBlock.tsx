@@ -1,4 +1,4 @@
-import { ListBlock, type PropsWithData, withPreview } from "@comet/site-nextjs";
+import { ListBlock, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { TeaserBlockData } from "@src/blocks.generated";
 import { PageLayout } from "@src/layout/PageLayout";
 

@@ -20,8 +20,8 @@ import {
     useDataGridExcelExport,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Delete, Download, Favorite, MoreVertical, Move } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Delete, Download, Favorite, MoreVertical, Move } from "@dextinity/admin-icons";
 import { Divider, Menu, MenuItem, useTheme } from "@mui/material";
 import Box from "@mui/material/Box";
 import { DataGrid, type GridRowSelectionModel } from "@mui/x-data-grid";

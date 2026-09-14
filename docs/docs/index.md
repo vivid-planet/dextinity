@@ -4,7 +4,7 @@ sidebar_position: 0
 id: Overview
 ---
 
-COMET DXP is a highly customizable platform for building modern applications based on a headless CMS.
+Dextinity is a highly customizable platform for building modern applications based on a headless CMS.
 
 The following design principles are considered:
 
@@ -20,7 +20,7 @@ The following diagram visually highlights these principles.
 
 ![Architecture](./1-getting-started/images/application-baseline.jpg)
 
-A typical COMET DXP application consists of multiple microservices which are shown in the following diagram.
+A typical Dextinity application consists of multiple microservices which are shown in the following diagram.
 
 ![Architecture](./1-getting-started/images/architecture.jpg)
 
@@ -36,7 +36,7 @@ Many of the highlighted microservices can be exchanged or omitted.
 - We want to offer excellent developer experience (DX)
 - We want to host on-premise
 
-You can build two types of applications with COMET DXP:
+You can build two types of applications with Dextinity:
 
 - **Content websites**: Websites that are primarily content-driven without a lot of structured data. Content websites heavily use the CMS features (page tree, blocks etc.) and have at least one site.
 - **Data-driven applications**: Applications that are primarily data-driven. Data-driven applications might not use the CMS features and might not have a site at all.

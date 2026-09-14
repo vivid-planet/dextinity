@@ -1,5 +1,5 @@
-import { Selection, SelectionRoute, useSelection, useSelectionRoute } from "@comet/admin";
-import { Add } from "@comet/admin-icons";
+import { Selection, SelectionRoute, useSelection, useSelectionRoute } from "@dextinity/admin";
+import { Add } from "@dextinity/admin-icons";
 import { List, ListItemButton, ListItemIcon, ListItemText, Paper } from "@mui/material";
 import { Redirect, Route, useLocation } from "react-router";
 

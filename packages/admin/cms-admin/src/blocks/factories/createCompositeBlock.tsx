@@ -1,4 +1,4 @@
-import { StackPage, StackSwitch, StackSwitchApiContext, SubRoute, useSubRoutePrefix } from "@comet/admin";
+import { StackPage, StackSwitch, StackSwitchApiContext, SubRoute, useSubRoutePrefix } from "@dextinity/admin";
 import { Divider } from "@mui/material";
 import { Fragment, type ReactNode } from "react";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
@@ -248,7 +248,7 @@ export const createCompositeBlock = <Options extends CreateCompositeBlockOptions
                                             isBlockInterface(block) ? (
                                                 block.displayName
                                             ) : (
-                                                <FormattedMessage id="comet.blocks.createCompositeBlock.settings" defaultMessage="Settings" />
+                                                <FormattedMessage id="dextinity.blocks.createCompositeBlock.settings" defaultMessage="Settings" />
                                             )
                                         }
                                         preview={blockPreviews[blockKey]}
@@ -338,8 +338,8 @@ export const createCompositeBlock = <Options extends CreateCompositeBlockOptions
                         ...nestedBlocks.map(([key, { title }]) => {
                             const block = blockConfigNormalized[key].block[0];
 
-                            // @TODO: change literal string "Settings" on next line to: <FormattedMessage id="comet.blocks.createCompositeBlock.settings" defaultMessage="Settings" />
-                            // when https://github.com/vivid-planet/comet/pull/340 is fixed
+                            // @TODO: change literal string "Settings" on next line to: <FormattedMessage id="dextinity.blocks.createCompositeBlock.settings" defaultMessage="Settings" />
+                            // when https://github.com/vivid-planet/dextinity/pull/340 is fixed
                             return (
                                 <StackPage key={key} name={key} title={title ? title : isBlockInterface(block) ? block.displayName : "Settings"}>
                                     {blockAdminComponents[key]}

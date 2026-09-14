@@ -5,6 +5,13 @@ type BlockMetaField =
           name: string;
           kind: "String" | "Number" | "Boolean" | "Json";
           nullable: boolean;
+          array?: boolean;
+      }
+    | {
+          name: string;
+          kind: "TipTapRichTextBlock";
+          nullable: boolean;
+          childBlocks: Record<string, string>;
       }
     | {
           name: string;
@@ -56,6 +63,13 @@ function extractFromBlockMeta(blockMeta: BlockMetaInterface): BlockMetaField[] {
                 kind: field.kind,
                 nullable: field.nullable,
                 array: field.array,
+            };
+        } else if (field.kind === BlockMetaFieldKind.TipTapRichTextBlock) {
+            return {
+                name: field.name,
+                kind: field.kind,
+                nullable: field.nullable,
+                childBlocks: Object.fromEntries(Object.entries(field.childBlocks).map(([blockType, block]) => [blockType, block.name])),
             };
         } else if (field.kind === BlockMetaFieldKind.Enum) {
             return {

@@ -1,0 +1,38 @@
+.root {
+    display: inline-flex;
+    pointer-events: none;
+}
+
+.overlay {
+    position: absolute;
+    z-index: 1;
+}
+
+.bottomLeft {
+    bottom: 0;
+    left: 0;
+}
+
+.topRight {
+    top: 0;
+    right: 0;
+}
+
+.icon {
+    display: block;
+
+    // Height so the label stays clearly visible and perceivable (EU Article 50 guidance).
+    height: var(--ai-content-disclosure-icon-size, 28px);
+    width: auto;
+}
+
+// Soft shadow hugging the label shape so it stays legible against any background
+// (Code of Practice: "remain visible against any background").
+
+.black .icon {
+    filter: drop-shadow(0 0 2px rgba(100, 100, 100, 0.7)) drop-shadow(0 0 5px rgba(100, 100, 100, 0.5));
+}
+
+.white .icon {
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+}

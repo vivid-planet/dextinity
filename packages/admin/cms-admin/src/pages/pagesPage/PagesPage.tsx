@@ -15,8 +15,8 @@ import {
     useEditDialog,
     useFocusAwarePolling,
     useStoredState,
-} from "@comet/admin";
-import { Add } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Add } from "@dextinity/admin-icons";
 import { Box, DialogContent, Divider, FormControlLabel, LinearProgress, Paper, Switch } from "@mui/material";
 import { type ComponentType, type ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -136,7 +136,7 @@ export function PagesPage({
 
     return (
         <DamScopeProvider>
-            <Stack topLevelTitle={intl.formatMessage({ id: "comet.pages.pages", defaultMessage: "Pages" })}>
+            <Stack topLevelTitle={intl.formatMessage({ id: "dextinity.pages.pages", defaultMessage: "Pages" })}>
                 <StackSwitch>
                     <StackPage name="table">
                         <Toolbar scopeIndicator={renderContentScopeIndicator(pageTreeScope)}>
@@ -146,7 +146,7 @@ export function PagesPage({
                             <ToolbarItem>
                                 <FormControlLabel
                                     control={<Switch checked={showArchive} color="primary" onChange={handleArchiveToggleClick} />}
-                                    label={<FormattedMessage id="comet.pages.pages.archivedItems" defaultMessage="Archived items" />}
+                                    label={<FormattedMessage id="dextinity.pages.pages.archivedItems" defaultMessage="Archived items" />}
                                 />
                             </ToolbarItem>
                             <ToolbarActions>
@@ -228,7 +228,7 @@ export function PagesPage({
                             </DialogContent>
                         </EditDialog>
                     </StackPage>
-                    <StackPage name="edit" title={intl.formatMessage({ id: "comet.pages.pages.editContent", defaultMessage: "Edit content" })}>
+                    <StackPage name="edit" title={intl.formatMessage({ id: "dextinity.pages.pages.editContent", defaultMessage: "Edit content" })}>
                         {(selectedId) => {
                             const page = data?.pages.find((page) => page.id == selectedId);
 
@@ -240,11 +240,11 @@ export function PagesPage({
                                 return (
                                     <MainContent>
                                         <Alert
-                                            title={<FormattedMessage id="comet.pages.pages.notFound" defaultMessage="Not found" />}
+                                            title={<FormattedMessage id="dextinity.pages.pages.notFound" defaultMessage="Not found" />}
                                             severity="error"
                                         >
                                             <FormattedMessage
-                                                id="comet.pages.pages.documentDoesntExist"
+                                                id="dextinity.pages.pages.documentDoesntExist"
                                                 defaultMessage="This document doesn't exist"
                                             />
                                         </Alert>
@@ -256,11 +256,11 @@ export function PagesPage({
                                 return (
                                     <MainContent>
                                         <Alert
-                                            title={<FormattedMessage id="comet.pages.pages.archived" defaultMessage="Archived" />}
+                                            title={<FormattedMessage id="dextinity.pages.pages.archived" defaultMessage="Archived" />}
                                             severity="error"
                                         >
                                             <FormattedMessage
-                                                id="comet.pages.pages.documentHasBeenArchived"
+                                                id="dextinity.pages.pages.documentHasBeenArchived"
                                                 defaultMessage="This document has been archived and can no longer be edited"
                                             />
                                         </Alert>

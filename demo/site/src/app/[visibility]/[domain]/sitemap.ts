@@ -2,7 +2,7 @@ import { createSitePath } from "@src/util/createSitePath";
 
 export const dynamic = "force-dynamic"; // don't generate at build time
 
-import { gql } from "@comet/site-nextjs";
+import { gql } from "@dextinity/site-nextjs";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { getSiteConfig } from "@src/util/siteConfig";
 import type { MetadataRoute } from "next";

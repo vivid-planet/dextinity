@@ -2,7 +2,7 @@
 
 Certain pages in the page tree are not typical content pages.
 An example of this would be a news page that is automatically generated from structured data.
-In Comet, we call such pages "Predefined pages".
+In Dextinity, we call such pages "Predefined pages".
 
 ## Basic idea
 
@@ -13,16 +13,16 @@ For instance, if the type "News" is selected in the Admin, the news page should 
 
 ## Adding predefined pages to a project
 
-This section shows the changes necessary to support predefined pages in a Comet project.
+This section shows the changes necessary to support predefined pages in a Dextinity project.
 
 :::note
 
 This guide uses news as an example of structured data.
 The implementation of the news in the project is not covered here.
 Have a look at the implementation in the Demo project:
-[API](https://github.com/vivid-planet/comet/blob/main/demo/api/src/news/entities/news.entity.ts),
-[Admin](https://github.com/vivid-planet/comet/blob/main/demo/admin/crud-generator-config.ts),
-[Site](https://github.com/vivid-planet/comet/tree/main/demo/site/src/app/%5Blang%5D/news).
+[API](https://github.com/vivid-planet/dextinity/blob/main/demo/api/src/news/entities/news.entity.ts),
+[Admin](https://github.com/vivid-planet/dextinity/blob/main/demo/admin/crud-generator-config.ts),
+[Site](https://github.com/vivid-planet/dextinity/tree/main/demo/site/src/app/%5Blang%5D/news).
 
 :::
 
@@ -38,7 +38,7 @@ The following steps are required in the API:
 #### Creation of the predefined pages module
 
 Create the module in `src/documents/predefined-pages`.
-To do this, copy the corresponding [folder](https://github.com/vivid-planet/comet/tree/main/demo/api/src/documents/predefined-pages) from the Demo project.
+To do this, copy the corresponding [folder](https://github.com/vivid-planet/dextinity/tree/main/demo/api/src/documents/predefined-pages) from the Demo project.
 The following files should be copied:
 
 - `predefined-pages.module.ts`: The module
@@ -128,7 +128,7 @@ The following steps are required in the Admin:
 #### Creation of the predefined pages module
 
 Create the module in `src/documents/predefinedPages`.
-To do this, copy the corresponding [folder](https://github.com/vivid-planet/comet/tree/main/demo/admin/src/documents/predefinedPages) from the Demo project.
+To do this, copy the corresponding [folder](https://github.com/vivid-planet/dextinity/tree/main/demo/admin/src/documents/predefinedPages) from the Demo project.
 The following files should be copied:
 
 - `EditPredefinedPage.tsx`: The editing component
@@ -163,7 +163,7 @@ The following steps are required in the Site:
 #### Creation of the predefined pages module
 
 Create the module in `src/documents/predefinedPages`.
-To do this, copy the corresponding [folder](https://github.com/vivid-planet/comet/tree/main/demo/site/src/documents/predefinedPages) from the Demo project.
+To do this, copy the corresponding [folder](https://github.com/vivid-planet/dextinity/tree/main/demo/site/src/documents/predefinedPages) from the Demo project.
 The following files should be copied:
 
 - `predefinedPagePaths.ts`: The paths where the predefined pages are located in the code
@@ -172,7 +172,7 @@ The following files should be copied:
 
 We use a combination of a redirect and a rewrite in the middleware to ensure that a predefined page can be viewed at the expected location in the page tree.
 
-For example, consider a Comet website that is available in English and German.
+For example, consider a Dextinity website that is available in English and German.
 For the German site, the news page should be located at `https://example.com/de/aktuelles`.
 However, in code, the news page is located at `/app/[language]/news`, resulting in `https://example.com/de/news`.
 To ensure that the page can be viewed at the expected location, we need the following redirect and rewrite:
@@ -182,12 +182,12 @@ To ensure that the page can be viewed at the expected location, we need the foll
 
 Perform the following changes in the middleware:
 
-1.  Copy the predefined pages [helper functions](https://github.com/vivid-planet/comet/tree/main/demo/site/src/middleware/predefinedPages.ts) from the Demo project
+1.  Copy the predefined pages [helper functions](https://github.com/vivid-planet/dextinity/tree/main/demo/site/src/middleware/predefinedPages.ts) from the Demo project
 
     :::warning
 
     Support for filtering by document type in the `paginatedPageTreeNodes` query has been added in version 7.4.0.
-    Make sure your project uses Comet 7.4.0 or later.
+    Make sure your project uses Dextinity 7.4.0 or later.
 
     :::
 

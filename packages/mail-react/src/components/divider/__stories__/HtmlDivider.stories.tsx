@@ -24,7 +24,11 @@ const config: Meta<typeof HtmlDivider> = {
             <MjmlColumn>
                 <MjmlSpacer height="16px" />
                 <MjmlRaw>
-                    <HtmlDivider {...args} />
+                    <tr>
+                        <td style={{ fontSize: 0, lineHeight: 0, msoLineHeightRule: "exactly" }}>
+                            <HtmlDivider {...args} />
+                        </td>
+                    </tr>
                 </MjmlRaw>
                 <MjmlSpacer height="16px" />
             </MjmlColumn>
@@ -71,11 +75,19 @@ export const WithVariants: Story = {
             <MjmlColumn>
                 <MjmlSpacer height="16px" />
                 <MjmlRaw>
-                    <HtmlDivider {...args} />
+                    <tr>
+                        <td style={{ fontSize: 0, lineHeight: 0, msoLineHeightRule: "exactly" }}>
+                            <HtmlDivider {...args} />
+                        </td>
+                    </tr>
                 </MjmlRaw>
                 <MjmlSpacer height="16px" />
                 <MjmlRaw>
-                    <HtmlDivider {...args} variant="thick" />
+                    <tr>
+                        <td style={{ fontSize: 0, lineHeight: 0, msoLineHeightRule: "exactly" }}>
+                            <HtmlDivider {...args} variant="thick" />
+                        </td>
+                    </tr>
                 </MjmlRaw>
                 <MjmlSpacer height="16px" />
             </MjmlColumn>

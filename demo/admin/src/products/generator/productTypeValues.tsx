@@ -1,4 +1,4 @@
-import type { StaticSelectValue } from "@comet/admin-generator";
+import type { StaticSelectValue } from "@dextinity/admin-generator";
 import { FormattedMessage } from "react-intl";
 
 export const productTypeValues: StaticSelectValue[] = [

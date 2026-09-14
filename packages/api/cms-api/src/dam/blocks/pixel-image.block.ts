@@ -13,6 +13,7 @@ import {
 } from "../../blocks/block";
 import { AnnotationBlockMeta } from "../../blocks/decorators/field";
 import { FocalPoint } from "../../file-utils/focal-point.enum";
+import { DamFileAiContentType } from "../files/entities/ai-content-type.enum";
 import { FILE_ENTITY } from "../files/entities/file.entity";
 import { FilesService } from "../files/files.service";
 import { ImageCropAreaInput } from "../images/dto/image-crop-area.input";
@@ -123,6 +124,12 @@ class Meta extends AnnotationBlockMeta {
                         {
                             name: "altText",
                             kind: BlockMetaFieldKind.String,
+                            nullable: true,
+                        },
+                        {
+                            name: "aiContentType",
+                            kind: BlockMetaFieldKind.Enum,
+                            enum: Object.values(DamFileAiContentType),
                             nullable: true,
                         },
                         {

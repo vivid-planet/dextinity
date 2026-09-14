@@ -19,18 +19,18 @@ const Root = createComponentSlot("div")<ToolbarActionsClassKey>({
 );
 
 export const ToolbarActions = (inProps: PropsWithChildren<ThemedComponentBaseProps>) => {
-    const { children, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminToolbarActions" });
+    const { children, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminToolbarActions" });
     return <Root {...restProps}>{children}</Root>;
 };
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminToolbarActions: ToolbarActionsClassKey;
+        DextinityAdminToolbarActions: ToolbarActionsClassKey;
     }
 
     interface Components {
-        CometAdminToolbarActions?: {
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminToolbarActions"];
+        DextinityAdminToolbarActions?: {
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminToolbarActions"];
         };
     }
 }

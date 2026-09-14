@@ -1,4 +1,4 @@
-import { ExtractBlockInputFactoryProps } from "@comet/cms-api";
+import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import { faker } from "@src/db/fixtures/faker";
 import { Alignment as BasicStageBlockAlignment, BasicStageBlock } from "@src/documents/pages/blocks/basic-stage.block";

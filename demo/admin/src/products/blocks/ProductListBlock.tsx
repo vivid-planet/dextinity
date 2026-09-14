@@ -1,4 +1,4 @@
-import { createCompositeBlock, createCompositeBlockSelectField } from "@comet/cms-admin";
+import { createCompositeBlock, createCompositeBlockSelectField } from "@dextinity/cms-admin";
 import type { ProductListBlockData } from "@src/blocks.generated";
 import type { JSX } from "react";
 import { FormattedMessage } from "react-intl";

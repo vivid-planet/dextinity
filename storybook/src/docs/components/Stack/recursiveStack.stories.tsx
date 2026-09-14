@@ -11,8 +11,8 @@ import {
     StackToolbar,
     ToolbarAutomaticTitleItem,
     ToolbarBackButton,
-} from "@comet/admin";
-import { ContentScopeIndicator } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { ContentScopeIndicator } from "@dextinity/cms-admin";
 import { Box } from "@mui/system";
 import type { FunctionComponent } from "react";
 import { useLocation } from "react-router";
@@ -21,7 +21,7 @@ import { apolloStoryDecorator } from "../../../apollo-story.decorator";
 import { storyRouterDecorator } from "../../../story-router.decorator";
 
 export default {
-    title: "@comet/admin/stack/Recursive Stack",
+    title: "@dextinity/admin/stack/Recursive Stack",
     decorators: [apolloStoryDecorator("/graphql"), storyRouterDecorator()],
 };
 

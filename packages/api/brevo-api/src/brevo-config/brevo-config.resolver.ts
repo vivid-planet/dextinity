@@ -1,4 +1,4 @@
-import { AffectedEntity, RequiredPermission, validateNotModified } from "@comet/cms-api";
+import { AffectedEntity, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, wrap } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";

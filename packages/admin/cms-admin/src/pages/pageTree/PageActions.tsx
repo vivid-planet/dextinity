@@ -1,6 +1,6 @@
 import { useApolloClient } from "@apollo/client";
-import { type IEditDialogApi, RowActionsItem, RowActionsMenu, useStackSwitchApi, writeClipboardText } from "@comet/admin";
-import { Add, Delete, Domain, Edit, Preview, PreviewUnavailable, Settings, Translate } from "@comet/admin-icons";
+import { type IEditDialogApi, RowActionsItem, RowActionsMenu, useStackSwitchApi, writeClipboardText } from "@dextinity/admin";
+import { Add, Delete, Domain, Edit, Preview, PreviewUnavailable, Settings, Translate } from "@dextinity/admin-icons";
 import { Divider } from "@mui/material";
 import { type PropsWithChildren, useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -83,7 +83,7 @@ export default function PageActions({ page, editDialog, children, siteUrl }: Pro
                             },
                         }}
                     >
-                        <FormattedMessage id="comet.pages.pages.page.editContent" defaultMessage="Edit content" />
+                        <FormattedMessage id="dextinity.pages.pages.page.editContent" defaultMessage="Edit content" />
                     </RowActionsItem>,
                     documentType.SitePreviewAction ? (
                         <documentType.SitePreviewAction key="preview" pageTreeNode={page} />
@@ -96,7 +96,7 @@ export default function PageActions({ page, editDialog, children, siteUrl }: Pro
                             }}
                             disabled={documentType.hasNoSitePreview}
                         >
-                            <FormattedMessage id="comet.pages.pages.page.openPreview" defaultMessage="Open preview" />
+                            <FormattedMessage id="dextinity.pages.pages.page.openPreview" defaultMessage="Open preview" />
                         </RowActionsItem>
                     ),
                 ]}
@@ -109,7 +109,7 @@ export default function PageActions({ page, editDialog, children, siteUrl }: Pro
                                 editDialog?.openEditDialog(page.id);
                             }}
                         >
-                            <FormattedMessage id="comet.pages.pages.page.properties" defaultMessage="Page properties" />
+                            <FormattedMessage id="dextinity.pages.pages.page.properties" defaultMessage="Page properties" />
                         </RowActionsItem>,
                         <RowActionsItem
                             key="copyUrl"
@@ -118,7 +118,7 @@ export default function PageActions({ page, editDialog, children, siteUrl }: Pro
                                 writeClipboardText(`${siteUrl}${page.path}`);
                             }}
                         >
-                            <FormattedMessage id="comet.pages.pages.page.copyUrl" defaultMessage="Copy URL" />
+                            <FormattedMessage id="dextinity.pages.pages.page.copyUrl" defaultMessage="Copy URL" />
                         </RowActionsItem>,
                         <Divider key="divider1" />,
                         <RowActionsItem
@@ -128,7 +128,7 @@ export default function PageActions({ page, editDialog, children, siteUrl }: Pro
                                 editDialog?.openAddDialog(serializeInitialValues({ parent: page.id }));
                             }}
                         >
-                            <FormattedMessage id="comet.pages.pages.page.newSubpage" defaultMessage="New subpage" />
+                            <FormattedMessage id="dextinity.pages.pages.page.newSubpage" defaultMessage="New subpage" />
                         </RowActionsItem>,
                         <MovePageMenuItem key="movePage" page={page} />,
                         <Divider key="divider2" />,
@@ -140,7 +140,7 @@ export default function PageActions({ page, editDialog, children, siteUrl }: Pro
                                 disabled={translating || !hasTranslatableContent}
                                 onClick={openTranslateDialog}
                             >
-                                <FormattedMessage id="comet.translator.translate" defaultMessage="Translate" />
+                                <FormattedMessage id="dextinity.translator.translate" defaultMessage="Translate" />
                             </RowActionsItem>
                         ),
                         <Divider key="divider3" />,
@@ -153,7 +153,7 @@ export default function PageActions({ page, editDialog, children, siteUrl }: Pro
                                 setDeleteDialogOpen(true);
                             }}
                         >
-                            <FormattedMessage id="comet.pages.pages.page.delete" defaultMessage="Delete" />
+                            <FormattedMessage id="dextinity.pages.pages.page.delete" defaultMessage="Delete" />
                         </RowActionsItem>
                     )}
                 </RowActionsMenu>

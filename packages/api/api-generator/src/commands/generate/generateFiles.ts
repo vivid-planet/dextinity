@@ -7,7 +7,7 @@ import {
     CRUD_SINGLE_GENERATOR_METADATA_KEY,
     type CrudGeneratorOptions,
     type CrudSingleGeneratorOptions,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { CLIHelper } from "@mikro-orm/cli";
 import type { MikroORM } from "@mikro-orm/core";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";

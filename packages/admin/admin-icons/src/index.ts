@@ -4,8 +4,8 @@ export { default as BallTriangle } from "./BallTriangle";
 export { default as CheckboxChecked } from "./CheckboxChecked";
 export { default as CheckboxIndeterminate } from "./CheckboxIndeterminate";
 export { default as CheckboxUnchecked } from "./CheckboxUnchecked";
-export { default as CometColor } from "./CometColor";
-export { default as CometDigitalExperienceLogo } from "./CometDigitalExperienceLogo";
+export { DextinityIcon, type DextinityIconProps, type DextinityIconVariant } from "./DextinityIcon";
+export { DextinityLogo, type DextinityLogoProps, type DextinityLogoVariant } from "./DextinityLogo";
 export * from "./generated";
 export { default as Html } from "./Html";
 export { default as MovePage } from "./MovePage";
@@ -20,7 +20,7 @@ export type IconName =
     | "CheckboxChecked"
     | "CheckboxUnchecked"
     | "CheckboxIndeterminate"
-    | "CometColor"
+    | "DextinityIcon"
     | "Html"
     | "MovePage"
     | "RadioChecked"

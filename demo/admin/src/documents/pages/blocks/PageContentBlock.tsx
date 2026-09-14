@@ -1,4 +1,4 @@
-import { AnchorBlock, createBlocksBlock, DamImageBlock } from "@comet/cms-admin";
+import { AnchorBlock, createBlocksBlock, DamImageBlock } from "@dextinity/cms-admin";
 import { AccordionBlock } from "@src/common/blocks/AccordionBlock";
 import { ContactFormBlock } from "@src/common/blocks/ContactFormBlock";
 import { LayoutBlock } from "@src/common/blocks/LayoutBlock";
@@ -12,6 +12,7 @@ import { StandaloneRichTextBlock } from "@src/common/blocks/StandaloneRichTextBl
 import { TableBlock } from "@src/common/blocks/TableBlock";
 import { TextImageBlock } from "@src/common/blocks/TextImageBlock";
 import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
+import { TipTapTableBlock } from "@src/common/blocks/TipTapTableBlock";
 import { NewsDetailBlock } from "@src/news/blocks/NewsDetailBlock";
 import { NewsListBlock } from "@src/news/blocks/NewsListBlock";
 import { ProductListBlock } from "@src/products/blocks/ProductListBlock";
@@ -52,6 +53,7 @@ export const PageContentBlock = createBlocksBlock({
         textImage: TextImageBlock,
         fullWidthImage: FullWidthImageBlock,
         table: TableBlock,
+        tipTapTable: TipTapTableBlock,
         tipTapRichText: TipTapRichTextBlock,
         productList: ProductListBlock,
         pageTreeIndex: PageTreeIndexBlock,

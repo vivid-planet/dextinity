@@ -1,4 +1,4 @@
-import { BaseListBlockItemData, BaseListBlockItemInput, BlockField, createListBlock } from "@comet/cms-api";
+import { BaseListBlockItemData, BaseListBlockItemInput, BlockField, createListBlock } from "@dextinity/cms-api";
 import { UserGroup } from "@src/user-groups/user-group";
 import { IsEnum } from "class-validator";
 

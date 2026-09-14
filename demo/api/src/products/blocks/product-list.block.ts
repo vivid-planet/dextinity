@@ -1,4 +1,4 @@
-import { BlockData, BlockField, BlockInput, blockInputToData, createBlock } from "@comet/cms-api";
+import { BlockData, BlockField, BlockInput, blockInputToData, createBlock } from "@dextinity/cms-api";
 import { ProductType } from "@src/products/entities/product-type.enum";
 import { IsEnum } from "class-validator";
 

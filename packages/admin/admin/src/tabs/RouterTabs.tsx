@@ -72,7 +72,7 @@ export function RouterTabs(inProps: Props) {
         tabsProps: { ScrollButtonComponent = TabScrollButton, ...tabsProps } = {},
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminRouterTabs" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminRouterTabs" });
 
     const history = useHistory();
     const subRoutePrefix = useSubRoutePrefix();
@@ -181,12 +181,12 @@ export function RouterTabs(inProps: Props) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminRouterTabs: RouterTabsClassKey;
+        DextinityAdminRouterTabs: RouterTabsClassKey;
     }
 
     interface Components {
-        CometAdminRouterTabs?: {
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminRouterTabs"];
+        DextinityAdminRouterTabs?: {
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminRouterTabs"];
         };
     }
 }

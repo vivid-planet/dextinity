@@ -1,0 +1,381 @@
+---
+title: TipTap Rich Text Block
+sidebar_position: 4.5
+---
+
+# TipTap Rich Text Block
+
+The `TipTapRichTextBlock` is a rich text block based on [TipTap](https://tiptap.dev/) (a headless editor built on top of [ProseMirror](https://prosemirror.net/)).
+It is the successor to the [Draft.js-based `RichTextBlock`](./4-factories.mdx#richtextblock) and is created with the `createTipTapRichTextBlock` factory.
+
+It offers several advantages over the old block:
+
+- **Built on a maintained library.** TipTap is actively developed, while Draft.js is no longer maintained.
+- **Schema-based validation.** TipTap defines the allowed content as a schema, which enables full server-side validation of the content in the API — the old block stored its content unvalidated.
+- **Easier to extend.** New features can be added as TipTap extensions, making it simpler to implement new functionality.
+- **Standardized, portable content format.** Content is stored as a nested ProseMirror JSON tree that mirrors the document structure, which is far easier to work with than Draft.js's flat list of blocks with separate offset-based ranges and a detached `entityMap`. The well-structured format is straightforward to render, transform, and reason about — and paves the way for AI-assisted workflows such as generating, editing, or analyzing rich text content.
+
+:::caution Experimental
+
+The TipTap Rich Text Block is **experimental**.
+The factory (`createTipTapRichTextBlock`) and the site render helper (`renderTipTapRichText`) are marked `@experimental`, and their APIs may change in a minor release without following semantic versioning.
+
+Use it for new projects and evaluate it against your requirements, but be prepared to adapt your configuration when upgrading.
+
+:::
+
+## Roadmap
+
+The TipTap Rich Text Block will replace the Draft.js-based `RichTextBlock` over the following steps:
+
+1. **Experimental (current).** The block is available and functional, but its public API is not yet stable and may still change.
+2. **Stable.** Once the API has settled, the `@experimental` markers are removed and the block follows the regular semantic-versioning guarantees. This is the point at which we recommend it for all projects.
+3. **Removal of the old block.** In a future (major) Dextinity version, the Draft.js-based `RichTextBlock` (`createRichTextBlock`) will be deprecated and eventually removed.
+
+We recommend planning the switch to the TipTap Rich Text Block early. New content should use the new block, and existing content can be migrated with the [built-in Draft.js migration](#migrating-existing-content).
+
+:::note
+
+The TipTap Rich Text Block only replaces the Draft.js-based `RichTextBlock`. It does **not** replace `@dextinity/admin-rte`, which remains available for using the rich text editor directly (non-block usage), for instance as a standalone form field.
+
+:::
+
+## Replacing the `RichTextBlock`
+
+### Feature comparison
+
+Most features of the Draft.js `RichTextBlock` have a direct equivalent in the TipTap Rich Text Block.
+
+| Draft.js `RichTextBlock`                        | TipTap Rich Text Block                                                                               |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `createRichTextBlock`                           | `createTipTapRichTextBlock`                                                                          |
+| `rte.supports` (`SupportedThings[]`)            | `supports` (`TipTapSupports[]`)                                                                      |
+| `bold`, `italic`, `strikethrough`, `sub`, `sup` | `bold`, `italic`, `strike`, `sub`, `sup`                                                             |
+| `header-one` … `header-six`                     | `heading` support + the [text-block-type select](#text-block-type-and-styling-selects) (Heading 1–6) |
+| `ordered-list`, `unordered-list`                | `ordered-list`, `unordered-list`                                                                     |
+| `history`                                       | `history` (Admin only)                                                                               |
+| `link`, `links-remove`                          | pass a `link` block (automatically enables `link` support)                                           |
+| `non-breaking-space`, `soft-hyphen`             | `non-breaking-space`, `soft-hyphen`                                                                  |
+| `rte.blocktypeMap` (custom block types)         | [`textBlockStyles`](#text-block-type-and-styling-selects) + the styling select                       |
+| `rte.customInlineStyles`                        | [`inlineStyles`](#text-block-type-and-styling-selects) + the inline style select                     |
+| `rte.listLevelMax`                              | `listLevelMax`                                                                                       |
+| `rte.maxBlocks`                                 | `maxTextBlocks`                                                                                      |
+| Site rendering with `redraft` + `Renderers`     | Site rendering with `renderTipTapRichText` + `nodeMapping`/`markMapping`                             |
+
+### Setup
+
+Like the old block, the TipTap Rich Text Block is configured on the API and in the Admin, and rendered on the site. The factory is available from `@dextinity/cms-api` and `@dextinity/cms-admin` under the same name.
+
+#### Admin
+
+```tsx title="TipTapRichTextBlock.tsx"
+import { createTipTapRichTextBlock } from "@dextinity/cms-admin";
+
+import { LinkBlock } from "./LinkBlock";
+
+export const TipTapRichTextBlock = createTipTapRichTextBlock({ link: LinkBlock });
+```
+
+In the Admin, the style and placeholder options additionally carry rendering information (`label` and `element`) that is used to preview them in the editor — see [Text block type and styling selects](#text-block-type-and-styling-selects).
+
+#### API
+
+Unlike the old block, the API now validates the entire block content against the schema derived from your configuration. As a result, the API factory takes more configuration options than the old block did. These options are named exactly like their Admin counterparts, and it is important to keep the two configurations in sync: the API schema must allow everything the Admin editor can produce, otherwise content that looks valid in the editor is rejected when saved.
+
+```ts title="tip-tap-rich-text.block.ts"
+import { createTipTapRichTextBlock } from "@dextinity/cms-api";
+
+import { LinkBlock } from "./link.block";
+
+export const TipTapRichTextBlock = createTipTapRichTextBlock({ link: LinkBlock });
+```
+
+The factory accepts additional Block Options such as the block name, like the old one:
+
+```ts title="tip-tap-rich-text.block.ts"
+export const TipTapRichTextBlock = createTipTapRichTextBlock(
+    { link: LinkBlock },
+    { name: "TipTapRichText" },
+);
+```
+
+#### Site
+
+There is no site factory. Instead, `@dextinity/site-react` / `@dextinity/site-nextjs` provide the `renderTipTapRichText` render helper (and a `hasTipTapRichTextContent` helper for preview skeletons). You write your own block component that maps TipTap nodes and marks to your components:
+
+```tsx title="TipTapRichTextBlock.tsx"
+"use client";
+import {
+    hasTipTapRichTextContent,
+    PreviewSkeleton,
+    type PropsWithData,
+    renderTipTapRichText,
+    type TipTapMarkHandler,
+    type TipTapNode,
+    type TipTapNodeHandler,
+} from "@dextinity/site-nextjs";
+import { LinkBlockData, TipTapRichTextBlockData } from "@src/blocks.generated";
+
+import { LinkBlock } from "./LinkBlock";
+
+const nodeMapping: Record<string, TipTapNodeHandler> = {
+    // Override the defaults or handle additional node types, e.g. styled paragraphs/headings.
+    paragraph: ({ children }) => <p>{children}</p>,
+};
+
+const markMapping: Record<string, TipTapMarkHandler> = {
+    link: ({ mark, children }) => {
+        const linkData = mark.attrs?.data as LinkBlockData | undefined;
+        return linkData ? <LinkBlock data={linkData}>{children}</LinkBlock> : <>{children}</>;
+    },
+};
+
+export function TipTapRichTextBlock({ data }: PropsWithData<TipTapRichTextBlockData>) {
+    const content = data.tipTapContent as TipTapNode;
+    return (
+        <PreviewSkeleton
+            title="RichText"
+            type="rows"
+            hasContent={hasTipTapRichTextContent(content)}
+        >
+            {renderTipTapRichText({ content, nodeMapping, markMapping })}
+        </PreviewSkeleton>
+    );
+}
+```
+
+`renderTipTapRichText` ships default mappings for the standard nodes and marks (`paragraph` → `<p>`, `heading` → `<h1>`…`<h6>`, `bulletList` → `<ul>`, `orderedList` → `<ol>`, `listItem` → `<li>`, `bold` → `<strong>`, `italic` → `<em>`, `strike` → `<s>`, `superscript` → `<sup>`, `subscript` → `<sub>`, and the special-character nodes). Your `nodeMapping`/`markMapping` are merged over the defaults; supply handlers for anything the defaults don't cover (`link`, `inlineStyle`, `cmsBlock`/`cmsInlineBlock`, `placeholder`, styled text blocks).
+
+:::note
+
+The generated type `TipTapRichTextBlockData.tipTapContent` is `unknown` on the site. Cast it to `TipTapNode` before passing it to `renderTipTapRichText`.
+
+:::
+
+### Migrating existing content
+
+Existing content stored by the Draft.js `RichTextBlock` (`{ draftContent: { blocks, entityMap } }`) can be migrated in place. Enable the built-in migration with the `migrateFromDraftJs` option on the **API** factory:
+
+```ts title="tip-tap-rich-text.block.ts"
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    link: LinkBlock,
+    // highlight-next-line
+    migrateFromDraftJs: true,
+});
+```
+
+To perform an in-place replacement, register the TipTap block wherever the old `RichTextBlock` was used (e.g. under the same key in a `BlocksBlock`'s `supportedBlocks`). Existing block instances are then [live-migrated](./5-migrations.mdx) from `draftContent` to `tipTapContent` the next time they are loaded from the database.
+
+The migration converts:
+
+- inline styles `BOLD`, `ITALIC`, `STRIKETHROUGH`, `SUP`, `SUB` → the corresponding TipTap marks,
+- `header-one` … `header-six` → heading nodes,
+- ordered/unordered list items → TipTap lists,
+- `LINK` entities → TipTap `link` marks,
+- ` ` / `­` → non-breaking-space / soft-hyphen nodes.
+
+It uses the block's `supports`, `textBlockStyles`, `link`, and `maxTextBlocks` options to build the target schema and validates the result. The conversion is **best effort**: if validation fails, it falls back to a stripped-down plain-text document in production (logging a warning) and throws in development so you can catch problems early.
+
+:::caution Test with production content
+
+Because the API never validated the old block's content and the TipTap block performs a complete re-validation, the migration must be tested very carefully against real production content before going live. Content that was accepted by the old block may now fail validation and be stripped down. Run the migration on a copy of your production data and review the result before deploying.
+
+:::
+
+#### Mapping custom Draft.js styles
+
+If the old block used custom block types (via `blocktypeMap`) or custom inline styles (via `customInlineStyles`), map them to their TipTap equivalents by passing an object instead of `true`:
+
+```ts title="tip-tap-rich-text.block.ts"
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    link: LinkBlock,
+    textBlockStyles: [{ name: "paragraph200", appliesTo: ["paragraph"] }],
+    inlineStyles: [{ name: "highlight" }],
+    // highlight-start
+    migrateFromDraftJs: {
+        // Map the Draft.js `blocktypeMap` entry to a TipTap `textBlockStyle`.
+        textBlockStyleMap: { "paragraph-small": "paragraph200" },
+        // Map a Draft.js `customInlineStyles` name to a TipTap `inlineStyle`.
+        inlineStyleMap: { HIGHLIGHT: "highlight" },
+    },
+    // highlight-end
+});
+```
+
+A mapped block type keeps its text block type: `header-two` still becomes a heading with level 2, only with the mapped `textBlockStyle` applied. If the Draft.js block type doesn't carry that information — a custom block type such as `headline450` that was rendered as `<h2>` — pass a `{ textBlockType, textBlockStyle }` object to set the text block type explicitly, so the semantic tag isn't lost:
+
+```ts title="tip-tap-rich-text.block.ts"
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    textBlockStyles: [{ name: "headline450", appliesTo: ["heading-2"] }],
+    migrateFromDraftJs: {
+        // highlight-next-line
+        textBlockStyleMap: { headline450: { textBlockType: "heading-2", textBlockStyle: "headline450" } },
+    },
+});
+```
+
+`textBlockType` accepts `paragraph` and `heading-1` … `heading-6`. Both parts are optional: pass only `textBlockType` to change the tag without applying a style, or only `textBlockStyle` (equivalent to the plain string form) to keep the text block type derived from the Draft.js block type.
+
+#### Migration versioning
+
+`migrateFromDraftJs` reserves **version 1** for the injected Draft.js → TipTap migration. Your own [block migrations](./5-migrations.mdx) must therefore start at **version 2**:
+
+```ts title="tip-tap-rich-text.block.ts"
+import { createTipTapRichTextBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
+
+export const TipTapRichTextBlock = createTipTapRichTextBlock(
+    {
+        link: LinkBlock,
+        migrateFromDraftJs: true,
+    },
+    {
+        name: "TipTapRichText",
+        migrate: {
+            // highlight-next-line
+            version: 2, // 1 is reserved for the Draft.js migration
+            migrations: typeSafeBlockMigrationPipe([Heading1ToHeading2Migration]),
+        },
+    },
+);
+```
+
+## New features
+
+Beyond replacing the old block, the TipTap Rich Text Block adds capabilities the Draft.js block did not have.
+
+### Text block type and styling selects
+
+The editor toolbar offers two dropdowns to structure and style text blocks:
+
+1. **Text block type** — the semantic type of the current block: _Default_ (paragraph) or _Heading 1_ … _Heading 6_. Shown when `heading` is in `supports`.
+2. **Styling** — a named style applied to the current text block (`textBlockStyles`). This decouples semantics ("this is a paragraph") from appearance ("small paragraph"), so editors pick a type _and_ a style independently.
+
+There is a matching **inline style** dropdown for `inlineStyles`, which applies named styles to a text selection.
+
+Styles are configured on the API (`name` + optional `appliesTo`) and in the Admin (additionally `label` for the dropdown and `element` for the editor preview). The `appliesTo` option limits a style to certain text block types.
+
+```ts title="tip-tap-rich-text.block.ts (API)"
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    link: LinkBlock,
+    textBlockStyles: [
+        { name: "paragraph300", appliesTo: ["paragraph"] },
+        { name: "paragraph200", appliesTo: ["paragraph"] },
+        { name: "list200", appliesTo: ["ordered-list", "unordered-list"] },
+    ],
+    inlineStyles: [{ name: "highlight" }, { name: "tag", appliesTo: ["paragraph"] }],
+});
+```
+
+```tsx title="TipTapRichTextBlock.tsx (Admin)"
+import type { HTMLAttributes } from "react";
+import { FormattedMessage } from "react-intl";
+
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    link: LinkBlock,
+    textBlockStyles: [
+        {
+            name: "paragraph300",
+            label: (
+                <FormattedMessage
+                    id="tipTapRichTextBlock.paragraph300"
+                    defaultMessage="Paragraph"
+                />
+            ),
+            appliesTo: ["paragraph"],
+            element: (props: HTMLAttributes<HTMLElement>) => (
+                <p style={{ fontSize: 18, lineHeight: "26px" }} {...props} />
+            ),
+        },
+        {
+            name: "paragraph200",
+            label: (
+                <FormattedMessage
+                    id="tipTapRichTextBlock.paragraph200"
+                    defaultMessage="Paragraph Small"
+                />
+            ),
+            appliesTo: ["paragraph"],
+            element: (props: HTMLAttributes<HTMLElement>) => (
+                <p style={{ fontSize: 15, lineHeight: "22px" }} {...props} />
+            ),
+        },
+    ],
+    inlineStyles: [
+        {
+            name: "highlight",
+            label: (
+                <FormattedMessage id="tipTapRichTextBlock.highlight" defaultMessage="Highlight" />
+            ),
+            element: (props: HTMLAttributes<HTMLElement>) => (
+                <span style={{ backgroundColor: "#fff3cd" }} {...props} />
+            ),
+        },
+    ],
+});
+```
+
+On the site, the chosen style is available as the `textBlockStyle` attribute (block styles) or the `inlineStyle` mark type (inline styles), which you resolve to your own components in `nodeMapping`/`markMapping`:
+
+```tsx title="TipTapRichTextBlock.tsx (Site)"
+const nodeMapping: Record<string, TipTapNodeHandler> = {
+    paragraph: ({ node, children }) => (
+        <Typography variant={(node.attrs?.textBlockStyle as string | null) ?? undefined}>
+            {children}
+        </Typography>
+    ),
+};
+```
+
+### Child blocks
+
+The TipTap Rich Text Block can embed other blocks directly into the rich text via the `childBlocks` option. This lets editors insert, for example, a product teaser between paragraphs, or an inline product price within a sentence — something the Draft.js block could not do.
+
+Child blocks are keyed by a **stable key**. The key (not the block's name) is stored in the content, so blocks can be renamed or swapped without invalidating existing content. Each entry specifies a `display`:
+
+- `"block"` — a standalone block element on its own line,
+- `"inline"` — inline within the surrounding text.
+
+The same configuration is used on the API and in the Admin:
+
+```ts title="tip-tap-rich-text.block.ts (API)"
+import { createTipTapRichTextBlock } from "@dextinity/cms-api";
+
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    link: LinkBlock,
+    childBlocks: {
+        productPrice: { block: ProductPriceBlock, display: "inline" },
+        productTeaser: { block: ProductTeaserBlock, display: "block" },
+    },
+});
+```
+
+```tsx title="TipTapRichTextBlock.tsx (Admin)"
+import { createTipTapRichTextBlock } from "@dextinity/cms-admin";
+
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    link: LinkBlock,
+    childBlocks: {
+        productPrice: { block: ProductPriceBlock, display: "inline" },
+        productTeaser: { block: ProductTeaserBlock, display: "block" },
+    },
+});
+```
+
+Child-block data is validated against each block's input on the API (just like top-level blocks) and exposed as nested blocks, so block loaders and transformers recurse into them. On the site, render them via `nodeMapping` by inspecting the node's `blockType` attribute:
+
+```tsx title="TipTapRichTextBlock.tsx (Site)"
+const renderCmsBlock: TipTapNodeHandler = ({ node }) => {
+    if (node.attrs?.blockType === "productPrice") {
+        return <ProductPriceBlock data={node.attrs?.data as ProductPriceBlockData} />;
+    }
+    if (node.attrs?.blockType === "productTeaser") {
+        return <ProductTeaserBlock data={node.attrs?.data as ProductTeaserBlockData} />;
+    }
+    return null;
+};
+
+const nodeMapping: Record<string, TipTapNodeHandler> = {
+    cmsBlock: renderCmsBlock, // block-level child blocks
+    cmsInlineBlock: renderCmsBlock, // inline child blocks
+};
+```

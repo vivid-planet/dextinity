@@ -1,5 +1,5 @@
-import { ClearInputAdornment, type InputWithPopperComponents, type InputWithPopperProps } from "@comet/admin";
-import { Close } from "@comet/admin-icons";
+import { ClearInputAdornment, type InputWithPopperComponents, type InputWithPopperProps } from "@dextinity/admin";
+import { Close } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, type InputBaseProps, Typography } from "@mui/material";
 import { type Theme, useThemeProps } from "@mui/material/styles";
 import { type ChangeEvent, type ComponentType, type FocusEvent, type HTMLAttributes, type ReactNode, useEffect, useState } from "react";
@@ -78,12 +78,12 @@ export const ColorPicker = (inProps: ColorPickerProps) => {
         endAdornment,
         onBlur,
         required,
-        titleText = <FormattedMessage id="comet.colorPicker.title" defaultMessage="Choose a color" />,
-        clearButtonText = <FormattedMessage id="comet.colorPicker.clearButton" defaultMessage="clear color" />,
+        titleText = <FormattedMessage id="dextinity.colorPicker.title" defaultMessage="Choose a color" />,
+        clearButtonText = <FormattedMessage id="dextinity.colorPicker.clearButton" defaultMessage="clear color" />,
         components = {},
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminColorPicker" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminColorPicker" });
     const {
         ColorPickerColorPreview: ColorPreview = DefaultColorPreviewIndicator,
         ColorPickerInvalidPreview: InvalidPreview = DefaultNoColorPreviewIndicator,
@@ -232,17 +232,17 @@ export const ColorPicker = (inProps: ColorPickerProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminColorPicker: ColorPickerClassKey;
+        DextinityAdminColorPicker: ColorPickerClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminColorPicker: ColorPickerProps;
+        DextinityAdminColorPicker: ColorPickerProps;
     }
 
     interface Components {
-        CometAdminColorPicker?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminColorPicker"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminColorPicker"];
+        DextinityAdminColorPicker?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminColorPicker"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminColorPicker"];
         };
     }
 }

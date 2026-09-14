@@ -76,7 +76,7 @@ export const IFrameBridgeProvider = ({ children, onReceiveMessage }: PropsWithCh
     const _onReceiveMessage = useCallback(
         (message: IFrameMessage) => {
             onReceiveMessage?.(message);
-            switch (message.cometType) {
+            switch (message.dextinityType) {
                 case IFrameMessageType.Ready:
                     setIFrameReady(true);
                     break;
@@ -97,7 +97,7 @@ export const IFrameBridgeProvider = ({ children, onReceiveMessage }: PropsWithCh
                 const message = JSON.parse(event.data);
                 // Check if message is an iframe message from us -> there are more messaging from e.g webpack,etc.
                 // eslint-disable-next-line no-prototype-builtins
-                if (message.hasOwnProperty("cometType")) {
+                if (message.hasOwnProperty("dextinityType")) {
                     _onReceiveMessage(message as IFrameMessage);
                 }
             } catch {
@@ -114,7 +114,7 @@ export const IFrameBridgeProvider = ({ children, onReceiveMessage }: PropsWithCh
 
     const sendSelectComponent = useCallback(
         (adminRoute: string) => {
-            const message: IAdminSelectComponentMessage = { cometType: AdminMessageType.SelectComponent, data: { adminRoute } };
+            const message: IAdminSelectComponentMessage = { dextinityType: AdminMessageType.SelectComponent, data: { adminRoute } };
             sendMessage(message);
         },
         [sendMessage],
@@ -129,7 +129,7 @@ export const IFrameBridgeProvider = ({ children, onReceiveMessage }: PropsWithCh
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             sendBlockState: (blockState: any) => {
                                 const message: IAdminBlockMessage = {
-                                    cometType: AdminMessageType.Block,
+                                    dextinityType: AdminMessageType.Block,
                                     data: {
                                         block: blockState, // @TODO: refactor block to blockState
                                     },
@@ -138,7 +138,7 @@ export const IFrameBridgeProvider = ({ children, onReceiveMessage }: PropsWithCh
                             },
                             sendShowOnlyVisible: (showOnlyVisible: boolean) => {
                                 const message: IAdminShowOnlyVisibleMessage = {
-                                    cometType: AdminMessageType.ShowOnlyVisible,
+                                    dextinityType: AdminMessageType.ShowOnlyVisible,
                                     data: {
                                         showOnlyVisible,
                                     },
@@ -150,19 +150,19 @@ export const IFrameBridgeProvider = ({ children, onReceiveMessage }: PropsWithCh
                             sendSelectComponent,
                             hoveredSiteRoute: hoveredSiteRoute,
                             sendHoverComponent: (adminRoute) => {
-                                const message: IAdminHoverComponentMessage = { cometType: AdminMessageType.HoverComponent, data: { adminRoute } };
+                                const message: IAdminHoverComponentMessage = { dextinityType: AdminMessageType.HoverComponent, data: { adminRoute } };
                                 sendMessage(message);
                             },
                             sendContentScopeJwt: (contentScopeJwt) => {
                                 const message: IAdminContentScopeMessage = {
-                                    cometType: AdminMessageType.ContentScope,
+                                    dextinityType: AdminMessageType.ContentScope,
                                     data: { contentScopeJwt },
                                 };
                                 sendMessage(message);
                             },
                             sendGraphQLApiUrl: (graphQLApiUrl) => {
                                 const message: IAdminGraphQLApiUrlMessage = {
-                                    cometType: AdminMessageType.GraphQLApiUrl,
+                                    dextinityType: AdminMessageType.GraphQLApiUrl,
                                     data: { graphQLApiUrl },
                                 };
                                 sendMessage(message);

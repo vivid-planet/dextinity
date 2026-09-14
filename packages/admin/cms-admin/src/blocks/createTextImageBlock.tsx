@@ -1,4 +1,4 @@
-import { messages } from "@comet/admin";
+import { messages } from "@dextinity/admin";
 import { FormControlLabel, MenuItem, Radio, RadioGroup, Select } from "@mui/material";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 
@@ -48,7 +48,7 @@ const createTextImageBlock = (
 
         name: "TextImage",
 
-        displayName: <FormattedMessage id="comet.blocks.textImage" defaultMessage="Text/Image" />,
+        displayName: <FormattedMessage id="dextinity.blocks.textImage" defaultMessage="Text/Image" />,
 
         category: BlockCategory.TextAndContent,
 
@@ -63,14 +63,14 @@ const createTextImageBlock = (
 
             return (
                 <>
-                    <BlockAdminComponentSection title={<FormattedMessage id="comet.blocks.textImage.text" defaultMessage="Text" />}>
+                    <BlockAdminComponentSection title={<FormattedMessage id="dextinity.blocks.textImage.text" defaultMessage="Text" />}>
                         {text}
                     </BlockAdminComponentSection>
-                    <BlockAdminComponentSection title={<FormattedMessage id="comet.blocks.textImage.image" defaultMessage="Image" />}>
+                    <BlockAdminComponentSection title={<FormattedMessage id="dextinity.blocks.textImage.image" defaultMessage="Image" />}>
                         <BlockAdminComponentPaper disablePadding>{image}</BlockAdminComponentPaper>
                     </BlockAdminComponentSection>
                     <BlockAdminComponentSection
-                        title={<FormattedMessage id="comet.blocks.textImage.imagePosition" defaultMessage="Image position" />}
+                        title={<FormattedMessage id="dextinity.blocks.textImage.imagePosition" defaultMessage="Image position" />}
                     >
                         <RadioGroup
                             row
@@ -87,7 +87,7 @@ const createTextImageBlock = (
                         </RadioGroup>
                     </BlockAdminComponentSection>
                     <BlockAdminComponentSection
-                        title={<FormattedMessage id="comet.blocks.textImage.imageAspectRatio" defaultMessage="Image aspect ratio" />}
+                        title={<FormattedMessage id="dextinity.blocks.textImage.imageAspectRatio" defaultMessage="Image aspect ratio" />}
                     >
                         <Select
                             value={state.imageAspectRatio}

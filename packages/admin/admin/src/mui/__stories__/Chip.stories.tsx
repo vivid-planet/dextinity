@@ -1,4 +1,4 @@
-import { ChevronDown } from "@comet/admin-icons";
+import { ChevronDown } from "@dextinity/admin-icons";
 import { Box, Card, CardContent, Chip, Grid, Stack, Typography } from "@mui/material";
 
 export default {

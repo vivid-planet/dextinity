@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp } from "@comet/admin-icons";
+import { ChevronDown, ChevronUp } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, Popover as MuiPopover, type Theme } from "@mui/material";
 import { css, useThemeProps } from "@mui/material/styles";
 import { type ReactNode, useEffect, useRef, useState } from "react";
@@ -49,7 +49,7 @@ export function AppHeaderDropdown(inProps: AppHeaderDropdownProps) {
         onOpenChange,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminAppHeaderDropdown" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminAppHeaderDropdown" });
 
     const [uncontrolledOpen, setUncontrolledOpen] = useState<boolean>(false);
 
@@ -102,17 +102,17 @@ export function AppHeaderDropdown(inProps: AppHeaderDropdownProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminAppHeaderDropdown: AppHeaderDropdownProps;
+        DextinityAdminAppHeaderDropdown: AppHeaderDropdownProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminAppHeaderDropdown: AppHeaderDropdownClassKey;
+        DextinityAdminAppHeaderDropdown: AppHeaderDropdownClassKey;
     }
 
     interface Components {
-        CometAdminAppHeaderDropdown?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminAppHeaderDropdown"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminAppHeaderDropdown"];
+        DextinityAdminAppHeaderDropdown?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminAppHeaderDropdown"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminAppHeaderDropdown"];
         };
     }
 }

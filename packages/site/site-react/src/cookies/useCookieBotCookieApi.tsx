@@ -6,7 +6,9 @@ import type { CookieApiHook } from "./CookieApiContext";
 
 type WindowWithCookiebot = Window & {
     Cookiebot: {
-        consent: Record<string, boolean>;
+        // `consent` is only populated once Cookiebot has initialized and fired `CookiebotOnConsentReady`.
+        // `window.Cookiebot` already exists once the script has run, so `consent` must be treated as optional.
+        consent?: Record<string, boolean>;
         renew: () => void;
         [key: string]: unknown;
     };
@@ -23,8 +25,13 @@ export const useCookieBotCookieApi: CookieApiHook = () => {
     useEffect(() => {
         const handleCookieUpdated = () => {
             if (isWindowWithCookiebot(window)) {
-                setInitialized(true);
                 const consentedList = window.Cookiebot.consent;
+                // The initial call can run before Cookiebot has finished initializing, when `consent` is not
+                // yet populated. Calling `Object.keys` on it would throw, so bail out until it's available.
+                if (!consentedList) {
+                    return;
+                }
+                setInitialized(true);
                 setConsentedCookies(Object.keys(consentedList).filter((key) => consentedList[key]));
             }
         };

@@ -82,7 +82,7 @@
             "ignore": ["./src/**/*.generated.ts"]
         },
         "demo/admin": {
-            "entry": ["./src/loader.ts", "./src/**/*.cometGen.{ts,tsx}"],
+            "entry": ["./src/loader.ts", "./src/**/*.dextinityGen.{ts,tsx}"],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["./src/**/generated/**", "**/graphql.generated.ts", "**/*.generated.ts"],
             "ignoreDependencies": ["@swc/plugin-emotion", "cosmiconfig-toml-loader", "@babel/core"]
@@ -102,12 +102,12 @@
             ],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignoreDependencies": ["@as-integrations/express5"],
-            "ignore": ["./src/**/generated/**"]
+            "ignore": ["./src/**/generated/**", "**/*.generated.ts"]
         },
         "demo/site": {
             "entry": ["./src/app/**", "./cache-handler.ts", "./server.ts", "./opentelemetry-metrics.ts", "tracing.dev.ts", "tracing.production.ts"],
             "project": ["./src/**/*.{ts,tsx}"],
-            "ignoreDependencies": ["@babel/core", "@types/grecaptcha"],
+            "ignoreDependencies": ["@babel/core", "@types/grecaptcha", "mjml"],
             "ignore": ["**/*.generated.ts"]
         },
         "storybook": {

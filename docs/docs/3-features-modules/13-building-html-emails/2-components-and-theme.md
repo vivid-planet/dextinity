@@ -7,7 +7,7 @@ title: Theme & Base Components
 The theme controls layout dimensions, typography, colors, and responsive breakpoints across all mail components. Use `createTheme()` to build one:
 
 ```ts
-import { createTheme } from "@comet/mail-react";
+import { createTheme } from "@dextinity/mail-react";
 
 const theme = createTheme();
 ```
@@ -17,7 +17,7 @@ const theme = createTheme();
 Pass a partial overrides object to customize any part of the theme.
 
 ```ts
-import { createBreakpoint, createTheme } from "@comet/mail-react";
+import { createBreakpoint, createTheme } from "@dextinity/mail-react";
 
 const theme = createTheme({
     sizes: {
@@ -30,6 +30,14 @@ const theme = createTheme({
     text: {
         fontFamily: "Georgia, serif",
         fontSize: "18px",
+    },
+    list: {
+        indent: 16,
+        markerGap: { default: 12, mobile: 8 },
+        unorderedMarker: "▪",
+        // 97 is the code of "a", so nested items are lettered a), b), c)
+        orderedMarker: ({ index, depth }) =>
+            depth === 0 ? `${index + 1})` : `${String.fromCharCode(97 + index)})`,
     },
     colors: {
         background: {
@@ -46,10 +54,10 @@ The built-in breakpoints are `default` and `mobile`. To add more, augment the `T
 
 Breakpoint values must be created with `createBreakpoint()`, which produces an object containing the pixel width and a ready-to-use media query string.
 
-Once augmented, the new key automatically becomes available in all responsive theme values, e.g. `contentIndentation`.
+Once augmented, the new key automatically becomes available in all responsive theme values, e.g. `sizes.contentIndentation` and the `list` spacing tokens.
 
 ```ts title="theme.ts"
-import { createBreakpoint, createTheme, type ThemeBreakpoint } from "@comet/mail-react";
+import { createBreakpoint, createTheme, type ThemeBreakpoint } from "@dextinity/mail-react";
 
 export const theme = createTheme({
     breakpoints: {
@@ -64,7 +72,7 @@ export const theme = createTheme({
     },
 });
 
-declare module "@comet/mail-react" {
+declare module "@dextinity/mail-react" {
     interface ThemeBreakpoints {
         tablet: ThemeBreakpoint;
     }
@@ -76,7 +84,7 @@ declare module "@comet/mail-react" {
 Augment `ThemeBackgroundColors` or `ThemeColors` to add project-specific color tokens:
 
 ```ts title="theme.ts"
-import { createTheme } from "@comet/mail-react";
+import { createTheme } from "@dextinity/mail-react";
 
 export const theme = createTheme({
     colors: {
@@ -85,7 +93,7 @@ export const theme = createTheme({
     },
 });
 
-declare module "@comet/mail-react" {
+declare module "@dextinity/mail-react" {
     interface ThemeBackgroundColors {
         highlight: string;
     }
@@ -124,7 +132,7 @@ export const MyStory: StoryObj = {
 When rendering emails outside Storybook, wrap your content in `MjmlMailRoot` yourself and use `renderMailHtml` to convert the React tree to HTML — see [Rendering](./4-rendering.md) for full details.
 
 ```tsx title="src/emails/WelcomeEmail.tsx"
-import { MjmlColumn, MjmlMailRoot, MjmlSection, MjmlText, createTheme } from "@comet/mail-react";
+import { MjmlColumn, MjmlMailRoot, MjmlSection, MjmlText, createTheme } from "@dextinity/mail-react";
 
 const theme = createTheme({
     colors: { background: { body: "#EAEAEA" } },
@@ -257,7 +265,7 @@ For a region that also needs different default text color or variants, combine `
 Variants are named typography presets. Define them in your theme file alongside the `TextVariants` module augmentation for type-safety:
 
 ```ts title="theme.ts"
-import { createTheme } from "@comet/mail-react";
+import { createTheme } from "@dextinity/mail-react";
 
 export const theme = createTheme({
     text: {
@@ -269,7 +277,7 @@ export const theme = createTheme({
     },
 });
 
-declare module "@comet/mail-react" {
+declare module "@dextinity/mail-react" {
     interface TextVariants {
         heading: true;
         body: true;
@@ -365,11 +373,9 @@ It supports the same `variant` and `bottomSpacing` props as `MjmlText`:
 <MjmlSection>
     <MjmlColumn>
         <MjmlRaw>
-            <table>
-                <tr>
-                    <HtmlText>Themed text inside a raw HTML table</HtmlText>
-                </tr>
-            </table>
+            <tr>
+                <HtmlText>Themed text in a row of the column's table</HtmlText>
+            </tr>
         </MjmlRaw>
     </MjmlColumn>
 </MjmlSection>
@@ -494,7 +500,7 @@ If all you need to change is the **background color** behind a group of sections
 A common pattern is wrapping a section in a `ThemeProvider` with a modified theme to create a visually distinct area, such as a dark-background footer. Copy the project's theme and override only what needs to change — this preserves the rest of the theme (font family, sizes, breakpoints, variants, etc.):
 
 ```tsx
-import { MjmlColumn, MjmlSection, MjmlText, ThemeProvider } from "@comet/mail-react";
+import { MjmlColumn, MjmlSection, MjmlText, ThemeProvider } from "@dextinity/mail-react";
 
 import { theme } from "./theme";
 

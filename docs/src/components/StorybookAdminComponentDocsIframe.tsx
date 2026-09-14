@@ -52,14 +52,14 @@ const getStorybookDomain = () => {
 
         if (originParts.length) {
             if (originParts[0].includes("next")) {
-                return `https://next.storybook.comet-dxp.com`;
+                return `https://next.cms-storybook.dextinity.com`;
             }
 
             if (originParts[0].includes("deploy-preview")) {
-                return `${originParts[0]}.storybook.comet-dxp.com`;
+                return `${originParts[0]}.cms-storybook.dextinity.com`;
             }
         }
     }
 
-    return "https://storybook.comet-dxp.com";
+    return "https://cms-storybook.dextinity.com";
 };

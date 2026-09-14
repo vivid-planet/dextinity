@@ -1,6 +1,6 @@
 import { useApolloClient } from "@apollo/client";
-import { Button, downloadFile, useStackApi } from "@comet/admin";
-import { Archive, Delete, Download, Restore, ZipFile } from "@comet/admin-icons";
+import { Button, downloadFile, useStackApi } from "@dextinity/admin";
+import { Archive, Delete, Download, Restore, ZipFile } from "@dextinity/admin-icons";
 import { Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { type ReactNode, useState } from "react";
@@ -83,7 +83,7 @@ export const FilePreview = ({ file }: FilePreviewProps) => {
                         downloadFile(file.fileUrl, file.name);
                     }}
                 >
-                    <FormattedMessage id="comet.dam.file.downloadFile" defaultMessage="Download File" />
+                    <FormattedMessage id="dextinity.dam.file.downloadFile" defaultMessage="Download File" />
                 </Button>
                 <ReplaceFileButton file={file} />
                 <Button
@@ -104,9 +104,9 @@ export const FilePreview = ({ file }: FilePreviewProps) => {
                     }}
                 >
                     {file.archived ? (
-                        <FormattedMessage id="comet.dam.file.restore" defaultMessage="Restore" />
+                        <FormattedMessage id="dextinity.dam.file.restore" defaultMessage="Restore" />
                     ) : (
-                        <FormattedMessage id="comet.dam.file.archive" defaultMessage="Archive" />
+                        <FormattedMessage id="dextinity.dam.file.archive" defaultMessage="Archive" />
                     )}
                 </Button>
                 <Button
@@ -116,7 +116,7 @@ export const FilePreview = ({ file }: FilePreviewProps) => {
                         setDeleteDialogOpen(true);
                     }}
                 >
-                    <FormattedMessage id="comet.dam.file.delete" defaultMessage="Delete" />
+                    <FormattedMessage id="dextinity.dam.file.delete" defaultMessage="Delete" />
                 </Button>
             </ActionsContainer>
             <FileWrapper>{preview}</FileWrapper>

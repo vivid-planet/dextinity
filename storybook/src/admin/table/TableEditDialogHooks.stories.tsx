@@ -11,15 +11,15 @@ import {
     ToolbarActions,
     ToolbarItem,
     useEditDialog,
-} from "@comet/admin";
-import { Add as AddIcon, Edit as EditIcon } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Add as AddIcon, Edit as EditIcon } from "@dextinity/admin-icons";
 import { DialogContent, IconButton, Typography } from "@mui/material";
 import { useMemo, useState } from "react";
 
 import { storyRouterDecorator } from "../../story-router.decorator";
 
 export default {
-    title: "@comet/admin/table",
+    title: "@dextinity/admin/table",
     decorators: [storyRouterDecorator()],
 };
 

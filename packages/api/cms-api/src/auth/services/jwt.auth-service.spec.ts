@@ -62,13 +62,13 @@ describe("createJwtAuthService", () => {
     it("verifies token and returns user", async () => {
         const service = instantianteService({
             verifyOptions: { secret: "secret" },
-            convertJwtToUser: (jwt) => ({ id: jwt.sub, name: jwt.name, email: "test@comet-dxp.com" }),
+            convertJwtToUser: (jwt) => ({ id: jwt.sub, name: jwt.name, email: "test@dextinity.com" }),
         });
         expect(await service.authenticateUser(mockRequest(`Bearer ${token}`))).toStrictEqual({
             user: {
                 id: "1234567890",
                 name: "John Doe",
-                email: "test@comet-dxp.com",
+                email: "test@dextinity.com",
             },
         });
     });

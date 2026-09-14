@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from "@comet/admin-icons";
+import { ChevronLeft, ChevronRight } from "@dextinity/admin-icons";
 import {
     type ComponentsOverrides,
     IconButton,
@@ -53,7 +53,7 @@ export const DataGridPaginationActions: FunctionComponent<PropsWithChildren<Data
         slotProps = {},
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminDataGridPaginationActions",
+        name: "DextinityAdminDataGridPaginationActions",
     });
     const iconMapping = { ...defaultIconMapping, ...passedIconMapping };
 
@@ -65,7 +65,7 @@ export const DataGridPaginationActions: FunctionComponent<PropsWithChildren<Data
                 <PageOf variant="body2" {...slotProps.pageOf}>
                     <FormattedMessage
                         defaultMessage="Page {page} of {pageCount}"
-                        id="comet.dataGridPaginationActions.pageXOfY"
+                        id="dextinity.dataGridPaginationActions.pageXOfY"
                         values={{
                             page: pageCount === 0 ? 0 : page + 1,
                             pageCount: pageCount,
@@ -99,17 +99,17 @@ export const DataGridPaginationActions: FunctionComponent<PropsWithChildren<Data
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminDataGridPaginationActions: DataGridPaginationActionsProps;
+        DextinityAdminDataGridPaginationActions: DataGridPaginationActionsProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminDataGridPaginationActions: DataGridPaginationActionsClassKey;
+        DextinityAdminDataGridPaginationActions: DataGridPaginationActionsClassKey;
     }
 
     interface Components {
-        CometAdminDataGridPaginationActions?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminDataGridPaginationActions"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminDataGridPaginationActions"];
+        DextinityAdminDataGridPaginationActions?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminDataGridPaginationActions"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminDataGridPaginationActions"];
         };
     }
 }

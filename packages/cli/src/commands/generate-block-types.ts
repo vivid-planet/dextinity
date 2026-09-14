@@ -5,6 +5,21 @@ import { format, resolveConfig } from "prettier";
 import type { BlockMeta, BlockMetaField } from "../BlockMeta";
 
 let content = "";
+let isTipTapNodeTypeUsed = false;
+
+const tipTapNodeType = `export interface TipTapMark {
+    type: string;
+    attrs?: Record<string, unknown>;
+}
+
+export interface TipTapNode {
+    type: string;
+    attrs?: Record<string, unknown>;
+    content?: TipTapNode[];
+    marks?: TipTapMark[];
+    text?: string;
+}
+`;
 
 function writeFieldType(field: BlockMetaField, blockNamePostfix: string) {
     if (field.kind === "String") {
@@ -31,6 +46,9 @@ function writeFieldType(field: BlockMetaField, blockNamePostfix: string) {
         if (field.array) {
             content += "[]";
         }
+    } else if (field.kind === "TipTapRichTextBlock") {
+        isTipTapNodeTypeUsed = true;
+        content += "TipTapNode";
     } else if (field.kind === "Enum") {
         const enumType = `"${field.enum.join('" | "')}"`;
         content += field.array ? `(${enumType})[]` : enumType;
@@ -130,6 +148,10 @@ const generateBlockTypes = new Command("generate-block-types")
         }
 
         content += generateAllBlockNames(blockMeta);
+
+        if (isTipTapNodeTypeUsed) {
+            content = `${tipTapNodeType}\n${content}`;
+        }
 
         const prettierOptions = await resolveConfig(process.cwd());
         content = await format(content, { ...prettierOptions, parser: "typescript" });

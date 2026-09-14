@@ -1,5 +1,5 @@
-import type { GridColDef } from "@comet/admin";
-import { ArrowRight, Reload } from "@comet/admin-icons";
+import type { GridColDef } from "@dextinity/admin";
+import { ArrowRight, Reload } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import type { DataGridProps } from "@mui/x-data-grid";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -29,13 +29,13 @@ export const LatestContentUpdatesDashboardWidget = <Row extends MinimalRow>({
         {
             ...disableFieldOptions,
             field: "name",
-            headerName: intl.formatMessage({ id: "dashboard.latestContentUpdates.name", defaultMessage: "Page Name" }),
+            headerName: intl.formatMessage({ id: "dextinity.dashboard.latestContentUpdates.name", defaultMessage: "Page Name" }),
             flex: 1,
         },
         {
             ...disableFieldOptions,
             field: "updatedAt",
-            headerName: intl.formatMessage({ id: "dashboard.latestContentUpdates.updatedAt", defaultMessage: "Updated At" }),
+            headerName: intl.formatMessage({ id: "dextinity.dashboard.latestContentUpdates.updatedAt", defaultMessage: "Updated At" }),
             type: "dateTime",
             flex: 1,
             valueFormatter: (value) => (value ? intl.formatDate(value, { dateStyle: "medium", timeStyle: "short" }) : ""),
@@ -60,7 +60,7 @@ export const LatestContentUpdatesDashboardWidget = <Row extends MinimalRow>({
     return (
         <DashboardWidgetRoot
             icon={<Reload />}
-            header={<FormattedMessage id="dashboard.latestContentUpdatesWidget.title" defaultMessage="Latest Content Updates" />}
+            header={<FormattedMessage id="dextinity.dashboard.latestContentUpdatesWidget.title" defaultMessage="Latest Content Updates" />}
         >
             <DataGrid disableColumnMenu hideFooter autoHeight columns={columns} rows={rows} loading={loading} />
         </DashboardWidgetRoot>

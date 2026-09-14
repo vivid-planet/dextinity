@@ -1,4 +1,4 @@
-import { DateTimeRangePicker } from "@comet/admin";
+import { DateTimeRangePicker } from "@dextinity/admin";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { componentDocsDecorator } from "./utils/componentDocsDecorator";

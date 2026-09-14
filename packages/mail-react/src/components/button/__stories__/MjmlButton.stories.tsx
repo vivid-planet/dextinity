@@ -190,8 +190,6 @@ export const FullWidthOnMobile: Story = {
                     }
                     .mobileFullWidth a {
                         display: block !important;
-                        width: 100% !important;
-                        box-sizing: border-box !important;
                         text-align: center !important;
                     }
                 }

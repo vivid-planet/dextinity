@@ -26,7 +26,7 @@ jobs:
               if: ${{ github.ref_name == 'main' && !contains(github.event.head_commit.message, 'Version Packages') }}
               run: |
                   echo --- > .changeset/canary.md
-                  echo '"@comet/cli": patch' >> .changeset/canary.md
+                  echo '"@dextinity/cli": patch' >> .changeset/canary.md
                   echo --- >> .changeset/canary.md
                   echo >> .changeset/canary.md
                   echo fake change to always get a canary release >> .changeset/canary.md
@@ -39,7 +39,7 @@ jobs:
               if: ${{ github.ref_name == 'next' && !contains(github.event.head_commit.message, 'Version Packages') }}
               run: |
                   echo --- > .changeset/canary.md
-                  echo '"@comet/cli": major' >> .changeset/canary.md
+                  echo '"@dextinity/cli": major' >> .changeset/canary.md
                   echo --- >> .changeset/canary.md
                   echo >> .changeset/canary.md
                   echo fake change to always get a canary release >> .changeset/canary.md

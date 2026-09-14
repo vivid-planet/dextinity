@@ -1,6 +1,6 @@
 import { dirname } from "node:path";
 
-import { type CrudGeneratorOptions, getCrudSearchFieldsFromMetadata, hasCrudFieldFeature, SCOPED_ENTITY_METADATA_KEY } from "@comet/cms-api";
+import { type CrudGeneratorOptions, getCrudSearchFieldsFromMetadata, hasCrudFieldFeature, SCOPED_ENTITY_METADATA_KEY } from "@dextinity/cms-api";
 import type { EntityMetadata } from "@mikro-orm/core";
 
 import { buildNameVariants } from "../utils/build-name-variants";

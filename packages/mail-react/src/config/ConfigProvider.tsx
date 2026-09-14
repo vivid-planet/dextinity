@@ -3,7 +3,7 @@ import { createContext, type PropsWithChildren, type ReactNode, useContext } fro
 export interface PixelImageBlockConfig {
     /**
      * Image widths supported by the API, used to pick a render width.
-     * Generally derived from `cometConfig.images.imageSizes` and `cometConfig.images.deviceSizes`.
+     * Generally derived from `dextinityConfig.images.imageSizes` and `dextinityConfig.images.deviceSizes`.
      */
     validSizes: number[];
     /**
@@ -18,7 +18,7 @@ export interface PixelImageBlockConfig {
  * Add custom keys via TypeScript interface declaration merging:
  *
  * ```ts
- * declare module "@comet/mail-react" {
+ * declare module "@dextinity/mail-react" {
  *     interface Config {
  *         myKey?: { foo: string };
  *     }

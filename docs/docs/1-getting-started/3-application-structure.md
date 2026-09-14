@@ -9,7 +9,7 @@ The application starts automatically when executing `npm run dev`.
 
 Some microservices are used as existing solutions and only need to be configured. Others are custom-built for the application.
 
-### COMET microservices
+### Dextinity microservices
 
 The following microservices are custom-built for the application.
 

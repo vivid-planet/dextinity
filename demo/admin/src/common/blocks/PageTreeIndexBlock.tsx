@@ -1,4 +1,4 @@
-import { type BlockInterface, createBlockSkeleton } from "@comet/cms-admin";
+import { type BlockInterface, createBlockSkeleton } from "@dextinity/cms-admin";
 import type { PageTreeIndexBlockData, PageTreeIndexBlockInput } from "@src/blocks.generated";
 import { FormattedMessage } from "react-intl";
 

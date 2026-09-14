@@ -2,7 +2,7 @@
 title: Migrate local development to a setup with authentication
 ---
 
-This guide helps to add local authentication in a project, like the [current implementation the Comet DXP Starter](https://github.com/vivid-planet/comet-starter/pull/1201) uses.
+This guide helps to add local authentication in a project, like the [current implementation the Dextinity Starter](https://github.com/vivid-planet/dextinity-starter/pull/1201) uses.
 That brings the development setup closer to the production setup as it requires real authentication, thus reducing the risk of environment-specific bugs.
 
 ## Add Auth-Server
@@ -10,7 +10,7 @@ That brings the development setup closer to the production setup as it requires 
 1. Install package
 
 ```bash
-npm i @comet/dev-oidc-provider
+npm i dev-oidc-provider
 ```
 
 2. Add configuration variables to `.env`
@@ -18,8 +18,8 @@ npm i @comet/dev-oidc-provider
 ```env
 # idp
 IDP_PORT=8080
-IDP_CLIENT_ID=comet-oidc-client
-IDP_CLIENT_SECRET=comet-oidc-secret
+IDP_CLIENT_ID=dev-oidc-client
+IDP_CLIENT_SECRET=dev-oidc-secret
 IDP_SSO_URL=http://${DEV_DOMAIN:-localhost}:${IDP_PORT}
 IDP_JWKS_URI=http://${DEV_DOMAIN:-localhost}:${IDP_PORT}/jwks
 IDP_END_SESSION_ENDPOINT=http://${DEV_DOMAIN:-localhost}:${IDP_PORT}/session/end
@@ -30,7 +30,7 @@ IDP_END_SESSION_ENDPOINT=http://${DEV_DOMAIN:-localhost}:${IDP_PORT}/session/end
 It might be possible that you have to alter the implementation of the `userProvider`-callback according to your `staticUsers`.
 
 ```ts
-import { defineConfig } from "@comet/dev-oidc-provider";
+import { defineConfig } from "dev-oidc-provider";
 import { staticUsers } from "./api/src/auth/static-users";
 
 export default defineConfig({
@@ -72,7 +72,7 @@ export default defineConfig({
 
 ```diff package.json
        "setup:ci": "npm run setup-project-files",
-+      "setup:download-oauth2-proxy": "dotenv -- sh -c 'npx @comet/cli download-oauth2-proxy -v $OAUTH2_PROXY_VERSION'"
++      "setup:download-oauth2-proxy": "dotenv -- sh -c 'npx @dextinity/cli download-oauth2-proxy -v $OAUTH2_PROXY_VERSION'"
 ```
 
 ```diff install.sh

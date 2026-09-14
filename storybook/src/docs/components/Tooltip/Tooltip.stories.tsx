@@ -1,4 +1,4 @@
-import { Tooltip } from "@comet/admin";
+import { Tooltip } from "@dextinity/admin";
 import { Grid } from "@mui/material";
 
 export default {

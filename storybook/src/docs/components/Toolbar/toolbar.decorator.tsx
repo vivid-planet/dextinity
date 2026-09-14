@@ -1,4 +1,4 @@
-import { Stack, StackPage, StackPageTitle, StackSwitch } from "@comet/admin";
+import { Stack, StackPage, StackPageTitle, StackSwitch } from "@dextinity/admin";
 import type { Decorator } from "@storybook/react-vite";
 
 export function toolbarDecorator(): Decorator {

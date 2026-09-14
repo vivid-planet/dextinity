@@ -1,4 +1,4 @@
-import { type IPagingInfo, Table, useTableQueryPaging } from "@comet/admin";
+import { type IPagingInfo, Table, useTableQueryPaging } from "@dextinity/admin";
 
 interface IExampleRow {
     id: number;
@@ -7,7 +7,7 @@ interface IExampleRow {
 }
 
 export default {
-    title: "@comet/admin/table",
+    title: "@dextinity/admin/table",
 };
 
 export const PagingClientside = () => {

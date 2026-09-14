@@ -1,5 +1,5 @@
 "use client";
-import { JsonLd } from "@comet/site-nextjs";
+import { JsonLd } from "@dextinity/site-nextjs";
 import { SvgUse } from "@src/common/helpers/SvgUse";
 import { PageLayout } from "@src/layout/PageLayout";
 import { createSitePath } from "@src/util/createSitePath";

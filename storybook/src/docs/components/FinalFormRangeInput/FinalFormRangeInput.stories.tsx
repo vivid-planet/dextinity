@@ -1,4 +1,4 @@
-import { Button, Field, FinalFormRangeInput } from "@comet/admin";
+import { Button, Field, FinalFormRangeInput } from "@dextinity/admin";
 import { styled } from "@mui/material/styles";
 import { Form } from "react-final-form";
 

@@ -10,7 +10,7 @@ const isValidEnvironment = (env: string): env is Environment => {
     return ["local", "dev", "test", "staging", "prod"].includes(env);
 };
 
-// Called by `pnpm exec comet inject-site-configs`
+// Called by `pnpm exec dextinity inject-site-configs`
 const getSiteConfigs = (env: string): SiteConfig[] => {
     if (!isValidEnvironment(env)) {
         throw new Error(`Invalid environment: ${env}`);

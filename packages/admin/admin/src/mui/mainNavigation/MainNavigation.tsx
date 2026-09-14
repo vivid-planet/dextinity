@@ -32,7 +32,7 @@ export const MainNavigation = (inProps: MainNavigationProps) => {
         variant = "permanent",
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminMainNavigation" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminMainNavigation" });
     const history = useHistory();
     const { open, toggleOpen, setOpen, setDrawerVariant, drawerVariant } = useMainNavigation();
     const initialRender = useRef(true);
@@ -128,17 +128,17 @@ export const MainNavigation = (inProps: MainNavigationProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminMainNavigation: MainNavigationClassKey;
+        DextinityAdminMainNavigation: MainNavigationClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminMainNavigation: MainNavigationProps;
+        DextinityAdminMainNavigation: MainNavigationProps;
     }
 
     interface Components {
-        CometAdminMainNavigation?: {
-            defaultProps?: ComponentsPropsList["CometAdminMainNavigation"];
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminMainNavigation"];
+        DextinityAdminMainNavigation?: {
+            defaultProps?: ComponentsPropsList["DextinityAdminMainNavigation"];
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminMainNavigation"];
         };
     }
 }

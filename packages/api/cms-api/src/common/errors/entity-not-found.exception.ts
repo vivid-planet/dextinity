@@ -1,3 +1,3 @@
-import { CometException } from "./comet.exception";
+import { DextinityException } from "./dextinity.exception";
 
-export class CometEntityNotFoundException extends CometException {}
+export class DextinityEntityNotFoundException extends DextinityException {}

@@ -1,4 +1,4 @@
-import type { MutationError } from "@comet/cms-api";
+import type { MutationError } from "@dextinity/cms-api";
 
 export enum TestEntity3MutationErrorCode {
     titleTooShort = "titleTooShort",

@@ -24,23 +24,23 @@ export interface ToolbarItemProps extends ThemedComponentBaseProps {
 }
 
 export const ToolbarItem = (inProps: ToolbarItemProps) => {
-    const { children, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminToolbarItem" });
+    const { children, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminToolbarItem" });
     return <Root {...restProps}>{children}</Root>;
 };
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminToolbarItem: ToolbarItemClassKey;
+        DextinityAdminToolbarItem: ToolbarItemClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminToolbarItem: ToolbarItemProps;
+        DextinityAdminToolbarItem: ToolbarItemProps;
     }
 
     interface Components {
-        CometAdminToolbarItem?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminToolbarItem"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminToolbarItem"];
+        DextinityAdminToolbarItem?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminToolbarItem"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminToolbarItem"];
         };
     }
 }

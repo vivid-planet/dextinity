@@ -9,16 +9,16 @@ import {
     ToolbarActions,
     ToolbarAutomaticTitleItem,
     ToolbarBackButton,
-} from "@comet/admin";
-import { Add } from "@comet/admin-icons";
-import { ContentScopeIndicator } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { Add } from "@dextinity/admin-icons";
+import { ContentScopeIndicator } from "@dextinity/cms-admin";
 
 import { ExampleDataGrid } from "../helpers/ExampleDataGrid";
 import { masterLayoutDecorator, stackRouteDecorator } from "../helpers/storyDecorators";
 import { storyRouterDecorator } from "../story-router.decorator";
 
 export default {
-    title: "@comet/admin/FullHeightContent",
+    title: "@dextinity/admin/FullHeightContent",
     decorators: [masterLayoutDecorator(), stackRouteDecorator(), storyRouterDecorator()],
     parameters: {
         layout: "none",

@@ -10,7 +10,7 @@ import {
     type MainNavigationItemRouterLinkProps,
     useMainNavigation,
     useWindowSize,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import { type ReactNode, useEffect } from "react";
 import { type RouteProps, useRouteMatch } from "react-router-dom";
 

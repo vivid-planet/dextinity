@@ -1,8 +1,8 @@
 import type { ValidationError } from "@nestjs/common";
 
-import { CometException } from "./comet.exception";
+import { DextinityException } from "./dextinity.exception";
 
-export class CometValidationException extends CometException {
+export class DextinityValidationException extends DextinityException {
     constructor(
         message: string,
         readonly errors?: ValidationError[],

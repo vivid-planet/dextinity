@@ -1,5 +1,5 @@
 import { type ApolloClient, gql } from "@apollo/client";
-import { LocalErrorScopeApolloContext } from "@comet/admin";
+import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 
 const slugAvailableQuery = gql`
     query FindAvailableSlug($parentId: ID, $slug: String!, $scope: PageTreeNodeScopeInput!) {

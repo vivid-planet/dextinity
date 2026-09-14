@@ -1,4 +1,4 @@
-import { BlockInputInterface, RootBlockInputScalar } from "@comet/cms-api";
+import { BlockInputInterface, RootBlockInputScalar } from "@dextinity/cms-api";
 import { Field, InputType } from "@nestjs/graphql";
 import { LinkBlock } from "@src/common/blocks/link.block";
 import { Transform } from "class-transformer";

@@ -8,7 +8,7 @@ sidebar_position: 7
 Blocks can have references to entities.
 But since block data is stored as JSON, there is no actual database relationship.
 
-If you still need to know which entities a block references or in which blocks an entity is used, you can use COMET's block index.
+If you still need to know which entities a block references or in which blocks an entity is used, you can use Dextinity's block index.
 
 ---
 
@@ -205,7 +205,7 @@ The `basePath` option specifies the URL path to the entity's edit page.
 
 ```tsx
 // NewsDependency.tsx
-import { createDependencyMethods } from "@comet/cms-admin";
+import { createDependencyMethods } from "@dextinity/cms-admin";
 
 // ...
 
@@ -226,7 +226,7 @@ It loads the document and also the `PageTreeNode` the document is attached to.
 
 ```tsx
 // Page.tsx
-import { createDocumentDependencyMethods } from "@comet/cms-admin";
+import { createDocumentDependencyMethods } from "@dextinity/cms-admin";
 
 // ...
 
@@ -287,7 +287,7 @@ export class NewsModule {}
 
 #### 5. Admin: Display dependencies with `DependenciesList` or `DependentsList`
 
-Use `DependenciesList` to display what an entity depends on, or `DependentsList` to display what depends on an entity. Both components are provided by `@comet/cms-admin`. The DAM uses `DependentsList` in its "Dependents" tab.
+Use `DependenciesList` to display what an entity depends on, or `DependentsList` to display what depends on an entity. Both components are provided by `@dextinity/cms-admin`. The DAM uses `DependentsList` in its "Dependents" tab.
 
 Each component requires two props:
 

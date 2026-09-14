@@ -1,4 +1,4 @@
-import { createFetchWithDefaults, createGraphQLFetch } from "@comet/site-nextjs";
+import { createFetchWithDefaults, createGraphQLFetch } from "@dextinity/site-nextjs";
 
 export function createGraphQLFetchMiddleware() {
     if (!process.env.API_BASIC_AUTH_SYSTEM_USER_PASSWORD) {

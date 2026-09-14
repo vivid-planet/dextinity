@@ -1,4 +1,4 @@
-import { Clear } from "@comet/admin-icons";
+import { Clear } from "@dextinity/admin-icons";
 import {
     ButtonBase,
     type ComponentsOverrides,
@@ -36,7 +36,7 @@ export const ClearInputAdornment = (inProps: ClearInputAdornmentProps) => {
         icon = <Clear fontSize="inherit" />,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminClearInputAdornment" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminClearInputAdornment" });
 
     const ownerState: OwnerState = {
         position,
@@ -100,17 +100,17 @@ const Button = createComponentSlot(ButtonBase)<ClearInputAdornmentClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminClearInputAdornment: ClearInputAdornmentClassKey;
+        DextinityAdminClearInputAdornment: ClearInputAdornmentClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminClearInputAdornment: ClearInputAdornmentProps;
+        DextinityAdminClearInputAdornment: ClearInputAdornmentProps;
     }
 
     interface Components {
-        CometAdminClearInputAdornment?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminClearInputAdornment"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminClearInputAdornment"];
+        DextinityAdminClearInputAdornment?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminClearInputAdornment"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminClearInputAdornment"];
         };
     }
 }

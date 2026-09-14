@@ -1,5 +1,5 @@
 import { useApolloClient } from "@apollo/client";
-import { OpenNewTab } from "@comet/admin-icons";
+import { OpenNewTab } from "@dextinity/admin-icons";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import { type ComponentProps, isValidElement, type ReactElement, type ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
@@ -39,7 +39,7 @@ export const FileFieldMenu = ({ fileId, anchorEl, onClose, menuActions, keepMoun
                     <ListItemIcon>
                         <OpenNewTab />
                     </ListItemIcon>
-                    <ListItemText primary={<FormattedMessage id="comet.form.file.openInDam" defaultMessage="Open in DAM" />} />
+                    <ListItemText primary={<FormattedMessage id="dextinity.form.file.openInDam" defaultMessage="Open in DAM" />} />
                 </MenuItem>
             )}
             {menuActions?.map((item, index) => {

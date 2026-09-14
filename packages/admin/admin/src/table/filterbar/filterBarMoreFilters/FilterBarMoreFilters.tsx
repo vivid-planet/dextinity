@@ -1,4 +1,4 @@
-import { Filter } from "@comet/admin-icons";
+import { Filter } from "@dextinity/admin-icons";
 import type { ComponentsOverrides } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
 import { type PropsWithChildren, type ReactNode, useState } from "react";
@@ -52,7 +52,7 @@ export function FilterBarMoreFilters(inProps: PropsWithChildren<FilterBarMoreFil
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminFilterBarMoreFilters",
+        name: "DextinityAdminFilterBarMoreFilters",
     });
     const [hasExtended, setHasExtended] = useState(false);
 
@@ -63,7 +63,7 @@ export function FilterBarMoreFilters(inProps: PropsWithChildren<FilterBarMoreFil
     return (
         <Root {...slotProps?.root} {...restProps}>
             <StyledFilterBarButton {...slotProps?.button} onClick={() => setHasExtended(true)} startIcon={icon} endIcon={null}>
-                <FormattedMessage id="comet.filterbar.moreFilter" defaultMessage="More Filter" />
+                <FormattedMessage id="dextinity.filterbar.moreFilter" defaultMessage="More Filter" />
             </StyledFilterBarButton>
         </Root>
     );
@@ -71,17 +71,17 @@ export function FilterBarMoreFilters(inProps: PropsWithChildren<FilterBarMoreFil
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFilterBarMoreFilters: FilterBarMoreFiltersClassKey;
+        DextinityAdminFilterBarMoreFilters: FilterBarMoreFiltersClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFilterBarMoreFilters: FilterBarMoreFiltersProps;
+        DextinityAdminFilterBarMoreFilters: FilterBarMoreFiltersProps;
     }
 
     interface Components {
-        CometAdminFilterBarMoreFilters?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFilterBarMoreFilters"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFilterBarMoreFilters"];
+        DextinityAdminFilterBarMoreFilters?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFilterBarMoreFilters"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFilterBarMoreFilters"];
         };
     }
 }

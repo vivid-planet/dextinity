@@ -1,4 +1,4 @@
-import { Field, RadioGroupField, SelectField } from "@comet/admin";
+import { Field, RadioGroupField, SelectField } from "@dextinity/admin";
 import { Box, Divider, ToggleButton as MuiToggleButton, ToggleButtonGroup as MuiToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import isEqual from "lodash.isequal";
@@ -296,7 +296,7 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                 }
 
                 const options: Array<{ value: string; label: ReactNode }> = allowEmpty
-                    ? [{ value: "none", label: <FormattedMessage id="comet.blocks.oneOfBlock.empty" defaultMessage="None" /> }]
+                    ? [{ value: "none", label: <FormattedMessage id="dextinity.blocks.oneOfBlock.empty" defaultMessage="None" /> }]
                     : [];
 
                 Object.entries(filteredSupportedBlocks).forEach(([blockType, block]) => {

@@ -8,6 +8,7 @@ import { ContentScope } from "../user-permissions/interfaces/content-scope.inter
 import { KubernetesJobStatus } from "./job-status.enum";
 import { KUBERNETES_CONFIG, PARENT_CRON_JOB_LABEL } from "./kubernetes.constants";
 import { KubernetesConfig } from "./kubernetes.module";
+import { getAnnotation, toLegacyLabelSelector } from "./kubernetes-metadata";
 
 @Injectable()
 export class KubernetesService implements OnModuleInit {
@@ -23,7 +24,7 @@ export class KubernetesService implements OnModuleInit {
     constructor(@Inject(KUBERNETES_CONFIG) readonly config: KubernetesConfig) {}
 
     // @kubernetes/client-node is heavy (~85 MB resident). It's imported lazily here rather than at
-    // module load, so importing @comet/cms-api doesn't pull it into memory — it's only loaded once
+    // module load, so importing @dextinity/cms-api doesn't pull it into memory — it's only loaded once
     // this service is instantiated (i.e. the Kubernetes feature is enabled) and connects to a cluster.
     async onModuleInit(): Promise<void> {
         if ("namespace" in this.config) {
@@ -64,7 +65,17 @@ export class KubernetesService implements OnModuleInit {
 
     async getAllCronJobs(labelSelector: string): Promise<V1CronJob[]> {
         const { items } = await this.batchApi.listNamespacedCronJob({ namespace: this.namespace, labelSelector });
-        return items;
+
+        const legacyLabelSelector = toLegacyLabelSelector(labelSelector);
+        if (items.length > 0 || !legacyLabelSelector) {
+            return items;
+        }
+
+        const { items: legacyItems } = await this.batchApi.listNamespacedCronJob({
+            namespace: this.namespace,
+            labelSelector: legacyLabelSelector,
+        });
+        return legacyItems;
     }
 
     async deleteJob(name: string): Promise<void> {
@@ -103,7 +114,14 @@ export class KubernetesService implements OnModuleInit {
      */
     async getAllJobs(labelSelector?: string): Promise<V1Job[]> {
         const { items } = await this.batchApi.listNamespacedJob({ namespace: this.namespace, labelSelector });
-        return items.sort((a, b) => (b.metadata?.creationTimestamp?.getTime() ?? 0) - (a.metadata?.creationTimestamp?.getTime() ?? 0));
+
+        const legacyLabelSelector = labelSelector ? toLegacyLabelSelector(labelSelector) : undefined;
+        const jobs =
+            items.length > 0 || !legacyLabelSelector
+                ? items
+                : (await this.batchApi.listNamespacedJob({ namespace: this.namespace, labelSelector: legacyLabelSelector })).items;
+
+        return jobs.sort((a, b) => (b.metadata?.creationTimestamp?.getTime() ?? 0) - (a.metadata?.creationTimestamp?.getTime() ?? 0));
     }
 
     async getAllJobsForCronJob(cronJob: string) {
@@ -178,7 +196,7 @@ export class KubernetesService implements OnModuleInit {
     }
 
     getContentScope(resource: V1Job | V1CronJob): ContentScope | null {
-        const contentScopeAnnotation = resource.metadata?.annotations?.[CONTENT_SCOPE_ANNOTATION];
+        const contentScopeAnnotation = getAnnotation(resource, CONTENT_SCOPE_ANNOTATION);
 
         if (contentScopeAnnotation) {
             let json = JSON.parse(contentScopeAnnotation);

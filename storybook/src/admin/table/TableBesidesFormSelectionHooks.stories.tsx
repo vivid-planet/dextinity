@@ -1,5 +1,15 @@
 import { gql } from "@apollo/client";
-import { Field, FinalForm, FinalFormInput, type ISelectionApi, Selected, Table, TableQuery, useSelectionRoute, useTableQuery } from "@comet/admin";
+import {
+    Field,
+    FinalForm,
+    FinalFormInput,
+    type ISelectionApi,
+    Selected,
+    Table,
+    TableQuery,
+    useSelectionRoute,
+    useTableQuery,
+} from "@dextinity/admin";
 import { Grid } from "@mui/material";
 import { Redirect, Route, Switch, useLocation } from "react-router";
 
@@ -113,7 +123,7 @@ function Story() {
 }
 
 export default {
-    title: "@comet/admin/table",
+    title: "@dextinity/admin/table",
     decorators: [apolloRestStoryDecorator(), storyRouterDecorator()],
 };
 

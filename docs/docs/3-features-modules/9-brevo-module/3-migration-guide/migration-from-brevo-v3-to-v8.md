@@ -4,7 +4,7 @@ sidebar_position: -8
 ---
 
 :::info
-We moved the brevo packages from the [comet-brevo-module](https://github.com/vivid-planet/comet-brevo-module) repo to the main [comet](https://github.com/vivid-planet/comet) monorepo.
+We moved the brevo packages from the [comet-brevo-module](https://github.com/vivid-planet/comet-brevo-module) repo to the main [comet](https://github.com/vivid-planet/dextinity) monorepo.
 From now on, versions are coupled to the comet core packages. That's why there is a jump from v3 to v8.
 :::
 
@@ -63,4 +63,4 @@ If you need any of these factories, you can import them from this package.
 
 It's not necessary to migrate to app router. You can stay on pages router without problems.
 
-But if you want to migrate your project to app router, this PR could be helpful for the implementation: https://github.com/vivid-planet/comet/pull/5012.
+But if you want to migrate your project to app router, this PR could be helpful for the implementation: https://github.com/vivid-planet/dextinity/pull/5012.

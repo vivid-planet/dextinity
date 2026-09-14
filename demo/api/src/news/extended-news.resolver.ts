@@ -1,4 +1,4 @@
-import { AffectedEntity, RequiredPermission } from "@comet/cms-api";
+import { AffectedEntity, RequiredPermission } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, ID, Query, Resolver } from "@nestjs/graphql";
 

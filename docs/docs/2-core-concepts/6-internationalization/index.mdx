@@ -13,7 +13,7 @@ The following page describes core translation concepts. We use [FormatJS](https:
 
 All strings that should be translated must be masked using [`<FormattedMessage />`](https://formatjs.io/docs/react-intl/components#formattedmessage) or, if not possible, [`intl.formatMessage()`](https://formatjs.io/docs/react-intl/api#formatmessage). To ensure that all strings are translated we use [`@calm/eslint-plugin-react-intl`](https://www.npmjs.com/package/@calm/eslint-plugin-react-intl).
 
-A stable and unique ID must be used to identify the string. IDs must be prefixed with a project identifier to prevent clashes with other translations. IDs must be named camelCase with dots representing hierarchy.
+A stable and unique ID must be used to identify the string. IDs must be named camelCase with dots representing hierarchy. Dextinity's own messages are prefixed with `dextinity.`, so don't use that prefix in your application to prevent clashes.
 
 :::caution
 
@@ -24,8 +24,8 @@ Translations are lost when an ID changes. Changing an existing ID should be well
 Examples:
 
 ```ts
-<FormattedMessage id="cometDemo.menu.dashboard" defaultMessage="Dashboard" />
-<FormattedMessage id="cometDemo.menu.pageTree.mainNavigation" defaultMessage="Main navigation" />
+<FormattedMessage id="menu.dashboard" defaultMessage="Dashboard" />
+<FormattedMessage id="menu.pageTree.mainNavigation" defaultMessage="Main navigation" />
 ```
 
 ## Extracting strings
@@ -51,19 +51,19 @@ Before using the translation strings, they are compiled using `intl:compile` to 
 ```ts title="lang.ts"
 import { ResolvedIntlConfig } from "react-intl";
 
-import comet_demo_messages_de from "../lang-compiled/comet-demo-lang/de.json";
-import comet_demo_messages_en from "../lang-compiled/comet-demo-lang/en.json";
-import comet_messages_de from "../lang-compiled/comet-lang/de.json";
-import comet_messages_en from "../lang-compiled/comet-lang/en.json";
+import dextinity_demo_messages_de from "../lang-compiled/dextinity-demo-lang/de.json";
+import dextinity_demo_messages_en from "../lang-compiled/dextinity-demo-lang/en.json";
+import dextinity_messages_de from "../lang-compiled/dextinity-lang/de.json";
+import dextinity_messages_en from "../lang-compiled/dextinity-lang/en.json";
 
-const cometMessages = {
-    en: comet_messages_en,
-    de: comet_messages_de,
+const dextinityMessages = {
+    en: dextinity_messages_en,
+    de: dextinity_messages_de,
 };
 
-const cometDemoMessages = {
-    en: comet_demo_messages_en,
-    de: comet_demo_messages_de,
+const dextinityDemoMessages = {
+    en: dextinity_demo_messages_en,
+    de: dextinity_demo_messages_de,
 };
 
 export const getMessages = (): ResolvedIntlConfig["messages"] => {
@@ -73,8 +73,8 @@ export const getMessages = (): ResolvedIntlConfig["messages"] => {
     }
 
     return {
-        ...cometMessages["en"],
-        ...cometDemoMessages["en"],
+        ...dextinityMessages["en"],
+        ...dextinityDemoMessages["en"],
     };
 };
 ```
@@ -89,10 +89,10 @@ import { getMessages } from "./lang";
 
 ## Common Messages
 
-Comet DXP provides a set of commonly used messages exported from `@comet/admin`. They are already translated and can be used inside applications.
+Dextinity provides a set of commonly used messages exported from `@dextinity/admin`. They are already translated and can be used inside applications.
 
 ```ts
-import { messages } from "@comet/admin";
+import { messages } from "@dextinity/admin";
 
 <FormattedMessage {...messages.save} />
 

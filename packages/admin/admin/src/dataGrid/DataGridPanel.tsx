@@ -1,4 +1,4 @@
-import { Add, Check, Close, Reset } from "@comet/admin-icons";
+import { Add, Check, Close, Reset } from "@dextinity/admin-icons";
 import {
     type ComponentsOverrides,
     css,
@@ -34,9 +34,9 @@ import { createComponentSlot } from "../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
 const panelTypeTitle: Record<GridPreferencePanelsValue, ReactNode> = {
-    [GridPreferencePanelsValue.filters]: <FormattedMessage id="dataGrid.panel.filters" defaultMessage="Filters" />,
-    [GridPreferencePanelsValue.columns]: <FormattedMessage id="dataGrid.panel.columns" defaultMessage="Columns" />,
-    [GridPreferencePanelsValue.aiAssistant]: <FormattedMessage id="dataGrid.panel.aiAssistant" defaultMessage="AI Assistant" />,
+    [GridPreferencePanelsValue.filters]: <FormattedMessage id="dextinity.dataGrid.panel.filters" defaultMessage="Filters" />,
+    [GridPreferencePanelsValue.columns]: <FormattedMessage id="dextinity.dataGrid.panel.columns" defaultMessage="Columns" />,
+    [GridPreferencePanelsValue.aiAssistant]: <FormattedMessage id="dextinity.dataGrid.panel.aiAssistant" defaultMessage="AI Assistant" />,
 };
 
 export type DataGridPanelClassKey =
@@ -88,12 +88,19 @@ export type DataGridPanelProps = GridPanelProps &
         };
     };
 
-const addFilterText = <FormattedMessage id="dataGrid.panel.addFilter" defaultMessage="Add filter" />;
+const addFilterText = <FormattedMessage id="dextinity.dataGrid.panel.addFilter" defaultMessage="Add filter" />;
 
 let lastAddedFilterItemId = 0;
 
 export const DataGridPanel = (inProps: DataGridPanelProps) => {
-    const { children, open, slotProps, iconMapping = {}, onClose, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminDataGridPanel" });
+    const {
+        children,
+        open,
+        slotProps,
+        iconMapping = {},
+        onClose,
+        ...restProps
+    } = useThemeProps({ props: inProps, name: "DextinityAdminDataGridPanel" });
     const apiRef = useGridApiContext();
     const filterModel = useGridSelector(apiRef, gridFilterModelSelector);
     const filterableColumns = useGridSelector(apiRef, gridFilterableColumnDefinitionsSelector);
@@ -162,19 +169,19 @@ export const DataGridPanel = (inProps: DataGridPanelProps) => {
 
     const resetFiltersButton = (
         <ResetFiltersButton variant="outlined" startIcon={resetFiltersIcon} onClick={resetFilters} {...slotProps?.resetFiltersButton}>
-            <FormattedMessage id="dataGrid.panel.resetFilters" defaultMessage="Reset filters" />
+            <FormattedMessage id="dextinity.dataGrid.panel.resetFilters" defaultMessage="Reset filters" />
         </ResetFiltersButton>
     );
 
     const resetColumnsButton = (
         <ResetColumnsButton variant="outlined" startIcon={resetColumnsIcon} onClick={resetColumns} {...slotProps?.resetColumnsButton}>
-            <FormattedMessage id="dataGrid.panel.resetColumns" defaultMessage="Reset columns" />
+            <FormattedMessage id="dextinity.dataGrid.panel.resetColumns" defaultMessage="Reset columns" />
         </ResetColumnsButton>
     );
 
     const applyButton = (
         <ApplyButton startIcon={applyIcon} onClick={closeDialog} {...slotProps?.applyButton}>
-            <FormattedMessage id="dataGrid.panel.apply" defaultMessage="Apply" />
+            <FormattedMessage id="dextinity.dataGrid.panel.apply" defaultMessage="Apply" />
         </ApplyButton>
     );
 
@@ -406,17 +413,17 @@ const ApplyButton = createComponentSlot(Button)<DataGridPanelClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminDataGridPanel: DataGridPanelProps;
+        DextinityAdminDataGridPanel: DataGridPanelProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminDataGridPanel: DataGridPanelClassKey;
+        DextinityAdminDataGridPanel: DataGridPanelClassKey;
     }
 
     interface Components {
-        CometAdminDataGridPanel?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminDataGridPanel"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminDataGridPanel"];
+        DextinityAdminDataGridPanel?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminDataGridPanel"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminDataGridPanel"];
         };
     }
 }

@@ -19,8 +19,8 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Add as AddIcon, Delete as DeleteIcon, Edit } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Add as AddIcon, Delete as DeleteIcon, Edit } from "@dextinity/admin-icons";
 import { IconButton, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import {
@@ -66,14 +66,14 @@ function RedirectsGridToolbar({ selectedIds = [], onDeleteSelected }: RedirectsG
                 selectionSize={selectedIds.length}
                 selectiveActions={[
                     {
-                        label: <FormattedMessage id="comet.pages.redirects.deleteSelected" defaultMessage="Delete" />,
+                        label: <FormattedMessage id="dextinity.pages.redirects.deleteSelected" defaultMessage="Delete" />,
                         icon: <DeleteIcon />,
                         onClick: onDeleteSelected,
                     },
                 ]}
             />
             <Button startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
-                <FormattedMessage id="comet.pages.redirects.add" defaultMessage="New redirect" />
+                <FormattedMessage id="dextinity.pages.redirects.add" defaultMessage="New redirect" />
             </Button>
         </DataGridToolbar>
     );
@@ -101,14 +101,14 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
     const typeOptions = [
         {
             label: intl.formatMessage({
-                id: "comet.redirects.redirect.generationType.manual",
+                id: "dextinity.redirects.redirect.generationType.manual",
                 defaultMessage: "Manual",
             }),
             value: "manual",
         },
         {
             label: intl.formatMessage({
-                id: "comet.redirects.redirect.generationType.automatic",
+                id: "dextinity.redirects.redirect.generationType.automatic",
                 defaultMessage: "Automatic",
             }),
             value: "automatic",
@@ -118,13 +118,13 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
     const columns: GridColDef[] = [
         {
             field: "source",
-            headerName: intl.formatMessage({ id: "comet.pages.redirects.redirect.source", defaultMessage: "Source" }),
+            headerName: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.source", defaultMessage: "Source" }),
             sortable: true,
             flex: 4,
         },
         {
             field: "target",
-            headerName: intl.formatMessage({ id: "comet.pages.redirects.redirect.target", defaultMessage: "Target" }),
+            headerName: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.target", defaultMessage: "Target" }),
             renderCell: (params) => {
                 return (
                     <TargetWrapper>
@@ -137,7 +137,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
         },
         {
             field: "comment",
-            headerName: intl.formatMessage({ id: "comet.pages.redirects.redirect.comment", defaultMessage: "Comment" }),
+            headerName: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.comment", defaultMessage: "Comment" }),
             renderCell: (params) => <div>{params.value}</div>,
             sortable: false,
             flex: 2,
@@ -146,15 +146,15 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
         {
             field: "generationType",
             headerName: intl.formatMessage({
-                id: "comet.pages.redirects.redirect.generationType",
+                id: "dextinity.pages.redirects.redirect.generationType",
                 defaultMessage: "Generation Type",
             }),
             renderCell: (params) => (
                 <Typography>
                     {params.value === "manual" ? (
-                        <FormattedMessage id="comet.redirects.redirect.generationType.manual" defaultMessage="Manual" />
+                        <FormattedMessage id="dextinity.redirects.redirect.generationType.manual" defaultMessage="Manual" />
                     ) : (
-                        <FormattedMessage id="comet.redirects.redirect.generationType.automatic" defaultMessage="Automatic" />
+                        <FormattedMessage id="dextinity.redirects.redirect.generationType.automatic" defaultMessage="Automatic" />
                     )}
                 </Typography>
             ),
@@ -167,7 +167,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
         {
             field: "active",
             headerName: intl.formatMessage({
-                id: "comet.pages.redirects.redirect.activation",
+                id: "dextinity.pages.redirects.redirect.activation",
                 defaultMessage: "Activation",
             }),
             renderCell: (params) => <RedirectActiveness redirect={params.row} />,
@@ -179,7 +179,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
             ...dataGridDateTimeColumn,
             field: "activatedAt",
             headerName: intl.formatMessage({
-                id: "comet.pages.redirects.redirect.activatedAt",
+                id: "dextinity.pages.redirects.redirect.activatedAt",
                 defaultMessage: "Activation Date",
             }),
             sortable: false,

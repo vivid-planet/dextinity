@@ -1,4 +1,4 @@
-import { Add } from "@comet/admin-icons";
+import { Add } from "@dextinity/admin-icons";
 import { DialogContent, Typography } from "@mui/material";
 import { DataGrid, type GridToolbarProps } from "@mui/x-data-grid";
 import { type ReactNode, type RefObject, useRef } from "react";

@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from "@comet/admin-icons";
+import { ChevronLeft, ChevronRight } from "@dextinity/admin-icons";
 import { ButtonBase, type ButtonBaseProps, type ComponentsOverrides } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
 import isMobile from "is-mobile";
@@ -40,7 +40,7 @@ export interface TabScrollButtonProps extends ButtonBaseProps {
 export function TabScrollButton(inProps: TabScrollButtonProps) {
     const { orientation, direction, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminTabScrollButton",
+        name: "DextinityAdminTabScrollButton",
     });
 
     const ownerState: OwnerState = {
@@ -56,17 +56,17 @@ export function TabScrollButton(inProps: TabScrollButtonProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminTabScrollButton: TabScrollButtonClassKey;
+        DextinityAdminTabScrollButton: TabScrollButtonClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminTabScrollButton: TabScrollButtonProps;
+        DextinityAdminTabScrollButton: TabScrollButtonProps;
     }
 
     interface Components {
-        CometAdminTabScrollButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminTabScrollButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminTabScrollButton"];
+        DextinityAdminTabScrollButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminTabScrollButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminTabScrollButton"];
         };
     }
 }

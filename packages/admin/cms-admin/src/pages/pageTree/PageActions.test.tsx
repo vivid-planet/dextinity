@@ -31,8 +31,8 @@ vi.mock("./usePageTreeContext", () => ({
     }),
 }));
 
-vi.mock("@comet/admin", async (importOriginal) => {
-    const actual = await importOriginal<typeof import("@comet/admin")>();
+vi.mock("@dextinity/admin", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("@dextinity/admin")>();
     return {
         ...actual,
         useStackSwitchApi: () => ({

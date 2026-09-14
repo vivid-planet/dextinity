@@ -9,7 +9,7 @@ import {
 import type { CSSProperties } from "@mui/material/styles";
 import { type ComponentProps, type ElementType, forwardRef, type JSX } from "react";
 
-const classNamePrefix = "CometAdmin";
+const classNamePrefix = "DextinityAdmin";
 
 type Options<ClassKey extends string, OwnerState extends object | undefined> = {
     componentName: string;

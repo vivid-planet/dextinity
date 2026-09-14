@@ -1,5 +1,5 @@
-export const BLOCK_PREVIEW_CONTAINER_DATA_ATTRIBUTE = "data-comet-block-preview-container";
-export const PREVIEW_ELEMENT_SCROLLED_INTO_VIEW_EVENT = "comet-preview-element-scrolled-into-view";
+export const BLOCK_PREVIEW_CONTAINER_DATA_ATTRIBUTE = "data-dextinity-block-preview-container";
+export const PREVIEW_ELEMENT_SCROLLED_INTO_VIEW_EVENT = "dextinity-preview-element-scrolled-into-view";
 
 export const getRecursiveChildrenOfPreviewElement = (rootElement: Element): Element[] => {
     const previewElementChildNodes: Element[] = [];

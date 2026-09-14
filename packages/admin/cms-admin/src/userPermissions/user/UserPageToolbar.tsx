@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import { CrudMoreActionsMenu, FillSpace, Loading, StackToolbar, ToolbarActions, ToolbarBackButton, ToolbarTitleItem } from "@comet/admin";
-import { ImpersonateUser, Reset } from "@comet/admin-icons";
+import { CrudMoreActionsMenu, FillSpace, Loading, StackToolbar, ToolbarActions, ToolbarBackButton, ToolbarTitleItem } from "@dextinity/admin";
+import { ImpersonateUser, Reset } from "@dextinity/admin-icons";
 import { styled } from "@mui/material/styles";
 
 import { commonImpersonationMessages } from "../../common/impersonation/commonImpersonationMessages";

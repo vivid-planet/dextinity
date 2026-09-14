@@ -10,7 +10,7 @@ export interface DividerProps {
      * Custom variants should be defined in the theme through module augmentation:
      *
      * ```ts
-     * declare module "@comet/mail-react" {
+     * declare module "@dextinity/mail-react" {
      *     interface DividerVariants { thin: true; thick: true }
      * }
      * ```

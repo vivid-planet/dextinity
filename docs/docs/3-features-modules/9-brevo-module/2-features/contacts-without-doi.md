@@ -43,7 +43,7 @@ Make sure that your project uses Brevo Module v3.1.0 or later.
 ```diff
     //...
     return {
-        ...cometConfig,
+        ...dextinityConfig,
         apiUrl: environmentVariables.API_URL,
         adminUrl: environmentVariables.ADMIN_URL,
         sitesConfig: JSON.parse(environmentVariables.SITES_CONFIG) as SitesConfig,

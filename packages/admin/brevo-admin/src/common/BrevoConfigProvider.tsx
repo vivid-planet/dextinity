@@ -1,4 +1,4 @@
-import { type ContentScope, useContentScope } from "@comet/cms-admin";
+import { type ContentScope, useContentScope } from "@dextinity/cms-admin";
 import { createContext, type PropsWithChildren, useContext } from "react";
 
 export interface BrevoConfig {

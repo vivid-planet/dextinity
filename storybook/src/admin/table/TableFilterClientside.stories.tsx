@@ -1,4 +1,4 @@
-import { Field, FinalFormInput, MainContent, Table, TableFilterFinalForm, Toolbar, ToolbarItem, useTableQueryFilter } from "@comet/admin";
+import { Field, FinalFormInput, MainContent, Table, TableFilterFinalForm, Toolbar, ToolbarItem, useTableQueryFilter } from "@dextinity/admin";
 import { Typography } from "@mui/material";
 
 interface IExampleRow {
@@ -11,7 +11,7 @@ interface IFilterValues {
 }
 
 export default {
-    title: "@comet/admin/table",
+    title: "@dextinity/admin/table",
 };
 
 export const FilterClientside = () => {

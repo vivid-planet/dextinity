@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "storybook/internal/components";
 import { useChannel } from "storybook/manager-api";
 
-const RENDER_RESULT_EVENT = "comet-mail-render-result";
+const RENDER_RESULT_EVENT = "dextinity-mail-render-result";
 
 export function CopyMailHtmlButton() {
     const htmlRef = useRef<string>("");

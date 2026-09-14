@@ -12,8 +12,8 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Edit } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Edit } from "@dextinity/admin-icons";
 import { Chip, IconButton, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { GridRenderCellParams, GridSlotsComponent, GridToolbarProps } from "@mui/x-data-grid";
@@ -75,7 +75,7 @@ export const UserPermissionsUserGrid = ({ toolbarAction, rowAction, actionsColum
                 field: "name",
                 flex: 1,
                 pinnable: false,
-                headerName: intl.formatMessage({ id: "comet.userPermissions.name", defaultMessage: "Name" }),
+                headerName: intl.formatMessage({ id: "dextinity.userPermissions.name", defaultMessage: "Name" }),
                 renderCell: ({ row }) => (
                     <NameBox>
                         <Typography>{row.name}</Typography>
@@ -86,7 +86,7 @@ export const UserPermissionsUserGrid = ({ toolbarAction, rowAction, actionsColum
                 field: "email",
                 flex: 1,
                 pinnable: false,
-                headerName: intl.formatMessage({ id: "comet.userPermissions.email", defaultMessage: "E-Mail" }),
+                headerName: intl.formatMessage({ id: "dextinity.userPermissions.email", defaultMessage: "E-Mail" }),
             },
         ];
     }, [intl]);
@@ -99,20 +99,20 @@ export const UserPermissionsUserGrid = ({ toolbarAction, rowAction, actionsColum
                 sortable: false,
                 type: "singleSelect",
                 valueOptions: availablePermissionsAndContentScopes?.permissions,
-                headerName: intl.formatMessage({ id: "comet.userPermissions.permissionsInfo", defaultMessage: "Permissions" }),
+                headerName: intl.formatMessage({ id: "dextinity.userPermissions.permissionsInfo", defaultMessage: "Permissions" }),
                 renderCell: ({ row }) => {
                     if (row.permissionsCount === availablePermissionsAndContentScopes?.permissions.length) {
                         return (
                             <Chip
                                 color="primary"
-                                label={<FormattedMessage id="comet.userPermissions.allPermissions" defaultMessage="All permissions" />}
+                                label={<FormattedMessage id="dextinity.userPermissions.allPermissions" defaultMessage="All permissions" />}
                             />
                         );
                     } else if (row.permissionsCount === 0) {
                         return (
                             <Chip
                                 color="secondary"
-                                label={<FormattedMessage id="comet.userPermissions.noPermissions" defaultMessage="No permissions" />}
+                                label={<FormattedMessage id="dextinity.userPermissions.noPermissions" defaultMessage="No permissions" />}
                             />
                         );
                     } else {
@@ -121,7 +121,7 @@ export const UserPermissionsUserGrid = ({ toolbarAction, rowAction, actionsColum
                                 color="default"
                                 label={
                                     <FormattedMessage
-                                        id="comet.userPermissions.permissionsCount"
+                                        id="dextinity.userPermissions.permissionsCount"
                                         defaultMessage="{permissionsCount} of {availablePermissionsCount} permissions"
                                         values={{
                                             permissionsCount: row.permissionsCount,
@@ -140,20 +140,20 @@ export const UserPermissionsUserGrid = ({ toolbarAction, rowAction, actionsColum
                 pinnable: false,
                 sortable: false,
                 filterable: false,
-                headerName: intl.formatMessage({ id: "comet.userPermissions.contentScopesInfo", defaultMessage: "Scopes" }),
+                headerName: intl.formatMessage({ id: "dextinity.userPermissions.contentScopesInfo", defaultMessage: "Scopes" }),
                 renderCell: ({ row }) => {
                     if (row.contentScopesCount === availablePermissionsAndContentScopes?.contentScopes.length) {
                         return (
                             <Chip
                                 color="primary"
-                                label={<FormattedMessage id="comet.userPermissions.allContentScopes" defaultMessage="All scopes" />}
+                                label={<FormattedMessage id="dextinity.userPermissions.allContentScopes" defaultMessage="All scopes" />}
                             />
                         );
                     } else if (row.contentScopesCount === 0) {
                         return (
                             <Chip
                                 color="secondary"
-                                label={<FormattedMessage id="comet.userPermissions.noContentScopes" defaultMessage="No scopes" />}
+                                label={<FormattedMessage id="dextinity.userPermissions.noContentScopes" defaultMessage="No scopes" />}
                             />
                         );
                     } else {
@@ -162,7 +162,7 @@ export const UserPermissionsUserGrid = ({ toolbarAction, rowAction, actionsColum
                                 color="default"
                                 label={
                                     <FormattedMessage
-                                        id="comet.userPermissions.contentScopesCount"
+                                        id="dextinity.userPermissions.contentScopesCount"
                                         defaultMessage="{contentScopesCount} of {availableContentScopesCount} scopes"
                                         values={{
                                             contentScopesCount: row.contentScopesCount,

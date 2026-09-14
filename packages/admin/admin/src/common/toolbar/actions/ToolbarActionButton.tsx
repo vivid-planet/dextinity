@@ -65,10 +65,10 @@ const StyledButton = createComponentSlot(Button)<ToolbarActionButtonClassKey, Ow
 })();
 
 /**
- * @deprecated Use `Button` from `@comet/admin` with the `responsive` prop instead.
+ * @deprecated Use `Button` from `@dextinity/admin` with the `responsive` prop instead.
  */
 export const ToolbarActionButton = (props: ToolbarActionButtonProps) => {
-    const { children, slotProps = {}, ...restProps } = useThemeProps({ props, name: "CometAdminToolbarActionButton" });
+    const { children, slotProps = {}, ...restProps } = useThemeProps({ props, name: "DextinityAdminToolbarActionButton" });
     const { iconButton: iconButtonProps, tooltip: tooltipProps, button: buttonProps } = slotProps;
 
     const windowSize = useWindowSize();
@@ -93,15 +93,15 @@ export const ToolbarActionButton = (props: ToolbarActionButtonProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminToolbarActionButton: ToolbarActionButtonProps;
+        DextinityAdminToolbarActionButton: ToolbarActionButtonProps;
     }
     interface ComponentNameToClassKey {
-        CometAdminToolbarActionButton: ToolbarActionButtonClassKey;
+        DextinityAdminToolbarActionButton: ToolbarActionButtonClassKey;
     }
     interface Components {
-        CometAdminToolbarActionButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminToolbarActionButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminToolbarActionButton"];
+        DextinityAdminToolbarActionButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminToolbarActionButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminToolbarActionButton"];
         };
     }
 }

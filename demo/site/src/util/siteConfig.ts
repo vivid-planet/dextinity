@@ -1,4 +1,4 @@
-import { previewParams } from "@comet/site-nextjs/server";
+import { previewParams } from "@dextinity/site-nextjs/server";
 import type { PublicSiteConfig } from "@src/site-configs";
 import { headers } from "next/headers";
 

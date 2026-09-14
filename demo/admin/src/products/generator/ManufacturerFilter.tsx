@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import { ClearInputAdornment } from "@comet/admin";
-import { ChevronDown } from "@comet/admin-icons";
+import { ClearInputAdornment } from "@dextinity/admin";
+import { ChevronDown } from "@dextinity/admin-icons";
 import Autocomplete from "@mui/material/Autocomplete";
 import { type GridFilterInputValueProps, type GridFilterOperator, useGridRootProps } from "@mui/x-data-grid-pro";
 import { type ChangeEvent, useCallback, useState } from "react";

@@ -1,12 +1,11 @@
-import { Alert, RowActionsItem, RowActionsMenu, useSnackbarApi, writeClipboardText } from "@comet/admin";
-import { Add, ArrowDown, ArrowUp, Copy, Delete, Duplicate, Paste, Remove } from "@comet/admin-icons";
+import { Alert, RowActionsItem, RowActionsMenu, useSnackbarApi, writeClipboardText } from "@dextinity/admin";
+import { Add, ArrowDown, ArrowUp, Copy, Delete, Duplicate, Paste, Remove } from "@dextinity/admin-icons";
 import { Divider, Snackbar } from "@mui/material";
 import type { Dispatch, SetStateAction } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { v4 as uuid } from "uuid";
 
 import { useBlockContext } from "../context/useBlockContext";
-import type { RichTextBlockState } from "../createRichTextBlock";
 import type { TableBlockState } from "../createTableBlock";
 import { FailedToPasteSnackbar } from "./FailedToPasteSnackbar";
 import { useTableBlockContext } from "./TableBlockContext";
@@ -75,7 +74,7 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
             snackbarApi.showSnackbar(
                 <Snackbar autoHideDuration={5000}>
                     <Alert severity="error">
-                        <FormattedMessage id="comet.tableBlock.failedToDuplicateRow" defaultMessage="Failed to duplicate row" />
+                        <FormattedMessage id="dextinity.tableBlock.failedToDuplicateRow" defaultMessage="Failed to duplicate row" />
                     </Alert>
                 </Snackbar>,
             );
@@ -95,7 +94,7 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
             snackbarApi.showSnackbar(
                 <Snackbar autoHideDuration={5000}>
                     <Alert severity="error">
-                        <FormattedMessage id="comet.tableBlock.failedToCopyRow" defaultMessage="Failed to copy row" />
+                        <FormattedMessage id="dextinity.tableBlock.failedToCopyRow" defaultMessage="Failed to copy row" />
                     </Alert>
                 </Snackbar>,
             );
@@ -113,7 +112,7 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
             return;
         }
 
-        let cellValuesToInsert: RichTextBlockState[] = [];
+        let cellValuesToInsert: unknown[] = [];
 
         try {
             cellValuesToInsert = await Promise.all(clipboardData.cellValues.map((cellValue) => RichTextBlock.output2State(cellValue, blockContext)));
@@ -137,7 +136,7 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
                     rowActionsIconItem: {
                         componentsProps: {
                             iconButton: {
-                                "aria-label": intl.formatMessage({ id: "comet.tableBlock.openRowOptions", defaultMessage: "Open row options" }),
+                                "aria-label": intl.formatMessage({ id: "dextinity.tableBlock.openRowOptions", defaultMessage: "Open row options" }),
                             },
                         },
                     },
@@ -150,9 +149,9 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
                     }}
                 >
                     {stateRow?.highlighted ? (
-                        <FormattedMessage id="comet.tableBlock.removeHighlighting" defaultMessage="Remove highlighting" />
+                        <FormattedMessage id="dextinity.tableBlock.removeHighlighting" defaultMessage="Remove highlighting" />
                     ) : (
-                        <FormattedMessage id="comet.tableBlock.highlightRow" defaultMessage="Highlight row" />
+                        <FormattedMessage id="dextinity.tableBlock.highlightRow" defaultMessage="Highlight row" />
                     )}
                 </RowActionsItem>
                 <Divider />
@@ -162,7 +161,7 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
                         handleInsertNewRow("above");
                     }}
                 >
-                    <FormattedMessage id="comet.tableBlock.addRowAbove" defaultMessage="Add row above" />
+                    <FormattedMessage id="dextinity.tableBlock.addRowAbove" defaultMessage="Add row above" />
                 </RowActionsItem>
                 <RowActionsItem
                     icon={<ArrowDown />}
@@ -170,21 +169,21 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
                         handleInsertNewRow("below");
                     }}
                 >
-                    <FormattedMessage id="comet.tableBlock.addRowBelow" defaultMessage="Add row below" />
+                    <FormattedMessage id="dextinity.tableBlock.addRowBelow" defaultMessage="Add row below" />
                 </RowActionsItem>
                 <Divider />
                 <RowActionsItem icon={<Copy />} onClick={handleCopyRowToClipboard}>
-                    <FormattedMessage id="comet.tableBlock.copyRow" defaultMessage="Copy" />
+                    <FormattedMessage id="dextinity.tableBlock.copyRow" defaultMessage="Copy" />
                 </RowActionsItem>
                 <RowActionsItem icon={<Paste />} onClick={pasteRowFromClipboard}>
-                    <FormattedMessage id="comet.tableBlock.pasteRow" defaultMessage="Paste" />
+                    <FormattedMessage id="dextinity.tableBlock.pasteRow" defaultMessage="Paste" />
                 </RowActionsItem>
                 <RowActionsItem icon={<Duplicate />} onClick={handleDuplicateRow}>
-                    <FormattedMessage id="comet.tableBlock.duplicateRow" defaultMessage="Duplicate" />
+                    <FormattedMessage id="dextinity.tableBlock.duplicateRow" defaultMessage="Duplicate" />
                 </RowActionsItem>
                 <Divider />
                 <RowActionsItem icon={<Delete />} onClick={handleDeleteRow}>
-                    <FormattedMessage id="comet.tableBlock.deleteRow" defaultMessage="Delete" />
+                    <FormattedMessage id="dextinity.tableBlock.deleteRow" defaultMessage="Delete" />
                 </RowActionsItem>
             </RowActionsMenu>
         </RowActionsMenu>

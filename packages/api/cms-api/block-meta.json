@@ -223,6 +223,15 @@
                             "nullable": true
                         },
                         {
+                            "name": "aiContentType",
+                            "kind": "Enum",
+                            "enum": [
+                                "Generated",
+                                "Modified"
+                            ],
+                            "nullable": true
+                        },
+                        {
                             "name": "archived",
                             "kind": "Boolean",
                             "nullable": false
@@ -569,6 +578,15 @@
                         {
                             "name": "altText",
                             "kind": "String",
+                            "nullable": true
+                        },
+                        {
+                            "name": "aiContentType",
+                            "kind": "Enum",
+                            "enum": [
+                                "Generated",
+                                "Modified"
+                            ],
                             "nullable": true
                         },
                         {
@@ -1282,6 +1300,25 @@
                 "kind": "Block",
                 "block": "Link",
                 "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "TipTapRichText",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {}
             }
         ]
     },

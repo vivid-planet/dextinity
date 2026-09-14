@@ -5,7 +5,7 @@ import { renderMailHtml } from "../../../server/renderMailHtml.js";
 import { createTheme } from "../../../theme/createTheme.js";
 import { MjmlMailRoot } from "../../mailRoot/MjmlMailRoot.js";
 import { MjmlSection } from "../../section/MjmlSection.js";
-import { generateTextStyles, MjmlText } from "../MjmlText.js";
+import { generateMjmlTextStyles, MjmlText } from "../MjmlText.js";
 
 describe("MjmlText integration", () => {
     // Full render pipeline: mjml2html must report no errors for this MjmlText + theme setup.
@@ -41,10 +41,10 @@ describe("MjmlText integration", () => {
     });
 });
 
-describe("generateTextStyles", () => {
+describe("generateMjmlTextStyles", () => {
     it("returns empty CSS when no variants are defined", () => {
         const theme = createTheme();
-        const result = generateTextStyles(theme);
+        const result = generateMjmlTextStyles(theme);
         expect(result).toBe("");
     });
 
@@ -59,7 +59,7 @@ describe("generateTextStyles", () => {
             },
         });
 
-        const result = generateTextStyles(theme);
+        const result = generateMjmlTextStyles(theme);
         expect(result).toContain(".mjmlText--heading > div");
         expect(result).toContain("font-size: 24px !important");
     });
@@ -76,7 +76,7 @@ describe("generateTextStyles", () => {
             },
         });
 
-        const result = generateTextStyles(theme);
+        const result = generateMjmlTextStyles(theme);
         const mobileMediaQuery = `@media (max-width: ${theme.breakpoints.mobile.value - 1}px)`;
         expect(result).toContain(mobileMediaQuery);
 
@@ -98,7 +98,7 @@ describe("generateTextStyles", () => {
             },
         });
 
-        const result = generateTextStyles(theme);
+        const result = generateMjmlTextStyles(theme);
         expect(result).toContain(".mjmlText--bottomSpacing.mjmlText--heading");
         expect(result).toContain("padding-bottom: 16px !important");
     });
@@ -112,7 +112,7 @@ describe("generateTextStyles", () => {
             },
         });
 
-        const result = generateTextStyles(theme);
+        const result = generateMjmlTextStyles(theme);
         expect(result).not.toContain("@media");
     });
 
@@ -128,7 +128,7 @@ describe("generateTextStyles", () => {
             },
         });
 
-        const result = generateTextStyles(theme);
+        const result = generateMjmlTextStyles(theme);
 
         // Style overrides use "> div" selector
         expect(result).toContain(".mjmlText--heading > div");

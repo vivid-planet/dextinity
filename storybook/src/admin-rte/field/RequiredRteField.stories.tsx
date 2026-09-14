@@ -1,12 +1,12 @@
-import { Button, FieldSet, TextField } from "@comet/admin";
-import { createRteField } from "@comet/admin-rte";
+import { Button, FieldSet, TextField } from "@dextinity/admin";
+import { createRteField } from "@dextinity/admin-rte";
 import { Box, Grid } from "@mui/material";
 import { Form } from "react-final-form";
 
 const { RteField } = createRteField();
 
 export default {
-    title: "@comet/admin-rte/field",
+    title: "@dextinity/admin-rte/field",
 };
 
 type FormValues = {

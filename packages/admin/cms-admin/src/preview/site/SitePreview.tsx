@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import { Tooltip } from "@comet/admin";
-import { CometColor, Domain, DomainLocked } from "@comet/admin-icons";
+import { Tooltip } from "@dextinity/admin";
+import { DextinityIcon, Domain, DomainLocked } from "@dextinity/admin-icons";
 import { Grid, Typography } from "@mui/material";
 import { type ReactNode, useCallback, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -44,7 +44,7 @@ function useSearchState<ParseFunction extends (value: string | undefined) => Ret
     );
     return [value, setValue];
 }
-function SitePreview({ resolvePath, logo = <CometColor sx={{ fontSize: 32 }} /> }: Props) {
+function SitePreview({ resolvePath, logo = <DextinityIcon sx={{ fontSize: 32 }} /> }: Props) {
     const { scope } = useContentScope();
     const siteConfig = useSiteConfig({ scope });
 
@@ -109,7 +109,7 @@ function SitePreview({ resolvePath, logo = <CometColor sx={{ fontSize: 32 }} /> 
     const siteLink = `${siteConfig.url}${sitePath}`;
 
     useSitePreviewIFrameBridge((message) => {
-        switch (message.cometType) {
+        switch (message.dextinityType) {
             case SitePreviewIFrameMessageType.OpenLink:
                 setLinkToOpen(message.data.link);
                 break;
@@ -154,14 +154,14 @@ function SitePreview({ resolvePath, logo = <CometColor sx={{ fontSize: 32 }} /> 
                             <LogoWrapper>
                                 {logo}
                                 <Typography textTransform="uppercase" color="white">
-                                    <FormattedMessage defaultMessage="Preview" id="comet.sitePreview.preview" />
+                                    <FormattedMessage defaultMessage="Preview" id="dextinity.sitePreview.preview" />
                                 </Typography>
                             </LogoWrapper>
                             <SiteLinkWrapper>
                                 {siteConfig.preloginEnabled ? (
                                     <Tooltip
                                         title={intl.formatMessage({
-                                            id: "comet.sitePreview.sitePreloginEnabledMessage",
+                                            id: "dextinity.sitePreview.sitePreloginEnabledMessage",
                                             defaultMessage: "Site is not yet publicly available",
                                         })}
                                     >

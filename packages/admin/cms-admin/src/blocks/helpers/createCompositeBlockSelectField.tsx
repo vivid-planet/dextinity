@@ -1,4 +1,4 @@
-import { SelectField, type SelectFieldOption, type SelectFieldProps } from "@comet/admin";
+import { SelectField, type SelectFieldOption, type SelectFieldProps } from "@dextinity/admin";
 
 import { BlocksFinalForm } from "../form/BlocksFinalForm";
 import type { BlockMethods } from "../types";

@@ -1,4 +1,4 @@
-import { Alert, ErrorBoundary, ErrorHandlerProvider } from "@comet/admin";
+import { Alert, ErrorBoundary, ErrorHandlerProvider } from "@dextinity/admin";
 import { Box, Card, CardContent, Link, List, ListItem, ListItemText, Typography } from "@mui/material";
 import type { Meta } from "@storybook/react-vite";
 import { type ErrorInfo, useState } from "react";
@@ -18,7 +18,7 @@ type CapturedError = {
 };
 
 export default {
-    title: "@comet/admin/error-handling/error-handler-provider",
+    title: "@dextinity/admin/error-handling/error-handler-provider",
     args: {
         renderViewWithErrors: false,
     },

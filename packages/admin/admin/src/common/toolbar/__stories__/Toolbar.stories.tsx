@@ -1,4 +1,4 @@
-import { ArrowRight, Save } from "@comet/admin-icons";
+import { ArrowRight, Save } from "@dextinity/admin-icons";
 import { Box, Chip, Typography } from "@mui/material";
 import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";

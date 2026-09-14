@@ -1,4 +1,4 @@
-import { createTableBlock } from "@comet/cms-api";
+import { createTableBlock } from "@dextinity/cms-api";
 
 import { RichTextBlock } from "./rich-text.block";
 

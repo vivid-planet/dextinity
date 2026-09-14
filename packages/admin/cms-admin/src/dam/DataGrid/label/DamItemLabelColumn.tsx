@@ -1,4 +1,4 @@
-import { type IFilterApi, StackLink } from "@comet/admin";
+import { type IFilterApi, StackLink } from "@dextinity/admin";
 import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { type ReactNode, useEffect, useRef } from "react";

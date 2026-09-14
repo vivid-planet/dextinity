@@ -1,9 +1,9 @@
-import { DisableCometGuards } from "@comet/cms-api";
+import { DisableDextinityGuards } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Controller, Get, Header } from "@nestjs/common";
 
 @Controller("status")
-@DisableCometGuards()
+@DisableDextinityGuards()
 export class StatusController {
     constructor(private readonly entityManager: EntityManager) {}
 

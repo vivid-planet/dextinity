@@ -14,7 +14,7 @@ export function createAuthGuardProviders(...authServices: Type<AuthServiceInterf
         });
     });
     providers.push({
-        provide: "COMET_AUTH_SERVICES",
+        provide: "DEXTINITY_AUTH_SERVICES",
         useFactory: (...authServices) => authServices,
         inject: authServiceNames,
     });

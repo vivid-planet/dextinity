@@ -22,7 +22,7 @@ export interface AppHeaderButtonProps
 export function AppHeaderButton(inProps: AppHeaderButtonProps) {
     const { children, disableTypography, slotProps, onClick, startIcon, endIcon, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminAppHeaderButton",
+        name: "DextinityAdminAppHeaderButton",
     });
 
     return (
@@ -46,17 +46,17 @@ export function AppHeaderButton(inProps: AppHeaderButtonProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminAppHeaderButton: AppHeaderButtonProps;
+        DextinityAdminAppHeaderButton: AppHeaderButtonProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminAppHeaderButton: AppHeaderButtonClassKey;
+        DextinityAdminAppHeaderButton: AppHeaderButtonClassKey;
     }
 
     interface Components {
-        CometAdminAppHeaderButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminAppHeaderButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminAppHeaderButton"];
+        DextinityAdminAppHeaderButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminAppHeaderButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminAppHeaderButton"];
         };
     }
 }

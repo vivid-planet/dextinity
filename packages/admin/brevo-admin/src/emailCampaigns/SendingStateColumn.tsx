@@ -15,29 +15,27 @@ export const SendingStateColumn = ({ sendingState }: Props) => {
         <Root>
             {sendingState === "SENT" && (
                 <>
-                    <DeliveredIndicator
-                        title={intl.formatMessage({ id: "cometBrevoModule.emailCampaigns.sendingState.sent", defaultMessage: "Sent" })}
-                    />
+                    <DeliveredIndicator title={intl.formatMessage({ id: "dextinity.emailCampaigns.sendingState.sent", defaultMessage: "Sent" })} />
                     <Typography variant="body2">
-                        <FormattedMessage id="cometBrevoModule.emailCampaigns.sendingState.sent" defaultMessage="Sent" />
+                        <FormattedMessage id="dextinity.emailCampaigns.sendingState.sent" defaultMessage="Sent" />
                     </Typography>
                 </>
             )}
             {sendingState === "SCHEDULED" && (
                 <>
                     <ScheduledIndicator
-                        title={intl.formatMessage({ id: "cometBrevoModule.emailCampaigns.sendingState.scheduled", defaultMessage: "Scheduled" })}
+                        title={intl.formatMessage({ id: "dextinity.emailCampaigns.sendingState.scheduled", defaultMessage: "Scheduled" })}
                     />
                     <Typography variant="body2">
-                        <FormattedMessage id="cometBrevoModule.emailCampaigns.sendingState.scheduled" defaultMessage="Scheduled" />
+                        <FormattedMessage id="dextinity.emailCampaigns.sendingState.scheduled" defaultMessage="Scheduled" />
                     </Typography>
                 </>
             )}
             {sendingState === "DRAFT" && (
                 <>
-                    <DraftIndicator title={intl.formatMessage({ id: "cometBrevoModule.emailCampaigns.draft", defaultMessage: "Draft" })} />
+                    <DraftIndicator title={intl.formatMessage({ id: "dextinity.emailCampaigns.draft", defaultMessage: "Draft" })} />
                     <Typography variant="body2">
-                        <FormattedMessage id="cometBrevoModule.emailCampaigns.sendingState.draft" defaultMessage="Draft" />
+                        <FormattedMessage id="dextinity.emailCampaigns.sendingState.draft" defaultMessage="Draft" />
                     </Typography>
                 </>
             )}

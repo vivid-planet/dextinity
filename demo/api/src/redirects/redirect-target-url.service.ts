@@ -5,7 +5,7 @@ import {
     PageTreeReadApiService,
     RedirectsLinkBlock,
     RedirectTargetUrlServiceInterface,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Scope } from "@nestjs/common";
 import { Config } from "@src/config/config";

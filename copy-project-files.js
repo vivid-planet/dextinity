@@ -43,7 +43,7 @@ const files = [
         targetDir: ["demo/admin", "demo/site"],
     },
     {
-        file: "demo/api/src/comet-config.json",
+        file: "demo/api/src/dextinity-config.json",
         targetDir: ["demo/admin/src", "demo/site/src"],
     },
     {

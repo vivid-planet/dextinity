@@ -1,4 +1,4 @@
-import { useCometConfig } from "../config/CometConfigContext";
+import { useDextinityConfig } from "../config/DextinityConfigContext";
 import type { DependencyInterface } from "./types";
 
 export type DependenciesConfig = {
@@ -10,11 +10,11 @@ interface EntityDependencyMap {
 }
 
 export function useDependenciesConfig(): DependenciesConfig {
-    const cometConfig = useCometConfig();
+    const dextinityConfig = useDextinityConfig();
 
-    if (!cometConfig.dependencies) {
+    if (!dextinityConfig.dependencies) {
         return { entityDependencyMap: {} };
     }
 
-    return cometConfig.dependencies;
+    return dextinityConfig.dependencies;
 }

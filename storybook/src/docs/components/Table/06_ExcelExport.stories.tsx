@@ -15,7 +15,7 @@ import {
     useTableQuery,
     useTableQueryPaging,
     VisibleType,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import { Typography } from "@mui/material";
 
 import { apolloRestStoryDecorator } from "../../../apollo-rest-story.decorator";

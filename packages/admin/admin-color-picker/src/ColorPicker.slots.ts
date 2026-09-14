@@ -1,4 +1,4 @@
-import { createComponentSlot, InputWithPopper, type ThemedComponentBaseProps } from "@comet/admin";
+import { createComponentSlot, InputWithPopper, type ThemedComponentBaseProps } from "@dextinity/admin";
 import { Box, ButtonBase, IconButton, InputAdornment as MuiInputAdornment, Typography } from "@mui/material";
 import { css, type Theme } from "@mui/material/styles";
 import type { ComponentProps, ComponentType } from "react";

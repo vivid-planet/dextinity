@@ -1,4 +1,4 @@
-import { Delete, MoreVertical } from "@comet/admin-icons";
+import { Delete, MoreVertical } from "@dextinity/admin-icons";
 import { IconButton, ListItem, ListItemText, Stack } from "@mui/material";
 import { type MouseEventHandler, type ReactElement, type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
@@ -30,7 +30,7 @@ export const FileFieldRow = ({ file, onRemove, preview, menuActions }: FileField
                     <IconButton
                         size="small"
                         onClick={onRemove}
-                        aria-label={intl.formatMessage({ id: "comet.form.file.removeFile", defaultMessage: "Remove" })}
+                        aria-label={intl.formatMessage({ id: "dextinity.form.file.removeFile", defaultMessage: "Remove" })}
                     >
                         <Delete color="action" />
                     </IconButton>
@@ -38,7 +38,7 @@ export const FileFieldRow = ({ file, onRemove, preview, menuActions }: FileField
                         <IconButton
                             size="small"
                             onClick={handleMoreClick}
-                            aria-label={intl.formatMessage({ id: "comet.form.file.moreActions", defaultMessage: "More actions" })}
+                            aria-label={intl.formatMessage({ id: "dextinity.form.file.moreActions", defaultMessage: "More actions" })}
                         >
                             <MoreVertical color="action" />
                         </IconButton>

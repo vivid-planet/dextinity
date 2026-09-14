@@ -5,7 +5,7 @@ import { MjmlMailRoot } from "../components/mailRoot/MjmlMailRoot.js";
 import type { Theme } from "../theme/themeTypes.js";
 import { replaceImagesWithPublicUrl } from "./replaceImagesWithPublicUrl.js";
 
-const RENDER_RESULT_EVENT = "comet-mail-render-result";
+const RENDER_RESULT_EVENT = "dextinity-mail-render-result";
 
 export function MailRendererDecorator(Story: () => React.JSX.Element, context: { parameters: { mailRoot?: boolean; theme?: Theme } }) {
     const [globals] = useGlobals();

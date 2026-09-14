@@ -1,4 +1,4 @@
-import { PrettyBytes } from "@comet/admin";
+import { PrettyBytes } from "@dextinity/admin";
 
 export default {
     title: "Docs/Components/PrettyBytes",

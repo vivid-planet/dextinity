@@ -9,7 +9,7 @@ describe("transformConfig", () => {
     }
     it("parses a simple config using defineConfig", () => {
         const config = parseString(`
-            import { defineConfig } from "@comet/admin-generator";
+            import { defineConfig } from "@dextinity/admin-generator";
             import { GQLProduct } from "@src/graphql.generated";
 
             export default defineConfig<GQLProduct>({
@@ -34,7 +34,7 @@ describe("transformConfig", () => {
     it("parses a simple static json that uses satisfies", () => {
         const config = parseString(`
             import { GQLProduct } from "@src/graphql.generated";
-            import { GeneratorConfig } from "@comet/admin-generator";
+            import { GeneratorConfig } from "@dextinity/admin-generator";
 
             export default {
                 type: "grid",
@@ -46,7 +46,7 @@ describe("transformConfig", () => {
 
     it("parses an arrow function", () => {
         const config = parseString(`
-            import { defineConfig } from "@comet/admin-generator";
+            import { defineConfig } from "@dextinity/admin-generator";
             import { GQLProduct } from "@src/graphql.generated";
 
             export default defineConfig<GQLProduct>({
@@ -63,7 +63,7 @@ describe("transformConfig", () => {
 
     it("parses an arrow function referencing an imported component", () => {
         const config = parseString(`
-            import { defineConfig } from "@comet/admin-generator";
+            import { defineConfig } from "@dextinity/admin-generator";
             import { GQLProduct } from "@src/graphql.generated";
 
             import { ProductTitle } from "./ProductTitle";
@@ -86,7 +86,7 @@ describe("transformConfig", () => {
 
     it("parses an arrow function referencing an imported component using an function body", () => {
         const config = parseString(`
-            import { defineConfig } from "@comet/admin-generator";
+            import { defineConfig } from "@dextinity/admin-generator";
             import { GQLProduct } from "@src/graphql.generated";
 
             import { ProductTitle } from "./ProductTitle";
@@ -109,7 +109,7 @@ describe("transformConfig", () => {
 
     it("parses a reference to a locally defined variable", () => {
         const config = parseString(`
-            import { defineConfig } from "@comet/admin-generator";
+            import { defineConfig } from "@dextinity/admin-generator";
             import { GQLProduct } from "@src/graphql.generated";
 
             const abc = 123;
@@ -124,7 +124,7 @@ describe("transformConfig", () => {
     it("parser throws error for function at unsupported location", () => {
         expect(() => {
             parseString(`
-                import { defineConfig } from "@comet/admin-generator";
+                import { defineConfig } from "@dextinity/admin-generator";
                 import { GQLProduct } from "@src/graphql.generated";
         
                 export default defineConfig<GQLProduct>({
@@ -136,7 +136,7 @@ describe("transformConfig", () => {
 
     it("doesn't transform a function call", () => {
         const config = parseString(`
-            import { defineConfig } from "@comet/admin-generator";
+            import { defineConfig } from "@dextinity/admin-generator";
             import { GQLProduct } from "@src/graphql.generated";
 
             import { foo } from "./foo";
@@ -156,7 +156,7 @@ describe("transformConfig", () => {
 
     it("doesn't transform a imported function call with an arrow function", () => {
         const config = parseString(`
-            import { defineConfig } from "@comet/admin-generator";
+            import { defineConfig } from "@dextinity/admin-generator";
             import { GQLProduct } from "@src/graphql.generated";
 
             import { foo } from "./foo";
@@ -176,7 +176,7 @@ describe("transformConfig", () => {
 
     it("doesn't transform a function call with an arrow function", () => {
         const config = parseString(`
-            import { defineConfig } from "@comet/admin-generator";
+            import { defineConfig } from "@dextinity/admin-generator";
             import { GQLProduct } from "@src/graphql.generated";
 
             function foo() {}
@@ -196,7 +196,7 @@ describe("transformConfig", () => {
 
     it("parses injectFormVariables", () => {
         const config = parseString(`
-            import { defineConfig, injectFormVariables } from "@comet/admin-generator";
+            import { defineConfig, injectFormVariables } from "@dextinity/admin-generator";
             import { GQLProduct } from "@src/graphql.generated";
 
             export default defineConfig<GQLProduct>({
@@ -228,9 +228,9 @@ describe("transformConfig", () => {
             expect(importedIdentifiers).toEqual(new Map([["productTypeValues", { name: "productTypeValues", import: "./productTypeValues" }]]));
         });
         it("collects named package imports", () => {
-            const sourceFile = parseString(`import { DamImageBlock } from "@comet/cms-admin";`);
+            const sourceFile = parseString(`import { DamImageBlock } from "@dextinity/cms-admin";`);
             const importedIdentifiers = collectImports(sourceFile);
-            expect(importedIdentifiers).toEqual(new Map([["DamImageBlock", { name: "DamImageBlock", import: "@comet/cms-admin" }]]));
+            expect(importedIdentifiers).toEqual(new Map([["DamImageBlock", { name: "DamImageBlock", import: "@dextinity/cms-admin" }]]));
         });
         it("collects default imports", () => {
             const sourceFile = parseString(`import debounce from "p-debounce";`);
@@ -242,7 +242,7 @@ describe("transformConfig", () => {
     it("parses FormattedMessage", () => {
         const config = parseString(`
             import { FormattedMessage } from "react-intl";
-            import { defineConfig } from "@comet/admin-generator";
+            import { defineConfig } from "@dextinity/admin-generator";
             import { GQLProduct } from "@src/graphql.generated";
 
             export default defineConfig<GQLProduct>({

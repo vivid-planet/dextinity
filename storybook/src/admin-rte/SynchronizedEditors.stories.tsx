@@ -1,4 +1,4 @@
-import { type IRteRef, makeRteApi, Rte } from "@comet/admin-rte";
+import { type IRteRef, makeRteApi, Rte } from "@dextinity/admin-rte";
 import { Grid, Typography } from "@mui/material";
 import { EditorState } from "draft-js";
 import { useRef, useState } from "react";
@@ -8,7 +8,7 @@ import { PrintEditorState, useAutoFocus } from "./helper";
 const [useRteApi] = makeRteApi();
 
 export default {
-    title: "@comet/admin-rte",
+    title: "@dextinity/admin-rte",
 };
 
 export const SynchronizedRtEs = {

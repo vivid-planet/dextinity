@@ -34,7 +34,7 @@ const PageLabel = ({ page, disabled, onClick }: PageLabelProps) => {
                 {page.visibility === "Archived" && (
                     <ArchivedChip
                         component="span"
-                        label={<FormattedMessage id="comet.pages.pages.archived" defaultMessage="Archived" />}
+                        label={<FormattedMessage id="dextinity.pages.pages.archived" defaultMessage="Archived" />}
                         color="primary"
                         clickable={false}
                         size="small"

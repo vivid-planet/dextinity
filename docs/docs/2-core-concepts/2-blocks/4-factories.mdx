@@ -4,7 +4,7 @@ title: Factories
 
 # Block factories
 
-COMET DXP offers factories for common block use cases.
+Dextinity offers factories for common block use cases.
 
 ## BlocksBlock
 
@@ -24,7 +24,7 @@ import BlocksBlock from "./images/blocks-block.png";
 Use the `createBlocksBlock` factory:
 
 ```ts title="page-content.block.ts"
-import { createBlocksBlock } from "@comet/cms-api";
+import { createBlocksBlock } from "@dextinity/cms-api";
 
 export const PageContentBlock = createBlocksBlock(
     {
@@ -43,7 +43,7 @@ export const PageContentBlock = createBlocksBlock(
 Use the `createBlocksBlock` factory:
 
 ```tsx title="PageContentBlock.tsx"
-import { createBlocksBlock } from "@comet/cms-admin";
+import { createBlocksBlock } from "@dextinity/cms-admin";
 
 export const PageContentBlock = createBlocksBlock({
     name: "PageContent",
@@ -60,7 +60,7 @@ export const PageContentBlock = createBlocksBlock({
 Use the `BlocksBlock` component:
 
 ```tsx title="PageContentBlock.tsx"
-import { BlocksBlock, PropsWithData, SupportedBlocks } from "@comet/site-nextjs";
+import { BlocksBlock, PropsWithData, SupportedBlocks } from "@dextinity/site-nextjs";
 import { PageContentBlockData } from "@src/blocks.generated";
 
 const supportedBlocks: SupportedBlocks = {
@@ -94,7 +94,7 @@ import ColumnsBlock from "./images/columns-block.png";
 Use the `ColumnsBlockFactory`:
 
 ```ts title="columns.block.ts"
-import { ColumnsBlockFactory, createBlocksBlock } from "@comet/cms-api";
+import { ColumnsBlockFactory, createBlocksBlock } from "@dextinity/cms-api";
 
 const ColumnsContentBlock = createBlocksBlock(
     {
@@ -128,7 +128,7 @@ import {
     ColumnsLayoutPreviewSpacing,
     createBlocksBlock,
     createColumnsBlock,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 
 const ColumnsContentBlock = createBlocksBlock({
     name: "ColumnsContent",
@@ -175,7 +175,7 @@ export const ColumnsBlock = createColumnsBlock({
 ### Site
 
 ```tsx title="ColumnsBlock.tsx"
-import { BlocksBlock, PropsWithData, SupportedBlocks, withPreview } from "@comet/site-nextjs";
+import { BlocksBlock, PropsWithData, SupportedBlocks, withPreview } from "@dextinity/site-nextjs";
 import { ColumnsBlockData, ColumnsContentBlockData } from "@src/blocks.generated";
 
 const supportedBlocks: SupportedBlocks = {
@@ -207,23 +207,21 @@ The `createCompositeBlock` factory composes several child blocks and fields into
 For most of your blocks, you will use this factory to create the block in the admin.
 
 ```tsx title="FullWidthImageBlock.tsx"
-import { createCompositeBlock } from "@comet/cms-admin";
+import { createCompositeBlock } from "@dextinity/cms-admin";
 
 export const FullWidthImageBlock = createCompositeBlock({
     name: "FullWidthImage",
-    displayName: (
-        <FormattedMessage id="cometDemo.blocks.fullWidthImage" defaultMessage="Full Width Image" />
-    ),
+    displayName: <FormattedMessage id="blocks.fullWidthImage" defaultMessage="Full Width Image" />,
     category: BlockCategory.Media,
     blocks: {
         image: {
             block: DamImageBlock,
-            title: <FormattedMessage id="cometDemo.generic.image" defaultMessage="Image" />,
+            title: <FormattedMessage id="generic.image" defaultMessage="Image" />,
             paper: true,
         },
         content: {
             block: FullWidthImageContentBlock,
-            title: <FormattedMessage id="cometDemo.generic.content" defaultMessage="Content" />,
+            title: <FormattedMessage id="generic.content" defaultMessage="Content" />,
         },
     },
 });
@@ -255,7 +253,7 @@ import ImageLinkBlock from "./images/image-link-block.png";
 Use the `createImageLinkBlock` factory:
 
 ```ts title="image-link.block.ts"
-import { createImageLinkBlock, DamImageBlock } from "@comet/cms-api";
+import { createImageLinkBlock, DamImageBlock } from "@dextinity/cms-api";
 import { LinkBlock } from "@src/common/blocks/linkBlock/link.block";
 
 export const ImageLinkBlock = createImageLinkBlock({ link: LinkBlock, image: DamImageBlock });
@@ -266,7 +264,7 @@ export const ImageLinkBlock = createImageLinkBlock({ link: LinkBlock, image: Dam
 Use the `createImageLinkBlock` factory:
 
 ```tsx title="ImageLinkBlock.tsx"
-import { createImageLinkBlock, DamImageBlock } from "@comet/cms-admin";
+import { createImageLinkBlock, DamImageBlock } from "@dextinity/cms-admin";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
 
 export const ImageLinkBlock = createImageLinkBlock({ link: LinkBlock, image: DamImageBlock });
@@ -275,7 +273,7 @@ export const ImageLinkBlock = createImageLinkBlock({ link: LinkBlock, image: Dam
 ### Site
 
 ```tsx title="ImageLinkBlock.tsx"
-import { PropsWithData } from "@comet/site-nextjs";
+import { PropsWithData } from "@dextinity/site-nextjs";
 import { ImageLinkBlockData } from "@src/blocks.generated";
 import { DamImageBlock } from "@src/blocks/DamImageBlock";
 import { LinkBlock } from "@src/blocks/LinkBlock";
@@ -307,7 +305,7 @@ import LinkBlock from "./images/link-block.png";
 Use the `createLinkBlock` factory:
 
 ```ts title="link.block.ts"
-import { createLinkBlock } from "@comet/cms-api";
+import { createLinkBlock } from "@dextinity/cms-api";
 
 export const LinkBlock = createLinkBlock({
     supportedBlocks: {
@@ -326,7 +324,7 @@ export const LinkBlock = createLinkBlock({
 Use the `createLinkBlock` factory:
 
 ```tsx title="LinkBlock.tsx"
-import { createLinkBlock } from "@comet/cms-admin";
+import { createLinkBlock } from "@dextinity/cms-admin";
 
 export const LinkBlock = createLinkBlock({
     supportedBlocks: {
@@ -344,7 +342,7 @@ export const LinkBlock = createLinkBlock({
 
 ```tsx title="LinkBlock.tsx"
 "use client";
-import { OneOfBlock, PropsWithData, SupportedBlocks } from "@comet/site-nextjs";
+import { OneOfBlock, PropsWithData, SupportedBlocks } from "@dextinity/site-nextjs";
 import { LinkBlockData } from "@src/blocks.generated";
 
 const supportedBlocks: SupportedBlocks = {
@@ -412,7 +410,7 @@ import ListBlock from "./images/list-block.png";
 Use the `createListBlock` factory:
 
 ```ts title="link-list.block.ts"
-import { createListBlock } from "@comet/cms-api";
+import { createListBlock } from "@dextinity/cms-api";
 
 export const LinkListBlock = createListBlock({ block: TextLinkBlock }, "LinkList");
 ```
@@ -422,7 +420,7 @@ export const LinkListBlock = createListBlock({ block: TextLinkBlock }, "LinkList
 Use the `createListBlock` factory:
 
 ```tsx title="LinkListBlock.tsx"
-import { createListBlock } from "@comet/cms-admin";
+import { createListBlock } from "@dextinity/cms-admin";
 
 export const LinkListBlock = createListBlock({
     name: "LinkList",
@@ -435,7 +433,7 @@ export const LinkListBlock = createListBlock({
 Use the `ListBlock` component:
 
 ```tsx title="LinkListBlock.tsx"
-import { ListBlock, PropsWithData } from "@comet/site-nextjs";
+import { ListBlock, PropsWithData } from "@dextinity/site-nextjs";
 import { LinkListBlockData } from "@src/blocks.generated";
 
 export function LinkListBlock({ data }: PropsWithData<LinkListBlockData>) {
@@ -462,7 +460,7 @@ import OneOfBlock from "./images/one-of-block.png";
 Use the `createOneOfBlock` factory:
 
 ```ts title="link.block.ts"
-import { createOneOfBlock } from "@comet/cms-api";
+import { createOneOfBlock } from "@dextinity/cms-api";
 
 export const LinkBlock = createOneOfBlock(
     {
@@ -482,7 +480,7 @@ export const LinkBlock = createOneOfBlock(
 Use the `createOneOfBlock` factory:
 
 ```tsx title="LinkBlock.tsx"
-import { createOneOfBlock } from "@comet/cms-admin";
+import { createOneOfBlock } from "@dextinity/cms-admin";
 
 export const LinkBlock = createOneOfBlock({
     supportedBlocks: {
@@ -498,7 +496,7 @@ export const LinkBlock = createOneOfBlock({
 Use the `OneOfBlock` component:
 
 ```tsx title="LinkBlock.tsx"
-import { OneOfBlock, PropsWithData, SupportedBlocks } from "@comet/site-nextjs";
+import { OneOfBlock, PropsWithData, SupportedBlocks } from "@dextinity/site-nextjs";
 import { LinkBlockData } from "@src/blocks.generated";
 
 const supportedBlocks: SupportedBlocks = {
@@ -549,7 +547,7 @@ import OptionalBlock from "./images/optional-block.png";
 Use the `createOptionalBlock` factory:
 
 ```ts title="optional-image.block.ts"
-import { createOptionalBlock } from "@comet/cms-api";
+import { createOptionalBlock } from "@dextinity/cms-api";
 
 export const OptionalImageBlock = createOptionalBlock(ImageBlock);
 ```
@@ -559,7 +557,7 @@ export const OptionalImageBlock = createOptionalBlock(ImageBlock);
 Use the `createOptionalBlock` factory:
 
 ```tsx title="OptionalImageBlock.tsx"
-import { createOptionalBlock } from "@comet/cms-admin";
+import { createOptionalBlock } from "@dextinity/cms-admin";
 
 export const OptionalImageBlock = createOptionalBlock(ImageBlock);
 ```
@@ -569,7 +567,7 @@ export const OptionalImageBlock = createOptionalBlock(ImageBlock);
 Use the `OptionalBlock` component:
 
 ```tsx title="LinkBlock.tsx"
-import { OptionalBlock, PropsWithData } from "@comet/site-nextjs";
+import { OptionalBlock, PropsWithData } from "@dextinity/site-nextjs";
 import { OptionalImageBlockData } from "@src/blocks.generated";
 
 export function OptionalImageBlock({ data }: PropsWithData<OptionalImageBlockData>) {
@@ -596,7 +594,7 @@ import RichTextBlock from "./images/rich-text-block.png";
 Use the `createRichTextBlock` factory:
 
 ```ts title="rich-text.block.ts"
-import { createRichTextBlock } from "@comet/cms-api";
+import { createRichTextBlock } from "@dextinity/cms-api";
 
 import { LinkBlock } from "./linkBlock/link.block";
 
@@ -608,7 +606,7 @@ export const RichTextBlock = createRichTextBlock({ link: LinkBlock });
 Use the `createRichTextBlock` factory:
 
 ```tsx title="RichTextBlock.tsx"
-import { createRichTextBlock } from "@comet/cms-admin";
+import { createRichTextBlock } from "@dextinity/cms-admin";
 
 import { LinkBlock } from "./LinkBlock";
 
@@ -618,7 +616,7 @@ export const RichTextBlock = createRichTextBlock({ link: LinkBlock });
 ### Site
 
 ```tsx title="RichTextBlock.tsx"
-import { hasRichTextBlockContent, PreviewSkeleton, PropsWithData } from "@comet/site-nextjs";
+import { hasRichTextBlockContent, PreviewSkeleton, PropsWithData } from "@dextinity/site-nextjs";
 import { LinkBlockData, RichTextBlockData } from "@src/blocks.generated";
 import redraft, { Renderers } from "redraft";
 
@@ -691,7 +689,7 @@ import SeoBlock from "./images/seo-block.png";
 Use the `createSeoBlock` factory:
 
 ```ts title="seo.block.ts"
-import { createSeoBlock } from "@comet/cms-api";
+import { createSeoBlock } from "@dextinity/cms-api";
 
 export const SeoBlock = createSeoBlock();
 ```
@@ -701,7 +699,7 @@ export const SeoBlock = createSeoBlock();
 Use the `createSeoBlock` factory:
 
 ```ts title="SeoBlock.tsx"
-import { createSeoBlock } from "@comet/cms-admin";
+import { createSeoBlock } from "@dextinity/cms-admin";
 
 export const SeoBlock = createSeoBlock();
 ```
@@ -711,7 +709,7 @@ export const SeoBlock = createSeoBlock();
 Use the `SeoBlock` component:
 
 ```tsx title="Page.tsx"
-import { SeoBlock } from "@comet/site-nextjs";
+import { SeoBlock } from "@dextinity/site-nextjs";
 
 <SeoBlock data={document.seo} title="Custom title" />;
 ```
@@ -734,7 +732,7 @@ import SpaceBlock from "./images/space-block.png";
 Use the `createSpaceBlock` factory:
 
 ```ts title="space.block.ts"
-import { createSpaceBlock } from "@comet/cms-api";
+import { createSpaceBlock } from "@dextinity/cms-api";
 
 export enum Spacing {
     d150 = "d150",
@@ -757,7 +755,7 @@ export const SpaceBlock = createSpaceBlock({ spacing: Spacing }, "DemoSpace");
 Use the `createSpaceBlock` factory:
 
 ```tsx title="SpaceBlock.tsx"
-import { createSpaceBlock } from "@comet/cms-admin";
+import { createSpaceBlock } from "@dextinity/cms-admin";
 
 const options: { value: string; label: string }[] = [
     { value: "d150", label: "Dynamic 150" },
@@ -778,7 +776,7 @@ export const SpaceBlock = createSpaceBlock<string>({ defaultValue: options[0].va
 ### Site
 
 ```tsx title="SpaceBlock.tsx"
-import { PropsWithData } from "@comet/site-nextjs";
+import { PropsWithData } from "@dextinity/site-nextjs";
 import { SpaceBlockData } from "@src/blocks.generated";
 
 const spaceMapping: Record<string, number> = {
@@ -808,7 +806,7 @@ The TableBlock factory creates a block for editable tables with rich text cell c
 Use the `createTableBlock` factory:
 
 ```ts title="table.block.ts"
-import { createTableBlock } from "@comet/cms-api";
+import { createTableBlock } from "@dextinity/cms-api";
 
 import { RichTextBlock } from "./rich-text.block";
 
@@ -820,7 +818,7 @@ export const TableBlock = createTableBlock({ richText: RichTextBlock });
 Use the `createTableBlock` factory:
 
 ```tsx title="TableBlock.tsx"
-import { createTableBlock } from "@comet/cms-admin";
+import { createTableBlock } from "@dextinity/cms-admin";
 
 import { RichTextBlock } from "./RichTextBlock";
 
@@ -835,7 +833,7 @@ Both rows and columns have a `highlighted` flag that can be toggled in the admin
 Apply a distinct style when either the row or the column is highlighted.
 
 ```tsx title="TableBlock.tsx"
-import { PropsWithData } from "@comet/site-nextjs";
+import { PropsWithData } from "@dextinity/site-nextjs";
 import { TableBlockData } from "@src/blocks.generated";
 
 import clsx from "clsx";
@@ -894,7 +892,7 @@ import TextImageBlock from "./images/text-image-block.png";
 Use the `createTextImageBlock` factory:
 
 ```ts title="text-image.block.ts"
-import { createTextImageBlock, DamImageBlock } from "@comet/cms-api";
+import { createTextImageBlock, DamImageBlock } from "@dextinity/cms-api";
 import { RichTextBlock } from "@src/common/blocks/rich-text.block";
 
 export const TextImageBlock = createTextImageBlock({ text: RichTextBlock, image: DamImageBlock });
@@ -905,7 +903,7 @@ export const TextImageBlock = createTextImageBlock({ text: RichTextBlock, image:
 Use the `createTextImageBlock` factory:
 
 ```tsx title="TextImageBlock.tsx"
-import { createTextImageBlock, DamImageBlock } from "@comet/cms-admin";
+import { createTextImageBlock, DamImageBlock } from "@dextinity/cms-admin";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 
 export const TextImageBlock = createTextImageBlock({ text: RichTextBlock, image: DamImageBlock });
@@ -914,7 +912,7 @@ export const TextImageBlock = createTextImageBlock({ text: RichTextBlock, image:
 ### Site
 
 ```tsx title="TextImageBlock.tsx"
-import { PropsWithData } from "@comet/site-nextjs";
+import { PropsWithData } from "@dextinity/site-nextjs";
 import { TextImageBlockData } from "@src/blocks.generated";
 
 import { DamImageBlock } from "./DamImageBlock";
@@ -955,7 +953,7 @@ import TextLinkBlock from "./images/text-link-block.png";
 Use the `createTextLinkBlock` factory:
 
 ```ts title="text-link.block.ts"
-import { createTextLinkBlock } from "@comet/cms-api";
+import { createTextLinkBlock } from "@dextinity/cms-api";
 
 import { LinkBlock } from "./linkBlock/link.block";
 
@@ -967,7 +965,7 @@ export const TextLinkBlock = createTextLinkBlock({ link: LinkBlock });
 Use the `createTextLinkBlock` factory:
 
 ```tsx title="TextLinkBlock.tsx"
-import { createTextLinkBlock } from "@comet/cms-admin";
+import { createTextLinkBlock } from "@dextinity/cms-admin";
 
 import { LinkBlock } from "./LinkBlock";
 
@@ -977,7 +975,7 @@ export const TextLinkBlock = createTextLinkBlock({ link: LinkBlock });
 ### Site
 
 ```tsx title="TextLinkBlock.tsx"
-import { PropsWithData } from "@comet/site-nextjs";
+import { PropsWithData } from "@dextinity/site-nextjs";
 import { DemoTextLinkBlockData } from "@src/blocks.generated";
 
 import { LinkBlock } from "./LinkBlock";

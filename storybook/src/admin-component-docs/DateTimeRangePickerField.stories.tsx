@@ -1,4 +1,4 @@
-import { DateTimeRangePickerField, FinalForm } from "@comet/admin";
+import { DateTimeRangePickerField, FinalForm } from "@dextinity/admin";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { componentDocsDecorator } from "./utils/componentDocsDecorator";

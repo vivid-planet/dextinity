@@ -1,4 +1,4 @@
-import { Loading } from "@comet/admin";
+import { Loading } from "@dextinity/admin";
 import { css } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { forwardRef, useState } from "react";

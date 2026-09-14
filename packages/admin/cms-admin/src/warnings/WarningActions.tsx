@@ -1,6 +1,6 @@
 import { useApolloClient } from "@apollo/client";
-import { messages, Tooltip } from "@comet/admin";
-import { ArrowRight, OpenNewTab } from "@comet/admin-icons";
+import { messages, Tooltip } from "@dextinity/admin";
+import { ArrowRight, OpenNewTab } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 import { useHistory } from "react-router";
@@ -38,7 +38,7 @@ export function WarningActions({ sourceInfo, scope }: Props) {
                 `Cannot load URL because no implementation of DependencyInterface for ${sourceInfo.rootEntityName} was provided via the DependenciesConfig`,
             );
         }
-        return <FormattedMessage id="comet.dependencies.dataGrid.cannotLoadUrl" defaultMessage="Cannot determine URL" />;
+        return <FormattedMessage id="dextinity.dependencies.dataGrid.cannotLoadUrl" defaultMessage="Cannot determine URL" />;
     }
 
     const loadUrl = async () => {

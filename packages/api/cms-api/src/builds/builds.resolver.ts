@@ -6,6 +6,7 @@ import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
 import { INSTANCE_LABEL } from "../kubernetes/kubernetes.constants";
 import { KubernetesService } from "../kubernetes/kubernetes.service";
 import { KubernetesAuthenticationGuard } from "../kubernetes/kubernetes-authentication.guard";
+import { getLabel } from "../kubernetes/kubernetes-metadata";
 import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
 import { CurrentUser } from "../user-permissions/dto/current-user";
 import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants";
@@ -35,7 +36,7 @@ export class BuildsResolver {
         const cronJobs: V1CronJob[] = [];
         for (const name of names) {
             const cronJob = await this.kubernetesService.getCronJob(name);
-            if (this.kubernetesService.helmRelease !== cronJob.metadata?.labels?.[INSTANCE_LABEL]) {
+            if (this.kubernetesService.helmRelease !== getLabel(cronJob, INSTANCE_LABEL)) {
                 throw new Error("Triggering build from different instance is not allowed");
             }
 

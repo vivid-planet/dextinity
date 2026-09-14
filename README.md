@@ -1,19 +1,19 @@
-# Comet DXP
+# Dextinity
 
-![npm (scoped with tag)](https://img.shields.io/npm/v/%40comet/admin/latest)
-![npm (scoped with tag)](https://img.shields.io/npm/v/%40comet/admin/canary)
-![npm (scoped with tag)](https://img.shields.io/npm/v/%40comet/admin/next-canary)
+![npm (scoped with tag)](https://img.shields.io/npm/v/%40dextinity/admin/latest)
+![npm (scoped with tag)](https://img.shields.io/npm/v/%40dextinity/admin/canary)
+![npm (scoped with tag)](https://img.shields.io/npm/v/%40dextinity/admin/next-canary)
 
-![main](https://github.com/vivid-planet/comet/actions/workflows/lint.yml/badge.svg?branch=main)
-![next](https://github.com/vivid-planet/comet/actions/workflows/lint.yml/badge.svg?branch=next)
+![main](https://github.com/vivid-planet/dextinity/actions/workflows/lint.yml/badge.svg?branch=main)
+![next](https://github.com/vivid-planet/dextinity/actions/workflows/lint.yml/badge.svg?branch=next)
 
 ## Docs
 
-Visit https://docs.comet-dxp.com/ to view the documentation.
+Visit https://cms-docs.dextinity.com/ to view the documentation.
 
-## Create a new Comet DXP project
+## Create a new Dextinity project
 
-Use `@comet/create-app` to create a new Comet DXP project. More information can be found in the [docs](https://docs.comet-dxp.com/docs/getting-started/).
+Use `@dextinity/create-app` to create a new Dextinity project. More information can be found in the [docs](https://cms-docs.dextinity.com/docs/getting-started/).
 
 ## Development
 
@@ -49,7 +49,7 @@ MUI_LICENSE_KEY=your_license_key_here
 
 ### Build packages
 
-Before starting individual development processes, build all Comet packages at least once.
+Before starting individual development processes, build all Dextinity packages at least once.
 
 ```bash
 pnpm run build:packages
@@ -59,18 +59,18 @@ _It is recommended to build all packages every time you switch to the `main` bra
 
 ### Start development processes
 
-[dev-process-manager](https://github.com/vivid-planet/dev-process-manager) is used for local development.
+[dev-process-manager](https://dev-process-manager.com/) is used for local development.
 We recommend only running the development process you will need.
 Typically, you will need a subset of the available development processes.
 
 Here are a few examples:
 
-1. You want to add a new component to `@comet/admin`
+1. You want to add a new component to `@dextinity/admin`
 
-    Start the development process for `@comet/admin`:
+    Start the development process for `@dextinity/admin`:
 
     ```bash
-    pnpm exec dev-pm start @comet-admin
+    pnpm exec dev-pm start @dextinity-admin
     ```
 
     Create a development story in Storybook:
@@ -81,7 +81,7 @@ Here are a few examples:
 
 2. You want to add a CMS feature to the API
 
-    Start the development process for `@comet/cms-api`:
+    Start the development process for `@dextinity/cms-api`:
 
     ```bash
     pnpm exec dev-pm start @cms-api
@@ -97,7 +97,7 @@ Here are a few examples:
 
 3. You want to add a CMS feature to the Admin
 
-    Start the development process for `@comet/cms-admin`:
+    Start the development process for `@dextinity/cms-admin`:
 
     ```bash
     pnpm exec dev-pm start @cms-admin
@@ -176,7 +176,7 @@ See [package.json](/package.json) for a list of all available dev scripts.
 
 ### Setup
 
-Configure `wml` to sync the comet `node_modules` to the external project:
+Configure `wml` to sync the Dextinity `node_modules` to the external project:
 
 ```bash
 ./wml-add.sh /path/to/my-project
@@ -188,7 +188,7 @@ It may be necessary to configure `watchman` to watch your globally installed `wm
 watchman watch $(dirname "$(dirname "$(which node)")")/lib/node_modules/wml/src
 ```
 
-Start syncing the comet `node_modules` to the external project:
+Start syncing the Dextinity `node_modules` to the external project:
 
 ```bash
 wml start

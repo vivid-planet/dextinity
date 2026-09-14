@@ -1,4 +1,4 @@
-import { greyPalette, primaryPalette } from "@comet/admin";
+import { greyPalette, primaryPalette } from "@dextinity/admin";
 import { grey as muiGreyPalette } from "@mui/material/colors";
 import type { CSSProperties } from "react";
 

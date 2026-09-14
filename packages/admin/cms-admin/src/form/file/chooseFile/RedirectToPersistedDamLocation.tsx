@@ -1,4 +1,4 @@
-import { useStoredState } from "@comet/admin";
+import { useStoredState } from "@dextinity/admin";
 import { useEffect, useRef } from "react";
 import { Redirect, useLocation, useRouteMatch } from "react-router";
 

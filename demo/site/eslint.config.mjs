@@ -1,7 +1,7 @@
 import { defineConfig, globalIgnores } from "eslint/config";
-import eslintConfigNextJs from "@comet/eslint-config/future/nextjs.js";
+import eslintConfigNextJs from "@dextinity/eslint-config/future/nextjs.js";
 
-const docsLink = "https://docs.comet-dxp.com/docs/faqs/environment-variables-in-site";
+const docsLink = "https://cms-docs.dextinity.com/docs/faqs/environment-variables-in-site";
 
 export default defineConfig([
     globalIgnores([

@@ -1,5 +1,5 @@
 import { defineConfig, globalIgnores } from "eslint/config";
-import eslintConfigReact from "@comet/eslint-config/future/react.js";
+import eslintConfigReact from "@dextinity/eslint-config/future/react.js";
 
 export default defineConfig([
     globalIgnores([".docusaurus", "build"]),

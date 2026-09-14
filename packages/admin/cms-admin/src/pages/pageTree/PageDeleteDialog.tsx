@@ -1,5 +1,5 @@
-import { DeleteButton, messages } from "@comet/admin";
-import { ArrowRight, Clear, Delete } from "@comet/admin-icons";
+import { DeleteButton, messages } from "@dextinity/admin";
+import { ArrowRight, Clear, Delete } from "@dextinity/admin-icons";
 import {
     Box,
     // eslint-disable-next-line no-restricted-imports
@@ -58,7 +58,7 @@ export const PageDeleteDialog = (props: PageDeleteDialogProps) => {
     return (
         <Dialog open={dialogOpen} onClose={handleCancelClick}>
             <DialogTitle>
-                <FormattedMessage id="comet.pages.pages.page.deleteDialog.title" defaultMessage="Delete page?" />
+                <FormattedMessage id="dextinity.pages.pages.page.deleteDialog.title" defaultMessage="Delete page?" />
             </DialogTitle>
             <DialogContent>
                 <DeleteContentInformation variant="outlined">
@@ -69,7 +69,7 @@ export const PageDeleteDialog = (props: PageDeleteDialogProps) => {
                         <Typography variant="subtitle1">
                             {dialogInformation?.hasSubpages ? (
                                 <FormattedMessage
-                                    id="comet.pages.pages.page.deleteDialog.contentIncludingSubpages"
+                                    id="dextinity.pages.pages.page.deleteDialog.contentIncludingSubpages"
                                     defaultMessage="You are about to delete {amount, plural, =0 {no pages} one {# page} other {# pages}} in total, including subpages."
                                     values={{
                                         amount: dialogInformation?.totalPageCount,
@@ -77,7 +77,7 @@ export const PageDeleteDialog = (props: PageDeleteDialogProps) => {
                                 />
                             ) : (
                                 <FormattedMessage
-                                    id="comet.pages.pages.page.deleteDialog.content"
+                                    id="dextinity.pages.pages.page.deleteDialog.content"
                                     defaultMessage="You are about to delete {amount, plural, =0 {no pages} one {# page} other {# pages}}."
                                     values={{
                                         amount: dialogInformation?.totalPageCount,
@@ -93,12 +93,12 @@ export const PageDeleteDialog = (props: PageDeleteDialogProps) => {
                         <Box display="flex" flexDirection="row" justifyContent="space-between">
                             <PageVisibility>
                                 <PageVisibilityIcon visibility="Published" />
-                                <FormattedMessage id="comet.pages.pages.page.visibility.published" defaultMessage="Published" />
+                                <FormattedMessage id="dextinity.pages.pages.page.visibility.published" defaultMessage="Published" />
                             </PageVisibility>
                             <ArrowRight />
                             <PageCount>
                                 <FormattedMessage
-                                    id="comet.pages.pages.page.deleteDialog.countPages"
+                                    id="dextinity.pages.pages.page.deleteDialog.countPages"
                                     defaultMessage="{amount, plural, =0 {no pages} one {# page} other {# pages}}"
                                     values={{ amount: dialogInformation.publishedCount }}
                                 />
@@ -112,12 +112,12 @@ export const PageDeleteDialog = (props: PageDeleteDialogProps) => {
                         <Box display="flex" flexDirection="row" justifyContent="space-between">
                             <PageVisibility>
                                 <PageVisibilityIcon visibility="Unpublished" />
-                                <FormattedMessage id="comet.pages.pages.page.visibility.unpublished" defaultMessage="Unpublished" />
+                                <FormattedMessage id="dextinity.pages.pages.page.visibility.unpublished" defaultMessage="Unpublished" />
                             </PageVisibility>
                             <ArrowRight />
                             <PageCount>
                                 <FormattedMessage
-                                    id="comet.pages.pages.page.deleteDialog.countPages"
+                                    id="dextinity.pages.pages.page.deleteDialog.countPages"
                                     defaultMessage="{amount, plural, =0 {no pages} one {# page} other {# pages}}"
                                     values={{ amount: dialogInformation.unpublishedCount }}
                                 />
@@ -131,12 +131,12 @@ export const PageDeleteDialog = (props: PageDeleteDialogProps) => {
                         <Box display="flex" flexDirection="row" justifyContent="space-between">
                             <PageVisibility>
                                 <PageVisibilityIcon visibility="Archived" />
-                                <FormattedMessage id="comet.pages.pages.page.visibility.archived" defaultMessage="Archived" />
+                                <FormattedMessage id="dextinity.pages.pages.page.visibility.archived" defaultMessage="Archived" />
                             </PageVisibility>
                             <ArrowRight />
                             <PageCount>
                                 <FormattedMessage
-                                    id="comet.pages.pages.page.deleteDialog.countPages"
+                                    id="dextinity.pages.pages.page.deleteDialog.countPages"
                                     defaultMessage="{amount, plural, =0 {no pages} one {# page} other {# pages}}"
                                     values={{ amount: dialogInformation.archivedCount }}
                                 />
@@ -152,7 +152,7 @@ export const PageDeleteDialog = (props: PageDeleteDialogProps) => {
                 </Button>
 
                 <DeleteButton onClick={handleDeleteClick}>
-                    <FormattedMessage id="comet.pages.pages.page.deleteDialog.deleteButton" defaultMessage="Delete Page" />
+                    <FormattedMessage id="dextinity.pages.pages.page.deleteDialog.deleteButton" defaultMessage="Delete Page" />
                 </DeleteButton>
             </DialogActions>
         </Dialog>

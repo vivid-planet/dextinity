@@ -1,6 +1,6 @@
 import { useApolloClient, useQuery } from "@apollo/client";
-import { Field, filterByFragment, FinalForm, FinalFormInput, type FinalFormSubmitEvent, useFormApiRef } from "@comet/admin";
-import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@comet/cms-admin";
+import { Field, filterByFragment, FinalForm, FinalFormInput, type FinalFormSubmitEvent, useFormApiRef } from "@dextinity/admin";
+import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { CircularProgress } from "@mui/material";
 import type { FormApi } from "final-form";
 import isEqual from "lodash.isequal";

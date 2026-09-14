@@ -1,4 +1,4 @@
-import { FindUsersArgs, JwtPayload, JwtToUserServiceInterface, User, UserPermissionsUserServiceInterface, Users } from "@comet/cms-api";
+import { FindUsersArgs, JwtPayload, JwtToUserServiceInterface, User, UserPermissionsUserServiceInterface, Users } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 
 import { staticUsers } from "./static-users";

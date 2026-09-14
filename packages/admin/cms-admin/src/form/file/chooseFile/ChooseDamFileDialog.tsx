@@ -1,4 +1,4 @@
-import { Button } from "@comet/admin";
+import { Button } from "@dextinity/admin";
 import { styled } from "@mui/material/styles";
 import type { SyntheticEvent } from "react";
 import { FormattedMessage } from "react-intl";
@@ -41,7 +41,7 @@ export const ChooseDamFileDialog = ({ open, onClose, onChooseFile, allowedMimety
         <BaseChooseDamFileDialog
             open={open}
             onClose={onClose}
-            title={<FormattedMessage id="comet.form.file.selectFile" defaultMessage="Select file from DAM" />}
+            title={<FormattedMessage id="dextinity.form.file.selectFile" defaultMessage="Select file from DAM" />}
             stateKey="choose-file-dam-location"
             allowedMimetypes={allowedMimetypes}
             renderFileLabel={(file, options) => <FileLabel file={file} onChooseFile={onChooseFile} {...options} />}

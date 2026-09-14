@@ -1,4 +1,4 @@
-import { FileUploadsService } from "@comet/cms-api";
+import { FileUploadsService } from "@dextinity/cms-api";
 import { DynamicModule, Global, Module, OnModuleInit } from "@nestjs/common";
 
 import { BlacklistedContactsModule } from "./blacklisted-contacts/blacklisted-contacts.module";

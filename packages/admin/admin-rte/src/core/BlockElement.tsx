@@ -1,4 +1,4 @@
-import { createComponentSlot, type ThemedComponentBaseProps } from "@comet/admin";
+import { createComponentSlot, type ThemedComponentBaseProps } from "@dextinity/admin";
 import { type ComponentsOverrides, css, type Theme, Typography, type TypographyProps, useThemeProps } from "@mui/material";
 import type { ElementType } from "react";
 
@@ -112,7 +112,7 @@ export interface RteBlockElementProps
 }
 
 export function BlockElement(inProps: RteBlockElementProps) {
-    const { type, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminRteBlockElement" });
+    const { type, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminRteBlockElement" });
     const ownerState: OwnerState = {
         type,
     };
@@ -121,17 +121,17 @@ export function BlockElement(inProps: RteBlockElementProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminRteBlockElement: RteBlockElementClassKey;
+        DextinityAdminRteBlockElement: RteBlockElementClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminRteBlockElement: RteBlockElementProps;
+        DextinityAdminRteBlockElement: RteBlockElementProps;
     }
 
     interface Components {
-        CometAdminRteBlockElement?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminRteBlockElement"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminRteBlockElement"];
+        DextinityAdminRteBlockElement?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminRteBlockElement"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminRteBlockElement"];
         };
     }
 }

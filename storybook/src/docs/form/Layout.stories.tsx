@@ -2,7 +2,7 @@ import {
     Button,
     CancelButton,
     CheckboxField,
-    createCometTheme,
+    createDextinityTheme,
     Field,
     FieldContainer,
     FinalFormInput,
@@ -10,7 +10,7 @@ import {
     FinalFormSelect,
     FormSection,
     OkayButton,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import {
     // eslint-disable-next-line no-restricted-imports
     Dialog,
@@ -277,9 +277,9 @@ export const GridLayout = {
 
 export const HorizontalFields = {
     render: () => {
-        const theme = createCometTheme({
+        const theme = createDextinityTheme({
             components: {
-                CometAdminFormFieldContainer: {
+                DextinityAdminFormFieldContainer: {
                     defaultProps: {
                         variant: "horizontal",
                     },

@@ -1,4 +1,4 @@
-import { persistedQueryRoute } from "@comet/site-nextjs/server";
+import { persistedQueryRoute } from "@dextinity/site-nextjs/server";
 
 export const dynamic = "force-dynamic";
 

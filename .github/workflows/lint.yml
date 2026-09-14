@@ -26,26 +26,26 @@ jobs:
             - name: "Library: Clone translations"
               uses: actions/checkout@v6
               with:
-                  repository: vivid-planet/comet-lang
-                  path: "demo/admin/lang/comet-lang"
+                  repository: vivid-planet/dextinity-lang
+                  path: "demo/admin/lang/dextinity-lang"
 
             - name: "Demo Admin: Clone translations"
               uses: actions/checkout@v6
               with:
-                  repository: vivid-planet/comet-demo-lang
-                  path: "demo/admin/lang/comet-demo-lang"
+                  repository: vivid-planet/dextinity-demo-lang
+                  path: "demo/admin/lang/dextinity-demo-lang"
 
             - name: "Demo Site: Clone translations"
               uses: actions/checkout@v6
               with:
-                  repository: vivid-planet/comet-demo-lang
-                  path: "demo/site/lang/comet-demo-lang"
+                  repository: vivid-planet/dextinity-demo-lang
+                  path: "demo/site/lang/dextinity-demo-lang"
 
             - name: "Demo Api: Clone translations"
               uses: actions/checkout@v6
               with:
-                  repository: vivid-planet/comet-demo-lang
-                  path: "demo/api/lang/comet-demo-lang"
+                  repository: vivid-planet/dextinity-demo-lang
+                  path: "demo/api/lang/dextinity-demo-lang"
 
             - uses: ./.github/actions/setup
               with:
@@ -57,7 +57,7 @@ jobs:
                   # check for duplicate ids of formatted messages
                   pnpm run intl:extract
                   # check if schema files are up to date
-                  pnpm --filter '@comet/cms-api' run generate-block-meta
-                  pnpm --filter '@comet/cms-api' run generate-schema
-                  pnpm --filter '@comet/brevo-api' run generate-schema
+                  pnpm --filter '@dextinity/cms-api' run generate-block-meta
+                  pnpm --filter '@dextinity/cms-api' run generate-schema
+                  pnpm --filter '@dextinity/brevo-api' run generate-schema
                   git diff --exit-code HEAD --

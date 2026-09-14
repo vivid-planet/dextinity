@@ -2,11 +2,11 @@
 title: Deployment
 ---
 
-Deploying a Comet application requires a couple of [microservices](/docs/#microservices). The following sections describe how to deploy them.
+Deploying a Dextinity application requires a couple of [microservices](/docs/#microservices). The following sections describe how to deploy them.
 
 ## IDP
 
-Any OIDC-compliant identity provider can be used with Comet DXP. You can either use an existing IDP as SaaS (such as [Auth0](https://auth0.com/)) or self-host your own IDP.
+Any OIDC-compliant identity provider can be used with Dextinity. You can either use an existing IDP as SaaS (such as [Auth0](https://auth0.com/)) or self-host your own IDP.
 
 ## Database
 
@@ -26,20 +26,20 @@ There are several ways to deploy these microservices. The best deployment method
 
 ### Deployment with Kubernetes
 
-Comet DXP is a cloud-native CMS, so Kubernetes is the preferred way to deploy a Comet application, as it provides the most flexibility and supports all enterprise requirements. However, it is usually the most expensive way.
+Dextinity is a cloud-native CMS, so Kubernetes is the preferred way to deploy a Dextinity application, as it provides the most flexibility and supports all enterprise requirements. However, it is usually the most expensive way.
 
 We provide [Helm](https://helm.sh/) Charts, which are available on [GitHub](https://github.com/vivid-planet/comet-charts), for easy deployment.
 
 ### Deployment without Kubernetes
 
-Comet applications can also be deployed without Kubernetes. Two possible options are serverless container platforms (e.g., [Azure Container Apps](https://azure.microsoft.com/en-us/products/container-apps) or [Digital Ocean App Platform](https://docs.digitalocean.com/products/app-platform/)) or [Docker Compose](https://docs.docker.com/compose/).
+Dextinity applications can also be deployed without Kubernetes. Two possible options are serverless container platforms (e.g., [Azure Container Apps](https://azure.microsoft.com/en-us/products/container-apps) or [Digital Ocean App Platform](https://docs.digitalocean.com/products/app-platform/)) or [Docker Compose](https://docs.docker.com/compose/).
 
 It's important to note that deploying without Kubernetes comes with its own set of limitations. You won't be able to use the `KubernetesModule`. Additionally, [CronJobs](/docs/features-modules/cron-jobs/) must be handled differently and might require an external service. Consequently, you won't be able to use the `CronJobModule`.
 
 #### Serverless
 
-Serverless container platforms are a good option for those who want to deploy Comet applications without the complexity of Kubernetes. They are usually cheaper than Kubernetes and provide automatic scaling. An example deployment for the Digital Ocean App Platform can be found [here](https://github.com/vivid-planet/comet-starter/tree/main/.digitalocean).
+Serverless container platforms are a good option for those who want to deploy Dextinity applications without the complexity of Kubernetes. They are usually cheaper than Kubernetes and provide automatic scaling. An example deployment for the Digital Ocean App Platform can be found [here](https://github.com/vivid-planet/dextinity-starter/tree/main/.digitalocean).
 
 #### Docker Compose
 
-For those with budget constraints, [Docker Compose](https://docs.docker.com/compose/) can be a viable option for deploying Comet applications. An example deployment can be found [here](https://github.com/vivid-planet/comet-starter/tree/main/.docker-compose). The deployment only requires Docker to be installed on a server and leverages the power of [Traefik](https://doc.traefik.io/traefik/) to manage the ingress traffic (including SSL certificates).
+For those with budget constraints, [Docker Compose](https://docs.docker.com/compose/) can be a viable option for deploying Dextinity applications. An example deployment can be found [here](https://github.com/vivid-planet/dextinity-starter/tree/main/.docker-compose). The deployment only requires Docker to be installed on a server and leverages the power of [Traefik](https://doc.traefik.io/traefik/) to manage the ingress traffic (including SSL certificates).

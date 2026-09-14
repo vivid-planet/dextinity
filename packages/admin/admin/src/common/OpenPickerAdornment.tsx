@@ -33,7 +33,7 @@ export const OpenPickerAdornment = (inProps: OpenPickerAdornmentProps) => {
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminOpenPickerAdornment",
+        name: "DextinityAdminOpenPickerAdornment",
     });
 
     const ownerState: OwnerState = {
@@ -79,17 +79,17 @@ const OpenPickerButton = createComponentSlot(IconButton)<OpenPickerAdornmentClas
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminOpenPickerAdornment: OpenPickerAdornmentProps;
+        DextinityAdminOpenPickerAdornment: OpenPickerAdornmentProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminOpenPickerAdornment: OpenPickerAdornmentClassKey;
+        DextinityAdminOpenPickerAdornment: OpenPickerAdornmentClassKey;
     }
 
     interface Components {
-        CometAdminOpenPickerAdornment?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminOpenPickerAdornment"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminOpenPickerAdornment"];
+        DextinityAdminOpenPickerAdornment?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminOpenPickerAdornment"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminOpenPickerAdornment"];
         };
     }
 }

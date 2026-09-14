@@ -1,4 +1,4 @@
-import { gql } from "@comet/site-nextjs";
+import { gql } from "@dextinity/site-nextjs";
 
 import { desktopMenuFragment } from "./DesktopMenu.fragment";
 import { mobileMenuFragment } from "./MobileMenu.fragment";

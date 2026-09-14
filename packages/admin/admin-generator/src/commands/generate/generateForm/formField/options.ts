@@ -22,7 +22,7 @@ const buildAdornmentData = ({ adornmentData }: { adornmentData: Adornment }): Ad
         adornmentString = `<${adornmentData.icon}Icon />`;
         adornmentImport = {
             name: `${adornmentData.icon} as ${adornmentData.icon}Icon`,
-            importPath: "@comet/admin-icons",
+            importPath: "@dextinity/admin-icons",
         };
     } else if (typeof adornmentData.icon === "object") {
         if (isGeneratorConfigImport(adornmentData.icon)) {
@@ -37,7 +37,7 @@ const buildAdornmentData = ({ adornmentData }: { adornmentData: Adornment }): Ad
             />`;
             adornmentImport = {
                 name: `${adornmentData.icon.name} as ${adornmentData.icon.name}Icon`,
-                importPath: "@comet/admin-icons",
+                importPath: "@dextinity/admin-icons",
             };
         }
     }

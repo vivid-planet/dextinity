@@ -1,4 +1,4 @@
-import { Button, TableDndOrder, TableLocalChanges } from "@comet/admin";
+import { Button, TableDndOrder, TableLocalChanges } from "@dextinity/admin";
 
 import { dndProviderDecorator } from "../../../dnd.decorator";
 

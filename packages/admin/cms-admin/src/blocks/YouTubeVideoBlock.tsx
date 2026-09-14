@@ -1,4 +1,4 @@
-import { Field, FinalFormInput } from "@comet/admin";
+import { Field, FinalFormInput } from "@dextinity/admin";
 import { Box } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 
@@ -31,7 +31,7 @@ const validateIdentifier = (value?: string) => {
     }
 
     return value && isValidYouTubeIdentifier(value) ? undefined : (
-        <FormattedMessage id="comet.blocks.youTubeVideo.validation" defaultMessage="Should be a valid YouTube URL or identifier" />
+        <FormattedMessage id="dextinity.blocks.youTubeVideo.validation" defaultMessage="Should be a valid YouTube URL or identifier" />
     );
 };
 
@@ -40,7 +40,7 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
 
     name: "YouTubeVideo",
 
-    displayName: <FormattedMessage id="comet.blocks.youTubeVideo" defaultMessage="Video (YouTube)" />,
+    displayName: <FormattedMessage id="dextinity.blocks.youTubeVideo" defaultMessage="Video (YouTube)" />,
 
     defaultValues: () => ({ showControls: true, previewImage: PixelImageBlock.defaultValues() }),
 
@@ -74,7 +74,10 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
                     <BlocksFinalForm onSubmit={updateState} initialValues={state}>
                         <Field
                             label={
-                                <FormattedMessage id="comet.blocks.youTubeVideo.youtubeIdentifier" defaultMessage="YouTube URL or YouTube Video ID" />
+                                <FormattedMessage
+                                    id="dextinity.blocks.youTubeVideo.youtubeIdentifier"
+                                    defaultMessage="YouTube URL or YouTube Video ID"
+                                />
                             }
                             validate={validateIdentifier}
                             name="youtubeIdentifier"
@@ -84,7 +87,7 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
                         />
                         <VideoOptionsFields />
                     </BlocksFinalForm>
-                    <BlockAdminComponentSection title={<FormattedMessage id="comet.blocks.video.previewImage" defaultMessage="Preview Image" />}>
+                    <BlockAdminComponentSection title={<FormattedMessage id="dextinity.blocks.video.previewImage" defaultMessage="Preview Image" />}>
                         <PixelImageBlock.AdminComponent
                             state={state.previewImage}
                             updateState={(setStateAction) => {

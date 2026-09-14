@@ -1,4 +1,4 @@
-import { ChevronDown } from "@comet/admin-icons";
+import { ChevronDown } from "@dextinity/admin-icons";
 import type { PropsWithChildren } from "react";
 import { useForm, useFormState } from "react-final-form";
 import { FormattedMessage } from "react-intl";

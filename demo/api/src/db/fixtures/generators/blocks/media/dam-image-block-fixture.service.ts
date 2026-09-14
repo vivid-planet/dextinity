@@ -1,4 +1,4 @@
-import { DamImageBlock, ExtractBlockInputFactoryProps } from "@comet/cms-api";
+import { DamImageBlock, ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import { faker } from "@src/db/fixtures/faker";
 

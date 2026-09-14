@@ -1,10 +1,10 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { RouterMemoryRouter } from "@comet/admin";
+import { RouterMemoryRouter } from "@dextinity/admin";
 import type { ReactNode } from "react";
 import { renderHook } from "test-utils";
 import { describe, expect, it } from "vitest";
 
-import { type CometConfig, CometConfigProvider } from "../../config/CometConfigContext";
+import { type DextinityConfig, DextinityConfigProvider } from "../../config/DextinityConfigContext";
 import { ContentScopeProvider } from "../../contentScope/Provider";
 import { CurrentUserContext } from "../../userPermissions/hooks/currentUser";
 import type { PageTreeConfig } from "../pageTreeConfig";
@@ -41,14 +41,14 @@ describe("usePageTreeScope", () => {
         );
     }
 
-    const baseCometConfig = {} as CometConfig;
+    const baseDextinityConfig = {} as DextinityConfig;
     const basePageTreeConfig = {} as PageTreeConfig;
 
     it("should work with CmsBlockContextProvider", () => {
         const { result } = renderHook(() => usePageTreeScope(), {
             wrapper: ({ children }) => (
                 <Providers>
-                    <CometConfigProvider {...baseCometConfig}>{children}</CometConfigProvider>
+                    <DextinityConfigProvider {...baseDextinityConfig}>{children}</DextinityConfigProvider>
                 </Providers>
             ),
         });
@@ -60,9 +60,9 @@ describe("usePageTreeScope", () => {
         const { result } = renderHook(() => usePageTreeScope(), {
             wrapper: ({ children }) => (
                 <Providers>
-                    <CometConfigProvider {...baseCometConfig} pageTree={{ ...basePageTreeConfig, scopeParts: ["domain"] }}>
+                    <DextinityConfigProvider {...baseDextinityConfig} pageTree={{ ...basePageTreeConfig, scopeParts: ["domain"] }}>
                         {children}
-                    </CometConfigProvider>
+                    </DextinityConfigProvider>
                 </Providers>
             ),
         });
@@ -74,9 +74,9 @@ describe("usePageTreeScope", () => {
         const { result } = renderHook(() => usePageTreeScope(), {
             wrapper: ({ children }) => (
                 <Providers>
-                    <CometConfigProvider {...baseCometConfig} pageTree={{ ...basePageTreeConfig, scopeParts: ["domain", "language"] }}>
+                    <DextinityConfigProvider {...baseDextinityConfig} pageTree={{ ...basePageTreeConfig, scopeParts: ["domain", "language"] }}>
                         {children}
-                    </CometConfigProvider>
+                    </DextinityConfigProvider>
                 </Providers>
             ),
         });
@@ -88,9 +88,9 @@ describe("usePageTreeScope", () => {
         const { result } = renderHook(() => usePageTreeScope(), {
             wrapper: ({ children }) => (
                 <Providers>
-                    <CometConfigProvider {...baseCometConfig} pageTree={{ ...basePageTreeConfig, scopeParts: [] }}>
+                    <DextinityConfigProvider {...baseDextinityConfig} pageTree={{ ...basePageTreeConfig, scopeParts: [] }}>
                         {children}
-                    </CometConfigProvider>
+                    </DextinityConfigProvider>
                 </Providers>
             ),
         });
@@ -102,9 +102,9 @@ describe("usePageTreeScope", () => {
         const { result } = renderHook(() => usePageTreeScope(), {
             wrapper: ({ children }) => (
                 <Providers>
-                    <CometConfigProvider {...baseCometConfig} pageTree={{ ...basePageTreeConfig, scopeParts: ["domain", "unknown"] }}>
+                    <DextinityConfigProvider {...baseDextinityConfig} pageTree={{ ...basePageTreeConfig, scopeParts: ["domain", "unknown"] }}>
                         {children}
-                    </CometConfigProvider>
+                    </DextinityConfigProvider>
                 </Providers>
             ),
         });

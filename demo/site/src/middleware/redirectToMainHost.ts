@@ -1,4 +1,4 @@
-import { gql } from "@comet/site-nextjs";
+import { gql } from "@dextinity/site-nextjs";
 import type { ExternalLinkBlockData, InternalLinkBlockData, NewsLinkBlockData, RedirectsLinkBlockData } from "@src/blocks.generated";
 import type { GQLPageTreeNodeScope, GQLRedirectScopeInput } from "@src/graphql.generated";
 import type { PublicSiteConfig } from "@src/site-configs";

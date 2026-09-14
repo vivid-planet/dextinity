@@ -1,4 +1,4 @@
-import { createEnumFilter, DateTimeFilter, StringFilter } from "@comet/cms-api";
+import { createEnumFilter, DateTimeFilter, StringFilter } from "@dextinity/cms-api";
 import { Field, InputType } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsOptional, ValidateNested } from "class-validator";

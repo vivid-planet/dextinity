@@ -14,12 +14,12 @@ The typical procedure to use pagination is as follows:
 1. get an instance of `pagingApi` from the `useTableQueryPaging()` hook
 2. use the `useTableQuery()` hook to load your data
 3. pass the pagination parameters to your query as variables
-4. use one of Comet Admin's paging actions to generate a `pagingInfo` object inside `resolveTableData()`
+4. use one of Dextinity Admin's paging actions to generate a `pagingInfo` object inside `resolveTableData()`
 5. pass `pagingInfo` to the `Table`
 
 After performing the steps above, a `TableFooter` is automatically added to the `Table`. It allows the user to switch between pages.
 
-Comet Admin supports multiple types of pagination:
+Dextinity Admin supports multiple types of pagination:
 
 - **(Recommended)** [Offset-based Pagination](https://betterprogramming.pub/building-apis-a-comparison-between-cursor-and-offset-pagination-88261e3885f8#1c1a) (`createOffsetLimitPagingAction()`)
 - [Cursor-based Pagination](https://betterprogramming.pub/building-apis-a-comparison-between-cursor-and-offset-pagination-88261e3885f8#3cf7) (`createRelayPagingActions()`)

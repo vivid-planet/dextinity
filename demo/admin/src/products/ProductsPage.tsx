@@ -15,8 +15,8 @@ import {
     ToolbarAutomaticTitleItem,
     ToolbarBackButton,
     useStackSwitch,
-} from "@comet/admin";
-import { ContentScopeIndicator } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { ContentScopeIndicator } from "@dextinity/cms-admin";
 import { useIntl } from "react-intl";
 
 import { ProductForm } from "./ProductForm";

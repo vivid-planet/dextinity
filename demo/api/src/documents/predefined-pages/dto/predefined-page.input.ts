@@ -1,4 +1,4 @@
-import { IsNullable, IsUndefinable } from "@comet/cms-api";
+import { IsNullable, IsUndefinable } from "@dextinity/cms-api";
 import { Field, InputType } from "@nestjs/graphql";
 import { IsEnum } from "class-validator";
 

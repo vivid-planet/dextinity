@@ -1,5 +1,5 @@
 import { defineConfig, globalIgnores } from "eslint/config";
-import eslintConfigNestJs from "@comet/eslint-config/future/nestjs.js";
+import eslintConfigNestJs from "@dextinity/eslint-config/future/nestjs.js";
 import storybook from "eslint-plugin-storybook";
 
 export default defineConfig([

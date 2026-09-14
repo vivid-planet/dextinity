@@ -1,4 +1,4 @@
-import { AffectedEntity, PageTreeNodeVisibility, PageTreeService, RequiredPermission, validateNotModified } from "@comet/cms-api";
+import { AffectedEntity, PageTreeNodeVisibility, PageTreeService, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { UnauthorizedException } from "@nestjs/common";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
@@ -30,7 +30,7 @@ export class PredefinedPagesResolver {
         @Args("lastUpdatedAt", { type: () => Date, nullable: true }) lastUpdatedAt?: Date,
     ): Promise<PredefinedPage> {
         // all pageTypes need this is-archived-page-check
-        // TODO: maybe implemented in a base-(document|page)-service which lives in @comet/cms-api
+        // TODO: maybe implemented in a base-(document|page)-service which lives in @dextinity/cms-api
         const pageTreeNode = await this.pageTreeService.createReadApi({ visibility: "all" }).getNodeOrFail(attachedPageTreeNodeId);
         if (pageTreeNode.visibility === PageTreeNodeVisibility.Archived) {
             throw new UnauthorizedException("Archived Structured Content cannot be updated");

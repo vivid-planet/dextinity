@@ -1,4 +1,4 @@
-import { useStoredState } from "@comet/admin";
+import { useStoredState } from "@dextinity/admin";
 import type { Dispatch, SetStateAction } from "react";
 
 import { Device } from "../common/Device";

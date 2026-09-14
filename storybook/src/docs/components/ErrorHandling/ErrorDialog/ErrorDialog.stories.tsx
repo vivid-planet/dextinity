@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { Button, useErrorDialog } from "@comet/admin";
+import { Button, useErrorDialog } from "@dextinity/admin";
 import { Typography } from "@mui/material";
 import { useState } from "react";
 

@@ -1,5 +1,5 @@
 "use client";
-import { hasRichTextBlockContent, PreviewSkeleton, type PropsWithData, withPreview } from "@comet/site-nextjs";
+import { hasRichTextBlockContent, PreviewSkeleton, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { LinkBlockData, RichTextBlockData } from "@src/blocks.generated";
 import clsx from "clsx";
 import redraft, { type Renderers, type TextBlockRenderFn } from "redraft";

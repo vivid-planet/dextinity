@@ -13,7 +13,7 @@ export const restrictedImportPaths = [
     {
         name: "next/image",
         importNames: ["default"],
-        message: "Don't use next/image. See https://docs.comet-dxp.com/docs/faqs/next-image-import-restriction",
+        message: "Don't use next/image. See https://cms-docs.dextinity.com/docs/faqs/next-image-import-restriction",
     },
     {
         name: "node-cache",
@@ -29,7 +29,7 @@ const config = [
     nextPlugin.configs["core-web-vitals"],
     {
         rules: {
-            "@comet/no-private-sibling-import": ["error", ["gql", "sc", "gql.generated"]],
+            "@dextinity/no-private-sibling-import": ["error", ["gql", "sc", "gql.generated"]],
             "no-restricted-globals": ["error", "React"],
             "no-restricted-imports": [
                 "error",

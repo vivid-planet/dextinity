@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { type IFilterApi, Stack, StackMainContent, StackPage, StackSwitch, Toolbar, useStackApi, useTableQueryFilter } from "@comet/admin";
+import { type IFilterApi, Stack, StackMainContent, StackPage, StackSwitch, Toolbar, useStackApi, useTableQueryFilter } from "@dextinity/admin";
 import { type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
 
@@ -55,7 +55,7 @@ const Folder = ({ id, filterApi, renderWithFullHeightMainContent, ...props }: Fo
                     <Toolbar scopeIndicator={props.contentScopeIndicator} />
                     {renderWithFullHeightMainContent ? <StackMainContent fullHeight>{folderDataGridNode}</StackMainContent> : folderDataGridNode}
                 </StackPage>
-                <StackPage name="edit" title={intl.formatMessage({ id: "comet.pages.dam.edit", defaultMessage: "Edit" })}>
+                <StackPage name="edit" title={intl.formatMessage({ id: "dextinity.pages.dam.edit", defaultMessage: "Edit" })}>
                     {(selectedId: string) => {
                         return <EditFile id={selectedId} contentScopeIndicator={props.contentScopeIndicator} />;
                     }}
@@ -116,7 +116,7 @@ export const DamTable = ({ renderWithFullHeightMainContent, ...damConfigProps }:
     const filterApi = useTableQueryFilter<DamFilter>({});
 
     return (
-        <Stack topLevelTitle={intl.formatMessage({ id: "comet.pages.dam.assetManager", defaultMessage: "Asset Manager" })}>
+        <Stack topLevelTitle={intl.formatMessage({ id: "dextinity.pages.dam.assetManager", defaultMessage: "Asset Manager" })}>
             <FileUploadContextProvider>
                 <ManualDuplicatedFilenamesHandlerContextProvider>
                     <DamSelectionProvider initialSelection={damConfigProps.initialSelection} onSelectionChange={damConfigProps.onSelectionChange}>

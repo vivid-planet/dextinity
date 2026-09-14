@@ -294,7 +294,7 @@ type Build {
   id: ID!
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
   name: String
@@ -307,7 +307,7 @@ type BuildTemplate {
   id: ID!
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
   name: String!
@@ -380,6 +380,7 @@ type CurrentUserPermission {
 }
 
 type DamFile {
+  aiContentType: DamFileAiContentType
   altText: String
   alternativesForThisFile: [DamMediaAlternative!]!
   archived: Boolean!
@@ -402,6 +403,11 @@ type DamFile {
   thisFileIsAlternativeFor: [DamMediaAlternative!]!
   title: String
   updatedAt: DateTime!
+}
+
+enum DamFileAiContentType {
+  Generated
+  Modified
 }
 
 type DamFileImage {
@@ -764,7 +770,7 @@ type KubernetesCronJob {
   id: ID!
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
   lastJobRun: KubernetesJob
@@ -779,7 +785,7 @@ type KubernetesJob {
   id: ID!
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
   name: String!
@@ -1008,8 +1014,10 @@ type Mutation {
   saveLink(attachedPageTreeNodeId: ID, id: ID!, input: LinkInput!, lastUpdatedAt: DateTime): Link!
   savePage(attachedPageTreeNodeId: ID, input: PageInput!, lastUpdatedAt: DateTime, pageId: ID!): Page!
   savePredefinedPage(attachedPageTreeNodeId: ID!, id: ID!, input: PredefinedPageInput!, lastUpdatedAt: DateTime): PredefinedPage!
+  saveWelcomeEmail(input: WelcomeEmailInput!, scope: WelcomeEmailScopeInput!): WelcomeEmail!
   sendBrevoEmailCampaignNow(id: ID!): Boolean!
   sendBrevoEmailCampaignToTestEmails(data: SendTestEmailCampaignArgs!, id: ID!): Boolean!
+  sendWelcomeEmailTestMail(scope: WelcomeEmailScopeInput!): Boolean!
   startBrevoContactImport(fileId: ID!, scope: EmailCampaignContentScopeInput!, sendDoubleOptIn: Boolean!, targetGroupIds: [ID!]): CsvImportInformation!
   subscribeBrevoContact(input: SubscribeInput!, scope: EmailCampaignContentScopeInput!): SubscribeResponse!
   triggerKubernetesCronJob(name: String!): KubernetesJob!
@@ -2037,6 +2045,7 @@ type Query {
   userPermissionsUsers(filter: UserPermissionsUserFilter, limit: Int! = 25, offset: Int! = 0, search: String, sort: [UserPermissionsUserSort!]): UserPermissionPaginatedUserList!
   warning(id: ID!): Warning!
   warnings(filter: WarningFilter, limit: Int! = 25, offset: Int! = 0, scopes: [JSONObject!]!, search: String, sort: [WarningSort!], status: [WarningStatus!]! = [open]): PaginatedWarnings!
+  welcomeEmail(scope: WelcomeEmailScopeInput!): WelcomeEmail
 }
 
 type Redirect {
@@ -2228,6 +2237,7 @@ input TargetGroupUpdateInput {
 }
 
 input UpdateDamFileInput {
+  aiContentType: DamFileAiContentType
   altText: String
   folderId: ID
   image: UpdateImageFileInput
@@ -2344,8 +2354,10 @@ input WarningFilter {
   and: [WarningFilter!]
   createdAt: DateTimeFilter
   message: StringFilter
+  name: StringFilter
   or: [WarningFilter!]
   scope: ScopeFilter
+  secondaryInformation: StringFilter
   severity: WarningSeverityEnumFilter
   status: WarningStatusEnumFilter
   type: StringFilter
@@ -2372,6 +2384,7 @@ input WarningSort {
 enum WarningSortField {
   createdAt
   message
+  name
   severity
   status
   type
@@ -2404,4 +2417,33 @@ input WarningStatusEnumFilter {
   equal: WarningStatus
   isAnyOf: [WarningStatus!]
   notEqual: WarningStatus
+}
+
+type WelcomeEmail {
+  content: WelcomeEmailContentBlockData!
+  createdAt: DateTime!
+  dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0, sort: [DependencySort!]): PaginatedDependencies!
+  id: ID!
+  scope: WelcomeEmailScope!
+  updatedAt: DateTime!
+}
+
+"""WelcomeEmailContent root block data"""
+scalar WelcomeEmailContentBlockData @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+"""WelcomeEmailContent root block input"""
+scalar WelcomeEmailContentBlockInput @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+input WelcomeEmailInput {
+  content: WelcomeEmailContentBlockInput!
+}
+
+type WelcomeEmailScope {
+  domain: String!
+  language: String!
+}
+
+input WelcomeEmailScopeInput {
+  domain: String!
+  language: String!
 }

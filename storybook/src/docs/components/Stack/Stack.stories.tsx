@@ -13,8 +13,8 @@ import {
     Tooltip,
     useStackSwitch,
     useStackSwitchApi,
-} from "@comet/admin";
-import { ArrowLeft, ArrowRight } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { ArrowLeft, ArrowRight } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 
 import { apolloRestStoryDecorator } from "../../../apollo-rest-story.decorator";

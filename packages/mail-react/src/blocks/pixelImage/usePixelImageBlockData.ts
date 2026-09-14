@@ -84,7 +84,7 @@ interface CropArea {
     y?: number;
 }
 
-// Copied from `calculateInheritAspectRatio` in `@comet/site-react` (`src/image/image.utils.ts`).
+// Copied from `calculateInheritAspectRatio` in `@dextinity/site-react` (`src/image/image.utils.ts`).
 // Keep in sync with the site-react version when changes are made.
 function calculateAspectRatio(image: ImageDimensions, cropArea: CropArea): number {
     if (cropArea.focalPoint === "SMART") {
@@ -98,13 +98,13 @@ function calculateAspectRatio(image: ImageDimensions, cropArea: CropArea): numbe
     return (cropArea.width * image.width) / (cropArea.height * image.height);
 }
 
-// Copied from `generateImageUrl` in `@comet/site-react` (`src/image/image.utils.ts`).
+// Copied from `generateImageUrl` in `@dextinity/site-react` (`src/image/image.utils.ts`).
 // Keep in sync with the site-react version when changes are made.
 function generateImageUrl(urlTemplate: string, width: number, aspectRatio: number): string {
     return urlTemplate.replace("$resizeWidth", String(width)).replace("$resizeHeight", String(Math.ceil(width / aspectRatio)));
 }
 
-// Copied from `parseAspectRatio` in `@comet/site-react` (`src/image/image.utils.ts`).
+// Copied from `parseAspectRatio` in `@dextinity/site-react` (`src/image/image.utils.ts`).
 // Keep in sync with the site-react version when changes are made.
 function parseAspectRatio(value: number | string): number {
     let width: number | undefined;

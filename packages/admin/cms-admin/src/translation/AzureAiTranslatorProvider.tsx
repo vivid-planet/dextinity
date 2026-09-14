@@ -1,5 +1,5 @@
 import { gql, useApolloClient } from "@apollo/client";
-import { ContentTranslationServiceProvider } from "@comet/admin";
+import { ContentTranslationServiceProvider } from "@dextinity/admin";
 import type { ComponentProps, PropsWithChildren } from "react";
 
 import { useContentScope } from "../contentScope/Provider";

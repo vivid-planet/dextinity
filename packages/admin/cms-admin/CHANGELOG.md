@@ -1,5 +1,24 @@
 # @comet/cms-admin
 
+## 10.6.0
+
+### Minor Changes
+
+- 65d5f1c: Add `minHeight` option to `createTipTapRichTextBlock`
+
+    The editor's content area previously had a hardcoded minimum height of 200px with no way to override it. Compact use cases (e.g. a single-line rich text field) now have a supported way to shrink it:
+
+    ```ts
+    createTipTapRichTextBlock({ minHeight: 0 });
+    ```
+
+### Patch Changes
+
+- @dextinity/admin@10.6.0
+- @dextinity/admin-date-time@10.6.0
+- @dextinity/admin-icons@10.6.0
+- @dextinity/admin-rte@10.6.0
+
 ## 10.5.1
 
 ### Patch Changes

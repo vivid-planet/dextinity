@@ -90,6 +90,9 @@ type TipTapTextBlockType =
     | "ordered-list"
     | "unordered-list";
 
+// The `textBlockStyle` attribute only exists on paragraph and heading nodes, so lists are excluded here.
+type TipTapTextBlockStyleTargetType = Exclude<TipTapTextBlockType, "ordered-list" | "unordered-list">;
+
 interface TipTapTextBlockStyle {
     name: string;
     /**
@@ -185,6 +188,14 @@ export interface CreateTipTapRichTextBlockOptions {
      */
     link?: Block;
     textBlockStyles?: TipTapTextBlockStyle[];
+    /**
+     * Assigns a default text block style per tag: content of that tag missing a `textBlockStyle` is
+     * rejected during validation, mirroring the admin-side `defaultTextBlockStyles` option, which
+     * assigns it automatically and hides the toolbar's unstyled "Default" entry for that tag.
+     *
+     * Each value must be the `name` of an entry in `textBlockStyles` whose `appliesTo` (if set) includes that tag.
+     */
+    defaultTextBlockStyles?: Partial<Record<TipTapTextBlockStyleTargetType, string>>;
     inlineStyles?: TipTapInlineStyle[];
     placeholders?: TipTapPlaceholder[];
     indexSearchText?: boolean;
@@ -512,6 +523,26 @@ function getTextBlockTypeFromNode(node: JSONContent): TipTapTextBlockType | unde
     return undefined;
 }
 
+function containsMissingDefaultTextBlockStyle(
+    content: JSONContent,
+    defaultTextBlockStyles: Partial<Record<TipTapTextBlockStyleTargetType, string>>,
+): boolean {
+    const textBlockType = getTextBlockTypeFromNode(content) as TipTapTextBlockStyleTargetType | undefined;
+    if (textBlockType && defaultTextBlockStyles[textBlockType] && !content.attrs?.textBlockStyle) {
+        return true;
+    }
+
+    if (Array.isArray(content.content)) {
+        for (const child of content.content) {
+            if (containsMissingDefaultTextBlockStyle(child, defaultTextBlockStyles)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 function containsInvalidInlineStyleMarks(
     content: JSONContent,
     inlineStyles: TipTapInlineStyle[],
@@ -552,6 +583,7 @@ function IsTipTapContent(
         allowedPlaceholderNames,
         listLevelMax,
         headingLevels,
+        defaultTextBlockStyles,
     }: {
         inlineStyles: TipTapInlineStyle[];
         linkBlock?: Block;
@@ -560,6 +592,7 @@ function IsTipTapContent(
         allowedPlaceholderNames?: string[];
         listLevelMax?: number;
         headingLevels: HeadingLevel[];
+        defaultTextBlockStyles: Partial<Record<TipTapTextBlockStyleTargetType, string>>;
     },
     validationOptions?: ValidationOptions,
 ) {
@@ -606,6 +639,11 @@ function IsTipTapContent(
 
                         // Enforce headingLevels restriction
                         if (containsInvalidHeadingLevel(value as JSONContent, headingLevels)) {
+                            return false;
+                        }
+
+                        // Enforce defaultTextBlockStyles: reject headings/paragraphs missing a style for a tag that has a default
+                        if (containsMissingDefaultTextBlockStyle(value as JSONContent, defaultTextBlockStyles)) {
                             return false;
                         }
 
@@ -687,6 +725,30 @@ function extractTextEntries(node: JSONContent, headingLevel?: number): TextEntry
     return results;
 }
 
+function validateDefaultTextBlockStyles(
+    defaultTextBlockStyles: Partial<Record<TipTapTextBlockStyleTargetType, string>>,
+    textBlockStyles: TipTapTextBlockStyle[],
+    resolvedOptions: TipTapResolvedOptions,
+): void {
+    for (const [tag, styleName] of Object.entries(defaultTextBlockStyles) as [TipTapTextBlockStyleTargetType, string][]) {
+        const isEnabledTag =
+            tag === "paragraph"
+                ? resolvedOptions.paragraph
+                : resolvedOptions.heading !== false && resolvedOptions.heading.levels.includes(Number(tag.slice("heading-".length)) as HeadingLevel);
+        if (!isEnabledTag) {
+            throw new Error(`defaultTextBlockStyles has an entry for "${tag}", which is not enabled`);
+        }
+
+        const style = textBlockStyles.find((s) => s.name === styleName);
+        if (!style) {
+            throw new Error(`defaultTextBlockStyles has an entry for "${tag}" referencing unknown text block style "${styleName}"`);
+        }
+        if (style.appliesTo && !style.appliesTo.includes(tag)) {
+            throw new Error(`defaultTextBlockStyles has an entry for "${tag}", but text block style "${styleName}" does not apply to it`);
+        }
+    }
+}
+
 /**
  * @experimental
  */
@@ -696,6 +758,7 @@ export function createTipTapRichTextBlock(
 ): Block<TipTapRichTextBlockDataInterface, TipTapRichTextBlockInputInterface> {
     const {
         textBlockStyles = [],
+        defaultTextBlockStyles = {},
         inlineStyles = [],
         placeholders = [],
         indexSearchText = true,
@@ -710,6 +773,7 @@ export function createTipTapRichTextBlock(
 
     const resolvedOptions = resolveTipTapOptions(options);
     const headingLevels = resolvedOptions.heading ? resolvedOptions.heading.levels : [];
+    validateDefaultTextBlockStyles(defaultTextBlockStyles, textBlockStyles, resolvedOptions);
     const childBlocks: Record<string, Block> = Object.fromEntries(Object.entries(childBlocksConfig).map(([key, { block }]) => [key, block]));
     const childBlockConfigs = Object.values(childBlocksConfig);
     const hasChildBlocks = childBlockConfigs.length > 0;
@@ -752,6 +816,7 @@ export function createTipTapRichTextBlock(
                       headingLevels,
                       textBlockStyleMap: draftJsTextBlockStyleMap,
                       inlineStyleMap: draftJsInlineStyleMap,
+                      defaultTextBlockStyles,
                   }),
                   ...baseMigrate.migrations,
               ],
@@ -820,6 +885,7 @@ export function createTipTapRichTextBlock(
             allowedPlaceholderNames,
             listLevelMax,
             headingLevels,
+            defaultTextBlockStyles,
         })
         @BlockField({ type: "tipTapRichTextBlock", childBlocks })
         tipTapContent: JSONContent;

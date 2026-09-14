@@ -69,6 +69,12 @@ interface ConvertOptions {
      */
     textBlockStyleMap?: Record<string, string | TextBlockStyleMapping>;
     /**
+     * Falls back to the configured default text block style (see `defaultTextBlockStyles`) for a tag
+     * when `textBlockStyleMap` doesn't provide one, so migrated content doesn't end up in the "no
+     * style" state the tag no longer allows.
+     */
+    defaultTextBlockStyles?: Partial<Record<TipTapTextBlockStyleTargetType, string>>;
+    /**
      * Maps DraftJS custom inline style names (e.g. `highlight` from a DraftJS `customInlineStyles`
      * configuration) to TipTap `inlineStyle` mark type values.
      * Matched ranges become `{ type: "inlineStyle", attrs: { type: <mappedValue> } }`.
@@ -115,8 +121,11 @@ const TEXT_BLOCK_TYPE_TO_HEADING_LEVEL: Record<TipTapTextBlockStyleTargetType, n
  * Builds a document with a single empty text block, matching the target schema's default text block
  * type (a paragraph, or a heading for a heading-only schema).
  */
-export function buildEmptyTipTapDoc(resolvedOptions: TipTapResolvedOptions): JSONContent {
-    return { type: "doc", content: [makeTextBlockNode([], { resolvedOptions })] };
+export function buildEmptyTipTapDoc(
+    resolvedOptions: TipTapResolvedOptions,
+    defaultTextBlockStyles: Partial<Record<TipTapTextBlockStyleTargetType, string>> = {},
+): JSONContent {
+    return { type: "doc", content: [makeTextBlockNode([], { resolvedOptions, defaultTextBlockStyles })] };
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -270,14 +279,24 @@ function makeTextBlockNode(
     inlineContent: JSONContent[],
     {
         headingLevel: explicitHeadingLevel,
-        textBlockStyle,
+        textBlockStyle: explicitTextBlockStyle,
         resolvedOptions,
-    }: { headingLevel?: number; textBlockStyle?: string; resolvedOptions: TipTapResolvedOptions },
+        defaultTextBlockStyles = {},
+    }: {
+        headingLevel?: number;
+        textBlockStyle?: string;
+        resolvedOptions: TipTapResolvedOptions;
+        defaultTextBlockStyles?: Partial<Record<TipTapTextBlockStyleTargetType, string>>;
+    },
 ): JSONContent {
     // A heading-only schema has no paragraph to fall back to.
     const headingLevel =
         explicitHeadingLevel ?? (resolvedOptions.paragraph || resolvedOptions.heading === false ? undefined : resolvedOptions.heading.defaultLevel);
     const node: JSONContent = { type: headingLevel !== undefined ? "heading" : "paragraph" };
+
+    const targetType: TipTapTextBlockStyleTargetType =
+        headingLevel !== undefined ? (`heading-${headingLevel}` as TipTapTextBlockStyleTargetType) : "paragraph";
+    const textBlockStyle = explicitTextBlockStyle ?? defaultTextBlockStyles[targetType];
 
     const attrs: JSONContent["attrs"] = {};
     if (headingLevel !== undefined) {
@@ -296,10 +315,14 @@ function makeTextBlockNode(
     return node;
 }
 
-function makeListItem(inlineContent: JSONContent[], resolvedOptions: TipTapResolvedOptions): JSONContent {
+function makeListItem(
+    inlineContent: JSONContent[],
+    resolvedOptions: TipTapResolvedOptions,
+    defaultTextBlockStyles: Partial<Record<TipTapTextBlockStyleTargetType, string>>,
+): JSONContent {
     return {
         type: "listItem",
-        content: [makeTextBlockNode(inlineContent, { resolvedOptions })],
+        content: [makeTextBlockNode(inlineContent, { resolvedOptions, defaultTextBlockStyles })],
     };
 }
 
@@ -324,9 +347,10 @@ function normalizeTextBlockStyleMapping(mapping: string | TextBlockStyleMapping 
 
 export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined | null, options: ConvertOptions): JSONContent {
     const resolvedOptions = options.resolvedOptions;
+    const defaultTextBlockStyles = options.defaultTextBlockStyles ?? {};
 
     if (!draftContent || !Array.isArray(draftContent.blocks) || draftContent.blocks.length === 0) {
-        return buildEmptyTipTapDoc(resolvedOptions);
+        return buildEmptyTipTapDoc(resolvedOptions, defaultTextBlockStyles);
     }
 
     const hasLink = !!options.link;
@@ -382,7 +406,7 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
             openLists.push({ type: listType, items: [] });
         }
 
-        openLists[openLists.length - 1].items.push(makeListItem(inlineContent, resolvedOptions));
+        openLists[openLists.length - 1].items.push(makeListItem(inlineContent, resolvedOptions, defaultTextBlockStyles));
     };
 
     for (const block of draftContent.blocks) {
@@ -405,6 +429,7 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
                 resolvedOptions,
                 headingLevel: headingLevel !== undefined && resolvedOptions.heading !== false ? headingLevel : undefined,
                 textBlockStyle: mapping?.textBlockStyle,
+                defaultTextBlockStyles,
             }),
         );
     }
@@ -412,7 +437,7 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
     flushLists();
 
     if (topLevel.length === 0) {
-        return buildEmptyTipTapDoc(resolvedOptions);
+        return buildEmptyTipTapDoc(resolvedOptions, defaultTextBlockStyles);
     }
 
     return { type: "doc", content: topLevel };

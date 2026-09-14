@@ -1222,3 +1222,130 @@ export const HeadingOnlyWithTextBlockStyles: StoryObj<typeof HeadingOnlyWithText
         });
     },
 };
+
+const DefaultTextBlockStylesBlock = createTipTapRichTextBlock({
+    textBlockStyles: [
+        {
+            name: "copy100",
+            label: "Copy 100",
+            appliesTo: ["paragraph"],
+            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 16 }} {...props} />,
+        },
+        {
+            name: "copy200",
+            label: "Copy 200",
+            appliesTo: ["paragraph"],
+            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20 }} {...props} />,
+        },
+        {
+            name: "h2-large",
+            label: "H2 Large",
+            appliesTo: ["heading-2"],
+            element: (p) => <Typography sx={{ fontSize: 36, lineHeight: 1.2 }} variant="h2" {...p} />,
+        },
+        {
+            name: "h3-highlight",
+            label: "H3 Highlight",
+            appliesTo: ["heading-3"],
+            element: (p) => <Typography sx={{ color: "darkorange" }} variant="h3" {...p} />,
+        },
+    ],
+    defaultTextBlockStyles: {
+        paragraph: "copy100",
+        "heading-2": "h2-large",
+        // Heading 3 has an applicable style but no configured default, so it keeps today's behavior.
+    },
+});
+
+function DefaultTextBlockStylesStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(DefaultTextBlockStylesBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <DefaultTextBlockStylesBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+/**
+ * `defaultTextBlockStyles` assigns a default style per tag: the initial paragraph already carries its
+ * default ("Copy 100") instead of the "no style" state, and the style dropdown offers no "Default" entry
+ * for tags with a configured default — matching the pre-TipTap Draft.js RTE, which had no such state
+ * either. A tag with applicable styles but no configured default (Heading 3 here) keeps today's
+ * behavior and still offers "Default". A tag with no applicable styles at all (Heading 1) hides the
+ * style dropdown entirely, as before.
+ */
+export const DefaultTextBlockStyles: StoryObj<typeof DefaultTextBlockStylesStory> = {
+    render: () => <DefaultTextBlockStylesStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("The initial paragraph already carries its default style — no 'Default' option is offered", async () => {
+            await waitFor(
+                () => {
+                    const comboboxes = canvas.getAllByRole("combobox");
+                    expect(comboboxes).toHaveLength(2);
+                    expect(comboboxes[1]).toHaveTextContent("Copy 100");
+                },
+                { timeout: 5000 },
+            );
+
+            await userEvent.click(canvas.getAllByRole("combobox")[1]);
+            await waitFor(() => {
+                expect(within(document.body).queryByRole("option", { name: "Default" })).not.toBeInTheDocument();
+                expect(within(document.body).getByRole("option", { name: "Copy 200" })).toBeInTheDocument();
+            });
+            await userEvent.keyboard("{Escape}");
+        });
+
+        await step("Switching to Heading 2 auto-assigns its default style instead of 'Default'", async () => {
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await waitFor(() => {
+                expect(within(document.body).getByText("Heading 2")).toBeInTheDocument();
+            });
+            await userEvent.click(within(document.body).getByText("Heading 2"));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("H2 Large");
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Switching to Heading 3, which has an applicable style but no configured default, still offers 'Default'", async () => {
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await waitFor(() => {
+                expect(within(document.body).getByText("Heading 3")).toBeInTheDocument();
+            });
+            await userEvent.click(within(document.body).getByText("Heading 3"));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Default");
+                },
+                { timeout: 3000 },
+            );
+
+            await userEvent.click(canvas.getAllByRole("combobox")[1]);
+            await waitFor(() => {
+                expect(within(document.body).getByRole("option", { name: "Default" })).toBeInTheDocument();
+                expect(within(document.body).getByRole("option", { name: "H3 Highlight" })).toBeInTheDocument();
+            });
+            await userEvent.keyboard("{Escape}");
+        });
+
+        await step("Switching to Heading 1, which has no configured default, hides the style dropdown entirely", async () => {
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await waitFor(() => {
+                expect(within(document.body).getByText("Heading 1")).toBeInTheDocument();
+            });
+            await userEvent.click(within(document.body).getByText("Heading 1"));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")).toHaveLength(1);
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};

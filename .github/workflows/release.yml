@@ -13,9 +13,6 @@ jobs:
     release:
         name: Release
         runs-on: ubuntu-latest
-        concurrency:
-            group: release
-            cancel-in-progress: true
         steps:
             - name: Checkout Repo
               uses: actions/checkout@v6

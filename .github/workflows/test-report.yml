@@ -4,6 +4,11 @@ on:
         workflows: ["Test"]
         types:
             - completed
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch }}
+    cancel-in-progress: true
+
 jobs:
     test-report-unit:
         name: "Test Report (unit)"

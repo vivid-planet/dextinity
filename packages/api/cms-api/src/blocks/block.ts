@@ -221,6 +221,7 @@ export enum BlockMetaFieldKind {
     OneOfBlocks = "OneOfBlocks",
     NestedObject = "NestedObject",
     NestedObjectList = "NestedObjectList",
+    RichTextBlock = "RichTextBlock",
     TipTapRichTextBlock = "TipTapRichTextBlock",
 }
 
@@ -240,12 +241,25 @@ export type BlockMetaField =
     | { name: string; kind: BlockMetaFieldKind.OneOfBlocks; blocks: Record<string, Block>; nullable: boolean }
     | {
           name: string;
+          kind: BlockMetaFieldKind.RichTextBlock;
+          /**
+           * The link block used for links in the rich text content.
+           */
+          link: Block;
+          nullable: boolean;
+      }
+    | {
+          name: string;
           kind: BlockMetaFieldKind.TipTapRichTextBlock;
           /**
            * The child blocks the rich text content may contain, keyed by their stable config key.
            * Lets consumers like the block loader process blocks embedded in the content.
            */
           childBlocks: Record<string, Block>;
+          /**
+           * The link block used for links in the rich text content. Undefined if links are disabled.
+           */
+          link?: Block;
           nullable: boolean;
       };
 

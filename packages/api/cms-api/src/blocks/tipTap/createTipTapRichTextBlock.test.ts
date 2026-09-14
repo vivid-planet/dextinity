@@ -1,6 +1,8 @@
 import { validate } from "class-validator";
 import { describe, expect, it } from "vitest";
 
+import { BlockMetaFieldKind } from "../block";
+import { getBlocksMeta } from "../blocks-meta";
 import { ExternalLinkBlock } from "../externalLink/external-link.block";
 import { createLinkBlock } from "../factories/createLinkBlock";
 import {
@@ -1482,5 +1484,51 @@ describe("createTipTapRichTextBlock block typing", () => {
 
         expect(input.tipTapContent.type).toBe("doc");
         expect(blockData.tipTapContent.type).toBe("doc");
+    });
+});
+
+describe("createTipTapRichTextBlock block meta", () => {
+    const LinkBlock = createLinkBlock({ supportedBlocks: { external: ExternalLinkBlock } }, "TestMetaLink");
+    const childBlocks = { externalLink: { block: ExternalLinkBlock, display: "block" as const } };
+
+    it("should include the link block and the child blocks in the block meta", () => {
+        const block = createTipTapRichTextBlock({ link: LinkBlock, childBlocks }, "TestMetaWithLink");
+
+        const expectedFields = [
+            {
+                name: "tipTapContent",
+                kind: BlockMetaFieldKind.TipTapRichTextBlock,
+                childBlocks: { externalLink: ExternalLinkBlock },
+                link: LinkBlock,
+                nullable: false,
+            },
+        ];
+
+        expect(block.blockMeta.fields).toEqual(expectedFields);
+        expect(block.blockInputMeta.fields).toEqual(expectedFields);
+    });
+
+    it("should include the link block name in the generated block meta", () => {
+        createTipTapRichTextBlock({ link: LinkBlock, childBlocks }, "TestMetaGenerated");
+
+        const blockMeta = getBlocksMeta().find((block) => block.name === "TestMetaGenerated");
+
+        expect(blockMeta?.fields).toEqual([
+            {
+                name: "tipTapContent",
+                kind: "TipTapRichTextBlock",
+                childBlocks: { externalLink: "ExternalLink" },
+                link: "TestMetaLink",
+                nullable: false,
+            },
+        ]);
+    });
+
+    it("should omit the link when links are disabled", () => {
+        const block = createTipTapRichTextBlock({}, "TestMetaWithoutLink");
+
+        expect(block.blockMeta.fields).toEqual([
+            { name: "tipTapContent", kind: BlockMetaFieldKind.TipTapRichTextBlock, childBlocks: {}, link: undefined, nullable: false },
+        ]);
     });
 });

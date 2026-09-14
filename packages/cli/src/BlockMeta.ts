@@ -13,9 +13,16 @@ export type BlockMetaField =
       }
     | {
           name: string;
+          kind: "RichTextBlock";
+          nullable: boolean;
+          link: string;
+      }
+    | {
+          name: string;
           kind: "TipTapRichTextBlock";
           nullable: boolean;
           childBlocks: Record<string, string>;
+          link?: string;
       }
     | {
           name: string;

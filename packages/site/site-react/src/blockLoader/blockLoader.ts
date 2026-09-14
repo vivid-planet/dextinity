@@ -8,6 +8,7 @@ type BlockMetaField = {
     block?: string;
     blocks?: Record<string, string>;
     childBlocks?: Record<string, string>;
+    link?: string;
     object?: { fields: BlockMetaField[] };
 };
 
@@ -28,10 +29,19 @@ type BetterBlockMetaField =
       }
     | {
           name: string;
+          kind: "RichTextBlock";
+          nullable: boolean;
+          // The link block used for links in the rich text content.
+          link: string;
+      }
+    | {
+          name: string;
           kind: "TipTapRichTextBlock";
           nullable: boolean;
           // The child blocks the rich text content may contain, keyed by their stable config key.
           childBlocks: Record<string, string>;
+          // The link block used for links in the rich text content. Undefined if links are disabled.
+          link?: string;
       }
     | {
           name: string;

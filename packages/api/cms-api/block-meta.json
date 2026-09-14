@@ -825,15 +825,17 @@
         "fields": [
             {
                 "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "link": "Link"
             }
         ],
         "inputFields": [
             {
                 "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "link": "Link"
             }
         ]
     },
@@ -1358,7 +1360,8 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "link": "Link"
             }
         ],
         "inputFields": [
@@ -1366,7 +1369,8 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "link": "Link"
             }
         ]
     },

@@ -25,9 +25,15 @@ type BlockFieldOptions =
           array?: boolean;
       }
     | {
+          type: "richTextBlock";
+          nullable?: boolean;
+          link: Block;
+      }
+    | {
           type: "tipTapRichTextBlock";
           nullable?: boolean;
           childBlocks: Record<string, Block>;
+          link?: Block;
       }
     | {
           nullable?: boolean;
@@ -68,7 +74,8 @@ type BlockFieldData =
           array?: boolean;
       }
     | { kind: BlockMetaFieldKind.Enum; enum: string[]; nullable: boolean; array?: boolean }
-    | { kind: BlockMetaFieldKind.TipTapRichTextBlock; childBlocks: Record<string, Block>; nullable: boolean }
+    | { kind: BlockMetaFieldKind.RichTextBlock; link: Block; nullable: boolean }
+    | { kind: BlockMetaFieldKind.TipTapRichTextBlock; childBlocks: Record<string, Block>; link?: Block; nullable: boolean }
     | { kind: BlockMetaFieldKind.Block; block: Block; nullable: boolean }
     | { kind: BlockMetaFieldKind.NestedObject; object: ClassConstructor<BlockDataInterface | BlockInputInterface>; nullable: boolean }
     | { kind: BlockMetaFieldKind.NestedObjectList; object: ClassConstructor<BlockDataInterface | BlockInputInterface>; nullable: boolean }
@@ -93,8 +100,10 @@ export function getBlockFieldData(ctor: { prototype: any }, propertyKey: string)
             ret = { kind: BlockMetaFieldKind.Boolean, nullable, array };
         } else if (fieldType.type === "json") {
             ret = { kind: BlockMetaFieldKind.Json, nullable, array };
+        } else if (fieldType.type === "richTextBlock") {
+            ret = { kind: BlockMetaFieldKind.RichTextBlock, link: fieldType.link, nullable };
         } else if (fieldType.type === "tipTapRichTextBlock") {
-            ret = { kind: BlockMetaFieldKind.TipTapRichTextBlock, childBlocks: fieldType.childBlocks, nullable };
+            ret = { kind: BlockMetaFieldKind.TipTapRichTextBlock, childBlocks: fieldType.childBlocks, link: fieldType.link, nullable };
         } else if (fieldType.type === "enum") {
             const enumValues = Array.isArray(fieldType.enum) ? fieldType.enum : Object.values(fieldType.enum);
             ret = { kind: BlockMetaFieldKind.Enum, enum: enumValues, nullable, array };
@@ -177,11 +186,19 @@ export class AnnotationBlockMeta implements BlockMetaInterface {
                     nullable: field.nullable,
                     array: field.array,
                 });
+            } else if (field.kind === BlockMetaFieldKind.RichTextBlock) {
+                ret.push({
+                    name,
+                    kind: field.kind,
+                    link: field.link,
+                    nullable: field.nullable,
+                });
             } else if (field.kind === BlockMetaFieldKind.TipTapRichTextBlock) {
                 ret.push({
                     name,
                     kind: field.kind,
                     childBlocks: field.childBlocks,
+                    link: field.link,
                     nullable: field.nullable,
                 });
             } else if (field.kind === BlockMetaFieldKind.Block) {

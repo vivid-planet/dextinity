@@ -1,5 +1,21 @@
 # @comet/cms-api
 
+## 10.6.0
+
+### Patch Changes
+
+- 073dcd7: Add the file name to the `Content-Disposition` header of DAM file downloads
+
+    The header was previously set to `attachment` without a file name, so browsers derived the name of the downloaded file from the URL, which contains the file name without its extension.
+
+- 012411c: Add a `Content-Disposition: inline` header with the file name to DAM file endpoints
+
+    The endpoints serving a file for display previously sent no `Content-Disposition` header at all, so browsers derived the name from the URL when saving the file. They now send `inline` together with the file name, which keeps the file being displayed instead of downloaded.
+
+- d6a910e: Include `attachedBlocks` in the input fields of the block meta of one-of blocks
+
+    The block meta of blocks created with `createOneOfBlock` (and `createLinkBlock`) was missing the `attachedBlocks` field in `inputFields`, causing the generated block input types to only contain `activeType`.
+
 ## 10.5.1
 
 ### Patch Changes

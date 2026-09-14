@@ -890,6 +890,29 @@
         ],
         "inputFields": [
             {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "pixelImage": "PixelImage",
+                                "svgImage": "SvgImage"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
                 "name": "activeType",
                 "kind": "String",
                 "nullable": false
@@ -1654,6 +1677,34 @@
         ],
         "inputFields": [
             {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "internal": "InternalLink",
+                                "external": "ExternalLink",
+                                "damFileDownload": "DamFileDownloadLink",
+                                "email": "EmailLink",
+                                "phone": "PhoneLink",
+                                "news": "NewsLink",
+                                "product": "ProductLink"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
                 "name": "activeType",
                 "kind": "String",
                 "nullable": false
@@ -1905,6 +1956,29 @@
         ],
         "inputFields": [
             {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "external": "ExternalLink",
+                                "phone": "PhoneLink"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
                 "name": "activeType",
                 "kind": "String",
                 "nullable": false
@@ -2020,6 +2094,31 @@
             }
         ],
         "inputFields": [
+            {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "image": "DamImage",
+                                "damVideo": "DamVideo",
+                                "youTubeVideo": "YouTubeVideo",
+                                "vimeoVideo": "VimeoVideo"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
             {
                 "name": "activeType",
                 "kind": "String",
@@ -3056,6 +3155,30 @@
             }
         ],
         "inputFields": [
+            {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "internal": "InternalLink",
+                                "external": "ExternalLink",
+                                "news": "NewsLink"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
             {
                 "name": "activeType",
                 "kind": "String",

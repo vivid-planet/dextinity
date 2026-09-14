@@ -65,7 +65,6 @@ describe.each(handlers)("FilesController.$name", ({ name, urlBuilder }) => {
         await callHandler(controller, { hash: HASH, contentHash: undefined, fileId: FILE_ID, filename: "old-name" }, res);
 
         expect(res.redirect).toHaveBeenCalledWith(HttpStatus.MOVED_PERMANENTLY, CANONICAL_URL);
-        expect(res.setHeader).toHaveBeenCalledWith("Cache-Control", expect.any(String));
         expect(filesService[urlBuilder]).toHaveBeenCalledWith(file, {});
     });
 

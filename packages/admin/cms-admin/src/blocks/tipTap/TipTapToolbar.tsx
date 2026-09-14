@@ -193,6 +193,7 @@ export const TipTapToolbar = ({
     const specialChars = resolvedOptions.nonBreakingSpace || resolvedOptions.softHyphen;
     const hasLink = resolvedOptions.link && !!linkBlock;
     const headingLevels = resolvedOptions.heading ? resolvedOptions.heading.levels : [];
+    const hasParagraph = resolvedOptions.paragraph;
     const hasPlaceholders = placeholders.length > 0;
     const hasChildBlocks = Object.keys(childBlocks).length > 0;
 
@@ -205,7 +206,7 @@ export const TipTapToolbar = ({
                         return String(level);
                     }
                 }
-                return "paragraph";
+                return hasParagraph || resolvedOptions.heading === false ? "paragraph" : String(resolvedOptions.heading.defaultLevel);
             })();
             const activeTipTapTextBlockType: TipTapTextBlockType = (() => {
                 if (e.isActive("orderedList")) {
@@ -221,10 +222,11 @@ export const TipTapToolbar = ({
                 }
                 return "paragraph";
             })();
-            const attrs = e.isActive("heading") ? e.getAttributes("heading") : e.getAttributes("paragraph");
+            const attrs = e.isActive("heading") || !hasParagraph ? e.getAttributes("heading") : e.getAttributes("paragraph");
 
-            // Calculate current list nesting depth for listLevelMax enforcement
-            let canIndent = e.can().sinkListItem("listItem");
+            // Calculate current list nesting depth for listLevelMax enforcement.
+            // The list item node only exists in the schema when lists are enabled.
+            let canIndent = lists && e.can().sinkListItem("listItem");
             if (canIndent && listLevelMax !== undefined) {
                 const { $from } = e.state.selection;
                 let listDepth = 0;
@@ -246,7 +248,7 @@ export const TipTapToolbar = ({
                 canUndo: e.can().undo(),
                 canRedo: e.can().redo(),
                 canIndent,
-                canDedent: e.can().liftListItem("listItem"),
+                canDedent: lists && e.can().liftListItem("listItem"),
                 isBoldActive: e.isActive("bold"),
                 isItalicActive: e.isActive("italic"),
                 isUnderlineActive: e.isActive("underline"),
@@ -372,7 +374,7 @@ export const TipTapToolbar = ({
 
     const handleTextBlockStyleChange = (e: SelectChangeEvent) => {
         const value = e.target.value || null;
-        const nodeType = editor.isActive("heading") ? "heading" : "paragraph";
+        const nodeType = editor.isActive("heading") || !hasParagraph ? "heading" : "paragraph";
         editor.chain().focus().updateAttributes(nodeType, { textBlockStyle: value }).run();
     };
 
@@ -419,9 +421,11 @@ export const TipTapToolbar = ({
                             MenuProps={{ elevation: 1 }}
                             sx={selectSx}
                         >
-                            <MenuItem value="paragraph" dense>
-                                <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockType.paragraph" defaultMessage="Paragraph" />
-                            </MenuItem>
+                            {hasParagraph && (
+                                <MenuItem value="paragraph" dense>
+                                    <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockType.paragraph" defaultMessage="Paragraph" />
+                                </MenuItem>
+                            )}
                             {headingLevels.map((level) => (
                                 <MenuItem key={level} value={String(level)} dense>
                                     <FormattedMessage

@@ -856,24 +856,27 @@ describe("convertDraftJsToTipTap", () => {
 
 describe("buildStrippedTipTapDoc", () => {
     it("returns minimal doc for empty input", () => {
-        expect(buildStrippedTipTapDoc({ blocks: [], entityMap: {} })).toEqual({
+        expect(buildStrippedTipTapDoc({ blocks: [], entityMap: {} }, allEnabled)).toEqual({
             type: "doc",
             content: [{ type: "paragraph" }],
         });
     });
 
     it("emits one paragraph per block with plain text only", () => {
-        const result = buildStrippedTipTapDoc({
-            blocks: [
-                makeBlock({
-                    type: "header-one",
-                    text: "Hi",
-                    inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 2 }],
-                }),
-                makeBlock({ type: "unordered-list-item", text: "item" }),
-            ],
-            entityMap: {},
-        });
+        const result = buildStrippedTipTapDoc(
+            {
+                blocks: [
+                    makeBlock({
+                        type: "header-one",
+                        text: "Hi",
+                        inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 2 }],
+                    }),
+                    makeBlock({ type: "unordered-list-item", text: "item" }),
+                ],
+                entityMap: {},
+            },
+            allEnabled,
+        );
         expect(result).toEqual({
             type: "doc",
             content: [
@@ -884,10 +887,7 @@ describe("buildStrippedTipTapDoc", () => {
     });
 
     it("emits empty paragraphs for empty text blocks", () => {
-        const result = buildStrippedTipTapDoc({
-            blocks: [makeBlock({ type: "unstyled", text: "" })],
-            entityMap: {},
-        });
+        const result = buildStrippedTipTapDoc({ blocks: [makeBlock({ type: "unstyled", text: "" })], entityMap: {} }, allEnabled);
         expect(result.content).toEqual([{ type: "paragraph" }]);
     });
 });

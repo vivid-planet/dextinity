@@ -6,6 +6,7 @@ import { createLinkBlock } from "../factories/createLinkBlock";
 import {
     createTipTapRichTextBlock,
     type CreateTipTapRichTextBlockOptions,
+    resolveTipTapOptions,
     type TipTapRichTextBlockContent,
     type TipTapRichTextBlockDataInterface,
     type TipTapRichTextBlockInputInterface,
@@ -1306,6 +1307,67 @@ describe("createTipTapRichTextBlock validation", () => {
             });
             const errors = await validate(input);
             expect(errors).toHaveLength(0);
+        });
+    });
+
+    describe("heading-only schema (paragraph: false)", () => {
+        const block = createTipTapRichTextBlock(
+            onlyFeatures({ paragraph: false, heading: { levels: [2, 3, 4], defaultLevel: 3 }, bold: true }),
+            "TestHeadingOnly",
+        );
+
+        it("should accept a heading within the allowed levels", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "heading", attrs: { level: 3 }, content: [{ type: "text", text: "Headline" }] }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
+        });
+
+        it("should reject a paragraph", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "paragraph", content: [{ type: "text", text: "Text" }] }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
+            expect(errors[0].property).toBe("tipTapContent");
+        });
+
+        it("should reject a heading level outside the allowed levels", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Headline" }] }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
+        });
+
+        it("should throw when the heading defaultLevel is not one of the allowed levels", () => {
+            expect(() => createTipTapRichTextBlock({ heading: { levels: [2, 3, 4], defaultLevel: 1 } }, "TestInvalidDefaultHeadingLevel")).toThrow();
+        });
+
+        it("should throw when paragraphs are disabled without headings", () => {
+            expect(() => createTipTapRichTextBlock(onlyFeatures({ paragraph: false }), "TestNoTextBlockTypeLeft")).toThrow();
+        });
+
+        it("should throw when lists are enabled without paragraphs", () => {
+            expect(() => createTipTapRichTextBlock({ paragraph: false, orderedList: true }, "TestHeadingOnlyWithOrderedList")).toThrow();
+            expect(() => createTipTapRichTextBlock({ paragraph: false, unorderedList: true }, "TestHeadingOnlyWithUnorderedList")).toThrow();
+        });
+
+        it("should disable lists by default when paragraphs are disabled", () => {
+            const resolvedOptions = resolveTipTapOptions({ paragraph: false });
+            expect(resolvedOptions.orderedList).toBe(false);
+            expect(resolvedOptions.unorderedList).toBe(false);
+            expect(resolvedOptions.heading).toEqual({ levels: [1, 2, 3, 4, 5, 6], defaultLevel: 1 });
         });
     });
 

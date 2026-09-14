@@ -14,6 +14,25 @@ describe("createTipTapRichTextBlock", () => {
         expect(() => createTipTapRichTextBlock({ heading: { levels: [1.5, 2] } })).toThrow();
     });
 
+    it("should throw when the heading defaultLevel is not one of the allowed levels", () => {
+        expect(() => createTipTapRichTextBlock({ heading: { levels: [2, 3, 4], defaultLevel: 1 } })).toThrow();
+        expect(() => createTipTapRichTextBlock({ heading: { defaultLevel: 7 } })).toThrow();
+    });
+
+    it("should throw when paragraphs are disabled and no other text block type is left", () => {
+        expect(() => createTipTapRichTextBlock({ paragraph: false, heading: false })).toThrow();
+    });
+
+    it("should throw when lists are enabled without paragraphs", () => {
+        expect(() => createTipTapRichTextBlock({ paragraph: false, unorderedList: true })).toThrow();
+        expect(() => createTipTapRichTextBlock({ paragraph: false, orderedList: true })).toThrow();
+    });
+
+    it("should start heading-only content with a heading of the default level", () => {
+        const block = createTipTapRichTextBlock({ paragraph: false, heading: { levels: [2, 3, 4], defaultLevel: 3 } });
+        expect(block.defaultValues()).toEqual({ tipTapContent: { type: "doc", content: [{ type: "heading", attrs: { level: 3 } }] } });
+    });
+
     describe("translateContent", () => {
         // The HTML round trip only needs to leave non-text data byte-for-byte identical; whether
         // translation itself changes the surrounding text is exercised separately below, so an

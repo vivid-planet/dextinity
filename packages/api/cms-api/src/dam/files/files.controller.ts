@@ -271,7 +271,6 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
             // extensions were added to DAM file URLs). The hash still validates because it was signed for that filename,
             // so permanently redirect to the current canonical URL instead of serving under the stale one.
             if (params.filename !== file.name) {
-                res.setHeader("Cache-Control", "max-age=31536000, s-maxage=86400, public"); // Public cache, 1 year for browsers, 1 day for proxies/cdn's
                 res.redirect(HttpStatus.MOVED_PERMANENTLY, await this.filesService.createFileDownloadUrl(file, {}));
                 return;
             }
@@ -303,7 +302,6 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
 
             // See the comment in downloadFile above.
             if (params.filename !== file.name) {
-                res.setHeader("Cache-Control", "max-age=31536000, s-maxage=86400, public"); // Public cache, 1 year for browsers, 1 day for proxies/cdn's
                 res.redirect(HttpStatus.MOVED_PERMANENTLY, await this.filesService.createFileUrl(file, {}));
                 return;
             }

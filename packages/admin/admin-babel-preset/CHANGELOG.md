@@ -1,5 +1,7 @@
 # @comet/admin-babel-preset
 
+## 10.6.0
+
 ## 10.5.1
 
 ## 10.5.0

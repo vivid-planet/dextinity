@@ -1,8 +1,29 @@
-import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
+
+import {
+    findTextBlock,
+    type TipTapResolvedList,
+    type TipTapResolvedStyledNode,
+    type TipTapResolvedTextBlock,
+    type TipTapTextBlockTag,
+} from "./textBlocks";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TipTapContent = Record<string, any>;
+
+interface InlineStyle {
+    name: string;
+    appliesTo?: string[];
+}
+
+/**
+ * The text blocks and lists the content is validated against.
+ */
+export interface TipTapTextBlockContext {
+    textBlocks: TipTapResolvedTextBlock[];
+    orderedList: false | TipTapResolvedList;
+    unorderedList: false | TipTapResolvedList;
+}
 
 // ProseMirror's Node.fromJSON silently drops unknown marks. This function
 // checks the raw JSON for mark types that don't exist in the schema.
@@ -29,20 +50,116 @@ function containsUnknownMarks(json: any, schema: Schema): boolean {
     return false;
 }
 
-export function containsInvalidHeadingLevel(content: TipTapContent, headingLevels: HeadingLevel[]): boolean {
+export function getTextBlockTagFromNode(node: TipTapContent): TipTapTextBlockTag | undefined {
+    if (node.type === "paragraph") {
+        return "p";
+    }
+    if (node.type === "heading") {
+        return `h${node.attrs?.level}` as TipTapTextBlockTag;
+    }
+    return undefined;
+}
+
+const getListFromNode = (node: TipTapContent, context: TipTapTextBlockContext): TipTapResolvedList | undefined => {
+    if (node.type === "orderedList") {
+        return context.orderedList || undefined;
+    }
+    if (node.type === "bulletList") {
+        return context.unorderedList || undefined;
+    }
+    return undefined;
+};
+
+/**
+ * The text block or list whose styles apply to a paragraph/heading node. Inside a list, the list's
+ * styles apply, because the list - not the paragraph its items are built from - is what the editor
+ * styles there.
+ */
+function resolveStyledNode({
+    node,
+    list,
+    context,
+}: {
+    node: TipTapContent;
+    list?: TipTapResolvedList;
+    context: TipTapTextBlockContext;
+}): TipTapResolvedStyledNode | undefined {
+    const tag = getTextBlockTagFromNode(node);
+    if (tag === undefined) {
+        return undefined;
+    }
+    return list ?? findTextBlock({ name: node.attrs?.textBlock, tag, textBlocks: context.textBlocks });
+}
+
+/**
+ * Checks the text blocks against the configuration: a text block must exist for the node, an
+ * explicitly stored text block name must be known, and a text block style must be allowed for the
+ * text block (or the list) it is applied to.
+ */
+export function containsInvalidTextBlocks(content: TipTapContent, context: TipTapTextBlockContext, list?: TipTapResolvedList): boolean {
     if (typeof content !== "object" || content === null) {
         return false;
     }
 
-    if (content.type === "heading" && !headingLevels.includes(content.attrs?.level)) {
-        return true;
+    const tag = getTextBlockTagFromNode(content);
+    if (tag !== undefined) {
+        const styledNode = resolveStyledNode({ node: content, list, context });
+        if (!styledNode) {
+            return true;
+        }
+
+        const storedName = content.attrs?.textBlock;
+        if (storedName != null && !context.textBlocks.some((textBlock) => textBlock.name === storedName)) {
+            return true;
+        }
+
+        const style = content.attrs?.textBlockStyle;
+        if (style != null && !styledNode.styles.includes(style)) {
+            return true;
+        }
     }
 
     if (!Array.isArray(content.content)) {
         return false;
     }
 
-    return content.content.some((child: TipTapContent) => containsInvalidHeadingLevel(child, headingLevels));
+    const childList = getListFromNode(content, context) ?? list;
+    return content.content.some((child: TipTapContent) => containsInvalidTextBlocks(child, context, childList));
+}
+
+/**
+ * Checks that every inline style mark is used in a text block (or list) its `appliesTo` allows.
+ */
+export function containsInvalidInlineStyleMarks(
+    content: TipTapContent,
+    inlineStyles: InlineStyle[],
+    context: TipTapTextBlockContext,
+    { list, parentStyledNodeName }: { list?: TipTapResolvedList; parentStyledNodeName?: string } = {},
+): boolean {
+    if (typeof content !== "object" || content === null || !Array.isArray(content.content)) {
+        return false;
+    }
+
+    const styledNodeName = resolveStyledNode({ node: content, list, context })?.name ?? parentStyledNodeName;
+    const childList = getListFromNode(content, context) ?? list;
+
+    for (const child of content.content) {
+        if (child?.type === "text" && Array.isArray(child.marks)) {
+            for (const mark of child.marks) {
+                if (mark.type === "inlineStyle" && mark.attrs?.type) {
+                    const inlineStyle = inlineStyles.find((style) => style.name === mark.attrs.type);
+                    if (inlineStyle?.appliesTo && styledNodeName && !inlineStyle.appliesTo.includes(styledNodeName)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        if (containsInvalidInlineStyleMarks(child, inlineStyles, context, { list: childList, parentStyledNodeName: styledNodeName })) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 export function getListNestingDepth(content: TipTapContent, currentDepth = 0): number {
@@ -70,7 +187,7 @@ export function getListNestingDepth(content: TipTapContent, currentDepth = 0): n
 export function isValidTipTapContentSync(
     value: unknown,
     schema: Schema,
-    { maxTextBlocks, listLevelMax, headingLevels }: { maxTextBlocks?: number; listLevelMax?: number; headingLevels: HeadingLevel[] },
+    { maxTextBlocks, listLevelMax, textBlockContext }: { maxTextBlocks?: number; listLevelMax?: number; textBlockContext: TipTapTextBlockContext },
 ): boolean {
     if (typeof value !== "object" || value === null) {
         return false;
@@ -93,7 +210,7 @@ export function isValidTipTapContentSync(
             return false;
         }
 
-        if (containsInvalidHeadingLevel(value as TipTapContent, headingLevels)) {
+        if (containsInvalidTextBlocks(value as TipTapContent, textBlockContext)) {
             return false;
         }
 

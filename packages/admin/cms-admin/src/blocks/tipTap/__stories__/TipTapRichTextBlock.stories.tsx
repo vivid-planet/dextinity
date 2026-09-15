@@ -1,7 +1,7 @@
 import { Box, chipClasses, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type HTMLAttributes, type ReactNode, useState } from "react";
+import { type ReactNode, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "../createTipTapRichTextBlock";
@@ -73,12 +73,15 @@ export const Default: Story = {
 };
 
 const ReadOnlyBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "paragraph", tag: "p", label: "Paragraph", styles: ["intro"] },
+        { name: "heading-1", tag: "h1", label: "Heading 1" },
+    ],
     textBlockStyles: [
         {
             name: "intro",
             label: "Intro Text",
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
+            element: (props, Tag) => <Tag style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
         },
     ],
 });
@@ -156,7 +159,7 @@ const BoldOnlyBlock = createTipTapRichTextBlock({
     strike: false,
     sub: false,
     sup: false,
-    heading: false,
+    textBlocks: [{ name: "paragraph", tag: "p", label: "Paragraph" }],
     orderedList: false,
     unorderedList: false,
     nonBreakingSpace: false,
@@ -196,23 +199,27 @@ export const BoldOnly: StoryObj<typeof BoldOnlyStory> = {
 };
 
 const TextBlockStylesBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "paragraph", tag: "p", label: "Paragraph", styles: ["intro", "highlight"] },
+        { name: "heading-1", tag: "h1", label: "Heading 1", styles: ["large-heading", "highlight"] },
+        { name: "heading-2", tag: "h2", label: "Heading 2", styles: ["large-heading", "highlight"] },
+        { name: "heading-3", tag: "h3", label: "Heading 3", styles: ["highlight"] },
+    ],
     textBlockStyles: [
         {
             name: "large-heading",
             label: "Large Heading",
-            appliesTo: ["heading-1", "heading-2"],
-            element: (p) => <Typography sx={{ fontSize: 48, lineHeight: 1.2 }} variant="h1" {...p} />,
+            element: (props, Tag) => <Typography sx={{ fontSize: 48, lineHeight: 1.2 }} component={Tag} {...props} />,
         },
         {
             name: "intro",
             label: "Intro Text",
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
+            element: (props, Tag) => <Tag style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
         },
         {
             name: "highlight",
             label: "Highlight",
-            element: (props: HTMLAttributes<HTMLElement>) => <div style={{ backgroundColor: "#fff3cd", padding: 8 }} {...props} />,
+            element: (props) => <div style={{ backgroundColor: "#fff3cd", padding: 8 }} {...props} />,
         },
     ],
 });
@@ -359,7 +366,7 @@ const PlaceholdersWithContentBlock = createTipTapRichTextBlock({
     strike: false,
     sub: false,
     sup: false,
-    heading: false,
+    textBlocks: [{ name: "paragraph", tag: "p", label: "Paragraph" }],
     orderedList: false,
     unorderedList: false,
     nonBreakingSpace: false,
@@ -438,29 +445,31 @@ export const PlaceholdersWithContent: StoryObj<typeof PlaceholdersWithContentSto
 };
 
 const TextBlockStyleInteractionsBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "paragraph", tag: "p", label: "Paragraph", styles: ["intro", "highlight"] },
+        { name: "heading-1", tag: "h1", label: "Heading 1", styles: ["chapter-heading", "large-heading", "highlight"] },
+        { name: "heading-2", tag: "h2", label: "Heading 2", styles: ["large-heading", "highlight"] },
+    ],
     textBlockStyles: [
         {
             name: "chapter-heading",
             label: "Chapter Heading",
-            appliesTo: ["heading-1"],
-            element: (props: HTMLAttributes<HTMLElement>) => <h1 style={{ textTransform: "uppercase", letterSpacing: "0.1em" }} {...props} />,
+            element: (props, Tag) => <Tag style={{ textTransform: "uppercase", letterSpacing: "0.1em" }} {...props} />,
         },
         {
             name: "large-heading",
             label: "Large Heading",
-            appliesTo: ["heading-1", "heading-2"],
-            element: (p) => <Typography sx={{ fontSize: 48, lineHeight: 1.2 }} variant="h1" {...p} />,
+            element: (props, Tag) => <Typography sx={{ fontSize: 48, lineHeight: 1.2 }} component={Tag} {...props} />,
         },
         {
             name: "intro",
             label: "Intro Text",
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
+            element: (props, Tag) => <Tag style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
         },
         {
             name: "highlight",
             label: "Highlight",
-            element: (props: HTMLAttributes<HTMLElement>) => <div style={{ backgroundColor: "#fff3cd", padding: 8 }} {...props} />,
+            element: (props) => <div style={{ backgroundColor: "#fff3cd", padding: 8 }} {...props} />,
         },
     ],
 });
@@ -593,35 +602,37 @@ const ListTextBlockStylesBlock = createTipTapRichTextBlock({
     sup: false,
     nonBreakingSpace: false,
     softHyphen: false,
+    textBlocks: [
+        { name: "paragraph", tag: "p", label: "Paragraph", styles: ["intro", "universal"] },
+        { name: "heading-1", tag: "h1", label: "Heading 1", styles: ["universal"] },
+    ],
+    orderedList: { styles: ["list-large", "list-small", "ol-only", "universal"] },
+    unorderedList: { styles: ["list-large", "list-small", "universal"], defaultStyle: "list-small" },
     textBlockStyles: [
         {
             name: "intro",
             label: "Intro Text",
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
+            element: (props, Tag) => <Tag style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
         },
         {
             name: "list-large",
             label: "List Large",
-            appliesTo: ["ordered-list", "unordered-list"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
+            element: (props, Tag) => <Tag style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
         },
         {
             name: "list-small",
             label: "List Small",
-            appliesTo: ["ordered-list", "unordered-list"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 14, lineHeight: "20px" }} {...props} />,
+            element: (props, Tag) => <Tag style={{ fontSize: 14, lineHeight: "20px" }} {...props} />,
         },
         {
             name: "ol-only",
             label: "Numbered Style",
-            appliesTo: ["ordered-list"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 16, fontWeight: 600 }} {...props} />,
+            element: (props, Tag) => <Tag style={{ fontSize: 16, fontWeight: 600 }} {...props} />,
         },
         {
             name: "universal",
             label: "Universal",
-            element: (props: HTMLAttributes<HTMLElement>) => <div style={{ backgroundColor: "#e8f5e9", padding: 4 }} {...props} />,
+            element: (props) => <div style={{ backgroundColor: "#e8f5e9", padding: 4 }} {...props} />,
         },
     ],
 });
@@ -656,11 +667,11 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
             await waitFor(
                 () => {
                     const body = within(document.body);
-                    expect(body.getByText("Intro Text")).toBeInTheDocument();
-                    expect(body.getByText("Universal")).toBeInTheDocument();
-                    expect(body.queryByText("List Large")).not.toBeInTheDocument();
-                    expect(body.queryByText("List Small")).not.toBeInTheDocument();
-                    expect(body.queryByText("Numbered Style")).not.toBeInTheDocument();
+                    expect(body.getByRole("option", { name: "Intro Text" })).toBeInTheDocument();
+                    expect(body.getByRole("option", { name: "Universal" })).toBeInTheDocument();
+                    expect(body.queryByRole("option", { name: "List Large" })).not.toBeInTheDocument();
+                    expect(body.queryByRole("option", { name: "List Small" })).not.toBeInTheDocument();
+                    expect(body.queryByRole("option", { name: "Numbered Style" })).not.toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -689,6 +700,15 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
             );
         });
 
+        await step("Toggling the list on applies the list's default style, replacing the paragraph's styles", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("List Small");
+                },
+                { timeout: 3000 },
+            );
+        });
+
         await step("Unordered list mode: text block style dropdown shows UL-applicable styles", async () => {
             await waitFor(
                 () => {
@@ -703,11 +723,11 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
             await waitFor(
                 () => {
                     const body = within(document.body);
-                    expect(body.getByText("List Large")).toBeInTheDocument();
-                    expect(body.getByText("List Small")).toBeInTheDocument();
-                    expect(body.getByText("Universal")).toBeInTheDocument();
-                    expect(body.queryByText("Intro Text")).not.toBeInTheDocument();
-                    expect(body.queryByText("Numbered Style")).not.toBeInTheDocument();
+                    expect(body.getByRole("option", { name: "List Large" })).toBeInTheDocument();
+                    expect(body.getByRole("option", { name: "List Small" })).toBeInTheDocument();
+                    expect(body.getByRole("option", { name: "Universal" })).toBeInTheDocument();
+                    expect(body.queryByRole("option", { name: "Intro Text" })).not.toBeInTheDocument();
+                    expect(body.queryByRole("option", { name: "Numbered Style" })).not.toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -736,11 +756,11 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
             await waitFor(
                 () => {
                     const body = within(document.body);
-                    expect(body.getByText("List Large")).toBeInTheDocument();
-                    expect(body.getByText("List Small")).toBeInTheDocument();
-                    expect(body.getByText("Universal")).toBeInTheDocument();
-                    expect(body.getByText("Numbered Style")).toBeInTheDocument();
-                    expect(body.queryByText("Intro Text")).not.toBeInTheDocument();
+                    expect(body.getByRole("option", { name: "List Large" })).toBeInTheDocument();
+                    expect(body.getByRole("option", { name: "List Small" })).toBeInTheDocument();
+                    expect(body.getByRole("option", { name: "Universal" })).toBeInTheDocument();
+                    expect(body.getByRole("option", { name: "Numbered Style" })).toBeInTheDocument();
+                    expect(body.queryByRole("option", { name: "Intro Text" })).not.toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -754,12 +774,12 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
 
             await waitFor(
                 () => {
-                    expect(within(document.body).getByText("List Large")).toBeInTheDocument();
+                    expect(within(document.body).getByRole("option", { name: "List Large" })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
 
-            await userEvent.click(within(document.body).getByText("List Large"));
+            await userEvent.click(within(document.body).getByRole("option", { name: "List Large" }));
 
             await waitFor(
                 () => {
@@ -914,7 +934,14 @@ export const ListLevelMax: StoryObj<typeof ListLevelMaxStory> = {
     },
 };
 
-const HeadingLevelsBlock = createTipTapRichTextBlock({ heading: { levels: [2, 3, 4] } });
+const HeadingLevelsBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "paragraph", tag: "p", label: "Paragraph" },
+        { name: "heading-2", tag: "h2", label: "Heading 2" },
+        { name: "heading-3", tag: "h3", label: "Heading 3" },
+        { name: "heading-4", tag: "h4", label: "Heading 4" },
+    ],
+});
 
 function HeadingLevelsStory() {
     const [state, setState] = useState<TipTapRichTextBlockState>(HeadingLevelsBlock.defaultValues());
@@ -1073,8 +1100,12 @@ export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
 };
 
 const HeadingOnlyBlock = createTipTapRichTextBlock({
-    paragraph: false,
-    heading: { levels: [2, 3, 4], defaultLevel: 3 },
+    textBlocks: [
+        { name: "heading-2", tag: "h2", label: "Heading 2" },
+        { name: "heading-3", tag: "h3", label: "Heading 3" },
+        { name: "heading-4", tag: "h4", label: "Heading 4" },
+    ],
+    defaultTextBlock: "heading-3",
     nonBreakingSpace: false,
     softHyphen: false,
 });
@@ -1152,14 +1183,17 @@ export const HeadingOnly: StoryObj<typeof HeadingOnlyStory> = {
 };
 
 const HeadingOnlyWithTextBlockStylesBlock = createTipTapRichTextBlock({
-    paragraph: false,
-    heading: { levels: [2, 3, 4], defaultLevel: 3 },
+    textBlocks: [
+        { name: "heading-2", tag: "h2", label: "Heading 2", styles: ["headline550"] },
+        { name: "heading-3", tag: "h3", label: "Heading 3", styles: ["headline550"] },
+        { name: "heading-4", tag: "h4", label: "Heading 4", styles: ["headline550"] },
+    ],
+    defaultTextBlock: "heading-3",
     textBlockStyles: [
         {
             name: "headline550",
             label: "Size 550",
-            appliesTo: ["heading-2", "heading-3", "heading-4"],
-            element: (props: HTMLAttributes<HTMLElement>) => <h2 style={{ fontSize: 40, lineHeight: 1.2 }} {...props} />,
+            element: (props, Tag) => <Tag style={{ fontSize: 40, lineHeight: 1.2 }} {...props} />,
         },
     ],
 });

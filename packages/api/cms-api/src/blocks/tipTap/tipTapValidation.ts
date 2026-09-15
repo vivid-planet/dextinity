@@ -50,7 +50,7 @@ function containsUnknownMarks(json: any, schema: Schema): boolean {
     return false;
 }
 
-export function getTextBlockTagFromNode(node: TipTapContent): TipTapTextBlockTag | undefined {
+function getTextBlockTagFromNode(node: TipTapContent): TipTapTextBlockTag | undefined {
     if (node.type === "paragraph") {
         return "p";
     }

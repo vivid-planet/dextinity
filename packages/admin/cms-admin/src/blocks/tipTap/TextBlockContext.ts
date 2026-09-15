@@ -3,7 +3,7 @@ import { createContext } from "react";
 import type { TipTapTextBlockStyle } from "./createTipTapRichTextBlock";
 import type { TipTapResolvedTextBlock } from "./textBlocks";
 
-export interface TextBlockContextValue {
+interface TextBlockContextValue {
     textBlocks: TipTapResolvedTextBlock[];
     textBlockStyles: TipTapTextBlockStyle[];
 }

@@ -59,7 +59,9 @@ jobs:
                   build-packages: "true"
 
             - name: Install Playwright Browsers
-              run: pnpm --filter dextinity-storybook exec playwright install chromium-headless-shell
+              run: |
+                  pnpm --filter dextinity-storybook exec playwright install chromium-headless-shell
+                  pnpm --filter dextinity-demo-site exec playwright install chromium-headless-shell
 
             - name: Test (storybook)
               run: pnpm run test:storybook
@@ -72,5 +74,6 @@ jobs:
                   path: |
                       packages/*/junit-storybook.xml
                       packages/*/*/junit-storybook.xml
+                      demo/*/junit-storybook.xml
                       storybook/junit.xml
                   overwrite: true

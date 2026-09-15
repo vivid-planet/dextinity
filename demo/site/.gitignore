@@ -54,3 +54,7 @@ lang
 lang-extracted
 lang-compiled
 /dist
+
+# storybook
+/storybook-static
+junit-storybook.xml

@@ -1,5 +1,6 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import eslintConfigNextJs from "@dextinity/eslint-config/future/nextjs.js";
+import storybook from "eslint-plugin-storybook";
 
 const docsLink = "https://cms-docs.dextinity.com/docs/faqs/environment-variables-in-site";
 
@@ -12,12 +13,14 @@ export default defineConfig([
         "lang-extracted/**",
         ".next/**",
         "public/**",
+        "storybook-static/**",
         "block-meta.json",
         "lang/**",
         "lang-compiled/**",
         "lang-extracted/**",
     ]),
     ...eslintConfigNextJs,
+    ...storybook.configs["flat/recommended"],
     {
         rules: {
             "no-restricted-syntax": [

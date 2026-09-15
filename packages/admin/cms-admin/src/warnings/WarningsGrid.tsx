@@ -25,7 +25,6 @@ import { useContentScope } from "../contentScope/Provider";
 import { DataGrid } from "../dataGrid/DataGrid";
 import { useDependenciesConfig } from "../dependencies/dependenciesConfig";
 import { getDisplayNameString } from "../dependencies/getDisplayNameString";
-import { useWarningsScopes } from "./useWarningsScopes";
 import { WarningActions } from "./WarningActions";
 import { WarningMessage } from "./WarningMessage";
 import { useWarningsConfig } from "./warningsConfig";
@@ -90,8 +89,8 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
     };
     const { messages: warningMessages } = useWarningsConfig();
     const { entityDependencyMap } = useDependenciesConfig();
-    const { values: scopeValues } = useContentScope();
-    const scopes = useWarningsScopes(showAllScopes);
+    const { scope: currentScope, values: scopeValues } = useContentScope();
+    const scopes = showAllScopes ? scopeValues.map((item) => item.scope) : [currentScope];
 
     const scopeValueOptions = scopeValues.map((item) => {
         const label: string[] = [];
@@ -210,7 +209,8 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
         const customFilterModel = {
             ...filterModel,
             items: (filterModel?.items ?? [])
-                // A scope filter can still come from the URL, even though the column isn't filterable.
+                // `filterable` only hides the column from the filter panel. The filter model is read from the URL,
+                // so a scope filter from an existing link would still reach the query and empty the grid.
                 .filter((item) => showAllScopes || item.field !== "scope")
                 .map((item) => {
                     if (item.field === "scope") {

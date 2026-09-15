@@ -3,6 +3,7 @@ import { dataGridDateTimeColumn, type GridColDef } from "@dextinity/admin";
 import { Warning } from "@dextinity/admin-icons";
 import { FormattedMessage, useIntl } from "react-intl";
 
+import { useContentScope } from "../contentScope/Provider";
 import { DashboardWidgetRoot } from "../dashboard/widgets/DashboardWidgetRoot";
 import { DataGrid } from "../dataGrid/DataGrid";
 import type {
@@ -10,7 +11,6 @@ import type {
     GQLLatestWarningsQuery,
     GQLLatestWarningsQueryVariables,
 } from "./LatestWarningsDashboardWidget.generated";
-import { useWarningsScopes } from "./useWarningsScopes";
 import { WarningActions } from "./WarningActions";
 import { WarningMessage } from "./WarningMessage";
 import { useWarningsConfig } from "./warningsConfig";
@@ -22,7 +22,8 @@ export interface LatestWarningsDashboardWidgetProps {
 
 export const LatestWarningsDashboardWidget = ({ showAllScopes = false }: LatestWarningsDashboardWidgetProps) => {
     const { messages } = useWarningsConfig();
-    const scopes = useWarningsScopes(showAllScopes);
+    const { scope: currentScope, values: scopeValues } = useContentScope();
+    const scopes = showAllScopes ? scopeValues.map((item) => item.scope) : [currentScope];
 
     const { data, loading, error } = useQuery<GQLLatestWarningsQuery, GQLLatestWarningsQueryVariables>(latestWarningsQuery, {
         variables: { scopes },

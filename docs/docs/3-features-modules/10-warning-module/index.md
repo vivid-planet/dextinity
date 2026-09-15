@@ -80,6 +80,15 @@ To make the warnings accessible in the admin panel, add the following entry to t
 }
 ```
 
+`requiredPermission` hides the entry for users without the `warnings` permission in the currently selected scope.
+Guard `LatestWarningsDashboardWidget` the same way with `useUserPermissionCheck`:
+
+```tsx
+const isAllowed = useUserPermissionCheck();
+
+return isAllowed("warnings") && <LatestWarningsDashboardWidget />;
+```
+
 ### 3. Schedule the Daily Warning Check
 
 To ensure warnings are checked regularly, schedule the following CLI command to run once per day:

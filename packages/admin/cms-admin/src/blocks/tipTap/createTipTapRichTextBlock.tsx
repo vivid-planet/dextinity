@@ -551,6 +551,9 @@ function buildTipTapExtensions({
             code: false,
             codeBlock: false,
             link: false,
+            // A heading is directly editable (Enter at its end already creates a paragraph below it), so it
+            // doesn't need TrailingNode's own empty paragraph the way a trailing atom node (e.g. a child block) does.
+            trailingNode: { notAfter: ["heading"] },
         }),
         ...(resolvedOptions.paragraph && hasTextBlockStyles ? [TextBlockStyleParagraph] : []),
         ...(resolvedOptions.heading

@@ -77,7 +77,10 @@ const TopBar = createComponentSlot("div")<ToolbarClassKey>({
 const TopBarActions = createComponentSlot("div")<ToolbarClassKey>({
     componentName: "Toolbar",
     slotName: "topBarActions",
-})();
+})(css`
+    // The breadcrumbs usually push the actions to the end of the top bar, but they render nothing without a trail and a scope indicator.
+    margin-left: auto;
+`);
 
 const ScopeIndicator = createComponentSlot("div")<ToolbarClassKey>({
     componentName: "Toolbar",
@@ -127,7 +130,10 @@ const MainContentContainer = createComponentSlot("div")<ToolbarClassKey>({
 const Breadcrumbs = createComponentSlot(ToolbarBreadcrumbs)<ToolbarClassKey>({
     componentName: "Toolbar",
     slotName: "breadcrumbs",
-})();
+})(css`
+    // Allows the breadcrumbs to shrink below their content width, so that they collapse their items instead of overflowing the top bar.
+    min-width: 0;
+`);
 
 export const Toolbar = (inProps: ToolbarProps) => {
     const {
@@ -148,8 +154,10 @@ export const Toolbar = (inProps: ToolbarProps) => {
         <Root elevation={elevation} ownerState={ownerState} {...slotProps?.root} {...restProps}>
             {!hideTopBar && (
                 <TopBar {...slotProps?.topBar}>
-                    {Boolean(scopeIndicator) && <ScopeIndicator {...slotProps?.scopeIndicator}>{scopeIndicator}</ScopeIndicator>}
-                    <Breadcrumbs {...slotProps?.breadcrumbs} />
+                    <Breadcrumbs
+                        startAdornment={Boolean(scopeIndicator) && <ScopeIndicator {...slotProps?.scopeIndicator}>{scopeIndicator}</ScopeIndicator>}
+                        {...slotProps?.breadcrumbs}
+                    />
                     <FillSpace />
                     {Boolean(topBarActions) && <TopBarActions {...slotProps?.topBarActions}>{topBarActions}</TopBarActions>}
                 </TopBar>

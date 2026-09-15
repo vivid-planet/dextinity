@@ -25,7 +25,9 @@ const Content = styled("div")`
     margin-top: ${({ theme }) => theme.spacing(4)};
     margin-bottom: ${({ theme }) => theme.spacing(4)};
 
-    & > .DextinityAdminStackBreadcrumbs-root:first-of-type {
+    // A leading breadcrumbs bar sits flush at the top, whether it is rendered directly or inside a sticky container.
+    & > .DextinityAdminStackBreadcrumbs-root:first-of-type,
+    & > div:first-of-type:has(> .DextinityAdminStackBreadcrumbs-root) {
         margin-top: -${({ theme }) => theme.spacing(4)};
     }
 `;

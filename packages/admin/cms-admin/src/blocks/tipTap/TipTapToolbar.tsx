@@ -200,16 +200,24 @@ export const TipTapToolbar = ({
     const hasPlaceholders = placeholders.length > 0;
     const hasChildBlocks = Object.keys(childBlocks).length > 0;
 
+    const textBlockTypeSelectStylesByTag = textBlockStyles.reduce((map, style) => {
+        if (style.isTextBlockType && style.appliesTo?.length === 1) {
+            const tag = style.appliesTo[0] as TipTapTextBlockStyleTargetType;
+            map.set(tag, [...(map.get(tag) ?? []), style]);
+        }
+        return map;
+    }, new Map<TipTapTextBlockStyleTargetType, TipTapTextBlockStyle[]>());
+
     const editorState = useEditorState({
         editor,
         selector: ({ editor: e }: { editor: Editor }) => {
-            const activeTextBlockType = (() => {
+            const activeHeadingLevel = (() => {
                 for (let level = 1; level <= 6; level++) {
                     if (e.isActive("heading", { level })) {
-                        return String(level);
+                        return level;
                     }
                 }
-                return hasParagraph || resolvedOptions.heading === false ? "paragraph" : String(resolvedOptions.heading.defaultLevel);
+                return undefined;
             })();
             const activeTipTapTextBlockType: TipTapTextBlockType = (() => {
                 if (e.isActive("orderedList")) {
@@ -218,14 +226,25 @@ export const TipTapToolbar = ({
                 if (e.isActive("bulletList")) {
                     return "unordered-list";
                 }
-                for (let level = 1; level <= 6; level++) {
-                    if (e.isActive("heading", { level })) {
-                        return `heading-${level}` as TipTapTextBlockType;
-                    }
-                }
-                return "paragraph";
+                return activeHeadingLevel !== undefined ? (`heading-${activeHeadingLevel}` as TipTapTextBlockType) : "paragraph";
             })();
             const attrs = e.isActive("heading") || !hasParagraph ? e.getAttributes("heading") : e.getAttributes("paragraph");
+            const activeTextBlockStyleName = (attrs.textBlockStyle as string) ?? "";
+
+            // The type select's value: the tag alone ("paragraph"/"1".."6"), or "<tag>:<styleName>" when the
+            // current node's style is one promoted into this dropdown (see TipTapTextBlockStyle.isTextBlockType).
+            const activeTextBlockType = (() => {
+                const tag =
+                    activeHeadingLevel !== undefined
+                        ? String(activeHeadingLevel)
+                        : hasParagraph || resolvedOptions.heading === false
+                          ? "paragraph"
+                          : String(resolvedOptions.heading.defaultLevel);
+                const targetType: TipTapTextBlockStyleTargetType =
+                    tag === "paragraph" ? "paragraph" : (`heading-${tag}` as TipTapTextBlockStyleTargetType);
+                const typeSelectStyle = textBlockTypeSelectStylesByTag.get(targetType)?.find((style) => style.name === activeTextBlockStyleName);
+                return typeSelectStyle ? `${tag}:${typeSelectStyle.name}` : tag;
+            })();
 
             // Calculate current list nesting depth for listLevelMax enforcement.
             // The list item node only exists in the schema when lists are enabled.
@@ -247,7 +266,7 @@ export const TipTapToolbar = ({
             return {
                 activeTextBlockType,
                 activeTipTapTextBlockType,
-                activeTextBlockStyle: (attrs.textBlockStyle as string) ?? "",
+                activeTextBlockStyle: activeTextBlockStyleName,
                 canUndo: e.can().undo(),
                 canRedo: e.can().redo(),
                 canIndent,
@@ -296,8 +315,36 @@ export const TipTapToolbar = ({
     };
 
     const applicableTextBlockStyles = textBlockStyles.filter(
-        (style) => !style.appliesTo || style.appliesTo.includes(editorState.activeTipTapTextBlockType),
+        (style) => !style.isTextBlockType && (!style.appliesTo || style.appliesTo.includes(editorState.activeTipTapTextBlockType)),
     );
+
+    // A flat array, not JSX with nested fragments: MUI's Select reads its popup items via
+    // `React.Children.toArray(children)`, which flattens arrays but leaves `<Fragment>` wrappers as a single
+    // opaque child, so a per-tag fragment grouping a promoted style with its plain entry wouldn't render.
+    const textBlockTypeMenuItems = [
+        ...(hasParagraph
+            ? [
+                  ...(textBlockTypeSelectStylesByTag.get("paragraph") ?? []).map((style) => (
+                      <MenuItem key={`paragraph:${style.name}`} value={`paragraph:${style.name}`} dense>
+                          {style.label}
+                      </MenuItem>
+                  )),
+                  <MenuItem key="paragraph" value="paragraph" dense>
+                      <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockType.paragraph" defaultMessage="Paragraph" />
+                  </MenuItem>,
+              ]
+            : []),
+        ...headingLevels.flatMap((level) => [
+            ...(textBlockTypeSelectStylesByTag.get(`heading-${level}` as TipTapTextBlockStyleTargetType) ?? []).map((style) => (
+                <MenuItem key={`${level}:${style.name}`} value={`${level}:${style.name}`} dense>
+                    {style.label}
+                </MenuItem>
+            )),
+            <MenuItem key={level} value={String(level)} dense>
+                <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockType.heading" defaultMessage="Heading {level}" values={{ level }} />
+            </MenuItem>,
+        ]),
+    ];
     const applicableInlineStyles = inlineStyles.filter(
         (style) => !style.appliesTo || style.appliesTo.includes(editorState.activeTipTapTextBlockType),
     );
@@ -350,29 +397,32 @@ export const TipTapToolbar = ({
     ];
 
     const handleTextBlockTypeChange = (e: SelectChangeEvent) => {
-        const value = e.target.value;
-        if (value === "paragraph") {
-            editor.chain().focus().setParagraph().run();
-        } else {
-            editor
-                .chain()
-                .focus()
-                .setHeading({ level: Number(value) as 1 | 2 | 3 | 4 | 5 | 6 })
-                .run();
-        }
+        // The value is "<tag>" (e.g. "paragraph", "2") or "<tag>:<styleName>" for a style promoted into this
+        // dropdown via `isTextBlockType` (see textBlockTypeSelectStylesByTag).
+        const [tagKey, typeSelectStyleName] = e.target.value.split(":");
+        const nodeType = tagKey === "paragraph" ? "paragraph" : "heading";
+        const targetType: TipTapTextBlockStyleTargetType =
+            tagKey === "paragraph" ? "paragraph" : (`heading-${tagKey}` as TipTapTextBlockStyleTargetType);
 
-        // Clear textBlockStyle if it's not applicable to the new text block type
-        if (textBlockStyles.length > 0) {
-            const { activeTextBlockStyle } = editorState;
-            if (activeTextBlockStyle) {
-                const newType: TipTapTextBlockType = value === "paragraph" ? "paragraph" : (`heading-${value}` as TipTapTextBlockType);
-                const styleConfig = textBlockStyles.find((s) => s.name === activeTextBlockStyle);
-                if (styleConfig?.appliesTo && !styleConfig.appliesTo.includes(newType)) {
-                    const nodeType = value === "paragraph" ? "paragraph" : "heading";
-                    editor.chain().updateAttributes(nodeType, { textBlockStyle: null }).run();
-                }
+        let chain = editor.chain().focus();
+        chain = tagKey === "paragraph" ? chain.setParagraph() : chain.setHeading({ level: Number(tagKey) as 1 | 2 | 3 | 4 | 5 | 6 });
+
+        if (typeSelectStyleName) {
+            chain = chain.updateAttributes(nodeType, { textBlockStyle: typeSelectStyleName });
+        } else if (textBlockTypeSelectStylesByTag.has(targetType)) {
+            // This tag's plain entry always means no style, once one of its styles is promoted into this dropdown.
+            if (editorState.activeTextBlockStyle) {
+                chain = chain.updateAttributes(nodeType, { textBlockStyle: null });
+            }
+        } else if (editorState.activeTextBlockStyle) {
+            // Clear textBlockStyle if it's not applicable to the new text block type
+            const styleConfig = textBlockStyles.find((s) => s.name === editorState.activeTextBlockStyle);
+            if (styleConfig?.appliesTo && !styleConfig.appliesTo.includes(targetType)) {
+                chain = chain.updateAttributes(nodeType, { textBlockStyle: null });
             }
         }
+
+        chain.run();
     };
 
     const handleTextBlockStyleChange = (e: SelectChangeEvent) => {
@@ -424,20 +474,7 @@ export const TipTapToolbar = ({
                             MenuProps={{ elevation: 1 }}
                             sx={selectSx}
                         >
-                            {hasParagraph && (
-                                <MenuItem value="paragraph" dense>
-                                    <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockType.paragraph" defaultMessage="Paragraph" />
-                                </MenuItem>
-                            )}
-                            {headingLevels.map((level) => (
-                                <MenuItem key={level} value={String(level)} dense>
-                                    <FormattedMessage
-                                        id="dextinity.blocks.tipTapRichText.textBlockType.heading"
-                                        defaultMessage="Heading {level}"
-                                        values={{ level }}
-                                    />
-                                </MenuItem>
-                            ))}
+                            {textBlockTypeMenuItems}
                         </Select>
                     </FormControl>
                 </ToolbarGroup>

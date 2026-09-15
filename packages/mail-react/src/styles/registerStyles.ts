@@ -3,7 +3,7 @@ import type { IMjmlStyleProps } from "@faire/mjml-react";
 import type { Theme } from "../theme/themeTypes.js";
 import type { css } from "../utils/css.js";
 
-type StylesPayload = ReturnType<typeof css> | ((theme: Theme) => ReturnType<typeof css>);
+export type StylesPayload = ReturnType<typeof css> | ((theme: Theme) => ReturnType<typeof css>);
 type MjmlStyleOptions = Partial<Omit<IMjmlStyleProps, "children">>;
 
 interface StyleRegistryEntry {

@@ -84,7 +84,12 @@ export const createDamVideoBlock = (
 
         output2State: async (output, context) => {
             if (!output.damFileId) {
-                return { previewImage: await PixelImageBlock.output2State(output.previewImage, context) };
+                return {
+                    autoplay: output.autoplay,
+                    loop: output.loop,
+                    showControls: output.showControls,
+                    previewImage: await PixelImageBlock.output2State(output.previewImage, context),
+                };
             }
 
             const { data } = await context.apolloClient.query<GQLVideoBlockDamFileQuery, GQLVideoBlockDamFileQueryVariables>({
@@ -140,6 +145,8 @@ export const createDamVideoBlock = (
                 });
             }
 
+            dependencies.push(...(PixelImageBlock.dependencies?.(state.previewImage) ?? []));
+
             return dependencies;
         },
 
@@ -150,6 +157,8 @@ export const createDamVideoBlock = (
             if (replacement) {
                 clonedOutput.damFileId = replacement.replaceWithId;
             }
+
+            clonedOutput.previewImage = PixelImageBlock.replaceDependenciesInOutput(output.previewImage, replacements);
 
             return clonedOutput;
         },

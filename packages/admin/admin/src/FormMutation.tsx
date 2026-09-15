@@ -11,7 +11,7 @@ interface IProps {
 export function FormMutation(props: IProps) {
     const [update, { loading: updateLoading, error: updateError }] = useMutation(props.updateMutation);
     const [create, { loading: createLoading, error: createError }] = useMutation(props.createMutation);
-    return this.props.children(
+    return props.children(
         { update, create },
         {
             loading: updateLoading || createLoading,

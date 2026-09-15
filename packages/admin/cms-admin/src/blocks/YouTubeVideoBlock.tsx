@@ -61,6 +61,13 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
         };
     },
 
+    dependencies: (state) => PixelImageBlock.dependencies?.(state.previewImage) ?? [],
+
+    replaceDependenciesInOutput: (output, replacements) => ({
+        ...output,
+        previewImage: PixelImageBlock.replaceDependenciesInOutput(output.previewImage, replacements),
+    }),
+
     definesOwnPadding: true,
 
     isValid: ({ youtubeIdentifier }) => !youtubeIdentifier || isValidYouTubeIdentifier(youtubeIdentifier),

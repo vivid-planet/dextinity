@@ -1,5 +1,5 @@
+import { useSubRoutePrefix } from "@dextinity/admin";
 import { type PropsWithChildren, useEffect, useRef } from "react";
-import { useRouteMatch } from "react-router";
 import scrollIntoView from "scroll-into-view-if-needed";
 
 import * as sc from "./HoverPreviewComponent.sc";
@@ -10,11 +10,15 @@ interface HoverPreviewComponentProps {
 }
 
 export const HoverPreviewComponent = ({ children, componentSlug }: PropsWithChildren<HoverPreviewComponentProps>) => {
-    const match = useRouteMatch();
+    // The routes of the previewed blocks are built from the same prefix, through
+    // `BlockPreviewContext.parentUrl` and `parentUrlSubRoute`. A `SubRoute` passes its path through
+    // a context instead of a router match, so `useRouteMatch` would miss that segment and a block
+    // list below one, for instance below a `SaveBoundary`, would never be recognized as hovered.
+    const subRoutePrefix = useSubRoutePrefix();
     const iFrameBridge = useIFrameBridge();
     const rootEl = useRef<HTMLDivElement | null>(null);
 
-    const componentRoute = componentSlug.startsWith("#") ? `${match.url}${componentSlug}` : `${match.url}/${componentSlug}`;
+    const componentRoute = componentSlug.startsWith("#") ? `${subRoutePrefix}${componentSlug}` : `${subRoutePrefix}/${componentSlug}`;
 
     const isHovered = iFrameBridge.hoveredSiteRoute?.includes(componentRoute) ?? false;
     useEffect(() => {

@@ -28,10 +28,9 @@ const theme = createTheme({
 registerStyles(
     (theme) => css`
         ${theme.breakpoints.default.belowMediaQuery} {
-            .symmetricFourColumnsSection > table > tbody > tr > td {
+            .symmetricFourColumnsSection > table > tbody > tr > td > div {
                 display: flex !important;
                 flex-direction: column !important;
-                gap: 20px !important;
             }
 
             .symmetricFourColumnsSection__column {
@@ -39,6 +38,11 @@ registerStyles(
                 width: 100% !important;
                 max-width: 100% !important;
                 display: block !important;
+                margin-bottom: 20px !important;
+            }
+
+            .symmetricFourColumnsSection__column--last {
+                margin-bottom: 0 !important;
             }
 
             .symmetricFourColumnsSection__column > table > tbody > tr > td {
@@ -62,7 +66,7 @@ export const Default: StoryObj = {
             const innerColumnWidth = `${((contentWidthPerColumn + columnGap) / availableContentWidth) * 100}%`;
 
             return (
-                <MjmlSection indent className="symmetricFourColumnsSection">
+                <MjmlSection indent disableResponsiveBehavior className="symmetricFourColumnsSection">
                     <MjmlColumn width={outerColumnWidth} paddingRight={halfColumnGap} className="symmetricFourColumnsSection__column">
                         <MjmlText variant="subheading" bottomSpacing>
                             First
@@ -91,7 +95,11 @@ export const Default: StoryObj = {
                         </MjmlText>
                         <MjmlText>Occaecati vel possimus similique reiciendis iure rerum sit architecto.</MjmlText>
                     </MjmlColumn>
-                    <MjmlColumn width={outerColumnWidth} paddingLeft={halfColumnGap} className="symmetricFourColumnsSection__column">
+                    <MjmlColumn
+                        width={outerColumnWidth}
+                        paddingLeft={halfColumnGap}
+                        className="symmetricFourColumnsSection__column symmetricFourColumnsSection__column--last"
+                    >
                         <MjmlText variant="subheading" bottomSpacing>
                             Fourth
                         </MjmlText>

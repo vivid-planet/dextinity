@@ -12,8 +12,11 @@ const tipTapNodeType = `export interface TipTapMark {
     attrs?: Record<string, unknown>;
 }
 
+/**
+ * Structurally compatible with TipTap's \`JSONContent\` type, meaning \`TipTapNode\` and \`JSONContent\` values can be used interchangeably.
+ */
 export interface TipTapNode {
-    type: string;
+    type?: string;
     attrs?: Record<string, unknown>;
     content?: TipTapNode[];
     marks?: TipTapMark[];

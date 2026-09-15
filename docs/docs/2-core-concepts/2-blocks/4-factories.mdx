@@ -293,7 +293,7 @@ export const TeaserVideoBlock = createDamVideoBlock({ name: "TeaserVideo", suppo
 ```
 
 Unsupported options are hidden from the editor.
-Their stored values are kept as long as the API block supports them, so widening `supports` later brings them back.
+Their stored values are kept: the API keeps them even when its own `supports` leaves them out, so widening `supports` in both shows them in the editor again.
 
 ### Site
 

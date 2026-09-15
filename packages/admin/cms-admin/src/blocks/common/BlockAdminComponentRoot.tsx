@@ -14,8 +14,7 @@ const BlockAdminComponentRoot = (props: PropsWithChildren<Props>) => {
         <Stack topLevelTitle={title}>
             <StackBreadcrumbs
                 sx={({ palette, spacing }) => ({
-                    paddingTop: 0,
-                    paddingBottom: spacing(4),
+                    marginBottom: spacing(4),
                     position: "sticky",
                     zIndex: 15,
                     backgroundColor: palette.background.default,

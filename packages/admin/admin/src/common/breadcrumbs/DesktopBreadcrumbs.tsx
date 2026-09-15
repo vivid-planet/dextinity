@@ -1,6 +1,7 @@
 import { ChevronRight } from "@dextinity/admin-icons";
 import { Typography } from "@mui/material";
 import { type ReactNode, type Ref, useEffect, useRef, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
 import type { Breadcrumb, BreadcrumbsProps, BreadcrumbsSlotProps } from "./Breadcrumbs";
 import {
@@ -15,6 +16,7 @@ import {
     OverflowMenuItem,
     Root,
     Separator,
+    StartAdornment,
     ToolbarContainer,
 } from "./Breadcrumbs.slots";
 import { useBreadcrumbsOverflow } from "./useBreadcrumbsOverflow";
@@ -26,7 +28,7 @@ interface DesktopBreadcrumbsProps extends Omit<BreadcrumbsProps, "iconMapping"> 
 const BreadcrumbItemLink = ({ item, separatorIcon, slotProps }: { item: Breadcrumb; separatorIcon: ReactNode; slotProps?: BreadcrumbsSlotProps }) => (
     <MenuContainer ownerState={{ isCurrentItem: false }} {...slotProps?.menuContainer}>
         {/* @ts-expect-error The component prop does not work properly with MUIs `styled()`, see: https://mui.com/material-ui/guides/typescript/#complications-with-the-component-prop */}
-        <Item component="a" href={item.url} {...slotProps?.item}>
+        <Item component={RouterLink} to={item.url} {...slotProps?.item}>
             {item.title}
         </Item>
         <Separator {...slotProps?.separator}>{separatorIcon}</Separator>
@@ -58,7 +60,7 @@ const OverflowEllipsis = ({
     </MenuContainer>
 );
 
-export const DesktopBreadcrumbs = ({ items, separatorIcon, slotProps, ...restProps }: DesktopBreadcrumbsProps) => {
+export const DesktopBreadcrumbs = ({ items, startAdornment, separatorIcon, slotProps, ...restProps }: DesktopBreadcrumbsProps) => {
     const [isOverflowMenuOpen, setIsOverflowMenuOpen] = useState(false);
     const toolbarRef = useRef<HTMLDivElement>(null);
     const measureRef = useRef<HTMLDivElement>(null);
@@ -75,6 +77,8 @@ export const DesktopBreadcrumbs = ({ items, separatorIcon, slotProps, ...restPro
 
     return (
         <Root {...slotProps?.root} {...restProps}>
+            {Boolean(startAdornment) && <StartAdornment {...slotProps?.startAdornment}>{startAdornment}</StartAdornment>}
+
             <ToolbarContainer ref={toolbarRef} {...slotProps?.toolbarContainer}>
                 {leadingItem && <BreadcrumbItemLink item={leadingItem} separatorIcon={separatorIcon} slotProps={slotProps} />}
                 {hasHiddenItems && (
@@ -116,7 +120,7 @@ export const DesktopBreadcrumbs = ({ items, separatorIcon, slotProps, ...restPro
                     {...slotProps?.overflowMenu}
                 >
                     {hiddenItems.map((item) => (
-                        <OverflowMenuItem key={item.url} href={item.url} {...slotProps?.overflowMenuItem}>
+                        <OverflowMenuItem key={item.url} to={item.url} onClick={() => setIsOverflowMenuOpen(false)} {...slotProps?.overflowMenuItem}>
                             <ChevronRight />
                             <Typography variant="body2">{item.title}</Typography>
                         </OverflowMenuItem>

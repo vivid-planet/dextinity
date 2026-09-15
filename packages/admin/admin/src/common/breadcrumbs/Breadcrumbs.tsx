@@ -4,6 +4,7 @@ import { type Theme, useThemeProps } from "@mui/material/styles";
 import type { ReactNode } from "react";
 
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import type { BreadcrumbLink } from "./BreadcrumbLink";
 import type { BreadcrumbsClassKey } from "./Breadcrumbs.slots";
 import { DesktopBreadcrumbs } from "./DesktopBreadcrumbs";
 import { MobileBreadcrumbs } from "./MobileBreadcrumbs";
@@ -16,25 +17,30 @@ export interface Breadcrumb {
 export interface BreadcrumbsProps
     extends ThemedComponentBaseProps<{
         root: "div";
+        startAdornment: "div";
         item: typeof Typography;
         activeItem: typeof Typography;
         separator: "div";
         ellipsis: typeof Typography;
         overflowButton: typeof ButtonBase;
         overflowMenu: typeof MuiPopover;
-        overflowMenuItem: "a";
+        overflowMenuItem: typeof BreadcrumbLink;
         menuContainer: "div";
         toolbarContainer: "div";
         expandedMenu: "div";
         expandedMenuItem: typeof Typography;
         expandedMenuActiveItem: typeof Typography;
-        expandedMenuActiveItemWrapper: "div";
+        expandedMenuActiveItemWrapper: typeof BreadcrumbLink;
         pageTreeVerticalLine: "div";
-        expandedMenuSubitemWrapper: "div";
+        expandedMenuSubitemWrapper: typeof BreadcrumbLink;
         mobileMenuIcon: "div";
         mobileRootButton: typeof ButtonBase;
     }> {
     items: Breadcrumb[];
+    /**
+     * Rendered at the start of the breadcrumbs, before the items, for instance a back button or a scope indicator.
+     */
+    startAdornment?: ReactNode;
     iconMapping?: { separator?: ReactNode; openMenu?: ReactNode; closeMenu?: ReactNode };
 }
 
@@ -49,6 +55,10 @@ export const Breadcrumbs = (inProps: BreadcrumbsProps) => {
         openMenu: openMenuIcon = <ChevronDown />,
         closeMenu: closeMenuIcon = <ChevronUp />,
     } = iconMapping;
+
+    if (!restProps.items.length) {
+        return null;
+    }
 
     if (isDesktop) {
         return <DesktopBreadcrumbs separatorIcon={separatorIcon} {...restProps} />;

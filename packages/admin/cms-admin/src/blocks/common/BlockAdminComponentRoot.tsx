@@ -14,12 +14,21 @@ const BlockAdminComponentRoot = (props: PropsWithChildren<Props>) => {
         <Stack topLevelTitle={title}>
             <StackBreadcrumbs
                 sx={({ palette, spacing }) => ({
-                    paddingTop: 0,
-                    paddingBottom: spacing(4),
+                    marginBottom: spacing(4),
                     position: "sticky",
                     zIndex: 15,
                     backgroundColor: palette.background.default,
                     top: 0,
+                    // The breadcrumbs have a fixed height, so the gap below them has to be painted separately to keep the content scrolling underneath hidden.
+                    "&::before": {
+                        content: '""',
+                        position: "absolute",
+                        top: "100%",
+                        left: 0,
+                        right: 0,
+                        height: spacing(4),
+                        backgroundColor: palette.background.default,
+                    },
                 })}
             />
             <ChildrenContainer>{children}</ChildrenContainer>

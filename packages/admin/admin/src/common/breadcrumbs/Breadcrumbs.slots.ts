@@ -2,9 +2,11 @@ import { ButtonBase, Popover as MuiPopover, Typography } from "@mui/material";
 import { alpha, css, styled, type Theme } from "@mui/material/styles";
 
 import { createComponentSlot } from "../../helpers/createComponentSlot";
+import { BreadcrumbLink } from "./BreadcrumbLink";
 
 export type BreadcrumbsClassKey =
     | "root"
+    | "startAdornment"
     | "item"
     | "activeItem"
     | "separator"
@@ -54,6 +56,18 @@ export const Root = createComponentSlot("div")<BreadcrumbsClassKey>({
                 content: none;
             }
         }
+    `,
+);
+
+export const StartAdornment = createComponentSlot("div")<BreadcrumbsClassKey>({
+    componentName: "Breadcrumbs",
+    slotName: "startAdornment",
+})(
+    ({ theme }) => css`
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        margin-right: ${theme.spacing(2)};
     `,
 );
 
@@ -156,7 +170,7 @@ export const OverflowMenu = createComponentSlot(MuiPopover)<BreadcrumbsClassKey>
     `,
 );
 
-export const OverflowMenuItem = createComponentSlot("a")<BreadcrumbsClassKey>({
+export const OverflowMenuItem = createComponentSlot(BreadcrumbLink)<BreadcrumbsClassKey>({
     componentName: "Breadcrumbs",
     slotName: "overflowMenuItem",
 })(
@@ -211,16 +225,16 @@ export const ToolbarContainer = createComponentSlot("div")<BreadcrumbsClassKey>(
 })(
     ({ theme }) => css`
         display: flex;
+        flex: 1;
+        min-width: 0;
         align-items: center;
         justify-content: space-between;
+        overflow: hidden;
         height: 40px;
         padding: 0;
 
         ${theme.breakpoints.up("sm")} {
-            flex: 1;
-            min-width: 0;
             justify-content: flex-start;
-            overflow: hidden;
             height: 50px;
         }
     `,
@@ -265,7 +279,7 @@ type WrapperOwnerState = { indentation: number };
 const wrapperPaddingLeft = (theme: Theme, indentation: number) =>
     indentation === 0 ? theme.spacing(3) : `calc(${theme.spacing(1)} + 17px * ${indentation})`;
 
-export const ExpandedMenuActiveItemWrapper = createComponentSlot("div")<BreadcrumbsClassKey, WrapperOwnerState>({
+export const ExpandedMenuActiveItemWrapper = createComponentSlot(BreadcrumbLink)<BreadcrumbsClassKey, WrapperOwnerState>({
     componentName: "Breadcrumbs",
     slotName: "expandedMenuActiveItemWrapper",
 })(
@@ -277,10 +291,11 @@ export const ExpandedMenuActiveItemWrapper = createComponentSlot("div")<Breadcru
         padding-left: ${wrapperPaddingLeft(theme, ownerState.indentation)};
         padding-right: ${theme.spacing(3)};
         background-color: ${alpha(theme.palette.primary.main, 0.1)};
+        text-decoration: none;
     `,
 );
 
-export const ExpandedMenuSubitemWrapper = createComponentSlot("div")<BreadcrumbsClassKey, WrapperOwnerState>({
+export const ExpandedMenuSubitemWrapper = createComponentSlot(BreadcrumbLink)<BreadcrumbsClassKey, WrapperOwnerState>({
     componentName: "Breadcrumbs",
     slotName: "expandedMenuSubitemWrapper",
 })(
@@ -291,6 +306,7 @@ export const ExpandedMenuSubitemWrapper = createComponentSlot("div")<Breadcrumbs
         height: 45px;
         padding-left: ${wrapperPaddingLeft(theme, ownerState.indentation)};
         padding-right: ${theme.spacing(3)};
+        text-decoration: none;
     `,
 );
 
@@ -306,8 +322,12 @@ export const MobileRootButton = createComponentSlot(ButtonBase)<BreadcrumbsClass
     componentName: "Breadcrumbs",
     slotName: "mobileRootButton",
 })(css`
-    display: block;
-    width: 100%;
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
     text-align: left;
 `);
 

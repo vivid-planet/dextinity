@@ -368,6 +368,26 @@ const nodeMapping: Record<string, TipTapNodeHandler> = {
 };
 ```
 
+#### Default text block styles
+
+By default, the styling select always offers an unstyled _Default_ entry next to the configured `textBlockStyles`. `defaultTextBlockStyles` assigns one style per tag as that tag's default instead: no _Default_ entry is offered for it, a newly created or converted heading/paragraph of that tag gets the style automatically, and the API rejects stored content of that tag missing a style. This matches the Draft.js RTE's `standardBlockType`, which had no unstyled state to begin with for the block types it covered.
+
+```ts title="tip-tap-rich-text.block.ts (API and Admin)"
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    textBlockStyles: [
+        { name: "copy100", appliesTo: ["paragraph"] },
+        { name: "copy200", appliesTo: ["paragraph"] },
+        { name: "headline300", appliesTo: ["heading-2"] },
+    ],
+    defaultTextBlockStyles: {
+        paragraph: "copy100",
+        "heading-2": "headline300",
+    },
+});
+```
+
+Each value must be the `name` of an entry in `textBlockStyles` whose `appliesTo` (if set) includes that tag. A tag without an entry keeps today's behavior — the styling select still offers _Default_ for it, unchanged. `migrateFromDraftJs` falls back to the configured default when a mapped Draft.js block doesn't specify a `textBlockStyle`, the same way `heading.defaultLevel` supplies a missing heading level.
+
 ### Heading-only blocks
 
 Turning the `paragraph` feature off leaves a block that only holds headings — the TipTap equivalent of the Draft.js pattern of a `RichTextBlock` restricted to `header-*` block types with a `standardBlockType`, for instance the headline part of a heading block:

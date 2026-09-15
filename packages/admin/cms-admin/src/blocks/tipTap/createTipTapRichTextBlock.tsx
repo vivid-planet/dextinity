@@ -22,6 +22,7 @@ import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface, type ReadOnlyBlockRenderInterface } from "../types";
 import { ChildBlocksContext } from "./ChildBlocksContext";
 import { translateTipTapContent } from "./contentTranslation";
+import { createDefaultTextBlockStyleExtension } from "./defaultTextBlockStyleHelpers";
 import { CmsBlock, CmsInlineBlock } from "./extensions/CmsBlock";
 import { CmsLink } from "./extensions/CmsLink";
 import { InlineStyleMark } from "./extensions/InlineStyleMark";
@@ -151,6 +152,9 @@ export type TipTapTextBlockType =
     | "heading-6"
     | "ordered-list"
     | "unordered-list";
+
+// The `textBlockStyle` attribute only exists on paragraph and heading nodes, so lists are excluded here.
+export type TipTapTextBlockStyleTargetType = Exclude<TipTapTextBlockType, "ordered-list" | "unordered-list">;
 
 export interface TipTapTextBlockStyle {
     name: string;
@@ -285,6 +289,15 @@ interface TipTapRichTextBlockFactoryOptions {
      */
     childBlocks?: Record<string, TipTapChildBlock>;
     /**
+     * Assigns a default text block style per tag: the style a newly created or converted heading/paragraph
+     * of that tag gets automatically, so the toolbar's text block style dropdown no longer offers an unstyled
+     * "Default" entry for it. Matches the pre-TipTap Draft.js RTE, where `standardBlockType` played the same
+     * role and there was no "no style" state to begin with.
+     *
+     * Each value must be the `name` of an entry in `textBlockStyles` whose `appliesTo` (if set) includes that tag.
+     */
+    defaultTextBlockStyles?: Partial<Record<TipTapTextBlockStyleTargetType, string>>;
+    /**
      * Limits the maximum number of top-level text blocks (paragraphs, headings, lists)
      * that can be created in the editor.
      */
@@ -317,14 +330,25 @@ function getPlainTextFromContent(content: JSONContent): string {
 // block node and therefore ProseMirror's default block type.
 const paragraphPriority = 1000;
 
-const buildEmptyContent = (resolvedOptions: TipTapResolvedOptions): JSONContent => ({
-    type: "doc",
-    content: [
-        resolvedOptions.paragraph || resolvedOptions.heading === false
-            ? { type: "paragraph" }
-            : { type: "heading", attrs: { level: resolvedOptions.heading.defaultLevel } },
-    ],
-});
+const buildEmptyContent = (
+    resolvedOptions: TipTapResolvedOptions,
+    defaultTextBlockStyles: Partial<Record<TipTapTextBlockStyleTargetType, string>>,
+): JSONContent => {
+    const isParagraph = resolvedOptions.paragraph || resolvedOptions.heading === false;
+    const node: JSONContent = isParagraph
+        ? { type: "paragraph" }
+        : { type: "heading", attrs: { level: (resolvedOptions.heading as { defaultLevel: HeadingLevel }).defaultLevel } };
+
+    const targetType: TipTapTextBlockStyleTargetType = isParagraph
+        ? "paragraph"
+        : (`heading-${(resolvedOptions.heading as { defaultLevel: HeadingLevel }).defaultLevel}` as TipTapTextBlockStyleTargetType);
+    const textBlockStyle = defaultTextBlockStyles[targetType];
+    if (textBlockStyle) {
+        node.attrs = { ...node.attrs, textBlockStyle };
+    }
+
+    return { type: "doc", content: [node] };
+};
 
 /**
  * Sets the default heading level and, for heading-only blocks, makes the heading the schema's
@@ -509,6 +533,7 @@ function collectLinkMarksData(content: JSONContent): unknown[] {
 function buildTipTapExtensions({
     resolvedOptions,
     textBlockStyles,
+    defaultTextBlockStyles,
     inlineStyles,
     placeholders,
     linkBlock,
@@ -518,6 +543,7 @@ function buildTipTapExtensions({
 }: {
     resolvedOptions: TipTapResolvedOptions;
     textBlockStyles: TipTapTextBlockStyle[];
+    defaultTextBlockStyles: Partial<Record<TipTapTextBlockStyleTargetType, string>>;
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
     linkBlock?: BlockInterface & LinkBlockInterface;
@@ -577,6 +603,7 @@ function buildTipTapExtensions({
         ...(hasInlineChildBlocks ? [CmsInlineBlock] : []),
         ...(maxTextBlocks !== undefined ? [createMaxTextBlocksExtension(maxTextBlocks)] : []),
         ...(listLevelMax !== undefined ? [createListLevelMaxExtension(listLevelMax)] : []),
+        ...(Object.keys(defaultTextBlockStyles).length > 0 ? [createDefaultTextBlockStyleExtension(defaultTextBlockStyles)] : []),
     ];
 }
 
@@ -595,6 +622,7 @@ export interface TipTapEditorProps {
     updateState: React.Dispatch<React.SetStateAction<TipTapRichTextBlockState>>;
     resolvedOptions: TipTapResolvedOptions;
     textBlockStyles: TipTapTextBlockStyle[];
+    defaultTextBlockStyles: Partial<Record<TipTapTextBlockStyleTargetType, string>>;
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
     linkBlock?: BlockInterface & LinkBlockInterface;
@@ -610,6 +638,7 @@ export const TipTapEditor = ({
     updateState,
     resolvedOptions,
     textBlockStyles,
+    defaultTextBlockStyles,
     inlineStyles,
     placeholders,
     linkBlock,
@@ -624,6 +653,7 @@ export const TipTapEditor = ({
     const extensions = buildTipTapExtensions({
         resolvedOptions,
         textBlockStyles,
+        defaultTextBlockStyles,
         inlineStyles,
         placeholders,
         linkBlock,
@@ -727,6 +757,7 @@ export const TipTapEditor = ({
                                 editor={editor}
                                 resolvedOptions={resolvedOptions}
                                 textBlockStyles={textBlockStyles}
+                                defaultTextBlockStyles={defaultTextBlockStyles}
                                 inlineStyles={inlineStyles}
                                 placeholders={placeholders}
                                 linkBlock={linkBlock}
@@ -751,6 +782,7 @@ export const TipTapEditor = ({
                             editorProps={{
                                 resolvedOptions,
                                 textBlockStyles,
+                                defaultTextBlockStyles,
                                 inlineStyles,
                                 placeholders,
                                 linkBlock,
@@ -770,12 +802,37 @@ export const TipTapEditor = ({
 type TipTapRichTextBlockInterface = BlockInterface<TipTapRichTextBlockData, TipTapRichTextBlockState, TipTapRichTextBlockInput> &
     ReadOnlyBlockRenderInterface<TipTapRichTextBlockState>;
 
+function validateDefaultTextBlockStyles(
+    defaultTextBlockStyles: Partial<Record<TipTapTextBlockStyleTargetType, string>>,
+    textBlockStyles: TipTapTextBlockStyle[],
+    resolvedOptions: TipTapResolvedOptions,
+): void {
+    for (const [tag, styleName] of Object.entries(defaultTextBlockStyles) as [TipTapTextBlockStyleTargetType, string][]) {
+        const isEnabledTag =
+            tag === "paragraph"
+                ? resolvedOptions.paragraph
+                : resolvedOptions.heading !== false && resolvedOptions.heading.levels.includes(Number(tag.slice("heading-".length)) as HeadingLevel);
+        if (!isEnabledTag) {
+            throw new Error(`defaultTextBlockStyles has an entry for "${tag}", which is not enabled`);
+        }
+
+        const style = textBlockStyles.find((s) => s.name === styleName);
+        if (!style) {
+            throw new Error(`defaultTextBlockStyles has an entry for "${tag}" referencing unknown text block style "${styleName}"`);
+        }
+        if (style.appliesTo && !style.appliesTo.includes(tag)) {
+            throw new Error(`defaultTextBlockStyles has an entry for "${tag}", but text block style "${styleName}" does not apply to it`);
+        }
+    }
+}
+
 /**
  * @experimental
  */
 export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOptions = {}): TipTapRichTextBlockInterface => {
     const resolvedOptions = resolveTipTapOptions(options);
     const textBlockStyles = options.textBlockStyles ?? [];
+    const defaultTextBlockStyles = options.defaultTextBlockStyles ?? {};
     const inlineStyles = options.inlineStyles ?? [];
     const placeholders = options.placeholders ?? [];
     const linkBlock = options.link;
@@ -785,11 +842,15 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
     const maxTextBlocks = options.maxTextBlocks;
     const listLevelMax = options.listLevelMax;
     const minHeight = options.minHeight;
-    const emptyContent = buildEmptyContent(resolvedOptions);
+
+    validateDefaultTextBlockStyles(defaultTextBlockStyles, textBlockStyles, resolvedOptions);
+
+    const emptyContent = buildEmptyContent(resolvedOptions, defaultTextBlockStyles);
 
     const sharedEditorProps = {
         resolvedOptions,
         textBlockStyles,
+        defaultTextBlockStyles,
         inlineStyles,
         placeholders,
         linkBlock,
@@ -802,6 +863,7 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
     const tipTapExtensions = buildTipTapExtensions({
         resolvedOptions,
         textBlockStyles,
+        defaultTextBlockStyles,
         inlineStyles,
         placeholders,
         linkBlock,

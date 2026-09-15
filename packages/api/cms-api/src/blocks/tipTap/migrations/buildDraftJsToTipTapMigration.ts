@@ -44,8 +44,9 @@ interface BuildOptions extends ConvertOptions {
 }
 
 export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConstructor<BlockMigrationInterface> {
-    const { schema, maxTextBlocks, headingLevels, resolvedOptions, link, textBlockStyleMap, inlineStyleMap, listLevelMax } = options;
-    const emptyDoc = buildEmptyTipTapDoc(resolvedOptions);
+    const { schema, maxTextBlocks, headingLevels, resolvedOptions, link, textBlockStyleMap, inlineStyleMap, listLevelMax, defaultTextBlockStyles } =
+        options;
+    const emptyDoc = buildEmptyTipTapDoc(resolvedOptions, defaultTextBlockStyles);
 
     return class DraftJsToTipTapMigration extends BlockMigration<(from: From) => To> implements BlockMigrationInterface {
         public readonly toVersion = 1;
@@ -59,7 +60,14 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
                 return { tipTapContent: emptyDoc };
             }
 
-            const converted = convertDraftJsToTipTap(from.draftContent, { resolvedOptions, link, textBlockStyleMap, inlineStyleMap, listLevelMax });
+            const converted = convertDraftJsToTipTap(from.draftContent, {
+                resolvedOptions,
+                link,
+                textBlockStyleMap,
+                inlineStyleMap,
+                listLevelMax,
+                defaultTextBlockStyles,
+            });
             if (isValidTipTapContentSync(converted, schema, { maxTextBlocks, listLevelMax, headingLevels })) {
                 return { tipTapContent: converted };
             }

@@ -13,6 +13,7 @@ interface TipTapContentTranslationDialogProps {
         TipTapEditorProps,
         | "resolvedOptions"
         | "textBlockStyles"
+        | "defaultTextBlockStyles"
         | "inlineStyles"
         | "placeholders"
         | "linkBlock"

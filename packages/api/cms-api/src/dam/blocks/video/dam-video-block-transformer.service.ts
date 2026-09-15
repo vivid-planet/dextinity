@@ -4,7 +4,7 @@ import { BlockContext, BlockTransformerServiceInterface, TraversableTransformBlo
 import { DamFileAiContentType } from "../../files/entities/ai-content-type.enum";
 import { FilesService } from "../../files/files.service";
 import { DamScopeInterface } from "../../types";
-import { DamVideoBlockData } from "./dam-video.block";
+import { DamVideoBlockDataInterface } from "./createDamVideoBlock";
 
 type TransformResponse = {
     damFile?: {
@@ -26,10 +26,10 @@ type TransformResponse = {
 };
 
 @Injectable()
-export class DamVideoBlockTransformerService implements BlockTransformerServiceInterface<DamVideoBlockData, TransformResponse> {
+export class DamVideoBlockTransformerService implements BlockTransformerServiceInterface<DamVideoBlockDataInterface, TransformResponse> {
     constructor(private readonly filesService: FilesService) {}
 
-    async transformToPlain(block: DamVideoBlockData, { previewDamUrls }: BlockContext) {
+    async transformToPlain(block: DamVideoBlockDataInterface, { previewDamUrls }: BlockContext) {
         const ret: TraversableTransformBlockResponse = {
             autoplay: block.autoplay,
             loop: block.loop,

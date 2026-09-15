@@ -32,6 +32,10 @@ describe("createDamVideoBlock", () => {
         expect(createDamVideoBlock().name).toBe("DamVideo");
     });
 
+    it("should allow setting the name", () => {
+        expect(createDamVideoBlock({ name: "TeaserVideo" }).name).toBe("TeaserVideo");
+    });
+
     it("should allow overriding the tags", () => {
         expect(createDamVideoBlock({ tags: ["Movie"] }).tags).toEqual(["Movie"]);
     });

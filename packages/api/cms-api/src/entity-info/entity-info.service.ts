@@ -1,12 +1,15 @@
-import { AnyEntity, EntityManager } from "@mikro-orm/postgresql";
+import { AnyEntity, EntityManager, EntityMetadata } from "@mikro-orm/postgresql";
 import { Injectable, Logger } from "@nestjs/common";
 
 import { DiscoverService } from "../dependencies/discover.service";
+import { PAGE_TREE_ENTITY } from "../page-tree/page-tree.constants";
 import { REQUIRED_PERMISSION_METADATA_KEY, RequiredPermissionMetadata } from "../user-permissions/decorators/required-permission.decorator";
+import { SCOPED_ENTITY_METADATA_KEY, ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator";
 import { ENTITY_INFO_METADATA_KEY, EntityInfo } from "./entity-info.decorator";
 import { EntityInfoObject } from "./entity-info.object";
 import { isEntityInfoSql, requiredPermissionToSql } from "./entity-info.utils";
 import { resolveFieldToSql } from "./resolve-field-to-sql";
+import { NO_SCOPES_SQL, resolveScopesToSql } from "./resolve-scopes-to-sql";
 
 @Injectable()
 export class EntityInfoService {
@@ -33,8 +36,18 @@ export class EntityInfoService {
                     | undefined;
                 const requiredPermissionSql = requiredPermissionToSql(permissionMetadata?.requiredPermission);
 
+                const { metadata } = targetEntity;
+                const scopesSql = this.resolveScopesSql(targetEntity);
+
+                // The raw SQL may select from a dedicated view that doesn't know about the entity's scope. Join the
+                // entity's own table (on the id the SQL is required to return) to resolve the scope from it.
+                const scopeJoin =
+                    scopesSql === NO_SCOPES_SQL
+                        ? ""
+                        : ` LEFT JOIN "${metadata.tableName}" ON "${metadata.tableName}"."${metadata.primaryKeys[0]}"::text = sub."id"`;
+
                 indexSelects.push(
-                    `SELECT sub."name", sub."secondaryInformation", sub."visible", sub."id", sub."entityName", ${requiredPermissionSql} AS "requiredPermission" FROM (${sql}) sub`,
+                    `SELECT sub."name", sub."secondaryInformation", sub."visible", sub."id", sub."entityName", ${requiredPermissionSql} AS "requiredPermission", ${scopesSql} AS "scopes" FROM (${sql}) sub${scopeJoin}`,
                 );
             } else {
                 const { entityName, metadata } = targetEntity;
@@ -72,16 +85,27 @@ export class EntityInfoService {
                                 ${visibleSql} AS "visible",
                                 "${metadata.tableName}"."${primary}"::text "id",
                                 '${entityName}' "entityName",
-                                ${requiredPermissionSql} AS "requiredPermission"
+                                ${requiredPermissionSql} AS "requiredPermission",
+                                ${this.resolveScopesSql(targetEntity)} AS "scopes"
                             FROM "${metadata.tableName}"`;
                 indexSelects.push(select);
             }
         }
 
         // add all PageTreeNode Documents (Page, Link etc) thru PageTreeNodeDocument (no @EntityInfo needed on Page/Link)
-        indexSelects.push(`SELECT "PageTreeNodeEntityInfo"."name", "PageTreeNodeEntityInfo"."secondaryInformation", "PageTreeNodeEntityInfo"."visible", "PageTreeNodeDocument"."documentId"::text "id", "type" "entityName", ARRAY['pageTree']::text[] AS "requiredPermission"
+        // Documents are scoped by their page tree node, which is why the scope is resolved from it instead of from the
+        // document entity (whose @ScopedEntity is a service and therefore not convertible to SQL).
+        const pageTreeNode = targetEntities.find((targetEntity) => targetEntity.metadata.tableName === PAGE_TREE_ENTITY);
+        const pageTreeNodeScopesSql = pageTreeNode ? this.resolveScopesSql(pageTreeNode) : NO_SCOPES_SQL;
+        const pageTreeNodeScopeJoin =
+            pageTreeNodeScopesSql === NO_SCOPES_SQL
+                ? ""
+                : `LEFT JOIN "${PAGE_TREE_ENTITY}" ON "${PAGE_TREE_ENTITY}"."id" = "PageTreeNodeDocument"."pageTreeNodeId"`;
+
+        indexSelects.push(`SELECT "PageTreeNodeEntityInfo"."name", "PageTreeNodeEntityInfo"."secondaryInformation", "PageTreeNodeEntityInfo"."visible", "PageTreeNodeDocument"."documentId"::text "id", "type" "entityName", ARRAY['pageTree']::text[] AS "requiredPermission", ${pageTreeNodeScopesSql} AS "scopes"
             FROM "PageTreeNodeDocument"
             JOIN "PageTreeNodeEntityInfo" ON "PageTreeNodeEntityInfo"."id" = "PageTreeNodeDocument"."pageTreeNodeId"::text
+            ${pageTreeNodeScopeJoin}
         `);
 
         const viewSql = indexSelects.join("\n UNION ALL \n");
@@ -90,6 +114,14 @@ export class EntityInfoService {
         await this.entityManager.getConnection().execute(`DROP VIEW IF EXISTS "EntityInfo"`);
         await this.entityManager.getConnection().execute(`CREATE VIEW "EntityInfo" AS ${viewSql}`);
         console.timeEnd("creating EntityInfo view");
+    }
+
+    private resolveScopesSql(targetEntity: { entity: AnyEntity; metadata: EntityMetadata }): string {
+        const scopedEntity = Reflect.getMetadata(SCOPED_ENTITY_METADATA_KEY, targetEntity.entity) as ScopedEntityMeta | undefined;
+
+        // The EntityInfo view is created on every application start, so an entity whose scope cannot be resolved must
+        // not break the view creation. It contributes no scope instead.
+        return resolveScopesToSql({ metadata: targetEntity.metadata, scopedEntity, onUnsupported: "null" });
     }
 
     async dropEntityInfoView() {

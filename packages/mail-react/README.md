@@ -22,7 +22,7 @@ We extend `@faire/mjml-react` rather than fork it. A few rules keep that working
 ### Styling
 
 - **Inline first.** Components must render correctly without any `<style>` block — clients like Outlook ignore them.
-- **Media queries** via `registerStyles` are progressive enhancement for mobile, where modern CSS (flex, grid) is fine. Use `theme.breakpoints.*.belowMediaQuery` (max-width queries) to target viewports below a breakpoint.
+- **Media queries** via `registerStyles` are progressive enhancement for mobile, where modern CSS (flex, grid) is available — support still varies per property. Use `theme.breakpoints.*.belowMediaQuery` (max-width queries) to target viewports below a breakpoint.
 - **BEM, camelCase blocks.** Block `mjmlSection`, element `mjmlSection__item`, modifier `mjmlSection--indented`. Every component applies its block class and merges any consumer-provided `className` with `clsx`: `clsx("mjmlSection", className)`.
 
 ### Theme variants

@@ -49,6 +49,7 @@
         "lru-cache": "^11.5.1",
         "mjml": "^4.18.0",
         "next": "^16.2.10",
+        "nodemailer": "^10.0.0",
         "react": "^19.2.6",
         "react-dom": "^19.2.6",
         "react-focus-lock": "^2.13.7",

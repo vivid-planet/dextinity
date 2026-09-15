@@ -123,11 +123,11 @@ Common commands:
 
 ### API (`packages/api/`)
 
-| Package                    | Description                                                                                |
-| -------------------------- | ------------------------------------------------------------------------------------------ |
-| `@dextinity/cms-api`       | NestJS/GraphQL API for CMS features (file uploads, translations, blocks, S3/Azure storage) |
-| `@dextinity/brevo-api`     | NestJS integration for the Brevo email/marketing service                                   |
-| `@dextinity/api-generator` | CLI tool that generates TypeScript types from GraphQL schemas (`dextinity-api-generator` bin)  |
+| Package                    | Description                                                                                   |
+| -------------------------- | --------------------------------------------------------------------------------------------- |
+| `@dextinity/cms-api`       | NestJS/GraphQL API for CMS features (file uploads, translations, blocks, S3/Azure storage)    |
+| `@dextinity/brevo-api`     | NestJS integration for the Brevo email/marketing service                                      |
+| `@dextinity/api-generator` | CLI tool that generates TypeScript types from GraphQL schemas (`dextinity-api-generator` bin) |
 
 ### Site (`packages/site/`)
 
@@ -180,6 +180,14 @@ Fix description here
 
 - Do not use Conventional Commits.
 - If a change is scoped to one package, prefix the commit message with the affected package name. Don't include `@dextinity/` in the package name.
+
+## Pull request descriptions
+
+- Fill in `.github/pull_request_template.md`. Don't add sections beyond it, and delete the sections and comments that don't apply.
+- Describe why the change is needed, not what changed. Never restate the diff: no file-by-file list of changes, no summary of the code the reviewer is about to read.
+- Don't document how you arrived at the change: which files you read, which documentation you checked, which alternatives you ruled out. Only the outcome belongs in the description; alternatives go under "Further information" when they help the reviewer decide.
+- Keep the length proportional to the change. A one-line fix gets a paragraph, not a report.
+- The description becomes the message of the squashed commit. See CONTRIBUTING.md#pull-requests.
 
 ## Generated demo files
 

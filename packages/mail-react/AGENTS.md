@@ -4,7 +4,7 @@
 
 [README.md](README.md) explains what this package is, the design decisions behind it (e.g. `useOptionalTheme()` over `useTheme()`), and the conventions its code follows. Read it before working in here. If a change reverses a decision or shifts a convention, update the README in the same PR.
 
-When your change affects how the package is used (components, behavior, patterns, styling), update the docs and the agent skill (`skills/dextinity-mail-react/SKILL.md`) — see _Usage documentation_ in the README; consider a separate docs commit. The skill is the agent-facing usage guide; it doesn't restate props, types, or defaults — those live in the package's types and TSDoc.
+When a change affects how the package is used (components, documented behavior, patterns, styling), update the docs and the agent skill (`skills/dextinity-mail-react/SKILL.md`) — see _Usage documentation_ in the README; consider a separate docs commit. A fix inside the package that leaves its usage unchanged needs neither. The skill is the agent-facing usage guide; it doesn't restate props, types, or defaults — those live in the package's types and TSDoc.
 
 ## When creating a changeset
 

@@ -48,6 +48,11 @@ type ContentScopeWithLabel {
   label: JSONObject!
 }
 
+type ContentScopeDimension {
+  name: String!
+  label: String!
+}
+
 type UserPermissionsUser {
   id: String!
   name: String!
@@ -567,6 +572,7 @@ type Query {
   userPermissionsAvailablePermissions: [String!]!
   userPermissionsContentScopes(userId: String!, skipManual: Boolean): [JSONObject!]!
   userPermissionsAvailableContentScopes: [ContentScopeWithLabel!]!
+  userPermissionsAvailableContentScopeDimensions: [ContentScopeDimension!]!
   fileUploadForTypesGenerationDoNotUse: FileUpload!
   azureAiTranslate(input: AzureAiTranslationInput!): String!
   azureAiTranslateBatch(input: AzureAiTranslationBatchInput!): [String!]!

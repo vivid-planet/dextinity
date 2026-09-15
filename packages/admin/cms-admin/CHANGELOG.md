@@ -1,5 +1,63 @@
 # @comet/cms-admin
 
+## 10.7.0
+
+### Minor Changes
+
+- ae93af6: Support heading-only TipTap rich text blocks
+
+    `paragraph` is now a feature of `createTipTapRichTextBlock` like the other text block types, enabled by default. Turning it off results in a heading-only block (e.g. a headline): the text block type select only offers headings, the editor starts with a heading instead of a paragraph, and content containing a paragraph is rejected during validation.
+
+    The `heading` options gain a `defaultLevel`, the level a newly created heading gets. It defaults to the lowest allowed level and must be one of them. `migrateFromDraftJs` uses it for Draft.js blocks that don't carry a heading level, so migrated content doesn't fall back to paragraphs the schema doesn't allow.
+
+    **Example**
+
+    A headline block that only offers H2-H4 and starts with an H3:
+
+    ```tsx
+    createTipTapRichTextBlock({
+        paragraph: false,
+        heading: { levels: [2, 3, 4], defaultLevel: 3 },
+        maxTextBlocks: 1,
+    });
+    ```
+
+    Lists are disabled in a heading-only block, because a list item's content starts with a paragraph. Enabling one explicitly throws, as does turning off `paragraph` and `heading` together, which would leave no text block type at all.
+
+- 0ba6e01: Display only warnings of the currently selected scope by default
+
+    Previously, `WarningsPage` and `LatestWarningsDashboardWidget` displayed the warnings of all scopes the user is allowed to access.
+    Now, they only display the warnings of the currently selected scope by default.
+    Switching the scope automatically updates the displayed warnings.
+    Warnings without a scope (e.g., DAM warnings) and warnings with a partial scope (e.g., only `domain`) remain visible.
+    In `WarningsPage`, filtering the `scope` column is only possible with `showAllScopes`, because it otherwise queries a single scope.
+
+    Use the new `showAllScopes` prop to restore the previous behavior:
+
+    ```tsx
+    <WarningsPage showAllScopes />
+    ```
+
+    ```tsx
+    <LatestWarningsDashboardWidget showAllScopes />
+    ```
+
+### Patch Changes
+
+- 33cfcdd: Fix an empty paragraph appearing after switching a block to a heading
+
+    Turning the editor's only (or last) block into a heading via the text block type dropdown left an empty paragraph behind it. This came from TipTap's `TrailingNode` extension, which inserts an empty paragraph after the last block whenever that block isn't of the schema's default type, so a document never ends on a block with no direct way to place the cursor after it. A heading doesn't need that: pressing Enter at its end already creates a paragraph below it, unlike a non-text block such as an inserted child block.
+
+    `createTipTapRichTextBlock` now excludes headings from that check, so switching a block to a heading (and back) no longer adds or leaves behind an extra paragraph.
+
+- 320f47a: Fix invalid HTML nesting in `textBlockStyles` node views
+
+    `TextBlockStyleParagraph` and `TextBlockStyleHeading` rendered their editable content in a `NodeViewContent`, which defaults to a `<div>`. Wrapped in a `<p>`, a heading tag, or a custom `element` that renders one of those tags, this produced invalid markup (a `<div>` inside a `<p>`/heading), which React flags as a DOM nesting warning in development. `NodeViewContent` now renders as a `<span>`, which both tags allow as content.
+    - @dextinity/admin@10.7.0
+    - @dextinity/admin-date-time@10.7.0
+    - @dextinity/admin-icons@10.7.0
+    - @dextinity/admin-rte@10.7.0
+
 ## 10.6.0
 
 ### Minor Changes

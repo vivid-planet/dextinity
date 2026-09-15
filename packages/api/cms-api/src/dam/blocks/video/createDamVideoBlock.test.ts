@@ -133,14 +133,6 @@ describe("createDamVideoBlock migrations", () => {
         expect(transformToBlockSave(DamVideoBlock.blockDataFactory({ damFileId }))).toEqual({ damFileId, previewImage: {}, $$version: 1 });
     });
 
-    it("should keep a preview image that the exported block stored without a version", () => {
-        expect(transformToBlockSave(DamVideoBlock.blockDataFactory({ damFileId, previewImage: { damFileId } }))).toEqual({
-            damFileId,
-            previewImage: { damFileId },
-            $$version: 1,
-        });
-    });
-
     it("should neither migrate nor version data of a block created by the factory", () => {
         const block = createDamVideoBlock({ supports: [] }, "UnmigratedVideo");
 

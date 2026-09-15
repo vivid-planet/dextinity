@@ -19,6 +19,7 @@ junit-storybook.xml
 .context
 .playwright
 .playwright-mcp
+.playwright-cli/
 
 # Agent files
 .agents/skills/

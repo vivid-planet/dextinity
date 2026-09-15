@@ -12,12 +12,14 @@ import * as rimraf from "rimraf";
 import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service";
 import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util";
 import { DextinityEntityNotFoundException } from "../../common/errors/entity-not-found.exception";
+import { DextinityValidationException } from "../../common/errors/validation.exception";
 import { SortDirection } from "../../common/sorting/sort-direction.enum";
 import { FileUploadInput } from "../../file-utils/file-upload.input";
 import { slugifyFilename } from "../../file-utils/files.utils";
 import { FocalPoint } from "../../file-utils/focal-point.enum";
 import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
 import { DextinityImageResolutionException } from "../common/errors/image-resolution.exception";
+import { getDamFileCategory } from "../common/mimeTypes/dam-file-category";
 import { DamConfig } from "../dam.config";
 import { DAM_CONFIG, DAM_DOMINANT_COLOR_CALCULATOR } from "../dam.constants";
 import { DominantColorCalculatorInterface } from "../dominant-color-calculator.interface";
@@ -258,11 +260,23 @@ export class FilesService {
     ): Promise<FileInterface> {
         let result: FileInterface | undefined = undefined;
         try {
-            if (uploadedFile.mimetype !== fileToReplace.mimetype) {
-                throw new Error(
-                    `File cannot be replaced by a file with a different mimetype. Existing mimetype: ${fileToReplace.mimetype}, new mimetype: ${uploadedFile.mimetype}`,
+            const existingCategory = getDamFileCategory(fileToReplace.mimetype);
+            const uploadedCategory = getDamFileCategory(uploadedFile.mimetype);
+
+            if (existingCategory === "document") {
+                // Files in the "document" category serve varying purposes: a VTT file is a video's subtitles, a PDF is a download.
+                if (uploadedFile.mimetype !== fileToReplace.mimetype) {
+                    throw new DextinityValidationException(
+                        `File cannot be replaced by a file of a different mimetype. Existing mimetype: ${fileToReplace.mimetype}, new mimetype: ${uploadedFile.mimetype}`,
+                    );
+                }
+            } else if (uploadedCategory !== existingCategory) {
+                throw new DextinityValidationException(
+                    `File cannot be replaced by a file of a different category. Existing category: ${existingCategory} (${fileToReplace.mimetype}), new category: ${uploadedCategory} (${uploadedFile.mimetype})`,
                 );
             }
+
+            const name = await this.getNameForReplacedFile(fileToReplace, uploadedFile);
 
             const uploadedFileMetadata = await this.getFileMetadataForUpload(uploadedFile);
             const oldAndNewFileAreIdentical = fileToReplace.contentHash === uploadedFileMetadata.contentHash;
@@ -287,6 +301,7 @@ export class FilesService {
             }
 
             Object.assign(fileToReplace, {
+                name,
                 size: uploadedFile.size,
                 mimetype: uploadedFile.mimetype,
                 contentHash: uploadedFileMetadata.contentHash,
@@ -302,6 +317,29 @@ export class FilesService {
         }
 
         return result;
+    }
+
+    private async getNameForReplacedFile(fileToReplace: FileInterface, uploadedFile: FileUploadInput): Promise<string> {
+        const previousExtension = extname(fileToReplace.name);
+        const newExtension = extname(uploadedFile.originalname).toLowerCase();
+
+        if (newExtension === previousExtension.toLowerCase()) {
+            return fileToReplace.name;
+        }
+
+        // fileToReplace.name is already slugified, so only the extension needs to be swapped
+        const nameWithoutExtension = basename(fileToReplace.name, previousExtension);
+        const folderId = fileToReplace.folder?.id ?? null;
+
+        let name = `${nameWithoutExtension}${newExtension}`;
+        let counter = 1;
+
+        while ((await this.findOneByFilenameAndFolder({ filename: name, folderId }, fileToReplace.scope)) !== null) {
+            counter++;
+            name = `${nameWithoutExtension}-${counter}${newExtension}`;
+        }
+
+        return name;
     }
 
     async updateById(id: string, data: UpdateFileInput): Promise<FileInterface> {

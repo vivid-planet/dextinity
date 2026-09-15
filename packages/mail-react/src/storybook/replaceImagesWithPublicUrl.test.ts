@@ -62,6 +62,16 @@ describe("replaceImagesWithPublicUrl", () => {
         );
     });
 
+    it("gives the VML shape the same public URL as its image", () => {
+        const html =
+            '<v:roundrect style="width:300px;height:200px;"><v:fill type="frame" src="original.jpg" /></v:roundrect>' +
+            '<img src="original.jpg" width="300" height="200" />';
+        const result = replaceImagesWithPublicUrl(html);
+
+        expect(result).toContain('<v:fill type="frame" src="https://picsum.photos/seed/0/600/400" />');
+        expect(result).toContain('<img src="https://picsum.photos/seed/0/600/400" width="300" height="200" />');
+    });
+
     it("returns unchanged html when there are no img tags", () => {
         const html = "<p>Hello world</p>";
         const result = replaceImagesWithPublicUrl(html);

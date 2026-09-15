@@ -8,12 +8,11 @@
         "lib": ["DOM", "ES2015", "ES2016", "ES2017", "ES2018", "ES2019", "ESNext.AsyncIterable"],
         "module": "preserve",
         "moduleResolution": "bundler",
-        "noImplicitAny": true,
         "outDir": "lib",
         "rootDirs": ["src", ".storybook"],
         "skipLibCheck": true,
         "sourceMap": true,
-        "strictNullChecks": true,
+        "strict": true,
         "target": "es5"
     },
     "include": ["./src", ".storybook/**/*.ts", ".storybook/**/*.tsx"]

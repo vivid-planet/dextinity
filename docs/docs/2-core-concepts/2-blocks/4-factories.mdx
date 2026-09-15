@@ -227,6 +227,31 @@ export const FullWidthImageBlock = createCompositeBlock({
 });
 ```
 
+## DamVideoBlock (Admin only)
+
+The DamVideoBlock factory creates a block for a video from the DAM.
+Use `supports` to restrict what editors can set besides the video file itself:
+
+- `"controls"`: The playback options autoplay, loop and show controls.
+- `"previewImage"`: The poster image shown before playback.
+
+Both are supported by default.
+`@dextinity/cms-admin` exports a ready-made `DamVideoBlock` created with those defaults, use the `createDamVideoBlock` factory to change them:
+
+```tsx title="DamVideoBlock.tsx"
+import { createDamVideoBlock } from "@dextinity/cms-admin";
+
+// For a site that renders no poster image
+export const DamVideoBlock = createDamVideoBlock({ supports: ["controls"] });
+```
+
+:::note
+
+Leaving out an option only hides it from the editor.
+Values that are already stored are kept as they are.
+The preview image in particular stays part of the block's data either way, since the API's child block is non-nullable.
+:::
+
 ## FinalFormBlock (Admin only)
 
 The FinalFormBlock factory can be used to convert a block's `AdminComponent` API to the Final Form `Field` API.

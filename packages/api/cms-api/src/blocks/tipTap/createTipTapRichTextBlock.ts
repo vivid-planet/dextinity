@@ -1,5 +1,5 @@
 import { type Extensions, getSchema, type JSONContent } from "@tiptap/core";
-import type { Level as HeadingLevel } from "@tiptap/extension-heading";
+import { Heading, type Level as HeadingLevel } from "@tiptap/extension-heading";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
@@ -36,21 +36,40 @@ import { buildDraftJsToTipTapMigration } from "./migrations/buildDraftJsToTipTap
 import type { TextBlockStyleMapping } from "./migrations/convertDraftJsToTipTap";
 import { containsInvalidHeadingLevel, getListNestingDepth } from "./tipTapValidation";
 
-export type TipTapSupports =
-    | "bold"
-    | "italic"
-    | "underline"
-    | "strike"
-    | "sub"
-    | "sup"
-    | "heading"
-    | "ordered-list"
-    | "unordered-list"
-    | "non-breaking-space"
-    | "soft-hyphen"
-    | "link";
-
 export type { JSONContent as TipTapRichTextBlockContent } from "@tiptap/core";
+
+interface TipTapHeadingOptions {
+    /**
+     * Limits the selectable heading levels (1-6). Defaults to all levels ([1, 2, 3, 4, 5, 6]).
+     * Must be a non-empty array of unique integers between 1 and 6, otherwise an error is thrown.
+     * Content with a heading level outside this set will be rejected during validation.
+     */
+    levels?: number[];
+    /**
+     * Heading level used for headings that don't specify one. Defaults to the lowest allowed level.
+     * Must be one of `levels`, otherwise an error is thrown.
+     */
+    defaultLevel?: number;
+}
+
+/**
+ * The block's options with the defaults applied and the heading levels validated.
+ */
+export interface TipTapResolvedOptions {
+    bold: boolean;
+    italic: boolean;
+    underline: boolean;
+    strike: boolean;
+    sub: boolean;
+    sup: boolean;
+    paragraph: boolean;
+    heading: false | { levels: HeadingLevel[]; defaultLevel: HeadingLevel };
+    orderedList: boolean;
+    unorderedList: boolean;
+    nonBreakingSpace: boolean;
+    softHyphen: boolean;
+    link: boolean;
+}
 
 export interface TipTapRichTextBlockDataInterface extends BlockDataInterface {
     tipTapContent: JSONContent;
@@ -91,6 +110,10 @@ interface TipTapInlineStyle {
 
 const allHeadingLevels: HeadingLevel[] = [1, 2, 3, 4, 5, 6];
 
+// TipTap's own priority for the paragraph extension, which makes the paragraph the schema's first
+// block node and therefore ProseMirror's default block type.
+const paragraphPriority = 1000;
+
 function isValidHeadingLevels(headingLevels: number[]): headingLevels is HeadingLevel[] {
     return (
         headingLevels.length > 0 &&
@@ -99,30 +122,72 @@ function isValidHeadingLevels(headingLevels: number[]): headingLevels is Heading
     );
 }
 
-const defaultSupports: TipTapSupports[] = [
-    "bold",
-    "italic",
-    "strike",
-    "sub",
-    "sup",
-    "heading",
-    "ordered-list",
-    "unordered-list",
-    "non-breaking-space",
-    "soft-hyphen",
-];
-
 interface TipTapPlaceholder {
     name: string;
 }
 
 export interface CreateTipTapRichTextBlockOptions {
-    supports?: TipTapSupports[];
+    /**
+     * Enables bold text. Defaults to `true`.
+     */
+    bold?: boolean;
+    /**
+     * Enables italic text. Defaults to `true`.
+     */
+    italic?: boolean;
+    /**
+     * Enables underlined text. Defaults to `false`.
+     */
+    underline?: boolean;
+    /**
+     * Enables struck-through text. Defaults to `true`.
+     */
+    strike?: boolean;
+    /**
+     * Enables subscript text. Defaults to `true`.
+     */
+    sub?: boolean;
+    /**
+     * Enables superscript text. Defaults to `true`.
+     */
+    sup?: boolean;
+    /**
+     * Enables paragraphs. Defaults to `true`.
+     *
+     * Pass `false` for a heading-only block (e.g. a headline): content containing a paragraph is
+     * rejected during validation. Requires headings, and disables lists, because a list item's
+     * content starts with a paragraph.
+     */
+    paragraph?: boolean;
+    /**
+     * Enables headings. Defaults to `true` (all levels).
+     * Pass an options object to limit the allowed heading `levels` or to set the `defaultLevel`.
+     */
+    heading?: boolean | TipTapHeadingOptions;
+    /**
+     * Enables ordered lists. Defaults to `true`.
+     */
+    orderedList?: boolean;
+    /**
+     * Enables unordered lists. Defaults to `true`.
+     */
+    unorderedList?: boolean;
+    /**
+     * Enables non-breaking spaces. Defaults to `true`.
+     */
+    nonBreakingSpace?: boolean;
+    /**
+     * Enables soft hyphens. Defaults to `true`.
+     */
+    softHyphen?: boolean;
+    /**
+     * Enables links by passing the link block that is used for them. Disabled by default.
+     */
+    link?: Block;
     textBlockStyles?: TipTapTextBlockStyle[];
     inlineStyles?: TipTapInlineStyle[];
     placeholders?: TipTapPlaceholder[];
     indexSearchText?: boolean;
-    link?: Block;
     /**
      * Child blocks that can be inserted into the editor (e.g. via the toolbar's "+" menu), keyed by
      * a stable key. The key (not the block's name) is stored in the content, so blocks can be
@@ -146,16 +211,10 @@ export interface CreateTipTapRichTextBlockOptions {
      */
     listLevelMax?: number;
     /**
-     * Limits the selectable heading levels (1-6). Defaults to all levels ([1, 2, 3, 4, 5, 6]).
-     * Must be a non-empty array of unique integers between 1 and 6, otherwise an error is thrown.
-     * Content with a heading level outside this set will be rejected during validation.
-     */
-    headingLevels?: number[];
-    /**
      * Enables best-effort migration of DraftJS-based RichTextBlock data
      * (`{ draftContent: { blocks, entityMap } }`) into TipTap data.
      *
-     * The migration uses the `supports`, `textBlockStyles`, `link`, `maxTextBlocks`, and
+     * The migration uses the enabled features and the `textBlockStyles`, `maxTextBlocks` and
      * `listLevelMax` options to build the target schema, validates the converted document, and
      * falls back to a stripped-down plain-text-paragraph document if validation fails.
      *
@@ -170,43 +229,145 @@ export interface CreateTipTapRichTextBlockOptions {
     migrateFromDraftJs?: boolean | { textBlockStyleMap?: Record<string, string | TextBlockStyleMapping>; inlineStyleMap?: Record<string, string> };
 }
 
-function buildExtensions(
-    supports: TipTapSupports[],
-    textBlockStyles: TipTapTextBlockStyle[],
-    inlineStyles: TipTapInlineStyle[],
-    placeholders: TipTapPlaceholder[],
-    hasLink: boolean,
-    hasBlockChildBlocks: boolean,
-    hasInlineChildBlocks: boolean,
-    headingLevels: HeadingLevel[],
-): Extensions {
+export function resolveTipTapOptions({
+    bold = true,
+    italic = true,
+    underline = false,
+    strike = true,
+    sub = true,
+    sup = true,
+    paragraph = true,
+    heading = true,
+    orderedList,
+    unorderedList,
+    nonBreakingSpace = true,
+    softHyphen = true,
+    link,
+}: CreateTipTapRichTextBlockOptions = {}): TipTapResolvedOptions {
+    const headingOptions = heading !== false && heading !== true ? heading : {};
+    const headingLevels = headingOptions.levels ?? allHeadingLevels;
+
+    if (!isValidHeadingLevels(headingLevels)) {
+        throw new Error("heading levels must be a non-empty array of unique integers between 1 and 6");
+    }
+
+    if (headingOptions.defaultLevel !== undefined && !headingLevels.includes(headingOptions.defaultLevel as HeadingLevel)) {
+        throw new Error(`heading defaultLevel must be one of the allowed levels (${headingLevels.join(", ")})`);
+    }
+
+    const defaultHeadingLevel = (headingOptions.defaultLevel ?? Math.min(...headingLevels)) as HeadingLevel;
+
+    if (!paragraph) {
+        if (heading === false) {
+            throw new Error("paragraph: false requires headings, otherwise no text block type is left");
+        }
+        if (orderedList || unorderedList) {
+            throw new Error("Lists require paragraphs, because a list item's content starts with a paragraph");
+        }
+    }
+
+    return {
+        bold,
+        italic,
+        underline,
+        strike,
+        sub,
+        sup,
+        paragraph,
+        heading: heading === false ? false : { levels: headingLevels, defaultLevel: defaultHeadingLevel },
+        // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
+        orderedList: orderedList ?? paragraph,
+        unorderedList: unorderedList ?? paragraph,
+        nonBreakingSpace,
+        softHyphen,
+        link: !!link,
+    };
+}
+
+/**
+ * Sets the default heading level and, for heading-only blocks, makes the heading the schema's
+ * default block type (the position paragraphs would otherwise take, by priority).
+ */
+function buildHeadingExtension({
+    base,
+    levels,
+    defaultLevel,
+    hasParagraph,
+}: {
+    base: typeof Heading;
+    levels: HeadingLevel[];
+    defaultLevel: HeadingLevel;
+    hasParagraph: boolean;
+}) {
+    return base
+        .extend({
+            ...(hasParagraph ? {} : { priority: paragraphPriority }),
+            addAttributes() {
+                return {
+                    ...this.parent?.(),
+                    // `rendered: false` keeps TipTap from adding a `level` HTML attribute, the level is the tag name.
+                    level: { default: defaultLevel, rendered: false },
+                };
+            },
+        })
+        .configure({ levels });
+}
+
+function buildExtensions({
+    resolvedOptions,
+    textBlockStyles,
+    inlineStyles,
+    placeholders,
+    hasBlockChildBlocks,
+    hasInlineChildBlocks,
+}: {
+    resolvedOptions: TipTapResolvedOptions;
+    textBlockStyles: TipTapTextBlockStyle[];
+    inlineStyles: TipTapInlineStyle[];
+    placeholders: TipTapPlaceholder[];
+    hasBlockChildBlocks: boolean;
+    hasInlineChildBlocks: boolean;
+}): Extensions {
     const hasTextBlockStyles = textBlockStyles.length > 0;
     const hasInlineStyles = inlineStyles.length > 0;
     const hasPlaceholders = placeholders.length > 0;
     return [
         StarterKit.configure({
-            bold: supports.includes("bold") ? {} : false,
-            italic: supports.includes("italic") ? {} : false,
-            underline: supports.includes("underline") ? {} : false,
-            strike: supports.includes("strike") ? {} : false,
-            heading: supports.includes("heading") ? (hasTextBlockStyles ? false : { levels: headingLevels }) : false,
-            paragraph: hasTextBlockStyles ? false : undefined,
-            orderedList: supports.includes("ordered-list") ? {} : false,
-            bulletList: supports.includes("unordered-list") ? {} : false,
+            bold: resolvedOptions.bold ? {} : false,
+            italic: resolvedOptions.italic ? {} : false,
+            underline: resolvedOptions.underline ? {} : false,
+            strike: resolvedOptions.strike ? {} : false,
+            // The heading extension is added separately below to set the default heading level.
+            heading: false,
+            paragraph: resolvedOptions.paragraph && !hasTextBlockStyles ? undefined : false,
+            orderedList: resolvedOptions.orderedList ? {} : false,
+            bulletList: resolvedOptions.unorderedList ? {} : false,
+            // A list item's content starts with a paragraph, so lists cannot exist without one.
+            listItem: resolvedOptions.paragraph ? undefined : false,
+            listKeymap: resolvedOptions.paragraph ? undefined : false,
             blockquote: false,
             code: false,
             codeBlock: false,
             link: false,
         }),
-        ...(hasTextBlockStyles ? [TextBlockStyleParagraph] : []),
-        ...(hasTextBlockStyles && supports.includes("heading") ? [TextBlockStyleHeading.configure({ levels: headingLevels })] : []),
+        ...(resolvedOptions.paragraph && hasTextBlockStyles ? [TextBlockStyleParagraph] : []),
+        ...(resolvedOptions.heading
+            ? [
+                  buildHeadingExtension({
+                      base: hasTextBlockStyles ? TextBlockStyleHeading : Heading,
+                      levels: resolvedOptions.heading.levels,
+                      defaultLevel: resolvedOptions.heading.defaultLevel,
+                      hasParagraph: resolvedOptions.paragraph,
+                  }),
+              ]
+            : []),
         ...(hasInlineStyles ? [InlineStyleMark] : []),
-        ...(supports.includes("sup") ? [Superscript] : []),
-        ...(supports.includes("sub") ? [Subscript] : []),
-        ...(supports.includes("non-breaking-space") ? [NonBreakingSpace] : []),
-        ...(supports.includes("soft-hyphen") ? [SoftHyphen] : []),
+        ...(resolvedOptions.sup ? [Superscript] : []),
+        ...(resolvedOptions.sub ? [Subscript] : []),
+        ...(resolvedOptions.nonBreakingSpace ? [NonBreakingSpace] : []),
+        ...(resolvedOptions.softHyphen ? [SoftHyphen] : []),
         ...(hasPlaceholders ? [Placeholder] : []),
-        ...(hasLink ? [CmsLink] : []),
+        ...(resolvedOptions.link ? [CmsLink] : []),
         ...(hasBlockChildBlocks ? [CmsBlock] : []),
         ...(hasInlineChildBlocks ? [CmsInlineBlock] : []),
     ];
@@ -530,8 +691,10 @@ function extractTextEntries(node: JSONContent, headingLevel?: number): TextEntry
  * @experimental
  */
 export function createTipTapRichTextBlock(
-    {
-        supports = defaultSupports,
+    options: CreateTipTapRichTextBlockOptions = {},
+    nameOrOptions: BlockFactoryNameOrOptions = "TipTapRichText",
+): Block<TipTapRichTextBlockDataInterface, TipTapRichTextBlockInputInterface> {
+    const {
         textBlockStyles = [],
         inlineStyles = [],
         placeholders = [],
@@ -540,34 +703,26 @@ export function createTipTapRichTextBlock(
         childBlocks: childBlocksConfig = {},
         maxTextBlocks,
         listLevelMax,
-        headingLevels = allHeadingLevels,
         migrateFromDraftJs = false,
-    }: CreateTipTapRichTextBlockOptions = {},
-    nameOrOptions: BlockFactoryNameOrOptions = "TipTapRichText",
-): Block<TipTapRichTextBlockDataInterface, TipTapRichTextBlockInputInterface> {
+    } = options;
     const blockName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
     const baseMigrate = typeof nameOrOptions !== "string" && nameOrOptions.migrate ? nameOrOptions.migrate : { migrations: [], version: 0 };
 
-    if (!isValidHeadingLevels(headingLevels)) {
-        throw new Error("headingLevels must be a non-empty array of unique integers between 1 and 6");
-    }
-
-    const hasLink = !!LinkBlock;
+    const resolvedOptions = resolveTipTapOptions(options);
+    const headingLevels = resolvedOptions.heading ? resolvedOptions.heading.levels : [];
     const childBlocks: Record<string, Block> = Object.fromEntries(Object.entries(childBlocksConfig).map(([key, { block }]) => [key, block]));
     const childBlockConfigs = Object.values(childBlocksConfig);
     const hasChildBlocks = childBlockConfigs.length > 0;
     const hasBlockChildBlocks = childBlockConfigs.some(({ display }) => display === "block");
     const hasInlineChildBlocks = childBlockConfigs.some(({ display }) => display === "inline");
-    const extensions = buildExtensions(
-        supports,
+    const extensions = buildExtensions({
+        resolvedOptions,
         textBlockStyles,
         inlineStyles,
         placeholders,
-        hasLink,
         hasBlockChildBlocks,
         hasInlineChildBlocks,
-        headingLevels,
-    );
+    });
     const schema = getSchema(extensions);
 
     const draftJsTextBlockStyleMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.textBlockStyleMap : undefined;
@@ -590,7 +745,7 @@ export function createTipTapRichTextBlock(
               migrations: [
                   buildDraftJsToTipTapMigration({
                       schema,
-                      supports,
+                      resolvedOptions,
                       link: LinkBlock,
                       maxTextBlocks,
                       listLevelMax,

@@ -13,6 +13,7 @@ import { PageLayout } from "@src/layout/PageLayout";
 import { ProductPriceBlock } from "@src/products/blocks/ProductPriceBlock";
 import { ProductTeaserBlock } from "@src/products/blocks/ProductTeaserBlock";
 import type { LoadedData as ProductTeaserLoadedData } from "@src/products/blocks/ProductTeaserBlock.loader";
+import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 
 import { Typography, type TypographyProps } from "../components/Typography";
 import { isValidLink } from "../helpers/HiddenIfInvalidLink";
@@ -102,7 +103,9 @@ export const TipTapRichTextBlock = withPreview(
 export const PageContentTipTapRichTextBlock = (props: PropsWithData<TipTapRichTextBlockData>) => (
     <PageLayout grid>
         <div className={styles.pageLayoutContent}>
-            <TipTapRichTextBlock {...props} />
+            <AnimateBoxInOnScroll direction="bottom" offset={300}>
+                <TipTapRichTextBlock {...props} />
+            </AnimateBoxInOnScroll>
         </div>
     </PageLayout>
 );

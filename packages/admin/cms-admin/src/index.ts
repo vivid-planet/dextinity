@@ -86,9 +86,10 @@ export type {
     TipTapPlaceholder,
     TipTapRichTextBlockContent,
     TipTapTextBlockStyle,
-    TipTapTextBlockType,
+    TipTapTextBlockStyleProps,
 } from "./blocks/tipTap/createTipTapRichTextBlock";
 export { createTipTapRichTextBlock } from "./blocks/tipTap/createTipTapRichTextBlock";
+export type { TipTapListTag, TipTapStyledTag, TipTapStyleOptions, TipTapTextBlock, TipTapTextBlockTag } from "./blocks/tipTap/textBlocks";
 export type {
     AnonymousBlockInterface,
     BlockAdminComponent,

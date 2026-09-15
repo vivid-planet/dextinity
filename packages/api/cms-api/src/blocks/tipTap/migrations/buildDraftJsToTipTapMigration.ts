@@ -1,12 +1,11 @@
 import type { JSONContent } from "@tiptap/core";
-import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import type { Schema } from "@tiptap/pm/model";
 import type { ClassConstructor } from "class-transformer";
 
 import type { Block } from "../../block";
 import { BlockMigration } from "../../migrations/BlockMigration";
 import type { BlockMigrationInterface } from "../../migrations/types";
-import { isValidTipTapContentSync } from "../tipTapValidation";
+import { isValidTipTapContentSync, type TipTapTextBlockContext } from "../tipTapValidation";
 import {
     buildEmptyTipTapDoc,
     buildStrippedTipTapDoc,
@@ -39,12 +38,12 @@ function isDraftJsContent(value: unknown): value is DraftJsContent {
 interface BuildOptions extends ConvertOptions {
     schema: Schema;
     maxTextBlocks?: number;
-    headingLevels: HeadingLevel[];
+    textBlockContext: TipTapTextBlockContext;
     link?: Block;
 }
 
 export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConstructor<BlockMigrationInterface> {
-    const { schema, maxTextBlocks, headingLevels, resolvedOptions, link, textBlockStyleMap, inlineStyleMap, listLevelMax } = options;
+    const { schema, maxTextBlocks, textBlockContext, resolvedOptions, link, textBlockStyleMap, inlineStyleMap, listLevelMax } = options;
     const emptyDoc = buildEmptyTipTapDoc(resolvedOptions);
 
     return class DraftJsToTipTapMigration extends BlockMigration<(from: From) => To> implements BlockMigrationInterface {
@@ -60,7 +59,7 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
             }
 
             const converted = convertDraftJsToTipTap(from.draftContent, { resolvedOptions, link, textBlockStyleMap, inlineStyleMap, listLevelMax });
-            if (isValidTipTapContentSync(converted, schema, { maxTextBlocks, listLevelMax, headingLevels })) {
+            if (isValidTipTapContentSync(converted, schema, { maxTextBlocks, listLevelMax, textBlockContext })) {
                 return { tipTapContent: converted };
             }
 
@@ -69,7 +68,7 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
             }
 
             const stripped = buildStrippedTipTapDoc(from.draftContent, resolvedOptions);
-            if (isValidTipTapContentSync(stripped, schema, { maxTextBlocks, headingLevels })) {
+            if (isValidTipTapContentSync(stripped, schema, { maxTextBlocks, textBlockContext })) {
                 console.warn("DraftJS->TipTap migration failed, using stripped content");
                 return { tipTapContent: stripped };
             }

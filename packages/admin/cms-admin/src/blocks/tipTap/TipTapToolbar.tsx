@@ -46,8 +46,9 @@ import type {
     TipTapPlaceholder,
     TipTapResolvedOptions,
     TipTapTextBlockStyle,
-    TipTapTextBlockType,
 } from "./createTipTapRichTextBlock";
+import { getActiveTextBlock, setTextBlock, toggleList } from "./textBlockCommands";
+import type { TipTapResolvedList, TipTapResolvedStyledNode } from "./textBlocks";
 import { TipTapBlockDialog } from "./TipTapBlockDialog";
 import { TipTapLinkDialog } from "./TipTapLinkDialog";
 
@@ -192,37 +193,22 @@ export const TipTapToolbar = ({
     const lists = resolvedOptions.orderedList || resolvedOptions.unorderedList;
     const specialChars = resolvedOptions.nonBreakingSpace || resolvedOptions.softHyphen;
     const hasLink = resolvedOptions.link && !!linkBlock;
-    const headingLevels = resolvedOptions.heading ? resolvedOptions.heading.levels : [];
-    const hasParagraph = resolvedOptions.paragraph;
+    const textBlocks = resolvedOptions.textBlocks;
     const hasPlaceholders = placeholders.length > 0;
     const hasChildBlocks = Object.keys(childBlocks).length > 0;
 
     const editorState = useEditorState({
         editor,
         selector: ({ editor: e }: { editor: Editor }) => {
-            const activeTextBlockType = (() => {
-                for (let level = 1; level <= 6; level++) {
-                    if (e.isActive("heading", { level })) {
-                        return String(level);
-                    }
-                }
-                return hasParagraph || resolvedOptions.heading === false ? "paragraph" : String(resolvedOptions.heading.defaultLevel);
-            })();
-            const activeTipTapTextBlockType: TipTapTextBlockType = (() => {
-                if (e.isActive("orderedList")) {
-                    return "ordered-list";
-                }
-                if (e.isActive("bulletList")) {
-                    return "unordered-list";
-                }
-                for (let level = 1; level <= 6; level++) {
-                    if (e.isActive("heading", { level })) {
-                        return `heading-${level}` as TipTapTextBlockType;
-                    }
-                }
-                return "paragraph";
-            })();
-            const attrs = e.isActive("heading") || !hasParagraph ? e.getAttributes("heading") : e.getAttributes("paragraph");
+            const attrs = e.isActive("heading") ? e.getAttributes("heading") : e.getAttributes("paragraph");
+            const activeTextBlock = getActiveTextBlock(e, textBlocks);
+            // Inside a list the list's styles apply, because the list - not the paragraph its items
+            // are built from - is what gets styled there.
+            const activeList = e.isActive("orderedList")
+                ? resolvedOptions.orderedList
+                : e.isActive("bulletList")
+                  ? resolvedOptions.unorderedList
+                  : false;
 
             // Calculate current list nesting depth for listLevelMax enforcement.
             // The list item node only exists in the schema when lists are enabled.
@@ -242,8 +228,8 @@ export const TipTapToolbar = ({
             }
 
             return {
-                activeTextBlockType,
-                activeTipTapTextBlockType,
+                activeTextBlockName: activeTextBlock?.name ?? "",
+                activeStyledNodeName: activeList ? activeList.name : (activeTextBlock?.name ?? ""),
                 activeTextBlockStyle: (attrs.textBlockStyle as string) ?? "",
                 canUndo: e.can().undo(),
                 canRedo: e.can().redo(),
@@ -292,11 +278,14 @@ export const TipTapToolbar = ({
         setTimeout(() => editor.commands.focus(), 0);
     };
 
-    const applicableTextBlockStyles = textBlockStyles.filter(
-        (style) => !style.appliesTo || style.appliesTo.includes(editorState.activeTipTapTextBlockType),
+    const activeList = [resolvedOptions.orderedList, resolvedOptions.unorderedList].find(
+        (list) => list !== false && list.name === editorState.activeStyledNodeName,
     );
+    const activeTextBlock = textBlocks.find((textBlock) => textBlock.name === editorState.activeTextBlockName);
+    const activeStyledNode: TipTapResolvedStyledNode | undefined = activeList || activeTextBlock;
+    const applicableTextBlockStyles = (activeStyledNode?.styles ?? []).flatMap((name) => textBlockStyles.find((style) => style.name === name) ?? []);
     const applicableInlineStyles = inlineStyles.filter(
-        (style) => !style.appliesTo || style.appliesTo.includes(editorState.activeTipTapTextBlockType),
+        (style) => !style.appliesTo || (!!activeStyledNode && style.appliesTo.includes(activeStyledNode.name)),
     );
     // Without bold/italic/underline/strike buttons to fold behind it, a "..." menu just for superscript/subscript/inline
     // styles adds an extra click for no space savings, so show them as individual buttons instead
@@ -347,34 +336,21 @@ export const TipTapToolbar = ({
     ];
 
     const handleTextBlockTypeChange = (e: SelectChangeEvent) => {
-        const value = e.target.value;
-        if (value === "paragraph") {
-            editor.chain().focus().setParagraph().run();
-        } else {
-            editor
-                .chain()
-                .focus()
-                .setHeading({ level: Number(value) as 1 | 2 | 3 | 4 | 5 | 6 })
-                .run();
+        const textBlock = textBlocks.find((candidate) => candidate.name === e.target.value);
+        if (textBlock) {
+            setTextBlock(editor, textBlock, editorState.activeTextBlockStyle || null);
         }
+    };
 
-        // Clear textBlockStyle if it's not applicable to the new text block type
-        if (textBlockStyles.length > 0) {
-            const { activeTextBlockStyle } = editorState;
-            if (activeTextBlockStyle) {
-                const newType: TipTapTextBlockType = value === "paragraph" ? "paragraph" : (`heading-${value}` as TipTapTextBlockType);
-                const styleConfig = textBlockStyles.find((s) => s.name === activeTextBlockStyle);
-                if (styleConfig?.appliesTo && !styleConfig.appliesTo.includes(newType)) {
-                    const nodeType = value === "paragraph" ? "paragraph" : "heading";
-                    editor.chain().updateAttributes(nodeType, { textBlockStyle: null }).run();
-                }
-            }
+    const handleListToggle = (list: false | TipTapResolvedList) => {
+        if (list) {
+            toggleList(editor, { list, textBlock: activeTextBlock, activeStyle: editorState.activeTextBlockStyle || null });
         }
     };
 
     const handleTextBlockStyleChange = (e: SelectChangeEvent) => {
         const value = e.target.value || null;
-        const nodeType = editor.isActive("heading") || !hasParagraph ? "heading" : "paragraph";
+        const nodeType = editor.isActive("heading") ? "heading" : "paragraph";
         editor.chain().focus().updateAttributes(nodeType, { textBlockStyle: value }).run();
     };
 
@@ -410,29 +386,20 @@ export const TipTapToolbar = ({
                     />
                 </ToolbarGroup>
             )}
-            {resolvedOptions.heading && (
+            {textBlocks.length > 1 && (
                 <ToolbarGroup>
                     <FormControl sx={selectFormControlSx}>
                         <Select
-                            value={editorState.activeTextBlockType}
+                            value={editorState.activeTextBlockName}
                             onChange={handleTextBlockTypeChange}
                             displayEmpty
                             variant="filled"
                             MenuProps={{ elevation: 1 }}
                             sx={selectSx}
                         >
-                            {hasParagraph && (
-                                <MenuItem value="paragraph" dense>
-                                    <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockType.paragraph" defaultMessage="Paragraph" />
-                                </MenuItem>
-                            )}
-                            {headingLevels.map((level) => (
-                                <MenuItem key={level} value={String(level)} dense>
-                                    <FormattedMessage
-                                        id="dextinity.blocks.tipTapRichText.textBlockType.heading"
-                                        defaultMessage="Heading {level}"
-                                        values={{ level }}
-                                    />
+                            {textBlocks.map((textBlock) => (
+                                <MenuItem key={textBlock.name} value={textBlock.name} dense>
+                                    {textBlock.label}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -585,7 +552,7 @@ export const TipTapToolbar = ({
                             icon={RteOl}
                             tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.orderedList.tooltip" defaultMessage="Ordered list" />}
                             isActive="orderedList"
-                            onToggle={() => editor.chain().focus().toggleOrderedList().run()}
+                            onToggle={() => handleListToggle(resolvedOptions.orderedList)}
                         />
                     )}
                     {resolvedOptions.unorderedList && (
@@ -594,7 +561,7 @@ export const TipTapToolbar = ({
                             icon={RteUl}
                             tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.bulletList.tooltip" defaultMessage="Bullet list" />}
                             isActive="bulletList"
-                            onToggle={() => editor.chain().focus().toggleBulletList().run()}
+                            onToggle={() => handleListToggle(resolvedOptions.unorderedList)}
                         />
                     )}
                     <ToolbarButton

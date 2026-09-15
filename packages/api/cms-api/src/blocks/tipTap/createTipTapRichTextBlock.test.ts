@@ -20,7 +20,7 @@ const onlyFeatures = (options: CreateTipTapRichTextBlockOptions = {}): CreateTip
     strike: false,
     sub: false,
     sup: false,
-    heading: false,
+    textBlocks: [{ name: "paragraph", tag: "p" }],
     orderedList: false,
     unorderedList: false,
     nonBreakingSpace: false,
@@ -363,8 +363,11 @@ describe("createTipTapRichTextBlock validation", () => {
         const block = createTipTapRichTextBlock(
             onlyFeatures({
                 bold: true,
-                heading: true,
-                textBlockStyles: [{ name: "intro", appliesTo: ["paragraph"] }, { name: "highlight" }],
+                textBlocks: [
+                    { name: "paragraph", tag: "p", styles: ["intro", "highlight"] },
+                    { name: "heading-1", tag: "h1", styles: ["highlight"] },
+                ],
+                textBlockStyles: [{ name: "intro" }, { name: "highlight" }],
             }),
             "TestBlockStyles",
         );
@@ -419,20 +422,71 @@ describe("createTipTapRichTextBlock validation", () => {
             const errors = await validate(input);
             expect(errors).toHaveLength(0);
         });
+
+        it("should reject a text block style the text block does not allow", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "heading",
+                            attrs: { level: 1, textBlockStyle: "intro" },
+                            content: [{ type: "text", text: "Intro heading" }],
+                        },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
+            expect(errors[0].property).toBe("tipTapContent");
+        });
+
+        it("should reject an unknown text block name", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "paragraph",
+                            attrs: { textBlock: "lead" },
+                            content: [{ type: "text", text: "Lead text" }],
+                        },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
+        });
+
+        it("should accept a text block that is addressed by name", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "paragraph",
+                            attrs: { textBlock: "paragraph", textBlockStyle: "intro" },
+                            content: [{ type: "text", text: "Intro text" }],
+                        },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
+        });
     });
 
     describe("schema with text block styles and lists", () => {
         const block = createTipTapRichTextBlock(
             {
                 bold: true,
-                heading: true,
-                orderedList: true,
-                unorderedList: true,
-                textBlockStyles: [
-                    { name: "intro", appliesTo: ["paragraph"] },
-                    { name: "listStyle", appliesTo: ["ordered-list", "unordered-list"] },
-                    { name: "highlight" },
+                textBlocks: [
+                    { name: "paragraph", tag: "p", styles: ["intro", "highlight"] },
+                    { name: "heading-1", tag: "h1", styles: ["highlight"] },
                 ],
+                orderedList: { styles: ["listStyle", "highlight"] },
+                unorderedList: { styles: ["listStyle", "highlight"] },
+                textBlockStyles: [{ name: "intro" }, { name: "listStyle" }, { name: "highlight" }],
             },
             "TestBlockStylesList",
         );
@@ -489,6 +543,34 @@ describe("createTipTapRichTextBlock validation", () => {
             });
             const errors = await validate(input);
             expect(errors).toHaveLength(0);
+        });
+
+        it("should reject a paragraph-only style inside a list, where the list's styles apply", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "bulletList",
+                            content: [
+                                {
+                                    type: "listItem",
+                                    content: [
+                                        {
+                                            type: "paragraph",
+                                            attrs: { textBlockStyle: "intro" },
+                                            content: [{ type: "text", text: "Intro bullet" }],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
+            expect(errors[0].property).toBe("tipTapContent");
         });
 
         it("should accept a list item paragraph with null textBlockStyle", async () => {
@@ -596,7 +678,6 @@ describe("createTipTapRichTextBlock validation", () => {
         const block = createTipTapRichTextBlock(
             {
                 bold: true,
-                heading: true,
                 inlineStyles: [
                     { name: "highlight" },
                     { name: "tag", appliesTo: ["paragraph"] },
@@ -1264,8 +1345,18 @@ describe("createTipTapRichTextBlock validation", () => {
         });
     });
 
-    describe("heading levels option", () => {
-        const block = createTipTapRichTextBlock({ heading: { levels: [2, 3, 4] } }, "TestHeadingLevels");
+    describe("text blocks with a limited set of heading levels", () => {
+        const block = createTipTapRichTextBlock(
+            {
+                textBlocks: [
+                    { name: "paragraph", tag: "p" },
+                    { name: "heading-2", tag: "h2" },
+                    { name: "heading-3", tag: "h3" },
+                    { name: "heading-4", tag: "h4" },
+                ],
+            },
+            "TestHeadingLevels",
+        );
 
         it("should accept a heading within the allowed levels", async () => {
             const input = block.blockInputFactory({
@@ -1290,12 +1381,22 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(errors[0].property).toBe("tipTapContent");
         });
 
-        it("should throw when the heading levels are invalid", () => {
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [] } }, "TestInvalidHeadingLevelsEmpty")).toThrow();
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [0, 2, 3] } }, "TestInvalidHeadingLevelsZero")).toThrow();
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [1, 7] } }, "TestInvalidHeadingLevelsSeven")).toThrow();
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [1, 1, 2] } }, "TestInvalidHeadingLevelsDuplicate")).toThrow();
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [1.5, 2] } }, "TestInvalidHeadingLevelsFraction")).toThrow();
+        it("should throw when the text blocks are invalid", () => {
+            expect(() => createTipTapRichTextBlock({ textBlocks: [] }, "TestTextBlocksEmpty")).toThrow();
+            expect(() =>
+                createTipTapRichTextBlock(
+                    {
+                        textBlocks: [
+                            { name: "paragraph", tag: "p" },
+                            { name: "paragraph", tag: "h1" },
+                        ],
+                    },
+                    "TestTextBlocksDuplicateName",
+                ),
+            ).toThrow(/Duplicate text block name/);
+            expect(() =>
+                createTipTapRichTextBlock({ textBlocks: [{ name: "paragraph", tag: "p", styles: ["intro"] }] }, "TestTextBlocksUnknownStyle"),
+            ).toThrow(/unknown text block style/);
         });
 
         it("should accept content without headings regardless of the heading levels", async () => {
@@ -1310,9 +1411,14 @@ describe("createTipTapRichTextBlock validation", () => {
         });
     });
 
-    describe("heading-only schema (paragraph: false)", () => {
+    describe("heading-only schema (no paragraph text block)", () => {
+        const headlineTextBlocks: CreateTipTapRichTextBlockOptions["textBlocks"] = [
+            { name: "heading-2", tag: "h2" },
+            { name: "heading-3", tag: "h3" },
+            { name: "heading-4", tag: "h4" },
+        ];
         const block = createTipTapRichTextBlock(
-            onlyFeatures({ paragraph: false, heading: { levels: [2, 3, 4], defaultLevel: 3 }, bold: true }),
+            onlyFeatures({ textBlocks: headlineTextBlocks, defaultTextBlock: "heading-3", bold: true }),
             "TestHeadingOnly",
         );
 
@@ -1350,24 +1456,36 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(errors).toHaveLength(1);
         });
 
-        it("should throw when the heading defaultLevel is not one of the allowed levels", () => {
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [2, 3, 4], defaultLevel: 1 } }, "TestInvalidDefaultHeadingLevel")).toThrow();
+        it("should throw when the defaultTextBlock is not one of the text blocks", () => {
+            expect(() =>
+                createTipTapRichTextBlock({ textBlocks: headlineTextBlocks, defaultTextBlock: "paragraph" }, "TestInvalidDefaultTextBlock"),
+            ).toThrow(/defaultTextBlock/);
         });
 
-        it("should throw when paragraphs are disabled without headings", () => {
-            expect(() => createTipTapRichTextBlock(onlyFeatures({ paragraph: false }), "TestNoTextBlockTypeLeft")).toThrow();
+        it("should throw when no text block is left", () => {
+            expect(() => createTipTapRichTextBlock(onlyFeatures({ textBlocks: [] }), "TestNoTextBlockTypeLeft")).toThrow();
         });
 
-        it("should throw when lists are enabled without paragraphs", () => {
-            expect(() => createTipTapRichTextBlock({ paragraph: false, orderedList: true }, "TestHeadingOnlyWithOrderedList")).toThrow();
-            expect(() => createTipTapRichTextBlock({ paragraph: false, unorderedList: true }, "TestHeadingOnlyWithUnorderedList")).toThrow();
+        it("should throw when lists are enabled without a paragraph text block", () => {
+            expect(() =>
+                createTipTapRichTextBlock({ textBlocks: headlineTextBlocks, orderedList: true }, "TestHeadingOnlyWithOrderedList"),
+            ).toThrow();
+            expect(() =>
+                createTipTapRichTextBlock({ textBlocks: headlineTextBlocks, unorderedList: {} }, "TestHeadingOnlyWithUnorderedList"),
+            ).toThrow();
         });
 
-        it("should disable lists by default when paragraphs are disabled", () => {
-            const resolvedOptions = resolveTipTapOptions({ paragraph: false });
+        it("should disable lists by default without a paragraph text block", () => {
+            const resolvedOptions = resolveTipTapOptions({ textBlocks: headlineTextBlocks, defaultTextBlock: "heading-3" });
             expect(resolvedOptions.orderedList).toBe(false);
             expect(resolvedOptions.unorderedList).toBe(false);
-            expect(resolvedOptions.heading).toEqual({ levels: [1, 2, 3, 4, 5, 6], defaultLevel: 1 });
+            expect(resolvedOptions.defaultTextBlock).toEqual({
+                name: "heading-3",
+                tag: "h3",
+                level: 3,
+                styles: [],
+                defaultStyle: null,
+            });
         });
     });
 

@@ -6,31 +6,67 @@ import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "../
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "./createTipTapRichTextBlock";
 
 describe("createTipTapRichTextBlock", () => {
-    it("should throw for invalid heading levels instead of silently creating a broken heading", () => {
-        expect(() => createTipTapRichTextBlock({ heading: { levels: [] } })).toThrow();
-        expect(() => createTipTapRichTextBlock({ heading: { levels: [0, 2, 3] } })).toThrow();
-        expect(() => createTipTapRichTextBlock({ heading: { levels: [1, 7] } })).toThrow();
-        expect(() => createTipTapRichTextBlock({ heading: { levels: [1, 1, 2] } })).toThrow();
-        expect(() => createTipTapRichTextBlock({ heading: { levels: [1.5, 2] } })).toThrow();
+    const headlineTextBlocks = [
+        { name: "heading-2", tag: "h2", label: "Heading 2" },
+        { name: "heading-3", tag: "h3", label: "Heading 3" },
+        { name: "heading-4", tag: "h4", label: "Heading 4" },
+    ] as const;
+
+    it("should throw for text blocks that cannot be resolved instead of silently creating a broken editor", () => {
+        expect(() => createTipTapRichTextBlock({ textBlocks: [] })).toThrow();
+        expect(() =>
+            createTipTapRichTextBlock({
+                textBlocks: [
+                    { name: "paragraph", tag: "p", label: "Paragraph" },
+                    { name: "paragraph", tag: "h1", label: "Heading 1" },
+                ],
+            }),
+        ).toThrow(/Duplicate text block name/);
     });
 
-    it("should throw when the heading defaultLevel is not one of the allowed levels", () => {
-        expect(() => createTipTapRichTextBlock({ heading: { levels: [2, 3, 4], defaultLevel: 1 } })).toThrow();
-        expect(() => createTipTapRichTextBlock({ heading: { defaultLevel: 7 } })).toThrow();
+    it("should throw for a text block style that is not configured", () => {
+        expect(() =>
+            createTipTapRichTextBlock({
+                textBlocks: [{ name: "paragraph", tag: "p", label: "Paragraph", styles: ["intro"] }],
+            }),
+        ).toThrow(/unknown text block style/);
+        expect(() =>
+            createTipTapRichTextBlock({
+                textBlocks: [{ name: "paragraph", tag: "p", label: "Paragraph", defaultStyle: "intro" }],
+                textBlockStyles: [{ name: "intro", label: "Intro", element: (props, Tag) => <Tag {...props} /> }],
+            }),
+        ).toThrow(/defaultStyle/);
+        expect(() =>
+            createTipTapRichTextBlock({
+                orderedList: { styles: ["list"] },
+            }),
+        ).toThrow(/unknown text block style/);
     });
 
-    it("should throw when paragraphs are disabled and no other text block type is left", () => {
-        expect(() => createTipTapRichTextBlock({ paragraph: false, heading: false })).toThrow();
+    it("should throw when the defaultTextBlock is not one of the text blocks", () => {
+        expect(() => createTipTapRichTextBlock({ textBlocks: [...headlineTextBlocks], defaultTextBlock: "paragraph" })).toThrow(/defaultTextBlock/);
     });
 
-    it("should throw when lists are enabled without paragraphs", () => {
-        expect(() => createTipTapRichTextBlock({ paragraph: false, unorderedList: true })).toThrow();
-        expect(() => createTipTapRichTextBlock({ paragraph: false, orderedList: true })).toThrow();
+    it("should throw when lists are enabled without a paragraph text block", () => {
+        expect(() => createTipTapRichTextBlock({ textBlocks: [...headlineTextBlocks], unorderedList: true })).toThrow();
+        expect(() => createTipTapRichTextBlock({ textBlocks: [...headlineTextBlocks], orderedList: {} })).toThrow();
     });
 
-    it("should start heading-only content with a heading of the default level", () => {
-        const block = createTipTapRichTextBlock({ paragraph: false, heading: { levels: [2, 3, 4], defaultLevel: 3 } });
-        expect(block.defaultValues()).toEqual({ tipTapContent: { type: "doc", content: [{ type: "heading", attrs: { level: 3 } }] } });
+    it("should start heading-only content with the default text block", () => {
+        const block = createTipTapRichTextBlock({ textBlocks: [...headlineTextBlocks], defaultTextBlock: "heading-3" });
+        expect(block.defaultValues()).toEqual({
+            tipTapContent: { type: "doc", content: [{ type: "heading", attrs: { textBlock: "heading-3", level: 3 } }] },
+        });
+    });
+
+    it("should start content with the default text block's default style", () => {
+        const block = createTipTapRichTextBlock({
+            textBlocks: [{ name: "paragraph", tag: "p", label: "Paragraph", styles: ["intro"], defaultStyle: "intro" }],
+            textBlockStyles: [{ name: "intro", label: "Intro", element: (props, Tag) => <Tag {...props} /> }],
+        });
+        expect(block.defaultValues()).toEqual({
+            tipTapContent: { type: "doc", content: [{ type: "paragraph", attrs: { textBlock: "paragraph", textBlockStyle: "intro" } }] },
+        });
     });
 
     describe("translateContent", () => {
@@ -62,6 +98,8 @@ describe("createTipTapRichTextBlock", () => {
                     content: [
                         {
                             type: "paragraph",
+                            // The text block and its style survive the round trip through HTML, just like the text does.
+                            attrs: { textBlock: "paragraph", textBlockStyle: null },
                             content: [
                                 { type: "text", text: "A " },
                                 { type: "text", marks: [{ type: "bold" }], text: "bold" },

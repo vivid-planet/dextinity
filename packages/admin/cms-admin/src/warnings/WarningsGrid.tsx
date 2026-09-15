@@ -77,7 +77,11 @@ function WarningsGridToolbar() {
     );
 }
 
-export function WarningsGrid() {
+export interface WarningsGridProps {
+    showAllScopes?: boolean;
+}
+
+export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
     const intl = useIntl();
     const dataGridProps = {
         ...useDataGridRemote({ initialFilter: { items: [{ field: "status", operator: "is", value: "open" }] } }),
@@ -85,8 +89,8 @@ export function WarningsGrid() {
     };
     const { messages: warningMessages } = useWarningsConfig();
     const { entityDependencyMap } = useDependenciesConfig();
-    const { values: scopeValues } = useContentScope();
-    const scopes = scopeValues.map((item) => item.scope);
+    const { scope: currentScope, values: scopeValues } = useContentScope();
+    const scopes = showAllScopes ? scopeValues.map((item) => item.scope) : [currentScope];
 
     const scopeValueOptions = scopeValues.map((item) => {
         const label: string[] = [];
@@ -168,6 +172,8 @@ export function WarningsGrid() {
             headerName: intl.formatMessage({ id: "dextinity.warning.scope", defaultMessage: "Scope" }),
             type: "singleSelect",
             sortable: false,
+            // Only the current scope is queried, so filtering by any other scope would return an empty grid.
+            filterable: showAllScopes,
             valueOptions: scopeValueOptions,
             valueFormatter: (value) => {
                 if (typeof value === "object" && value !== null) {
@@ -202,8 +208,11 @@ export function WarningsGrid() {
         // Create a custom filter model by transforming the filterModel's items
         const customFilterModel = {
             ...filterModel,
-            items:
-                filterModel?.items.map((item) => {
+            items: (filterModel?.items ?? [])
+                // `filterable` only hides the column from the filter panel. The filter model is read from the URL,
+                // so a scope filter from an existing link would still reach the query and empty the grid.
+                .filter((item) => showAllScopes || item.field !== "scope")
+                .map((item) => {
                     if (item.field === "scope") {
                         if (typeof item.value === "string") {
                             return { ...item, value: JSON.parse(item.value) };
@@ -215,7 +224,7 @@ export function WarningsGrid() {
                     }
 
                     return item;
-                }) ?? [],
+                }),
         };
 
         return muiGridFilterToGql(columns, customFilterModel);

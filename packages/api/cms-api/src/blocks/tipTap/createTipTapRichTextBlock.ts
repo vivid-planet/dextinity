@@ -32,6 +32,7 @@ import { Placeholder } from "./extensions/Placeholder";
 import { SoftHyphen } from "./extensions/SoftHyphen";
 import { TextBlockStyleHeading } from "./extensions/TextBlockStyleHeading";
 import { TextBlockStyleParagraph } from "./extensions/TextBlockStyleParagraph";
+import { buildApplyDefaultTextBlockStylesMigration } from "./migrations/buildApplyDefaultTextBlockStylesMigration";
 import { buildDraftJsToTipTapMigration } from "./migrations/buildDraftJsToTipTapMigration";
 import type { TextBlockStyleMapping } from "./migrations/convertDraftJsToTipTap";
 import { containsInvalidHeadingLevel, getListNestingDepth } from "./tipTapValidation";
@@ -803,7 +804,7 @@ export function createTipTapRichTextBlock(
             }
         }
     }
-    const migrate = migrateFromDraftJs
+    const migrateWithDraftJs = migrateFromDraftJs
         ? {
               version: baseMigrate.version == 0 ? 1 : baseMigrate.version,
               migrations: [
@@ -822,6 +823,20 @@ export function createTipTapRichTextBlock(
               ],
           }
         : baseMigrate;
+
+    // Safety net, appended after every other migration: a migration that runs before this one (the DraftJS
+    // conversion, or a block-specific migration such as one that changes a node's heading level) can resolve
+    // `defaultTextBlockStyles` against a tag/level a node no longer has by the time all migrations have run.
+    const hasDefaultTextBlockStyles = Object.keys(defaultTextBlockStyles).length > 0;
+    const migrate = hasDefaultTextBlockStyles
+        ? {
+              version: migrateWithDraftJs.version + 1,
+              migrations: [
+                  ...migrateWithDraftJs.migrations,
+                  buildApplyDefaultTextBlockStylesMigration({ toVersion: migrateWithDraftJs.version + 1, defaultTextBlockStyles }),
+              ],
+          }
+        : migrateWithDraftJs;
 
     @BlockDataMigrationVersion(migrate.version)
     class TipTapRichTextBlockData extends BlockData implements TipTapRichTextBlockDataInterface {

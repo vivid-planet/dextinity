@@ -61,6 +61,32 @@ describe("buildApplyDefaultTextBlockStylesMigration", () => {
         });
     });
 
+    it("swaps a style a later migration's tag/level change made inapplicable for a style with matching appliesTo", () => {
+        const block = createTipTapRichTextBlock(
+            {
+                migrateFromDraftJs: true,
+                textBlockStyles: [
+                    { name: "headline100", appliesTo: ["heading-1"] },
+                    { name: "headline300", appliesTo: ["heading-2"] },
+                ],
+                defaultTextBlockStyles: { "heading-1": "headline100", "heading-2": "headline300" },
+            },
+            {
+                name: "HeadingBumpStyledRichText",
+                migrate: { migrations: typeSafeBlockMigrationPipe([Heading1ToHeading2Migration]), version: 2 },
+            },
+        );
+
+        const data = block.blockDataFactory({
+            draftContent: { blocks: [draftBlock({ type: "header-one", text: "Title" })], entityMap: {} },
+        });
+
+        expect(data.tipTapContent).toEqual({
+            type: "doc",
+            content: [{ type: "heading", attrs: { level: 2, textBlockStyle: "headline300" }, content: [{ type: "text", text: "Title" }] }],
+        });
+    });
+
     it("does not override a style a migration already set", () => {
         const block = createTipTapRichTextBlock(
             {

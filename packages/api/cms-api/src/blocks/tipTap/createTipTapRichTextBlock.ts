@@ -833,7 +833,7 @@ export function createTipTapRichTextBlock(
               version: migrateWithDraftJs.version + 1,
               migrations: [
                   ...migrateWithDraftJs.migrations,
-                  buildApplyDefaultTextBlockStylesMigration({ toVersion: migrateWithDraftJs.version + 1, defaultTextBlockStyles }),
+                  buildApplyDefaultTextBlockStylesMigration({ toVersion: migrateWithDraftJs.version + 1, defaultTextBlockStyles, textBlockStyles }),
               ],
           }
         : migrateWithDraftJs;

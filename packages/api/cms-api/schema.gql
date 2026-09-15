@@ -571,6 +571,7 @@ type Query {
   userPermissionsPermission(id: ID!, userId: String): UserPermission!
   userPermissionsAvailablePermissions: [String!]!
   userPermissionsContentScopes(userId: String!, skipManual: Boolean): [JSONObject!]!
+  userPermissionsManualContentScopes(userId: String!): [JSONObject!]!
   userPermissionsAvailableContentScopes: [ContentScopeWithLabel!]!
   userPermissionsAvailableContentScopeDimensions: [ContentScopeDimension!]!
   fileUploadForTypesGenerationDoNotUse: FileUpload!

@@ -115,4 +115,31 @@ describe("UserPermissionsService", () => {
             ]);
         });
     });
+
+    describe("getManualContentScopesForUser", () => {
+        it("returns the persisted manual content scopes", async () => {
+            const service = createService({}, { manualContentScopes: [{ domain: "main", language: "en" }] });
+
+            expect(await service.getManualContentScopesForUser(user)).toEqual([{ domain: "main", language: "en" }]);
+        });
+
+        it("returns a manual content scope even when the same scope is also granted by a rule", async () => {
+            const service = createService(
+                {},
+                {
+                    getContentScopesForUser: () => [{ domain: "main", language: "en" }],
+                    manualContentScopes: [{ domain: "main", language: "en" }],
+                },
+            );
+
+            // The scope is both rule-based and manually assigned; it must still be reported as manual so it stays removable.
+            expect(await service.getManualContentScopesForUser(user)).toEqual([{ domain: "main", language: "en" }]);
+        });
+
+        it("returns an empty array when the user has no manual content scopes", async () => {
+            const service = createService({});
+
+            expect(await service.getManualContentScopesForUser(user)).toEqual([]);
+        });
+    });
 });

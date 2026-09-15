@@ -2045,6 +2045,7 @@ type Query {
   userPermissionsAvailableContentScopes: [ContentScopeWithLabel!]!
   userPermissionsAvailablePermissions: [String!]!
   userPermissionsContentScopes(skipManual: Boolean, userId: String!): [JSONObject!]!
+  userPermissionsManualContentScopes(userId: String!): [JSONObject!]!
   userPermissionsPermission(id: ID!, userId: String): UserPermission!
   userPermissionsPermissionList(userId: String!): [UserPermission!]!
   userPermissionsUserById(id: String!): UserPermissionsUser!

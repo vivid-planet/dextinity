@@ -34,6 +34,7 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
             query ContentScopes($userId: String!) {
                 userContentScopes: userPermissionsContentScopes(userId: $userId)
                 userContentScopesSkipManual: userPermissionsContentScopes(userId: $userId, skipManual: true)
+                userContentScopesManual: userPermissionsManualContentScopes(userId: $userId)
                 availableContentScopes: userPermissionsAvailableContentScopes {
                     scope
                     label
@@ -68,14 +69,14 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
             data.userContentScopesSkipManual.some((scope) => isEqual(scope, availableContentScope.scope)),
         );
 
-    // A scope is rule-based (as opposed to manually assigned) when it is part of the scopes granted by rule. Only manually
-    // assigned scopes can be deleted here.
-    const isRuleBasedScope = (scope: ContentScope) => data.userContentScopesSkipManual.some((ruleBasedScope) => isEqual(ruleBasedScope, scope));
+    // The manually assigned scopes as persisted, taken directly from the API (not derived by subtracting the rule-based
+    // scopes), so a scope that is both manually assigned and rule-based is preserved and not silently dropped on the next edit.
+    // Only manually assigned scopes can be deleted here.
+    const manualContentScopes = deduplicateContentScopes(data.userContentScopesManual);
+    const isManualScope = (scope: ContentScope) => manualContentScopes.some((manualScope) => isEqual(manualScope, scope));
 
-    // Show manually assigned scopes before rule-based ones (sort is stable, so the order within each group is preserved).
-    const sortedContentScopes = [...userContentScopes].sort((a, b) => Number(isRuleBasedScope(a)) - Number(isRuleBasedScope(b)));
-
-    const manualContentScopes = userContentScopes.filter((contentScope) => !isRuleBasedScope(contentScope));
+    // Show manually assigned scopes before purely rule-based ones (sort is stable, so the order within each group is preserved).
+    const sortedContentScopes = [...userContentScopes].sort((a, b) => Number(isManualScope(b)) - Number(isManualScope(a)));
 
     const setManualContentScopes = async (contentScopes: ContentScope[]) => {
         await updateContentScopes({
@@ -104,10 +105,10 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
             filterable: false,
             headerName: intl.formatMessage({ id: "dextinity.userPermissions.source", defaultMessage: "Assignment type" }),
             renderCell: ({ row }) =>
-                isRuleBasedScope(row) ? (
-                    <FormattedMessage id="dextinity.userPermissions.assignmentType.byRule" defaultMessage="By rule" />
-                ) : (
+                isManualScope(row) ? (
                     <FormattedMessage id="dextinity.userPermissions.assignmentType.manual" defaultMessage="Manual" />
+                ) : (
+                    <FormattedMessage id="dextinity.userPermissions.assignmentType.byRule" defaultMessage="By rule" />
                 ),
         },
         {
@@ -119,11 +120,11 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
             sortable: false,
             filterable: false,
             renderCell: ({ row }) =>
-                isRuleBasedScope(row) ? null : (
+                isManualScope(row) ? (
                     <IconButton onClick={() => setScopeToDelete(row)} disabled={updateInProgress}>
                         <Delete />
                     </IconButton>
-                ),
+                ) : null,
         },
     ];
 

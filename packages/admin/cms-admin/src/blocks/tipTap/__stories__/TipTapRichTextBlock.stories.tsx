@@ -1349,3 +1349,106 @@ export const DefaultTextBlockStyles: StoryObj<typeof DefaultTextBlockStylesStory
         });
     },
 };
+
+const IsTextBlockTypeBlock = createTipTapRichTextBlock({
+    paragraph: false,
+    heading: { levels: [1, 2, 3, 4, 5] },
+    textBlockStyles: [
+        {
+            name: "display",
+            label: "Display",
+            appliesTo: ["heading-1"],
+            isTextBlockType: true,
+            element: (props: HTMLAttributes<HTMLElement>) => (
+                <Typography sx={{ fontSize: 56, fontWeight: 700, lineHeight: 1.1 }} variant="h1" {...props} />
+            ),
+        },
+    ],
+});
+
+function IsTextBlockTypeStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(IsTextBlockTypeBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <IsTextBlockTypeBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+/**
+ * `isTextBlockType` shows a text block style as its own entry in the type dropdown, above the plain heading
+ * level entry it shares a tag with — matching a legacy single-dropdown block type select (e.g. Draft.js's
+ * `blocktypeMap`) where "Display" and "Headline 1" were two distinct block types that both render as `<h1>`.
+ * No separate style dropdown is needed for a heading-only block whose only style is promoted this way.
+ */
+export const IsTextBlockType: StoryObj<typeof IsTextBlockTypeStory> = {
+    render: () => <IsTextBlockTypeStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Editor starts on plain Heading 1 — no style dropdown, since heading-1's only style is promoted", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 1 })).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+
+            expect(canvas.getAllByRole("combobox")).toHaveLength(1);
+            expect(canvas.getByRole("combobox")).toHaveTextContent("Heading 1");
+        });
+
+        await step("Type dropdown lists Display above Heading 1, then Heading 2-5, no separate style entries", async () => {
+            await userEvent.click(canvas.getByRole("combobox"));
+
+            const body = within(document.body);
+            await waitFor(() => {
+                expect(body.getByRole("option", { name: "Display" })).toBeInTheDocument();
+            });
+            const optionLabels = body.getAllByRole("option").map((option) => option.textContent);
+            expect(optionLabels).toEqual(["Display", "Heading 1", "Heading 2", "Heading 3", "Heading 4", "Heading 5"]);
+
+            await userEvent.keyboard("{Escape}");
+        });
+
+        await step("Selecting Display sets the style — still only one dropdown", async () => {
+            await userEvent.click(canvas.getByRole("combobox"));
+            await userEvent.click(within(document.body).getByRole("option", { name: "Display" }));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("combobox")).toHaveTextContent("Display");
+                },
+                { timeout: 3000 },
+            );
+            expect(canvas.getAllByRole("combobox")).toHaveLength(1);
+
+            const state = JSON.parse(canvas.getByText(/"tipTapContent"/).textContent ?? "{}");
+            expect(state.tipTapContent.content[0]).toMatchObject({ type: "heading", attrs: { level: 1, textBlockStyle: "display" } });
+        });
+
+        await step("Switching back to plain Heading 1 clears the style", async () => {
+            await userEvent.click(canvas.getByRole("combobox"));
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 1" }));
+
+            await waitFor(() => {
+                const state = JSON.parse(canvas.getByText(/"tipTapContent"/).textContent ?? "{}");
+                expect(state.tipTapContent.content[0]).toMatchObject({ type: "heading", attrs: { level: 1, textBlockStyle: null } });
+            });
+        });
+
+        await step("Display -> Heading 2 (no promoted style there) also clears the style", async () => {
+            await userEvent.click(canvas.getByRole("combobox"));
+            await userEvent.click(within(document.body).getByRole("option", { name: "Display" }));
+            await waitFor(() => expect(canvas.getByRole("combobox")).toHaveTextContent("Display"));
+
+            await userEvent.click(canvas.getByRole("combobox"));
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
+
+            await waitFor(() => {
+                const state = JSON.parse(canvas.getByText(/"tipTapContent"/).textContent ?? "{}");
+                expect(state.tipTapContent.content[0]).toMatchObject({ type: "heading", attrs: { level: 2, textBlockStyle: null } });
+            });
+            expect(canvas.getAllByRole("combobox")).toHaveLength(1);
+        });
+    },
+};

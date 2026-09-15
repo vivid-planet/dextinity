@@ -165,6 +165,14 @@ export interface TipTapTextBlockStyle {
      */
     appliesTo?: TipTapTextBlockType[];
     element: ComponentType<HTMLAttributes<HTMLElement>>;
+    /**
+     * Shows this style as its own entry in the text block type dropdown (alongside "Paragraph"/"Heading N"),
+     * instead of in the text block style dropdown. Requires `appliesTo` to name exactly one tag.
+     *
+     * The plain ("Heading N") entry for that tag remains selectable and always means no style — picking it,
+     * or any other tag, clears this style. It never survives a tag switch the way an ordinary style does.
+     */
+    isTextBlockType?: boolean;
 }
 
 export interface TipTapInlineStyle {
@@ -802,17 +810,19 @@ export const TipTapEditor = ({
 type TipTapRichTextBlockInterface = BlockInterface<TipTapRichTextBlockData, TipTapRichTextBlockState, TipTapRichTextBlockInput> &
     ReadOnlyBlockRenderInterface<TipTapRichTextBlockState>;
 
+function isEnabledTextBlockStyleTargetType(tag: TipTapTextBlockStyleTargetType, resolvedOptions: TipTapResolvedOptions): boolean {
+    return tag === "paragraph"
+        ? resolvedOptions.paragraph
+        : resolvedOptions.heading !== false && resolvedOptions.heading.levels.includes(Number(tag.slice("heading-".length)) as HeadingLevel);
+}
+
 function validateDefaultTextBlockStyles(
     defaultTextBlockStyles: Partial<Record<TipTapTextBlockStyleTargetType, string>>,
     textBlockStyles: TipTapTextBlockStyle[],
     resolvedOptions: TipTapResolvedOptions,
 ): void {
     for (const [tag, styleName] of Object.entries(defaultTextBlockStyles) as [TipTapTextBlockStyleTargetType, string][]) {
-        const isEnabledTag =
-            tag === "paragraph"
-                ? resolvedOptions.paragraph
-                : resolvedOptions.heading !== false && resolvedOptions.heading.levels.includes(Number(tag.slice("heading-".length)) as HeadingLevel);
-        if (!isEnabledTag) {
+        if (!isEnabledTextBlockStyleTargetType(tag, resolvedOptions)) {
             throw new Error(`defaultTextBlockStyles has an entry for "${tag}", which is not enabled`);
         }
 
@@ -822,6 +832,39 @@ function validateDefaultTextBlockStyles(
         }
         if (style.appliesTo && !style.appliesTo.includes(tag)) {
             throw new Error(`defaultTextBlockStyles has an entry for "${tag}", but text block style "${styleName}" does not apply to it`);
+        }
+    }
+}
+
+function validateTextBlockTypeSelectStyles(
+    textBlockStyles: TipTapTextBlockStyle[],
+    defaultTextBlockStyles: Partial<Record<TipTapTextBlockStyleTargetType, string>>,
+    resolvedOptions: TipTapResolvedOptions,
+): void {
+    for (const style of textBlockStyles) {
+        if (!style.isTextBlockType) {
+            continue;
+        }
+
+        if (style.name.includes(":")) {
+            throw new Error(`Text block style "${style.name}" has isTextBlockType set, so its name must not contain ":"`);
+        }
+        if (style.appliesTo?.length !== 1) {
+            throw new Error(`Text block style "${style.name}" has isTextBlockType set, so appliesTo must name exactly one text block type`);
+        }
+
+        const [tag] = style.appliesTo as [TipTapTextBlockType];
+        if (tag === "ordered-list" || tag === "unordered-list") {
+            throw new Error(`Text block style "${style.name}" has isTextBlockType set, but "${tag}" is not a text block type dropdown entry`);
+        }
+        if (!isEnabledTextBlockStyleTargetType(tag, resolvedOptions)) {
+            throw new Error(`Text block style "${style.name}" has isTextBlockType set for "${tag}", which is not enabled`);
+        }
+        if (defaultTextBlockStyles[tag] !== undefined) {
+            throw new Error(
+                `Text block style "${style.name}" has isTextBlockType set for "${tag}", which also has a defaultTextBlockStyles entry — the ` +
+                    `plain type dropdown entry for "${tag}" always means no style, so a default for it would be silently overwritten`,
+            );
         }
     }
 }
@@ -844,6 +887,7 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
     const minHeight = options.minHeight;
 
     validateDefaultTextBlockStyles(defaultTextBlockStyles, textBlockStyles, resolvedOptions);
+    validateTextBlockTypeSelectStyles(textBlockStyles, defaultTextBlockStyles, resolvedOptions);
 
     const emptyContent = buildEmptyContent(resolvedOptions, defaultTextBlockStyles);
 

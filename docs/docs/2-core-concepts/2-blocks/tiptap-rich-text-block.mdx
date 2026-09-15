@@ -388,6 +388,30 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
 
 Each value must be the `name` of an entry in `textBlockStyles` whose `appliesTo` (if set) includes that tag. A tag without an entry keeps today's behavior — the styling select still offers _Default_ for it, unchanged. `migrateFromDraftJs` falls back to the configured default when a mapped Draft.js block doesn't specify a `textBlockStyle`, the same way `heading.defaultLevel` supplies a missing heading level.
 
+#### Promoting a style into the text block type select
+
+Some Draft.js RTEs had block types that share an HTML tag but are otherwise distinct, editor-facing choices — for instance a `display` type sitting above `header-one`, both rendering as `<h1>`, with `display` a large hero-style variant and `header-one` a normal heading. `isTextBlockType` reproduces that single-dropdown UX: it shows a `textBlockStyles` entry as its own entry in the text block type select, alongside "Paragraph"/"Heading N", instead of in the styling select.
+
+```tsx title="TipTapHeadlineBlock.tsx (Admin)"
+export const TipTapHeadlineBlock = createTipTapRichTextBlock({
+    paragraph: false,
+    heading: { levels: [1, 2, 3, 4, 5] },
+    textBlockStyles: [
+        {
+            name: "display",
+            label: "Display",
+            appliesTo: ["heading-1"],
+            isTextBlockType: true,
+            element: (props: HTMLAttributes<HTMLElement>) => (
+                <h1 style={{ fontSize: 56 }} {...props} />
+            ),
+        },
+    ],
+});
+```
+
+The type select becomes _Display, Heading 1, Heading 2, Heading 3, Heading 4, Heading 5_ — `display` sits above the plain heading-1 entry it shares a tag with. That plain entry stays selectable and always means no style: switching to it, or to any other tag, clears the style rather than carrying it over. Requires `appliesTo` naming exactly one tag, and that tag can't also have a `defaultTextBlockStyles` entry (the plain type-select entry always meaning "no style" and a configured default for the same tag would fight each other on every keystroke). `isTextBlockType` is admin-only: it only changes which dropdown offers the style, not the stored content or the API's validation.
+
 ### Heading-only blocks
 
 Turning the `paragraph` feature off leaves a block that only holds headings — the TipTap equivalent of the Draft.js pattern of a `RichTextBlock` restricted to `header-*` block types with a `standardBlockType`, for instance the headline part of a heading block:

@@ -41,14 +41,14 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
 import type { TipTapChildBlock, TipTapInlineStyle, TipTapPlaceholder, TipTapResolvedOptions } from "./createTipTapRichTextBlock";
+import { toggleTextBlockList } from "./extensions/TextBlockList";
 import {
     findTextBlock,
     getStyledNodes,
     hasParagraphTextBlock,
-    hasStyle,
     orderedListName,
+    resolveStyle,
     type TipTapResolvedList,
-    type TipTapResolvedStyledNode,
     type TipTapResolvedTextBlock,
     type TipTapTextBlockTag,
     unorderedListName,
@@ -141,13 +141,6 @@ const toolbarSlotSx = {
 } as const;
 
 const ToolbarGroup = ({ children }: { children: ReactNode }) => <Box sx={toolbarSlotSx}>{children}</Box>;
-
-/**
- * Keeps the applied style if the text block (or list) offers it, and falls back to its default style
- * otherwise.
- */
-const resolveStyle = (styledNode: TipTapResolvedStyledNode, activeStyle: string | null): string | null =>
-    activeStyle !== null && hasStyle(styledNode, activeStyle) ? activeStyle : styledNode.defaultStyle;
 
 const selectFormControlSx = {
     [`& .${inputBaseClasses.root}`]: {
@@ -365,20 +358,12 @@ export const TipTapToolbar = ({
         }
     };
 
-    // Toggling a list hands the cursor's paragraph from its text block to the list or back, so the
-    // style of whichever now holds it applies.
     const handleListToggle = (list: TipTapResolvedList) => {
-        const wasActive = editor.isActive(list.tag === "ol" ? "orderedList" : "bulletList");
-        const chain = editor.chain().focus();
-        (list.tag === "ol" ? chain.toggleOrderedList() : chain.toggleBulletList()).run();
-
-        const styledNode = wasActive ? textBlocks.find((textBlock) => textBlock.name === editorState.activeTextBlock) : list;
-        if (styledNode) {
-            editor
-                .chain()
-                .updateAttributes("paragraph", { textBlockStyle: resolveStyle(styledNode, activeStyle) })
-                .run();
-        }
+        toggleTextBlockList(editor, {
+            list,
+            textBlock: textBlocks.find((textBlock) => textBlock.name === editorState.activeTextBlock),
+            activeStyle,
+        });
     };
 
     const handleTextBlockStyleChange = (e: SelectChangeEvent) => {

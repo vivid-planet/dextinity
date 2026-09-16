@@ -246,7 +246,14 @@ export const getHeadingLevels = (textBlocks: TipTapResolvedTextBlock[]): Heading
 /**
  * Whether the styled node offers the style.
  */
-export const hasStyle = (styledNode: TipTapResolvedStyledNode, style: string): boolean => styledNode.styles.some(({ name }) => name === style);
+const hasStyle = (styledNode: TipTapResolvedStyledNode, style: string): boolean => styledNode.styles.some(({ name }) => name === style);
+
+/**
+ * Keeps the applied style if the text block (or list) offers it, and falls back to its default style
+ * otherwise.
+ */
+export const resolveStyle = (styledNode: TipTapResolvedStyledNode, activeStyle: string | null): string | null =>
+    activeStyle !== null && hasStyle(styledNode, activeStyle) ? activeStyle : styledNode.defaultStyle;
 
 export const hasParagraphTextBlock = (textBlocks: TipTapResolvedTextBlock[]): boolean => textBlocks.some((textBlock) => textBlock.tag === "p");
 

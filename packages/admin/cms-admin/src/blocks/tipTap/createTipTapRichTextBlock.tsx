@@ -30,6 +30,7 @@ import { Placeholder } from "./extensions/Placeholder";
 import { SoftHyphen } from "./extensions/SoftHyphen";
 import { createSyncTextBlock } from "./extensions/SyncTextBlock";
 import { createTextBlockHeading } from "./extensions/TextBlockHeading";
+import { createTextBlockList } from "./extensions/TextBlockList";
 import { createTextBlockParagraph } from "./extensions/TextBlockParagraph";
 import { InlineStyleContext } from "./InlineStyleContext";
 import { createListLevelMaxExtension, getListNestingDepthFromJson, trimListNesting } from "./listLevelMaxHelpers";
@@ -544,6 +545,10 @@ function buildTipTapExtensions({
             : []),
         createSyncTextBlock(resolvedOptions),
         ...(styledNodes.some((styledNode) => styledNode.defaultStyle !== null) ? [createDefaultTextBlockStyle(resolvedOptions)] : []),
+        // Only worth replacing the list shortcuts where a list has styles of its own to apply.
+        ...([resolvedOptions.orderedList, resolvedOptions.unorderedList].some((list) => list && list.styles.length > 0)
+            ? [createTextBlockList(resolvedOptions)]
+            : []),
         ...(hasInlineStyles ? [InlineStyleMark] : []),
         ...(resolvedOptions.sup ? [Superscript] : []),
         ...(resolvedOptions.sub ? [Subscript] : []),

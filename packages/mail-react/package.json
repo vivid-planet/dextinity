@@ -59,7 +59,7 @@
         "@types/mjml-browser": "^4.15.0",
         "@types/react": "^19.2.15",
         "@types/react-dom": "^19.2.3",
-        "@vitest/browser": "4.1.8",
+        "@vitest/browser": "4.1.10",
         "@vitest/browser-playwright": "4.1.8",
         "chokidar-cli": "^3.0.0",
         "eslint": "^9.39.4",

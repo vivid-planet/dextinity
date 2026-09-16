@@ -81,15 +81,17 @@ export { PhoneLinkBlock } from "./blocks/PhoneLinkBlock";
 export { PixelImageBlock } from "./blocks/PixelImageBlock";
 export { SpaceBlock } from "./blocks/SpaceBlock";
 export { SvgImageBlock } from "./blocks/SvgImageBlock";
+export type { TipTapInlineStyle, TipTapPlaceholder, TipTapRichTextBlockContent } from "./blocks/tipTap/createTipTapRichTextBlock";
+export { createTipTapRichTextBlock } from "./blocks/tipTap/createTipTapRichTextBlock";
 export type {
-    TipTapInlineStyle,
-    TipTapPlaceholder,
-    TipTapRichTextBlockContent,
+    TipTapListTag,
+    TipTapStyledTag,
+    TipTapStyleOptions,
+    TipTapTextBlock,
     TipTapTextBlockStyle,
     TipTapTextBlockStyleProps,
-} from "./blocks/tipTap/createTipTapRichTextBlock";
-export { createTipTapRichTextBlock } from "./blocks/tipTap/createTipTapRichTextBlock";
-export type { TipTapListTag, TipTapStyledTag, TipTapStyleOptions, TipTapTextBlock, TipTapTextBlockTag } from "./blocks/tipTap/textBlocks";
+    TipTapTextBlockTag,
+} from "./blocks/tipTap/textBlocks";
 export type {
     AnonymousBlockInterface,
     BlockAdminComponent,

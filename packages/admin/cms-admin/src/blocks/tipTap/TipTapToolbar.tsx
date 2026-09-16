@@ -40,13 +40,7 @@ import { type ForwardRefExoticComponent, type MouseEvent, type ReactNode, type R
 import { FormattedMessage, useIntl } from "react-intl";
 
 import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
-import type {
-    TipTapChildBlock,
-    TipTapInlineStyle,
-    TipTapPlaceholder,
-    TipTapResolvedOptions,
-    TipTapTextBlockStyle,
-} from "./createTipTapRichTextBlock";
+import type { TipTapChildBlock, TipTapInlineStyle, TipTapPlaceholder, TipTapResolvedOptions } from "./createTipTapRichTextBlock";
 import { getActiveTextBlock, setTextBlock, toggleList } from "./textBlockCommands";
 import type { TipTapResolvedList, TipTapResolvedStyledNode } from "./textBlocks";
 import { TipTapBlockDialog } from "./TipTapBlockDialog";
@@ -162,7 +156,6 @@ const selectSx = {
 export const TipTapToolbar = ({
     editor,
     resolvedOptions,
-    textBlockStyles,
     inlineStyles,
     placeholders,
     linkBlock,
@@ -173,7 +166,6 @@ export const TipTapToolbar = ({
 }: {
     editor: Editor;
     resolvedOptions: TipTapResolvedOptions;
-    textBlockStyles: TipTapTextBlockStyle[];
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
     linkBlock?: BlockInterface & LinkBlockInterface;
@@ -283,7 +275,7 @@ export const TipTapToolbar = ({
     );
     const activeTextBlock = textBlocks.find((textBlock) => textBlock.name === editorState.activeTextBlockName);
     const activeStyledNode: TipTapResolvedStyledNode | undefined = activeList || activeTextBlock;
-    const applicableTextBlockStyles = (activeStyledNode?.styles ?? []).flatMap((name) => textBlockStyles.find((style) => style.name === name) ?? []);
+    const applicableTextBlockStyles = activeStyledNode?.styles ?? [];
     const applicableInlineStyles = inlineStyles.filter(
         (style) => !style.appliesTo || (!!activeStyledNode && style.appliesTo.includes(activeStyledNode.name)),
     );

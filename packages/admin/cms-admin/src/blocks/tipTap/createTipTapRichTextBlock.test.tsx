@@ -4,8 +4,11 @@ import { describe, expect, it } from "vitest";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "../types";
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "./createTipTapRichTextBlock";
+import type { TipTapTextBlockStyle } from "./textBlocks";
 
 describe("createTipTapRichTextBlock", () => {
+    const introStyle: TipTapTextBlockStyle = { name: "intro", label: "Intro", element: (props, Tag) => <Tag {...props} /> };
+
     const headlineTextBlocks = [
         { name: "heading-2", tag: "h2", label: "Heading 2" },
         { name: "heading-3", tag: "h3", label: "Heading 3" },
@@ -24,23 +27,22 @@ describe("createTipTapRichTextBlock", () => {
         ).toThrow(/Duplicate text block name/);
     });
 
-    it("should throw for a text block style that is not configured", () => {
+    it("should throw for an invalid text block style configuration", () => {
         expect(() =>
             createTipTapRichTextBlock({
-                textBlocks: [{ name: "paragraph", tag: "p", label: "Paragraph", styles: ["intro"] }],
+                textBlocks: [{ name: "paragraph", tag: "p", label: "Paragraph", styles: [introStyle, introStyle] }],
             }),
-        ).toThrow(/unknown text block style/);
+        ).toThrow(/offers the text block style "intro" twice/);
         expect(() =>
             createTipTapRichTextBlock({
-                textBlocks: [{ name: "paragraph", tag: "p", label: "Paragraph", defaultStyle: "intro" }],
-                textBlockStyles: [{ name: "intro", label: "Intro", element: (props, Tag) => <Tag {...props} /> }],
+                textBlocks: [{ name: "paragraph", tag: "p", label: "Paragraph", styles: [introStyle], defaultStyle: "highlight" }],
             }),
         ).toThrow(/defaultStyle/);
         expect(() =>
             createTipTapRichTextBlock({
-                orderedList: { styles: ["list"] },
+                orderedList: { defaultStyle: "list" },
             }),
-        ).toThrow(/unknown text block style/);
+        ).toThrow(/defaultStyle/);
     });
 
     it("should throw when the defaultTextBlock is not one of the text blocks", () => {
@@ -61,8 +63,7 @@ describe("createTipTapRichTextBlock", () => {
 
     it("should start content with the default text block's default style", () => {
         const block = createTipTapRichTextBlock({
-            textBlocks: [{ name: "paragraph", tag: "p", label: "Paragraph", styles: ["intro"], defaultStyle: "intro" }],
-            textBlockStyles: [{ name: "intro", label: "Intro", element: (props, Tag) => <Tag {...props} /> }],
+            textBlocks: [{ name: "paragraph", tag: "p", label: "Paragraph", styles: [introStyle], defaultStyle: "intro" }],
         });
         expect(block.defaultValues()).toEqual({
             tipTapContent: { type: "doc", content: [{ type: "paragraph", attrs: { textBlock: "paragraph", textBlockStyle: "intro" } }] },

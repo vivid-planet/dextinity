@@ -11,16 +11,25 @@ export type TipTapListTag = "ol" | "ul";
 export type TipTapStyledTag = TipTapTextBlockTag | TipTapListTag;
 
 /**
+ * A text block style that can be applied to a text block or to the content of a list.
+ */
+export interface TipTapTextBlockStyle {
+    /**
+     * Identifies the style. Stored in the content's `textBlockStyle` attribute.
+     */
+    name: string;
+}
+
+/**
  * Text block styles that can be applied to a text block or to the content of a list.
  */
 export interface TipTapStyleOptions {
     /**
-     * Names of the `textBlockStyles` that can be applied, in the order they are offered.
-     * Defaults to none.
+     * The text block styles that can be applied, in the order they are offered. Defaults to none.
      */
-    styles?: string[];
+    styles?: TipTapTextBlockStyle[];
     /**
-     * Style applied to newly created text blocks of this type. Must be one of `styles`.
+     * Name of the style applied to newly created text blocks of this type. Must be one of `styles`.
      * Defaults to no style.
      */
     defaultStyle?: string;
@@ -47,7 +56,7 @@ export interface TipTapTextBlock extends TipTapStyleOptions {
 export interface TipTapResolvedStyledNode {
     name: string;
     tag: TipTapStyledTag;
-    styles: string[];
+    styles: TipTapTextBlockStyle[];
     defaultStyle: string | null;
 }
 
@@ -72,14 +81,15 @@ const tipTapTextBlockTags: TipTapTextBlockTag[] = ["p", "h1", "h2", "h3", "h4", 
 
 const getHeadingLevelFromTag = (tag: TipTapTextBlockTag): HeadingLevel | undefined => headingLevelByTag[tag];
 
-function resolveStyles({ name, styles = [], defaultStyle, styleNames }: TipTapStyleOptions & { name: string; styleNames: string[] }) {
-    for (const style of styles) {
-        if (!styleNames.includes(style)) {
-            throw new Error(`"${name}" references the unknown text block style "${style}"`);
-        }
+function resolveStyles({ name, styles = [], defaultStyle }: TipTapStyleOptions & { name: string }) {
+    const styleNames = styles.map((style) => style.name);
+
+    const duplicate = styleNames.find((styleName, index) => styleNames.indexOf(styleName) !== index);
+    if (duplicate !== undefined) {
+        throw new Error(`"${name}" offers the text block style "${duplicate}" twice`);
     }
 
-    if (defaultStyle !== undefined && !styles.includes(defaultStyle)) {
+    if (defaultStyle !== undefined && !styleNames.includes(defaultStyle)) {
         throw new Error(`"${name}" has the defaultStyle "${defaultStyle}", which is not one of its styles`);
     }
 
@@ -87,10 +97,9 @@ function resolveStyles({ name, styles = [], defaultStyle, styleNames }: TipTapSt
 }
 
 /**
- * Applies the defaults to the configured text blocks and validates them against each other and the
- * configured text block styles.
+ * Applies the defaults to the configured text blocks and validates them against each other.
  */
-export function resolveTextBlocks({ textBlocks, styleNames }: { textBlocks: TipTapTextBlock[]; styleNames: string[] }): TipTapResolvedTextBlock[] {
+export function resolveTextBlocks(textBlocks: TipTapTextBlock[]): TipTapResolvedTextBlock[] {
     if (textBlocks.length === 0) {
         throw new Error("textBlocks must not be empty, otherwise no text block type is left");
     }
@@ -109,31 +118,29 @@ export function resolveTextBlocks({ textBlocks, styleNames }: { textBlocks: TipT
 
     return textBlocks.map((textBlock) => ({
         ...textBlock,
-        ...resolveStyles({ ...textBlock, styleNames }),
+        ...resolveStyles(textBlock),
         level: getHeadingLevelFromTag(textBlock.tag),
     }));
 }
 
 /**
- * Applies the defaults to a list's options and validates its styles against the configured text
- * block styles. Returns `false` for a disabled list.
+ * Applies the defaults to a list's options and validates its styles. Returns `false` for a disabled
+ * list.
  */
 export function resolveList({
     list,
     name,
     tag,
-    styleNames,
 }: {
     list: boolean | TipTapStyleOptions | undefined;
     name: string;
     tag: TipTapListTag;
-    styleNames: string[];
 }): TipTapResolvedList | false {
     if (!list) {
         return false;
     }
     const listOptions = list === true ? {} : list;
-    return { name, tag, ...resolveStyles({ ...listOptions, name, styleNames }) };
+    return { name, tag, ...resolveStyles({ ...listOptions, name }) };
 }
 
 /**
@@ -153,6 +160,11 @@ export function findTextBlock<T extends TipTapResolvedTextBlock>({
     const byName = name ? textBlocks.find((textBlock) => textBlock.name === name && textBlock.tag === tag) : undefined;
     return byName ?? textBlocks.find((textBlock) => textBlock.tag === tag);
 }
+
+/**
+ * Whether the text block (or list) offers the style.
+ */
+export const hasStyle = (styledNode: TipTapResolvedStyledNode, style: string): boolean => styledNode.styles.some(({ name }) => name === style);
 
 export const getParagraphTextBlocks = <T extends TipTapResolvedTextBlock>(textBlocks: T[]): T[] =>
     textBlocks.filter((textBlock) => textBlock.tag === "p");

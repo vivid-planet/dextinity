@@ -5,7 +5,7 @@ import { ProductTeaserBlock } from "@src/products/blocks/product-teaser.block";
 import { LinkBlock } from "./link.block";
 import { Heading1ToHeading2Migration } from "./tip-tap-rich-text/migrations/2-heading-1-to-heading-2.migration";
 
-const listStyles = { styles: ["list300", "list200"], defaultStyle: "list300" };
+const listStyles = { styles: [{ name: "list300" }, { name: "list200" }], defaultStyle: "list300" };
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock(
     {
@@ -15,9 +15,14 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
             productTeaser: { block: ProductTeaserBlock, display: "block" },
         },
         textBlocks: [
-            { name: "paragraph", tag: "p", styles: ["paragraph300", "paragraph200"], defaultStyle: "paragraph300" },
+            { name: "paragraph", tag: "p", styles: [{ name: "paragraph300" }, { name: "paragraph200" }], defaultStyle: "paragraph300" },
             // A second text block with the same tag: same semantics, but its own set of styles.
-            { name: "eyebrow", tag: "p", styles: ["eyebrow600", "eyebrow550", "eyebrow500", "eyebrow450"], defaultStyle: "eyebrow500" },
+            {
+                name: "eyebrow",
+                tag: "p",
+                styles: [{ name: "eyebrow600" }, { name: "eyebrow550" }, { name: "eyebrow500" }, { name: "eyebrow450" }],
+                defaultStyle: "eyebrow500",
+            },
             { name: "heading-1", tag: "h1" },
             { name: "heading-2", tag: "h2" },
             { name: "heading-3", tag: "h3" },
@@ -27,16 +32,6 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
         ],
         orderedList: listStyles,
         unorderedList: listStyles,
-        textBlockStyles: [
-            { name: "paragraph300" },
-            { name: "paragraph200" },
-            { name: "eyebrow600" },
-            { name: "eyebrow550" },
-            { name: "eyebrow500" },
-            { name: "eyebrow450" },
-            { name: "list300" },
-            { name: "list200" },
-        ],
         inlineStyles: [{ name: "highlight" }, { name: "tag", appliesTo: ["paragraph"] }],
         migrateFromDraftJs: {
             // Map the DraftJS `blocktypeMap` entry `paragraph-small` (configured in the admin RichTextBlock)

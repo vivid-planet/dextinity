@@ -34,6 +34,7 @@ import { InlineStyleContext } from "./InlineStyleContext";
 import { createListLevelMaxExtension, getListNestingDepthFromJson, trimListNesting } from "./listLevelMaxHelpers";
 import { TextBlockContext } from "./TextBlockContext";
 import {
+    collectTextBlockStyles,
     findDefaultTextBlock,
     getHeadingLevels,
     getParagraphTextBlocks,
@@ -42,9 +43,9 @@ import {
     resolveTextBlocks,
     type TipTapResolvedList,
     type TipTapResolvedTextBlock,
-    type TipTapStyledTag,
     type TipTapStyleOptions,
     type TipTapTextBlock,
+    type TipTapTextBlockStyle,
     unorderedListName,
 } from "./textBlocks";
 import { TipTapContentTranslationDialog } from "./TipTapContentTranslationDialog";
@@ -67,6 +68,10 @@ export interface TipTapResolvedOptions {
     defaultTextBlock: TipTapResolvedTextBlock;
     orderedList: false | TipTapResolvedList;
     unorderedList: false | TipTapResolvedList;
+    /**
+     * The styles of all text blocks and lists, for rendering the style a node carries.
+     */
+    textBlockStyles: TipTapTextBlockStyle[];
     nonBreakingSpace: boolean;
     softHyphen: boolean;
     link: boolean;
@@ -100,7 +105,6 @@ function resolveTipTapOptions({
     sup = true,
     textBlocks = defaultTextBlocks,
     defaultTextBlock,
-    textBlockStyles = [],
     orderedList,
     unorderedList,
     nonBreakingSpace = true,
@@ -108,13 +112,16 @@ function resolveTipTapOptions({
     link,
     contentTranslation = true,
 }: TipTapRichTextBlockFactoryOptions = {}): TipTapResolvedOptions {
-    const styleNames = textBlockStyles.map(({ name }) => name);
-    const resolvedTextBlocks = resolveTextBlocks({ textBlocks, styleNames });
+    const resolvedTextBlocks = resolveTextBlocks(textBlocks);
     const hasParagraph = getParagraphTextBlocks(resolvedTextBlocks).length > 0;
 
     if (!hasParagraph && (orderedList || unorderedList)) {
         throw new Error("Lists require a paragraph text block, because a list item's content starts with a paragraph");
     }
+
+    // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
+    const resolvedOrderedList = resolveList({ list: orderedList ?? hasParagraph, name: orderedListName, tag: "ol" });
+    const resolvedUnorderedList = resolveList({ list: unorderedList ?? hasParagraph, name: unorderedListName, tag: "ul" });
 
     return {
         undoRedoButtons,
@@ -126,32 +133,17 @@ function resolveTipTapOptions({
         sup,
         textBlocks: resolvedTextBlocks,
         defaultTextBlock: findDefaultTextBlock({ textBlocks: resolvedTextBlocks, defaultTextBlock }),
-        // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
-        orderedList: resolveList({ list: orderedList ?? hasParagraph, name: orderedListName, tag: "ol", styleNames }),
-        unorderedList: resolveList({ list: unorderedList ?? hasParagraph, name: unorderedListName, tag: "ul", styleNames }),
+        orderedList: resolvedOrderedList,
+        unorderedList: resolvedUnorderedList,
+        textBlockStyles: collectTextBlockStyles([
+            ...resolvedTextBlocks,
+            ...[resolvedOrderedList, resolvedUnorderedList].filter((list): list is TipTapResolvedList => list !== false),
+        ]),
         nonBreakingSpace,
         softHyphen,
         link: !!link,
         contentTranslation,
     };
-}
-
-/**
- * Props a text block style's `element` must spread onto the element it renders.
- */
-export interface TipTapTextBlockStyleProps extends HTMLAttributes<HTMLElement> {
-    "data-text-block-style"?: string;
-}
-
-export interface TipTapTextBlockStyle {
-    name: string;
-    label: ReactNode;
-    /**
-     * Renders the styled text block. Receives the `tag` of the text block (or of the list) the
-     * style is applied to, so one style can be shared by several text blocks:
-     * `(props, Tag) => <Tag {...props} />`.
-     */
-    element: (props: TipTapTextBlockStyleProps, tag: TipTapStyledTag) => ReactNode;
 }
 
 export interface TipTapInlineStyle {
@@ -270,7 +262,6 @@ interface TipTapRichTextBlockFactoryOptions {
      * to avoid a nested translate button when this block is rendered inside another translation UI.
      */
     contentTranslation?: boolean;
-    textBlockStyles?: TipTapTextBlockStyle[];
     inlineStyles?: TipTapInlineStyle[];
     placeholders?: TipTapPlaceholder[];
     /**
@@ -481,7 +472,6 @@ function collectLinkMarksData(content: JSONContent): unknown[] {
 
 function buildTipTapExtensions({
     resolvedOptions,
-    textBlockStyles,
     inlineStyles,
     placeholders,
     linkBlock,
@@ -490,7 +480,6 @@ function buildTipTapExtensions({
     listLevelMax,
 }: {
     resolvedOptions: TipTapResolvedOptions;
-    textBlockStyles: TipTapTextBlockStyle[];
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
     linkBlock?: BlockInterface & LinkBlockInterface;
@@ -498,7 +487,7 @@ function buildTipTapExtensions({
     maxTextBlocks?: number;
     listLevelMax?: number;
 }): Extensions {
-    const styled = textBlockStyles.length > 0;
+    const styled = resolvedOptions.textBlockStyles.length > 0;
     const hasInlineStyles = inlineStyles.length > 0;
     const hasLink = resolvedOptions.link && !!linkBlock;
     const hasPlaceholders = placeholders.length > 0;
@@ -573,7 +562,6 @@ export interface TipTapEditorProps {
     state: TipTapRichTextBlockState;
     updateState: React.Dispatch<React.SetStateAction<TipTapRichTextBlockState>>;
     resolvedOptions: TipTapResolvedOptions;
-    textBlockStyles: TipTapTextBlockStyle[];
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
     linkBlock?: BlockInterface & LinkBlockInterface;
@@ -588,7 +576,6 @@ export const TipTapEditor = ({
     state,
     updateState,
     resolvedOptions,
-    textBlockStyles,
     inlineStyles,
     placeholders,
     linkBlock,
@@ -602,7 +589,6 @@ export const TipTapEditor = ({
 
     const extensions = buildTipTapExtensions({
         resolvedOptions,
-        textBlockStyles,
         inlineStyles,
         placeholders,
         linkBlock,
@@ -695,7 +681,7 @@ export const TipTapEditor = ({
     const editorNode = <EditorContent editor={editor} />;
 
     return (
-        <TextBlockContext.Provider value={{ textBlocks: resolvedOptions.textBlocks, textBlockStyles }}>
+        <TextBlockContext.Provider value={{ textBlocks: resolvedOptions.textBlocks, textBlockStyles: resolvedOptions.textBlockStyles }}>
             <InlineStyleContext.Provider value={inlineStyles}>
                 <ChildBlocksContext.Provider value={childBlocksByKey}>
                     {readOnly ? (
@@ -705,7 +691,6 @@ export const TipTapEditor = ({
                             <TipTapToolbar
                                 editor={editor}
                                 resolvedOptions={resolvedOptions}
-                                textBlockStyles={textBlockStyles}
                                 inlineStyles={inlineStyles}
                                 placeholders={placeholders}
                                 linkBlock={linkBlock}
@@ -729,7 +714,6 @@ export const TipTapEditor = ({
                             }}
                             editorProps={{
                                 resolvedOptions,
-                                textBlockStyles,
                                 inlineStyles,
                                 placeholders,
                                 linkBlock,
@@ -754,7 +738,6 @@ type TipTapRichTextBlockInterface = BlockInterface<TipTapRichTextBlockData, TipT
  */
 export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOptions = {}): TipTapRichTextBlockInterface => {
     const resolvedOptions = resolveTipTapOptions(options);
-    const textBlockStyles = options.textBlockStyles ?? [];
     const inlineStyles = options.inlineStyles ?? [];
     const placeholders = options.placeholders ?? [];
     const linkBlock = options.link;
@@ -768,7 +751,6 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
 
     const sharedEditorProps = {
         resolvedOptions,
-        textBlockStyles,
         inlineStyles,
         placeholders,
         linkBlock,
@@ -780,7 +762,6 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
 
     const tipTapExtensions = buildTipTapExtensions({
         resolvedOptions,
-        textBlockStyles,
         inlineStyles,
         placeholders,
         linkBlock,

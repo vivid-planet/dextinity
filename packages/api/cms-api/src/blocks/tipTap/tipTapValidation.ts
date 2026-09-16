@@ -2,6 +2,7 @@ import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
 
 import {
     findTextBlock,
+    hasStyle,
     type TipTapResolvedList,
     type TipTapResolvedStyledNode,
     type TipTapResolvedTextBlock,
@@ -114,7 +115,7 @@ export function containsInvalidTextBlocks(content: TipTapContent, context: TipTa
         }
 
         const style = content.attrs?.textBlockStyle;
-        if (style != null && !styledNode.styles.includes(style)) {
+        if (style != null && !hasStyle(styledNode, style)) {
             return true;
         }
     }

@@ -77,10 +77,6 @@ export interface TipTapRichTextBlockInputInterface extends BlockInputInterface<T
     tipTapContent: JSONContent;
 }
 
-interface TipTapTextBlockStyle {
-    name: string;
-}
-
 interface TipTapInlineStyle {
     name: string;
     /**
@@ -175,7 +171,6 @@ export interface CreateTipTapRichTextBlockOptions {
      * Enables links by passing the link block that is used for them. Disabled by default.
      */
     link?: Block;
-    textBlockStyles?: TipTapTextBlockStyle[];
     inlineStyles?: TipTapInlineStyle[];
     placeholders?: TipTapPlaceholder[];
     indexSearchText?: boolean;
@@ -205,7 +200,7 @@ export interface CreateTipTapRichTextBlockOptions {
      * Enables best-effort migration of DraftJS-based RichTextBlock data
      * (`{ draftContent: { blocks, entityMap } }`) into TipTap data.
      *
-     * The migration uses the enabled features and the `textBlockStyles`, `maxTextBlocks` and
+     * The migration uses the enabled features and the `textBlocks`, `maxTextBlocks` and
      * `listLevelMax` options to build the target schema, validates the converted document, and
      * falls back to a stripped-down plain-text-paragraph document if validation fails.
      *
@@ -229,15 +224,13 @@ export function resolveTipTapOptions({
     sup = true,
     textBlocks = defaultTextBlocks,
     defaultTextBlock,
-    textBlockStyles = [],
     orderedList,
     unorderedList,
     nonBreakingSpace = true,
     softHyphen = true,
     link,
 }: CreateTipTapRichTextBlockOptions = {}): TipTapResolvedOptions {
-    const styleNames = textBlockStyles.map(({ name }) => name);
-    const resolvedTextBlocks = resolveTextBlocks({ textBlocks, styleNames });
+    const resolvedTextBlocks = resolveTextBlocks(textBlocks);
     const hasParagraph = getParagraphTextBlocks(resolvedTextBlocks).length > 0;
 
     if (!hasParagraph && (orderedList || unorderedList)) {
@@ -254,8 +247,8 @@ export function resolveTipTapOptions({
         textBlocks: resolvedTextBlocks,
         defaultTextBlock: findDefaultTextBlock({ textBlocks: resolvedTextBlocks, defaultTextBlock }),
         // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
-        orderedList: resolveList({ list: orderedList ?? hasParagraph, name: orderedListName, tag: "ol", styleNames }),
-        unorderedList: resolveList({ list: unorderedList ?? hasParagraph, name: unorderedListName, tag: "ul", styleNames }),
+        orderedList: resolveList({ list: orderedList ?? hasParagraph, name: orderedListName, tag: "ol" }),
+        unorderedList: resolveList({ list: unorderedList ?? hasParagraph, name: unorderedListName, tag: "ul" }),
         nonBreakingSpace,
         softHyphen,
         link: !!link,

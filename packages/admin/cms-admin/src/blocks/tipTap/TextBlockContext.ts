@@ -1,7 +1,6 @@
 import { createContext } from "react";
 
-import type { TipTapTextBlockStyle } from "./createTipTapRichTextBlock";
-import type { TipTapResolvedTextBlock } from "./textBlocks";
+import type { TipTapResolvedTextBlock, TipTapTextBlockStyle } from "./textBlocks";
 
 interface TextBlockContextValue {
     textBlocks: TipTapResolvedTextBlock[];

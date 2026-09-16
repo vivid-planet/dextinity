@@ -364,10 +364,9 @@ describe("createTipTapRichTextBlock validation", () => {
             onlyFeatures({
                 bold: true,
                 textBlocks: [
-                    { name: "paragraph", tag: "p", styles: ["intro", "highlight"] },
-                    { name: "heading-1", tag: "h1", styles: ["highlight"] },
+                    { name: "paragraph", tag: "p", styles: [{ name: "intro" }, { name: "highlight" }] },
+                    { name: "heading-1", tag: "h1", styles: [{ name: "highlight" }] },
                 ],
-                textBlockStyles: [{ name: "intro" }, { name: "highlight" }],
             }),
             "TestBlockStyles",
         );
@@ -481,12 +480,11 @@ describe("createTipTapRichTextBlock validation", () => {
             {
                 bold: true,
                 textBlocks: [
-                    { name: "paragraph", tag: "p", styles: ["intro", "highlight"] },
-                    { name: "heading-1", tag: "h1", styles: ["highlight"] },
+                    { name: "paragraph", tag: "p", styles: [{ name: "intro" }, { name: "highlight" }] },
+                    { name: "heading-1", tag: "h1", styles: [{ name: "highlight" }] },
                 ],
-                orderedList: { styles: ["listStyle", "highlight"] },
-                unorderedList: { styles: ["listStyle", "highlight"] },
-                textBlockStyles: [{ name: "intro" }, { name: "listStyle" }, { name: "highlight" }],
+                orderedList: { styles: [{ name: "listStyle" }, { name: "highlight" }] },
+                unorderedList: { styles: [{ name: "listStyle" }, { name: "highlight" }] },
             },
             "TestBlockStylesList",
         );
@@ -1395,8 +1393,17 @@ describe("createTipTapRichTextBlock validation", () => {
                 ),
             ).toThrow(/Duplicate text block name/);
             expect(() =>
-                createTipTapRichTextBlock({ textBlocks: [{ name: "paragraph", tag: "p", styles: ["intro"] }] }, "TestTextBlocksUnknownStyle"),
-            ).toThrow(/unknown text block style/);
+                createTipTapRichTextBlock(
+                    { textBlocks: [{ name: "paragraph", tag: "p", styles: [{ name: "intro" }, { name: "intro" }] }] },
+                    "TestTextBlocksDuplicateStyle",
+                ),
+            ).toThrow(/offers the text block style "intro" twice/);
+            expect(() =>
+                createTipTapRichTextBlock(
+                    { textBlocks: [{ name: "paragraph", tag: "p", styles: [{ name: "intro" }], defaultStyle: "highlight" }] },
+                    "TestTextBlocksUnknownDefaultStyle",
+                ),
+            ).toThrow(/defaultStyle/);
         });
 
         it("should accept content without headings regardless of the heading levels", async () => {

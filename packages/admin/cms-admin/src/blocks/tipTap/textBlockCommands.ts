@@ -1,6 +1,6 @@
 import type { Editor } from "@tiptap/react";
 
-import { findTextBlock, type TipTapResolvedStyledNode, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "./textBlocks";
+import { findTextBlock, hasStyle, type TipTapResolvedStyledNode, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "./textBlocks";
 
 /**
  * The tag of the text block at the cursor.
@@ -35,7 +35,7 @@ export function getActiveTextBlockStyle(editor: Editor): string | null {
  * style otherwise.
  */
 const resolveStyle = (styledNode: TipTapResolvedStyledNode, activeStyle: string | null): string | null =>
-    activeStyle !== null && styledNode.styles.includes(activeStyle) ? activeStyle : styledNode.defaultStyle;
+    activeStyle !== null && hasStyle(styledNode, activeStyle) ? activeStyle : styledNode.defaultStyle;
 
 /**
  * Switches the text block at the cursor.

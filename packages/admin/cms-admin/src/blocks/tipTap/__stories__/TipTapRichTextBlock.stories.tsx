@@ -5,6 +5,31 @@ import { type ReactNode, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "../createTipTapRichTextBlock";
+import type { TipTapTextBlockStyle } from "../textBlocks";
+
+const introStyle: TipTapTextBlockStyle = {
+    name: "intro",
+    label: "Intro Text",
+    element: (props, Tag) => <Tag style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
+};
+
+const largeHeadingStyle: TipTapTextBlockStyle = {
+    name: "large-heading",
+    label: "Large Heading",
+    element: (props, Tag) => <Typography sx={{ fontSize: 48, lineHeight: 1.2 }} component={Tag} {...props} />,
+};
+
+const chapterHeadingStyle: TipTapTextBlockStyle = {
+    name: "chapter-heading",
+    label: "Chapter Heading",
+    element: (props, Tag) => <Tag style={{ textTransform: "uppercase", letterSpacing: "0.1em" }} {...props} />,
+};
+
+const highlightStyle: TipTapTextBlockStyle = {
+    name: "highlight",
+    label: "Highlight",
+    element: (props) => <div style={{ backgroundColor: "#fff3cd", padding: 8 }} {...props} />,
+};
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
@@ -74,15 +99,8 @@ export const Default: Story = {
 
 const ReadOnlyBlock = createTipTapRichTextBlock({
     textBlocks: [
-        { name: "paragraph", tag: "p", label: "Paragraph", styles: ["intro"] },
+        { name: "paragraph", tag: "p", label: "Paragraph", styles: [introStyle] },
         { name: "heading-1", tag: "h1", label: "Heading 1" },
-    ],
-    textBlockStyles: [
-        {
-            name: "intro",
-            label: "Intro Text",
-            element: (props, Tag) => <Tag style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
-        },
     ],
 });
 
@@ -126,7 +144,7 @@ export const ReadOnly: Story = {
         });
 
         await step(
-            "The block's own text block style is applied — this needs the block's textBlockStyles reaching the read-only renderer",
+            "The block's own text block style is applied — this needs the block's text block styles reaching the read-only renderer",
             async () => {
                 await waitFor(
                     () => {
@@ -200,27 +218,10 @@ export const BoldOnly: StoryObj<typeof BoldOnlyStory> = {
 
 const TextBlockStylesBlock = createTipTapRichTextBlock({
     textBlocks: [
-        { name: "paragraph", tag: "p", label: "Paragraph", styles: ["intro", "highlight"] },
-        { name: "heading-1", tag: "h1", label: "Heading 1", styles: ["large-heading", "highlight"] },
-        { name: "heading-2", tag: "h2", label: "Heading 2", styles: ["large-heading", "highlight"] },
-        { name: "heading-3", tag: "h3", label: "Heading 3", styles: ["highlight"] },
-    ],
-    textBlockStyles: [
-        {
-            name: "large-heading",
-            label: "Large Heading",
-            element: (props, Tag) => <Typography sx={{ fontSize: 48, lineHeight: 1.2 }} component={Tag} {...props} />,
-        },
-        {
-            name: "intro",
-            label: "Intro Text",
-            element: (props, Tag) => <Tag style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
-        },
-        {
-            name: "highlight",
-            label: "Highlight",
-            element: (props) => <div style={{ backgroundColor: "#fff3cd", padding: 8 }} {...props} />,
-        },
+        { name: "paragraph", tag: "p", label: "Paragraph", styles: [introStyle, highlightStyle] },
+        { name: "heading-1", tag: "h1", label: "Heading 1", styles: [largeHeadingStyle, highlightStyle] },
+        { name: "heading-2", tag: "h2", label: "Heading 2", styles: [largeHeadingStyle, highlightStyle] },
+        { name: "heading-3", tag: "h3", label: "Heading 3", styles: [highlightStyle] },
     ],
 });
 
@@ -446,31 +447,9 @@ export const PlaceholdersWithContent: StoryObj<typeof PlaceholdersWithContentSto
 
 const TextBlockStyleInteractionsBlock = createTipTapRichTextBlock({
     textBlocks: [
-        { name: "paragraph", tag: "p", label: "Paragraph", styles: ["intro", "highlight"] },
-        { name: "heading-1", tag: "h1", label: "Heading 1", styles: ["chapter-heading", "large-heading", "highlight"] },
-        { name: "heading-2", tag: "h2", label: "Heading 2", styles: ["large-heading", "highlight"] },
-    ],
-    textBlockStyles: [
-        {
-            name: "chapter-heading",
-            label: "Chapter Heading",
-            element: (props, Tag) => <Tag style={{ textTransform: "uppercase", letterSpacing: "0.1em" }} {...props} />,
-        },
-        {
-            name: "large-heading",
-            label: "Large Heading",
-            element: (props, Tag) => <Typography sx={{ fontSize: 48, lineHeight: 1.2 }} component={Tag} {...props} />,
-        },
-        {
-            name: "intro",
-            label: "Intro Text",
-            element: (props, Tag) => <Tag style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
-        },
-        {
-            name: "highlight",
-            label: "Highlight",
-            element: (props) => <div style={{ backgroundColor: "#fff3cd", padding: 8 }} {...props} />,
-        },
+        { name: "paragraph", tag: "p", label: "Paragraph", styles: [introStyle, highlightStyle] },
+        { name: "heading-1", tag: "h1", label: "Heading 1", styles: [chapterHeadingStyle, largeHeadingStyle, highlightStyle] },
+        { name: "heading-2", tag: "h2", label: "Heading 2", styles: [largeHeadingStyle, highlightStyle] },
     ],
 });
 
@@ -594,6 +573,30 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
     },
 };
 
+const listLargeStyle: TipTapTextBlockStyle = {
+    name: "list-large",
+    label: "List Large",
+    element: (props, Tag) => <Tag style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
+};
+
+const listSmallStyle: TipTapTextBlockStyle = {
+    name: "list-small",
+    label: "List Small",
+    element: (props, Tag) => <Tag style={{ fontSize: 14, lineHeight: "20px" }} {...props} />,
+};
+
+const orderedListOnlyStyle: TipTapTextBlockStyle = {
+    name: "ol-only",
+    label: "Numbered Style",
+    element: (props, Tag) => <Tag style={{ fontSize: 16, fontWeight: 600 }} {...props} />,
+};
+
+const universalStyle: TipTapTextBlockStyle = {
+    name: "universal",
+    label: "Universal",
+    element: (props) => <div style={{ backgroundColor: "#e8f5e9", padding: 4 }} {...props} />,
+};
+
 const ListTextBlockStylesBlock = createTipTapRichTextBlock({
     undoRedoButtons: false,
     italic: false,
@@ -603,38 +606,11 @@ const ListTextBlockStylesBlock = createTipTapRichTextBlock({
     nonBreakingSpace: false,
     softHyphen: false,
     textBlocks: [
-        { name: "paragraph", tag: "p", label: "Paragraph", styles: ["intro", "universal"] },
-        { name: "heading-1", tag: "h1", label: "Heading 1", styles: ["universal"] },
+        { name: "paragraph", tag: "p", label: "Paragraph", styles: [introStyle, universalStyle] },
+        { name: "heading-1", tag: "h1", label: "Heading 1", styles: [universalStyle] },
     ],
-    orderedList: { styles: ["list-large", "list-small", "ol-only", "universal"] },
-    unorderedList: { styles: ["list-large", "list-small", "universal"], defaultStyle: "list-small" },
-    textBlockStyles: [
-        {
-            name: "intro",
-            label: "Intro Text",
-            element: (props, Tag) => <Tag style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
-        },
-        {
-            name: "list-large",
-            label: "List Large",
-            element: (props, Tag) => <Tag style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
-        },
-        {
-            name: "list-small",
-            label: "List Small",
-            element: (props, Tag) => <Tag style={{ fontSize: 14, lineHeight: "20px" }} {...props} />,
-        },
-        {
-            name: "ol-only",
-            label: "Numbered Style",
-            element: (props, Tag) => <Tag style={{ fontSize: 16, fontWeight: 600 }} {...props} />,
-        },
-        {
-            name: "universal",
-            label: "Universal",
-            element: (props) => <div style={{ backgroundColor: "#e8f5e9", padding: 4 }} {...props} />,
-        },
-    ],
+    orderedList: { styles: [listLargeStyle, listSmallStyle, orderedListOnlyStyle, universalStyle] },
+    unorderedList: { styles: [listLargeStyle, listSmallStyle, universalStyle], defaultStyle: "list-small" },
 });
 
 function ListTextBlockStylesStory() {
@@ -1182,20 +1158,19 @@ export const HeadingOnly: StoryObj<typeof HeadingOnlyStory> = {
     },
 };
 
+const headline550Style: TipTapTextBlockStyle = {
+    name: "headline550",
+    label: "Size 550",
+    element: (props, Tag) => <Tag style={{ fontSize: 40, lineHeight: 1.2 }} {...props} />,
+};
+
 const HeadingOnlyWithTextBlockStylesBlock = createTipTapRichTextBlock({
     textBlocks: [
-        { name: "heading-2", tag: "h2", label: "Heading 2", styles: ["headline550"] },
-        { name: "heading-3", tag: "h3", label: "Heading 3", styles: ["headline550"] },
-        { name: "heading-4", tag: "h4", label: "Heading 4", styles: ["headline550"] },
+        { name: "heading-2", tag: "h2", label: "Heading 2", styles: [headline550Style] },
+        { name: "heading-3", tag: "h3", label: "Heading 3", styles: [headline550Style] },
+        { name: "heading-4", tag: "h4", label: "Heading 4", styles: [headline550Style] },
     ],
     defaultTextBlock: "heading-3",
-    textBlockStyles: [
-        {
-            name: "headline550",
-            label: "Size 550",
-            element: (props, Tag) => <Tag style={{ fontSize: 40, lineHeight: 1.2 }} {...props} />,
-        },
-    ],
 });
 
 function HeadingOnlyWithTextBlockStylesStory() {

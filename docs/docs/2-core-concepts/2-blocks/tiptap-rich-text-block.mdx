@@ -57,7 +57,7 @@ Most features of the Draft.js `RichTextBlock` have a direct equivalent in the Ti
 | `history`                                       | `undoRedoButtons` (Admin only)                                                               |
 | `link`, `links-remove`                          | `link` (pass the link block)                                                                 |
 | `non-breaking-space`, `soft-hyphen`             | `nonBreakingSpace`, `softHyphen`                                                             |
-| `rte.blocktypeMap` (custom block types)         | [`textBlockStyles`](#text-blocks-and-styles) + the styling select                             |
+| `rte.blocktypeMap` (custom block types)         | [text block `styles`](#text-blocks-and-styles) + the styling select                           |
 | `rte.customInlineStyles`                        | [`inlineStyles`](#text-blocks-and-styles) + the inline style select                          |
 | `rte.listLevelMax`                              | `listLevelMax`                                                                               |
 | `rte.maxBlocks`                                 | `maxTextBlocks`                                                                              |
@@ -216,7 +216,7 @@ The migration converts:
 - `LINK` entities → TipTap `link` marks,
 - ` ` / `­` → non-breaking-space / soft-hyphen nodes.
 
-It uses the block's enabled features and its `textBlocks`, `textBlockStyles` and `maxTextBlocks` options to build the target schema and validates the result. The conversion is **best effort**: if validation fails, it falls back to a stripped-down plain-text document in production (logging a warning) and throws in development so you can catch problems early.
+It uses the block's enabled features and its `textBlocks` and `maxTextBlocks` options to build the target schema and validates the result. The conversion is **best effort**: if validation fails, it falls back to a stripped-down plain-text document in production (logging a warning) and throws in development so you can catch problems early.
 
 :::caution Test with production content
 
@@ -232,10 +232,9 @@ If the old block used custom block types (via `blocktypeMap`) or custom inline s
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
     link: LinkBlock,
     textBlocks: [
-        { name: "paragraph", tag: "p", styles: ["paragraph200"] },
+        { name: "paragraph", tag: "p", styles: [{ name: "paragraph200" }] },
         { name: "heading-2", tag: "h2" },
     ],
-    textBlockStyles: [{ name: "paragraph200" }],
     inlineStyles: [{ name: "highlight" }],
     // highlight-start
     migrateFromDraftJs: {
@@ -254,9 +253,8 @@ A mapped block type keeps its text block type: `header-two` still becomes the te
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
     textBlocks: [
         { name: "paragraph", tag: "p" },
-        { name: "heading-2", tag: "h2", styles: ["headline450"] },
+        { name: "heading-2", tag: "h2", styles: [{ name: "headline450" }] },
     ],
-    textBlockStyles: [{ name: "headline450" }],
     migrateFromDraftJs: {
         // highlight-next-line
         textBlockStyleMap: {
@@ -300,7 +298,7 @@ Beyond replacing the old block, the TipTap Rich Text Block adds capabilities the
 The editor toolbar offers two dropdowns to structure and style text blocks:
 
 1. **Text block type** — which of the configured `textBlocks` the current block is, for instance _Paragraph_ or _Heading 2_. Shown when more than one text block is configured.
-2. **Styling** — a named style (`textBlockStyles`) applied to the current text block. This decouples semantics ("this is a heading") from appearance ("headline 300"), so editors pick a type _and_ a style independently.
+2. **Styling** — one of the `styles` the current text block offers. This decouples semantics ("this is a heading") from appearance ("headline 300"), so editors pick a type _and_ a style independently.
 
 There is a matching **inline style** dropdown for `inlineStyles`, which applies named styles to a text selection.
 
@@ -312,31 +310,27 @@ Each text block has
 
 - a `name`, which identifies it: it is stored in the content's `textBlock` attribute and referenced by `defaultTextBlock` and an inline style's `appliesTo`,
 - a `tag` (`p` or `h1`-`h6`), which decides how the text block is stored and rendered: `p` becomes a paragraph node, `h1`-`h6` a heading node of that level,
-- the `styles` it offers and the `defaultStyle` new text blocks of this type get,
+- the `styles` it offers, each with its own `name`, and the `defaultStyle` (a style name) new text blocks of this type get,
 - a `label` for the toolbar's select (Admin only).
 
-Several text blocks may share a tag, for instance an eyebrow next to a regular paragraph. Both are stored as a paragraph, but each offers its own set of styles.
+Several text blocks may share a tag, for instance an eyebrow next to a regular paragraph. Both are stored as a paragraph, but each offers its own set of styles. A style's `name` identifies it, so text blocks that offer the same style share its definition (a variable holding the styles they have in common).
 
 Lists are configured the same way, except that their name and tag are fixed: pass `{ styles, defaultStyle }` to `orderedList`/`unorderedList` instead of `true`. Inside a list, the list's styles apply — the list, not the paragraph its items are built from, is what gets styled. In an inline style's `appliesTo`, the lists are named `ordered-list` and `unordered-list`.
 
 ```ts title="tip-tap-rich-text.block.ts (API)"
+const copyStyles = [{ name: "copy200" }, { name: "copy100" }];
+const headlineStyles = [{ name: "headline300" }, { name: "headline400" }];
+
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
     link: LinkBlock,
     textBlocks: [
-        { name: "paragraph", tag: "p", styles: ["copy200", "copy100"], defaultStyle: "copy200" },
-        { name: "eyebrow", tag: "p", styles: ["eyebrow500"] },
-        { name: "heading-1", tag: "h1", styles: ["headline300", "headline400"], defaultStyle: "headline300" },
-        { name: "heading-2", tag: "h2", styles: ["headline300", "headline400"], defaultStyle: "headline400" },
+        { name: "paragraph", tag: "p", styles: copyStyles, defaultStyle: "copy200" },
+        { name: "eyebrow", tag: "p", styles: [{ name: "eyebrow500" }] },
+        { name: "heading-1", tag: "h1", styles: headlineStyles, defaultStyle: "headline300" },
+        { name: "heading-2", tag: "h2", styles: headlineStyles, defaultStyle: "headline400" },
     ],
-    orderedList: { styles: ["copy200", "copy100"], defaultStyle: "copy200" },
-    unorderedList: { styles: ["copy200", "copy100"], defaultStyle: "copy200" },
-    textBlockStyles: [
-        { name: "copy100" },
-        { name: "copy200" },
-        { name: "eyebrow500" },
-        { name: "headline300" },
-        { name: "headline400" },
-    ],
+    orderedList: { styles: copyStyles, defaultStyle: "copy200" },
+    unorderedList: { styles: copyStyles, defaultStyle: "copy200" },
     inlineStyles: [{ name: "highlight" }, { name: "tag", appliesTo: ["paragraph"] }],
 });
 ```
@@ -344,7 +338,21 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
 In the Admin, a text block additionally has its `label`, and a text block style its `label` and the `element` that previews it in the editor. The `element` receives the props it must spread onto the element it renders and the `tag` of the text block (or list) the style is applied to, so one style can be shared by several text blocks:
 
 ```tsx title="TipTapRichTextBlock.tsx (Admin)"
+import type { TipTapTextBlockStyle } from "@dextinity/cms-admin";
 import { FormattedMessage } from "react-intl";
+
+const headlineStyles: TipTapTextBlockStyle[] = [
+    {
+        name: "headline300",
+        label: <FormattedMessage id="tipTapRichTextBlock.headline300" defaultMessage="Headline 300" />,
+        element: (props, Tag) => <Tag style={{ fontSize: 32, lineHeight: "40px" }} {...props} />,
+    },
+    {
+        name: "headline400",
+        label: <FormattedMessage id="tipTapRichTextBlock.headline400" defaultMessage="Headline 400" />,
+        element: (props, Tag) => <Tag style={{ fontSize: 40, lineHeight: "48px" }} {...props} />,
+    },
+];
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
     link: LinkBlock,
@@ -353,27 +361,28 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
             name: "paragraph",
             tag: "p",
             label: <FormattedMessage id="tipTapRichTextBlock.paragraph" defaultMessage="Paragraph" />,
-            styles: ["copy200", "copy100"],
+            styles: [
+                {
+                    name: "copy200",
+                    label: <FormattedMessage id="tipTapRichTextBlock.copy200" defaultMessage="Copy 200" />,
+                    element: (props, Tag) => <Tag style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
+                },
+            ],
             defaultStyle: "copy200",
         },
         {
             name: "heading-1",
             tag: "h1",
             label: <FormattedMessage id="tipTapRichTextBlock.heading1" defaultMessage="Heading 1" />,
-            styles: ["headline300", "headline400"],
+            styles: headlineStyles,
             defaultStyle: "headline300",
         },
-    ],
-    textBlockStyles: [
         {
-            name: "copy200",
-            label: <FormattedMessage id="tipTapRichTextBlock.copy200" defaultMessage="Copy 200" />,
-            element: (props, Tag) => <Tag style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
-        },
-        {
-            name: "headline300",
-            label: <FormattedMessage id="tipTapRichTextBlock.headline300" defaultMessage="Headline 300" />,
-            element: (props, Tag) => <Tag style={{ fontSize: 32, lineHeight: "40px" }} {...props} />,
+            name: "heading-2",
+            tag: "h2",
+            label: <FormattedMessage id="tipTapRichTextBlock.heading2" defaultMessage="Heading 2" />,
+            styles: headlineStyles,
+            defaultStyle: "headline400",
         },
     ],
     inlineStyles: [

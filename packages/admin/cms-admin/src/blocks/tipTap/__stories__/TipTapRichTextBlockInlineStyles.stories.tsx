@@ -5,6 +5,7 @@ import { type HTMLAttributes, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "../createTipTapRichTextBlock";
+import type { TipTapTextBlockStyle } from "../textBlocks";
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
@@ -285,17 +286,16 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
     },
 };
 
+const introStyle: TipTapTextBlockStyle = {
+    name: "intro",
+    label: "Intro Text",
+    element: (props, TextBlockTag) => <TextBlockTag style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
+};
+
 const CombinedStylesBlock = createTipTapRichTextBlock({
     textBlocks: [
-        { name: "paragraph", tag: "p", label: "Paragraph", styles: ["intro"] },
+        { name: "paragraph", tag: "p", label: "Paragraph", styles: [introStyle] },
         { name: "heading-1", tag: "h1", label: "Heading 1" },
-    ],
-    textBlockStyles: [
-        {
-            name: "intro",
-            label: "Intro Text",
-            element: (props, Tag) => <Tag style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
-        },
     ],
     inlineStyles: [
         {

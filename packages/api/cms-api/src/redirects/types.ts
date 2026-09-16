@@ -1,3 +1,3 @@
-import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
+import type { ModuleContentScope } from "../user-permissions/interfaces/content-scope.interface";
 
-export type RedirectScopeInterface = Partial<ContentScope>;
+export type RedirectScopeInterface = ModuleContentScope;

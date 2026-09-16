@@ -1,6 +1,8 @@
 import { type ApolloClient, gql } from "@apollo/client";
 import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 
+import type { ContentScope } from "../../contentScope/Provider";
+
 const slugAvailableQuery = gql`
     query FindAvailableSlug($parentId: ID, $slug: String!, $scope: PageTreeNodeScopeInput!) {
         pageTreeNodeSlugAvailable(parentId: $parentId, slug: $slug, scope: $scope)
@@ -9,7 +11,7 @@ const slugAvailableQuery = gql`
 
 export async function findAvailableSlug(
     apolloClient: ApolloClient<unknown>,
-    { slug, name, parentId, scope }: { slug: string; name: string; parentId: string | null; scope: Record<string, unknown> },
+    { slug, name, parentId, scope }: { slug: string; name: string; parentId: string | null; scope: ContentScope },
 ): Promise<{ slug: string; name: string }> {
     let candidateSlug = slug;
     let candidateName = name;

@@ -188,7 +188,7 @@ export function createFilesResolver({
         @Query(() => Boolean)
         async damIsFilenameOccupied(
             @Args("filename") filename: string,
-            @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: typeof Scope,
+            @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: DamScopeInterface,
             @Args("folderId", { nullable: true }) folderId?: string,
         ): Promise<boolean> {
             const extension = extname(filename);
@@ -203,7 +203,7 @@ export function createFilesResolver({
         @Query(() => [FilenameResponse])
         async damAreFilenamesOccupied(
             @Args("filenames", { type: () => [FilenameInput] }) filenames: Array<FilenameInput>,
-            @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: typeof Scope,
+            @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: DamScopeInterface,
         ): Promise<Array<FilenameResponse>> {
             const response: Array<FilenameResponse> = [];
 

@@ -15,7 +15,7 @@ import { EmailCampaignScopeInterface } from "../types";
 
 interface CommandOptions {
     path: string;
-    scope: Type<EmailCampaignScopeInterface>;
+    scope: EmailCampaignScopeInterface;
     targetGroupIds: string[];
     sendDoubleOptIn: boolean;
 }
@@ -59,8 +59,8 @@ export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCa
             required: true,
             description: "scope for current import file",
         })
-        parseScope(scope: string): Type<EmailCampaignScopeInterface> {
-            const parsedScope = JSON.parse(scope) as typeof Scope;
+        parseScope(scope: string): EmailCampaignScopeInterface {
+            const parsedScope = JSON.parse(scope) as EmailCampaignScopeInterface;
             const validateErrors = validateSync(parsedScope);
 
             if (validateErrors.length) {
@@ -111,7 +111,7 @@ export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCa
             this.logger.log(result);
         }
 
-        async validateRedirectUrl(urlToValidate: string, scope: Type<EmailCampaignScopeInterface>): Promise<boolean> {
+        async validateRedirectUrl(urlToValidate: string, scope: EmailCampaignScopeInterface): Promise<boolean> {
             const configForScope = await this.brevoConfigRepository.findOneOrFail({ scope });
 
             if (!configForScope) {

@@ -91,7 +91,7 @@ export function createEmailCampaignsResolver({
         @Mutation(() => BrevoEmailCampaign)
         async createBrevoEmailCampaign(
             @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope))
-            scope: typeof Scope,
+            scope: EmailCampaignScopeInterface,
             @Args("input", { type: () => EmailCampaignInput }, new DynamicDtoValidationPipe(EmailCampaignInput)) input: EmailCampaignInputInterface,
         ): Promise<EmailCampaignInterface> {
             const campaign = this.repository.create({

@@ -1,9 +1,10 @@
+import type { ContentScope } from "../../contentScope/Provider";
 import type { GQLUpdateDamFileInput } from "../../graphql.generated";
 
 interface UploadFileData {
     file: File &
         Pick<GQLUpdateDamFileInput, "license" | "title" | "altText"> & { importSource?: { importSourceType: string; importSourceId: string } };
-    scope: Record<string, unknown>;
+    scope: ContentScope;
     folderId?: string;
     /**
      * @deprecated Set `file.importSource.importSourceId` instead

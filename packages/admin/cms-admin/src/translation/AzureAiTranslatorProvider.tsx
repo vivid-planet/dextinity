@@ -23,7 +23,7 @@ export const AzureAiTranslatorProvider = ({ children, enabled = false, ...rest }
                 const { data } = await apolloClient.query<GQLTranslateQuery, GQLTranslateQueryVariables>({
                     query: translationQuery,
                     variables: {
-                        input: { text, targetLanguage: scope.language },
+                        input: { text, targetLanguage: String(scope.language) },
                     },
                 });
                 return data.azureAiTranslate;
@@ -32,7 +32,7 @@ export const AzureAiTranslatorProvider = ({ children, enabled = false, ...rest }
                 const { data } = await apolloClient.query<{ azureAiTranslateBatch: string[] }>({
                     query: batchTranslationQuery,
                     variables: {
-                        input: { texts, targetLanguage: scope.language },
+                        input: { texts, targetLanguage: String(scope.language) },
                     },
                     fetchPolicy: "no-cache",
                 });

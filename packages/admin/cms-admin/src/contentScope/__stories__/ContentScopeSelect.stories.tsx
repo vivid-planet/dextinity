@@ -297,9 +297,9 @@ export const GroupingWithOptionalScopeParts = {
                 renderOption={(option, query, isSelected) => {
                     let text: string;
                     if (option.scope.company === undefined) {
-                        text = option.label?.country ?? option.scope.country;
+                        text = option.label?.country ?? String(option.scope.country);
                     } else {
-                        text = option.label?.company ?? option.scope.company;
+                        text = option.label?.company ?? String(option.scope.company);
                     }
 
                     const matches = findTextMatches(text, query);

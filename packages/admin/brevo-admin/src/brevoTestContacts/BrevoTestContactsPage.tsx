@@ -1,5 +1,5 @@
 import { type GridColDef, Stack, StackPage, StackSwitch, StackToolbar } from "@dextinity/admin";
-import { ContentScopeIndicator, useContentScope } from "@dextinity/cms-admin";
+import { type ContentScope, ContentScopeIndicator, useContentScope } from "@dextinity/cms-admin";
 import type { DocumentNode } from "graphql";
 import type { JSX, ReactNode } from "react";
 import { useIntl } from "react-intl";
@@ -31,13 +31,10 @@ function createBrevoTestContactsPage({
         const scopeParts = passedScopeParts ?? brevoConfig.scopeParts;
         const { scope: completeScope } = useContentScope();
 
-        const scope = scopeParts.reduce(
-            (acc, scopePart) => {
-                acc[scopePart] = completeScope[scopePart];
-                return acc;
-            },
-            {} as { [key: string]: unknown },
-        );
+        const scope = scopeParts.reduce((acc, scopePart) => {
+            acc[scopePart] = completeScope[scopePart];
+            return acc;
+        }, {} as ContentScope);
 
         return (
             <ConfigVerification scope={scope}>

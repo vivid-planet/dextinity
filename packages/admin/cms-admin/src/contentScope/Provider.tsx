@@ -8,8 +8,7 @@ import { NoContentScopeFallback } from "./noContentScopeFallback/NoContentScopeF
 import { defaultCreatePath } from "./utils/defaultCreatePath";
 
 export interface ContentScope {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: any;
+    [key: string]: string | number | null | undefined;
 }
 
 type ContentScopeLocation = {
@@ -36,10 +35,7 @@ const defaultContentScopeContext: ContentScopeContext = {
     location: defaultContentScopeLocation,
 };
 
-type NonNull<T> = T extends null ? never : T;
-type NonNullRecord<T> = {
-    [P in keyof T]: NonNull<T[P]>;
-};
+type ContentScopeRouterParams = Record<string, string>;
 
 type SetContentScopeAction = (state: ContentScope) => ContentScope;
 
@@ -64,7 +60,7 @@ const Context = createContext<ContentScopeContext>(defaultContentScopeContext);
 
 const NullValueAsString = "-"; // used to represent null-values in the url
 
-function parseScopeFromRouterMatchParams(params: NonNullRecord<ContentScope>): ContentScope {
+function parseScopeFromRouterMatchParams(params: ContentScopeRouterParams): ContentScope {
     return Object.entries(params).reduce((a, [key, value]) => {
         return {
             ...a,
@@ -73,13 +69,13 @@ function parseScopeFromRouterMatchParams(params: NonNullRecord<ContentScope>): C
     }, {} as ContentScope);
 }
 
-function formatScopeToRouterMatchParams(scope: Partial<ContentScope>): NonNullRecord<ContentScope> {
+function formatScopeToRouterMatchParams(scope: ContentScope): ContentScopeRouterParams {
     return Object.entries(scope).reduce((a, [key, value]) => {
         return {
             ...a,
-            [key]: !value || value === null ? NullValueAsString : value,
+            [key]: value === null || value === undefined || value === "" ? NullValueAsString : String(value),
         };
-    }, {} as NonNullRecord<ContentScope>);
+    }, {} as ContentScopeRouterParams);
 }
 
 function defaultCreateUrl(scope: ContentScope) {
@@ -93,7 +89,7 @@ function defaultCreateUrl(scope: ContentScope) {
 export function useContentScope(): UseContentScopeApi {
     const context = useContext(Context);
     const history = useHistory();
-    const matchContextScope = useRouteMatch<NonNullRecord<ContentScope>>(context?.path || "");
+    const matchContextScope = useRouteMatch<ContentScopeRouterParams>(context?.path || "");
     const matchDefault = useRouteMatch();
     const match = matchContextScope || matchDefault;
 
@@ -124,7 +120,7 @@ export function useContentScope(): UseContentScopeApi {
 export interface ContentScopeProviderProps {
     defaultValue?: ContentScope;
     values?: ContentScopeValues;
-    children: (p: { match: match<NonNullRecord<ContentScope>> }) => ReactNode;
+    children: (p: { match: match<ContentScopeRouterParams> }) => ReactNode;
     location?: ContentScopeLocation;
 
     /**
@@ -151,7 +147,7 @@ export function ContentScopeProvider({
     }
 
     const path = location.createPath(values);
-    const match = useRouteMatch<NonNullRecord<ContentScope>>(path);
+    const match = useRouteMatch<ContentScopeRouterParams>(path);
     const [redirectPathAfterChange, setRedirectPathAfterChange] = useState<undefined | string>("");
 
     if (values.length === 0) {

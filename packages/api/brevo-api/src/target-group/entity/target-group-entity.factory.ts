@@ -71,7 +71,7 @@ export function createTargetGroupEntity({
 
         @Embedded(() => Scope)
         @Field(() => Scope)
-        scope: typeof Scope;
+        scope: EmailCampaignScopeInterface;
 
         @Property({ columnType: "int", nullable: true })
         @Field(() => Int, { nullable: true })

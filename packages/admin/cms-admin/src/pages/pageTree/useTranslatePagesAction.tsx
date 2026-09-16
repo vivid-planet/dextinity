@@ -108,7 +108,7 @@ export function useTranslatePagesAction({ pages, documentTypes }: Props): {
                     const [translatedName, ...rest] = translatedTexts;
                     translatedContentTexts = rest;
 
-                    const translatedSlug = transformToSlug(translatedName, scope.language);
+                    const translatedSlug = transformToSlug(translatedName, String(scope.language));
 
                     if (translatedName !== page.name || translatedSlug !== page.slug) {
                         const available = await findAvailableSlug(apolloClient, {

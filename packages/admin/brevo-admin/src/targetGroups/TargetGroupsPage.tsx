@@ -1,5 +1,5 @@
 import { Stack, StackPage, StackSwitch, Toolbar } from "@dextinity/admin";
-import { ContentScopeIndicator, useContentScope } from "@dextinity/cms-admin";
+import { type ContentScope, ContentScopeIndicator, useContentScope } from "@dextinity/cms-admin";
 import type { DocumentNode } from "graphql";
 import type { JSX, ReactNode } from "react";
 import { useIntl } from "react-intl";
@@ -26,13 +26,10 @@ export function createTargetGroupsPage({ additionalFormFields, nodeFragment, inp
         const { scope: completeScope } = useContentScope();
         const intl = useIntl();
 
-        const scope = scopeParts.reduce(
-            (acc, scopePart) => {
-                acc[scopePart] = completeScope[scopePart];
-                return acc;
-            },
-            {} as { [key: string]: unknown },
-        );
+        const scope = scopeParts.reduce((acc, scopePart) => {
+            acc[scopePart] = completeScope[scopePart];
+            return acc;
+        }, {} as ContentScope);
 
         return (
             <ConfigVerification scope={scope}>

@@ -1,5 +1,5 @@
 import { Stack, StackPage, StackSwitch, StackToolbar } from "@dextinity/admin";
-import { type BlockInterface, ContentScopeIndicator, useContentScope } from "@dextinity/cms-admin";
+import { type BlockInterface, type ContentScope, ContentScopeIndicator, useContentScope } from "@dextinity/cms-admin";
 import type { JSX } from "react";
 import { useIntl } from "react-intl";
 
@@ -20,13 +20,10 @@ export function createEmailCampaignsPage({ EmailCampaignContentBlock }: CreateEm
         const { scope: completeScope } = useContentScope();
         const intl = useIntl();
 
-        const scope = scopeParts.reduce(
-            (acc, scopePart) => {
-                acc[scopePart] = completeScope[scopePart];
-                return acc;
-            },
-            {} as { [key: string]: unknown },
-        );
+        const scope = scopeParts.reduce((acc, scopePart) => {
+            acc[scopePart] = completeScope[scopePart];
+            return acc;
+        }, {} as ContentScope);
 
         return (
             <ConfigVerification scope={scope}>

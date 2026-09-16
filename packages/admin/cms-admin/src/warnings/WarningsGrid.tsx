@@ -94,7 +94,7 @@ export function WarningsGrid() {
             if (item.label && item.label[key]) {
                 label.push(item.label[key]);
             } else if (value) {
-                label.push(capitalCase(value));
+                label.push(capitalCase(String(value)));
             }
         }
 

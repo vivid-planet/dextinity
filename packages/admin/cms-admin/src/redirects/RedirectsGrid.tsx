@@ -35,6 +35,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import { BlockPreviewContent } from "../blocks/common/blockRow/BlockPreviewContent";
 import type { BlockInterface } from "../blocks/types";
+import type { ContentScope } from "../contentScope/Provider";
 import { DataGrid } from "../dataGrid/DataGrid";
 import RedirectActiveness from "./RedirectActiveness";
 import { deleteRedirectMutation, deleteRedirectsMutation, paginatedRedirectsQuery } from "./RedirectsGrid.gql";
@@ -48,7 +49,7 @@ import {
 
 interface Props {
     linkBlock: BlockInterface;
-    scope: Record<string, unknown>;
+    scope: ContentScope;
 }
 
 interface RedirectsGridToolbarProps extends GridToolbarProps {

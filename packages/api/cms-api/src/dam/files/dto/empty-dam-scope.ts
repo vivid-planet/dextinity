@@ -6,7 +6,6 @@ import { DamScopeInterface } from "../../types";
 @ObjectType("DamScope")
 @InputType("DamScopeInput")
 export class EmptyDamScope implements DamScopeInterface {
-    [key: string]: unknown;
     // empty scope
     @Field({ nullable: true })
     @IsUndefinable()

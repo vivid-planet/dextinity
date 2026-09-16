@@ -184,7 +184,7 @@ export function createRedirectsResolver({
 
         @Query(() => Redirect, { nullable: true })
         async redirectBySource(
-            @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: typeof Scope,
+            @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: RedirectScopeInterface,
             @Args("source", { type: () => String }) source: string,
             @Args("sourceType", { type: () => RedirectSourceType }) sourceType: RedirectSourceType,
         ): Promise<RedirectInterface | null> {
@@ -198,7 +198,7 @@ export function createRedirectsResolver({
 
         @Query(() => Boolean)
         async redirectSourceAvailable(
-            @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: typeof Scope,
+            @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: RedirectScopeInterface,
             @Args("source", { type: () => String }) source: string,
         ): Promise<boolean> {
             return this.redirectService.isRedirectSourceAvailable(source, nonEmptyScopeOrNothing(scope));
@@ -207,7 +207,7 @@ export function createRedirectsResolver({
         @Mutation(() => Redirect)
         async createRedirect(
             @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }, new DynamicDtoValidationPipe(Scope))
-            scope: typeof Scope,
+            scope: RedirectScopeInterface,
             @Args("input", { type: () => RedirectInput }, new DynamicDtoValidationPipe(RedirectInput)) input: RedirectInputInterface,
         ): Promise<RedirectInterface> {
             if (!(await this.redirectService.isRedirectSourceAvailable(input.source, nonEmptyScopeOrNothing(scope)))) {

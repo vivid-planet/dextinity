@@ -1,5 +1,5 @@
 import { useDextinityConfig } from "../config/DextinityConfigContext";
-import { useContentScope } from "../contentScope/Provider";
+import { type ContentScope, useContentScope } from "../contentScope/Provider";
 
 export interface RedirectsConfig {
     scopeParts?: string[];
@@ -15,18 +15,15 @@ function useRedirectsConfig(): RedirectsConfig {
     return dextinityConfig.redirects;
 }
 
-export function useRedirectsScope(): { [key: string]: unknown } {
+export function useRedirectsScope(): ContentScope {
     const { scopeParts } = useRedirectsConfig();
     const { scope: completeScope } = useContentScope();
 
     const redirectScope = scopeParts?.length
-        ? scopeParts.reduce(
-              (acc, scopePart) => {
-                  acc[scopePart] = completeScope[scopePart];
-                  return acc;
-              },
-              {} as { [key: string]: unknown },
-          )
+        ? scopeParts.reduce((acc, scopePart) => {
+              acc[scopePart] = completeScope[scopePart];
+              return acc;
+          }, {} as ContentScope)
         : completeScope;
 
     return redirectScope;

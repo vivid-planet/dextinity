@@ -1,7 +1,7 @@
 import { gql, useApolloClient, useQuery } from "@apollo/client";
 import { Field, FinalForm, FinalFormSelect, SaveButton, Tooltip } from "@dextinity/admin";
 import { Info, Newsletter } from "@dextinity/admin-icons";
-import { BlockAdminComponentPaper, BlockAdminComponentSectionGroup, useContentScope } from "@dextinity/cms-admin";
+import { BlockAdminComponentPaper, BlockAdminComponentSectionGroup, type ContentScope, useContentScope } from "@dextinity/cms-admin";
 import { Card } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 
@@ -50,13 +50,10 @@ export const TestEmailCampaignForm = ({ id, isSendable = false, isCampaignCreate
     const { scopeParts } = useBrevoConfig();
     const { scope: completeScope } = useContentScope();
 
-    const scope = scopeParts.reduce(
-        (acc, scopePart) => {
-            acc[scopePart] = completeScope[scopePart];
-            return acc;
-        },
-        {} as { [key: string]: unknown },
-    );
+    const scope = scopeParts.reduce((acc, scopePart) => {
+        acc[scopePart] = completeScope[scopePart];
+        return acc;
+    }, {} as ContentScope);
 
     // Contact creation is limited to 100 at a time. Therefore, 100 contacts are queried without using pagination.
     const { data, loading, error } = useQuery(brevoTestContactsSelectQuery, {

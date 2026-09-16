@@ -87,7 +87,7 @@ export function createEmailCampaignEntity({
 
         @Embedded(() => Scope)
         @Field(() => Scope)
-        scope: typeof Scope;
+        scope: EmailCampaignScopeInterface;
     }
 
     return BrevoEmailCampaign;

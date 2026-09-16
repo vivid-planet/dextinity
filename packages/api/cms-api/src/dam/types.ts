@@ -1,4 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type DamScopeInterface = Record<string, any>;
+import type { ModuleContentScope } from "../user-permissions/interfaces/content-scope.interface";
+
+type DamScopeInterface = ModuleContentScope;
 
 export type { DamScopeInterface };

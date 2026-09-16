@@ -173,7 +173,7 @@ export class ImportRedirectsCommand extends CommandRunner {
                     reject(error);
                 })
                 .on("data", (row: Row & Record<string, string>) => {
-                    const scope: RedirectScopeInterface = {};
+                    const scope: Record<string, string> = {};
                     Object.keys(row).forEach((key) => {
                         if (key.startsWith("scope_")) {
                             const scopeKey = key.replace("scope_", "");
@@ -182,7 +182,7 @@ export class ImportRedirectsCommand extends CommandRunner {
                         }
                     });
 
-                    row["scope"] = Object.keys(scope).length > 0 ? scope : undefined;
+                    row["scope"] = Object.keys(scope).length > 0 ? (scope as RedirectScopeInterface) : undefined;
 
                     imports.push(row);
                 })

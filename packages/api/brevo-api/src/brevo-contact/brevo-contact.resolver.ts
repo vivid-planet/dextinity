@@ -61,7 +61,7 @@ export function createBrevoContactResolver({
         @AffectedEntity(BrevoContact)
         async brevoContact(
             @Args("id", { type: () => Int }) id: number,
-            @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope)) scope: typeof Scope,
+            @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope)) scope: EmailCampaignScopeInterface,
         ): Promise<BrevoContactInterface> {
             const brevoContact = await this.brevoContactsApiService.findContact(id, scope);
 
@@ -158,7 +158,7 @@ export function createBrevoContactResolver({
         @AffectedEntity(BrevoContact)
         async updateBrevoContact(
             @Args("id", { type: () => Int }) id: number,
-            @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope)) scope: typeof Scope,
+            @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope)) scope: EmailCampaignScopeInterface,
             @Args("input", { type: () => BrevoContactUpdateInput }) input: BrevoContactUpdateInputInterface,
         ): Promise<BrevoContactInterface> {
             // update attributes of contact before (un)assigning to target groups because they cannot be correctly validated for completeness
@@ -206,7 +206,7 @@ export function createBrevoContactResolver({
         @Mutation(() => SubscribeResponse)
         @RequiredPermission(["brevoNewsletter"], { skipScopeCheck: true })
         async createBrevoContact(
-            @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope)) scope: typeof Scope,
+            @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope)) scope: EmailCampaignScopeInterface,
             @Args("input", { type: () => BrevoContactInput })
             input: BrevoContactInputInterface,
             @GetCurrentUser() user: CurrentUser,
@@ -232,7 +232,7 @@ export function createBrevoContactResolver({
         @Mutation(() => SubscribeResponse)
         @RequiredPermission(["brevoNewsletter"], { skipScopeCheck: true })
         async createBrevoTestContact(
-            @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope)) scope: typeof Scope,
+            @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope)) scope: EmailCampaignScopeInterface,
             @Args("input", { type: () => BrevoTestContactInput })
             input: BrevoContactInputInterface,
         ): Promise<SubscribeResponse> {
@@ -278,7 +278,7 @@ export function createBrevoContactResolver({
         @AffectedEntity(BrevoContact)
         async deleteBrevoContact(
             @Args("id", { type: () => Int }) id: number,
-            @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope)) scope: typeof Scope,
+            @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope)) scope: EmailCampaignScopeInterface,
         ): Promise<boolean> {
             const contact = await this.brevoContactsApiService.findContact(id, scope);
             if (!contact) {
@@ -312,7 +312,7 @@ export function createBrevoContactResolver({
         @AffectedEntity(BrevoContact)
         async deleteBrevoTestContact(
             @Args("id", { type: () => Int }) id: number,
-            @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope)) scope: typeof Scope,
+            @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope)) scope: EmailCampaignScopeInterface,
         ): Promise<boolean> {
             const contact = await this.brevoContactsApiService.findContact(id, scope);
             if (!contact) {
@@ -347,7 +347,7 @@ export function createBrevoContactResolver({
         async subscribeBrevoContact(
             @Args("input", { type: () => BrevoContactSubscribeInput }) data: SubscribeInputInterface,
             @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope))
-            scope: typeof Scope,
+            scope: EmailCampaignScopeInterface,
         ): Promise<SubscribeResponse> {
             return this.brevoContactsService.subscribeBrevoContact(data, scope);
         }

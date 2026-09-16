@@ -56,7 +56,7 @@ export function createBrevoEmailImportLogEntity({ Scope }: { Scope: Type<EmailCa
 
         @Embedded(() => Scope)
         @Field(() => Scope)
-        scope: typeof Scope;
+        scope: EmailCampaignScopeInterface;
 
         @Property({ columnType: "uuid" })
         @IsUndefinable()

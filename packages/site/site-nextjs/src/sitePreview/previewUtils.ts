@@ -5,8 +5,7 @@ import { cookies, draftMode, headers as getHeaders } from "next/headers";
 
 // Return type of previewParams function
 type PreviewParams = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    scope: Record<string, any>;
+    scope: Record<string, string | number | null | undefined>;
     previewData?: PreviewData;
 };
 

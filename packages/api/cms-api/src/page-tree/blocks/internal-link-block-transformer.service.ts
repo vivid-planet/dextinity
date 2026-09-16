@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 import { BlockTransformerServiceInterface } from "../../blocks/block";
 import { PageTreeReadApiService } from "../page-tree-read-api.service";
+import type { ScopeInterface } from "../types";
 import type { InternalLinkBlockData } from "./internal-link.block";
 
 type TransformResponse = {
@@ -10,7 +11,7 @@ type TransformResponse = {
         name: string;
         path: string;
         documentType: string;
-        scope: Record<string, string> | null;
+        scope: ScopeInterface | null;
     } | null;
     targetPageAnchor?: string;
 };

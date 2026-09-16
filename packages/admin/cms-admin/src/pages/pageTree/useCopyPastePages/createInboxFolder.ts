@@ -2,6 +2,7 @@ import { type ApolloClient, gql } from "@apollo/client";
 import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 import { format } from "date-fns";
 
+import type { ContentScope } from "../../../contentScope/Provider";
 import type { GQLCreateInboxFolderMutation, GQLCreateInboxFolderMutationVariables } from "./createInboxFolder.generated";
 
 export const createInboxFolder = async ({
@@ -10,8 +11,8 @@ export const createInboxFolder = async ({
     sourceScopes,
 }: {
     client: ApolloClient<unknown>;
-    targetScope: Record<string, unknown>;
-    sourceScopes: Record<string, unknown>[];
+    targetScope: ContentScope;
+    sourceScopes: ContentScope[];
 }) => {
     const scopeString = sourceScopes.length === 0 ? "unknown" : sourceScopes.map((scope) => Object.values(scope).join("-")).join(", ");
     const date = new Date();

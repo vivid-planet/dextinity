@@ -105,12 +105,14 @@ export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
 };
 
 const HeadingOnlyBlock = createTipTapRichTextBlock({
-    // The default level (3) must be the first entry — that's what makes it the schema's default block type.
+    // textBlocks order is just the dropdown order (natural ascending here) — defaultTextBlock picks
+    // the default level (3) independently, instead of forcing it to be listed first too.
     textBlocks: [
-        { name: "heading-3", tag: "heading-3", label: "Heading 3" },
         { name: "heading-2", tag: "heading-2", label: "Heading 2" },
+        { name: "heading-3", tag: "heading-3", label: "Heading 3" },
         { name: "heading-4", tag: "heading-4", label: "Heading 4" },
     ],
+    defaultTextBlock: "heading-3",
     nonBreakingSpace: false,
     softHyphen: false,
 });
@@ -137,13 +139,14 @@ export const HeadingOnly: StoryObj<typeof HeadingOnlyStory> = {
             );
         });
 
-        await step("Text block type dropdown only offers headings, no paragraph, in textBlocks order (default level first)", async () => {
+        await step("Text block type dropdown only offers headings, no paragraph, in natural textBlocks order", async () => {
             await userEvent.click(canvas.getByRole("combobox"));
 
             await waitFor(
                 () => {
                     const body = within(document.body);
-                    expect(body.getAllByRole("option").map((option) => option.textContent)).toEqual(["Heading 3", "Heading 2", "Heading 4"]);
+                    // Dropdown order is textBlocks order (2, 3, 4) — independent of defaultTextBlock (3).
+                    expect(body.getAllByRole("option").map((option) => option.textContent)).toEqual(["Heading 2", "Heading 3", "Heading 4"]);
                 },
                 { timeout: 3000 },
             );

@@ -1529,6 +1529,48 @@ describe("createTipTapRichTextBlock validation", () => {
         });
     });
 
+    describe("defaultTextBlock option", () => {
+        const textBlocks: CreateTipTapRichTextBlockOptions["textBlocks"] = [
+            { name: "heading-2", tag: "heading-2" },
+            { name: "heading-3", tag: "heading-3" },
+            { name: "heading-4", tag: "heading-4" },
+        ];
+
+        it("should default to textBlocks[0] when not set", () => {
+            const resolvedOptions = resolveTipTapOptions({ textBlocks });
+            expect(resolvedOptions.defaultTextBlock).toEqual({ name: "heading-2", tag: "heading-2" });
+        });
+
+        it("should resolve to the named entry, independent of textBlocks order", () => {
+            const resolvedOptions = resolveTipTapOptions({ textBlocks, defaultTextBlock: "heading-3" });
+            expect(resolvedOptions.defaultTextBlock).toEqual({ name: "heading-3", tag: "heading-3" });
+            // The dropdown order (textBlocks itself) is untouched by defaultTextBlock.
+            expect(resolvedOptions.textBlocks).toEqual(textBlocks);
+        });
+
+        it("should throw when defaultTextBlock references an unknown name", () => {
+            expect(() => resolveTipTapOptions({ textBlocks, defaultTextBlock: "unknown" })).toThrow();
+        });
+
+        it("should use defaultTextBlock, not textBlocks[0], for an empty DraftJS migration in a heading-only schema", () => {
+            const block = createTipTapRichTextBlock(
+                {
+                    textBlocks,
+                    defaultTextBlock: "heading-3",
+                    migrateFromDraftJs: true,
+                },
+                "TestDefaultTextBlockEmptyMigration",
+            );
+
+            const data = block.blockDataFactory({ draftContent: { blocks: [], entityMap: {} } });
+
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [{ type: "heading", attrs: { level: 3, textBlockName: "heading-3", textBlockStyle: null } }],
+            });
+        });
+    });
+
     describe("childBlocks option", () => {
         const block = createTipTapRichTextBlock(
             onlyFeatures({ bold: true, childBlocks: { externalLink: { block: ExternalLinkBlock, display: "block" } } }),

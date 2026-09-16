@@ -51,6 +51,12 @@ export interface TipTapResolvedOptions {
     sup: boolean;
     textBlocks: TipTapTextBlock[];
     /**
+     * The `textBlocks` entry used for new/empty content, and — for a heading-only schema (no
+     * `paragraph`-tag entry) — the schema's default block type. Defaults to `textBlocks[0]`, but is
+     * independent of `textBlocks` order, which only controls the type dropdown.
+     */
+    defaultTextBlock: TipTapTextBlock;
+    /**
      * Names of `textBlockStyles` entries selectable for a list item, independent of `textBlocks`
      * since a list isn't a text block type of its own (it's toggled via a toolbar button, not the
      * type dropdown).
@@ -218,6 +224,13 @@ export interface CreateTipTapRichTextBlockOptions {
      */
     textBlocks?: TipTapTextBlock[];
     /**
+     * Name of the `textBlocks` entry used for new/empty content, and — for a heading-only schema —
+     * the schema's default block type. Defaults to `textBlocks[0]`. Set this when the default
+     * shouldn't also be the type dropdown's first entry (which is always just `textBlocks` order).
+     * Throws if it doesn't reference a `textBlocks` entry.
+     */
+    defaultTextBlock?: string;
+    /**
      * Names of `textBlockStyles` entries selectable for a list item. A list isn't covered by
      * `textBlocks`, since it's toggled via a toolbar button rather than chosen from the type dropdown.
      */
@@ -295,6 +308,7 @@ export function resolveTipTapOptions({
     sub = true,
     sup = true,
     textBlocks = defaultTextBlocks,
+    defaultTextBlock: defaultTextBlockName,
     listStyles = [],
     orderedList,
     unorderedList,
@@ -304,6 +318,11 @@ export function resolveTipTapOptions({
 }: CreateTipTapRichTextBlockOptions = {}): TipTapResolvedOptions {
     if (textBlocks.length === 0) {
         throw new Error("textBlocks must not be empty");
+    }
+
+    const defaultTextBlock = defaultTextBlockName !== undefined ? textBlocks.find((block) => block.name === defaultTextBlockName) : textBlocks[0];
+    if (!defaultTextBlock) {
+        throw new Error(`defaultTextBlock references unknown textBlocks entry "${defaultTextBlockName}"`);
     }
 
     const hasParagraph = textBlocks.some((block) => block.tag === "paragraph");
@@ -319,6 +338,7 @@ export function resolveTipTapOptions({
         sub,
         sup,
         textBlocks,
+        defaultTextBlock,
         listStyles,
         // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
         orderedList: orderedList ?? hasParagraph,
@@ -368,13 +388,13 @@ function buildExtensions({
     hasBlockChildBlocks: boolean;
     hasInlineChildBlocks: boolean;
 }): Extensions {
-    const { textBlocks } = resolvedOptions;
+    const { textBlocks, defaultTextBlock } = resolvedOptions;
     const hasParagraph = textBlocks.some((block) => block.tag === "paragraph");
     const headingLevels = getHeadingLevels(textBlocks);
     const hasHeadings = headingLevels.length > 0;
-    const defaultHeadingLevel = hasParagraph
-        ? headingLevels[0]
-        : ((textBlocks[0].tag === "paragraph" ? headingLevels[0] : Number(textBlocks[0].tag.slice("heading-".length))) as HeadingLevel);
+    // In a heading-only schema (the only case this matters for), defaultTextBlock's tag is always a
+    // heading — no paragraph-tag entry exists to resolve to.
+    const defaultHeadingLevel = hasParagraph ? headingLevels[0] : (Number(defaultTextBlock.tag.slice("heading-".length)) as HeadingLevel);
     const hasInlineStyles = inlineStyles.length > 0;
     const hasPlaceholders = placeholders.length > 0;
     return [

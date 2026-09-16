@@ -1,5 +1,6 @@
-import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
+
+import type { TipTapTextBlock, TipTapTextBlockTag } from "./createTipTapRichTextBlock";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TipTapContent = Record<string, any>;
@@ -29,20 +30,57 @@ function containsUnknownMarks(json: any, schema: Schema): boolean {
     return false;
 }
 
-export function containsInvalidHeadingLevel(content: TipTapContent, headingLevels: HeadingLevel[]): boolean {
+function getTagFromNode(content: TipTapContent): TipTapTextBlockTag | undefined {
+    if (content.type === "paragraph") {
+        return "paragraph";
+    }
+    if (content.type === "heading" && content.attrs?.level) {
+        return `heading-${content.attrs.level}` as TipTapTextBlockTag;
+    }
+    return undefined;
+}
+
+/**
+ * Checks that every paragraph/heading node names a `textBlocks` entry (by `textBlockName`) whose
+ * `tag` matches the node's actual type/level, and that its `textBlockStyle` (if set) is one of that
+ * entry's `styles` — or, for a list item's paragraph, one of `listStyles` instead, since a list item
+ * isn't a `textBlocks` entry of its own (lists aren't selectable via the text block type dropdown).
+ * A `textBlocks` entry with a `defaultStyle` requires a style: content missing one is rejected too.
+ */
+export function containsInvalidTextBlock(
+    content: TipTapContent,
+    textBlocks: TipTapTextBlock[],
+    listStyles: string[] = [],
+    insideListItem = false,
+): boolean {
     if (typeof content !== "object" || content === null) {
         return false;
     }
 
-    if (content.type === "heading" && !headingLevels.includes(content.attrs?.level)) {
-        return true;
+    const tag = getTagFromNode(content);
+    if (tag) {
+        const textBlockName = content.attrs?.textBlockName;
+        const block = typeof textBlockName === "string" ? textBlocks.find((b) => b.name === textBlockName) : undefined;
+        if (!block || block.tag !== tag) {
+            return true;
+        }
+        const textBlockStyle = content.attrs?.textBlockStyle;
+        const allowedStyles = insideListItem && tag === "paragraph" ? listStyles : (block.styles ?? []);
+        if (textBlockStyle != null) {
+            if (!allowedStyles.includes(textBlockStyle)) {
+                return true;
+            }
+        } else if (!insideListItem && block.defaultStyle !== undefined) {
+            return true;
+        }
     }
 
     if (!Array.isArray(content.content)) {
         return false;
     }
 
-    return content.content.some((child: TipTapContent) => containsInvalidHeadingLevel(child, headingLevels));
+    const isListItem = content.type === "listItem";
+    return content.content.some((child: TipTapContent) => containsInvalidTextBlock(child, textBlocks, listStyles, insideListItem || isListItem));
 }
 
 export function getListNestingDepth(content: TipTapContent, currentDepth = 0): number {
@@ -70,7 +108,12 @@ export function getListNestingDepth(content: TipTapContent, currentDepth = 0): n
 export function isValidTipTapContentSync(
     value: unknown,
     schema: Schema,
-    { maxTextBlocks, listLevelMax, headingLevels }: { maxTextBlocks?: number; listLevelMax?: number; headingLevels: HeadingLevel[] },
+    {
+        maxTextBlocks,
+        listLevelMax,
+        textBlocks,
+        listStyles,
+    }: { maxTextBlocks?: number; listLevelMax?: number; textBlocks: TipTapTextBlock[]; listStyles?: string[] },
 ): boolean {
     if (typeof value !== "object" || value === null) {
         return false;
@@ -93,7 +136,7 @@ export function isValidTipTapContentSync(
             return false;
         }
 
-        if (containsInvalidHeadingLevel(value as TipTapContent, headingLevels)) {
+        if (containsInvalidTextBlock(value as TipTapContent, textBlocks, listStyles)) {
             return false;
         }
 

@@ -6,31 +6,30 @@ import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "../
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "./createTipTapRichTextBlock";
 
 describe("createTipTapRichTextBlock", () => {
-    it("should throw for invalid heading levels instead of silently creating a broken heading", () => {
-        expect(() => createTipTapRichTextBlock({ heading: { levels: [] } })).toThrow();
-        expect(() => createTipTapRichTextBlock({ heading: { levels: [0, 2, 3] } })).toThrow();
-        expect(() => createTipTapRichTextBlock({ heading: { levels: [1, 7] } })).toThrow();
-        expect(() => createTipTapRichTextBlock({ heading: { levels: [1, 1, 2] } })).toThrow();
-        expect(() => createTipTapRichTextBlock({ heading: { levels: [1.5, 2] } })).toThrow();
+    it("should throw when textBlocks is empty", () => {
+        expect(() => createTipTapRichTextBlock({ textBlocks: [] })).toThrow();
     });
 
-    it("should throw when the heading defaultLevel is not one of the allowed levels", () => {
-        expect(() => createTipTapRichTextBlock({ heading: { levels: [2, 3, 4], defaultLevel: 1 } })).toThrow();
-        expect(() => createTipTapRichTextBlock({ heading: { defaultLevel: 7 } })).toThrow();
+    it("should throw when lists are enabled without a paragraph textBlocks entry", () => {
+        expect(() =>
+            createTipTapRichTextBlock({ textBlocks: [{ name: "heading-1", tag: "heading-1", label: "Heading 1" }], unorderedList: true }),
+        ).toThrow();
+        expect(() =>
+            createTipTapRichTextBlock({ textBlocks: [{ name: "heading-1", tag: "heading-1", label: "Heading 1" }], orderedList: true }),
+        ).toThrow();
     });
 
-    it("should throw when paragraphs are disabled and no other text block type is left", () => {
-        expect(() => createTipTapRichTextBlock({ paragraph: false, heading: false })).toThrow();
-    });
-
-    it("should throw when lists are enabled without paragraphs", () => {
-        expect(() => createTipTapRichTextBlock({ paragraph: false, unorderedList: true })).toThrow();
-        expect(() => createTipTapRichTextBlock({ paragraph: false, orderedList: true })).toThrow();
-    });
-
-    it("should start heading-only content with a heading of the default level", () => {
-        const block = createTipTapRichTextBlock({ paragraph: false, heading: { levels: [2, 3, 4], defaultLevel: 3 } });
-        expect(block.defaultValues()).toEqual({ tipTapContent: { type: "doc", content: [{ type: "heading", attrs: { level: 3 } }] } });
+    it("should start heading-only content with a heading of the first textBlocks entry's level", () => {
+        const block = createTipTapRichTextBlock({
+            textBlocks: [
+                { name: "heading-3", tag: "heading-3", label: "Heading 3" },
+                { name: "heading-2", tag: "heading-2", label: "Heading 2" },
+                { name: "heading-4", tag: "heading-4", label: "Heading 4" },
+            ],
+        });
+        expect(block.defaultValues()).toEqual({
+            tipTapContent: { type: "doc", content: [{ type: "heading", attrs: { textBlockName: "heading-3", level: 3 } }] },
+        });
     });
 
     describe("translateContent", () => {
@@ -62,6 +61,7 @@ describe("createTipTapRichTextBlock", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph", textBlockStyle: null },
                             content: [
                                 { type: "text", text: "A " },
                                 { type: "text", marks: [{ type: "bold" }], text: "bold" },
@@ -110,9 +110,9 @@ describe("createTipTapRichTextBlock", () => {
                 tipTapContent: {
                     type: "doc",
                     content: [
-                        { type: "paragraph", content: [{ type: "text", text: "Before" }] },
+                        { type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Before" }] },
                         { type: "cmsBlock", attrs: { blockType: "structured", data: { nested: { value: "keep me" } } } },
-                        { type: "paragraph", content: [{ type: "text", text: "After" }] },
+                        { type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "After" }] },
                     ],
                 },
             };
@@ -148,6 +148,7 @@ describe("createTipTapRichTextBlock", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [
                                 { type: "text", text: "Before " },
                                 // `false` is a valid (if unusual) value for a link mark's `data`: `setCmsLink`'s
@@ -178,6 +179,7 @@ describe("createTipTapRichTextBlock", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [
                                 { type: "text", text: "Hello " },
                                 { type: "placeholder", attrs: { name: "firstName" } },
@@ -217,6 +219,7 @@ describe("createTipTapRichTextBlock", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [
                                 { type: "text", text: "Before " },
                                 { type: "text", marks: [{ type: "link", attrs: { data: { url: "https://example.com" } } }], text: "link" },

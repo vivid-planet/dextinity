@@ -1,7 +1,7 @@
 import type { JSONContent } from "@tiptap/core";
 
 import type { Block } from "../../block";
-import type { TipTapResolvedOptions } from "../createTipTapRichTextBlock";
+import type { TipTapResolvedOptions, TipTapTextBlock, TipTapTextBlockTag } from "../createTipTapRichTextBlock";
 
 interface DraftJsInlineStyleRange {
     style: string;
@@ -38,20 +38,17 @@ interface DraftJsContent {
     entityMap: Record<string, DraftJsEntity>;
 }
 
-type TipTapTextBlockStyleTargetType = "paragraph" | "heading-1" | "heading-2" | "heading-3" | "heading-4" | "heading-5" | "heading-6";
-
-interface TextBlockStyleMapping {
+interface TextBlockMapping {
     /**
-     * TipTap text block type the DraftJS block is converted to. Use this for DraftJS block types
-     * that were rendered as a heading (e.g. a custom `headline450` block type rendered as `<h2>`),
-     * so the semantic tag isn't lost.
-     *
-     * Defaults to the type derived from the DraftJS block type: `header-one`…`header-six` keep
-     * their heading level, all other block types become a paragraph.
+     * Name of the `textBlocks` entry the DraftJS block converts to. Defaults to the entry inferred
+     * from the DraftJS block type: `header-one`…`header-six` keep their heading level, all other
+     * block types become the configured paragraph. If more than one `textBlocks` entry shares that
+     * tag, the first one (in `textBlocks` order) is used.
      */
-    textBlockType?: TipTapTextBlockStyleTargetType;
+    textBlockName?: string;
     /**
-     * TipTap `textBlockStyle` attribute value applied to the converted text block.
+     * TipTap `textBlockStyle` attribute value applied to the converted text block. Falls back to the
+     * resolved `textBlocks` entry's `defaultStyle` when not given.
      */
     textBlockStyle?: string;
 }
@@ -60,14 +57,12 @@ interface ConvertOptions {
     resolvedOptions: TipTapResolvedOptions;
     link?: Block;
     /**
-     * Maps DraftJS block types (e.g. custom `paragraph-small`) to a TipTap `textBlockStyle`
-     * attribute value. Matched blocks become `{ type: "paragraph", attrs: { textBlockStyle: ... } }`.
+     * Maps DraftJS block types (e.g. a custom `paragraph-small`) to a TipTap text block. Matched
+     * blocks become the mapped `textBlocks` entry with the given `textBlockStyle` applied.
      *
-     * Pass a `{ textBlockType, textBlockStyle }` object instead of a plain style name to also
-     * control the text block type, for instance to convert a DraftJS block type that was rendered
-     * as `<h2>` into a TipTap heading with level 2.
+     * Pass a plain string as a shorthand for `{ textBlockStyle: <string> }`.
      */
-    textBlockStyleMap?: Record<string, string | TextBlockStyleMapping>;
+    textBlockMap?: Record<string, string | TextBlockMapping>;
     /**
      * Maps DraftJS custom inline style names (e.g. `highlight` from a DraftJS `customInlineStyles`
      * configuration) to TipTap `inlineStyle` mark type values.
@@ -92,31 +87,38 @@ const INLINE_STYLE_TO_MARK: Record<string, { mark: string; option: TipTapMarkOpt
     SUB: { mark: "subscript", option: "sub" },
 };
 
-const HEADER_TYPE_TO_LEVEL: Record<string, number> = {
-    "header-one": 1,
-    "header-two": 2,
-    "header-three": 3,
-    "header-four": 4,
-    "header-five": 5,
-    "header-six": 6,
-};
-
-const TEXT_BLOCK_TYPE_TO_HEADING_LEVEL: Record<TipTapTextBlockStyleTargetType, number | undefined> = {
-    paragraph: undefined,
-    "heading-1": 1,
-    "heading-2": 2,
-    "heading-3": 3,
-    "heading-4": 4,
-    "heading-5": 5,
-    "heading-6": 6,
+const HEADER_TYPE_TO_TAG: Record<string, TipTapTextBlockTag> = {
+    "header-one": "heading-1",
+    "header-two": "heading-2",
+    "header-three": "heading-3",
+    "header-four": "heading-4",
+    "header-five": "heading-5",
+    "header-six": "heading-6",
 };
 
 /**
- * Builds a document with a single empty text block, matching the target schema's default text block
- * type (a paragraph, or a heading for a heading-only schema).
+ * Resolves which `textBlocks` entry a converted node uses: an explicit name wins, then the entry
+ * matching `tag` (the first one, if more than one shares it), then the schema's overall default
+ * (the first configured entry) as a last resort, e.g. when `tag` isn't configured in this schema.
+ */
+function resolveTextBlock(tag: TipTapTextBlockTag | undefined, explicitName: string | undefined, textBlocks: TipTapTextBlock[]): TipTapTextBlock {
+    const named = explicitName ? textBlocks.find((b) => b.name === explicitName) : undefined;
+    if (named) {
+        return named;
+    }
+    const byTag = tag ? textBlocks.find((b) => b.tag === tag) : undefined;
+    if (byTag) {
+        return byTag;
+    }
+    return textBlocks[0];
+}
+
+/**
+ * Builds a document with a single empty text block, matching the target schema's overall default
+ * text block (the first configured `textBlocks` entry).
  */
 export function buildEmptyTipTapDoc(resolvedOptions: TipTapResolvedOptions): JSONContent {
-    return { type: "doc", content: [makeTextBlockNode([], { resolvedOptions })] };
+    return { type: "doc", content: [makeTextBlockNode([], { textBlocks: resolvedOptions.textBlocks })] };
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -220,8 +222,8 @@ function buildInlineContent({
     return segments.flatMap((segment) => splitAtomChars(segment.text, segment.marks, resolvedOptions));
 }
 
-const NBSP_CHAR = "\u00a0";
-const SOFT_HYPHEN_CHAR = "\u00ad";
+const NBSP_CHAR = " ";
+const SOFT_HYPHEN_CHAR = "­";
 
 function makeTextNode(text: string, marks: NonNullable<JSONContent["marks"]>): JSONContent {
     const node: JSONContent = { type: "text", text };
@@ -269,26 +271,33 @@ function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, 
 function makeTextBlockNode(
     inlineContent: JSONContent[],
     {
-        headingLevel: explicitHeadingLevel,
-        textBlockStyle,
-        resolvedOptions,
-    }: { headingLevel?: number; textBlockStyle?: string; resolvedOptions: TipTapResolvedOptions },
+        tag,
+        textBlockName,
+        textBlockStyle: explicitTextBlockStyle,
+        textBlocks,
+        skipDefaultStyle,
+    }: {
+        tag?: TipTapTextBlockTag;
+        textBlockName?: string;
+        textBlockStyle?: string;
+        textBlocks: TipTapTextBlock[];
+        // A list item's paragraph draws its style from `listStyles`, not the resolved `textBlocks`
+        // entry's own `defaultStyle` — a list isn't a `textBlocks` entry of its own.
+        skipDefaultStyle?: boolean;
+    },
 ): JSONContent {
-    // A heading-only schema has no paragraph to fall back to.
-    const headingLevel =
-        explicitHeadingLevel ?? (resolvedOptions.paragraph || resolvedOptions.heading === false ? undefined : resolvedOptions.heading.defaultLevel);
-    const node: JSONContent = { type: headingLevel !== undefined ? "heading" : "paragraph" };
+    const resolved = resolveTextBlock(tag, textBlockName, textBlocks);
+    const node: JSONContent = { type: resolved.tag === "paragraph" ? "paragraph" : "heading" };
 
-    const attrs: JSONContent["attrs"] = {};
-    if (headingLevel !== undefined) {
-        attrs.level = headingLevel;
+    const attrs: JSONContent["attrs"] = { textBlockName: resolved.name };
+    if (resolved.tag !== "paragraph") {
+        attrs.level = Number(resolved.tag.slice("heading-".length));
     }
+    const textBlockStyle = explicitTextBlockStyle ?? (skipDefaultStyle ? undefined : resolved.defaultStyle);
     if (textBlockStyle !== undefined) {
         attrs.textBlockStyle = textBlockStyle;
     }
-    if (Object.keys(attrs).length > 0) {
-        node.attrs = attrs;
-    }
+    node.attrs = attrs;
 
     if (inlineContent.length > 0) {
         node.content = inlineContent;
@@ -296,10 +305,12 @@ function makeTextBlockNode(
     return node;
 }
 
-function makeListItem(inlineContent: JSONContent[], resolvedOptions: TipTapResolvedOptions): JSONContent {
+// A list item's content always starts with a plain paragraph text block, regardless of which
+// `textBlocks` entry happens to be listed first in the schema.
+function makeListItem(inlineContent: JSONContent[], textBlocks: TipTapTextBlock[]): JSONContent {
     return {
         type: "listItem",
-        content: [makeTextBlockNode(inlineContent, { resolvedOptions })],
+        content: [makeTextBlockNode(inlineContent, { tag: "paragraph", textBlocks, skipDefaultStyle: true })],
     };
 }
 
@@ -315,7 +326,7 @@ interface OpenList {
     items: JSONContent[];
 }
 
-function normalizeTextBlockStyleMapping(mapping: string | TextBlockStyleMapping | undefined): TextBlockStyleMapping | undefined {
+function normalizeTextBlockMapping(mapping: string | TextBlockMapping | undefined): TextBlockMapping | undefined {
     if (mapping === undefined) {
         return undefined;
     }
@@ -324,13 +335,14 @@ function normalizeTextBlockStyleMapping(mapping: string | TextBlockStyleMapping 
 
 export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined | null, options: ConvertOptions): JSONContent {
     const resolvedOptions = options.resolvedOptions;
+    const textBlocks = resolvedOptions.textBlocks;
 
     if (!draftContent || !Array.isArray(draftContent.blocks) || draftContent.blocks.length === 0) {
         return buildEmptyTipTapDoc(resolvedOptions);
     }
 
     const hasLink = !!options.link;
-    const textBlockStyleMap = options.textBlockStyleMap ?? {};
+    const textBlockMap = options.textBlockMap ?? {};
     const inlineStyleMap = options.inlineStyleMap ?? {};
     const entityMap = draftContent.entityMap ?? {};
     const maxListLevels = options.listLevelMax !== undefined ? Math.max(options.listLevelMax, 1) : undefined;
@@ -382,7 +394,7 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
             openLists.push({ type: listType, items: [] });
         }
 
-        openLists[openLists.length - 1].items.push(makeListItem(inlineContent, resolvedOptions));
+        openLists[openLists.length - 1].items.push(makeListItem(inlineContent, textBlocks));
     };
 
     for (const block of draftContent.blocks) {
@@ -396,15 +408,15 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
 
         flushLists();
 
-        const mapping = normalizeTextBlockStyleMapping(textBlockStyleMap[block.type]);
-        const headingLevel =
-            mapping?.textBlockType !== undefined ? TEXT_BLOCK_TYPE_TO_HEADING_LEVEL[mapping.textBlockType] : HEADER_TYPE_TO_LEVEL[block.type];
+        const mapping = normalizeTextBlockMapping(textBlockMap[block.type]);
+        const tag = HEADER_TYPE_TO_TAG[block.type];
 
         topLevel.push(
             makeTextBlockNode(inlineContent, {
-                resolvedOptions,
-                headingLevel: headingLevel !== undefined && resolvedOptions.heading !== false ? headingLevel : undefined,
+                tag,
+                textBlockName: mapping?.textBlockName,
                 textBlockStyle: mapping?.textBlockStyle,
+                textBlocks,
             }),
         );
     }
@@ -425,7 +437,7 @@ export function buildStrippedTipTapDoc(draftContent: DraftJsContent | undefined 
 
     const content: JSONContent[] = draftContent.blocks.map((block) => {
         const text = block.text ?? "";
-        return makeTextBlockNode(text.length === 0 ? [] : [{ type: "text", text }], { resolvedOptions });
+        return makeTextBlockNode(text.length === 0 ? [] : [{ type: "text", text }], { textBlocks: resolvedOptions.textBlocks });
     });
 
     if (content.length === 0) {
@@ -435,4 +447,4 @@ export function buildStrippedTipTapDoc(draftContent: DraftJsContent | undefined 
     return { type: "doc", content };
 }
 
-export type { ConvertOptions, DraftJsContent, TextBlockStyleMapping };
+export type { ConvertOptions, DraftJsContent, TextBlockMapping };

@@ -1,1 +1,3 @@
-export type RedirectScopeInterface = Record<string, string | number | null | undefined>; //@TODO: move to general scope (other modules (page-tree, dam) need this too)
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
+
+export type RedirectScopeInterface = Partial<ContentScope>;

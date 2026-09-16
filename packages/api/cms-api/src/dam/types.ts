@@ -1,3 +1,5 @@
-type DamScopeInterface = Record<string, string | number | null | undefined>;
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
+
+type DamScopeInterface = Partial<ContentScope>;
 
 export type { DamScopeInterface };

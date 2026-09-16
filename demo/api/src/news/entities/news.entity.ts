@@ -51,8 +51,6 @@ registerEnumType(NewsCategory, {
 @ObjectType("")
 @InputType("NewsContentScopeInput")
 export class NewsContentScope {
-    [key: string]: string;
-
     @Property({ columnType: "text" })
     @Field()
     @IsString()

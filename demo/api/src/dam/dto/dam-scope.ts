@@ -6,8 +6,6 @@ import { IsString } from "class-validator";
 @ObjectType()
 @InputType("DamScopeInput")
 export class DamScope {
-    [key: string]: string;
-
     @Property({ columnType: "text" })
     @Field()
     @IsString()

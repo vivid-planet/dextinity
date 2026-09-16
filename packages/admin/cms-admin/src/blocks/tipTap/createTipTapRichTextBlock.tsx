@@ -431,19 +431,31 @@ const buildEmptyContent = (resolvedOptions: TipTapResolvedOptions): JSONContent 
 };
 
 /**
+ * Resolves the `textBlockStyle` a text block keeps when switching to `target`: preserved if it's
+ * still one of `target`'s styles, otherwise `target`'s own default (which may be unset, clearing it).
+ */
+export function resolveTextBlockStyleForSwitch(currentStyle: string | null | undefined, target: TipTapTextBlock): string | null {
+    const styleStillValid = currentStyle != null && (target.styles ?? []).includes(currentStyle);
+    return styleStillValid ? currentStyle : (target.defaultStyle ?? null);
+}
+
+/**
  * Sets the default heading level and, for a heading-only schema (no `paragraph`-tag entry), makes
  * the heading the schema's default block type (the position paragraphs would otherwise take, by
  * priority) and replaces the heading keyboard shortcuts, which would otherwise toggle back to a
- * paragraph.
+ * paragraph — keeping `textBlockName`/`textBlockStyle` in sync with the new level, same as the
+ * toolbar's type dropdown does.
  */
 const buildHeadingExtension = ({
     levels,
     defaultLevel,
     hasParagraph,
+    textBlocks,
 }: {
     levels: HeadingLevel[];
     defaultLevel: HeadingLevel;
     hasParagraph: boolean;
+    textBlocks: TipTapTextBlock[];
 }) =>
     TextBlockHeading.extend({
         ...(hasParagraph
@@ -451,7 +463,26 @@ const buildHeadingExtension = ({
             : {
                   priority: paragraphPriority,
                   addKeyboardShortcuts() {
-                      return Object.fromEntries(levels.map((level) => [`Mod-Alt-${level}`, () => this.editor.commands.setHeading({ level })]));
+                      return Object.fromEntries(
+                          levels.map((level) => [
+                              `Mod-Alt-${level}`,
+                              () => {
+                                  const target = textBlocks.find((block) => block.tag === `heading-${level}`);
+                                  if (!target) {
+                                      return this.editor.commands.setHeading({ level });
+                                  }
+                                  const currentStyle = this.editor.getAttributes("heading").textBlockStyle as string | null | undefined;
+                                  return this.editor
+                                      .chain()
+                                      .setHeading({ level })
+                                      .updateAttributes("heading", {
+                                          textBlockName: target.name,
+                                          textBlockStyle: resolveTextBlockStyleForSwitch(currentStyle, target),
+                                      })
+                                      .run();
+                              },
+                          ]),
+                      );
                   },
               }),
         addAttributes() {
@@ -662,7 +693,7 @@ function buildTipTapExtensions({
             trailingNode: { notAfter: ["heading"] },
         }),
         ...(hasParagraph ? [TextBlockParagraph] : []),
-        ...(hasHeadings ? [buildHeadingExtension({ levels: headingLevels, defaultLevel: defaultHeadingLevel, hasParagraph })] : []),
+        ...(hasHeadings ? [buildHeadingExtension({ levels: headingLevels, defaultLevel: defaultHeadingLevel, hasParagraph, textBlocks })] : []),
         ...(hasInlineStyles ? [InlineStyleMark] : []),
         ...(resolvedOptions.sup ? [Superscript] : []),
         ...(resolvedOptions.sub ? [Subscript] : []),

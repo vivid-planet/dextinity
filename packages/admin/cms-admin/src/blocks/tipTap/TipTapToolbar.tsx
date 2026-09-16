@@ -40,15 +40,16 @@ import { type ForwardRefExoticComponent, type MouseEvent, type ReactNode, type R
 import { FormattedMessage, useIntl } from "react-intl";
 
 import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
-import type {
-    TipTapChildBlock,
-    TipTapInlineStyle,
-    TipTapPlaceholder,
-    TipTapResolvedOptions,
-    TipTapTextBlock,
-    TipTapTextBlockStyle,
-    TipTapTextBlockTag,
-    TipTapTextBlockType,
+import {
+    resolveTextBlockStyleForSwitch,
+    type TipTapChildBlock,
+    type TipTapInlineStyle,
+    type TipTapPlaceholder,
+    type TipTapResolvedOptions,
+    type TipTapTextBlock,
+    type TipTapTextBlockStyle,
+    type TipTapTextBlockTag,
+    type TipTapTextBlockType,
 } from "./createTipTapRichTextBlock";
 import { TipTapBlockDialog } from "./TipTapBlockDialog";
 import { TipTapLinkDialog } from "./TipTapLinkDialog";
@@ -375,12 +376,8 @@ export const TipTapToolbar = ({
             editor.chain().focus().setHeading({ level }).run();
         }
 
-        // Preserve the current style if it's still one of the target text block's styles, otherwise
-        // fall back to its own default (which may be unset, clearing the style).
-        const { activeTextBlockStyle } = editorState;
-        const styleStillValid = activeTextBlockStyle !== "" && (target.styles ?? []).includes(activeTextBlockStyle);
-        const newStyle = styleStillValid ? activeTextBlockStyle : (target.defaultStyle ?? null);
         const nodeType = target.tag === "paragraph" ? "paragraph" : "heading";
+        const newStyle = resolveTextBlockStyleForSwitch(editorState.activeTextBlockStyle || null, target);
         editor.chain().updateAttributes(nodeType, { textBlockName: target.name, textBlockStyle: newStyle }).run();
     };
 

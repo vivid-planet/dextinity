@@ -1,7 +1,9 @@
 {
     "skipReview": "AUTOMATIC",
+    "triggerOnDrafts": false,
     "autoApprove": {
         "enabled": true,
+        "riskCeiling": "low",
         "filters": {
             "includeAuthors": ["VPS-Obi", "VPS-thodax", "nsams", "fraxachun"]
         }

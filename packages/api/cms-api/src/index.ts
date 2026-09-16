@@ -108,6 +108,7 @@ export {
     type CreateTipTapRichTextBlockOptions,
     type TipTapRichTextBlockContent,
     type TipTapTextBlock,
+    type TipTapTextBlockStyle,
     type TipTapTextBlockTag,
 } from "./blocks/tipTap/createTipTapRichTextBlock";
 export { buildApplyTextBlocksMigration } from "./blocks/tipTap/migrations/buildApplyTextBlocksMigration";

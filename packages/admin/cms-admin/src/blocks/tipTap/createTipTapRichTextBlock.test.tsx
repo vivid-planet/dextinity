@@ -3,7 +3,12 @@ import { describe, expect, it } from "vitest";
 
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "../types";
-import { createTipTapRichTextBlock, type TipTapRichTextBlockState, type TipTapTextBlock } from "./createTipTapRichTextBlock";
+import {
+    createTipTapRichTextBlock,
+    type TipTapRichTextBlockState,
+    type TipTapTextBlock,
+    type TipTapTextBlockElementProps,
+} from "./createTipTapRichTextBlock";
 
 describe("createTipTapRichTextBlock", () => {
     it("should throw for an unsupported text block tag instead of silently creating a broken node", () => {
@@ -23,6 +28,18 @@ describe("createTipTapRichTextBlock", () => {
                 ],
             }),
         ).toThrow();
+    });
+
+    it("should throw when a text block offers the same style twice, because a style's name identifies it", () => {
+        const style = { name: "copy100", label: "Copy 100", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
+        expect(() =>
+            createTipTapRichTextBlock({ textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [style, style] }] }),
+        ).toThrow();
+    });
+
+    it("should throw when a list offers the same style twice", () => {
+        const style = { name: "list300", label: "List", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
+        expect(() => createTipTapRichTextBlock({ orderedList: { styles: [style, style] } })).toThrow();
     });
 
     it("should throw when the defaultTextBlock is not one of the text blocks", () => {

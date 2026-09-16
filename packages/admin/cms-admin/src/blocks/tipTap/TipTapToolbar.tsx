@@ -40,15 +40,8 @@ import { type ForwardRefExoticComponent, type MouseEvent, type ReactNode, type R
 import { FormattedMessage, useIntl } from "react-intl";
 
 import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
-import type {
-    TipTapChildBlock,
-    TipTapInlineStyle,
-    TipTapPlaceholder,
-    TipTapResolvedOptions,
-    TipTapTextBlockStyle,
-    TipTapTextBlockType,
-} from "./createTipTapRichTextBlock";
-import { findTextBlock, hasParagraphTextBlock, type TipTapTextBlockTag } from "./textBlocks";
+import type { TipTapChildBlock, TipTapInlineStyle, TipTapPlaceholder, TipTapResolvedOptions } from "./createTipTapRichTextBlock";
+import { findTextBlock, getStyledNodes, hasParagraphTextBlock, orderedListName, type TipTapTextBlockTag, unorderedListName } from "./textBlocks";
 import { TipTapBlockDialog } from "./TipTapBlockDialog";
 import { TipTapLinkDialog } from "./TipTapLinkDialog";
 
@@ -162,7 +155,6 @@ const selectSx = {
 export const TipTapToolbar = ({
     editor,
     resolvedOptions,
-    textBlockStyles,
     inlineStyles,
     placeholders,
     linkBlock,
@@ -173,7 +165,6 @@ export const TipTapToolbar = ({
 }: {
     editor: Editor;
     resolvedOptions: TipTapResolvedOptions;
-    textBlockStyles: TipTapTextBlockStyle[];
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
     linkBlock?: BlockInterface & LinkBlockInterface;
@@ -194,6 +185,7 @@ export const TipTapToolbar = ({
     const specialChars = resolvedOptions.nonBreakingSpace || resolvedOptions.softHyphen;
     const hasLink = resolvedOptions.link && !!linkBlock;
     const textBlocks = resolvedOptions.textBlocks;
+    const styledNodes = getStyledNodes(resolvedOptions);
     const hasParagraph = hasParagraphTextBlock(textBlocks);
     const hasPlaceholders = placeholders.length > 0;
     const hasChildBlocks = Object.keys(childBlocks).length > 0;
@@ -206,19 +198,16 @@ export const TipTapToolbar = ({
                 const tag: TipTapTextBlockTag = e.isActive("heading") ? (`h${attrs.level}` as TipTapTextBlockTag) : "p";
                 return findTextBlock({ name: attrs.textBlock, tag, textBlocks }) ?? resolvedOptions.defaultTextBlock;
             })();
-            const activeTipTapTextBlockType: TipTapTextBlockType = (() => {
+            // A list wins over the paragraph inside its items, so a list's own styles are offered
+            // for a list item's content.
+            const activeStyledNode = (() => {
                 if (e.isActive("orderedList")) {
-                    return "ordered-list";
+                    return orderedListName;
                 }
                 if (e.isActive("bulletList")) {
-                    return "unordered-list";
+                    return unorderedListName;
                 }
-                for (let level = 1; level <= 6; level++) {
-                    if (e.isActive("heading", { level })) {
-                        return `heading-${level}` as TipTapTextBlockType;
-                    }
-                }
-                return "paragraph";
+                return activeTextBlock.name;
             })();
             // Calculate current list nesting depth for listLevelMax enforcement.
             // The list item node only exists in the schema when lists are enabled.
@@ -239,7 +228,7 @@ export const TipTapToolbar = ({
 
             return {
                 activeTextBlock: activeTextBlock.name,
-                activeTipTapTextBlockType,
+                activeStyledNode,
                 activeTextBlockStyle: (attrs.textBlockStyle as string) ?? "",
                 canUndo: e.can().undo(),
                 canRedo: e.can().redo(),
@@ -288,12 +277,8 @@ export const TipTapToolbar = ({
         setTimeout(() => editor.commands.focus(), 0);
     };
 
-    const applicableTextBlockStyles = textBlockStyles.filter(
-        (style) => !style.appliesTo || style.appliesTo.includes(editorState.activeTipTapTextBlockType),
-    );
-    const applicableInlineStyles = inlineStyles.filter(
-        (style) => !style.appliesTo || style.appliesTo.includes(editorState.activeTipTapTextBlockType),
-    );
+    const applicableTextBlockStyles = styledNodes.find((styledNode) => styledNode.name === editorState.activeStyledNode)?.styles ?? [];
+    const applicableInlineStyles = inlineStyles.filter((style) => !style.appliesTo || style.appliesTo.includes(editorState.activeStyledNode));
     // Without bold/italic/underline/strike buttons to fold behind it, a "..." menu just for superscript/subscript/inline
     // styles adds an extra click for no space savings, so show them as individual buttons instead
     const showMoreOptionsAsButtons = !hasInlineFormatButtons && inlineStyles.every((style) => style.icon);
@@ -356,16 +341,10 @@ export const TipTapToolbar = ({
         }
         editor.chain().updateAttributes(nodeType, { textBlock: textBlock.name }).run();
 
-        // Clear textBlockStyle if it's not applicable to the new text block type
-        if (textBlockStyles.length > 0) {
-            const { activeTextBlockStyle } = editorState;
-            if (activeTextBlockStyle) {
-                const newType: TipTapTextBlockType = textBlock.level !== undefined ? `heading-${textBlock.level}` : "paragraph";
-                const styleConfig = textBlockStyles.find((style) => style.name === activeTextBlockStyle);
-                if (styleConfig?.appliesTo && !styleConfig.appliesTo.includes(newType)) {
-                    editor.chain().updateAttributes(nodeType, { textBlockStyle: null }).run();
-                }
-            }
+        // Clear a textBlockStyle the new text block doesn't offer
+        const { activeTextBlockStyle } = editorState;
+        if (activeTextBlockStyle && !textBlock.styles.some((style) => style.name === activeTextBlockStyle)) {
+            editor.chain().updateAttributes(nodeType, { textBlockStyle: null }).run();
         }
     };
 

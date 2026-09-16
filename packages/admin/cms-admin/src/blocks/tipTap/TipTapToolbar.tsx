@@ -48,6 +48,7 @@ import type {
     TipTapTextBlockStyle,
     TipTapTextBlockType,
 } from "./createTipTapRichTextBlock";
+import { findTextBlock, hasParagraphTextBlock, type TipTapTextBlockTag } from "./textBlocks";
 import { TipTapBlockDialog } from "./TipTapBlockDialog";
 import { TipTapLinkDialog } from "./TipTapLinkDialog";
 
@@ -192,21 +193,18 @@ export const TipTapToolbar = ({
     const lists = resolvedOptions.orderedList || resolvedOptions.unorderedList;
     const specialChars = resolvedOptions.nonBreakingSpace || resolvedOptions.softHyphen;
     const hasLink = resolvedOptions.link && !!linkBlock;
-    const headingLevels = resolvedOptions.heading ? resolvedOptions.heading.levels : [];
-    const hasParagraph = resolvedOptions.paragraph;
+    const textBlocks = resolvedOptions.textBlocks;
+    const hasParagraph = hasParagraphTextBlock(textBlocks);
     const hasPlaceholders = placeholders.length > 0;
     const hasChildBlocks = Object.keys(childBlocks).length > 0;
 
     const editorState = useEditorState({
         editor,
         selector: ({ editor: e }: { editor: Editor }) => {
-            const activeTextBlockType = (() => {
-                for (let level = 1; level <= 6; level++) {
-                    if (e.isActive("heading", { level })) {
-                        return String(level);
-                    }
-                }
-                return hasParagraph || resolvedOptions.heading === false ? "paragraph" : String(resolvedOptions.heading.defaultLevel);
+            const attrs = e.isActive("heading") || !hasParagraph ? e.getAttributes("heading") : e.getAttributes("paragraph");
+            const activeTextBlock = (() => {
+                const tag: TipTapTextBlockTag = e.isActive("heading") ? (`h${attrs.level}` as TipTapTextBlockTag) : "p";
+                return findTextBlock({ name: attrs.textBlock, tag, textBlocks }) ?? resolvedOptions.defaultTextBlock;
             })();
             const activeTipTapTextBlockType: TipTapTextBlockType = (() => {
                 if (e.isActive("orderedList")) {
@@ -222,8 +220,6 @@ export const TipTapToolbar = ({
                 }
                 return "paragraph";
             })();
-            const attrs = e.isActive("heading") || !hasParagraph ? e.getAttributes("heading") : e.getAttributes("paragraph");
-
             // Calculate current list nesting depth for listLevelMax enforcement.
             // The list item node only exists in the schema when lists are enabled.
             let canIndent = lists && e.can().sinkListItem("listItem");
@@ -242,7 +238,7 @@ export const TipTapToolbar = ({
             }
 
             return {
-                activeTextBlockType,
+                activeTextBlock: activeTextBlock.name,
                 activeTipTapTextBlockType,
                 activeTextBlockStyle: (attrs.textBlockStyle as string) ?? "",
                 canUndo: e.can().undo(),
@@ -346,26 +342,27 @@ export const TipTapToolbar = ({
         })),
     ];
 
-    const handleTextBlockTypeChange = (e: SelectChangeEvent) => {
-        const value = e.target.value;
-        if (value === "paragraph") {
-            editor.chain().focus().setParagraph().run();
-        } else {
-            editor
-                .chain()
-                .focus()
-                .setHeading({ level: Number(value) as 1 | 2 | 3 | 4 | 5 | 6 })
-                .run();
+    const handleTextBlockChange = (e: SelectChangeEvent) => {
+        const textBlock = textBlocks.find((candidate) => candidate.name === e.target.value);
+        if (!textBlock) {
+            return;
         }
+
+        const nodeType = textBlock.level !== undefined ? "heading" : "paragraph";
+        if (textBlock.level !== undefined) {
+            editor.chain().focus().setHeading({ level: textBlock.level }).run();
+        } else {
+            editor.chain().focus().setParagraph().run();
+        }
+        editor.chain().updateAttributes(nodeType, { textBlock: textBlock.name }).run();
 
         // Clear textBlockStyle if it's not applicable to the new text block type
         if (textBlockStyles.length > 0) {
             const { activeTextBlockStyle } = editorState;
             if (activeTextBlockStyle) {
-                const newType: TipTapTextBlockType = value === "paragraph" ? "paragraph" : (`heading-${value}` as TipTapTextBlockType);
-                const styleConfig = textBlockStyles.find((s) => s.name === activeTextBlockStyle);
+                const newType: TipTapTextBlockType = textBlock.level !== undefined ? `heading-${textBlock.level}` : "paragraph";
+                const styleConfig = textBlockStyles.find((style) => style.name === activeTextBlockStyle);
                 if (styleConfig?.appliesTo && !styleConfig.appliesTo.includes(newType)) {
-                    const nodeType = value === "paragraph" ? "paragraph" : "heading";
                     editor.chain().updateAttributes(nodeType, { textBlockStyle: null }).run();
                 }
             }
@@ -410,29 +407,20 @@ export const TipTapToolbar = ({
                     />
                 </ToolbarGroup>
             )}
-            {resolvedOptions.heading && (
+            {textBlocks.length > 1 && (
                 <ToolbarGroup>
                     <FormControl sx={selectFormControlSx}>
                         <Select
-                            value={editorState.activeTextBlockType}
-                            onChange={handleTextBlockTypeChange}
+                            value={editorState.activeTextBlock}
+                            onChange={handleTextBlockChange}
                             displayEmpty
                             variant="filled"
                             MenuProps={{ elevation: 1 }}
                             sx={selectSx}
                         >
-                            {hasParagraph && (
-                                <MenuItem value="paragraph" dense>
-                                    <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockType.paragraph" defaultMessage="Paragraph" />
-                                </MenuItem>
-                            )}
-                            {headingLevels.map((level) => (
-                                <MenuItem key={level} value={String(level)} dense>
-                                    <FormattedMessage
-                                        id="dextinity.blocks.tipTapRichText.textBlockType.heading"
-                                        defaultMessage="Heading {level}"
-                                        values={{ level }}
-                                    />
+                            {textBlocks.map((textBlock) => (
+                                <MenuItem key={textBlock.name} value={textBlock.name} dense>
+                                    {textBlock.label}
                                 </MenuItem>
                             ))}
                         </Select>

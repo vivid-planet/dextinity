@@ -26,7 +26,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
         migrateFromDraftJs: {
             // Map the DraftJS `blocktypeMap` entry `paragraph-small` (configured in the admin RichTextBlock)
             // to the equivalent TipTap textBlockStyle so legacy content keeps its smaller paragraph variant.
-            textBlockStyleMap: { "paragraph-small": "paragraph200" },
+            textBlockMap: { "paragraph-small": "paragraph200" },
         },
     },
     {

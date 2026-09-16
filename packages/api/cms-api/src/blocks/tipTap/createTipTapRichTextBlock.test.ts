@@ -10,7 +10,23 @@ import {
     type TipTapRichTextBlockContent,
     type TipTapRichTextBlockDataInterface,
     type TipTapRichTextBlockInputInterface,
+    type TipTapTextBlock,
 } from "./createTipTapRichTextBlock";
+
+const paragraphOnly: TipTapTextBlock[] = [{ name: "paragraph", tag: "p" }];
+
+const headingLevels234: TipTapTextBlock[] = [
+    { name: "paragraph", tag: "p" },
+    { name: "heading-2", tag: "h2" },
+    { name: "heading-3", tag: "h3" },
+    { name: "heading-4", tag: "h4" },
+];
+
+const headingOnly234: TipTapTextBlock[] = [
+    { name: "heading-2", tag: "h2" },
+    { name: "heading-3", tag: "h3" },
+    { name: "heading-4", tag: "h4" },
+];
 
 // Disables all features that aren't explicitly enabled, to pin down the schema a test expects.
 const onlyFeatures = (options: CreateTipTapRichTextBlockOptions = {}): CreateTipTapRichTextBlockOptions => ({
@@ -20,7 +36,7 @@ const onlyFeatures = (options: CreateTipTapRichTextBlockOptions = {}): CreateTip
     strike: false,
     sub: false,
     sup: false,
-    heading: false,
+    textBlocks: paragraphOnly,
     orderedList: false,
     unorderedList: false,
     nonBreakingSpace: false,
@@ -363,7 +379,7 @@ describe("createTipTapRichTextBlock validation", () => {
         const block = createTipTapRichTextBlock(
             onlyFeatures({
                 bold: true,
-                heading: true,
+                textBlocks: undefined,
                 textBlockStyles: [{ name: "intro", appliesTo: ["paragraph"] }, { name: "highlight" }],
             }),
             "TestBlockStyles",
@@ -425,7 +441,6 @@ describe("createTipTapRichTextBlock validation", () => {
         const block = createTipTapRichTextBlock(
             {
                 bold: true,
-                heading: true,
                 orderedList: true,
                 unorderedList: true,
                 textBlockStyles: [
@@ -596,7 +611,6 @@ describe("createTipTapRichTextBlock validation", () => {
         const block = createTipTapRichTextBlock(
             {
                 bold: true,
-                heading: true,
                 inlineStyles: [
                     { name: "highlight" },
                     { name: "tag", appliesTo: ["paragraph"] },
@@ -1264,8 +1278,8 @@ describe("createTipTapRichTextBlock validation", () => {
         });
     });
 
-    describe("heading levels option", () => {
-        const block = createTipTapRichTextBlock({ heading: { levels: [2, 3, 4] } }, "TestHeadingLevels");
+    describe("textBlocks option", () => {
+        const block = createTipTapRichTextBlock({ textBlocks: headingLevels234 }, "TestHeadingLevels");
 
         it("should accept a heading within the allowed levels", async () => {
             const input = block.blockInputFactory({
@@ -1278,7 +1292,7 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(errors).toHaveLength(0);
         });
 
-        it("should reject a heading level outside the allowed levels", async () => {
+        it("should reject a heading level no text block is configured for", async () => {
             const input = block.blockInputFactory({
                 tipTapContent: {
                     type: "doc",
@@ -1290,15 +1304,75 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(errors[0].property).toBe("tipTapContent");
         });
 
-        it("should throw when the heading levels are invalid", () => {
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [] } }, "TestInvalidHeadingLevelsEmpty")).toThrow();
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [0, 2, 3] } }, "TestInvalidHeadingLevelsZero")).toThrow();
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [1, 7] } }, "TestInvalidHeadingLevelsSeven")).toThrow();
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [1, 1, 2] } }, "TestInvalidHeadingLevelsDuplicate")).toThrow();
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [1.5, 2] } }, "TestInvalidHeadingLevelsFraction")).toThrow();
+        it("should accept a heading without a textBlock attribute, resolving it by its tag", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "heading", attrs: { level: 3 }, content: [{ type: "text", text: "Heading" }] }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
         });
 
-        it("should accept content without headings regardless of the heading levels", async () => {
+        it("should reject a textBlock that is not configured for the tag the node is stored as", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "heading", attrs: { level: 2, textBlock: "heading-3" }, content: [{ type: "text", text: "Heading" }] }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
+        });
+
+        it("should accept two text blocks sharing a tag, told apart by the textBlock attribute", async () => {
+            const sharedTagBlock = createTipTapRichTextBlock(
+                {
+                    textBlocks: [
+                        { name: "paragraph", tag: "p" },
+                        { name: "display", tag: "h1" },
+                        { name: "heading-1", tag: "h1" },
+                    ],
+                },
+                "TestSharedTag",
+            );
+            const input = sharedTagBlock.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        { type: "heading", attrs: { level: 1, textBlock: "display" }, content: [{ type: "text", text: "Display" }] },
+                        { type: "heading", attrs: { level: 1, textBlock: "heading-1" }, content: [{ type: "text", text: "Heading" }] },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
+        });
+
+        it("should throw for an unsupported text block tag", () => {
+            expect(() => createTipTapRichTextBlock({ textBlocks: [{ name: "paragraph", tag: "div" as "p" }] }, "TestInvalidTag")).toThrow();
+        });
+
+        it("should throw for an empty textBlocks array", () => {
+            expect(() => createTipTapRichTextBlock({ textBlocks: [] }, "TestEmptyTextBlocks")).toThrow();
+        });
+
+        it("should throw for a duplicate text block name", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    {
+                        textBlocks: [
+                            { name: "heading", tag: "h1" },
+                            { name: "heading", tag: "h2" },
+                        ],
+                    },
+                    "TestDuplicateTextBlockName",
+                ),
+            ).toThrow();
+        });
+
+        it("should accept content without headings regardless of the configured text blocks", async () => {
             const input = block.blockInputFactory({
                 tipTapContent: {
                     type: "doc",
@@ -1310,9 +1384,9 @@ describe("createTipTapRichTextBlock validation", () => {
         });
     });
 
-    describe("heading-only schema (paragraph: false)", () => {
+    describe("heading-only schema (no paragraph text block)", () => {
         const block = createTipTapRichTextBlock(
-            onlyFeatures({ paragraph: false, heading: { levels: [2, 3, 4], defaultLevel: 3 }, bold: true }),
+            onlyFeatures({ textBlocks: headingOnly234, defaultTextBlock: "heading-3", bold: true }),
             "TestHeadingOnly",
         );
 
@@ -1339,7 +1413,7 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(errors[0].property).toBe("tipTapContent");
         });
 
-        it("should reject a heading level outside the allowed levels", async () => {
+        it("should reject a heading level no text block is configured for", async () => {
             const input = block.blockInputFactory({
                 tipTapContent: {
                     type: "doc",
@@ -1350,24 +1424,24 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(errors).toHaveLength(1);
         });
 
-        it("should throw when the heading defaultLevel is not one of the allowed levels", () => {
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [2, 3, 4], defaultLevel: 1 } }, "TestInvalidDefaultHeadingLevel")).toThrow();
+        it("should throw when the defaultTextBlock is not one of the text blocks", () => {
+            expect(() =>
+                createTipTapRichTextBlock({ textBlocks: headingOnly234, defaultTextBlock: "heading-1" }, "TestInvalidDefaultTextBlock"),
+            ).toThrow();
         });
 
-        it("should throw when paragraphs are disabled without headings", () => {
-            expect(() => createTipTapRichTextBlock(onlyFeatures({ paragraph: false }), "TestNoTextBlockTypeLeft")).toThrow();
+        it("should throw when lists are enabled without a paragraph text block", () => {
+            expect(() => createTipTapRichTextBlock({ textBlocks: headingOnly234, orderedList: true }, "TestHeadingOnlyWithOrderedList")).toThrow();
+            expect(() =>
+                createTipTapRichTextBlock({ textBlocks: headingOnly234, unorderedList: true }, "TestHeadingOnlyWithUnorderedList"),
+            ).toThrow();
         });
 
-        it("should throw when lists are enabled without paragraphs", () => {
-            expect(() => createTipTapRichTextBlock({ paragraph: false, orderedList: true }, "TestHeadingOnlyWithOrderedList")).toThrow();
-            expect(() => createTipTapRichTextBlock({ paragraph: false, unorderedList: true }, "TestHeadingOnlyWithUnorderedList")).toThrow();
-        });
-
-        it("should disable lists by default when paragraphs are disabled", () => {
-            const resolvedOptions = resolveTipTapOptions({ paragraph: false });
+        it("should disable lists by default when there is no paragraph text block", () => {
+            const resolvedOptions = resolveTipTapOptions({ textBlocks: headingOnly234 });
             expect(resolvedOptions.orderedList).toBe(false);
             expect(resolvedOptions.unorderedList).toBe(false);
-            expect(resolvedOptions.heading).toEqual({ levels: [1, 2, 3, 4, 5, 6], defaultLevel: 1 });
+            expect(resolvedOptions.defaultTextBlock).toEqual({ name: "heading-2", tag: "h2", level: 2 });
         });
     });
 

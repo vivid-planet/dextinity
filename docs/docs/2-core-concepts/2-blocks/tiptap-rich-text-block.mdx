@@ -359,6 +359,29 @@ A style's `element` receives the `tag` of the text block it is applied to, so on
 
 An inline style's `appliesTo` limits it to the named text blocks, plus `"ordered-list"` and `"unordered-list"` for a list item's content.
 
+#### Default styles
+
+A text block (or list) with a `defaultStyle` has no "no style" state: the styling select drops its _Default_ entry, and every text block of that type carries one of the styles. Text blocks without a `defaultStyle` keep the _Default_ entry, so both can sit side by side:
+
+```ts title="tip-tap-rich-text.block.ts (API)"
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "heading-1", tag: "h1", styles: headlineStyles, defaultStyle: "headline300" },
+        { name: "heading-2", tag: "h2", styles: headlineStyles },
+    ],
+});
+```
+
+The style is applied to new content, to a text block the editor converts through the type select, and to any paragraph/heading the editor creates without one — pressing Enter at the end of a heading, using the `Mod-Alt-<level>` shortcuts, or pasting. Switching the type keeps a style the new text block also offers and falls back to its `defaultStyle` otherwise.
+
+`defaultStyle` must be one of the text block's `styles`, otherwise an error is thrown. It only exists next to `styles`, not next to a text block's own `element`.
+
+:::caution Existing content
+
+Content written before a `defaultStyle` was configured carries no style, and the editor fills it in on the first edit rather than when the document is opened, so opening a document does not mark it as changed. To give such content its style up front, run [`buildApplyTextBlocksMigration`](#heading-only-blocks), which also replaces a style a text block no longer offers.
+
+:::
+
 #### Text blocks without a style choice
 
 A text block that needs no style choice carries its own `element` instead of `styles`. The two exclude each other, and a text block with neither is rendered as its plain tag:
@@ -457,24 +480,25 @@ Lists are disabled without a `p` text block, because a list item's content start
 
 The API rejects content the configuration doesn't allow: a tag no text block uses, or a `textBlock` attribute that names a text block not configured for the tag the node is stored as. Narrowing `textBlocks` for a block that already holds content therefore requires a [migration](./5-migrations.mdx).
 
-A node written before the `textBlock` attribute existed doesn't carry a name and is resolved by its tag when read, so content from before this option keeps working without a migration. That resolution picks the first text block with a matching tag, which only stays stable as long as no second text block uses the same tag: adding a `display` above an existing `heading-1` turns every stored `h1` into a `display`. `buildApplyTextBlocksMigration` writes the resolved name into the content once. Run it with the configuration that is live today, and the existing content keeps the text block it has:
+A node written before the `textBlock` attribute existed doesn't carry a name and is resolved by its tag when read, so content from before this option keeps working without a migration. That resolution picks the first text block with a matching tag, which only stays stable as long as no second text block uses the same tag: adding a `display` above an existing `heading-1` turns every stored `h1` into a `display`. `buildApplyTextBlocksMigration` writes the resolved name into the content once. Run it with the configuration that is live today, and the existing content keeps the text block it has. It also replaces a `textBlockStyle` the text block (or the list the node sits in) no longer offers with its [`defaultStyle`](#default-styles), for which it takes the list options too:
 
 ```ts title="tip-tap-rich-text.block.ts"
 import { buildApplyTextBlocksMigration, createTipTapRichTextBlock, type TipTapTextBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
 
 const textBlocks: TipTapTextBlock[] = [
-    { name: "paragraph", tag: "p" },
+    { name: "paragraph", tag: "p", styles: [{ name: "copy100" }], defaultStyle: "copy100" },
     { name: "heading-1", tag: "h1" },
 ];
+const orderedList = { styles: [{ name: "list300" }], defaultStyle: "list300" };
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock(
-    { textBlocks },
+    { textBlocks, orderedList },
     {
         name: "TipTapRichText",
         migrate: {
             version: 2,
             // highlight-next-line
-            migrations: typeSafeBlockMigrationPipe([buildApplyTextBlocksMigration({ toVersion: 2, textBlocks })]),
+            migrations: typeSafeBlockMigrationPipe([buildApplyTextBlocksMigration({ toVersion: 2, textBlocks, orderedList })]),
         },
     },
 );

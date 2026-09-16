@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type HTMLAttributes, type ReactNode, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
-import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "../createTipTapRichTextBlock";
+import { createTipTapRichTextBlock, type TipTapRichTextBlockState, type TipTapTextBlock } from "../createTipTapRichTextBlock";
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
@@ -156,7 +156,7 @@ const BoldOnlyBlock = createTipTapRichTextBlock({
     strike: false,
     sub: false,
     sup: false,
-    heading: false,
+    textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }],
     orderedList: false,
     unorderedList: false,
     nonBreakingSpace: false,
@@ -359,7 +359,7 @@ const PlaceholdersWithContentBlock = createTipTapRichTextBlock({
     strike: false,
     sub: false,
     sup: false,
-    heading: false,
+    textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }],
     orderedList: false,
     unorderedList: false,
     nonBreakingSpace: false,
@@ -914,7 +914,14 @@ export const ListLevelMax: StoryObj<typeof ListLevelMaxStory> = {
     },
 };
 
-const HeadingLevelsBlock = createTipTapRichTextBlock({ heading: { levels: [2, 3, 4] } });
+const HeadingLevelsBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p" },
+        { name: "heading-2", label: "Heading 2", tag: "h2" },
+        { name: "heading-3", label: "Heading 3", tag: "h3" },
+        { name: "heading-4", label: "Heading 4", tag: "h4" },
+    ],
+});
 
 function HeadingLevelsStory() {
     const [state, setState] = useState<TipTapRichTextBlockState>(HeadingLevelsBlock.defaultValues());
@@ -1072,9 +1079,15 @@ export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
     },
 };
 
+const headingOnlyTextBlocks: TipTapTextBlock[] = [
+    { name: "heading-2", label: "Heading 2", tag: "h2" },
+    { name: "heading-3", label: "Heading 3", tag: "h3" },
+    { name: "heading-4", label: "Heading 4", tag: "h4" },
+];
+
 const HeadingOnlyBlock = createTipTapRichTextBlock({
-    paragraph: false,
-    heading: { levels: [2, 3, 4], defaultLevel: 3 },
+    textBlocks: headingOnlyTextBlocks,
+    defaultTextBlock: "heading-3",
     nonBreakingSpace: false,
     softHyphen: false,
 });
@@ -1152,8 +1165,8 @@ export const HeadingOnly: StoryObj<typeof HeadingOnlyStory> = {
 };
 
 const HeadingOnlyWithTextBlockStylesBlock = createTipTapRichTextBlock({
-    paragraph: false,
-    heading: { levels: [2, 3, 4], defaultLevel: 3 },
+    textBlocks: headingOnlyTextBlocks,
+    defaultTextBlock: "heading-3",
     textBlockStyles: [
         {
             name: "headline550",

@@ -177,9 +177,9 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
     describe("textBlockMap", () => {
         const block = createTipTapRichTextBlock(
             {
-                textBlockStyles: [
-                    { name: "headline450", appliesTo: ["heading-2"] },
-                    { name: "paragraph200", appliesTo: ["paragraph"] },
+                textBlocks: [
+                    { name: "paragraph", tag: "p", styles: [{ name: "paragraph200" }] },
+                    { name: "heading-2", tag: "h2", styles: [{ name: "headline450" }] },
                 ],
                 migrateFromDraftJs: {
                     textBlockMap: {

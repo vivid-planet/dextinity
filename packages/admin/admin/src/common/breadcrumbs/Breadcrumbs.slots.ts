@@ -228,13 +228,11 @@ export const ToolbarContainer = createComponentSlot("div")<BreadcrumbsClassKey>(
         flex: 1;
         min-width: 0;
         align-items: center;
-        justify-content: space-between;
         overflow: hidden;
         height: 40px;
         padding: 0;
 
         ${theme.breakpoints.up("sm")} {
-            justify-content: flex-start;
             height: 50px;
         }
     `,

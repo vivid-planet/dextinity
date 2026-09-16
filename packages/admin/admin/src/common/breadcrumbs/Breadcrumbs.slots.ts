@@ -273,9 +273,8 @@ export const ExpandedMenuActiveItemWrapper = createComponentSlot("div")<Breadcru
         display: flex;
         align-items: center;
         gap: 5px;
-        height: 45px;
-        padding-left: ${wrapperPaddingLeft(theme, ownerState.indentation)};
-        padding-right: ${theme.spacing(3)};
+        min-height: 45px;
+        padding: ${theme.spacing(1)} ${theme.spacing(3)} ${theme.spacing(1)} ${wrapperPaddingLeft(theme, ownerState.indentation)};
         background-color: ${alpha(theme.palette.primary.main, 0.1)};
     `,
 );
@@ -288,9 +287,8 @@ export const ExpandedMenuSubitemWrapper = createComponentSlot("div")<Breadcrumbs
         display: flex;
         align-items: center;
         gap: 5px;
-        height: 45px;
-        padding-left: ${wrapperPaddingLeft(theme, ownerState.indentation)};
-        padding-right: ${theme.spacing(3)};
+        min-height: 45px;
+        padding: ${theme.spacing(1)} ${theme.spacing(3)} ${theme.spacing(1)} ${wrapperPaddingLeft(theme, ownerState.indentation)};
     `,
 );
 

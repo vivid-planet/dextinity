@@ -623,7 +623,8 @@ export const TipTapEditor = ({
 }: TipTapEditorProps) => {
     const childBlocksByKey: Record<string, BlockInterface> = Object.fromEntries(Object.entries(childBlocks).map(([key, { block }]) => [key, block]));
 
-    // Content the editor emitted that hasn't come back through state yet.
+    // Content the editor emitted that hasn't come back through state yet. Matched by identity, not by
+    // value: content set from outside can be equal to one of these and still has to be applied.
     const contentEmittedByEditor = useRef<JSONContent[]>([]);
 
     const extensions = buildTipTapExtensions({
@@ -683,11 +684,13 @@ export const TipTapEditor = ({
 
         // React can render a keystroke's state after later keystrokes already reached the editor, so
         // applying anything the editor emitted itself would undo those later keystrokes.
-        const emittedIndex = contentEmittedByEditor.current.findIndex((content) => isEqual(content, state.tipTapContent));
+        const emittedIndex = contentEmittedByEditor.current.indexOf(state.tipTapContent);
         if (emittedIndex >= 0) {
             contentEmittedByEditor.current.splice(0, emittedIndex + 1);
             return;
         }
+
+        contentEmittedByEditor.current.length = 0;
 
         if (isEqual(state.tipTapContent, editor.getJSON())) {
             return;

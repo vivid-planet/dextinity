@@ -8,7 +8,11 @@ import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "../cre
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
-        <Box component="pre" sx={{ mt: 2, p: 2, backgroundColor: "#f5f5f5", fontSize: 12, overflow: "auto", borderRadius: 1 }}>
+        <Box
+            component="pre"
+            data-testid="state-preview"
+            sx={{ mt: 2, p: 2, backgroundColor: "#f5f5f5", fontSize: 12, overflow: "auto", borderRadius: 1 }}
+        >
             {JSON.stringify(state, null, 2)}
         </Box>
     );
@@ -1326,12 +1330,15 @@ export const LaggingState: StoryObj<typeof LaggingStateStory> = {
             await userEvent.click(editor);
             await userEvent.keyboard("Text written by the user");
 
+            // The editor shows the text as it is typed, so only the state catching up tells us that
+            // the delayed updates have landed — and that none of them reset the editor on arrival.
             await waitFor(
                 () => {
-                    expect(editor).toHaveTextContent("Text written by the user");
+                    expect(canvas.getByTestId("state-preview")).toHaveTextContent("Text written by the user");
                 },
                 { timeout: 3000 },
             );
+            expect(editor).toHaveTextContent("Text written by the user");
         });
     },
 };

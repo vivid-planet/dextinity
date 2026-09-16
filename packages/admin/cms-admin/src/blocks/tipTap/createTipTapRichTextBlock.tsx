@@ -25,6 +25,7 @@ import { ChildBlocksContext } from "./ChildBlocksContext";
 import { translateTipTapContent } from "./contentTranslation";
 import { CmsBlock, CmsInlineBlock } from "./extensions/CmsBlock";
 import { CmsLink } from "./extensions/CmsLink";
+import { createDefaultTextBlockStyle } from "./extensions/DefaultTextBlockStyle";
 import { InlineStyleMark } from "./extensions/InlineStyleMark";
 import { NonBreakingSpace } from "./extensions/NonBreakingSpace";
 import { Placeholder } from "./extensions/Placeholder";
@@ -299,10 +300,14 @@ function getPlainTextFromContent(content: JSONContent): string {
     return text;
 }
 
-const buildEmptyContent = ({ defaultTextBlock }: TipTapResolvedOptions): JSONContent => ({
-    type: "doc",
-    content: [{ type: "textBlock", attrs: { textBlock: defaultTextBlock.name } }],
-});
+const buildEmptyContent = ({ defaultTextBlock }: TipTapResolvedOptions): JSONContent => {
+    const attrs: JSONContent["attrs"] = { textBlock: defaultTextBlock.name };
+    if (defaultTextBlock.defaultStyle !== null) {
+        attrs.textBlockStyle = defaultTextBlock.defaultStyle;
+    }
+
+    return { type: "doc", content: [{ type: "textBlock", attrs }] };
+};
 
 const isCmsBlockNode = (content: JSONContent): boolean => content.type === "cmsBlock" || content.type === "cmsInlineBlock";
 
@@ -502,6 +507,7 @@ function buildTipTapExtensions({
         }),
         createTextBlock({ ...resolvedOptions, hasTextBlockStyles, styled }),
         ...(hasParagraph ? [TextBlockListItem] : []),
+        ...(styledNodes.some((styledNode) => styledNode.defaultStyle !== null) ? [createDefaultTextBlockStyle(resolvedOptions)] : []),
         ...(hasInlineStyles ? [InlineStyleMark] : []),
         ...(resolvedOptions.sup ? [Superscript] : []),
         ...(resolvedOptions.sub ? [Subscript] : []),

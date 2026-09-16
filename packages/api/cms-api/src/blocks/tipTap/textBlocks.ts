@@ -21,9 +21,17 @@ export interface TipTapTextBlockStyle {
  * exclude each other, and leaving both out renders the plain tag.
  */
 export type TipTapStyling<Style extends TipTapTextBlockStyle, Element> =
-    | { styles: Style[]; element?: never }
-    | { element: Element; styles?: never }
-    | { styles?: never; element?: never };
+    | {
+          styles: Style[];
+          /**
+           * Style applied to a newly created or converted text block. Must be one of `styles`,
+           * otherwise an error is thrown. Without it the text block starts out without a style.
+           */
+          defaultStyle?: string;
+          element?: never;
+      }
+    | { element: Element; styles?: never; defaultStyle?: never }
+    | { styles?: never; element?: never; defaultStyle?: never };
 
 export interface TipTapTextBlockBase {
     /**
@@ -41,21 +49,24 @@ export interface TipTapTextBlockBase {
 // block has one instead of a style choice, to keep both configurations the same shape.
 export type TipTapTextBlock = TipTapTextBlockBase & TipTapStyling<TipTapTextBlockStyle, true>;
 
-export interface TipTapResolvedTextBlock extends TipTapTextBlockBase {
+export interface TipTapResolvedStyledNode {
+    name: string;
+    styles: TipTapTextBlockStyle[];
+    defaultStyle: string | null;
+}
+
+export interface TipTapResolvedTextBlock extends TipTapTextBlockBase, TipTapResolvedStyledNode {
     /**
      * Heading level of the text block's tag, `undefined` for a paragraph.
      */
     level?: HeadingLevel;
-    styles: TipTapTextBlockStyle[];
 }
 
-export interface TipTapResolvedList {
-    name: string;
+export interface TipTapResolvedList extends TipTapResolvedStyledNode {
     tag: TipTapListTag;
-    styles: TipTapTextBlockStyle[];
 }
 
-export type TipTapListOptions = { styles: TipTapTextBlockStyle[] };
+export type TipTapListOptions = { styles: TipTapTextBlockStyle[]; defaultStyle?: string };
 
 export const orderedListName = "ordered-list";
 export const unorderedListName = "unordered-list";
@@ -78,21 +89,34 @@ export const defaultTextBlocks: TipTapTextBlock[] = [
  * Checks that the styled node offers no style twice, since a style's name identifies it in the
  * content.
  */
-function resolveStyles<Style extends TipTapTextBlockStyle>({ name, styles = [] }: { name: string; styles?: Style[] }): Style[] {
+function resolveStyles<Style extends TipTapTextBlockStyle>({
+    name,
+    styles = [],
+    defaultStyle,
+}: {
+    name: string;
+    styles?: Style[];
+    defaultStyle?: string;
+}): { styles: Style[]; defaultStyle: string | null } {
     const styleNames = styles.map((style) => style.name);
     const duplicate = styleNames.find((styleName, index) => styleNames.indexOf(styleName) !== index);
     if (duplicate !== undefined) {
         throw new Error(`"${name}" offers the text block style "${duplicate}" twice`);
     }
-    return styles;
+
+    if (defaultStyle !== undefined && !styleNames.includes(defaultStyle)) {
+        throw new Error(`"${name}" has the defaultStyle "${defaultStyle}", which is not one of its styles`);
+    }
+
+    return { styles, defaultStyle: defaultStyle ?? null };
 }
 
 /**
  * Applies the defaults to the configured text blocks and validates them against each other.
  */
-export function resolveTextBlocks<T extends TipTapTextBlockBase & { styles?: TipTapTextBlockStyle[] }>(
+export function resolveTextBlocks<T extends TipTapTextBlockBase & { styles?: TipTapTextBlockStyle[]; defaultStyle?: string }>(
     textBlocks: T[],
-): Array<T & { level?: HeadingLevel; styles: NonNullable<T["styles"]> }> {
+): Array<T & { level?: HeadingLevel; styles: NonNullable<T["styles"]>; defaultStyle: string | null }> {
     if (textBlocks.length === 0) {
         throw new Error("textBlocks must not be empty, otherwise no text block type is left");
     }
@@ -112,7 +136,7 @@ export function resolveTextBlocks<T extends TipTapTextBlockBase & { styles?: Tip
     return textBlocks.map((textBlock) => ({
         ...textBlock,
         level: headingLevelByTag[textBlock.tag],
-        styles: resolveStyles(textBlock) as NonNullable<T["styles"]>,
+        ...(resolveStyles(textBlock) as { styles: NonNullable<T["styles"]>; defaultStyle: string | null }),
     }));
 }
 
@@ -125,14 +149,15 @@ export function resolveList<Style extends TipTapTextBlockStyle>({
     name,
     tag,
 }: {
-    list: boolean | { styles: Style[] } | undefined;
+    list: boolean | { styles: Style[]; defaultStyle?: string } | undefined;
     name: string;
     tag: TipTapListTag;
-}): { name: string; tag: TipTapListTag; styles: Style[] } | false {
+}): { name: string; tag: TipTapListTag; styles: Style[]; defaultStyle: string | null } | false {
     if (!list) {
         return false;
     }
-    return { name, tag, styles: resolveStyles({ name, styles: list === true ? undefined : list.styles }) };
+    const listOptions = list === true ? {} : list;
+    return { name, tag, ...resolveStyles({ name, ...listOptions }) };
 }
 
 /**

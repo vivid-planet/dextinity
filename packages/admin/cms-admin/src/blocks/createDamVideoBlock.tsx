@@ -72,11 +72,11 @@ export const createDamVideoBlock = (
 
         category: BlockCategory.Media,
 
-        input2State: (input) => ({ ...input, previewImage: PixelImageBlock.input2State(input.previewImage) }),
+        input2State: (input) => ({ ...input, previewImage: PixelImageBlock.input2State(input.previewImage ?? {}) }),
 
         state2Output: (state) => ({
             damFileId: state.damFile?.id,
-            previewImage: PixelImageBlock.state2Output(state.previewImage),
+            previewImage: PixelImageBlock.state2Output(state.previewImage ?? {}),
             autoplay: state.autoplay,
             loop: state.loop,
             showControls: state.showControls,
@@ -88,7 +88,7 @@ export const createDamVideoBlock = (
                     autoplay: output.autoplay,
                     loop: output.loop,
                     showControls: output.showControls,
-                    previewImage: await PixelImageBlock.output2State(output.previewImage, context),
+                    previewImage: await PixelImageBlock.output2State(output.previewImage ?? {}, context),
                 };
             }
 
@@ -120,7 +120,7 @@ export const createDamVideoBlock = (
                 autoplay: output.autoplay,
                 loop: output.loop,
                 showControls: output.showControls,
-                previewImage: await PixelImageBlock.output2State(output.previewImage, context),
+                previewImage: await PixelImageBlock.output2State(output.previewImage ?? {}, context),
             };
         },
 
@@ -128,7 +128,7 @@ export const createDamVideoBlock = (
             ...state,
             autoplay: false,
             loop: false,
-            previewImage: PixelImageBlock.createPreviewState(state.previewImage, previewContext),
+            previewImage: PixelImageBlock.createPreviewState(state.previewImage ?? {}, previewContext),
             adminMeta: { route: previewContext.parentUrl },
         }),
 
@@ -145,7 +145,7 @@ export const createDamVideoBlock = (
                 });
             }
 
-            dependencies.push(...(PixelImageBlock.dependencies?.(state.previewImage) ?? []));
+            dependencies.push(...(PixelImageBlock.dependencies?.(state.previewImage ?? {}) ?? []));
 
             return dependencies;
         },
@@ -158,7 +158,7 @@ export const createDamVideoBlock = (
                 clonedOutput.damFileId = replacement.replaceWithId;
             }
 
-            clonedOutput.previewImage = PixelImageBlock.replaceDependenciesInOutput(output.previewImage, replacements);
+            clonedOutput.previewImage = PixelImageBlock.replaceDependenciesInOutput(output.previewImage ?? {}, replacements);
 
             return clonedOutput;
         },

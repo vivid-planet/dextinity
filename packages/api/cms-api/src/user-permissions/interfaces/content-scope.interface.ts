@@ -1,15 +1,23 @@
+/**
+ * Declares the dimensions of the application's content scope, for instance `domain` and `language`.
+ * An application augments this interface, every other type derives from it.
+ */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface ContentScope {}
+export interface ContentScopeDimensions {}
 
 type InvalidContentScopeDimension = "A content scope dimension must be a string, a number, null or undefined";
 
 /**
- * The scope of a single module, which uses the dimensions of the application's `ContentScope` or a subset of them.
- * A dimension of an unsupported type resolves to `InvalidContentScopeDimension`, so the application's scope class no
- * longer fits the module it is passed to.
+ * A dimension of an unsupported type resolves to `InvalidContentScopeDimension`, so a scope carrying it no longer fits
+ * where a content scope is expected.
  */
-export type ModuleContentScope = {
-    [Dimension in keyof ContentScope]?: ContentScope[Dimension] extends string | number | null | undefined
-        ? ContentScope[Dimension]
+export type ContentScope = {
+    [Dimension in keyof ContentScopeDimensions]: ContentScopeDimensions[Dimension] extends string | number | null | undefined
+        ? ContentScopeDimensions[Dimension]
         : InvalidContentScopeDimension;
 };
+
+/**
+ * The scope of a single module, which uses the dimensions of the content scope or a subset of them.
+ */
+export type ModuleContentScope = Partial<ContentScope>;

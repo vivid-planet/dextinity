@@ -293,7 +293,7 @@ export { SCOPED_ENTITY_METADATA_KEY, ScopedEntity, ScopedEntityMeta } from "./us
 export { CurrentUser } from "./user-permissions/dto/current-user";
 export { CurrentUserPermission } from "./user-permissions/dto/current-user";
 export { FindUsersArgs } from "./user-permissions/dto/paginated-user-list";
-export { ContentScope, type ModuleContentScope } from "./user-permissions/interfaces/content-scope.interface";
+export { type ContentScope, type ContentScopeDimensions, type ModuleContentScope } from "./user-permissions/interfaces/content-scope.interface";
 export { User } from "./user-permissions/interfaces/user";
 export { UserPermissionsModule } from "./user-permissions/user-permissions.module";
 export { UserPermissionsPublicService as UserPermissionsService } from "./user-permissions/user-permissions.public.service";

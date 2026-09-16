@@ -5,7 +5,6 @@ import { type ReactNode, useContext } from "react";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 import { MasterLayoutContext } from "../../mui/MasterLayoutContext";
-import { FillSpace } from "../FillSpace";
 import { ToolbarBreadcrumbs } from "./ToolbarBreadcrumbs";
 
 export type ToolbarClassKey = "root" | "topBar" | "bottomBar" | "mainContentContainer" | "breadcrumbs" | "scopeIndicator" | "topBarActions";
@@ -131,7 +130,10 @@ const Breadcrumbs = createComponentSlot(ToolbarBreadcrumbs)<ToolbarClassKey>({
     componentName: "Toolbar",
     slotName: "breadcrumbs",
 })(css`
-    // Allows the breadcrumbs to shrink below their content width, so that they collapse their items instead of overflowing the top bar.
+    // The breadcrumbs measure the space they have to decide how many items to collapse. A content-based width would make
+    // that measurement depend on the result it produces: once collapsed, the breadcrumbs would be narrow enough to stay
+    // collapsed forever. Growing from a zero basis keeps the available width independent of the items currently rendered.
+    flex: 1;
     min-width: 0;
 `);
 
@@ -158,7 +160,6 @@ export const Toolbar = (inProps: ToolbarProps) => {
                         startAdornment={Boolean(scopeIndicator) && <ScopeIndicator {...slotProps?.scopeIndicator}>{scopeIndicator}</ScopeIndicator>}
                         {...slotProps?.breadcrumbs}
                     />
-                    <FillSpace />
                     {Boolean(topBarActions) && <TopBarActions {...slotProps?.topBarActions}>{topBarActions}</TopBarActions>}
                 </TopBar>
             )}

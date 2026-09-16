@@ -1,5 +1,5 @@
 ---
-description: Language-agnostic naming, control-flow, and comment rules
+description: Language-agnostic naming and control-flow rules
 applyTo: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx,**/*.mjs,**/*.cjs"
 paths:
     - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
@@ -25,6 +25,4 @@ alwaysApply: false
 
 ## Comments
 
-- Default to writing no comments. Only add a comment when the _why_ is non-obvious (hidden constraint, workaround, surprising invariant).
-- Never write comments that restate _what_ the code does — the names should do that.
-- Never reference the current task, ticket, or PR in comments — that context belongs in the PR description and rots in code.
+See the Comments section in AGENTS.md — it applies to all code, not just the file types this rule matches.

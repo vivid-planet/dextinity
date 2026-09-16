@@ -25,6 +25,12 @@ When running in the cloud/web environment and repo is cloned from scratch, if re
 
 When making changes to demo api, either start the api and verify it's running or at least run `pnpm run console --help` to verify AppModule is configured correctly and schema.gql/block-meta.json regenerates.
 
+## Comments
+
+- Default to writing no comments. Only add a comment when the _why_ is non-obvious (hidden constraint, workaround, surprising invariant).
+- Never write comments that restate _what_ the code does — the names should do that.
+- Never reference the current task, ticket, or PR in comments — that context belongs in the PR description and rots in code.
+
 ## Linting
 
 Run the appropriate checks after every change and fix all reported errors.

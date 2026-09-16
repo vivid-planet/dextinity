@@ -51,8 +51,8 @@ Most features of the Draft.js `RichTextBlock` have a direct equivalent in the Ti
 | `createRichTextBlock`                           | `createTipTapRichTextBlock`                                                                  |
 | `rte.supports` (`SupportedThings[]`)            | one option per feature ([Features](#features))                                               |
 | `bold`, `italic`, `strikethrough`, `sub`, `sup` | `bold`, `italic`, `strike`, `sub`, `sup`                                                     |
-| `header-one` … `header-six`                     | `heading` + the [text-block-type select](#text-block-type-and-styling-selects) (Heading 1–6) |
-| `rte.standardBlockType`                         | [`heading: { defaultLevel }`](#heading-only-blocks)                                          |
+| `header-one` … `header-six`                     | [`textBlocks`](#text-blocks) + the text block type select (Heading 1–6)                      |
+| `rte.standardBlockType`                         | [`defaultTextBlock`](#text-blocks)                                                           |
 | `ordered-list`, `unordered-list`                | `orderedList`, `unorderedList`                                                               |
 | `history`                                       | `undoRedoButtons` (Admin only)                                                               |
 | `link`, `links-remove`                          | `link` (pass the link block)                                                                 |
@@ -165,15 +165,13 @@ Every editor feature has its own option in the root options object, similar to [
 | `strike`           | `true`  | API + Admin  |
 | `sub`              | `true`  | API + Admin  |
 | `sup`              | `true`  | API + Admin  |
-| `paragraph`        | `true`  | API + Admin  |
-| `heading`          | `true`  | API + Admin  |
 | `orderedList`      | `true`  | API + Admin  |
 | `unorderedList`    | `true`  | API + Admin  |
 | `nonBreakingSpace` | `true`  | API + Admin  |
 | `softHyphen`       | `true`  | API + Admin  |
 | `undoRedoButtons`  | `true`  | Admin only   |
 
-`heading` can be configured further by passing an options object instead of `true`, which limits the allowed `levels` and sets the `defaultLevel` of new headings. Turning `paragraph` off results in a [heading-only block](#heading-only-blocks).
+The text block types the content may consist of are configured separately, through [`textBlocks`](#text-blocks).
 
 Links are the exception to the boolean options: `link` takes the link block that is used for links, and passing it enables the feature. Links are disabled by default.
 
@@ -183,8 +181,6 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
     strike: false,
     // Turn a feature on that is disabled by default
     underline: true,
-    // Configure a feature
-    heading: { levels: [2, 3] },
     // Enable links by passing the link block
     link: LinkBlock,
 });
@@ -234,7 +230,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
     // highlight-start
     migrateFromDraftJs: {
         // Map the Draft.js `blocktypeMap` entry to a TipTap `textBlockStyle`.
-        textBlockStyleMap: { "paragraph-small": "paragraph200" },
+        textBlockMap: { "paragraph-small": "paragraph200" },
         // Map a Draft.js `customInlineStyles` name to a TipTap `inlineStyle`.
         inlineStyleMap: { HIGHLIGHT: "highlight" },
     },
@@ -242,21 +238,21 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
 });
 ```
 
-A mapped block type keeps its text block type: `header-two` still becomes a heading with level 2, only with the mapped `textBlockStyle` applied. If the Draft.js block type doesn't carry that information — a custom block type such as `headline450` that was rendered as `<h2>` — pass a `{ textBlockType, textBlockStyle }` object to set the text block type explicitly, so the semantic tag isn't lost:
+A mapped block type keeps its text block: `header-two` still becomes the text block with the `h2` tag, only with the mapped `textBlockStyle` applied. If the Draft.js block type doesn't carry that information — a custom block type such as `headline450` that was rendered as `<h2>` — pass a `{ textBlock, textBlockStyle }` object to name the text block explicitly, so the semantic tag isn't lost:
 
 ```ts title="tip-tap-rich-text.block.ts"
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
     textBlockStyles: [{ name: "headline450", appliesTo: ["heading-2"] }],
     migrateFromDraftJs: {
         // highlight-next-line
-        textBlockStyleMap: {
-            headline450: { textBlockType: "heading-2", textBlockStyle: "headline450" },
+        textBlockMap: {
+            headline450: { textBlock: "heading-2", textBlockStyle: "headline450" },
         },
     },
 });
 ```
 
-`textBlockType` accepts `paragraph` and `heading-1` … `heading-6`. Both parts are optional: pass only `textBlockType` to change the tag without applying a style, or only `textBlockStyle` (equivalent to the plain string form) to keep the text block type derived from the Draft.js block type.
+`textBlock` accepts the `name` of any configured [text block](#text-blocks). Both parts are optional: pass only `textBlock` to change the text block without applying a style, or only `textBlockStyle` (equivalent to the plain string form) to keep the text block derived from the Draft.js block type.
 
 #### Migration versioning
 
@@ -289,7 +285,7 @@ Beyond replacing the old block, the TipTap Rich Text Block adds capabilities the
 
 The editor toolbar offers two dropdowns to structure and style text blocks:
 
-1. **Text block type** — the semantic type of the current block: _Default_ (paragraph) or _Heading 1_ … _Heading 6_. Shown when the `heading` feature is enabled.
+1. **Text block type** — which of the configured [text blocks](#text-blocks) the current block is. Shown when more than one is configured.
 2. **Styling** — a named style applied to the current text block (`textBlockStyles`). This decouples semantics ("this is a paragraph") from appearance ("small paragraph"), so editors pick a type _and_ a style independently.
 
 There is a matching **inline style** dropdown for `inlineStyles`, which applies named styles to a text selection.
@@ -368,36 +364,98 @@ const nodeMapping: Record<string, TipTapNodeHandler> = {
 };
 ```
 
-### Heading-only blocks
+### Text blocks
 
-Turning the `paragraph` feature off leaves a block that only holds headings — the TipTap equivalent of the Draft.js pattern of a `RichTextBlock` restricted to `header-*` block types with a `standardBlockType`, for instance the headline part of a heading block:
+`textBlocks` configures the text block types the content may consist of, in the order the editor's text block type select offers them. Each entry has a `name` that identifies it, a `tag` it is stored and rendered as (`p`, or `h1`–`h6`), and — in the Admin — a `label` for the select. It defaults to a paragraph plus a heading for every level.
+
+```ts title="tip-tap-rich-text.block.ts (API)"
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "paragraph", tag: "p" },
+        { name: "display", tag: "h1" },
+        { name: "heading-1", tag: "h1" },
+        { name: "heading-2", tag: "h2" },
+    ],
+    defaultTextBlock: "paragraph",
+});
+```
+
+```tsx title="TipTapRichTextBlock.tsx (Admin)"
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "paragraph", tag: "p", label: <FormattedMessage id="tipTapRichText.paragraph" defaultMessage="Paragraph" /> },
+        { name: "display", tag: "h1", label: <FormattedMessage id="tipTapRichText.display" defaultMessage="Display" /> },
+        { name: "heading-1", tag: "h1", label: <FormattedMessage id="tipTapRichText.heading1" defaultMessage="Heading 1" /> },
+        { name: "heading-2", tag: "h2", label: <FormattedMessage id="tipTapRichText.heading2" defaultMessage="Heading 2" /> },
+    ],
+    defaultTextBlock: "paragraph",
+});
+```
+
+Several text blocks may share a `tag`, as `display` and `heading-1` do above: both are stored as an `h1`, and the node's `textBlock` attribute names which one it is. That covers a design where a display headline sits above a regular heading 1 without being a style of it. On the site, read `node.attrs.textBlock` to tell them apart:
+
+```tsx title="TipTapRichTextBlock.tsx (Site)"
+const nodeMapping: Record<string, TipTapNodeHandler> = {
+    heading: ({ node, children }) => <Headline variant={node.attrs?.textBlock}>{children}</Headline>,
+};
+```
+
+`defaultTextBlock` names the text block new content starts with, so the select's order can be chosen independently of it. It defaults to the first entry.
+
+The `textBlocks` and `defaultTextBlock` options must match between the API and the Admin, otherwise the API rejects content the editor produces.
+
+#### Heading-only blocks
+
+Leaving the `p` text block out results in a block that only holds headings — the TipTap equivalent of the Draft.js pattern of a `RichTextBlock` restricted to `header-*` block types with a `standardBlockType`, for instance the headline part of a heading block:
 
 ```ts title="tip-tap-headline.block.ts (API)"
 export const TipTapHeadlineBlock = createTipTapRichTextBlock(
     {
-        paragraph: false,
-        heading: { levels: [2, 3, 4], defaultLevel: 3 },
+        textBlocks: [
+            { name: "heading-2", tag: "h2" },
+            { name: "heading-3", tag: "h3" },
+            { name: "heading-4", tag: "h4" },
+        ],
+        defaultTextBlock: "heading-3",
         maxTextBlocks: 1,
     },
     { name: "TipTapHeadline" },
 );
 ```
 
-```tsx title="TipTapHeadlineBlock.tsx (Admin)"
-export const TipTapHeadlineBlock = createTipTapRichTextBlock({
-    paragraph: false,
-    heading: { levels: [2, 3, 4], defaultLevel: 3 },
-    maxTextBlocks: 1,
-});
-```
+The editor starts with an H3, the text block type select only offers the configured headings, and `Mod-Alt-2/3/4` switch between them (levels no text block uses have no shortcut).
 
-The editor starts with an H3, the text block type select only offers _Heading 2_ – _Heading 4_, and `Mod-Alt-2/3/4` switch between them (levels outside `levels` have no shortcut). `defaultLevel` also applies to a block that keeps its paragraphs: it is the level a new heading gets, and defaults to the lowest allowed level.
-
-Lists are disabled in a heading-only block, because a list item's content starts with a paragraph. Enabling one explicitly (`orderedList: true`) throws, as does turning off `paragraph` and `heading` together — that would leave no text block type at all.
+Lists are disabled without a `p` text block, because a list item's content starts with a paragraph. Enabling one explicitly (`orderedList: true`) throws, as does an empty `textBlocks` array — that would leave no text block type at all.
 
 :::caution Existing content
 
-The API rejects content that the configuration doesn't allow: a heading level outside the allowed `levels`, or a paragraph in a block without the `paragraph` feature. Narrowing these options for a block that already holds content therefore requires a [migration](./5-migrations.mdx). For content coming from the Draft.js block, the built-in [`migrateFromDraftJs`](#migrating-existing-content) migration already converts Draft.js blocks without a heading level into a heading with `defaultLevel`.
+The API rejects content the configuration doesn't allow: a tag no text block uses, or a `textBlock` attribute that names a text block not configured for the tag the node is stored as. Narrowing `textBlocks` for a block that already holds content therefore requires a [migration](./5-migrations.mdx).
+
+A node written before the `textBlock` attribute existed doesn't carry a name and is resolved by its tag, so content from before this option keeps working without a migration. Only when several text blocks share a tag does the assignment become ambiguous — the first one with a matching tag wins. `buildApplyTextBlocksMigration` writes the resolved name into the content once, so the assignment stops depending on the configuration's order:
+
+```ts title="tip-tap-rich-text.block.ts"
+import { buildApplyTextBlocksMigration, createTipTapRichTextBlock, type TipTapTextBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
+
+const textBlocks: TipTapTextBlock[] = [
+    { name: "paragraph", tag: "p" },
+    { name: "display", tag: "h1" },
+    { name: "heading-1", tag: "h1" },
+];
+
+export const TipTapRichTextBlock = createTipTapRichTextBlock(
+    { textBlocks },
+    {
+        name: "TipTapRichText",
+        migrate: {
+            version: 2,
+            // highlight-next-line
+            migrations: typeSafeBlockMigrationPipe([buildApplyTextBlocksMigration({ toVersion: 2, textBlocks })]),
+        },
+    },
+);
+```
+
+Place it after any migration that changes a node's tag (for instance one that bumps heading levels), since it resolves the tag a node has at the point it runs.
 
 :::
 

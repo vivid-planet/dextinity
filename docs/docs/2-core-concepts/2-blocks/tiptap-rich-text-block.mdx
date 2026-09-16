@@ -351,6 +351,29 @@ A style's `element` receives the `tag` of the text block it is applied to, so on
 
 An inline style's `appliesTo` limits it to the named text blocks, plus `"ordered-list"` and `"unordered-list"` for a list item's content.
 
+#### Default styles
+
+A text block (or list) with a `defaultStyle` has no "no style" state: the styling select drops its _Default_ entry, and every text block of that type carries one of the styles. Text blocks without a `defaultStyle` keep the _Default_ entry, so both can sit side by side:
+
+```ts title="tip-tap-rich-text.block.ts (API)"
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "heading-1", tag: "h1", styles: headlineStyles, defaultStyle: "headline300" },
+        { name: "heading-2", tag: "h2", styles: headlineStyles },
+    ],
+});
+```
+
+The style is applied to new content, to a text block the editor converts through the type select, and to any text block the editor creates without one — pressing Enter at the end of a text block, using the `Mod-Alt-<level>` shortcuts, or pasting. Switching the type keeps a style the new text block also offers and falls back to its `defaultStyle` otherwise.
+
+`defaultStyle` must be one of the text block's `styles`, otherwise an error is thrown. It only exists next to `styles`, not next to a text block's own `element`.
+
+:::caution Existing content
+
+Content written before a `defaultStyle` was configured carries no style, and the editor fills it in on the first edit rather than when the document is opened, so opening a document does not mark it as changed.
+
+:::
+
 #### Text blocks without a style choice
 
 A text block that needs no style choice carries its own `element` instead of `styles`. The two exclude each other, and a text block with neither is rendered as its plain tag:

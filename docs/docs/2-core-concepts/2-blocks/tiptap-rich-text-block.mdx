@@ -431,14 +431,13 @@ Lists are disabled without a `p` text block, because a list item's content start
 
 The API rejects content the configuration doesn't allow: a tag no text block uses, or a `textBlock` attribute that names a text block not configured for the tag the node is stored as. Narrowing `textBlocks` for a block that already holds content therefore requires a [migration](./5-migrations.mdx).
 
-A node written before the `textBlock` attribute existed doesn't carry a name and is resolved by its tag, so content from before this option keeps working without a migration. Only when several text blocks share a tag does the assignment become ambiguous — the first one with a matching tag wins. `buildApplyTextBlocksMigration` writes the resolved name into the content once, so the assignment stops depending on the configuration's order:
+A node written before the `textBlock` attribute existed doesn't carry a name and is resolved by its tag, so content from before this option keeps working without a migration. That resolution picks the first text block with a matching tag, which only stays stable as long as no second text block uses the same tag: adding a `display` above an existing `heading-1` turns every stored `h1` into a `display`. `buildApplyTextBlocksMigration` writes the resolved name into the content once. Run it with the configuration that is live today, and the existing content keeps the text block it has:
 
 ```ts title="tip-tap-rich-text.block.ts"
 import { buildApplyTextBlocksMigration, createTipTapRichTextBlock, type TipTapTextBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
 
 const textBlocks: TipTapTextBlock[] = [
     { name: "paragraph", tag: "p" },
-    { name: "display", tag: "h1" },
     { name: "heading-1", tag: "h1" },
 ];
 
@@ -455,7 +454,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
 );
 ```
 
-Place it after any migration that changes a node's tag (for instance one that bumps heading levels), since it resolves the tag a node has at the point it runs.
+Once it has run, a `display` text block can be added above `heading-1` without touching the content that is already there. Place it after any migration that changes a node's tag (for instance one that bumps heading levels), since it resolves the tag a node has at the point it runs.
 
 :::
 

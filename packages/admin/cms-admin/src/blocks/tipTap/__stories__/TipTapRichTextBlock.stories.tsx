@@ -1307,6 +1307,8 @@ export const TextBlockElement: StoryObj<typeof TextBlockElementStory> = {
 
 // "Heading 1" has a default style, so its styling select offers no "Default" and always holds one of
 // its styles. "Heading 2" shares the same styles without a default, so it keeps the "Default" entry.
+// The lists carry a default of their own, which takes over while a paragraph sits in one - by the
+// toolbar's list buttons as well as by `Mod-Shift-7`/`Mod-Shift-8`.
 const DefaultTextBlockStyleBlock = createTipTapRichTextBlock({
     undoRedoButtons: false,
     textBlocks: [
@@ -1314,8 +1316,8 @@ const DefaultTextBlockStyleBlock = createTipTapRichTextBlock({
         { name: "heading-1", label: "Heading 1", tag: "h1", styles: [largeHeadingStyle, chapterHeadingStyle], defaultStyle: "large-heading" },
         { name: "heading-2", label: "Heading 2", tag: "h2", styles: [largeHeadingStyle, chapterHeadingStyle] },
     ],
-    orderedList: false,
-    unorderedList: false,
+    orderedList: { styles: [listLargeStyle, listSmallStyle], defaultStyle: "list-large" },
+    unorderedList: { styles: [listLargeStyle, listSmallStyle], defaultStyle: "list-large" },
 });
 
 function DefaultTextBlockStyleStory() {
@@ -1389,6 +1391,44 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
             await waitFor(
                 () => {
                     expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Default");
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("The list shortcut hands the paragraph to the list's default style and back", async () => {
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Paragraph" }));
+
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("List item text");
+
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Intro Text");
+                },
+                { timeout: 3000 },
+            );
+
+            // TipTap binds list shortcuts to Mod-Shift-{7,8}: Meta on Mac, Control elsewhere
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Shift>}8{/Shift}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("ul")).toBeTruthy();
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("List Large");
+                },
+                { timeout: 3000 },
+            );
+
+            await userEvent.keyboard(`{${mod}>}{Shift>}8{/Shift}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("ul")).toBeFalsy();
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Intro Text");
                 },
                 { timeout: 3000 },
             );

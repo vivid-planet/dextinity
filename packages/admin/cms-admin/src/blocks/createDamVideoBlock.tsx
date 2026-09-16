@@ -42,9 +42,9 @@ interface DamVideoBlockFactoryOptions {
      * doesn't use, for instance `["controls"]` for a site that renders no poster image, or `[]` for a site
      * that only reads the file's URL.
      *
-     * Values that are already stored are kept as they are, the editor just can't change them anymore.
-     * Whether an option is part of the block's data at all is decided by the API block, so use the same
-     * `supports` there.
+     * As long as the API block still supports an option, its stored values are kept as they are and the
+     * editor just can't change them anymore. Whether an option is part of the block's data at all is
+     * decided by the API block, so use the same `supports` there.
      * @default ["controls", "previewImage"]
      */
     supports?: DamVideoBlockSupports[];

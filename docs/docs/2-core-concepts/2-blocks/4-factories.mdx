@@ -253,8 +253,18 @@ export const TeaserVideoBlock = createDamVideoBlock({ supports: [] }, "TeaserVid
 ```
 
 Unsupported options are part of neither the block's data nor its input, so they don't show up in `blocks.generated.ts` and aren't stored for new content.
-Values that were stored before an option was left out are kept: the block loads them and saves them again, so narrowing `supports` doesn't remove them from existing content.
+
+Values that were stored before an option was left out survive reading: the block loads them unchanged, and `migrateBlocks` writes them back as they are.
+They don't survive editing, though — saving a block in the Admin rebuilds its data from the input, which no longer carries the unsupported options.
+So narrowing `supports` leaves existing content untouched until an editor saves that block, and drops the values from then on.
 Note that such a value is no longer treated as a child block, so a preview image kept this way isn't part of the block index either.
+
+:::warning
+
+Narrowing `supports` is therefore not reversible for content that is edited in the meantime.
+Widening it again only brings back the values of blocks that nobody saved while the option was left out.
+
+:::
 
 #### Preview image of existing content
 
@@ -293,7 +303,8 @@ export const TeaserVideoBlock = createDamVideoBlock({ name: "TeaserVideo", suppo
 ```
 
 Unsupported options are hidden from the editor.
-Their stored values are kept: the API keeps them even when its own `supports` leaves them out, so widening `supports` in both shows them in the editor again.
+As long as the API block still supports them, their stored values are kept — the Admin passes them through unchanged — so widening `supports` shows them in the editor again.
+Once the API block leaves them out too, they are dropped as described above.
 
 ### Site
 

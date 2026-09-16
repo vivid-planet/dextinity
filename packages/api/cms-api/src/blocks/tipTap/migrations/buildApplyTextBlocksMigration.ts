@@ -34,8 +34,8 @@ function applyTextBlocks(node: JSONContent, textBlocks: ReturnType<typeof resolv
  * text block the node already names, or - for content written before the name was stored, or after a
  * migration changed the node's tag - the first text block with a matching tag.
  *
- * Content without the attribute is resolved by its tag anyway, so this migration is only needed to
- * assign such content to a specific one of several text blocks sharing a tag. Place it after any
+ * Content without the attribute is resolved by its tag anyway, so this migration is only needed
+ * before a second text block starts sharing that tag and takes the content over. Place it after any
  * migration that changes a node's tag (e.g. one that bumps heading levels), since it resolves the
  * tag a node has at the point it runs.
  */

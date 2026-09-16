@@ -22,7 +22,3 @@ alwaysApply: false
 ## Control flow
 
 - **Never use exceptions for control flow.** Exceptions signal _exceptional_ situations; using them for expected branches hides real failures. Check preconditions explicitly (`if (!(await exists(id))) return undefined;`) instead of wrapping a `findOrFail` in try/catch.
-
-## Comments
-
-See the Comments section in AGENTS.md — it applies to all code, not just the file types this rule matches.

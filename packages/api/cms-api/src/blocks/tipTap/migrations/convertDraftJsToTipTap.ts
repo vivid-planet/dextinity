@@ -2,7 +2,7 @@ import type { JSONContent } from "@tiptap/core";
 
 import type { Block } from "../../block";
 import type { TipTapResolvedOptions } from "../createTipTapRichTextBlock";
-import { findTextBlock, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks";
+import { findTextBlock, type TipTapResolvedStyledNode, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks";
 
 interface DraftJsInlineStyleRange {
     style: string;
@@ -279,7 +279,7 @@ function resolveTargetTextBlock({
 
 function makeTextBlockNode(
     inlineContent: JSONContent[],
-    { textBlock, textBlockStyle }: { textBlock: TipTapResolvedTextBlock; textBlockStyle?: string },
+    { styledNode, textBlock, textBlockStyle }: { styledNode?: TipTapResolvedStyledNode; textBlock: TipTapResolvedTextBlock; textBlockStyle?: string },
 ): JSONContent {
     const node: JSONContent = { type: textBlock.level !== undefined ? "heading" : "paragraph" };
 
@@ -287,8 +287,11 @@ function makeTextBlockNode(
     if (textBlock.level !== undefined) {
         attrs.level = textBlock.level;
     }
-    if (textBlockStyle !== undefined) {
-        attrs.textBlockStyle = textBlockStyle;
+    // A list item's paragraph draws its style from the list, not from its own text block.
+    const defaultStyle = (styledNode ?? textBlock).defaultStyle;
+    const style = textBlockStyle ?? defaultStyle ?? undefined;
+    if (style !== undefined) {
+        attrs.textBlockStyle = style;
     }
     node.attrs = attrs;
 
@@ -298,10 +301,10 @@ function makeTextBlockNode(
     return node;
 }
 
-function makeListItem(inlineContent: JSONContent[], resolvedOptions: TipTapResolvedOptions): JSONContent {
+function makeListItem(inlineContent: JSONContent[], resolvedOptions: TipTapResolvedOptions, list: TipTapResolvedStyledNode): JSONContent {
     return {
         type: "listItem",
-        content: [makeTextBlockNode(inlineContent, { textBlock: resolveTargetTextBlock({ resolvedOptions }) })],
+        content: [makeTextBlockNode(inlineContent, { styledNode: list, textBlock: resolveTargetTextBlock({ resolvedOptions }) })],
     };
 }
 
@@ -359,7 +362,7 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
         }
     };
 
-    const addListItem = (listType: ListType, depth: number, inlineContent: JSONContent[]) => {
+    const addListItem = (listType: ListType, depth: number, inlineContent: JSONContent[], list: TipTapResolvedStyledNode) => {
         // A list item may only be indented one level deeper than its predecessor, no matter how
         // large the gap in Draft.js is. `listLevelMax` limits the nesting further.
         let level = Math.min(Math.max(depth, 0), openLists.length);
@@ -377,15 +380,16 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
             openLists.push({ type: listType, items: [] });
         }
 
-        openLists[openLists.length - 1].items.push(makeListItem(inlineContent, resolvedOptions));
+        openLists[openLists.length - 1].items.push(makeListItem(inlineContent, resolvedOptions, list));
     };
 
     for (const block of draftContent.blocks) {
         const inlineContent = buildInlineContent({ block, entityMap, resolvedOptions, hasLink, inlineStyleMap });
 
         const listMapping = LIST_BLOCK_TYPE_TO_LIST[block.type];
-        if (listMapping && resolvedOptions[listMapping.option]) {
-            addListItem(listMapping.listType, block.depth ?? 0, inlineContent);
+        const list = listMapping ? resolvedOptions[listMapping.option] : false;
+        if (listMapping && list) {
+            addListItem(listMapping.listType, block.depth ?? 0, inlineContent, list);
             continue;
         }
 

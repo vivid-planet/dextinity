@@ -1304,3 +1304,94 @@ export const TextBlockElement: StoryObj<typeof TextBlockElementStory> = {
         });
     },
 };
+
+// "Heading 1" has a default style, so its styling select offers no "Default" and always holds one of
+// its styles. "Heading 2" shares the same styles without a default, so it keeps the "Default" entry.
+const DefaultTextBlockStyleBlock = createTipTapRichTextBlock({
+    undoRedoButtons: false,
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p", styles: [introStyle, highlightStyle], defaultStyle: "intro" },
+        { name: "heading-1", label: "Heading 1", tag: "h1", styles: [largeHeadingStyle, chapterHeadingStyle], defaultStyle: "large-heading" },
+        { name: "heading-2", label: "Heading 2", tag: "h2", styles: [largeHeadingStyle, chapterHeadingStyle] },
+    ],
+    orderedList: false,
+    unorderedList: false,
+});
+
+function DefaultTextBlockStyleStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(DefaultTextBlockStyleBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <DefaultTextBlockStyleBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> = {
+    render: () => <DefaultTextBlockStyleStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("New content starts with the default text block's default style", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Intro Text");
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("A text block with a default style offers no Default entry", async () => {
+            await userEvent.click(canvas.getAllByRole("combobox")[1]);
+
+            await waitFor(
+                () => {
+                    expect(within(document.body).getByRole("option", { name: "Intro Text" })).toBeInTheDocument();
+                    expect(within(document.body).queryByRole("option", { name: "Default" })).toBeNull();
+                },
+                { timeout: 3000 },
+            );
+            await userEvent.keyboard("{Escape}");
+        });
+
+        await step("Switching to Heading 1 applies its own default style", async () => {
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 1" }));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Large Heading");
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Heading 2 shares the styles but keeps the Default entry, having no default style", async () => {
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
+
+            // "Large Heading" is offered by both, so switching keeps it instead of resetting.
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Large Heading");
+                },
+                { timeout: 3000 },
+            );
+
+            await userEvent.click(canvas.getAllByRole("combobox")[1]);
+            await waitFor(
+                () => {
+                    expect(within(document.body).getByRole("option", { name: "Default" })).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+            await userEvent.click(within(document.body).getByRole("option", { name: "Default" }));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Default");
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};

@@ -715,6 +715,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "textBlock",
+                            attrs: { textBlock: "paragraph" },
                             content: [
                                 { type: "text", marks: [{ type: "inlineStyle", attrs: { type: "heading-accent" } }], text: "Accent in paragraph" },
                             ],

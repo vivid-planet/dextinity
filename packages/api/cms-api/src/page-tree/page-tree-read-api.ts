@@ -3,9 +3,10 @@ import opentelemetry from "@opentelemetry/api";
 import { compareAsc, compareDesc, isEqual } from "date-fns";
 
 import { SortDirection } from "../common/sorting/sort-direction.enum";
+import type { ScopeInterface } from "../user-permissions/interfaces/scope.interface";
 import { type PageTreeNodeSort, PageTreeNodeSortField } from "./dto/page-tree-node.sort";
 import type { AttachedDocument } from "./entities/attached-document.entity";
-import { type PageTreeNodeCategory, type PageTreeNodeInterface, PageTreeNodeVisibility as Visibility, type ScopeInterface } from "./types";
+import { type PageTreeNodeCategory, type PageTreeNodeInterface, PageTreeNodeVisibility as Visibility } from "./types";
 import pathBuilder from "./utils/path-builder";
 
 const tracer = opentelemetry.trace.getTracer("@dextinity/cms-api");

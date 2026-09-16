@@ -5,7 +5,7 @@ import { SkipBuild } from "../../builds/skip-build.decorator";
 import { PaginatedResponseFactory } from "../../common/pagination/paginated-response.factory";
 import { AffectedEntity } from "../../user-permissions/decorators/affected-entity.decorator";
 import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
-import { DamScopeInterface } from "../types";
+import { ScopeInterface } from "../../user-permissions/interfaces/scope.interface";
 import { EmptyDamScope } from "./dto/empty-dam-scope";
 import { createFolderArgs, createFolderByNameAndParentIdArgs, FolderArgsInterface, FolderByNameAndParentIdArgsInterface } from "./dto/folder.args";
 import { CreateFolderInput, UpdateFolderInput } from "./dto/folder.input";
@@ -17,12 +17,12 @@ export function createFoldersResolver({
     Scope: PassedScope,
 }: {
     Folder: Type<FolderInterface>;
-    Scope?: Type<DamScopeInterface>;
+    Scope?: Type<ScopeInterface>;
 }): Type<unknown> {
     const Scope = PassedScope ?? EmptyDamScope;
     const hasNonEmptyScope = PassedScope != null;
 
-    function nonEmptyScopeOrNothing(scope: DamScopeInterface): DamScopeInterface | undefined {
+    function nonEmptyScopeOrNothing(scope: ScopeInterface): ScopeInterface | undefined {
         // GraphQL sends the scope object with a null prototype ([Object: null prototype] { <key>: <value> }), but MikroORM uses the
         // object's hasOwnProperty method internally, resulting in a "object.hasOwnProperty is not a function" error. To fix this, we
         // create a "real" JavaScript object by using the spread operator.

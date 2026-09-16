@@ -3,6 +3,7 @@ import { DynamicModule, Global, Module, Type, ValueProvider } from "@nestjs/comm
 
 import { validateScopeTypeNames } from "../common/helper/scope-type-names.helper";
 import { FileValidationService } from "../file-utils/file-validation.service";
+import { ScopeInterface } from "../user-permissions/interfaces/scope.interface";
 import { HasValidFilenameConstraint } from "./common/decorators/has-valid-filename.decorator";
 import { damDefaultAcceptedMimetypes } from "./common/mimeTypes/dam-default-accepted-mimetypes";
 import { DamConfig, damDefaultBasePath } from "./dam.config";
@@ -24,11 +25,10 @@ import { createFoldersResolver } from "./files/folders.resolver";
 import { FoldersService } from "./files/folders.service";
 import { ImageCropArea } from "./images/entities/image-crop-area.entity";
 import { DamScopeAccessControlService } from "./scope-access-control.service";
-import { DamScopeInterface } from "./types";
 
 interface DamFilesModuleOptions {
     damConfig: Omit<DamConfig, "basePath"> & { basePath?: string };
-    Scope?: Type<DamScopeInterface>;
+    Scope?: Type<ScopeInterface>;
     Folder: Type<FolderInterface>;
     File: Type<FileInterface>;
     /**

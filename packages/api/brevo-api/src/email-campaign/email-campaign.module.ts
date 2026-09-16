@@ -1,4 +1,4 @@
-import { Block } from "@dextinity/cms-api";
+import { Block, ScopeInterface } from "@dextinity/cms-api";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { DynamicModule, Module, Type } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
@@ -7,14 +7,13 @@ import { TargetGroupInterface } from "src/target-group/entity/target-group-entit
 import { BrevoApiModule } from "../brevo-api/brevo-api.module";
 import { EcgRtrListService } from "../brevo-contact/ecg-rtr-list/ecg-rtr-list.service";
 import { ConfigModule } from "../config/config.module";
-import { EmailCampaignScopeInterface } from "../types";
 import { EmailCampaignInputFactory } from "./dto/email-campaign-input.factory";
 import { createEmailCampaignsResolver } from "./email-campaign.resolver";
 import { EmailCampaignsService } from "./email-campaigns.service";
 import { EmailCampaignInterface } from "./entities/email-campaign-entity.factory";
 
 interface EmailCampaignModuleConfig {
-    Scope: Type<EmailCampaignScopeInterface>;
+    Scope: Type<ScopeInterface>;
     EmailCampaignContentBlock: Block;
     BrevoTargetGroup: Type<TargetGroupInterface>;
     BrevoEmailCampaign: Type<EmailCampaignInterface>;

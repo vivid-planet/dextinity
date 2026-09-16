@@ -4,6 +4,7 @@ import { forwardRef, Inject, Injectable } from "@nestjs/common";
 
 import { DextinityValidationException } from "../common/errors/validation.exception";
 import { RedirectsService } from "../redirects/redirects.service";
+import { ScopeInterface } from "../user-permissions/interfaces/scope.interface";
 import { AttachedDocumentStrictInput } from "./dto/attached-document.input";
 import { MovePageTreeNodesByPosInput, PageTreeNodeBaseCreateInput } from "./dto/page-tree-node.input";
 import { AttachedDocument } from "./entities/attached-document.entity";
@@ -16,7 +17,6 @@ import {
     PageTreeNodeUpdateInputInterface,
     PageTreeNodeVisibility,
     PageTreeNodeVisibility as Visibility,
-    ScopeInterface,
 } from "./types";
 
 export { PageTreeReadApi } from "./page-tree-read-api";

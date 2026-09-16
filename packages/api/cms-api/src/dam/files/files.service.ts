@@ -18,13 +18,13 @@ import { FileUploadInput } from "../../file-utils/file-upload.input";
 import { slugifyFilename } from "../../file-utils/files.utils";
 import { FocalPoint } from "../../file-utils/focal-point.enum";
 import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
+import { ScopeInterface } from "../../user-permissions/interfaces/scope.interface";
 import { DextinityImageResolutionException } from "../common/errors/image-resolution.exception";
 import { getDamFileCategory } from "../common/mimeTypes/dam-file-category";
 import { DamConfig } from "../dam.config";
 import { DAM_CONFIG, DAM_DOMINANT_COLOR_CALCULATOR } from "../dam.constants";
 import { DominantColorCalculatorInterface } from "../dominant-color-calculator.interface";
 import { ImageCropAreaInput } from "../images/dto/image-crop-area.input";
-import { DamScopeInterface } from "../types";
 import { DamMediaAlternative } from "./dam-media-alternatives/entities/dam-media-alternative.entity";
 import { DamFileListPositionArgs, FileArgsInterface } from "./dto/file.args";
 import { UploadFileBodyInterface } from "./dto/file.body";
@@ -54,7 +54,7 @@ const withFilesSelect = (
         sortDirection?: SortDirection;
         offset?: number;
         limit?: number;
-        scope?: DamScopeInterface;
+        scope?: ScopeInterface;
         imageCropArea?: ImageCropAreaInput;
     },
 ): QueryBuilder<FileInterface> => {
@@ -137,7 +137,7 @@ export class FilesService {
 
     async findAll(
         { folderId, includeArchived, filter, sortColumnName, sortDirection }: Omit<FileArgsInterface, "offset" | "limit" | "scope">,
-        scope?: DamScopeInterface,
+        scope?: ScopeInterface,
     ): Promise<FileInterface[]> {
         const isSearching = filter?.searchText !== undefined && filter.searchText.length > 0;
         const isFilteringByIds = filter?.ids !== undefined && filter.ids.length > 0;
@@ -157,7 +157,7 @@ export class FilesService {
 
     async findAndCount(
         { folderId, includeArchived, filter, sortColumnName, sortDirection, offset, limit }: Omit<FileArgsInterface, "scope">,
-        scope?: DamScopeInterface,
+        scope?: ScopeInterface,
     ): Promise<[FileInterface[], number]> {
         const isSearching = filter?.searchText !== undefined && filter.searchText.length > 0;
         const isFilteringByIds = filter?.ids !== undefined && filter.ids.length > 0;
@@ -192,7 +192,7 @@ export class FilesService {
         return [files, totalCount];
     }
 
-    async findAllByHash(contentHash: string, options?: { scope?: DamScopeInterface }): Promise<FileInterface[]> {
+    async findAllByHash(contentHash: string, options?: { scope?: ScopeInterface }): Promise<FileInterface[]> {
         return withFilesSelect(this.selectQueryBuilder(), { contentHash, scope: options?.scope }).getResult();
     }
 
@@ -202,7 +202,7 @@ export class FilesService {
             .getResult();
     }
 
-    async findCopiesOfFileInScope(fileId: string, imageCropArea?: ImageCropAreaInput, scope?: DamScopeInterface) {
+    async findCopiesOfFileInScope(fileId: string, imageCropArea?: ImageCropAreaInput, scope?: ScopeInterface) {
         return withFilesSelect(this.selectQueryBuilder(), { copyOfId: fileId, imageCropArea, scope }).getResult();
     }
 
@@ -231,7 +231,7 @@ export class FilesService {
             filename: string;
             folderId?: string | null;
         },
-        scope?: DamScopeInterface,
+        scope?: ScopeInterface,
     ): Promise<FileInterface | null> {
         return withFilesSelect(this.selectQueryBuilder(), { folderId, filename, scope }).getSingleResult();
     }
@@ -412,7 +412,7 @@ export class FilesService {
 
     async upload(
         file: FileUploadInput,
-        { folderId, scope, ...assignData }: Omit<UploadFileBodyInterface, "scope"> & { scope?: DamScopeInterface },
+        { folderId, scope, ...assignData }: Omit<UploadFileBodyInterface, "scope"> & { scope?: ScopeInterface },
     ): Promise<FileInterface> {
         let result: FileInterface | undefined = undefined;
         try {
@@ -465,7 +465,7 @@ export class FilesService {
         return result;
     }
 
-    async getFilePosition(fileId: string, args: Omit<DamFileListPositionArgs, "scope">, scope?: DamScopeInterface): Promise<number> {
+    async getFilePosition(fileId: string, args: Omit<DamFileListPositionArgs, "scope">, scope?: ScopeInterface): Promise<number> {
         const isSearching = args.filter?.searchText !== undefined && args.filter.searchText.length > 0;
 
         const subQb = withFilesSelect(
@@ -586,7 +586,7 @@ export class FilesService {
     }: {
         filePath: string;
         folderId?: string | null;
-        scope?: DamScopeInterface;
+        scope?: ScopeInterface;
     }): Promise<string> {
         const extension = extname(filePath);
         const filename = basename(filePath, extension);

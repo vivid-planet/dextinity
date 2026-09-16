@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 
 import { BlockContext, BlockTransformerServiceInterface } from "../../blocks/block";
+import { ScopeInterface } from "../../user-permissions/interfaces/scope.interface";
 import { FilesService } from "../files/files.service";
-import { DamScopeInterface } from "../types";
 import { SvgImageBlockData } from "./svg-image.block";
 
 type TransformResponse = {
@@ -15,7 +15,7 @@ type TransformResponse = {
         title?: string;
         altText?: string;
         archived: boolean;
-        scope?: DamScopeInterface;
+        scope?: ScopeInterface;
         fileUrl?: string;
     };
 };

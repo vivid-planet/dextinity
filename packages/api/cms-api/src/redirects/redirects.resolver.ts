@@ -11,6 +11,7 @@ import { validateNotModified } from "../document/validateNotModified";
 import { PageTreeReadApiService } from "../page-tree/page-tree-read-api.service";
 import { AffectedEntity } from "../user-permissions/decorators/affected-entity.decorator";
 import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
+import { ScopeInterface } from "../user-permissions/interfaces/scope.interface";
 import { EmptyRedirectScope } from "./dto/empty-redirect-scope";
 import { PaginatedRedirectsArgsFactory } from "./dto/paginated-redirects-args.factory";
 import { RedirectInputInterface } from "./dto/redirect-input.factory";
@@ -23,7 +24,6 @@ import { RedirectSourceType } from "./redirects.enum";
 import { RedirectsLinkBlock } from "./redirects.module";
 import { RedirectsService } from "./redirects.service";
 import { isEmptyFilter, redirectMatchesFilter } from "./redirects.util";
-import { RedirectScopeInterface } from "./types";
 
 export function createRedirectsResolver({
     Redirect,
@@ -32,13 +32,13 @@ export function createRedirectsResolver({
 }: {
     Redirect: Type<RedirectInterface>;
     RedirectInput: Type<RedirectInputInterface>;
-    Scope?: Type<RedirectScopeInterface>;
+    Scope?: Type<ScopeInterface>;
 }): Type<unknown> {
     const Scope = PassedScope || EmptyRedirectScope;
 
     const hasNonEmptyScope = !!PassedScope;
 
-    function nonEmptyScopeOrNothing(scope: RedirectScopeInterface): RedirectScopeInterface | undefined {
+    function nonEmptyScopeOrNothing(scope: ScopeInterface): ScopeInterface | undefined {
         // GraphQL sends the scope object with a null prototype ([Object: null prototype] { <key>: <value> }), but MikroORM uses the
         // object's hasOwnProperty method internally, resulting in a "object.hasOwnProperty is not a function" error. To fix this, we
         // create a "real" JavaScript object by using the spread operator.

@@ -10,7 +10,7 @@ import { searchToMikroOrmQuery } from "../../../common/filter/mikro-orm";
 import { extractGraphqlFields } from "../../../common/graphql/extract-graphql-fields";
 import { AffectedEntity } from "../../../user-permissions/decorators/affected-entity.decorator";
 import { RequiredPermission } from "../../../user-permissions/decorators/required-permission.decorator";
-import { DamScopeInterface } from "../../types";
+import { ScopeInterface } from "../../../user-permissions/interfaces/scope.interface";
 import { FILE_ENTITY, FileInterface } from "../entities/file.entity";
 import { DamMediaAlternativeInput, DamMediaAlternativeUpdateInput } from "./dto/dam-media-alternative.input";
 import { DamMediaAlternativesArgs } from "./dto/dam-media-alternatives.args";
@@ -22,7 +22,7 @@ export function createDamMediaAlternativeResolver({
     Scope: PassedScope,
 }: {
     File: Type<FileInterface>;
-    Scope?: Type<DamScopeInterface>;
+    Scope?: Type<ScopeInterface>;
 }): Type<unknown> {
     const hasNonEmptyScope = PassedScope != null;
 

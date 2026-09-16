@@ -1,4 +1,4 @@
-import { createOneOfBlock, createRichTextBlock, ExternalLinkBlock, registerAdditionalPermissions } from "@dextinity/cms-api";
+import { createOneOfBlock, createRichTextBlock, ExternalLinkBlock, registerAdditionalPermissions, ScopeInterface } from "@dextinity/cms-api";
 import { CombinedPermission } from "@dextinity/cms-api/lib/user-permissions/user-permissions.types";
 import { Embeddable } from "@mikro-orm/postgresql";
 import { NestFactory } from "@nestjs/core";
@@ -20,12 +20,12 @@ import { createEmailCampaignEntity } from "./src/email-campaign/entities/email-c
 import { TargetGroupInputFactory } from "./src/target-group/dto/target-group-input.factory";
 import { createTargetGroupEntity } from "./src/target-group/entity/target-group-entity.factory";
 import { createTargetGroupsResolver } from "./src/target-group/target-group.resolver";
-import { BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "./src/types";
+import { BrevoContactFilterAttributesInterface } from "./src/types";
 import { BrevoPermission } from "./src";
 
 @ObjectType("EmailCampaignContentScope")
 @InputType("EmailCampaignContentScopeInput")
-class EmailCampaignScope implements EmailCampaignScopeInterface {
+class EmailCampaignScope implements ScopeInterface {
     [key: string]: unknown;
     // empty scope
     @Field({ nullable: true })

@@ -1,5 +1,5 @@
+import { ScopeInterface } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { EmailCampaignScopeInterface } from "src/types";
 
 import { handleBrevoError } from "./brevo-api.utils";
 import { BrevoApiClientFactory } from "./brevo-api-client.factory";
@@ -9,7 +9,7 @@ import { BrevoApiFolder } from "./dto/brevo-api-folder";
 export class BrevoApiFoldersService {
     constructor(private readonly clientFactory: BrevoApiClientFactory) {}
 
-    async *getAllBrevoFolders(scope: EmailCampaignScopeInterface): AsyncGenerator<BrevoApiFolder, void, undefined> {
+    async *getAllBrevoFolders(scope: ScopeInterface): AsyncGenerator<BrevoApiFolder, void, undefined> {
         // Limit set by Brevo
         const limit = 50;
         let offset = 0;

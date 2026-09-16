@@ -1,10 +1,9 @@
-import { BlocksTransformerService, filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@dextinity/cms-api";
+import { BlocksTransformerService, filtersToMikroOrmQuery, ScopeInterface, searchToMikroOrmQuery } from "@dextinity/cms-api";
 import { Brevo } from "@getbrevo/brevo";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, ObjectQuery, wrap } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
-import { EmailCampaignScopeInterface } from "src/types";
 
 import { BrevoApiCampaignsService } from "../brevo-api/brevo-api-campaigns.service";
 import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
@@ -109,7 +108,7 @@ export class EmailCampaignsService {
 
     public async loadEmailCampaignSendingStatesForEmailCampaigns(
         campaigns: EmailCampaignInterface[],
-        scope: EmailCampaignScopeInterface,
+        scope: ScopeInterface,
     ): Promise<EmailCampaignInterface[]> {
         const potentiallySentCampaigns = campaigns.filter(
             (campaign) => campaign.sendingState === SendingState.SCHEDULED && campaign.scheduledAt && campaign.scheduledAt < new Date(),

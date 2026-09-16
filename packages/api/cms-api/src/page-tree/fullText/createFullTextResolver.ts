@@ -3,10 +3,11 @@ import { Type } from "@nestjs/common";
 import { Args, Int, Query, Resolver } from "@nestjs/graphql";
 
 import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
+import { ScopeInterface } from "../../user-permissions/interfaces/scope.interface";
 import { EmptyPageTreeNodeScope } from "../dto/empty-page-tree-node-scope";
 import { PageTreeService } from "../page-tree.service";
 import { PageTreeReadApiService } from "../page-tree-read-api.service";
-import { PageTreeNodeInterface, ScopeInterface } from "../types";
+import { PageTreeNodeInterface } from "../types";
 import { PageTreeNodeFullText } from "./entities/page-tree-node-full-text.object";
 
 export function createFullTextResolver({

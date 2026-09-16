@@ -2,12 +2,12 @@ import { Type } from "@nestjs/common";
 import { plainToInstance, Transform, Type as ClassTransformerType } from "class-transformer";
 import { IsNotEmpty, IsOptional, IsString, ValidateIf, ValidateNested } from "class-validator";
 
+import { ScopeInterface } from "../../../user-permissions/interfaces/scope.interface";
 import { ImageCropAreaInput } from "../../images/dto/image-crop-area.input";
-import { DamScopeInterface } from "../../types";
 import { LicenseInput } from "./file.input";
 
 export interface UploadFileBodyInterface {
-    scope: DamScopeInterface;
+    scope: ScopeInterface;
     folderId?: string;
     title?: string;
     altText?: string;
@@ -17,11 +17,11 @@ export interface UploadFileBodyInterface {
     importSourceType?: string;
 }
 
-export function createUploadFileBody({ Scope }: { Scope: Type<DamScopeInterface> }): Type<UploadFileBodyInterface> {
+export function createUploadFileBody({ Scope }: { Scope: Type<ScopeInterface> }): Type<UploadFileBodyInterface> {
     class UploadFileBody implements UploadFileBodyInterface {
         @Transform(({ value }) => plainToInstance(Scope, JSON.parse(value)))
         @ValidateNested()
-        scope: DamScopeInterface;
+        scope: ScopeInterface;
 
         @IsOptional()
         @IsString()

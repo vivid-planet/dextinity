@@ -1,15 +1,13 @@
-import { DocumentInterface, IsUndefinable } from "@dextinity/cms-api";
+import { DocumentInterface, IsUndefinable, ScopeInterface } from "@dextinity/cms-api";
 import { Embedded, Entity, Enum, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
-import { EmailCampaignScopeInterface } from "../../types";
-
 export interface BrevoEmailImportLogInterface {
     importedEmail: string;
     responsibleUserId: string;
-    scope: EmailCampaignScopeInterface;
+    scope: ScopeInterface;
     createdAt: Date;
     updatedAt: Date;
     contactSource: ContactSource;
@@ -21,7 +19,7 @@ export enum ContactSource {
     csvImport = "csvImport",
 }
 
-export function createBrevoEmailImportLogEntity({ Scope }: { Scope: Type<EmailCampaignScopeInterface> }): Type<BrevoEmailImportLogInterface> {
+export function createBrevoEmailImportLogEntity({ Scope }: { Scope: Type<ScopeInterface> }): Type<BrevoEmailImportLogInterface> {
     @Entity()
     @ObjectType({
         implements: () => [DocumentInterface],

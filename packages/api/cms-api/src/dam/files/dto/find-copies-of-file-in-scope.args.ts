@@ -3,16 +3,16 @@ import { ArgsType, Field, ID } from "@nestjs/graphql";
 import { IsString, ValidateNested } from "class-validator";
 
 import { IsUndefinable } from "../../../common/validators/is-undefinable";
+import { ScopeInterface } from "../../../user-permissions/interfaces/scope.interface";
 import { ImageCropAreaInput } from "../../images/dto/image-crop-area.input";
-import { DamScopeInterface } from "../../types";
 
 export interface FindCopiesOfFileInScopeArgsInterface {
     id: string;
-    scope: DamScopeInterface;
+    scope: ScopeInterface;
     imageCropArea?: ImageCropAreaInput;
 }
 
-export function createFindCopiesOfFileInScopeArgs({ Scope, hasNonEmptyScope }: { Scope: Type<DamScopeInterface>; hasNonEmptyScope: boolean }): Type {
+export function createFindCopiesOfFileInScopeArgs({ Scope, hasNonEmptyScope }: { Scope: Type<ScopeInterface>; hasNonEmptyScope: boolean }): Type {
     @ArgsType()
     class FindCopiesOfFileInScopeArgs {
         @Field(() => ID)

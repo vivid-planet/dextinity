@@ -15,7 +15,7 @@ import { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
-import { DamScopeInterface } from "../../types";
+import { ScopeInterface } from "../../../user-permissions/interfaces/scope.interface";
 import { FileInterface } from "./file.entity";
 
 export interface FolderInterface extends BaseEntity {
@@ -40,10 +40,10 @@ export interface FolderInterface extends BaseEntity {
     files: FileInterface[];
     createdAt: Date;
     updatedAt: Date;
-    scope?: DamScopeInterface;
+    scope?: ScopeInterface;
 }
 
-export function createFolderEntity({ Scope }: { Scope?: Type<DamScopeInterface> } = {}): Type<FolderInterface> {
+export function createFolderEntity({ Scope }: { Scope?: Type<ScopeInterface> } = {}): Type<FolderInterface> {
     @Entity({ abstract: true })
     @ObjectType({ isAbstract: true })
     class FolderBase extends BaseEntity implements FolderInterface {

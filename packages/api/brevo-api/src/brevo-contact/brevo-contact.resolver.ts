@@ -1,4 +1,4 @@
-import { AffectedEntity, CurrentUser, GetCurrentUser, PaginatedResponseFactory, RequiredPermission } from "@dextinity/cms-api";
+import { AffectedEntity, CurrentUser, GetCurrentUser, PaginatedResponseFactory, RequiredPermission, ScopeInterface } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityRepository, FilterQuery } from "@mikro-orm/postgresql";
 import { Inject, Type } from "@nestjs/common";
@@ -11,7 +11,6 @@ import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory";
 import { TargetGroupsService } from "../target-group/target-groups.service";
-import { EmailCampaignScopeInterface } from "../types";
 import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe";
 import { BrevoContactsService } from "./brevo-contacts.service";
 import { BrevoContactInterface } from "./dto/brevo-contact.factory";
@@ -36,7 +35,7 @@ export function createBrevoContactResolver({
     BrevoContactInput: Type<BrevoContactInputInterface>;
     BrevoContactUpdateInput: Type<Partial<BrevoContactInputInterface>>;
     BrevoTestContactInput: Type<BrevoTestContactInputInterface>;
-    Scope: Type<EmailCampaignScopeInterface>;
+    Scope: Type<ScopeInterface>;
 }): Type<unknown> {
     @ObjectType()
     class PaginatedBrevoContacts extends PaginatedResponseFactory.create(BrevoContact) {}

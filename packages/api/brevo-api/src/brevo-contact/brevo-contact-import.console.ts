@@ -1,3 +1,4 @@
+import { ScopeInterface } from "@dextinity/cms-api";
 import { CreateRequestContext, EntityRepository, MikroORM } from "@mikro-orm/core";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { Inject, Logger, Type } from "@nestjs/common";
@@ -11,16 +12,15 @@ import { BrevoContactImportService } from "../brevo-contact/brevo-contact-import
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory";
-import { EmailCampaignScopeInterface } from "../types";
 
 interface CommandOptions {
     path: string;
-    scope: Type<EmailCampaignScopeInterface>;
+    scope: Type<ScopeInterface>;
     targetGroupIds: string[];
     sendDoubleOptIn: boolean;
 }
 
-export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCampaignScopeInterface> }): Type<unknown> {
+export function createBrevoContactImportConsole({ Scope }: { Scope: Type<ScopeInterface> }): Type<unknown> {
     @Command({
         name: "import-brevo-contacts",
         description: "import brevo contacts as csv",
@@ -59,7 +59,7 @@ export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCa
             required: true,
             description: "scope for current import file",
         })
-        parseScope(scope: string): Type<EmailCampaignScopeInterface> {
+        parseScope(scope: string): Type<ScopeInterface> {
             const parsedScope = JSON.parse(scope) as typeof Scope;
             const validateErrors = validateSync(parsedScope);
 
@@ -111,7 +111,7 @@ export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCa
             this.logger.log(result);
         }
 
-        async validateRedirectUrl(urlToValidate: string, scope: Type<EmailCampaignScopeInterface>): Promise<boolean> {
+        async validateRedirectUrl(urlToValidate: string, scope: Type<ScopeInterface>): Promise<boolean> {
             const configForScope = await this.brevoConfigRepository.findOneOrFail({ scope });
 
             if (!configForScope) {

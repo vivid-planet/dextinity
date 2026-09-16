@@ -1,10 +1,10 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 
-import { RedirectScopeInterface } from "../types";
+import { ScopeInterface } from "../../user-permissions/interfaces/scope.interface";
 
 @ObjectType("RedirectScope")
 @InputType("RedirectScopeInput")
-export class EmptyRedirectScope implements RedirectScopeInterface {
+export class EmptyRedirectScope implements ScopeInterface {
     [key: string]: unknown;
     // empty scope
     @Field({ nullable: true })

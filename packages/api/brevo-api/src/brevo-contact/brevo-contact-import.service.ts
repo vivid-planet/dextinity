@@ -1,3 +1,4 @@
+import { ScopeInterface } from "@dextinity/cms-api";
 import * as csv from "@fast-csv/parse";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityRepository } from "@mikro-orm/postgresql";
@@ -16,7 +17,6 @@ import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-impo
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { TargetGroupsService } from "../target-group/target-groups.service";
-import { EmailCampaignScopeInterface } from "../types";
 
 class BasicValidateableRow {
     @IsEmail()
@@ -52,7 +52,7 @@ export class CsvImportInformation {
 
 interface ImportContactsFromCsvParams {
     fileStream: Readable;
-    scope: EmailCampaignScopeInterface;
+    scope: ScopeInterface;
     redirectUrl: string;
     sendDoubleOptIn: boolean;
     targetGroupIds?: string[];
@@ -169,7 +169,7 @@ export class BrevoContactImportService {
 
     private async createOrUpdateBrevoContact(
         contact: CreateDoubleOptInContactData,
-        scope: EmailCampaignScopeInterface,
+        scope: ScopeInterface,
         targetGroupBrevoIds: number[],
         sendDoubleOptIn: boolean,
         responsibleUserId?: string,

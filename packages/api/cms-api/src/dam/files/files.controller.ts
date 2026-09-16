@@ -34,10 +34,10 @@ import { calculatePartialRanges, slugifyFilename } from "../../file-utils/files.
 import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
 import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
 import { CurrentUser } from "../../user-permissions/dto/current-user";
+import { ScopeInterface } from "../../user-permissions/interfaces/scope.interface";
 import { DamConfig } from "../dam.config";
 import { DAM_CONFIG } from "../dam.constants";
 import { DamScopeAccessControlService } from "../scope-access-control.service";
-import { DamScopeInterface } from "../types";
 import { DamUploadFileInterceptor } from "./dam-upload-file.interceptor";
 import { EmptyDamScope } from "./dto/empty-dam-scope";
 import { createUploadFileBody, ReplaceFileByIdBody, UploadFileBodyInterface } from "./dto/file.body";
@@ -48,11 +48,11 @@ import { FoldersService } from "./folders.service";
 
 const fileUrl = `:fileId/:filename`;
 
-export function createFilesController({ Scope: PassedScope, damBasePath }: { Scope?: Type<DamScopeInterface>; damBasePath: string }): Type<unknown> {
+export function createFilesController({ Scope: PassedScope, damBasePath }: { Scope?: Type<ScopeInterface>; damBasePath: string }): Type<unknown> {
     const Scope = PassedScope ?? EmptyDamScope;
     const hasNonEmptyScope = PassedScope != null;
 
-    function nonEmptyScopeOrNothing(scope: DamScopeInterface): DamScopeInterface | undefined {
+    function nonEmptyScopeOrNothing(scope: ScopeInterface): ScopeInterface | undefined {
         return hasNonEmptyScope ? scope : undefined;
     }
 

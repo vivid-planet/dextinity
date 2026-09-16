@@ -241,7 +241,7 @@ export class AppModule {
                 FullTextSearchModule,
                 BrevoModule.register({
                     brevo: {
-                        resolveConfig: (scope: EmailCampaignContentScope) => {
+                        resolveConfig: (scope) => {
                             // change config based on scope - for example different sender email
                             // this is just to show you can use the scope to change the config but it has no real use in this example
                             const siteConfig = config.siteConfigs.find((siteConfig) => siteConfig.scope.domain == scope.domain);
@@ -270,7 +270,7 @@ export class AppModule {
                     emailCampaigns: {
                         EmailCampaignContentBlock,
                         Scope: EmailCampaignContentScope,
-                        frontend: (scope: EmailCampaignContentScope) => {
+                        frontend: (scope) => {
                             const siteConfig = config.siteConfigs.find((sc) => sc.scope.domain === scope.domain);
                             if (!siteConfig) {
                                 throw new Error(`No site config found for scope ${scope.domain}`);

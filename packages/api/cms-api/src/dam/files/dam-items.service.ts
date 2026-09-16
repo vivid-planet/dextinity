@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { DamScopeInterface } from "../types";
+import { ScopeInterface } from "../../user-permissions/interfaces/scope.interface";
 import { DamItemInterface } from "./dam-items.resolver";
 import { DamItemPositionArgsInterface, DamItemsArgsInterface, DamItemType } from "./dto/dam-items.args";
 import { FilesService } from "./files.service";
@@ -15,7 +15,7 @@ export class DamItemsService {
 
     async findAndCount(
         { folderId, includeArchived, filter, sortColumnName, sortDirection, offset, limit }: Omit<DamItemsArgsInterface, "scope">,
-        scope?: DamScopeInterface,
+        scope?: ScopeInterface,
     ): Promise<[DamItemInterface[], number]> {
         const [folders, foldersTotalCount] = await this.foldersService.findAndCount(
             {
@@ -55,7 +55,7 @@ export class DamItemsService {
         return [response, foldersTotalCount + filesTotalCount];
     }
 
-    async getDamItemPosition({ type, id, ...args }: Omit<DamItemPositionArgsInterface, "scope">, scope?: DamScopeInterface): Promise<number> {
+    async getDamItemPosition({ type, id, ...args }: Omit<DamItemPositionArgsInterface, "scope">, scope?: ScopeInterface): Promise<number> {
         if (type === DamItemType.Folder) {
             const folderPosition = await this.foldersService.getFolderPosition(
                 id,

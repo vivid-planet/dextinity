@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 
 import { BlockContext, BlockTransformerServiceInterface, TraversableTransformBlockResponse } from "../../../blocks/block";
+import { ScopeInterface } from "../../../user-permissions/interfaces/scope.interface";
 import { DamFileAiContentType } from "../../files/entities/ai-content-type.enum";
 import { FilesService } from "../../files/files.service";
-import { DamScopeInterface } from "../../types";
 import { DamVideoBlockData } from "./dam-video.block";
 
 type TransformResponse = {
@@ -17,7 +17,7 @@ type TransformResponse = {
         altText?: string;
         aiContentType?: DamFileAiContentType;
         archived: boolean;
-        scope?: DamScopeInterface;
+        scope?: ScopeInterface;
         fileUrl: string;
     };
     autoplay?: boolean;

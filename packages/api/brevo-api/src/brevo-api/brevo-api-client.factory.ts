@@ -1,6 +1,6 @@
+import { ScopeInterface } from "@dextinity/cms-api";
 import { BrevoClient } from "@getbrevo/brevo";
 import { Inject, Injectable } from "@nestjs/common";
-import { EmailCampaignScopeInterface } from "src/types";
 
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
@@ -12,7 +12,7 @@ export class BrevoApiClientFactory {
 
     constructor(@Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig) {}
 
-    getClient(scope: EmailCampaignScopeInterface): BrevoClient {
+    getClient(scope: ScopeInterface): BrevoClient {
         try {
             const key = JSON.stringify(scope);
             const existingClient = this.clients.get(key);

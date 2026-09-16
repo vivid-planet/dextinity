@@ -1,3 +1,4 @@
+import { ScopeInterface } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
@@ -10,7 +11,7 @@ import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-impo
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { TargetGroupsService } from "../target-group/target-groups.service";
-import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "../types";
+import { BrevoContactAttributesInterface } from "../types";
 import { hashEmail } from "../util/hash.util";
 import { BrevoContactInterface } from "./dto/brevo-contact.factory";
 import { SubscribeInputInterface } from "./dto/subscribe-input.factory";
@@ -49,7 +50,7 @@ export class BrevoContactsService {
         email: string;
         attributes?: BrevoContactAttributesInterface;
         redirectionUrl?: string;
-        scope: EmailCampaignScopeInterface;
+        scope: ScopeInterface;
         templateId: number;
         listIds?: number[];
         sendDoubleOptIn: boolean;
@@ -114,7 +115,7 @@ export class BrevoContactsService {
     }: {
         email: string;
         attributes?: BrevoContactAttributesInterface;
-        scope: EmailCampaignScopeInterface;
+        scope: ScopeInterface;
     }): Promise<boolean> {
         const testTargetGroupForScope = await this.targetGroupService.createIfNotExistTestTargetGroupForScope(scope);
 
@@ -127,7 +128,7 @@ export class BrevoContactsService {
         scope,
     }: {
         contactAttributes?: BrevoContactAttributesInterface;
-        scope?: EmailCampaignScopeInterface;
+        scope?: ScopeInterface;
     }): Promise<number[]> {
         let offset = 0;
         let totalCount = 0;
@@ -155,7 +156,7 @@ export class BrevoContactsService {
         return targetGroupIds;
     }
 
-    public async subscribeBrevoContact(data: SubscribeInputInterface, scope: EmailCampaignScopeInterface): Promise<SubscribeResponse> {
+    public async subscribeBrevoContact(data: SubscribeInputInterface, scope: ScopeInterface): Promise<SubscribeResponse> {
         if ((await this.ecgRtrListService.getContainedEcgRtrListEmails([data.email])).length > 0) {
             return SubscribeResponse.ERROR_CONTAINED_IN_ECG_RTR_LIST;
         }

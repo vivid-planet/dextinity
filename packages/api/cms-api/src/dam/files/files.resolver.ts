@@ -12,7 +12,7 @@ import { slugifyFilename } from "../../file-utils/files.utils";
 import { AffectedEntity } from "../../user-permissions/decorators/affected-entity.decorator";
 import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
 import { CurrentUser } from "../../user-permissions/dto/current-user";
-import { DamScopeInterface } from "../types";
+import { ScopeInterface } from "../../user-permissions/interfaces/scope.interface";
 import { DamMediaAlternative } from "./dam-media-alternatives/entities/dam-media-alternative.entity";
 import { CopyFilesResponseInterface, createCopyFilesResponseType } from "./dto/copyFiles.types";
 import { EmptyDamScope } from "./dto/empty-dam-scope";
@@ -32,12 +32,12 @@ export function createFilesResolver({
 }: {
     File: Type<FileInterface>;
     Folder: Type<FolderInterface>;
-    Scope?: Type<DamScopeInterface>;
+    Scope?: Type<ScopeInterface>;
 }): Type<unknown> {
     const Scope = PassedScope ?? EmptyDamScope;
     const hasNonEmptyScope = PassedScope != null;
 
-    function nonEmptyScopeOrNothing(scope: DamScopeInterface): DamScopeInterface | undefined {
+    function nonEmptyScopeOrNothing(scope: ScopeInterface): ScopeInterface | undefined {
         // GraphQL sends the scope object with a null prototype ([Object: null prototype] { <key>: <value> }), but MikroORM uses the
         // object's hasOwnProperty method internally, resulting in a "object.hasOwnProperty is not a function" error. To fix this, we
         // create a "real" JavaScript object by using the spread operator.

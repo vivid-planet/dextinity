@@ -5,12 +5,12 @@ import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { filtersToMikroOrmQuery, searchToMikroOrmQuery } from "../common/filter/mikro-orm";
 import { PageTreeService } from "../page-tree/page-tree.service";
 import { PageTreeNodeInterface } from "../page-tree/types";
+import { ScopeInterface } from "../user-permissions/interfaces/scope.interface";
 import { RedirectFilter } from "./dto/redirects.filter";
 import { RedirectInterface } from "./entities/redirect-entity.factory";
 import { REDIRECTS_LINK_BLOCK } from "./redirects.constants";
 import { RedirectGenerationType, RedirectSourceType } from "./redirects.enum";
 import { RedirectsLinkBlock } from "./redirects.module";
-import { RedirectScopeInterface } from "./types";
 
 @Injectable()
 export class RedirectsService {
@@ -102,7 +102,7 @@ export class RedirectsService {
         }
     }
 
-    async isRedirectSourceAvailable(source: string, scope: RedirectScopeInterface | undefined, options?: { excludedId?: string }): Promise<boolean> {
+    async isRedirectSourceAvailable(source: string, scope: ScopeInterface | undefined, options?: { excludedId?: string }): Promise<boolean> {
         const where: FilterQuery<RedirectInterface> = { source, id: { $ne: options?.excludedId } };
         if (scope !== undefined) {
             where.scope = scope;

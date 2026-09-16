@@ -1,5 +1,6 @@
 import { DynamicModule, Global, Module, Type } from "@nestjs/common";
 
+import { ScopeInterface } from "../user-permissions/interfaces/scope.interface";
 import { DamConfig, damDefaultBasePath } from "./dam.config";
 import { DamBlocksModule } from "./dam-blocks.module";
 import { DamDependentsModule } from "./dam-dependents.module";
@@ -7,11 +8,10 @@ import { DamFilesModule } from "./dam-files.module";
 import { DamImagesModule } from "./dam-images.module";
 import { createFileEntity, FileInterface } from "./files/entities/file.entity";
 import { createFolderEntity, FolderInterface } from "./files/entities/folder.entity";
-import { DamScopeInterface } from "./types";
 
 interface DamModuleOptions {
     damConfig: Omit<DamConfig, "basePath"> & { basePath?: string };
-    Scope?: Type<DamScopeInterface>;
+    Scope?: Type<ScopeInterface>;
     Folder?: Type<FolderInterface>;
     File?: Type<FileInterface>;
 }

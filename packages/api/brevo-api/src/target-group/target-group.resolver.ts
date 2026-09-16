@@ -1,9 +1,8 @@
-import { AffectedEntity, PaginatedResponseFactory, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
+import { AffectedEntity, PaginatedResponseFactory, RequiredPermission, ScopeInterface, validateNotModified } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, FindOptions, wrap } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Int, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
-import { EmailCampaignScopeInterface } from "src/types";
 
 import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
 import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe";
@@ -23,7 +22,7 @@ export function createTargetGroupsResolver({
     BrevoTargetGroup: Type<TargetGroupInterface>;
     TargetGroupInput: Type<TargetGroupInputInterface>;
     TargetGroupUpdateInput: Type<Partial<TargetGroupInputInterface>>;
-    Scope: Type<EmailCampaignScopeInterface>;
+    Scope: Type<ScopeInterface>;
 }): Type<unknown> {
     @ObjectType()
     class PaginatedTargetGroups extends PaginatedResponseFactory.create(BrevoTargetGroup) {}

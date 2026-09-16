@@ -1,8 +1,9 @@
+import { ScopeInterface } from "@dextinity/cms-api";
 import { Type } from "@nestjs/common";
 import { Field, InputType } from "@nestjs/graphql";
 import { IsEmail, IsUrl } from "class-validator";
 
-import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "../../types";
+import { BrevoContactAttributesInterface } from "../../types";
 import { IsValidRedirectURL } from "../validator/redirect-url.validator";
 
 export interface SubscribeInputInterface {
@@ -17,7 +18,7 @@ export class SubscribeInputFactory {
         Scope,
     }: {
         BrevoContactAttributes?: Type<BrevoContactAttributesInterface>;
-        Scope: Type<EmailCampaignScopeInterface>;
+        Scope: Type<ScopeInterface>;
     }): Type<SubscribeInputInterface> {
         @InputType({ isAbstract: true })
         class SubscribeInputBase implements SubscribeInputInterface {

@@ -1,19 +1,17 @@
-import { DocumentInterface } from "@dextinity/cms-api";
+import { DocumentInterface, ScopeInterface } from "@dextinity/cms-api";
 import { Embedded, Entity, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
-import { EmailCampaignScopeInterface } from "../../types";
-
 export interface BlacklistedContactsInterface {
     hashedEmail: string;
-    scope: EmailCampaignScopeInterface;
+    scope: ScopeInterface;
     createdAt: Date;
     updatedAt: Date;
 }
 
-export function createBlacklistedContactsEntity({ Scope }: { Scope: Type<EmailCampaignScopeInterface> }): Type<BlacklistedContactsInterface> {
+export function createBlacklistedContactsEntity({ Scope }: { Scope: Type<ScopeInterface> }): Type<BlacklistedContactsInterface> {
     @Entity()
     @ObjectType({
         implements: () => [DocumentInterface],

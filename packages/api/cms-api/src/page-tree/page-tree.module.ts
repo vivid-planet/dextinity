@@ -7,6 +7,7 @@ import { DependenciesResolverFactory } from "../dependencies/dependencies.resolv
 import { DependentsResolverFactory } from "../dependencies/dependents.resolver.factory";
 import { DocumentInterface } from "../document/dto/document-interface";
 import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
+import type { ScopeInterface } from "../user-permissions/interfaces/scope.interface";
 import { AttachedDocumentLoaderService } from "./attached-document-loader.service";
 import { InternalLinkBlockTransformerService } from "./blocks/internal-link-block-transformer.service";
 import { InternalLinkBlockWarningsService } from "./blocks/internal-link-block-warnings.service";
@@ -31,7 +32,7 @@ import { PageTreeService } from "./page-tree.service";
 import { PageTreeNodeDocumentEntityScopeService } from "./page-tree-node-document-entity-scope.service";
 import { PageTreeReadApiService } from "./page-tree-read-api.service";
 import { SitePreviewResolver } from "./site-preview.resolver";
-import type { PageTreeNodeInterface, ScopeInterface } from "./types";
+import type { PageTreeNodeInterface } from "./types";
 import { PageExistsConstraint } from "./validators/page-exists.validator";
 
 export interface PageTreeConfig {

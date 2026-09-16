@@ -1,4 +1,4 @@
-import { filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@dextinity/cms-api";
+import { filtersToMikroOrmQuery, ScopeInterface, searchToMikroOrmQuery } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, FilterQuery, ObjectQuery, wrap } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
@@ -7,7 +7,7 @@ import { stringify } from "querystring";
 import { handleBrevoError } from "../brevo-api/brevo-api.utils";
 import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
 import { BrevoContactInterface } from "../brevo-contact/dto/brevo-contact.factory";
-import { BrevoContactAttributesInterface, BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "../types";
+import { BrevoContactAttributesInterface, BrevoContactFilterAttributesInterface } from "../types";
 import { TargetGroupFilter } from "./dto/target-group.filter";
 import { TargetGroupInterface } from "./entity/target-group-entity.factory";
 
@@ -67,7 +67,7 @@ export class TargetGroupsService {
 
     public async assignContactsToContactList(
         targetGroup: TargetGroupInterface,
-        scope: EmailCampaignScopeInterface,
+        scope: ScopeInterface,
         filters?: BrevoContactFilterAttributesInterface,
     ): Promise<true> {
         try {
@@ -140,7 +140,7 @@ export class TargetGroupsService {
         return [targetGroups, totalContactLists];
     }
 
-    public async createIfNotExistMainTargetGroupForScope(scope: EmailCampaignScopeInterface): Promise<TargetGroupInterface> {
+    public async createIfNotExistMainTargetGroupForScope(scope: ScopeInterface): Promise<TargetGroupInterface> {
         try {
             const mainList = await this.repository.findOne({ scope, isMainList: true });
 
@@ -166,7 +166,7 @@ export class TargetGroupsService {
         }
     }
 
-    public async createIfNotExistTestTargetGroupForScope(scope: EmailCampaignScopeInterface): Promise<TargetGroupInterface> {
+    public async createIfNotExistTestTargetGroupForScope(scope: ScopeInterface): Promise<TargetGroupInterface> {
         const testList = await this.repository.findOne({ scope, isMainList: false, isTestList: true });
 
         if (testList) {

@@ -5,7 +5,7 @@ import { IsBoolean, IsEnum, IsOptional, IsString, IsUUID, ValidateNested } from 
 
 import { OffsetBasedPaginationArgs } from "../../../common/pagination/offset-based.args";
 import { SortArgs } from "../../../common/sorting/sort.args";
-import { DamScopeInterface } from "../../types";
+import { ScopeInterface } from "../../../user-permissions/interfaces/scope.interface";
 import { EmptyDamScope } from "./empty-dam-scope";
 
 export enum DamItemType {
@@ -30,19 +30,19 @@ export class DamItemFilterInput {
 }
 
 export interface DamItemsArgsInterface extends OffsetBasedPaginationArgs, SortArgs {
-    scope: DamScopeInterface;
+    scope: ScopeInterface;
     folderId?: string;
     includeArchived?: boolean;
     filter?: DamItemFilterInput;
 }
 
-export function createDamItemArgs({ Scope }: { Scope: Type<DamScopeInterface> }): Type<DamItemsArgsInterface> {
+export function createDamItemArgs({ Scope }: { Scope: Type<ScopeInterface> }): Type<DamItemsArgsInterface> {
     @ArgsType()
     class DamItemsArgs extends IntersectionType(OffsetBasedPaginationArgs, SortArgs) implements DamItemsArgsInterface {
         @Field(() => Scope, { defaultValue: Scope === EmptyDamScope ? {} : undefined })
         @TransformerType(() => Scope)
         @ValidateNested()
-        scope: DamScopeInterface;
+        scope: ScopeInterface;
 
         @Field(() => ID, { nullable: true })
         @IsOptional()
@@ -65,7 +65,7 @@ export function createDamItemArgs({ Scope }: { Scope: Type<DamScopeInterface> })
 }
 
 export interface DamItemPositionArgsInterface extends SortArgs {
-    scope: DamScopeInterface;
+    scope: ScopeInterface;
     id: string;
     type: DamItemType;
     folderId?: string;
@@ -73,13 +73,13 @@ export interface DamItemPositionArgsInterface extends SortArgs {
     filter?: DamItemFilterInput;
 }
 
-export function createDamItemPositionArgs({ Scope }: { Scope: Type<DamScopeInterface> }): Type<DamItemPositionArgsInterface> {
+export function createDamItemPositionArgs({ Scope }: { Scope: Type<ScopeInterface> }): Type<DamItemPositionArgsInterface> {
     @ArgsType()
     class DamItemPositionArgs extends SortArgs implements DamItemPositionArgsInterface {
         @Field(() => Scope, { defaultValue: Scope === EmptyDamScope ? {} : undefined })
         @TransformerType(() => Scope)
         @ValidateNested()
-        scope: DamScopeInterface;
+        scope: ScopeInterface;
 
         @Field(() => ID)
         @IsUUID()

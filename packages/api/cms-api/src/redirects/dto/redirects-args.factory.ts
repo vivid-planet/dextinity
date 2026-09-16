@@ -5,12 +5,12 @@ import { IsBoolean, IsEnum, IsOptional, IsString, ValidateNested } from "class-v
 
 import { SortArgs } from "../../common/sorting/sort.args";
 import { SortDirection } from "../../common/sorting/sort-direction.enum";
+import { ScopeInterface } from "../../user-permissions/interfaces/scope.interface";
 import { RedirectGenerationType } from "../redirects.enum";
-import { RedirectScopeInterface } from "../types";
 import { EmptyRedirectScope } from "./empty-redirect-scope";
 
 interface RedirectsArgsInterface {
-    scope: RedirectScopeInterface;
+    scope: ScopeInterface;
     query?: string;
     type?: RedirectGenerationType;
     active?: boolean;
@@ -19,13 +19,13 @@ interface RedirectsArgsInterface {
 }
 
 export class RedirectsArgsFactory {
-    static create({ Scope }: { Scope: Type<RedirectScopeInterface> }): Type<RedirectsArgsInterface> {
+    static create({ Scope }: { Scope: Type<ScopeInterface> }): Type<RedirectsArgsInterface> {
         @ArgsType()
         class RedirectsArgs extends SortArgs implements RedirectsArgsInterface {
             @Field(() => Scope, { defaultValue: Scope === EmptyRedirectScope ? {} : undefined })
             @TransformerType(() => Scope)
             @ValidateNested()
-            scope: RedirectScopeInterface;
+            scope: ScopeInterface;
 
             @Field({ nullable: true })
             @IsOptional()

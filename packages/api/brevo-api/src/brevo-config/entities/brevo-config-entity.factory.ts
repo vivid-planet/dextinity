@@ -1,10 +1,8 @@
-import { DocumentInterface } from "@dextinity/cms-api";
+import { DocumentInterface, ScopeInterface } from "@dextinity/cms-api";
 import { Embedded, Entity, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
-
-import { EmailCampaignScopeInterface } from "../../types";
 
 export interface BrevoConfigInterface {
     [OptionalProps]?: "createdAt" | "updatedAt";
@@ -17,11 +15,11 @@ export interface BrevoConfigInterface {
     unsubscriptionPageId: string;
     createdAt: Date;
     updatedAt: Date;
-    scope: EmailCampaignScopeInterface;
+    scope: ScopeInterface;
 }
 
 export class BrevoConfigEntityFactory {
-    static create({ Scope }: { Scope: Type<EmailCampaignScopeInterface> }): Type<BrevoConfigInterface> {
+    static create({ Scope }: { Scope: Type<ScopeInterface> }): Type<BrevoConfigInterface> {
         @Entity()
         @ObjectType({
             implements: () => [DocumentInterface],

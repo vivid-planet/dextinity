@@ -1,7 +1,7 @@
+import { ScopeInterface } from "@dextinity/cms-api";
 import { Brevo } from "@getbrevo/brevo";
 import { Cache, CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Inject, Injectable } from "@nestjs/common";
-import { EmailCampaignScopeInterface } from "src/types";
 
 import { EmailCampaignInterface } from "../email-campaign/entities/email-campaign-entity.factory";
 import { SendingState } from "../email-campaign/sending-state.enum";
@@ -135,7 +135,7 @@ export class BrevoApiCampaignsService {
         }
     }
 
-    public async loadBrevoCampaignsByIds(ids: number[], scope: EmailCampaignScopeInterface): Promise<BrevoApiCampaign[]> {
+    public async loadBrevoCampaignsByIds(ids: number[], scope: ScopeInterface): Promise<BrevoApiCampaign[]> {
         try {
             const brevoCampaigns = [];
             const nonCachedIds = [];
@@ -194,7 +194,7 @@ export class BrevoApiCampaignsService {
 
     private async *getCampaignsResponse(
         ids: number[],
-        scope: EmailCampaignScopeInterface,
+        scope: ScopeInterface,
         status?: "suspended" | "archive" | "sent" | "queued" | "draft" | "inProcess",
     ): AsyncGenerator<BrevoApiCampaign, void, undefined> {
         let offset = 0;

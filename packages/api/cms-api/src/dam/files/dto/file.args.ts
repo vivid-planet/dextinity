@@ -6,7 +6,7 @@ import { IsArray, IsBoolean, IsOptional, IsString, IsUUID, ValidateNested } from
 import { OffsetBasedPaginationArgs } from "../../../common/pagination/offset-based.args";
 import { SortArgs } from "../../../common/sorting/sort.args";
 import { IsNullable } from "../../../common/validators/is-nullable";
-import { DamScopeInterface } from "../../types";
+import { ScopeInterface } from "../../../user-permissions/interfaces/scope.interface";
 import { EmptyDamScope } from "./empty-dam-scope";
 
 @InputType()
@@ -35,19 +35,19 @@ export class FileFilterInput {
 }
 
 export interface FileArgsInterface extends OffsetBasedPaginationArgs, SortArgs {
-    scope: DamScopeInterface;
+    scope: ScopeInterface;
     folderId?: string;
     includeArchived?: boolean;
     filter?: FileFilterInput;
 }
 
-export function createFileArgs({ Scope }: { Scope: Type<DamScopeInterface> }): Type<FileArgsInterface> {
+export function createFileArgs({ Scope }: { Scope: Type<ScopeInterface> }): Type<FileArgsInterface> {
     @ArgsType()
     class FileArgs extends IntersectionType(OffsetBasedPaginationArgs, SortArgs) implements FileArgsInterface {
         @Field(() => Scope, { defaultValue: Scope === EmptyDamScope ? {} : undefined })
         @TransformerType(() => Scope)
         @ValidateNested()
-        scope: DamScopeInterface;
+        scope: ScopeInterface;
 
         @Field(() => ID, {
             nullable: true,
@@ -74,7 +74,7 @@ export function createFileArgs({ Scope }: { Scope: Type<DamScopeInterface> }): T
 }
 
 export interface DamFileListPositionArgs extends SortArgs {
-    scope: DamScopeInterface;
+    scope: ScopeInterface;
     folderId?: string;
     includeArchived?: boolean;
     filter?: FileFilterInput;

@@ -21,8 +21,8 @@ import { v4 as uuid } from "uuid";
 
 import { EntityInfo } from "../../../entity-info/entity-info.decorator";
 import { RequiredPermission } from "../../../user-permissions/decorators/required-permission.decorator";
+import { ScopeInterface } from "../../../user-permissions/interfaces/scope.interface";
 import { CreateWarnings } from "../../../warnings/decorators/create-warnings.decorator";
-import { DamScopeInterface } from "../../types";
 import { DamMediaAlternative } from "../dam-media-alternatives/entities/dam-media-alternative.entity";
 import { FileWarningService } from "../file-warning.service";
 import { DamFileAiContentType } from "./ai-content-type.enum";
@@ -48,14 +48,14 @@ export interface FileInterface extends BaseEntity {
     license?: License;
     createdAt: Date;
     updatedAt: Date;
-    scope?: DamScopeInterface;
+    scope?: ScopeInterface;
     importSourceId?: string;
     importSourceType?: string;
     alternativesForThisFile: Collection<DamMediaAlternative>;
     thisFileIsAlternativeFor: Collection<DamMediaAlternative>;
 }
 
-export function createFileEntity({ Scope, Folder }: { Scope?: Type<DamScopeInterface>; Folder: Type<FolderInterface> }): Type<FileInterface> {
+export function createFileEntity({ Scope, Folder }: { Scope?: Type<ScopeInterface>; Folder: Type<FolderInterface> }): Type<FileInterface> {
     @Entity({ abstract: true })
     @ObjectType({ isAbstract: true })
     @CreateWarnings(FileWarningService)

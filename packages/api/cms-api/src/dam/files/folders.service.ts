@@ -8,9 +8,9 @@ import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.ut
 import { DextinityEntityNotFoundException } from "../../common/errors/entity-not-found.exception";
 import { SortDirection } from "../../common/sorting/sort-direction.enum";
 import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
+import { ScopeInterface } from "../../user-permissions/interfaces/scope.interface";
 import { DamConfig } from "../dam.config";
 import { DAM_CONFIG } from "../dam.constants";
-import { DamScopeInterface } from "../types";
 import { DamFolderListPositionArgs, FolderArgsInterface } from "./dto/folder.args";
 import { UpdateFolderInput } from "./dto/folder.input";
 import { FOLDER_TABLE_NAME, FolderInterface } from "./entities/folder.entity";
@@ -26,7 +26,7 @@ const withFoldersSelect = (
         sortDirection?: SortDirection;
         offset?: number;
         limit?: number;
-        scope?: DamScopeInterface;
+        scope?: ScopeInterface;
     },
 ): QueryBuilder<FolderInterface> => {
     if (!args.includeArchived) {
@@ -93,7 +93,7 @@ export class FoldersService {
 
     async findAllByParentId(
         { parentId, includeArchived, filter, sortColumnName, sortDirection }: Omit<FolderArgsInterface, "offset" | "limit" | "scope">,
-        scope?: DamScopeInterface,
+        scope?: ScopeInterface,
     ): Promise<FolderInterface[]> {
         const qb = withFoldersSelect(this.selectQueryBuilder(), {
             includeArchived,
@@ -107,7 +107,7 @@ export class FoldersService {
         return qb.getResult();
     }
 
-    async findAllFlat(scope?: DamScopeInterface): Promise<FolderInterface[]> {
+    async findAllFlat(scope?: ScopeInterface): Promise<FolderInterface[]> {
         const qb = this.selectQueryBuilder().orderBy({ name: "ASC" });
 
         if (scope) {
@@ -119,7 +119,7 @@ export class FoldersService {
 
     async findAndCount(
         { parentId, includeArchived, filter, sortColumnName, sortDirection, offset, limit }: Omit<FolderArgsInterface, "scope">,
-        scope?: DamScopeInterface,
+        scope?: ScopeInterface,
     ): Promise<[FolderInterface[], number]> {
         const args = {
             includeArchived,
@@ -154,10 +154,7 @@ export class FoldersService {
         return qb.getSingleResult();
     }
 
-    async findOneByNameAndParentId(
-        { name, parentId }: { name: string; parentId?: string },
-        scope?: DamScopeInterface,
-    ): Promise<FolderInterface | null> {
+    async findOneByNameAndParentId({ name, parentId }: { name: string; parentId?: string }, scope?: ScopeInterface): Promise<FolderInterface | null> {
         const qb = this.selectQueryBuilder().andWhere({ name });
         if (scope) {
             qb.andWhere({ scope });
@@ -180,7 +177,7 @@ export class FoldersService {
             parentId?: string;
             isInboxFromOtherScope?: boolean;
         },
-        scope?: DamScopeInterface,
+        scope?: ScopeInterface,
     ): Promise<FolderInterface> {
         let parent = undefined;
         let mpath: string[] = [];
@@ -240,7 +237,7 @@ export class FoldersService {
             folderIds: string[];
             targetFolderId?: string;
         },
-        scope?: DamScopeInterface,
+        scope?: ScopeInterface,
     ): Promise<FolderInterface[]> {
         let isValidParentId = true;
         for (const folderId of folderIds) {
@@ -300,7 +297,7 @@ export class FoldersService {
         return result === 1;
     }
 
-    async getFolderPosition(folderId: string, args: Omit<DamFolderListPositionArgs, "scope">, scope?: DamScopeInterface): Promise<number> {
+    async getFolderPosition(folderId: string, args: Omit<DamFolderListPositionArgs, "scope">, scope?: ScopeInterface): Promise<number> {
         const isSizeSort = args.sortColumnName === "size";
         const effectiveSortColumn = args.sortColumnName === "mimetype" ? "name" : args.sortColumnName;
         const rowNumberExpr = isSizeSort

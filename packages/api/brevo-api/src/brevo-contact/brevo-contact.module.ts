@@ -1,4 +1,4 @@
-import { FileUpload } from "@dextinity/cms-api";
+import { FileUpload, ScopeInterface } from "@dextinity/cms-api";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { DynamicModule, Module, Type } from "@nestjs/common";
 
@@ -10,7 +10,7 @@ import { BrevoEmailImportLogModule } from "../brevo-email-import-log/brevo-email
 import { BrevoEmailImportLogInterface } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
 import { ConfigModule } from "../config/config.module";
 import { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory";
-import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "../types";
+import { BrevoContactAttributesInterface } from "../types";
 import { DeleteUnsubscribedBrevoContactsConsole } from "./brevo-contact.console";
 import { createBrevoContactResolver } from "./brevo-contact.resolver";
 import { createBrevoContactImportResolver } from "./brevo-contact-import.resolver";
@@ -24,7 +24,7 @@ import { IsValidRedirectURLConstraint } from "./validator/redirect-url.validator
 
 interface BrevoContactModuleConfig {
     BrevoContactAttributes?: Type<BrevoContactAttributesInterface>;
-    Scope: Type<EmailCampaignScopeInterface>;
+    Scope: Type<ScopeInterface>;
     BrevoTargetGroup: Type<TargetGroupInterface>;
     BlacklistedContacts?: Type<BlacklistedContactsInterface>;
     BrevoEmailImportLog?: Type<BrevoEmailImportLogInterface>;

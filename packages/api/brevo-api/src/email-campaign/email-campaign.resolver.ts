@@ -1,4 +1,11 @@
-import { AffectedEntity, extractGraphqlFields, PaginatedResponseFactory, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
+import {
+    AffectedEntity,
+    extractGraphqlFields,
+    PaginatedResponseFactory,
+    RequiredPermission,
+    ScopeInterface,
+    validateNotModified,
+} from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, FindOptions, wrap } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
@@ -9,7 +16,6 @@ import { TargetGroupInterface } from "src/target-group/entity/target-group-entit
 import { BrevoApiCampaignsService } from "../brevo-api/brevo-api-campaigns.service";
 import { BrevoApiCampaignStatistics } from "../brevo-api/dto/brevo-api-campaign-statistics";
 import { EcgRtrListService } from "../brevo-contact/ecg-rtr-list/ecg-rtr-list.service";
-import { EmailCampaignScopeInterface } from "../types";
 import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe";
 import { EmailCampaignArgsFactory } from "./dto/email-campaign-args.factory";
 import { EmailCampaignInputInterface } from "./dto/email-campaign-input.factory";
@@ -28,7 +34,7 @@ export function createEmailCampaignsResolver({
     BrevoEmailCampaign: Type<EmailCampaignInterface>;
     EmailCampaignInput: Type<EmailCampaignInputInterface>;
     EmailCampaignUpdateInput: Type<Partial<EmailCampaignInputInterface>>;
-    Scope: Type<EmailCampaignScopeInterface>;
+    Scope: Type<ScopeInterface>;
     BrevoTargetGroup: Type<TargetGroupInterface>;
 }): Type<unknown> {
     @ObjectType()

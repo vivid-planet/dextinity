@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 
 import { BlockContext, BlockTransformerServiceInterface } from "../../blocks/block";
+import { ScopeInterface } from "../../user-permissions/interfaces/scope.interface";
 import { DamFileAiContentType } from "../files/entities/ai-content-type.enum";
 import { FilesService } from "../files/files.service";
 import { ImageCropArea } from "../images/entities/image-crop-area.entity";
 import { ImagesService } from "../images/images.service";
-import { DamScopeInterface } from "../types";
 import { PixelImageBlockData } from "./pixel-image.block";
 
 type TransformResponse = {
@@ -19,7 +19,7 @@ type TransformResponse = {
         altText?: string;
         aiContentType?: DamFileAiContentType;
         archived: boolean;
-        scope?: DamScopeInterface;
+        scope?: ScopeInterface;
         importSourceId?: string;
         importSourceType?: string;
         image?: {

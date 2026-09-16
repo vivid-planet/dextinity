@@ -1,4 +1,4 @@
-import { AffectedEntity, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
+import { AffectedEntity, RequiredPermission, ScopeInterface, validateNotModified } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, wrap } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
@@ -9,7 +9,6 @@ import { BrevoApiSenderService } from "../brevo-api/brevo-api-sender.service";
 import { BrevoTransactionalMailsService } from "../brevo-api/brevo-api-transactional-mails.service";
 import { BrevoApiEmailTemplate } from "../brevo-api/dto/brevo-api-email-templates-list";
 import { BrevoApiSender } from "../brevo-api/dto/brevo-api-sender";
-import { EmailCampaignScopeInterface } from "../types";
 import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe";
 import { BrevoConfigInput, BrevoConfigUpdateInput } from "./dto/brevo-config.input";
 import { BrevoConfigInterface } from "./entities/brevo-config-entity.factory";
@@ -18,7 +17,7 @@ export function createBrevoConfigResolver({
     Scope,
     BrevoConfig,
 }: {
-    Scope: Type<EmailCampaignScopeInterface>;
+    Scope: Type<ScopeInterface>;
     BrevoConfig: Type<BrevoConfigInterface>;
 }): Type<unknown> {
     @Resolver(() => BrevoConfig)
@@ -32,15 +31,7 @@ export function createBrevoConfigResolver({
             @InjectRepository(BrevoConfig) private readonly repository: EntityRepository<BrevoConfigInterface>,
         ) {}
 
-        private async brevoIsValidSender({
-            email,
-            name,
-            scope,
-        }: {
-            email: string;
-            name: string;
-            scope: EmailCampaignScopeInterface;
-        }): Promise<boolean> {
+        private async brevoIsValidSender({ email, name, scope }: { email: string; name: string; scope: ScopeInterface }): Promise<boolean> {
             const senders = await this.brevoSenderApiService.getSenders(scope);
 
             if (senders && senders.some((sender) => sender.email === email && sender.name === name)) {
@@ -50,7 +41,7 @@ export function createBrevoConfigResolver({
             return false;
         }
 
-        private async brevoIsValidTemplateId({ templateId, scope }: { templateId: number; scope: EmailCampaignScopeInterface }): Promise<boolean> {
+        private async brevoIsValidTemplateId({ templateId, scope }: { templateId: number; scope: ScopeInterface }): Promise<boolean> {
             const { templates } = await this.brevoTransactionalEmailsApiService.getEmailTemplates(scope);
 
             if (templates && templates.some((template) => template.id === templateId)) {
@@ -60,7 +51,7 @@ export function createBrevoConfigResolver({
             return false;
         }
 
-        private async brevoIsValidFolderId({ folderId, scope }: { folderId: number; scope: EmailCampaignScopeInterface }): Promise<boolean> {
+        private async brevoIsValidFolderId({ folderId, scope }: { folderId: number; scope: ScopeInterface }): Promise<boolean> {
             for await (const folder of this.brevoFolderIdService.getAllBrevoFolders(scope)) {
                 if (folder.id === folderId) {
                     return true;

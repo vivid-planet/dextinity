@@ -1,11 +1,11 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 
 import { IsUndefinable } from "../../../common/validators/is-undefinable";
-import { DamScopeInterface } from "../../types";
+import { ScopeInterface } from "../../../user-permissions/interfaces/scope.interface";
 
 @ObjectType("DamScope")
 @InputType("DamScopeInput")
-export class EmptyDamScope implements DamScopeInterface {
+export class EmptyDamScope implements ScopeInterface {
     [key: string]: unknown;
     // empty scope
     @Field({ nullable: true })

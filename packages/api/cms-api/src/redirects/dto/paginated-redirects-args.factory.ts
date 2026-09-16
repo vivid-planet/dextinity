@@ -3,13 +3,13 @@ import { ArgsType, Field, Int } from "@nestjs/graphql";
 import { Type as TransformerType } from "class-transformer";
 import { IsInt, IsOptional, IsString, Max, Min, ValidateNested } from "class-validator";
 
-import { RedirectScopeInterface } from "../types";
+import { ScopeInterface } from "../../user-permissions/interfaces/scope.interface";
 import { EmptyRedirectScope } from "./empty-redirect-scope";
 import { RedirectSort } from "./redirect.sort";
 import { RedirectFilter } from "./redirects.filter";
 
 interface PaginatedRedirectsArgsInterface {
-    scope: RedirectScopeInterface;
+    scope: ScopeInterface;
     search?: string;
     filter?: RedirectFilter;
     sort?: RedirectSort[];
@@ -18,13 +18,13 @@ interface PaginatedRedirectsArgsInterface {
 }
 
 export class PaginatedRedirectsArgsFactory {
-    static create({ Scope }: { Scope: Type<RedirectScopeInterface> }): Type<PaginatedRedirectsArgsInterface> {
+    static create({ Scope }: { Scope: Type<ScopeInterface> }): Type<PaginatedRedirectsArgsInterface> {
         @ArgsType()
         class PaginatedRedirectsArgs implements PaginatedRedirectsArgsInterface {
             @Field(() => Scope, { defaultValue: Scope === EmptyRedirectScope ? {} : undefined })
             @TransformerType(() => Scope)
             @ValidateNested()
-            scope: RedirectScopeInterface;
+            scope: ScopeInterface;
 
             @Field({ nullable: true })
             @IsOptional()

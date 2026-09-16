@@ -1,7 +1,7 @@
+import { ScopeInterface } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
-import { EmailCampaignScopeInterface } from "src/types";
 
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
@@ -22,7 +22,7 @@ export class BlacklistedContactsService {
         this.secretKey = this.config.contactsWithoutDoi?.emailHashKey;
     }
 
-    public async addBlacklistedContacts(emails: string[], scope: EmailCampaignScopeInterface): Promise<BlacklistedContactsInterface[]> {
+    public async addBlacklistedContacts(emails: string[], scope: ScopeInterface): Promise<BlacklistedContactsInterface[]> {
         const blacklistedContacts: BlacklistedContactsInterface[] = [];
 
         if (!this.secretKey) {

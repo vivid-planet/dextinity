@@ -7,6 +7,7 @@ import {
     RootBlockDataScalar,
     RootBlockEntity,
     RootBlockType,
+    ScopeInterface,
 } from "@dextinity/cms-api";
 import { Collection, Embedded, Entity, Enum, ManyToMany, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
@@ -14,7 +15,6 @@ import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
 import { TargetGroupInterface } from "../../target-group/entity/target-group-entity.factory";
-import { EmailCampaignScopeInterface } from "../../types";
 import { SendingState } from "../sending-state.enum";
 
 export interface EmailCampaignInterface {
@@ -27,7 +27,7 @@ export interface EmailCampaignInterface {
     brevoId?: number;
     updatedAt: Date;
     content: BlockDataInterface;
-    scope: EmailCampaignScopeInterface;
+    scope: ScopeInterface;
     sendingState: SendingState;
     targetGroups: Collection<TargetGroupInterface, object>;
     unsubscriptionPageId?: string;
@@ -39,7 +39,7 @@ export function createEmailCampaignEntity({
     TargetGroup: BrevoTargetGroup,
 }: {
     EmailCampaignContentBlock: Block;
-    Scope: Type<EmailCampaignScopeInterface>;
+    Scope: Type<ScopeInterface>;
     TargetGroup: Type<TargetGroupInterface>;
 }): Type<EmailCampaignInterface> {
     @EntityInfo<EmailCampaignInterface>({ name: "title", secondaryInformation: "subject" })

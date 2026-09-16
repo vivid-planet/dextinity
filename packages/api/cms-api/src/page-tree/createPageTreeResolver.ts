@@ -6,6 +6,7 @@ import { DynamicDtoValidationPipe } from "../common/validation/dynamic-dto-valid
 import { DocumentInterface } from "../document/dto/document-interface";
 import { AffectedEntity } from "../user-permissions/decorators/affected-entity.decorator";
 import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
+import { ScopeInterface } from "../user-permissions/interfaces/scope.interface";
 import { AttachedDocumentLoaderService } from "./attached-document-loader.service";
 import { EmptyPageTreeNodeScope } from "./dto/empty-page-tree-node-scope";
 import {
@@ -27,7 +28,6 @@ import {
     PageTreeNodeInterface,
     PageTreeNodeUpdateInputInterface,
     PageTreeNodeVisibility as Visibility,
-    ScopeInterface,
 } from "./types";
 
 export function createPageTreeResolver({

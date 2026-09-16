@@ -1,9 +1,10 @@
+import { ScopeInterface } from "@dextinity/cms-api";
 import { Brevo } from "@getbrevo/brevo";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
-import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "src/types";
+import { BrevoContactAttributesInterface } from "src/types";
 
 import { BlacklistedContactsService } from "../blacklisted-contacts/blacklisted-contacts.service";
 import { BrevoContactInterface } from "../brevo-contact/dto/brevo-contact.factory";
@@ -35,7 +36,7 @@ export class BrevoApiContactsService {
         { email, redirectionUrl, attributes }: CreateDoubleOptInContactData,
         brevoIds: number[],
         templateId: number,
-        scope: EmailCampaignScopeInterface,
+        scope: ScopeInterface,
     ): Promise<boolean> {
         try {
             if (redirectionUrl) {
@@ -58,7 +59,7 @@ export class BrevoApiContactsService {
     public async createBrevoContactWithoutDoubleOptIn(
         { email, attributes }: Brevo.CreateContactRequest,
         brevoIds: number[],
-        scope: EmailCampaignScopeInterface,
+        scope: ScopeInterface,
     ): Promise<boolean> {
         await this.clientFactory.getClient(scope).contacts.createContact({
             email,
@@ -69,11 +70,7 @@ export class BrevoApiContactsService {
         return true;
     }
 
-    public async createTestContact(
-        { email, attributes }: Brevo.CreateContactRequest,
-        brevoIds: number[],
-        scope: EmailCampaignScopeInterface,
-    ): Promise<boolean> {
+    public async createTestContact({ email, attributes }: Brevo.CreateContactRequest, brevoIds: number[], scope: ScopeInterface): Promise<boolean> {
         await this.clientFactory.getClient(scope).contacts.createContact({
             email,
             listIds: brevoIds,
@@ -91,7 +88,7 @@ export class BrevoApiContactsService {
             listIds,
             unlinkListIds,
         }: { blocked?: boolean; attributes?: BrevoContactAttributesInterface; listIds?: number[]; unlinkListIds?: number[] },
-        scope: EmailCampaignScopeInterface,
+        scope: ScopeInterface,
         sendDoubleOptIn?: boolean,
         responsibleUserId?: string,
         contactSource?: ContactSource,
@@ -118,10 +115,7 @@ export class BrevoApiContactsService {
         }
     }
 
-    public async updateMultipleContacts(
-        contacts: Brevo.UpdateBatchContactsRequest.Contacts.Item[],
-        scope: EmailCampaignScopeInterface,
-    ): Promise<boolean> {
+    public async updateMultipleContacts(contacts: Brevo.UpdateBatchContactsRequest.Contacts.Item[], scope: ScopeInterface): Promise<boolean> {
         try {
             await this.clientFactory.getClient(scope).contacts.updateBatchContacts({ contacts });
             return true;
@@ -130,7 +124,7 @@ export class BrevoApiContactsService {
         }
     }
 
-    public async deleteContact(id: number, scope: EmailCampaignScopeInterface): Promise<boolean> {
+    public async deleteContact(id: number, scope: ScopeInterface): Promise<boolean> {
         try {
             const contactsApi = this.clientFactory.getClient(scope).contacts;
             const contact = await contactsApi.getContactInfo({ identifier: id });
@@ -147,7 +141,7 @@ export class BrevoApiContactsService {
         }
     }
 
-    public async findContact(idOrEmail: string | number, scope: EmailCampaignScopeInterface): Promise<BrevoContactInterface | null> {
+    public async findContact(idOrEmail: string | number, scope: ScopeInterface): Promise<BrevoContactInterface | null> {
         try {
             const contact = await this.clientFactory.getClient(scope).contacts.getContactInfo({ identifier: idOrEmail });
 
@@ -162,7 +156,7 @@ export class BrevoApiContactsService {
         }
     }
 
-    public async getContactInfoByEmail(email: string, scope: EmailCampaignScopeInterface): Promise<BrevoContactInterface | null> {
+    public async getContactInfoByEmail(email: string, scope: ScopeInterface): Promise<BrevoContactInterface | null> {
         try {
             const contact = await this.clientFactory.getClient(scope).contacts.getContactInfo({ identifier: email });
             if (!contact) {
@@ -178,12 +172,7 @@ export class BrevoApiContactsService {
         }
     }
 
-    public async findContactsByListId(
-        id: number,
-        limit: number,
-        offset: number,
-        scope: EmailCampaignScopeInterface,
-    ): Promise<[BrevoContactInterface[], number]> {
+    public async findContactsByListId(id: number, limit: number, offset: number, scope: ScopeInterface): Promise<[BrevoContactInterface[], number]> {
         try {
             const data = await this.clientFactory.getClient(scope).contacts.getContactsFromList({ listId: id, limit, offset });
 
@@ -193,7 +182,7 @@ export class BrevoApiContactsService {
         }
     }
 
-    public async getContactCountByListId(id: number, scope: EmailCampaignScopeInterface): Promise<number> {
+    public async getContactCountByListId(id: number, scope: ScopeInterface): Promise<number> {
         try {
             const data = await this.clientFactory.getClient(scope).contacts.getContactsFromList({ listId: id });
             return data.count;
@@ -202,7 +191,7 @@ export class BrevoApiContactsService {
         }
     }
 
-    public async findContacts(limit: number, offset: number, scope: EmailCampaignScopeInterface): Promise<BrevoContactInterface[]> {
+    public async findContacts(limit: number, offset: number, scope: ScopeInterface): Promise<BrevoContactInterface[]> {
         try {
             const data = await this.clientFactory.getClient(scope).contacts.getContacts({ limit, offset });
 
@@ -212,7 +201,7 @@ export class BrevoApiContactsService {
         }
     }
 
-    public async deleteContacts(contacts: BrevoContactInterface[], scope: EmailCampaignScopeInterface): Promise<boolean> {
+    public async deleteContacts(contacts: BrevoContactInterface[], scope: ScopeInterface): Promise<boolean> {
         try {
             const contactsApi = this.clientFactory.getClient(scope).contacts;
             for (const contact of contacts) {
@@ -227,13 +216,13 @@ export class BrevoApiContactsService {
         }
     }
 
-    public async blacklistMultipleContacts(emails: string[], scope: EmailCampaignScopeInterface): Promise<void> {
+    public async blacklistMultipleContacts(emails: string[], scope: ScopeInterface): Promise<void> {
         const blacklistedContacts = emails.map((email) => ({ email, emailBlacklisted: true }));
 
         await this.clientFactory.getClient(scope).contacts.updateBatchContacts({ contacts: blacklistedContacts });
     }
 
-    public async createBrevoContactList(title: string, scope: EmailCampaignScopeInterface): Promise<number | undefined> {
+    public async createBrevoContactList(title: string, scope: ScopeInterface): Promise<number | undefined> {
         const brevoConfig = await this.brevoConfigRepository.findOne({ scope });
 
         try {
@@ -247,7 +236,7 @@ export class BrevoApiContactsService {
         }
     }
 
-    public async updateBrevoContactList(id: number, title: string, scope: EmailCampaignScopeInterface): Promise<boolean> {
+    public async updateBrevoContactList(id: number, title: string, scope: ScopeInterface): Promise<boolean> {
         try {
             await this.clientFactory.getClient(scope).contacts.updateList({ listId: id, name: title });
             return true;
@@ -256,7 +245,7 @@ export class BrevoApiContactsService {
         }
     }
 
-    public async deleteBrevoContactList(id: number, scope: EmailCampaignScopeInterface): Promise<boolean> {
+    public async deleteBrevoContactList(id: number, scope: ScopeInterface): Promise<boolean> {
         try {
             await this.clientFactory.getClient(scope).contacts.deleteList({ listId: id });
             return true;
@@ -265,7 +254,7 @@ export class BrevoApiContactsService {
         }
     }
 
-    public async findBrevoContactListById(id: number, scope: EmailCampaignScopeInterface): Promise<BrevoApiContactList> {
+    public async findBrevoContactListById(id: number, scope: ScopeInterface): Promise<BrevoApiContactList> {
         try {
             const data = await this.clientFactory.getClient(scope).contacts.getList({ listId: id });
             return data;
@@ -274,7 +263,7 @@ export class BrevoApiContactsService {
         }
     }
 
-    public async findBrevoContactListsByIds(ids: number[], scope: EmailCampaignScopeInterface): Promise<BrevoApiContactList[]> {
+    public async findBrevoContactListsByIds(ids: number[], scope: ScopeInterface): Promise<BrevoApiContactList[]> {
         try {
             const lists: BrevoApiContactList[] = [];
             for await (const list of this.getBrevoContactListResponses(scope)) {
@@ -288,7 +277,7 @@ export class BrevoApiContactsService {
         }
     }
 
-    async *getBrevoContactListResponses(scope: EmailCampaignScopeInterface): AsyncGenerator<BrevoApiContactList, void, undefined> {
+    async *getBrevoContactListResponses(scope: ScopeInterface): AsyncGenerator<BrevoApiContactList, void, undefined> {
         const limit = 50;
         let offset = 0;
 

@@ -8,18 +8,18 @@ import { Command, CommandRunner } from "nest-commander";
 
 import { PageTreeService } from "../page-tree/page-tree.service";
 import { PageTreeReadApiOptions } from "../page-tree/page-tree-read-api";
+import { ScopeInterface } from "../user-permissions/interfaces/scope.interface";
 import { RedirectInterface } from "./entities/redirect-entity.factory";
 import { REDIRECTS_LINK_BLOCK } from "./redirects.constants";
 import { RedirectGenerationType, RedirectSourceType } from "./redirects.enum";
 import { RedirectsLinkBlock } from "./redirects.module";
-import { RedirectScopeInterface } from "./types";
 
 interface Row {
     target: string;
     target_type: string;
     source: string;
     comment?: string;
-    scope?: RedirectScopeInterface;
+    scope?: ScopeInterface;
 }
 
 @Command({
@@ -173,7 +173,7 @@ export class ImportRedirectsCommand extends CommandRunner {
                     reject(error);
                 })
                 .on("data", (row: Row & Record<string, string>) => {
-                    const scope: RedirectScopeInterface = {};
+                    const scope: ScopeInterface = {};
                     Object.keys(row).forEach((key) => {
                         if (key.startsWith("scope_")) {
                             const scopeKey = key.replace("scope_", "");

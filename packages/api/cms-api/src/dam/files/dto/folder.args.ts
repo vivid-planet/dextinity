@@ -5,7 +5,7 @@ import { IsBoolean, IsOptional, IsString, IsUUID, ValidateNested } from "class-v
 
 import { OffsetBasedPaginationArgs } from "../../../common/pagination/offset-based.args";
 import { SortArgs } from "../../../common/sorting/sort.args";
-import { DamScopeInterface } from "../../types";
+import { ScopeInterface } from "../../../user-permissions/interfaces/scope.interface";
 import { EmptyDamScope } from "./empty-dam-scope";
 
 @InputType()
@@ -17,19 +17,19 @@ export class FolderFilterInput {
 }
 
 export interface FolderArgsInterface extends OffsetBasedPaginationArgs, SortArgs {
-    scope: DamScopeInterface;
+    scope: ScopeInterface;
     parentId?: string;
     includeArchived?: boolean;
     filter?: FolderFilterInput;
 }
 
-export function createFolderArgs({ Scope }: { Scope: Type<DamScopeInterface> }): Type<FolderArgsInterface> {
+export function createFolderArgs({ Scope }: { Scope: Type<ScopeInterface> }): Type<FolderArgsInterface> {
     @ArgsType()
     class FolderArgs extends IntersectionType(OffsetBasedPaginationArgs, SortArgs) implements FolderArgsInterface {
         @Field(() => Scope, { defaultValue: Scope === EmptyDamScope ? {} : undefined })
         @TransformerType(() => Scope)
         @ValidateNested()
-        scope: DamScopeInterface;
+        scope: ScopeInterface;
 
         @Field(() => ID, { nullable: true })
         @IsOptional()
@@ -52,18 +52,18 @@ export function createFolderArgs({ Scope }: { Scope: Type<DamScopeInterface> }):
 }
 
 export interface FolderByNameAndParentIdArgsInterface {
-    scope: DamScopeInterface;
+    scope: ScopeInterface;
     name: string;
     parentId?: string;
 }
 
-export function createFolderByNameAndParentIdArgs({ Scope }: { Scope: Type<DamScopeInterface> }): Type<FolderByNameAndParentIdArgsInterface> {
+export function createFolderByNameAndParentIdArgs({ Scope }: { Scope: Type<ScopeInterface> }): Type<FolderByNameAndParentIdArgsInterface> {
     @ArgsType()
     class FolderByNameAndParentIdArgs implements FolderByNameAndParentIdArgsInterface {
         @Field(() => Scope, { defaultValue: Scope === EmptyDamScope ? {} : undefined })
         @TransformerType(() => Scope)
         @ValidateNested()
-        scope: DamScopeInterface;
+        scope: ScopeInterface;
 
         @Field()
         @IsString()
@@ -79,7 +79,7 @@ export function createFolderByNameAndParentIdArgs({ Scope }: { Scope: Type<DamSc
 }
 
 export interface DamFolderListPositionArgs extends SortArgs {
-    scope: DamScopeInterface;
+    scope: ScopeInterface;
     parentId?: string;
     includeArchived?: boolean;
     filter?: FolderFilterInput;

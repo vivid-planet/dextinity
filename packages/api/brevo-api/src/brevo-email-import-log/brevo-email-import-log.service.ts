@@ -1,7 +1,7 @@
+import { ScopeInterface } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
-import { EmailCampaignScopeInterface } from "src/types";
 
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
@@ -18,7 +18,7 @@ export class BrevoEmailImportLogService {
     public async addContactToLogs(
         email: string,
         responsibleUserId: string,
-        scope: EmailCampaignScopeInterface,
+        scope: ScopeInterface,
         contactSource: ContactSource,
         importId?: string,
     ): Promise<BrevoEmailImportLogInterface> {

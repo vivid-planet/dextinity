@@ -1,21 +1,20 @@
-import { OffsetBasedPaginationArgs } from "@dextinity/cms-api";
+import { OffsetBasedPaginationArgs, ScopeInterface } from "@dextinity/cms-api";
 import { Type } from "@nestjs/common";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { Type as TransformerType } from "class-transformer";
 import { IsOptional, IsString, ValidateNested } from "class-validator";
-import { EmailCampaignScopeInterface } from "src/types";
 
 import { TargetGroupFilter } from "./target-group.filter";
 import { TargetGroupSort } from "./target-group.sort";
 
 export class TargetGroupArgsFactory {
-    static create({ Scope }: { Scope: Type<EmailCampaignScopeInterface> }) {
+    static create({ Scope }: { Scope: Type<ScopeInterface> }) {
         @ArgsType()
         class TargetGroupArgs extends OffsetBasedPaginationArgs {
             @Field(() => Scope)
             @TransformerType(() => Scope)
             @ValidateNested()
-            scope: EmailCampaignScopeInterface;
+            scope: ScopeInterface;
 
             @Field({ nullable: true })
             @IsOptional()

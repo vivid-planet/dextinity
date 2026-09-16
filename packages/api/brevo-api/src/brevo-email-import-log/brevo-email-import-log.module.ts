@@ -1,6 +1,6 @@
+import { ScopeInterface } from "@dextinity/cms-api";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { DynamicModule, Module, Type } from "@nestjs/common";
-import { EmailCampaignScopeInterface } from "src/types";
 
 import { BrevoApiModule } from "../brevo-api/brevo-api.module";
 import { ConfigModule } from "../config/config.module";
@@ -9,7 +9,7 @@ import { BrevoEmailImportLogInterface } from "./entity/brevo-email-import-log.en
 
 interface BrevoEmailImportLogModuleConfig {
     BrevoEmailImportLog?: Type<BrevoEmailImportLogInterface>;
-    Scope: Type<EmailCampaignScopeInterface>;
+    Scope: Type<ScopeInterface>;
 }
 
 @Module({})

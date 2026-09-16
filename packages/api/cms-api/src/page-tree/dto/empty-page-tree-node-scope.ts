@@ -1,6 +1,6 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 
-import { ScopeInterface } from "../types";
+import { ScopeInterface } from "../../user-permissions/interfaces/scope.interface";
 
 @ObjectType("PageTreeNodeScope")
 @InputType("PageTreeNodeScopeInput")

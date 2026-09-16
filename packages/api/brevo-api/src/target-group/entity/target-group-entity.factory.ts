@@ -1,11 +1,11 @@
-import { DocumentInterface } from "@dextinity/cms-api";
+import { DocumentInterface, ScopeInterface } from "@dextinity/cms-api";
 import { Collection, Embedded, Entity, ManyToMany, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
 import { EmailCampaignInterface } from "../../email-campaign/entities/email-campaign-entity.factory";
-import { BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "../../types";
+import { BrevoContactFilterAttributesInterface } from "../../types";
 
 export interface TargetGroupInterface {
     [OptionalProps]?: "createdAt" | "updatedAt" | "totalSubscribers";
@@ -16,7 +16,7 @@ export interface TargetGroupInterface {
     isMainList: boolean;
     brevoId: number;
     totalSubscribers: number;
-    scope: EmailCampaignScopeInterface;
+    scope: ScopeInterface;
     filters?: BrevoContactFilterAttributesInterface;
     assignedContactsTargetGroupBrevoId?: number;
     campaigns: Collection<EmailCampaignInterface, object>;
@@ -27,7 +27,7 @@ export function createTargetGroupEntity({
     Scope,
     BrevoFilterAttributes,
 }: {
-    Scope: Type<EmailCampaignScopeInterface>;
+    Scope: Type<ScopeInterface>;
     BrevoFilterAttributes?: Type<BrevoContactFilterAttributesInterface>;
 }): Type<TargetGroupInterface> {
     @Entity({ abstract: true })

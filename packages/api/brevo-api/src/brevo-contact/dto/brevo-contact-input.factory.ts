@@ -1,10 +1,10 @@
-import { IsUndefinable } from "@dextinity/cms-api";
+import { IsUndefinable, ScopeInterface } from "@dextinity/cms-api";
 import { Type } from "@nestjs/common";
 import { Field, InputType } from "@nestjs/graphql";
 import { Type as TypeTransformer } from "class-transformer";
 import { IsBoolean, IsNotEmpty, IsOptional, IsString, IsUrl, ValidateNested } from "class-validator";
 
-import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "../../types";
+import { BrevoContactAttributesInterface } from "../../types";
 import { IsValidRedirectURL } from "../validator/redirect-url.validator";
 
 export interface BrevoContactInputInterface {
@@ -27,7 +27,7 @@ export class BrevoContactInputFactory {
         Scope,
     }: {
         BrevoContactAttributes?: Type<BrevoContactAttributesInterface>;
-        Scope: Type<EmailCampaignScopeInterface>;
+        Scope: Type<ScopeInterface>;
     }): [Type<BrevoContactInputInterface>, Type<Partial<BrevoContactUpdateInputInterface>>] {
         @InputType({
             isAbstract: true,

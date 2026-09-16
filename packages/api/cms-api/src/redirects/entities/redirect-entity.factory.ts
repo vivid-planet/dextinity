@@ -9,8 +9,8 @@ import { RootBlock } from "../../blocks/decorators/root-block";
 import { RootBlockEntity } from "../../blocks/decorators/root-block-entity";
 import { RootBlockType } from "../../blocks/root-block-type";
 import { EntityInfo } from "../../entity-info/entity-info.decorator";
+import { ScopeInterface } from "../../user-permissions/interfaces/scope.interface";
 import { RedirectGenerationType, RedirectSourceType } from "../redirects.enum";
-import { RedirectScopeInterface } from "../types";
 
 export interface RedirectInterface {
     [OptionalProps]?: "createdAt" | "updatedAt" | "active";
@@ -24,11 +24,11 @@ export interface RedirectInterface {
     generationType: RedirectGenerationType;
     createdAt: Date;
     updatedAt: Date;
-    scope?: RedirectScopeInterface;
+    scope?: ScopeInterface;
 }
 
 export class RedirectEntityFactory {
-    static create({ linkBlock, Scope: RedirectScope }: { linkBlock: Block; Scope?: Type<RedirectScopeInterface> }): Type<RedirectInterface> {
+    static create({ linkBlock, Scope: RedirectScope }: { linkBlock: Block; Scope?: Type<ScopeInterface> }): Type<RedirectInterface> {
         @EntityInfo<RedirectInterface>({ name: "source", secondaryInformation: "comment" })
         @Entity({ abstract: true })
         @ObjectType({ isAbstract: true })

@@ -1,4 +1,4 @@
-import { CurrentUser, FileUpload, FileUploadsService, GetCurrentUser, RequiredPermission } from "@dextinity/cms-api";
+import { CurrentUser, FileUpload, FileUploadsService, GetCurrentUser, RequiredPermission, ScopeInterface } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Type } from "@nestjs/common";
@@ -8,7 +8,6 @@ import { v4 as uuid } from "uuid";
 
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
-import { EmailCampaignScopeInterface } from "../types";
 import { BrevoContactImportService, CsvImportInformation } from "./brevo-contact-import.service";
 import { BrevoContactInterface } from "./dto/brevo-contact.factory";
 import { BrevoContactImportArgsFactory } from "./dto/brevo-contact-import.args";
@@ -18,7 +17,7 @@ export function createBrevoContactImportResolver({
     BrevoContact,
 }: {
     BrevoContact: Type<BrevoContactInterface>;
-    Scope: Type<EmailCampaignScopeInterface>;
+    Scope: Type<ScopeInterface>;
 }): Type<unknown> {
     @ArgsType()
     class BrevoContactImportArgs extends BrevoContactImportArgsFactory.create({ Scope }) {}

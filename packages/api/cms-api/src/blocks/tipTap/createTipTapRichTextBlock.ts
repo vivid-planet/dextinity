@@ -37,16 +37,23 @@ import { buildNoopMigration } from "./migrations/buildNoopMigration";
 import { buildTextBlockNodeMigration } from "./migrations/buildTextBlockNodeMigration";
 import { assertDraftJsHeadingsAreUnambiguous, type TextBlockMapping } from "./migrations/convertDraftJsToTipTap";
 import {
+    collectTextBlockStyles,
     defaultTextBlocks,
     findDefaultTextBlock,
+    getStyledNodes,
     hasParagraphTextBlock,
+    orderedListName,
+    resolveList,
     resolveTextBlocks,
+    type TipTapListOptions,
+    type TipTapResolvedList,
     type TipTapResolvedTextBlock,
     type TipTapTextBlock,
+    unorderedListName,
 } from "./textBlocks";
 import { containsInvalidTextBlock, getListNestingDepth } from "./tipTapValidation";
 
-export type { TipTapTextBlock, TipTapTextBlockTag } from "./textBlocks";
+export type { TipTapListOptions, TipTapTextBlock, TipTapTextBlockStyle, TipTapTextBlockTag } from "./textBlocks";
 export type { JSONContent as TipTapRichTextBlockContent } from "@tiptap/core";
 
 /**
@@ -65,8 +72,8 @@ export interface TipTapResolvedOptions {
      * text block - the schema's default block type.
      */
     defaultTextBlock: TipTapResolvedTextBlock;
-    orderedList: boolean;
-    unorderedList: boolean;
+    orderedList: false | TipTapResolvedList;
+    unorderedList: false | TipTapResolvedList;
     nonBreakingSpace: boolean;
     softHyphen: boolean;
     link: boolean;
@@ -80,33 +87,13 @@ export interface TipTapRichTextBlockInputInterface extends BlockInputInterface<T
     tipTapContent: JSONContent;
 }
 
-type TipTapTextBlockType =
-    | "paragraph"
-    | "heading-1"
-    | "heading-2"
-    | "heading-3"
-    | "heading-4"
-    | "heading-5"
-    | "heading-6"
-    | "ordered-list"
-    | "unordered-list";
-
-interface TipTapTextBlockStyle {
-    name: string;
-    /**
-     * Limits the text block style to the provided text block types.
-     * If none is specified, the text block style is allowed for all text block types.
-     */
-    appliesTo?: TipTapTextBlockType[];
-}
-
 interface TipTapInlineStyle {
     name: string;
     /**
-     * Limits the inline style to the provided text block types.
-     * If none is specified, the inline style is allowed for all text block types.
+     * Limits the inline style to the named text blocks, `"ordered-list"` and `"unordered-list"`.
+     * If none is specified, the inline style is allowed everywhere.
      */
-    appliesTo?: TipTapTextBlockType[];
+    appliesTo?: string[];
 }
 
 interface TipTapPlaceholder {
@@ -156,13 +143,15 @@ export interface CreateTipTapRichTextBlockOptions {
      */
     defaultTextBlock?: string;
     /**
-     * Enables ordered lists. Defaults to `true`.
+     * Enables ordered lists. Defaults to `true`. Pass `{ styles }` to offer text block styles for a
+     * list item's content.
      */
-    orderedList?: boolean;
+    orderedList?: boolean | TipTapListOptions;
     /**
-     * Enables unordered lists. Defaults to `true`.
+     * Enables unordered lists. Defaults to `true`. Pass `{ styles }` to offer text block styles for
+     * a list item's content.
      */
-    unorderedList?: boolean;
+    unorderedList?: boolean | TipTapListOptions;
     /**
      * Enables non-breaking spaces. Defaults to `true`.
      */
@@ -175,7 +164,6 @@ export interface CreateTipTapRichTextBlockOptions {
      * Enables links by passing the link block that is used for them. Disabled by default.
      */
     link?: Block;
-    textBlockStyles?: TipTapTextBlockStyle[];
     inlineStyles?: TipTapInlineStyle[];
     placeholders?: TipTapPlaceholder[];
     indexSearchText?: boolean;
@@ -205,7 +193,7 @@ export interface CreateTipTapRichTextBlockOptions {
      * Enables best-effort migration of DraftJS-based RichTextBlock data
      * (`{ draftContent: { blocks, entityMap } }`) into TipTap data.
      *
-     * The migration uses the enabled features and the `textBlockStyles`, `maxTextBlocks` and
+     * The migration uses the enabled features and the `textBlocks`, `maxTextBlocks` and
      * `listLevelMax` options to build the target schema, validates the converted document, and
      * falls back to a stripped-down plain-text-paragraph document if validation fails.
      *
@@ -251,8 +239,8 @@ export function resolveTipTapOptions({
         textBlocks: resolvedTextBlocks,
         defaultTextBlock: findDefaultTextBlock({ textBlocks: resolvedTextBlocks, defaultTextBlock }),
         // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
-        orderedList: orderedList ?? hasParagraph,
-        unorderedList: unorderedList ?? hasParagraph,
+        orderedList: resolveList({ list: orderedList ?? hasParagraph, name: orderedListName, tag: "ol" }),
+        unorderedList: resolveList({ list: unorderedList ?? hasParagraph, name: unorderedListName, tag: "ul" }),
         nonBreakingSpace,
         softHyphen,
         link: !!link,
@@ -261,20 +249,18 @@ export function resolveTipTapOptions({
 
 function buildExtensions({
     resolvedOptions,
-    textBlockStyles,
     inlineStyles,
     placeholders,
     hasBlockChildBlocks,
     hasInlineChildBlocks,
 }: {
     resolvedOptions: TipTapResolvedOptions;
-    textBlockStyles: TipTapTextBlockStyle[];
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
     hasBlockChildBlocks: boolean;
     hasInlineChildBlocks: boolean;
 }): Extensions {
-    const hasTextBlockStyles = textBlockStyles.length > 0;
+    const hasTextBlockStyles = collectTextBlockStyles(getStyledNodes(resolvedOptions)).length > 0;
     const hasInlineStyles = inlineStyles.length > 0;
     const hasPlaceholders = placeholders.length > 0;
     const hasParagraph = hasParagraphTextBlock(resolvedOptions.textBlocks);
@@ -441,21 +427,31 @@ function collectPlaceholderNames(content: JSONContent): string[] {
     return names;
 }
 
-function getTextBlockTypeFromNode(node: JSONContent, textBlocks: TipTapResolvedTextBlock[]): TipTapTextBlockType | undefined {
-    if (node.type !== "textBlock") {
-        return undefined;
+/**
+ * What an inline style's `appliesTo` is matched against: the name of the list the node sits in, or
+ * the name of its text block.
+ */
+function getStylingContext(node: JSONContent, textBlocks: TipTapResolvedTextBlock[]): string | undefined {
+    if (node.type === "orderedList") {
+        return orderedListName;
     }
-    const level = textBlocks.find((textBlock) => textBlock.name === node.attrs?.textBlock)?.level;
-    return level === undefined ? "paragraph" : (`heading-${level}` as TipTapTextBlockType);
+    if (node.type === "bulletList") {
+        return unorderedListName;
+    }
+    if (node.type === "textBlock") {
+        return textBlocks.find((textBlock) => textBlock.name === node.attrs?.textBlock)?.name;
+    }
+    return undefined;
 }
 
 function containsInvalidInlineStyleMarks(
     content: JSONContent,
-    inlineStyles: TipTapInlineStyle[],
-    textBlocks: TipTapResolvedTextBlock[],
-    parentTextBlockType?: TipTapTextBlockType,
+    { inlineStyles, textBlocks }: { inlineStyles: TipTapInlineStyle[]; textBlocks: TipTapResolvedTextBlock[] },
+    parentStylingContext?: string,
 ): boolean {
-    const currentTextBlockType = getTextBlockTypeFromNode(content, textBlocks) ?? parentTextBlockType;
+    const isList = content.type === "orderedList" || content.type === "bulletList";
+    // A list wins over the text block inside its items, so a style limited to a list still matches.
+    const stylingContext = isList ? getStylingContext(content, textBlocks) : (parentStylingContext ?? getStylingContext(content, textBlocks));
 
     if (Array.isArray(content.content)) {
         for (const child of content.content) {
@@ -465,13 +461,13 @@ function containsInvalidInlineStyleMarks(
                     if (mark.type === "inlineStyle" && mark.attrs?.type) {
                         const markAttrs = mark.attrs;
                         const styleConfig = inlineStyles.find((s) => s.name === markAttrs.type);
-                        if (styleConfig?.appliesTo && currentTextBlockType && !styleConfig.appliesTo.includes(currentTextBlockType)) {
+                        if (styleConfig?.appliesTo && stylingContext && !styleConfig.appliesTo.includes(stylingContext)) {
                             return true;
                         }
                     }
                 }
             }
-            if (containsInvalidInlineStyleMarks(child, inlineStyles, textBlocks, currentTextBlockType)) {
+            if (containsInvalidInlineStyleMarks(child, { inlineStyles, textBlocks }, stylingContext)) {
                 return true;
             }
         }
@@ -524,7 +520,7 @@ function IsTipTapContent(
                         node.check();
 
                         // Validate inline style appliesTo constraints
-                        if (containsInvalidInlineStyleMarks(value as JSONContent, inlineStyles, textBlocks)) {
+                        if (containsInvalidInlineStyleMarks(value as JSONContent, { inlineStyles, textBlocks })) {
                             return false;
                         }
 
@@ -636,7 +632,6 @@ export function createTipTapRichTextBlock(
     nameOrOptions: BlockFactoryNameOrOptions = "TipTapRichText",
 ): Block<TipTapRichTextBlockDataInterface, TipTapRichTextBlockInputInterface> {
     const {
-        textBlockStyles = [],
         inlineStyles = [],
         placeholders = [],
         indexSearchText = true,
@@ -658,7 +653,6 @@ export function createTipTapRichTextBlock(
     const hasInlineChildBlocks = childBlockConfigs.some(({ display }) => display === "inline");
     const extensions = buildExtensions({
         resolvedOptions,
-        textBlockStyles,
         inlineStyles,
         placeholders,
         hasBlockChildBlocks,

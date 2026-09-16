@@ -7,6 +7,7 @@ import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import { EditorContent, type JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import isEqual from "lodash.isequal";
 import {
     type ComponentType,
     type ForwardRefExoticComponent,
@@ -14,6 +15,7 @@ import {
     type ReactNode,
     type RefAttributes,
     useEffect,
+    useRef,
     useState,
 } from "react";
 import { FormattedMessage } from "react-intl";
@@ -621,6 +623,9 @@ export const TipTapEditor = ({
 }: TipTapEditorProps) => {
     const childBlocksByKey: Record<string, BlockInterface> = Object.fromEntries(Object.entries(childBlocks).map(([key, { block }]) => [key, block]));
 
+    // Content the editor emitted that hasn't come back through state yet.
+    const contentEmittedByEditor = useRef<JSONContent[]>([]);
+
     const extensions = buildTipTapExtensions({
         resolvedOptions,
         textBlockStyles,
@@ -664,18 +669,35 @@ export const TipTapEditor = ({
                 }
             }
 
-            updateState({ tipTapContent: editor.getJSON() });
+            const content = editor.getJSON();
+            contentEmittedByEditor.current.push(content);
+            updateState({ tipTapContent: content });
         },
     });
 
-    // useEditor sets content once, at creation, then ignores it. Read-only content can change while
-    // mounted (e.g. a grid row re-rendering), so it needs re-syncing here. Editable content doesn't:
-    // typing already keeps state.tipTapContent in sync, and re-syncing would reset the caret.
+    // useEditor applies its content once, at creation, so content set from outside needs re-syncing here.
     useEffect(() => {
-        if (readOnly && editor) {
-            editor.commands.setContent(state.tipTapContent, { emitUpdate: false });
+        if (!editor) {
+            return;
         }
-    }, [readOnly, editor, state.tipTapContent]);
+
+        // React can render a keystroke's state after later keystrokes already reached the editor, so
+        // applying anything the editor emitted itself would undo those later keystrokes.
+        const emittedIndex = contentEmittedByEditor.current.findIndex((content) => isEqual(content, state.tipTapContent));
+        if (emittedIndex >= 0) {
+            contentEmittedByEditor.current.splice(0, emittedIndex + 1);
+            return;
+        }
+
+        if (isEqual(state.tipTapContent, editor.getJSON())) {
+            return;
+        }
+
+        // setContent replaces the whole document, which moves the caret to the end.
+        const { from, to } = editor.state.selection;
+        editor.commands.setContent(state.tipTapContent, { emitUpdate: false });
+        editor.commands.setTextSelection({ from, to });
+    }, [editor, state.tipTapContent]);
 
     const translationContext = useContentTranslationService();
     const canTranslate = translationContext.enabled && resolvedOptions.contentTranslation;

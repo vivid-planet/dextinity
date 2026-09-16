@@ -1222,3 +1222,116 @@ export const HeadingOnlyWithTextBlockStyles: StoryObj<typeof HeadingOnlyWithText
         });
     },
 };
+
+const contentFromOutside: TipTapRichTextBlockState = {
+    tipTapContent: {
+        type: "doc",
+        content: [{ type: "paragraph", content: [{ type: "text", text: "Text written by the agent" }] }],
+    },
+};
+
+function ExternalContentUpdateStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(TipTapRichTextBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <button type="button" onClick={() => setState(contentFromOutside)}>
+                Update from outside
+            </button>
+            <TipTapRichTextBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const ExternalContentUpdate: StoryObj<typeof ExternalContentUpdateStory> = {
+    render: () => <ExternalContentUpdateStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Typing keeps the caret in place", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("Text written by the user");
+
+            await waitFor(
+                () => {
+                    expect(editor).toHaveTextContent("Text written by the user");
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Content set from outside replaces what the editor shows", async () => {
+            await userEvent.click(canvas.getByRole("button", { name: "Update from outside" }));
+
+            await waitFor(
+                () => {
+                    const editor = canvas.getByRole("textbox");
+                    expect(editor).toHaveTextContent("Text written by the agent");
+                    expect(editor).not.toHaveTextContent("Text written by the user");
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("The editor stays editable after the update from outside", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard(", extended by the user");
+
+            await waitFor(
+                () => {
+                    expect(editor).toHaveTextContent("Text written by the agent, extended by the user");
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};
+
+// Mirrors a parent that applies the editor's updates late, which makes React render a keystroke's
+// state after later keystrokes already reached the editor.
+function LaggingStateStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(TipTapRichTextBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <TipTapRichTextBlock.AdminComponent
+                state={state}
+                updateState={(setStateAction) => {
+                    setTimeout(() => setState(setStateAction), 50);
+                }}
+            />
+        </StoryWrapper>
+    );
+}
+
+export const LaggingState: StoryObj<typeof LaggingStateStory> = {
+    render: () => <LaggingStateStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("State arriving late does not undo what was typed since", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("Text written by the user");
+
+            await waitFor(
+                () => {
+                    expect(editor).toHaveTextContent("Text written by the user");
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};

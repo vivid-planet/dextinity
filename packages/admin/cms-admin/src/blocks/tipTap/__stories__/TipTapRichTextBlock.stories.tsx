@@ -1441,3 +1441,62 @@ export const ListTextBlock: StoryObj<typeof ListTextBlockStory> = {
         });
     },
 };
+
+// "Display" needs no style choice, so it carries its own `element` instead of a single style.
+const TextBlockElementBlock = createTipTapRichTextBlock({
+    undoRedoButtons: false,
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p" },
+        { name: "display", label: "Display", tag: "h1", element: (props, Tag) => <Tag style={{ fontSize: 64, lineHeight: 1.1 }} {...props} /> },
+        { name: "heading-1", label: "Heading 1", tag: "h1", styles: [largeHeadingStyle] },
+    ],
+});
+
+function TextBlockElementStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(TextBlockElementBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <TextBlockElementBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const TextBlockElement: StoryObj<typeof TextBlockElementStory> = {
+    render: () => <TextBlockElementStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("A text block without styles shows no styling select", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")).toHaveLength(1);
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("Display renders through its own element", async () => {
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Display" }));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 1 })).toHaveStyle({ fontSize: "64px" });
+                    expect(canvas.getAllByRole("combobox")).toHaveLength(1);
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Heading 1 offers its styles instead", async () => {
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 1" }));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")).toHaveLength(2);
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};

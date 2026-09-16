@@ -41,7 +41,16 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
 import type { TipTapChildBlock, TipTapInlineStyle, TipTapPlaceholder, TipTapResolvedOptions } from "./createTipTapRichTextBlock";
-import { findTextBlock, getStyledNodes, orderedListName, unorderedListName } from "./textBlocks";
+import {
+    findTextBlock,
+    getStyledNodes,
+    hasStyle,
+    orderedListName,
+    type TipTapResolvedList,
+    type TipTapResolvedStyledNode,
+    type TipTapResolvedTextBlock,
+    unorderedListName,
+} from "./textBlocks";
 import { TipTapBlockDialog } from "./TipTapBlockDialog";
 import { TipTapLinkDialog } from "./TipTapLinkDialog";
 
@@ -130,6 +139,13 @@ const toolbarSlotSx = {
 } as const;
 
 const ToolbarGroup = ({ children }: { children: ReactNode }) => <Box sx={toolbarSlotSx}>{children}</Box>;
+
+/**
+ * Keeps the applied style if the text block (or list) offers it, and falls back to its default style
+ * otherwise.
+ */
+const resolveStyle = (styledNode: TipTapResolvedStyledNode, activeStyle: string | null): string | null =>
+    activeStyle !== null && hasStyle(styledNode, activeStyle) ? activeStyle : styledNode.defaultStyle;
 
 const selectFormControlSx = {
     [`& .${inputBaseClasses.root}`]: {
@@ -273,7 +289,11 @@ export const TipTapToolbar = ({
         setTimeout(() => editor.commands.focus(), 0);
     };
 
-    const applicableTextBlockStyles = styledNodes.find((styledNode) => styledNode.name === editorState.activeStyledNode)?.styles ?? [];
+    const activeStyledNode = styledNodes.find((styledNode) => styledNode.name === editorState.activeStyledNode);
+    const applicableTextBlockStyles = activeStyledNode?.styles ?? [];
+    // A configured default style means every text block of that type has one, so the styling select
+    // drops its "Default" entry and the choice becomes mandatory.
+    const activeDefaultStyle = activeStyledNode?.defaultStyle ?? null;
     const applicableInlineStyles = inlineStyles.filter((style) => !style.appliesTo || style.appliesTo.includes(editorState.activeStyledNode));
     // Without bold/italic/underline/strike buttons to fold behind it, a "..." menu just for superscript/subscript/inline
     // styles adds an extra click for no space savings, so show them as individual buttons instead
@@ -323,19 +343,35 @@ export const TipTapToolbar = ({
         })),
     ];
 
+    const activeStyle = editorState.activeTextBlockStyle || null;
+
     const handleTextBlockChange = (e: SelectChangeEvent) => {
-        const textBlock = textBlocks.find((candidate) => candidate.name === e.target.value);
+        const textBlock = textBlocks.find((candidate: TipTapResolvedTextBlock) => candidate.name === e.target.value);
         if (!textBlock) {
             return;
         }
 
         // Switching the type only renames the node's text block - the tag follows from the configuration.
-        editor.chain().focus().updateAttributes("textBlock", { textBlock: textBlock.name }).run();
+        editor
+            .chain()
+            .focus()
+            .updateAttributes("textBlock", { textBlock: textBlock.name, textBlockStyle: resolveStyle(textBlock, activeStyle) })
+            .run();
+    };
 
-        // Clear a textBlockStyle the new text block doesn't offer
-        const { activeTextBlockStyle } = editorState;
-        if (activeTextBlockStyle && !textBlock.styles.some((style) => style.name === activeTextBlockStyle)) {
-            editor.chain().updateAttributes("textBlock", { textBlockStyle: null }).run();
+    // Toggling a list hands the cursor's text block to the list or back, so the style of whichever
+    // now holds it applies.
+    const handleListToggle = (list: TipTapResolvedList) => {
+        const wasActive = editor.isActive(list.tag === "ol" ? "orderedList" : "bulletList");
+        const chain = editor.chain().focus();
+        (list.tag === "ol" ? chain.toggleOrderedList() : chain.toggleBulletList()).run();
+
+        const styledNode = wasActive ? textBlocks.find((textBlock) => textBlock.name === editorState.activeTextBlock) : list;
+        if (styledNode) {
+            editor
+                .chain()
+                .updateAttributes("textBlock", { textBlockStyle: resolveStyle(styledNode, activeStyle) })
+                .run();
         }
     };
 
@@ -410,9 +446,11 @@ export const TipTapToolbar = ({
                             MenuProps={{ elevation: 1 }}
                             sx={selectSx}
                         >
-                            <MenuItem value="" dense>
-                                <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockStyle.default" defaultMessage="Default" />
-                            </MenuItem>
+                            {activeDefaultStyle === null && (
+                                <MenuItem value="" dense>
+                                    <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockStyle.default" defaultMessage="Default" />
+                                </MenuItem>
+                            )}
                             {applicableTextBlockStyles.map((style) => (
                                 <MenuItem key={style.name} value={style.name} dense>
                                     {style.label}
@@ -545,7 +583,7 @@ export const TipTapToolbar = ({
                             icon={RteOl}
                             tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.orderedList.tooltip" defaultMessage="Ordered list" />}
                             isActive="orderedList"
-                            onToggle={() => editor.chain().focus().toggleOrderedList().run()}
+                            onToggle={() => handleListToggle(resolvedOptions.orderedList as TipTapResolvedList)}
                         />
                     )}
                     {resolvedOptions.unorderedList && (
@@ -554,7 +592,7 @@ export const TipTapToolbar = ({
                             icon={RteUl}
                             tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.bulletList.tooltip" defaultMessage="Bullet list" />}
                             isActive="bulletList"
-                            onToggle={() => editor.chain().focus().toggleBulletList().run()}
+                            onToggle={() => handleListToggle(resolvedOptions.unorderedList as TipTapResolvedList)}
                         />
                     )}
                     <ToolbarButton

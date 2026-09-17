@@ -4,13 +4,13 @@ import { DialogActions, DialogContent, DialogContentText } from "@mui/material";
 import { type ReactNode, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
+import { useProgressDialog } from "../../common/useProgressDialog";
 import { useContentScope } from "../../contentScope/Provider";
 import type { DocumentInterface, GQLDocument } from "../../documents/types";
 import type { TranslatableInterface } from "../../translation/TranslatableInterface";
 import { findAvailableSlug } from "./findAvailableSlug";
 import { transformToSlug } from "./transformToSlug";
 import type { PageTreePage } from "./usePageTree";
-import { useProgressDialog } from "./useProgressDialog";
 
 function isTranslatable(
     documentType: DocumentInterface,

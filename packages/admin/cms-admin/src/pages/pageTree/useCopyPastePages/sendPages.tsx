@@ -7,41 +7,19 @@ import { v4 as uuid } from "uuid";
 
 import type { BlockDependency, ReplaceDependencyObject } from "../../../blocks/types";
 import type { ContentScope } from "../../../contentScope/Provider";
+import { copyDamFilesToScope, type DamFileToCopy } from "../../../dam/copyFilesToScope/copyDamFilesToScope";
+import { damFilesFromDependencies, isDamFileDependency } from "../../../dam/copyFilesToScope/damFileDependencies";
 import type { DocumentInterface, GQLDocument, GQLUpdatePageMutationVariables } from "../../../documents/types";
-import type { GQLDamFile } from "../../../graphql.generated";
 import type { PageTreeConfig } from "../../pageTreeConfig";
 import { findAvailableSlug } from "../findAvailableSlug";
 import { arrayToTreeMap } from "../treemap/TreeMapUtils";
 import type { PageClipboard, PagesClipboard } from "../useCopyPastePages";
-import { createInboxFolder } from "./createInboxFolder";
-import type {
-    GQLCopyFilesToScopeMutation,
-    GQLCopyFilesToScopeMutationVariables,
-    GQLCreatePageNodeMutation,
-    GQLCreatePageNodeMutationVariables,
-    GQLFindCopiesOfFileInScopeQuery,
-    GQLFindCopiesOfFileInScopeQueryVariables,
-} from "./sendPages.generated";
+import type { GQLCreatePageNodeMutation, GQLCreatePageNodeMutationVariables } from "./sendPages.generated";
 
 const createPageNodeMutation = gql`
     mutation CreatePageNode($input: PageTreeNodeCreateInput!, $contentScope: PageTreeNodeScopeInput!, $category: String!) {
         createPageTreeNode(input: $input, scope: $contentScope, category: $category) {
             id
-        }
-    }
-`;
-
-const copyFilesToScopeMutation = gql`
-    mutation CopyFilesToScope($fileIds: [ID!]!, $inboxFolderId: ID!) {
-        copyFilesToScope(fileIds: $fileIds, inboxFolderId: $inboxFolderId) {
-            mappedFiles {
-                rootFile {
-                    id
-                }
-                copy {
-                    id
-                }
-            }
         }
     }
 `;
@@ -70,14 +48,13 @@ interface SendPagesDependencies {
  * Iterates over passed pages synchronous and creates data with mutations
  *
  * Process:
- *      1. find all source scopes of file dependencies, to create an dam inbox folder if needed
+ *      1. copy all files used on the pages to the target DAM scope
  *      2. traverses the tree with top-down strategy and create page tree nodes
  *          2a. Generate unique slug by adding "{slug}-{uniqueNumber}" to the slug
  *          2b. Create new PageTreeNode with new name "{name} {uniqueNumber}" and new parent
- *      3. create documents (and copy files if required) and attach them to the page tree nodes
- *          3a. Copy all files used on page to target scope
- *          3b.  Replace unhandled dependencies with undefined (when copying to another scope)
- *          3c. Create new document and attach it to new page tree node
+ *      3. create documents and attach them to the page tree nodes
+ *          3a. Replace unhandled dependencies with undefined (when copying to another scope)
+ *          3b. Create new document and attach it to new page tree node
  *      4. Refetch Pages query
  *
  **/
@@ -89,73 +66,35 @@ export async function sendPages(
     updateProgress: (progress: number, message: ReactNode) => void,
 ): Promise<void> {
     const dependencyReplacements = createPageTreeNodeIdReplacements(pages);
-    let inboxFolderIdForCopiedFiles: string | undefined = undefined;
     const hasDamScope = Object.entries(targetDamScope).length > 0;
 
-    // 1. find all source scopes of file dependencies, to create an dam inbox folder if needed
+    // 1. copy all files used on the pages to the target DAM scope
     updateProgress(0, <FormattedMessage id="dextinity.pages.paste.analyzingPages" defaultMessage="analyzing pages" />);
     {
-        let progressPages = 0;
-        const sourceScopes: Record<string, unknown>[] = [];
+        //TODO use the file's size to build a progress bar for uploading/downloading files
+        const filesToCopy: DamFileToCopy[] = [];
         for (const sourcePage of pages) {
             const documentType = documentTypes[sourcePage.documentType];
             if (!documentType) {
                 throw new Error(`Unknown document type "${documentType}"`);
             }
             if (sourcePage?.document != null) {
-                for (const damFile of fileDependenciesFromDocument(documentType, sourcePage.document)) {
-                    //TODO use damFile.size; to build a progress bar for uploading/downloading files
-                    if (dependencyReplacements.some((replacement) => replacement.type == "DamFile" && replacement.originalId === damFile.id)) {
-                        //file already handled (same file used multiple times on page)
-                    } else if (!hasDamScope || isEqual(damFile.scope, targetDamScope)) {
-                        //same scope, same server, no need to copy
-                    } else {
-                        // TODO eventually handle multiple files in one request for better performance
-                        const { data } = await client.query<GQLFindCopiesOfFileInScopeQuery, GQLFindCopiesOfFileInScopeQueryVariables>({
-                            query: gql`
-                                query FindCopiesOfFileInScope($id: ID!, $scope: DamScopeInput!, $imageCropArea: ImageCropAreaInput) {
-                                    findCopiesOfFileInScope(id: $id, scope: $scope, imageCropArea: $imageCropArea) {
-                                        id
-                                    }
-                                }
-                            `,
-                            variables: {
-                                id: damFile.id,
-                                scope: targetDamScope,
-                                imageCropArea: damFile.image?.cropArea,
-                            },
-                        });
-                        if (data.findCopiesOfFileInScope.length > 0) {
-                            // use already existing file
-                            dependencyReplacements.push({
-                                type: "DamFile",
-                                originalId: damFile.id,
-                                replaceWithId: data.findCopiesOfFileInScope[0].id,
-                            });
-                        } else {
-                            // copying is required
-                            if (damFile.scope && !sourceScopes.some((scope) => isEqual(scope, damFile.scope))) {
-                                sourceScopes.push(damFile.scope);
-                            }
-                        }
-                    }
-                }
+                filesToCopy.push(...damFilesFromDependencies(documentType.dependencies(sourcePage.document)));
             }
-            progressPages++;
-            updateProgress(
-                (progressPages / pages.length) * 10,
-                <FormattedMessage id="dextinity.pages.paste.analyzingPages" defaultMessage="analyzing pages" />,
-            ); // 10% of progress is used for analyzing pages
         }
 
-        if (sourceScopes.length > 0) {
-            const { id } = await createInboxFolder({
+        dependencyReplacements.push(
+            ...(await copyDamFilesToScope({
                 client,
-                targetScope: targetDamScope,
-                sourceScopes,
-            });
-            inboxFolderIdForCopiedFiles = id;
-        }
+                files: filesToCopy,
+                targetDamScope,
+                updateProgress: (progress) =>
+                    updateProgress(
+                        progress * 10, // 10% of progress is used for copying the files
+                        <FormattedMessage id="dextinity.pages.paste.copyingAssets" defaultMessage="copying assets" />,
+                    ),
+            })),
+        );
     }
 
     // 2. traverses the tree with top-down strategy and create page tree nodes
@@ -222,7 +161,7 @@ export async function sendPages(
         await traverse("root", parentId);
     }
 
-    // 3. create documents (and copy files if required) and attach them to the page tree nodes
+    // 3. create documents and attach them to the page tree nodes
     // no top-down strategy needed
     {
         updateProgress(50, <FormattedMessage id="dextinity.pages.paste.creatingDocuments" defaultMessage="creating documents" />);
@@ -239,44 +178,7 @@ export async function sendPages(
                 throw new Error(`Could not find new page tree node id`);
             }
 
-            // 3a. Copy all files used on page to target scope
-            const fileIdsToCopyDirectly: string[] = [];
-            if (sourcePage?.document != null) {
-                for (const damFile of fileDependenciesFromDocument(documentType, sourcePage.document)) {
-                    if (dependencyReplacements.some((replacement) => replacement.type == "DamFile" && replacement.originalId === damFile.id)) {
-                        //already copied
-                    } else {
-                        // not copied yet
-                        if (!hasDamScope || isEqual(damFile.scope, targetDamScope)) {
-                            //same scope, same server, no need to copy
-                        } else {
-                            //batch copy below
-                            fileIdsToCopyDirectly.push(damFile.id);
-                        }
-                    }
-                }
-
-                if (fileIdsToCopyDirectly.length > 0) {
-                    if (!inboxFolderIdForCopiedFiles) {
-                        throw new Error("inbox folder must be created in step 0 when files need to be copied");
-                    }
-                    const { data: copiedFiles } = await client.mutate<GQLCopyFilesToScopeMutation, GQLCopyFilesToScopeMutationVariables>({
-                        mutation: copyFilesToScopeMutation,
-                        variables: { fileIds: fileIdsToCopyDirectly, inboxFolderId: inboxFolderIdForCopiedFiles },
-                        update: (cache, result) => {
-                            cache.evict({ fieldName: "damItemsList" });
-                        },
-                    });
-
-                    if (copiedFiles) {
-                        for (const item of copiedFiles.copyFilesToScope.mappedFiles) {
-                            dependencyReplacements.push({ type: "DamFile", originalId: item.rootFile.id, replaceWithId: item.copy.id });
-                        }
-                    }
-                }
-            }
-
-            // 3b. Replace unhandled dependencies with undefined (when copying to another scope)
+            // 3a. Replace unhandled dependencies with undefined (when copying to another scope)
             if (sourcePage.document && !isEqual(sourceContentScope, targetContentScope)) {
                 const unhandledDependencies = unhandledDependenciesFromDocument(documentType, sourcePage.document, {
                     existingReplacements: dependencyReplacements,
@@ -288,7 +190,7 @@ export async function sendPages(
                 dependencyReplacements.push(...replacementsForUnhandledDependencies);
             }
 
-            // 3c. Create new document and attach it to new page tree node
+            // 3b. Create new document and attach it to new page tree node
             const newDocumentId = uuid();
             if (
                 sourcePage?.document != null &&
@@ -378,20 +280,4 @@ function createUndefinedReplacementsForDependencies(dependencies: BlockDependenc
     }
 
     return replacements;
-}
-
-function fileDependenciesFromDocument(documentType: DocumentInterface, document: GQLDocument) {
-    return documentType
-        .dependencies(document)
-        .filter(isDamFileDependency)
-        .map((dependency) => {
-            return dependency.data.damFile;
-        });
-}
-
-function isDamFileDependency(
-    dependency: BlockDependency,
-): dependency is BlockDependency & { data: { damFile: GQLDamFile & { scope?: Record<string, unknown> } } } {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return dependency.targetGraphqlObjectType === "DamFile" && dependency.data && (dependency.data as any).damFile;
 }

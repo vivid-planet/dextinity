@@ -229,8 +229,8 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
     inlineStyles: [{ name: "highlight" }],
     // highlight-start
     migrateFromDraftJs: {
-        // Map the Draft.js `blocktypeMap` entry to a TipTap `textBlockStyle`.
-        textBlockMap: { "paragraph-small": "paragraph200" },
+        // Map the Draft.js `blocktypeMap` entry to a text block and its `textBlockStyle`.
+        textBlockMap: { "paragraph-small": { textBlock: "paragraph", textBlockStyle: "paragraph200" } },
         // Map a Draft.js `customInlineStyles` name to a TipTap `inlineStyle`.
         inlineStyleMap: { HIGHLIGHT: "highlight" },
     },
@@ -238,7 +238,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
 });
 ```
 
-A mapped block type keeps its text block: `header-two` still becomes the text block with the `h2` tag, only with the mapped `textBlockStyle` applied. If the Draft.js block type doesn't carry that information — a custom block type such as `headline450` that was rendered as `<h2>` — pass a `{ textBlock, textBlockStyle }` object to name the text block explicitly, so the semantic tag isn't lost:
+Every mapping names the text block the Draft.js block becomes, which matters where the block type doesn't carry that information — a custom block type such as `headline450` that was rendered as `<h2>` would otherwise become a paragraph and lose its semantic tag:
 
 ```ts title="tip-tap-rich-text.block.ts"
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
@@ -252,7 +252,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
 });
 ```
 
-`textBlock` accepts the `name` of any configured [text block](#text-blocks). Both parts are optional: pass only `textBlock` to change the text block without applying a style, or only `textBlockStyle` (equivalent to the plain string form) to keep the text block derived from the Draft.js block type.
+`textBlock` accepts the `name` of any configured [text block](#text-blocks), and an unknown name throws. `textBlockStyle` is optional — leave it out for a text block that offers no styles. A Draft.js block type that isn't mapped becomes the text block its own type implies: `header-one`–`header-six` keep their heading level, everything else becomes a paragraph.
 
 #### Migration versioning
 

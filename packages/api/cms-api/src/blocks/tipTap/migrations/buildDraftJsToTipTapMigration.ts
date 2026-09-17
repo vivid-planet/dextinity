@@ -46,6 +46,14 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
     const textBlocks = resolvedOptions.textBlocks;
     const emptyDoc = buildEmptyTipTapDoc(resolvedOptions);
 
+    for (const [draftJsBlockType, { textBlock }] of Object.entries(textBlockMap ?? {})) {
+        // A name that doesn't exist would convert the content to whichever text block shares the
+        // DraftJS block's tag instead - silently, and only once, since the DraftJS content is gone afterwards.
+        if (!textBlocks.some((configured) => configured.name === textBlock)) {
+            throw new Error(`textBlockMap maps "${draftJsBlockType}" to the text block "${textBlock}", which is not configured`);
+        }
+    }
+
     return class DraftJsToTipTapMigration extends BlockMigration<(from: From) => To> implements BlockMigrationInterface {
         public readonly toVersion = 1;
 

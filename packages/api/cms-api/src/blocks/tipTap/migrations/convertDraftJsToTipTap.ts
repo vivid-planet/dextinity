@@ -41,16 +41,14 @@ interface DraftJsContent {
 
 interface TextBlockMapping {
     /**
-     * Name of the TipTap text block the DraftJS block is converted to. Use this for DraftJS block
-     * types that were rendered as a heading (e.g. a custom `headline450` block type rendered as
-     * `<h2>`), so the semantic tag isn't lost.
-     *
-     * Defaults to the text block derived from the DraftJS block type: `header-one`…`header-six`
-     * keep their heading level, all other block types become a paragraph.
+     * Name of the TipTap text block the DraftJS block is converted to. Naming it explicitly keeps
+     * the semantic tag of a DraftJS block type that was rendered as a heading (e.g. a custom
+     * `headline450` block type rendered as `<h2>`).
      */
-    textBlock?: string;
+    textBlock: string;
     /**
-     * TipTap `textBlockStyle` attribute value applied to the converted text block.
+     * TipTap `textBlockStyle` attribute value applied to the converted text block. Leave it out for
+     * a text block that offers no styles.
      */
     textBlockStyle?: string;
 }
@@ -59,14 +57,12 @@ interface ConvertOptions {
     resolvedOptions: TipTapResolvedOptions;
     link?: Block;
     /**
-     * Maps DraftJS block types (e.g. custom `paragraph-small`) to a TipTap `textBlockStyle`
-     * attribute value. Matched blocks become `{ type: "paragraph", attrs: { textBlockStyle: ... } }`.
-     *
-     * Pass a `{ textBlock, textBlockStyle }` object instead of a plain style name to also control
-     * which text block the DraftJS block becomes, for instance to convert a DraftJS block type that
-     * was rendered as `<h2>` into a TipTap heading with level 2.
+     * Maps DraftJS block types (e.g. custom `paragraph-small`) to the TipTap text block they are
+     * converted to, and to the `textBlockStyle` applied to it. A DraftJS block type that isn't
+     * mapped becomes the text block its own type implies: `header-one`…`header-six` keep their
+     * heading level, everything else becomes a paragraph.
      */
-    textBlockMap?: Record<string, string | TextBlockMapping>;
+    textBlockMap?: Record<string, TextBlockMapping>;
     /**
      * Maps DraftJS custom inline style names (e.g. `highlight` from a DraftJS `customInlineStyles`
      * configuration) to TipTap `inlineStyle` mark type values.
@@ -321,13 +317,6 @@ interface OpenList {
     items: JSONContent[];
 }
 
-function normalizeTextBlockMapping(mapping: string | TextBlockMapping | undefined): TextBlockMapping | undefined {
-    if (mapping === undefined) {
-        return undefined;
-    }
-    return typeof mapping === "string" ? { textBlockStyle: mapping } : mapping;
-}
-
 export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined | null, options: ConvertOptions): JSONContent {
     const resolvedOptions = options.resolvedOptions;
 
@@ -402,7 +391,7 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
 
         flushLists();
 
-        const mapping = normalizeTextBlockMapping(textBlockMap[block.type]);
+        const mapping = textBlockMap[block.type];
 
         topLevel.push(
             makeTextBlockNode(inlineContent, {

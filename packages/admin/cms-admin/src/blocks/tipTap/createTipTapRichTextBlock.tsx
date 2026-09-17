@@ -623,9 +623,10 @@ export const TipTapEditor = ({
 }: TipTapEditorProps) => {
     const childBlocksByKey: Record<string, BlockInterface> = Object.fromEntries(Object.entries(childBlocks).map(([key, { block }]) => [key, block]));
 
-    // Content the editor emitted that hasn't come back through state yet. Matched by identity, not by
+    // Content the editor holds that hasn't come back through state yet. Matched by identity, not by
     // value: content set from outside can be equal to one of these and still has to be applied.
-    const contentEmittedByEditor = useRef<JSONContent[]>([]);
+    // Seeded with the content useEditor is created with, which the editor already holds at mount.
+    const contentEmittedByEditor = useRef<JSONContent[]>([state.tipTapContent]);
 
     const extensions = buildTipTapExtensions({
         resolvedOptions,

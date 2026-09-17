@@ -16,9 +16,16 @@ export function isDamFileDependency(dependency: BlockDependency): dependency is 
  * Admin without reloading the block, the scope is undefined and must be substituted by the caller.
  */
 export function damFilesFromDependencies(dependencies: BlockDependency[]): DamFileToCopy[] {
-    return dependencies.filter(isDamFileDependency).map(({ data: { damFile } }) => ({
-        id: damFile.id,
-        scope: damFile.scope,
-        imageCropArea: damFile.image?.cropArea,
-    }));
+    return dependencies.filter(isDamFileDependency).map(({ data: { damFile } }) => {
+        const cropArea = damFile.image?.cropArea;
+
+        return {
+            id: damFile.id,
+            scope: damFile.scope,
+            // Map the crop area explicitly: when it originates from a GraphQL result it carries a __typename, which the input type rejects
+            imageCropArea: cropArea
+                ? { focalPoint: cropArea.focalPoint, width: cropArea.width, height: cropArea.height, x: cropArea.x, y: cropArea.y }
+                : undefined,
+        };
+    });
 }

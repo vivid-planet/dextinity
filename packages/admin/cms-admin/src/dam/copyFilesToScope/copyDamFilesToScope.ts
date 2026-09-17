@@ -105,7 +105,7 @@ export async function copyDamFilesToScope({
     if (filesToCopy.length > 0) {
         const sourceScopes: Record<string, unknown>[] = [];
         for (const { scope } of filesToCopy) {
-            if (scope && !sourceScopes.some((sourceScope) => isEqual(sourceScope, scope))) {
+            if (scope && Object.keys(scope).length > 0 && !sourceScopes.some((sourceScope) => isEqual(sourceScope, scope))) {
                 sourceScopes.push(scope);
             }
         }

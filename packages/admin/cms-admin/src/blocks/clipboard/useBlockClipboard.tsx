@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { useProgressDialog } from "../../common/useProgressDialog";
-import { useDamScope } from "../../dam/config/useDamScope";
+import { useDamScopeFromContentScope } from "../../dam/config/useDamScope";
 import { copyDamFilesToScope, type DamFileToCopy } from "../../dam/copyFilesToScope/copyDamFilesToScope";
 import { damFilesFromDependencies } from "../../dam/copyFilesToScope/damFileDependencies";
 import { useBlockContext } from "../context/useBlockContext";
@@ -25,17 +25,13 @@ interface TransformedClipboardBlock {
     output: BlockOutputApi<BlockInterface>;
     additionalFields?: Record<string, unknown>;
     /**
-     * The DAM files referenced by the block. Their scope can't be determined when pasting,
-     * therefore it has to be written to the clipboard when copying.
+     * The DAM files referenced by the block, including the scope they live in. The scope can't be determined when
+     * pasting, therefore it has to be written to the clipboard when copying.
      */
     damFiles?: DamFileToCopy[];
 }
 
-interface TransformedClipboardContent {
-    blocks: TransformedClipboardBlock[];
-    /** The DAM scope the blocks were copied from. */
-    damScope?: Record<string, unknown>;
-}
+type TransformedClipboardContent = TransformedClipboardBlock[];
 
 type GetClipboardContentResponse = { canPaste: true; content: ClipboardContent } | { canPaste: false; error: ReactNode };
 
@@ -51,7 +47,7 @@ interface UseBlockClipboardOptions {
 
 function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboardApi {
     const context = useBlockContext();
-    const damScope = useDamScope();
+    const damScope = useDamScopeFromContentScope();
     const progress = useProgressDialog({
         title: <FormattedMessage id="dextinity.blocks.insertingBlocks" defaultMessage="Inserting blocks" />,
     });
@@ -77,7 +73,11 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
                 throw new Error(`Block clipboard doesn't support block "${block.name}"`);
             }
 
-            const damFiles = damFilesFromDependencies(blockInterface.dependencies?.(block.state) ?? []);
+            const damFiles = damFilesFromDependencies(blockInterface.dependencies?.(block.state) ?? []).map((damFile) => ({
+                ...damFile,
+                // Files that were selected in the Admin don't know their scope, they live in the scope that is currently edited
+                scope: damFile.scope ?? damScope,
+            }));
 
             return {
                 name: block.name,
@@ -88,27 +88,21 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
             };
         });
 
-        return writeClipboardText(JSON.stringify({ blocks, damScope } satisfies TransformedClipboardContent));
+        return writeClipboardText(JSON.stringify(blocks satisfies TransformedClipboardContent));
     };
 
     /**
      * Copies the DAM files referenced by the blocks from the clipboard into the current DAM scope and returns the
      * replacements required to point the blocks to the copies.
      */
-    const copyReferencedDamFilesToScope = async ({ blocks, damScope: sourceDamScope }: TransformedClipboardContent) => {
-        if (isEqual(sourceDamScope, damScope)) {
-            // Source and target DAM scope are the same, the files can be used as they are
+    const copyReferencedDamFilesToScope = async (blocks: TransformedClipboardContent) => {
+        // Without DAM scoping every file can be used in every scope
+        if (Object.keys(damScope).length === 0) {
             return [];
         }
 
-        const files = blocks.flatMap(
-            (block) =>
-                block.damFiles?.map((file) => ({
-                    ...file,
-                    // Files without a known scope originate from the scope the blocks were copied from
-                    scope: file.scope ?? sourceDamScope,
-                })) ?? [],
-        );
+        // Files that already live in the target scope can be used as they are
+        const files = blocks.flatMap((block) => block.damFiles ?? []).filter((file) => !isEqual(file.scope, damScope));
 
         if (files.length === 0) {
             return [];
@@ -167,21 +161,18 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
         let transformedContent: TransformedClipboardContent;
 
         try {
-            const parsedText = JSON.parse(text);
-
-            // Blocks copied by an earlier version only contain the blocks themselves, without any scope information
-            transformedContent = Array.isArray(parsedText) ? { blocks: parsedText } : parsedText;
+            transformedContent = JSON.parse(text);
         } catch {
             return failedToParseClipboardResponse;
         }
 
-        if (!Array.isArray(transformedContent?.blocks)) {
+        if (!Array.isArray(transformedContent)) {
             return failedToParseClipboardResponse;
         }
 
         const clipboardBlocks: Array<{ clipboardBlock: TransformedClipboardBlock; blockInterface: BlockInterface }> = [];
 
-        for (const clipboardBlock of transformedContent.blocks) {
+        for (const clipboardBlock of transformedContent) {
             const blockInterface = findBlockInterfaceForClipboardBlock(clipboardBlock);
 
             if (!blockInterface) {

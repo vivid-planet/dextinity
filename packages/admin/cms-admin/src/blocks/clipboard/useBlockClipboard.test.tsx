@@ -4,7 +4,8 @@ import type { DocumentNode, OperationDefinitionNode } from "graphql";
 import { act, renderHook } from "test-utils";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 
-import { useDamScope } from "../../dam/config/useDamScope";
+import { useDextinityConfig } from "../../config/DextinityConfigContext";
+import { useContentScope } from "../../contentScope/Provider";
 import { useBlockContext } from "../context/useBlockContext";
 import { PixelImageBlock } from "../PixelImageBlock";
 import { useBlockClipboard } from "./useBlockClipboard";
@@ -15,7 +16,8 @@ vi.mock(import("@dextinity/admin"), async (importOriginal) => ({
     writeClipboardText: vi.fn(),
 }));
 
-vi.mock("../../dam/config/useDamScope", () => ({ useDamScope: vi.fn() }));
+vi.mock("../../config/DextinityConfigContext", () => ({ useDextinityConfig: vi.fn() }));
+vi.mock("../../contentScope/Provider", () => ({ useContentScope: vi.fn() }));
 vi.mock("../context/useBlockContext", () => ({ useBlockContext: vi.fn() }));
 
 const operationName = (document: DocumentNode) => (document.definitions[0] as OperationDefinitionNode).name?.value;
@@ -51,20 +53,11 @@ const mutate = vi.fn(async ({ mutation, variables }: { mutation: DocumentNode; v
 });
 
 const clipboardContentForScope = (scope: Record<string, unknown>) =>
-    JSON.stringify({
-        blocks: [
-            {
-                name: "Image",
-                visible: true,
-                output: { damFileId: "file-1" },
-                damFiles: [{ id: "file-1", scope }],
-            },
-        ],
-        damScope: scope,
-    });
+    JSON.stringify([{ name: "Image", visible: true, output: { damFileId: "file-1" }, damFiles: [{ id: "file-1", scope }] }]);
 
-function renderUseBlockClipboard({ damScope }: { damScope: Record<string, unknown> }) {
-    (useDamScope as Mock).mockReturnValue(damScope);
+function renderUseBlockClipboard({ domain, scopeParts = ["domain"] }: { domain: string; scopeParts?: string[] }) {
+    (useDextinityConfig as Mock).mockReturnValue({ apiUrl: "https://example.com", dam: { scopeParts } });
+    (useContentScope as Mock).mockReturnValue({ scope: { domain, language: "en" } });
     (useBlockContext as Mock).mockReturnValue({
         apolloClient: { query, mutate } as unknown as ApolloClient<unknown>,
         apiUrl: "https://example.com",
@@ -90,29 +83,37 @@ describe("useBlockClipboard", () => {
         vi.clearAllMocks();
     });
 
-    it("writes the referenced DAM files and the DAM scope to the clipboard", async () => {
-        const result = renderUseBlockClipboard({ damScope: { domain: "main" } });
+    it("writes the referenced DAM files including their scope to the clipboard", async () => {
+        const result = renderUseBlockClipboard({ domain: "main" });
 
         await act(async () => {
             await result.current.updateClipboardContent([{ name: "Image", visible: true, state: { damFile: damFile("file-1") } }]);
         });
 
-        expect(JSON.parse((writeClipboardText as Mock).mock.calls[0][0])).toEqual({
-            damScope: { domain: "main" },
-            blocks: [
-                {
-                    name: "Image",
-                    visible: true,
-                    output: { damFileId: "file-1" },
-                    damFiles: [{ id: "file-1", imageCropArea: { focalPoint: "SMART" } }],
-                },
-            ],
+        expect(JSON.parse((writeClipboardText as Mock).mock.calls[0][0])).toEqual([
+            {
+                name: "Image",
+                visible: true,
+                output: { damFileId: "file-1" },
+                // The file was selected in the Admin and doesn't know its scope, so the edited scope is used
+                damFiles: [{ id: "file-1", scope: { domain: "main" }, imageCropArea: { focalPoint: "SMART" } }],
+            },
+        ]);
+    });
+
+    it("determines the DAM scope without a DamScopeProvider", async () => {
+        const result = renderUseBlockClipboard({ domain: "main", scopeParts: ["domain", "unusedScopePart"] });
+
+        await act(async () => {
+            await result.current.updateClipboardContent([{ name: "Image", visible: true, state: { damFile: damFile("file-1") } }]);
         });
+
+        expect(JSON.parse((writeClipboardText as Mock).mock.calls[0][0])[0].damFiles[0].scope).toEqual({ domain: "main" });
     });
 
     it("copies the referenced DAM files when pasting into another scope", async () => {
         (readClipboardText as Mock).mockResolvedValue(clipboardContentForScope({ domain: "main" }));
-        const result = renderUseBlockClipboard({ damScope: { domain: "secondary" } });
+        const result = renderUseBlockClipboard({ domain: "secondary" });
 
         const response = await getClipboardContent(result);
 
@@ -123,7 +124,19 @@ describe("useBlockClipboard", () => {
 
     it("doesn't copy the referenced DAM files when pasting into the same scope", async () => {
         (readClipboardText as Mock).mockResolvedValue(clipboardContentForScope({ domain: "main" }));
-        const result = renderUseBlockClipboard({ damScope: { domain: "main" } });
+        const result = renderUseBlockClipboard({ domain: "main" });
+
+        const response = await getClipboardContent(result);
+
+        expect(response.canPaste).toBe(true);
+        expect(response.canPaste && response.content[0].state.damFile?.id).toBe("file-1");
+        expect(query.mock.calls.map(([{ query: document }]) => operationName(document))).toEqual(["ImageBlockDamFile"]);
+        expect(mutate).not.toHaveBeenCalled();
+    });
+
+    it("doesn't copy the referenced DAM files when the DAM isn't scoped", async () => {
+        (readClipboardText as Mock).mockResolvedValue(clipboardContentForScope({}));
+        const result = renderUseBlockClipboard({ domain: "main", scopeParts: [] });
 
         const response = await getClipboardContent(result);
 
@@ -134,7 +147,7 @@ describe("useBlockClipboard", () => {
 
     it("supports content copied by an earlier version", async () => {
         (readClipboardText as Mock).mockResolvedValue(JSON.stringify([{ name: "Image", visible: true, output: { damFileId: "file-1" } }]));
-        const result = renderUseBlockClipboard({ damScope: { domain: "secondary" } });
+        const result = renderUseBlockClipboard({ domain: "secondary" });
 
         const response = await getClipboardContent(result);
 
@@ -145,7 +158,7 @@ describe("useBlockClipboard", () => {
 
     it("can't paste content that isn't blocks", async () => {
         (readClipboardText as Mock).mockResolvedValue(JSON.stringify({ some: "object" }));
-        const result = renderUseBlockClipboard({ damScope: { domain: "main" } });
+        const result = renderUseBlockClipboard({ domain: "main" });
 
         expect((await getClipboardContent(result)).canPaste).toBe(false);
     });

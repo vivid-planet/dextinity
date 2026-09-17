@@ -33,7 +33,7 @@ export class AttachedDocumentLoaderService {
 
             for (const [type, attachedDocuments] of Object.entries(attachedDocumentsByType)) {
                 for (const document of await this.em.find(
-                    type,
+                    this.em.getMetadata().getByClassName(type).class,
                     attachedDocuments.map((i) => i.documentId),
                 )) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any

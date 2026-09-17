@@ -1,4 +1,5 @@
-import { CreateRequestContext, EntityManager, MikroORM } from "@mikro-orm/postgresql";
+import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
+import { EntityManager, MikroORM } from "@mikro-orm/postgresql";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { createHmac } from "crypto";
 import { addHours, addSeconds } from "date-fns";

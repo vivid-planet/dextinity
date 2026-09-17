@@ -6,6 +6,7 @@ import { SyntaxKind } from "ts-morph";
 import { buildOptions } from "../generateCrud/build-options";
 import { buildNameVariants } from "../utils/build-name-variants";
 import { integerTypes, numberTypes } from "../utils/constants";
+import { isArrayProp, isEnumArrayProp, isJsonProp } from "../utils/entity-property-type";
 import { generateImportsCode, type Imports } from "../utils/generate-imports-code";
 import {
     findBlockImportPath,
@@ -137,7 +138,7 @@ export async function generateCrudInput(
             decorators.push(`@IsEnum(${enumName})`);
             decorators.push(`@Field(() => ${enumName}, ${fieldOptions})`);
             type = enumName;
-        } else if (prop.type === "EnumArrayType") {
+        } else if (isEnumArrayProp(prop)) {
             if (prop.nullable) {
                 console.warn(`${prop.name}: Nullable enum arrays are not supported`);
             }
@@ -251,7 +252,9 @@ export async function generateCrudInput(
                 }
                 const inputNameClassName = `${metadata.className}Nested${prop.targetMeta.className}Input`;
                 {
-                    const excludeFields = prop.targetMeta.props.filter((p) => p.kind == "m:1" && p.targetMeta == metadata).map((p) => p.name);
+                    const excludeFields = prop.targetMeta.props
+                        .filter((p) => p.kind == "m:1" && p.targetMeta?.class == metadata.class)
+                        .map((p) => p.name);
 
                     const { fileNameSingular } = buildNameVariants(metadata);
                     const { fileNameSingular: targetFileNameSingular } = buildNameVariants(prop.targetMeta);
@@ -326,7 +329,9 @@ export async function generateCrudInput(
             }
             const inputNameClassName = `${metadata.className}Nested${prop.targetMeta.className}Input`;
             {
-                const excludeFields = prop.targetMeta.props.filter((p) => p.kind == "1:1" && p.targetMeta == metadata).map((p) => p.name);
+                const excludeFields = prop.targetMeta.props
+                    .filter((p) => p.kind == "1:1" && p.targetMeta?.class == metadata.class)
+                    .map((p) => p.name);
                 const { fileNameSingular } = buildNameVariants(metadata);
                 const { fileNameSingular: targetFileNameSingular } = buildNameVariants(prop.targetMeta);
                 const fileName = `dto/${fileNameSingular}-nested-${targetFileNameSingular}.input.ts`;
@@ -346,7 +351,7 @@ export async function generateCrudInput(
             decorators.push(`@Type(() => ${inputNameClassName})`);
             decorators.push("@ValidateNested()");
             type = `${inputNameClassName}`;
-        } else if (prop.type == "JsonType" || prop.embeddable || prop.type == "ArrayType") {
+        } else if (isJsonProp(prop) || prop.embeddable || isArrayProp(prop)) {
             const tsProp = morphTsProperty(prop.name, metadata);
 
             let tsType = tsProp.getType();

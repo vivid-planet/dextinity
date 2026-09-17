@@ -1,5 +1,6 @@
 import { ScopedEntity } from "@dextinity/cms-api";
-import { BaseEntity, defineConfig, Embeddable, Embedded, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Embeddable, Embedded, Entity, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
@@ -24,13 +25,13 @@ describe("GenerateCrud with ScopedEntity", () => {
         LazyMetadataStorage.load();
         const orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [TestEntityWithScopedEntity],
             }),
         );
 
-        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithScopedEntity"));
+        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntityWithScopedEntity"));
         const formattedOut = await formatGeneratedFiles(out);
 
         {
@@ -73,13 +74,13 @@ describe("GenerateCrud with Scope", () => {
         LazyMetadataStorage.load();
         const orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [TestEntityWithScope],
             }),
         );
 
-        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithScope"));
+        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntityWithScope"));
         const formattedOut = await formatGeneratedFiles(out);
 
         {

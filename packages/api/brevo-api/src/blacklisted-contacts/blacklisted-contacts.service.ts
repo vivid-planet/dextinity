@@ -1,3 +1,4 @@
+import { resolveEntityClass } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { EmailCampaignScopeInterface } from "src/types";
@@ -28,7 +29,7 @@ export class BlacklistedContactsService {
         for (const email of emails) {
             const hashedEmail = hashEmail(email, this.secretKey);
 
-            const blacklistedContact = this.entityManager.create<BlacklistedContactsInterface>("BrevoBlacklistedContacts", {
+            const blacklistedContact = this.entityManager.create(resolveEntityClass<BlacklistedContactsInterface>("BrevoBlacklistedContacts"), {
                 hashedEmail,
                 scope,
                 createdAt: new Date(),

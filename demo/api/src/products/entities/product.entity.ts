@@ -11,23 +11,8 @@ import {
     RootBlockEntity,
     RootBlockType,
 } from "@dextinity/cms-api";
-import {
-    BaseEntity,
-    Collection,
-    Entity,
-    Enum,
-    FullTextType,
-    Index,
-    ManyToMany,
-    ManyToOne,
-    OneToMany,
-    OneToOne,
-    OptionalProps,
-    PrimaryKey,
-    Property,
-    Ref,
-    types,
-} from "@mikro-orm/postgresql";
+import { Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, Collection, FullTextType, OptionalProps, Ref, types } from "@mikro-orm/postgresql";
 import { Field, ID, InputType, Int, ObjectType, registerEnumType } from "@nestjs/graphql";
 import { DamFile } from "@src/dam/entities/dam-file.entity";
 import { Manufacturer } from "@src/products/entities/manufacturer.entity";

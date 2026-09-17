@@ -1,4 +1,5 @@
-import { BaseEntity, defineConfig, Entity, Filter, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, Filter, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { v4 as uuid } from "uuid";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -25,13 +26,13 @@ describe("deletedAt soft delete", () => {
         LazyMetadataStorage.load();
         orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [TestEntity],
             }),
         );
 
-        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntity"));
+        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntity"));
         formattedOut = await formatGeneratedFiles(out);
     });
     afterEach(async () => {
@@ -39,7 +40,7 @@ describe("deletedAt soft delete", () => {
     });
 
     it("should detect deletedAt property", () => {
-        const options = buildOptions(orm.em.getMetadata().get("TestEntity"), { requiredPermission: testPermission });
+        const options = buildOptions(orm.em.getMetadata().getByClassName("TestEntity"), { requiredPermission: testPermission });
         expect(options.hasDeletedAtProp).toBe(true);
     });
 

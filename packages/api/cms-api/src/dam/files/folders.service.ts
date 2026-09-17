@@ -13,10 +13,16 @@ import { DamScopeInterface } from "../types";
 import { DamFolderListPositionArgs, FolderArgsInterface } from "./dto/folder.args";
 import { UpdateFolderInput } from "./dto/folder.input";
 import { FOLDER_TABLE_NAME, FolderInterface } from "./entities/folder.entity";
+import { resolveFolderEntity } from "./entities/resolve-dam-entity";
 import { FilesService } from "./files.service";
 
-const withFoldersSelect = (
-    qb: QueryBuilder<FolderInterface>,
+// The populate hint stays `never` because the QueryBuilder uses it contravariantly, which makes `any` incompatible
+// with every concrete hint.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type FoldersQueryBuilder = QueryBuilder<FolderInterface, any, never, any, any, any, any>;
+
+const withFoldersSelect = <Qb extends FoldersQueryBuilder>(
+    qb: Qb,
     args: {
         includeArchived?: boolean;
         parentId?: string | null;
@@ -27,7 +33,7 @@ const withFoldersSelect = (
         limit?: number;
         scope?: DamScopeInterface;
     },
-): QueryBuilder<FolderInterface> => {
+): Qb => {
     if (!args.includeArchived) {
         qb.where({ archived: false });
     }
@@ -69,7 +75,7 @@ const withFoldersSelect = (
     return qb;
 };
 
-const addSearchTermFiltertoQueryBuilder = (qb: QueryBuilder<FolderInterface>, searchText: string): QueryBuilder<FolderInterface> => {
+const addSearchTermFiltertoQueryBuilder = <Qb extends FoldersQueryBuilder>(qb: Qb, searchText: string): Qb => {
     const terms = searchText.split(" ");
     for (const term of terms) {
         qb.andWhere({ name: { $ilike: `%${term}%` } });
@@ -186,7 +192,7 @@ export class FoldersService {
             parent = await this.findOneById(parentId);
             mpath = (await this.findAncestorsByParentId(parentId)).map((folder) => folder.id);
         }
-        const folder = this.entityManager.create<FolderInterface>("DamFolder", { ...data, isInboxFromOtherScope, parent, mpath, scope });
+        const folder = this.entityManager.create(resolveFolderEntity(), { ...data, isInboxFromOtherScope, parent, mpath, scope });
         await this.entityManager.persist(folder).flush();
         return folder;
     }
@@ -217,7 +223,7 @@ export class FoldersService {
         if (parentIsDirty) {
             folder.mpath = folder.parent ? (await this.findAncestorsByParentId(folder.parent.id)).map((f) => f.id) : [];
 
-            const qb = this.entityManager.createQueryBuilder<FolderInterface>("DamFolder");
+            const qb = this.entityManager.createQueryBuilder(resolveFolderEntity());
             await qb
                 .update({
                     mpath: raw("array_cat(ARRAY[?]::uuid[], mpath[(array_position(mpath, ?)):array_length(mpath,1)])", [folder.mpath, folder.id]),
@@ -294,7 +300,7 @@ export class FoldersService {
             await this.delete(subFolder.id);
         }
 
-        const result = await this.entityManager.nativeDelete<FolderInterface>("DamFolder", id);
+        const result = await this.entityManager.nativeDelete(resolveFolderEntity(), id);
         return result === 1;
     }
 
@@ -305,7 +311,7 @@ export class FoldersService {
             ? raw(`ROW_NUMBER() OVER( ORDER BY (COUNT(DISTINCT children.id) + COUNT(DISTINCT files.id)) ${args.sortDirection} ) AS row_number`)
             : raw(`ROW_NUMBER() OVER( ORDER BY folder."${effectiveSortColumn}" ${args.sortDirection} ) AS row_number`);
 
-        let baseQb = this.entityManager.createQueryBuilder<FolderInterface, "folder">("DamFolder", "folder").select(["folder.id", rowNumberExpr]);
+        let baseQb = this.entityManager.createQueryBuilder(resolveFolderEntity(), "folder");
 
         if (isSizeSort) {
             baseQb = baseQb.leftJoin("folder.children", "children").leftJoin("folder.files", "files").groupBy(["folder.id"]);
@@ -318,9 +324,9 @@ export class FoldersService {
             sortColumnName: args.sortColumnName,
             sortDirection: args.sortDirection,
             scope,
-        });
+        }).select(["folder.id", rowNumberExpr]);
 
-        const result: { rows: Array<{ row_number: string }> } = await this.entityManager.getKnex().raw(
+        const rows = await this.entityManager.execute<Array<{ row_number: string }>>(
             `select "folder_with_row_number".row_number
                 from "${FOLDER_TABLE_NAME}" as "folder"
                 join (${subQb.getFormattedQuery()}) as "folder_with_row_number" ON folder_with_row_number.id = folder.id
@@ -329,12 +335,12 @@ export class FoldersService {
             [folderId],
         );
 
-        if (result.rows.length === 0) {
+        if (rows.length === 0) {
             throw new Error("Folder ID does not exist.");
         }
 
         // make the positions start with 0
-        return Number(result.rows[0].row_number) - 1;
+        return Number(rows[0].row_number) - 1;
     }
 
     async isValidParentForFolder(folderId: string, parentId: string | null): Promise<boolean> {
@@ -410,17 +416,17 @@ export class FoldersService {
 
     private selectQueryBuilder(): QueryBuilder<FolderInterface> {
         return this.entityManager
-            .createQueryBuilder<FolderInterface, "folder">("DamFolder", "folder")
+            .createQueryBuilder(resolveFolderEntity(), "folder")
             .select("*")
             .leftJoinAndSelect("folder.parent", "parent")
-            .addSelect(raw('COUNT(DISTINCT children.id) as "numberOfChildFolders"'))
+            .addSelect(raw('COUNT(DISTINCT children.id)::int as "numberOfChildFolders"'))
             .leftJoin("folder.children", "children")
-            .addSelect(raw('COUNT(DISTINCT files.id) as "numberOfFiles"'))
+            .addSelect(raw('COUNT(DISTINCT files.id)::int as "numberOfFiles"'))
             .leftJoin("folder.files", "files")
             .groupBy(["folder.id", "parent.id"]);
     }
 
     private countQueryBuilder(): QueryBuilder<FolderInterface> {
-        return this.entityManager.createQueryBuilder<FolderInterface, "folder">("DamFolder", "folder").select("*");
+        return this.entityManager.createQueryBuilder(resolveFolderEntity(), "folder").select("*");
     }
 }

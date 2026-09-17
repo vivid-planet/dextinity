@@ -49,7 +49,7 @@ export class DiscoverService {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const block = Reflect.getMetadata(ROOT_BLOCK_METADATA_KEY, (entity as any).prototype, key);
                     ret.push({
-                        metadata: metadataStorage.get(entity.name),
+                        metadata: metadataStorage.get(entity),
                         graphqlObjectType: this.objectTypesMetadata.find((item) => item.target.name === entity.name)?.name,
                         options: rootBlockEntityOptions,
                         column: key,
@@ -72,7 +72,7 @@ export class DiscoverService {
             ret.push({
                 entity,
                 entityName: entity.name,
-                metadata: metadataStorage.get(entity.name),
+                metadata: metadataStorage.get(entity),
                 graphqlObjectType: this.objectTypesMetadata.find((item) => item.target.name === entity.name)?.name,
             });
         });

@@ -31,12 +31,18 @@ import { FileParams } from "./dto/file.params";
 import { FILE_TABLE_NAME, FileInterface } from "./entities/file.entity";
 import { DamFileImage } from "./entities/file-image.entity";
 import { FolderInterface } from "./entities/folder.entity";
+import { resolveFileEntity } from "./entities/resolve-dam-entity";
 import { FoldersService } from "./folders.service";
 
 const exifrSupportedMimetypes = ["image/jpeg", "image/tiff", "image/x-iiq", "image/heif", "image/heic", "image/avif", "image/png"];
 
-const withFilesSelect = (
-    qb: QueryBuilder<FileInterface>,
+// The populate hint stays `never` because the QueryBuilder uses it contravariantly, which makes `any` incompatible
+// with every concrete hint.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type FilesQueryBuilder = QueryBuilder<FileInterface, any, never, any, any, any, any>;
+
+const withFilesSelect = <Qb extends FilesQueryBuilder>(
+    qb: Qb,
     args: {
         query?: string;
         id?: string;
@@ -55,7 +61,7 @@ const withFilesSelect = (
         scope?: DamScopeInterface;
         imageCropArea?: ImageCropAreaInput;
     },
-): QueryBuilder<FileInterface> => {
+): Qb => {
     if (args.query) {
         qb.andWhere("file.name ILIKE ANY (ARRAY[?])", [args.query.split(" ").map((term) => `%${term}%`)]);
     }
@@ -125,7 +131,7 @@ export class FilesService {
 
     private selectQueryBuilder(): QueryBuilder<FileInterface> {
         return this.entityManager
-            .createQueryBuilder<FileInterface, "file">("DamFile", "file")
+            .createQueryBuilder(resolveFileEntity(), "file")
             .select("*")
             .leftJoinAndSelect("file.image", "image")
             .leftJoinAndSelect("file.folder", "folder");
@@ -239,7 +245,7 @@ export class FilesService {
     async create({ folderId, ...data }: CreateFileInput & { copyOf?: FileInterface }): Promise<FileInterface> {
         const folder = folderId ? await this.foldersService.findOneById(folderId) : undefined;
         return this.save(
-            this.entityManager.create<FileInterface>("DamFile", {
+            this.entityManager.create(resolveFileEntity(), {
                 ...data,
                 license: { ...data.license },
                 folder: folder?.id,
@@ -284,7 +290,7 @@ export class FilesService {
                 // Check if the current file is the only one using the contentHash before deleting from blob storage
                 if (
                     (
-                        await withFilesSelect(this.entityManager.createQueryBuilder<FileInterface, "file">("DamFile", "file"), {
+                        await withFilesSelect(this.entityManager.createQueryBuilder(resolveFileEntity(), "file"), {
                             contentHash: fileToReplace.contentHash,
                         }).getResult()
                     ).length === 1
@@ -391,13 +397,13 @@ export class FilesService {
             throw new DextinityEntityNotFoundException();
         }
 
-        const result = await this.entityManager.nativeDelete<FileInterface>("DamFile", id);
+        const result = await this.entityManager.nativeDelete(resolveFileEntity(), id);
         const deleted = result === 1;
 
         if (
             deleted &&
             (
-                await withFilesSelect(this.entityManager.createQueryBuilder<FileInterface, "file">("DamFile", "file"), {
+                await withFilesSelect(this.entityManager.createQueryBuilder(resolveFileEntity(), "file"), {
                     contentHash: file.contentHash,
                 }).getResult()
             ).length === 0
@@ -471,23 +477,20 @@ export class FilesService {
     async getFilePosition(fileId: string, args: Omit<DamFileListPositionArgs, "scope">, scope?: DamScopeInterface): Promise<number> {
         const isSearching = args.filter?.searchText !== undefined && args.filter.searchText.length > 0;
 
-        const subQb = withFilesSelect(
-            this.entityManager
-                .createQueryBuilder<FileInterface, "file">("DamFile", "file")
-                .select(["file.id", raw(`ROW_NUMBER() OVER( ORDER BY file."${args.sortColumnName}" ${args.sortDirection} ) AS row_number`)])
-                .leftJoinAndSelect("file.folder", "folder"),
-            {
-                archived: !args.includeArchived ? false : undefined,
-                folderId: !isSearching ? args.folderId || null : undefined,
-                mimetypes: args.filter?.mimetypes,
-                query: args.filter?.searchText,
-                sortColumnName: args.sortColumnName,
-                sortDirection: args.sortDirection,
-                scope,
-            },
-        );
+        // `select()` narrows the QueryBuilder's type to the selected fields, so it runs after the filters are applied.
+        const subQb = withFilesSelect(this.entityManager.createQueryBuilder(resolveFileEntity(), "file"), {
+            archived: !args.includeArchived ? false : undefined,
+            folderId: !isSearching ? args.folderId || null : undefined,
+            mimetypes: args.filter?.mimetypes,
+            query: args.filter?.searchText,
+            sortColumnName: args.sortColumnName,
+            sortDirection: args.sortDirection,
+            scope,
+        })
+            .leftJoinAndSelect("file.folder", "folder")
+            .select(["file.id", raw(`ROW_NUMBER() OVER( ORDER BY file."${args.sortColumnName}" ${args.sortDirection} ) AS row_number`)]);
 
-        const result: { rows: Array<{ row_number: string }> } = await this.entityManager.getKnex().raw(
+        const rows = await this.entityManager.execute<Array<{ row_number: string }>>(
             `select "file_with_row_number".row_number
                 from "${FILE_TABLE_NAME}" as "file"
                 join (${subQb.getFormattedQuery()}) as "file_with_row_number" ON file_with_row_number.id = file.id
@@ -496,12 +499,12 @@ export class FilesService {
             [fileId],
         );
 
-        if (result.rows.length === 0) {
+        if (rows.length === 0) {
             throw new Error("File ID does not exist.");
         }
 
         // make the positions start with 0
-        return Number(result.rows[0].row_number) - 1;
+        return Number(rows[0].row_number) - 1;
     }
 
     async createCopyOfFile(file: FileInterface, { inboxFolder }: { inboxFolder: FolderInterface }) {

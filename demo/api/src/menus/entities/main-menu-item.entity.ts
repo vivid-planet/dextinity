@@ -1,5 +1,6 @@
 import { BlockDataInterface, RootBlock, RootBlockDataScalar, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
-import { BaseEntity, Entity, OneToOne, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, OneToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { RichTextBlock } from "@src/common/blocks/rich-text.block";
 import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity";

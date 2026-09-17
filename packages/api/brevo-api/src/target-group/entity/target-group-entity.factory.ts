@@ -1,5 +1,6 @@
-import { DocumentInterface } from "@dextinity/cms-api";
-import { Collection, Embedded, Entity, ManyToMany, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { DocumentInterface, resolveEntityClass } from "@dextinity/cms-api";
+import { Embedded, Entity, ManyToMany, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { Collection, OptionalProps } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
@@ -77,7 +78,10 @@ export function createTargetGroupEntity({
         @Field(() => Int, { nullable: true })
         assignedContactsTargetGroupBrevoId?: number;
 
-        @ManyToMany("BrevoEmailCampaign", "targetGroups")
+        @ManyToMany(
+            () => resolveEntityClass<EmailCampaignInterface>("BrevoEmailCampaign"),
+            (campaign: EmailCampaignInterface) => campaign.targetGroups,
+        )
         campaigns = new Collection<EmailCampaignInterface>(this);
     }
     if (BrevoFilterAttributes) {

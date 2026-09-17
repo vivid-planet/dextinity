@@ -6,7 +6,8 @@ import {
     PageTreeNodeVisibility,
     PageTreeService,
 } from "@dextinity/cms-api";
-import { CreateRequestContext, EntityManager, MikroORM } from "@mikro-orm/postgresql";
+import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
+import { EntityManager, MikroORM } from "@mikro-orm/postgresql";
 import { Inject, Logger } from "@nestjs/common";
 import { Config } from "@src/config/config";
 import { CONFIG } from "@src/config/config.module";
@@ -95,7 +96,7 @@ export class FixturesCommand extends CommandRunner {
         await this.blobStorageBackendService.createFolder(damFilesDirectory);
 
         this.logger.log("Run migrations...");
-        const migrator = this.orm.getMigrator();
+        const migrator = this.orm.migrator;
         await migrator.up();
 
         const scope = { domain: "main", language: "en" };

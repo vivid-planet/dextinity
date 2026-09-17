@@ -1,3 +1,4 @@
+import { resolveEntityClass } from "@dextinity/cms-api";
 import { Brevo } from "@getbrevo/brevo";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
@@ -233,7 +234,7 @@ export class BrevoApiContactsService {
     }
 
     public async createBrevoContactList(title: string, scope: EmailCampaignScopeInterface): Promise<number | undefined> {
-        const brevoConfig = await this.entityManager.findOne<BrevoConfigInterface>("BrevoConfig", { scope });
+        const brevoConfig = await this.entityManager.findOne(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"), { scope });
 
         try {
             const data = await this.clientFactory.getClient(scope).contacts.createList({

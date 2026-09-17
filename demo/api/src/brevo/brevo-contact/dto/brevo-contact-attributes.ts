@@ -1,5 +1,5 @@
 import { IsUndefinable } from "@dextinity/cms-api";
-import { Embeddable, Enum } from "@mikro-orm/core";
+import { Embeddable, Enum } from "@mikro-orm/decorators/legacy";
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { IsEnum, IsNotEmpty, IsString } from "class-validator";
 

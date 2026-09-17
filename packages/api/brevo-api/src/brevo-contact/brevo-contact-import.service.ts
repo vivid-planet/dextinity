@@ -1,3 +1,4 @@
+import { resolveEntityClass } from "@dextinity/cms-api";
 import * as csv from "@fast-csv/parse";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
@@ -83,7 +84,9 @@ export class BrevoContactImportService {
         const failedColumns: Record<string, string>[] = [];
         const blacklistedColumns: Record<string, string>[] = [];
 
-        const targetGroups = await this.entityManager.find<TargetGroupInterface>("BrevoTargetGroup", { id: { $in: targetGroupIds } });
+        const targetGroups = await this.entityManager.find(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"), {
+            id: { $in: targetGroupIds },
+        });
         const contactSource = ContactSource.csvImport;
 
         for (const targetGroup of targetGroups) {
@@ -192,7 +195,7 @@ export class BrevoContactImportService {
                     return "updated";
                 }
             } else if (!brevoContact) {
-                const brevoConfig = await this.entityManager.findOneOrFail<BrevoConfigInterface>("BrevoConfig", { scope });
+                const brevoConfig = await this.entityManager.findOneOrFail(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"), { scope });
 
                 const success = await this.brevoContactsService.createContact({
                     ...contact,

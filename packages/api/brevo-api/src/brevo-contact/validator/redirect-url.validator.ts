@@ -1,3 +1,4 @@
+import { resolveEntityClass } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
@@ -30,7 +31,7 @@ export class IsValidRedirectURLConstraint implements ValidatorConstraintInterfac
 
     async validate(urlToValidate: string, args: ValidationArguments): Promise<boolean> {
         const [scope] = args.constraints;
-        const configForScope = await this.entityManager.findOneOrFail<BrevoConfigInterface>("BrevoConfig", { scope });
+        const configForScope = await this.entityManager.findOneOrFail(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"), { scope });
 
         if (!configForScope) {
             throw Error("Scope does not exist");

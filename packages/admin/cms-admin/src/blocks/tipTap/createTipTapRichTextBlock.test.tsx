@@ -42,6 +42,25 @@ describe("createTipTapRichTextBlock", () => {
         expect(() => createTipTapRichTextBlock({ orderedList: { styles: [style, style] } })).toThrow();
     });
 
+    it("should throw when the defaultStyle is not one of the text block's styles", () => {
+        const style = { name: "copy100", label: "Copy 100", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
+        expect(() =>
+            createTipTapRichTextBlock({
+                textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [style], defaultStyle: "copy200" }],
+            }),
+        ).toThrow();
+    });
+
+    it("should start content with the default text block's default style", () => {
+        const style = { name: "copy100", label: "Copy 100", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
+        const block = createTipTapRichTextBlock({
+            textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [style], defaultStyle: "copy100" }],
+        });
+        expect(block.defaultValues()).toEqual({
+            tipTapContent: { type: "doc", content: [{ type: "paragraph", attrs: { textBlock: "paragraph", textBlockStyle: "copy100" } }] },
+        });
+    });
+
     it("should throw when the defaultTextBlock is not one of the text blocks", () => {
         expect(() =>
             createTipTapRichTextBlock({ textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }], defaultTextBlock: "heading-1" }),

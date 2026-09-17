@@ -41,7 +41,18 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
 import type { TipTapChildBlock, TipTapInlineStyle, TipTapPlaceholder, TipTapResolvedOptions } from "./createTipTapRichTextBlock";
-import { findTextBlock, getStyledNodes, hasParagraphTextBlock, orderedListName, type TipTapTextBlockTag, unorderedListName } from "./textBlocks";
+import { toggleTextBlockList } from "./extensions/TextBlockList";
+import {
+    findTextBlock,
+    getStyledNodes,
+    hasParagraphTextBlock,
+    orderedListName,
+    resolveStyle,
+    type TipTapResolvedList,
+    type TipTapResolvedTextBlock,
+    type TipTapTextBlockTag,
+    unorderedListName,
+} from "./textBlocks";
 import { TipTapBlockDialog } from "./TipTapBlockDialog";
 import { TipTapLinkDialog } from "./TipTapLinkDialog";
 
@@ -277,7 +288,11 @@ export const TipTapToolbar = ({
         setTimeout(() => editor.commands.focus(), 0);
     };
 
-    const applicableTextBlockStyles = styledNodes.find((styledNode) => styledNode.name === editorState.activeStyledNode)?.styles ?? [];
+    const activeStyledNode = styledNodes.find((styledNode) => styledNode.name === editorState.activeStyledNode);
+    const applicableTextBlockStyles = activeStyledNode?.styles ?? [];
+    // A configured default style means every text block of that type has one, so the styling select
+    // drops its "Default" entry and the choice becomes mandatory.
+    const activeDefaultStyle = activeStyledNode?.defaultStyle ?? null;
     const applicableInlineStyles = inlineStyles.filter((style) => !style.appliesTo || style.appliesTo.includes(editorState.activeStyledNode));
     // Without bold/italic/underline/strike buttons to fold behind it, a "..." menu just for superscript/subscript/inline
     // styles adds an extra click for no space savings, so show them as individual buttons instead
@@ -327,25 +342,28 @@ export const TipTapToolbar = ({
         })),
     ];
 
+    const activeStyle = editorState.activeTextBlockStyle || null;
+
     const handleTextBlockChange = (e: SelectChangeEvent) => {
-        const textBlock = textBlocks.find((candidate) => candidate.name === e.target.value);
+        const textBlock = textBlocks.find((candidate: TipTapResolvedTextBlock) => candidate.name === e.target.value);
         if (!textBlock) {
             return;
         }
 
-        const nodeType = textBlock.level !== undefined ? "heading" : "paragraph";
-        if (textBlock.level !== undefined) {
-            editor.chain().focus().setHeading({ level: textBlock.level }).run();
+        const attributes = { textBlock: textBlock.name, textBlockStyle: resolveStyle(textBlock, activeStyle) };
+        if (textBlock.level === undefined) {
+            editor.chain().focus().setParagraph().updateAttributes("paragraph", attributes).run();
         } else {
-            editor.chain().focus().setParagraph().run();
+            editor.chain().focus().setHeading({ level: textBlock.level }).updateAttributes("heading", attributes).run();
         }
-        editor.chain().updateAttributes(nodeType, { textBlock: textBlock.name }).run();
+    };
 
-        // Clear a textBlockStyle the new text block doesn't offer
-        const { activeTextBlockStyle } = editorState;
-        if (activeTextBlockStyle && !textBlock.styles.some((style) => style.name === activeTextBlockStyle)) {
-            editor.chain().updateAttributes(nodeType, { textBlockStyle: null }).run();
-        }
+    const handleListToggle = (list: TipTapResolvedList) => {
+        toggleTextBlockList(editor, {
+            list,
+            textBlock: textBlocks.find((textBlock) => textBlock.name === editorState.activeTextBlock),
+            activeStyle,
+        });
     };
 
     const handleTextBlockStyleChange = (e: SelectChangeEvent) => {
@@ -417,9 +435,11 @@ export const TipTapToolbar = ({
                             MenuProps={{ elevation: 1 }}
                             sx={selectSx}
                         >
-                            <MenuItem value="" dense>
-                                <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockStyle.default" defaultMessage="Default" />
-                            </MenuItem>
+                            {activeDefaultStyle === null && (
+                                <MenuItem value="" dense>
+                                    <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockStyle.default" defaultMessage="Default" />
+                                </MenuItem>
+                            )}
                             {applicableTextBlockStyles.map((style) => (
                                 <MenuItem key={style.name} value={style.name} dense>
                                     {style.label}
@@ -552,7 +572,7 @@ export const TipTapToolbar = ({
                             icon={RteOl}
                             tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.orderedList.tooltip" defaultMessage="Ordered list" />}
                             isActive="orderedList"
-                            onToggle={() => editor.chain().focus().toggleOrderedList().run()}
+                            onToggle={() => handleListToggle(resolvedOptions.orderedList as TipTapResolvedList)}
                         />
                     )}
                     {resolvedOptions.unorderedList && (
@@ -561,7 +581,7 @@ export const TipTapToolbar = ({
                             icon={RteUl}
                             tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.bulletList.tooltip" defaultMessage="Bullet list" />}
                             isActive="bulletList"
-                            onToggle={() => editor.chain().focus().toggleBulletList().run()}
+                            onToggle={() => handleListToggle(resolvedOptions.unorderedList as TipTapResolvedList)}
                         />
                     )}
                     <ToolbarButton

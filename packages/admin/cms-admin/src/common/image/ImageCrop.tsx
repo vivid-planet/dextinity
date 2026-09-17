@@ -1,4 +1,4 @@
-import isEqual from "lodash.isequal";
+import { deepEqual as isEqual } from "fast-equals";
 import { Field, useForm, useFormState } from "react-final-form";
 import ReactCrop, { type ReactCropProps } from "react-image-crop";
 

@@ -1,6 +1,6 @@
 import type { DataGridProps, GridFilterModel, GridPaginationModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
 import type { GridCallbackDetails } from "@mui/x-data-grid/models/api";
-import isEqual from "lodash.isequal";
+import { deepEqual as isEqual } from "fast-equals";
 import queryString from "query-string";
 import { useCallback, useRef, useState } from "react";
 import { useHistory, useLocation } from "react-router";

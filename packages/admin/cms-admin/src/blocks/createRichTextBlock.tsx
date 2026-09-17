@@ -9,7 +9,7 @@ import {
     Modifier,
     type RawDraftContentState,
 } from "draft-js";
-import isEqual from "lodash.isequal";
+import { deepEqual as isEqual } from "fast-equals";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 
 import type { RichTextBlockData, RichTextBlockInput } from "../blocks.generated";

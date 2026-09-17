@@ -1,4 +1,4 @@
-import isEqual from "lodash.isequal";
+import { deepEqual as isEqual } from "fast-equals";
 
 import type { BlockDependency } from "../types";
 

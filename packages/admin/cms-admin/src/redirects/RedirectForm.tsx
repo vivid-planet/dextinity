@@ -17,7 +17,7 @@ import {
 } from "@dextinity/admin";
 import { Box, MenuItem } from "@mui/material";
 import { isFQDN } from "class-validator";
-import isEqual from "lodash.isequal";
+import { deepEqual as isEqual } from "fast-equals";
 import { type JSX, useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 

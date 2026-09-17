@@ -1,6 +1,6 @@
 import { type ApolloError, gql, type TypedDocumentNode, useApolloClient, useQuery } from "@apollo/client";
 import { messages, SaveButton } from "@dextinity/admin";
-import isEqual from "lodash.isequal";
+import { deepEqual as isEqual } from "fast-equals";
 import {
     type ComponentProps,
     createElement,

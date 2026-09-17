@@ -1,6 +1,6 @@
 import { type ApolloError, type ApolloQueryResult, type OperationVariables, useQuery } from "@apollo/client";
+import { deepEqual as isEqual } from "fast-equals";
 import type { DocumentNode } from "graphql";
-import isEqual from "lodash.isequal";
 import { type Dispatch, type SetStateAction, useCallback, useEffect, useState } from "react";
 
 interface EditStateOptions<TData, TVariables, TState, TOutput> {

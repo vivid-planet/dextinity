@@ -1,7 +1,7 @@
 import { Field, RadioGroupField, SelectField } from "@dextinity/admin";
 import { Box, Divider, ToggleButton as MuiToggleButton, ToggleButtonGroup as MuiToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import isEqual from "lodash.isequal";
+import { deepEqual as isEqual } from "fast-equals";
 import { type Dispatch, type ReactNode, type SetStateAction, useCallback, useMemo } from "react";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 

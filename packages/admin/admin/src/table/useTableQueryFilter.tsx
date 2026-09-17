@@ -1,6 +1,6 @@
+import { deepEqual as isEqual } from "fast-equals";
 import { createForm, type FormApi } from "final-form";
 import debounce from "lodash.debounce";
-import isEqual from "lodash.isequal";
 import { useEffect, useRef } from "react";
 
 import { usePersistedState } from "./usePersistedState";

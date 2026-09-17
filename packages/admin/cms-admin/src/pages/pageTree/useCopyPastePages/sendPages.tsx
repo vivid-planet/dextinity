@@ -1,6 +1,6 @@
 import { type ApolloClient, gql } from "@apollo/client";
 import { LocalErrorScopeApolloContext } from "@dextinity/admin";
-import isEqual from "lodash.isequal";
+import { deepEqual as isEqual } from "fast-equals";
 import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 import { v4 as uuid } from "uuid";

@@ -936,6 +936,9 @@ importers:
       exceljs:
         specifier: ^4.4.0
         version: 4.4.0
+      fast-equals:
+        specifier: ^5.4.0
+        version: 5.4.0
       final-form-set-field-data:
         specifier: ^1.0.2
         version: 1.0.2(final-form@4.20.10)
@@ -948,9 +951,6 @@ importers:
       lodash.debounce:
         specifier: ^4.0.8
         version: 4.0.8
-      lodash.isequal:
-        specifier: ^4.5.0
-        version: 4.5.0
       query-string:
         specifier: ^7.1.3
         version: 7.1.3
@@ -1039,9 +1039,6 @@ importers:
       '@types/lodash.debounce':
         specifier: ^4.0.9
         version: 4.0.9
-      '@types/lodash.isequal':
-        specifier: ^4.5.8
-        version: 4.5.8
       '@types/node':
         specifier: ^24.13.3
         version: 24.13.3
@@ -1729,6 +1726,9 @@ importers:
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0
+      fast-equals:
+        specifier: ^5.4.0
+        version: 5.4.0
       final-form-arrays:
         specifier: ^3.1.0
         version: 3.1.0(final-form@4.20.10)
@@ -1741,9 +1741,6 @@ importers:
       lodash.escaperegexp:
         specifier: ^4.1.2
         version: 4.1.2
-      lodash.isequal:
-        specifier: ^4.5.0
-        version: 4.5.0
       mime-db:
         specifier: ^1.54.0
         version: 1.54.0
@@ -1883,9 +1880,6 @@ importers:
       '@types/lodash.escaperegexp':
         specifier: ^4.1.9
         version: 4.1.9
-      '@types/lodash.isequal':
-        specifier: ^4.5.8
-        version: 4.5.8
       '@types/mime-db':
         specifier: ^1.43.6
         version: 1.43.6

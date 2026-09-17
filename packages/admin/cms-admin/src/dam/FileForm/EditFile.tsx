@@ -17,7 +17,7 @@ import {
 } from "@dextinity/admin";
 import { Card, CardContent, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import isEqual from "lodash.isequal";
+import { deepEqual as isEqual } from "fast-equals";
 import { type ReactNode, useCallback } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Link as RouterLink } from "react-router-dom";

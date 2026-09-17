@@ -186,6 +186,7 @@ export { FormMutation } from "./FormMutation";
 export { FullPageAlert, type FullPageAlertClassKey, type FullPageAlertProps } from "./fullPageAlert/FullPageAlert";
 export { createComponentSlot } from "./helpers/createComponentSlot";
 export { downloadFile } from "./helpers/downloadFile";
+export { isEqual } from "./helpers/isEqual";
 export { PrettyBytes } from "./helpers/PrettyBytes";
 export type { ThemedComponentBaseProps } from "./helpers/ThemedComponentBaseProps";
 export { type IWindowSize, useWindowSize } from "./helpers/useWindowSize";

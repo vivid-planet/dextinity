@@ -18,7 +18,7 @@ import {
 import { Chip } from "@mui/material";
 import type { GridFilterModel } from "@mui/x-data-grid";
 import { capitalCase } from "change-case";
-import isEqual from "lodash.isequal";
+import { deepEqual as isEqual } from "fast-equals";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { useContentScope } from "../contentScope/Provider";

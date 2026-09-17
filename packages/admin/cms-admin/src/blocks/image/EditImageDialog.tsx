@@ -19,7 +19,7 @@ import {
     Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import isEqual from "lodash.isequal";
+import { deepEqual as isEqual } from "fast-equals";
 import type { ChangeEvent } from "react";
 import { Form } from "react-final-form";
 import { FormattedMessage } from "react-intl";

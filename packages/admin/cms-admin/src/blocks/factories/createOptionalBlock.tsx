@@ -1,5 +1,5 @@
 import { Box, Divider } from "@mui/material";
-import isEqual from "lodash.isequal";
+import { deepEqual as isEqual } from "fast-equals";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import type { MessageDescriptor } from "react-intl";
 import { Route, useRouteMatch } from "react-router";

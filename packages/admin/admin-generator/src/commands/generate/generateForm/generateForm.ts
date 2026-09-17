@@ -433,7 +433,7 @@ export function generateForm(
 
     const code = `
     ${generateImportsCode(imports)}
-    import isEqual from "lodash.isequal";
+    import { isEqual } from "@dextinity/admin";
 
     ${
         rootBlockFields.length > 0

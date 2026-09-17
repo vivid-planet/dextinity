@@ -7,7 +7,7 @@ import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import { EditorContent, type JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import isEqual from "lodash.isequal";
+import { deepEqual as isEqual } from "fast-equals";
 import {
     type ComponentType,
     type ForwardRefExoticComponent,

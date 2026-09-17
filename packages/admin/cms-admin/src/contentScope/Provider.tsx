@@ -1,4 +1,4 @@
-import isEqual from "lodash.isequal";
+import { deepEqual as isEqual } from "fast-equals";
 import { createContext, type Dispatch, type ReactNode, type SetStateAction, useCallback, useContext, useMemo, useState } from "react";
 import { type match, Redirect, Route, Switch, useHistory, useRouteMatch } from "react-router";
 

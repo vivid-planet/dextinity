@@ -20,7 +20,7 @@ import {
     Typography,
 } from "@mui/material";
 import type { GridToolbarProps } from "@mui/x-data-grid";
-import isEqual from "lodash.isequal";
+import { deepEqual as isEqual } from "fast-equals";
 import { type ReactNode, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 

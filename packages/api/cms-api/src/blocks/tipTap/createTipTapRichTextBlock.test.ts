@@ -1372,6 +1372,25 @@ describe("createTipTapRichTextBlock validation", () => {
             ).toThrow();
         });
 
+        it("should name the text block of content that predates the attribute when reading it", () => {
+            const blockWithDisplay = createTipTapRichTextBlock(
+                {
+                    textBlocks: [
+                        { name: "paragraph", tag: "p" },
+                        { name: "display", tag: "h1" },
+                        { name: "heading-1", tag: "h1" },
+                    ],
+                },
+                "TestResolveOnRead",
+            );
+
+            const blockData = blockWithDisplay.blockDataFactory({
+                tipTapContent: { type: "doc", content: [{ type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Headline" }] }] },
+            });
+
+            expect(blockData.tipTapContent.content?.[0].attrs).toEqual({ level: 1, textBlock: "display" });
+        });
+
         it("should throw when textBlockMap maps a DraftJS block type to an unconfigured text block", () => {
             expect(() =>
                 createTipTapRichTextBlock(

@@ -377,6 +377,8 @@ const nodeMapping: Record<string, TipTapNodeHandler> = {
 };
 ```
 
+The API fills the `textBlock` attribute in when it reads content that doesn't carry it - resolved by the node's tag - so the site can rely on the attribute without falling back to the tag itself.
+
 `defaultTextBlock` names the text block new content starts with, so the select's order can be chosen independently of it. It defaults to the first entry.
 
 The `textBlocks` and `defaultTextBlock` options must match between the API and the Admin, otherwise the API rejects content the editor produces.
@@ -408,7 +410,7 @@ Lists are disabled without a `p` text block, because a list item's content start
 
 The API rejects content the configuration doesn't allow: a tag no text block uses, or a `textBlock` attribute that names a text block not configured for the tag the node is stored as. Narrowing `textBlocks` for a block that already holds content therefore requires a [migration](./5-migrations.mdx).
 
-A node written before the `textBlock` attribute existed doesn't carry a name and is resolved by its tag, so content from before this option keeps working without a migration. That resolution picks the first text block with a matching tag, which only stays stable as long as no second text block uses the same tag: adding a `display` above an existing `heading-1` turns every stored `h1` into a `display`. `buildApplyTextBlocksMigration` writes the resolved name into the content once. Run it with the configuration that is live today, and the existing content keeps the text block it has:
+A node written before the `textBlock` attribute existed doesn't carry a name and is resolved by its tag when read, so content from before this option keeps working without a migration. That resolution picks the first text block with a matching tag, which only stays stable as long as no second text block uses the same tag: adding a `display` above an existing `heading-1` turns every stored `h1` into a `display`. `buildApplyTextBlocksMigration` writes the resolved name into the content once. Run it with the configuration that is live today, and the existing content keeps the text block it has:
 
 ```ts title="tip-tap-rich-text.block.ts"
 import { buildApplyTextBlocksMigration, createTipTapRichTextBlock, type TipTapTextBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";

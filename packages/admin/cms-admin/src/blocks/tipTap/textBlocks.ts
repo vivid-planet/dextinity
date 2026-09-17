@@ -1,4 +1,3 @@
-import type { JSONContent } from "@tiptap/core";
 import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import type { ReactNode } from "react";
 
@@ -110,14 +109,8 @@ export const getHeadingLevels = (textBlocks: TipTapResolvedTextBlock[]): Heading
 export const hasParagraphTextBlock = (textBlocks: TipTapResolvedTextBlock[]): boolean => textBlocks.some((textBlock) => textBlock.tag === "p");
 
 /**
- * The tag a paragraph/heading node is stored as, `undefined` for any other node.
+ * The tag a paragraph or heading node is stored as.
  */
-export function getTextBlockTag(node: JSONContent): TipTapTextBlockTag | undefined {
-    if (node.type === "paragraph") {
-        return "p";
-    }
-    if (node.type === "heading" && node.attrs?.level) {
-        return `h${node.attrs.level}` as TipTapTextBlockTag;
-    }
-    return undefined;
+export function getTextBlockTag(node: { type: { name: string }; attrs: { level?: number } }): TipTapTextBlockTag {
+    return node.type.name === "heading" ? (`h${node.attrs.level}` as TipTapTextBlockTag) : "p";
 }

@@ -5,11 +5,11 @@ on:
         types:
             - completed
 
-# The triggering run's branch name alone is ambiguous: a fork's branch can carry the same
-# name as one of ours. Qualify it with the head repository so a fork's "main" doesn't
-# cancel the report for ours.
+# A report belongs to the commit it reports on. Keying on the branch instead would let an
+# unrelated report cancel it, because group names are matched case-insensitively and a
+# fork's branch can carry the same name as ours.
 concurrency:
-    group: ${{ github.workflow }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
+    group: ${{ github.workflow }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_sha }}
     cancel-in-progress: true
 
 jobs:

@@ -1372,6 +1372,18 @@ describe("createTipTapRichTextBlock validation", () => {
             ).toThrow();
         });
 
+        it("should throw when textBlockMap maps a DraftJS block type to an unconfigured text block", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    {
+                        textBlocks: [{ name: "paragraph", tag: "p" }],
+                        migrateFromDraftJs: { textBlockMap: { "header-one": { textBlock: "heading-1" } } },
+                    },
+                    "TestUnknownTextBlockMapping",
+                ),
+            ).toThrow();
+        });
+
         it("should accept content without headings regardless of the configured text blocks", async () => {
             const input = block.blockInputFactory({
                 tipTapContent: {

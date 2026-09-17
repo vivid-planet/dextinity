@@ -34,7 +34,7 @@ import { GQLCreateNewsMutationVariables } from "./NewsForm.gql.generated";
 import { updateNewsMutation } from "./NewsForm.gql";
 import { GQLUpdateNewsMutation } from "./NewsForm.gql.generated";
 import { GQLUpdateNewsMutationVariables } from "./NewsForm.gql.generated";
-import isEqual from "lodash.isequal";
+import { isEqual } from "@dextinity/admin";
 const rootBlocks = {
     image: DamImageBlock,
     content: NewsContentBlock,

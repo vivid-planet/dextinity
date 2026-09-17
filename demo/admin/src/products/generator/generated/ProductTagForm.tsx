@@ -26,7 +26,7 @@ import { GQLCreateProductTagMutationVariables } from "./ProductTagForm.gql.gener
 import { updateProductTagMutation } from "./ProductTagForm.gql";
 import { GQLUpdateProductTagMutation } from "./ProductTagForm.gql.generated";
 import { GQLUpdateProductTagMutationVariables } from "./ProductTagForm.gql.generated";
-import isEqual from "lodash.isequal";
+import { isEqual } from "@dextinity/admin";
 type FormValues = GQLProductTagFormFragment;
 interface FormProps {
     onCreate?: (id: string) => void;

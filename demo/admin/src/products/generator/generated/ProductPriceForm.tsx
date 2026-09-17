@@ -22,7 +22,7 @@ import { GQLProductQueryVariables } from "./ProductPriceForm.gql.generated";
 import { updateProductMutation } from "./ProductPriceForm.gql";
 import { GQLUpdateProductMutation } from "./ProductPriceForm.gql.generated";
 import { GQLUpdateProductMutationVariables } from "./ProductPriceForm.gql.generated";
-import isEqual from "lodash.isequal";
+import { isEqual } from "@dextinity/admin";
 type FormValues = GQLProductPriceFormDetailsFragment;
 interface FormProps {
     onCreate?: (id: string) => void;

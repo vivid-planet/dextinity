@@ -30,7 +30,7 @@ import { GQLCreateProductCategoryMutationVariables } from "./ProductCategoryForm
 import { updateProductCategoryMutation } from "./ProductCategoryForm.gql";
 import { GQLUpdateProductCategoryMutation } from "./ProductCategoryForm.gql.generated";
 import { GQLUpdateProductCategoryMutationVariables } from "./ProductCategoryForm.gql.generated";
-import isEqual from "lodash.isequal";
+import { isEqual } from "@dextinity/admin";
 type FormValues = GQLProductCategoryFormFragment;
 interface FormProps {
     onCreate?: (id: string) => void;

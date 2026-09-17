@@ -36,7 +36,7 @@ import { updateProductMutation } from "./IdFieldInForm.gql";
 import { GQLUpdateProductMutation } from "./IdFieldInForm.gql.generated";
 import { GQLUpdateProductMutationVariables } from "./IdFieldInForm.gql.generated";
 import { GQLProductMutationErrorCode } from "@src/graphql.generated";
-import isEqual from "lodash.isequal";
+import { isEqual } from "@dextinity/admin";
 const rootBlocks = {
     image: DamImageBlock,
 };

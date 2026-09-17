@@ -32,7 +32,7 @@ import { GQLCreateManufacturerMutationVariables } from "./ManufacturerForm.gql.g
 import { updateManufacturerMutation } from "./ManufacturerForm.gql";
 import { GQLUpdateManufacturerMutation } from "./ManufacturerForm.gql.generated";
 import { GQLUpdateManufacturerMutationVariables } from "./ManufacturerForm.gql.generated";
-import isEqual from "lodash.isequal";
+import { isEqual } from "@dextinity/admin";
 type FormValues = Omit<GQLManufacturerFormFragment, "address"> & {
     address: GQLManufacturerFormFragment["address"] & {
         alternativeAddressEnabled: boolean;

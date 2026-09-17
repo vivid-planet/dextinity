@@ -35,7 +35,7 @@ import { GQLCreateProductHighlightMutationVariables } from "./ProductHighlightFo
 import { updateProductHighlightMutation } from "./ProductHighlightForm.gql";
 import { GQLUpdateProductHighlightMutation } from "./ProductHighlightForm.gql.generated";
 import { GQLUpdateProductHighlightMutationVariables } from "./ProductHighlightForm.gql.generated";
-import isEqual from "lodash.isequal";
+import { isEqual } from "@dextinity/admin";
 type FormValues = GQLProductHighlightFormDetailsFragment & {
     productCategoryType?: {
         id: string;

@@ -63,7 +63,7 @@ import { updateProductMutation } from "./ProductForm.gql";
 import { GQLUpdateProductMutation } from "./ProductForm.gql.generated";
 import { GQLUpdateProductMutationVariables } from "./ProductForm.gql.generated";
 import { GQLProductMutationErrorCode } from "@src/graphql.generated";
-import isEqual from "lodash.isequal";
+import { isEqual } from "@dextinity/admin";
 const rootBlocks = {
     image: DamImageBlock,
 };

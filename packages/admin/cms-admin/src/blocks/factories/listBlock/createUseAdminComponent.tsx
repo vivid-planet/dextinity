@@ -19,6 +19,7 @@ type ListBlockUseAdminComponentProps<T extends BlockInterface> = BlockAdminCompo
 
 interface ListBlockUseAdminComponentApi<T extends BlockInterface> {
     cannotPasteBlockErrorDialog: ReactNode;
+    clipboardProgressDialog: ReactNode;
     toggleVisible: (blockKey: string) => void;
     deleteBlocks: (blockKeys: string[]) => void;
     deleteAllSelectedBlocks: () => void;
@@ -176,7 +177,7 @@ export function createUseAdminComponent<T extends BlockInterface>({
 
         const totalVisibleBlocks = state.blocks.filter((block) => block.visible).length;
 
-        const { updateClipboardContent, getClipboardContent } = useBlockClipboard({ supports: block });
+        const { updateClipboardContent, getClipboardContent, progressDialog: clipboardProgressDialog } = useBlockClipboard({ supports: block });
 
         const cannotPasteBlockErrorDialog = useMemo(
             () =>
@@ -261,6 +262,7 @@ export function createUseAdminComponent<T extends BlockInterface>({
 
         return {
             cannotPasteBlockErrorDialog,
+            clipboardProgressDialog,
             toggleVisible,
             deleteBlocks,
             deleteAllSelectedBlocks,

@@ -232,6 +232,7 @@ export function createColumnsBlock<T extends BlockInterface>(
             };
             const {
                 cannotPasteBlockErrorDialog,
+                clipboardProgressDialog,
                 createUpdateSubBlocksFn,
                 updateClipboardContent,
                 addNewBlock,
@@ -449,6 +450,7 @@ export function createColumnsBlock<T extends BlockInterface>(
                         </StackPage>
                     </StackSwitch>
                     {cannotPasteBlockErrorDialog}
+                    {clipboardProgressDialog}
                 </>
             );
         },

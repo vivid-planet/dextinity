@@ -6,5 +6,4 @@ reviewers:
     - VPS-Obi
 
 skipKeywords:
-    - Merge main into next
     - Version Packages

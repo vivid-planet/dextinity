@@ -1,6 +1,5 @@
-import { AffectedEntity, CurrentUser, GetCurrentUser, PaginatedResponseFactory, RequiredPermission } from "@dextinity/cms-api";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository, FilterQuery } from "@mikro-orm/postgresql";
+import { AffectedEntity, CurrentUser, GetCurrentUser, PaginatedResponseFactory, RequiredPermission, resolveEntityClass } from "@dextinity/cms-api";
+import { EntityManager, EntityRepository, FilterQuery } from "@mikro-orm/postgresql";
 import { Inject, Type } from "@nestjs/common";
 import { Args, ArgsType, Int, Mutation, ObjectType, Query, Resolver } from "@nestjs/graphql";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
@@ -49,13 +48,24 @@ export function createBrevoContactResolver({
     class BrevoContactResolver {
         constructor(
             @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
-            @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
             private readonly brevoContactsApiService: BrevoApiContactsService,
             private readonly brevoContactsService: BrevoContactsService,
             private readonly ecgRtrListService: EcgRtrListService,
             private readonly targetGroupService: TargetGroupsService,
-            @InjectRepository("BrevoTargetGroup") private readonly targetGroupRepository: EntityRepository<TargetGroupInterface>,
+            private readonly entityManager: EntityManager,
         ) {}
+
+        // The concrete BrevoConfig entity is created by the application, so it cannot be injected via
+        // `@InjectRepository()`, which resolves its injection token while this class is being defined.
+        private get brevoConfigRepository(): EntityRepository<BrevoConfigInterface> {
+            return this.entityManager.getRepository(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"));
+        }
+
+        // The concrete BrevoTargetGroup entity is created by the application, so it cannot be injected via
+        // `@InjectRepository()`, which resolves its injection token while this class is being defined.
+        private get targetGroupRepository(): EntityRepository<TargetGroupInterface> {
+            return this.entityManager.getRepository(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"));
+        }
 
         @Query(() => BrevoContact)
         @AffectedEntity(BrevoContact)

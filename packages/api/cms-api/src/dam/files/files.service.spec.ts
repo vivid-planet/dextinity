@@ -1,9 +1,19 @@
-import type { EntityRepository, QueryBuilder } from "@mikro-orm/postgresql";
+import { Entity, PrimaryKey } from "@mikro-orm/decorators/legacy";
+import type { EntityManager, EntityRepository, QueryBuilder } from "@mikro-orm/postgresql";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { FileFilterInput } from "./dto/file.args";
 import type { FileInterface } from "./entities/file.entity";
 import { FilesService } from "./files.service";
+
+// `FilesService` resolves the concrete DAM file entity by class name, which requires it to be registered
+// in MikroORM's metadata. Decorating a stand-in entity is enough — no ORM instance is needed.
+
+@Entity({ tableName: "DamFile" })
+class DamFile {
+    @PrimaryKey({ columnType: "uuid" })
+    id!: string;
+}
 
 const FOLDER_ID = "11111111-1111-1111-1111-111111111111";
 const FILE_ID_A = "22222222-2222-2222-2222-222222222222";
@@ -32,19 +42,21 @@ function createServiceWithMockQueryBuilder() {
         createQueryBuilder: vi.fn().mockReturnValue(mockQb),
     } as unknown as EntityRepository<FileInterface>;
 
+    const entityManager = {
+        getRepository: vi.fn((entity) => (entity === DamFile ? filesRepository : undefined)),
+    } as unknown as EntityManager;
+
     const service = new FilesService(
-        filesRepository,
         null as never, // damMediaAlternativesRepository
         null as never, // blobStorageBackendService
         null as never, // foldersService
         null as never, // DAM_CONFIG
         null as never, // orm
-        null as never, // entityManager
+        entityManager,
         null as never, // dominantColorCalculator
     );
 
-    const hasFolderConstraint = () =>
-        andWhereArgs.some((arg) => typeof arg === "object" && arg !== null && "folder" in (arg as Record<string, unknown>));
+    const hasFolderConstraint = () => andWhereArgs.some((arg) => typeof arg === "object" && arg !== null && "folder" in arg);
 
     return { service, andWhereArgs, hasFolderConstraint };
 }

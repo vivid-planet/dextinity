@@ -1,5 +1,11 @@
-import { AffectedEntity, extractGraphqlFields, PaginatedResponseFactory, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
-import { InjectRepository } from "@mikro-orm/nestjs";
+import {
+    AffectedEntity,
+    extractGraphqlFields,
+    PaginatedResponseFactory,
+    RequiredPermission,
+    resolveEntityClass,
+    validateNotModified,
+} from "@dextinity/cms-api";
 import { EntityManager, EntityRepository, FindOptions, wrap } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Info, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
@@ -45,9 +51,19 @@ export function createEmailCampaignsResolver({
             private readonly brevoApiCampaignsService: BrevoApiCampaignsService,
             private readonly ecgRtrListService: EcgRtrListService,
             private readonly entityManager: EntityManager,
-            @InjectRepository("BrevoEmailCampaign") private readonly repository: EntityRepository<EmailCampaignInterface>,
-            @InjectRepository("BrevoTargetGroup") private readonly targetGroupRepository: EntityRepository<TargetGroupInterface>,
         ) {}
+
+        // The concrete BrevoEmailCampaign entity is created by the application, so it cannot be injected via
+        // `@InjectRepository()`, which resolves its injection token while this class is being defined.
+        private get repository(): EntityRepository<EmailCampaignInterface> {
+            return this.entityManager.getRepository(resolveEntityClass<EmailCampaignInterface>("BrevoEmailCampaign"));
+        }
+
+        // The concrete BrevoTargetGroup entity is created by the application, so it cannot be injected via
+        // `@InjectRepository()`, which resolves its injection token while this class is being defined.
+        private get targetGroupRepository(): EntityRepository<TargetGroupInterface> {
+            return this.entityManager.getRepository(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"));
+        }
 
         @Query(() => BrevoEmailCampaign)
         @AffectedEntity(BrevoEmailCampaign)
@@ -94,8 +110,11 @@ export function createEmailCampaignsResolver({
             scope: typeof Scope,
             @Args("input", { type: () => EmailCampaignInput }, new DynamicDtoValidationPipe(EmailCampaignInput)) input: EmailCampaignInputInterface,
         ): Promise<EmailCampaignInterface> {
+            // `brevoTargetGroups` is not an entity property — `updateBrevoEmailCampaign` maps it to `targetGroups`,
+            // while creating a campaign has never assigned target groups.
+            const { brevoTargetGroups, ...restInput } = input;
             const campaign = this.repository.create({
-                ...input,
+                ...restInput,
                 scope,
                 content: input.content.transformToBlockData(),
                 scheduledAt: input.scheduledAt ?? undefined,

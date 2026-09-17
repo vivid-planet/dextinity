@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { validateSync } from "class-validator";
-import type { AzureOpenAI } from "openai";
+import type { AzureOpenAI } from "openai" with { "resolution-mode": "import" };
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 import { FilesService } from "../../dam/files/files.service";

@@ -1,4 +1,4 @@
-import { Entity } from "@mikro-orm/postgresql";
+import { Entity } from "@mikro-orm/decorators/legacy";
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { describe, expect, it } from "vitest";
 

@@ -1,5 +1,6 @@
 import { CrudGenerator, CrudGeneratorHooksService, CurrentUser, MutationError } from "@dextinity/cms-api";
-import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
@@ -39,15 +40,15 @@ describe("find-hooks-service", () => {
         LazyMetadataStorage.load();
         const orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [TestEntity2],
             }),
         );
 
         const hooksService = findHooksService({
             generatorOptions: { requiredPermission: testPermission, hooksService: TestEntityService },
-            metadata: orm.em.getMetadata().get("TestEntity2"),
+            metadata: orm.em.getMetadata().getByClassName("TestEntity2"),
             targetDirectory: __dirname,
         });
         if (!hooksService) {
@@ -72,15 +73,15 @@ describe("find-hooks-service", () => {
         LazyMetadataStorage.load();
         const orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [TestEntity],
             }),
         );
 
         const hooksService = findHooksService({
             generatorOptions: { requiredPermission: testPermission, hooksService: TestEntityService },
-            metadata: orm.em.getMetadata().get("TestEntity"),
+            metadata: orm.em.getMetadata().getByClassName("TestEntity"),
             targetDirectory: __dirname,
         });
         if (!hooksService) {
@@ -108,15 +109,15 @@ describe("find-hooks-service", () => {
         LazyMetadataStorage.load();
         const orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [TestEntity3],
             }),
         );
 
         const hooksService = findHooksService({
             generatorOptions: { requiredPermission: testPermission, hooksService: TestEntityService },
-            metadata: orm.em.getMetadata().get("TestEntity3"),
+            metadata: orm.em.getMetadata().getByClassName("TestEntity3"),
             targetDirectory: __dirname,
         });
         if (!hooksService) {

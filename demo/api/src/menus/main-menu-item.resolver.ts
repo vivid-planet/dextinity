@@ -62,14 +62,16 @@ export class MainMenuItemResolver {
             }
 
             existingItem.assign({ content: input.content ? input.content.transformToBlockData() : null });
-            await this.entityManager.persistAndFlush(existingItem);
+            await this.entityManager.persist(existingItem).flush();
         } else {
-            await this.entityManager.persistAndFlush(
-                this.entityManager.create(MainMenuItem, {
-                    node: node as unknown as PageTreeNode,
-                    content: input.content ? input.content.transformToBlockData() : null,
-                }),
-            );
+            await this.entityManager
+                .persist(
+                    this.entityManager.create(MainMenuItem, {
+                        node: node as unknown as PageTreeNode,
+                        content: input.content ? input.content.transformToBlockData() : null,
+                    }),
+                )
+                .flush();
         }
 
         return this.entityManager.findOneOrFail(MainMenuItem, { node: node.id });

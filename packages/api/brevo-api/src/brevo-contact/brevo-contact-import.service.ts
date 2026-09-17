@@ -1,6 +1,6 @@
+import { resolveEntityClass } from "@dextinity/cms-api";
 import * as csv from "@fast-csv/parse";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 import { IsEmail, IsNotEmpty, validateSync } from "class-validator";
@@ -68,9 +68,20 @@ export class BrevoContactImportService {
         private readonly brevoApiContactsService: BrevoApiContactsService,
         private readonly brevoContactsService: BrevoContactsService,
         private readonly targetGroupsService: TargetGroupsService,
-        @InjectRepository("BrevoTargetGroup") private readonly targetGroupRepository: EntityRepository<TargetGroupInterface>,
-        @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
+        private readonly entityManager: EntityManager,
     ) {}
+
+    // The concrete BrevoTargetGroup entity is created by the application, so it cannot be injected via
+    // `@InjectRepository()`, which resolves its injection token while this class is being defined.
+    private get targetGroupRepository(): EntityRepository<TargetGroupInterface> {
+        return this.entityManager.getRepository(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"));
+    }
+
+    // The concrete BrevoConfig entity is created by the application, so it cannot be injected via
+    // `@InjectRepository()`, which resolves its injection token while this class is being defined.
+    private get brevoConfigRepository(): EntityRepository<BrevoConfigInterface> {
+        return this.entityManager.getRepository(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"));
+    }
 
     async importContactsFromCsv({
         fileStream,

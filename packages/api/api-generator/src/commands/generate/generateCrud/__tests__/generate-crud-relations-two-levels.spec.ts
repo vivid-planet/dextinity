@@ -1,16 +1,5 @@
-import {
-    BaseEntity,
-    Collection,
-    defineConfig,
-    Entity,
-    ManyToOne,
-    MikroORM,
-    OneToMany,
-    OneToOne,
-    PrimaryKey,
-    Property,
-    Ref,
-} from "@mikro-orm/postgresql";
+import { Entity, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, Collection, defineConfig, MikroORM, Ref } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
@@ -59,13 +48,13 @@ describe("generate-crud relations two levels", () => {
         LazyMetadataStorage.load();
         const orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [Product, ProductData, ProductVariant],
             }),
         );
 
-        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("Product"));
+        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("Product"));
         const formattedOut = await formatGeneratedFiles(out);
 
         {

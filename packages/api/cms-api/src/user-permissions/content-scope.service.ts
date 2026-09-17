@@ -158,8 +158,7 @@ export class ContentScopeService {
     }
 
     private hasUuidPrimaryKey(entity: EntityName<object>): boolean {
-        const entityName = typeof entity === "string" ? entity : entity.name;
-        const primaryProps = this.orm.em.getMetadata().get(entityName).getPrimaryProps();
+        const primaryProps = this.orm.em.getMetadata().get(entity).getPrimaryProps();
         return primaryProps.length === 1 && (primaryProps[0].type === "uuid" || (primaryProps[0].columnTypes ?? []).includes("uuid"));
     }
 

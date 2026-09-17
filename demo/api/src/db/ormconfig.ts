@@ -2,6 +2,7 @@ import { migrationsList as brevoMigrationsList } from "@dextinity/brevo-api";
 import { createMigrationsList, createOrmConfig } from "@dextinity/cms-api";
 import { DataloaderType, TextType, Type } from "@mikro-orm/core";
 import { defineConfig, EntityCaseNamingStrategy } from "@mikro-orm/postgresql";
+import { createSqlMetricsLogger } from "@src/open-telemetry/sql-metrics-logger";
 import path from "path";
 
 export const ormConfig = createOrmConfig(
@@ -14,11 +15,11 @@ export const ormConfig = createOrmConfig(
             .trim(),
         dbName: process.env.POSTGRESQL_DB,
         driverOptions: {
-            connection: { ssl: process.env.POSTGRESQL_USE_SSL === "true" },
+            ssl: process.env.POSTGRESQL_USE_SSL === "true",
         },
         namingStrategy: EntityCaseNamingStrategy,
+        loggerFactory: createSqlMetricsLogger,
         debug: false,
-        connect: process.env.MIKRO_ORM_NO_CONNECT !== "true",
         dataloader: DataloaderType.ALL,
         discovery: {
             getMappedType(type: string, platform) {

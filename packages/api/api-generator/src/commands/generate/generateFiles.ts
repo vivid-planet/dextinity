@@ -44,8 +44,7 @@ export const generateFiles = async (
         const entities = orm.em.getMetadata().getAll();
         LazyMetadataStorage.load();
 
-        for (const name in entities) {
-            const entity = entities[name];
+        for (const entity of entities.values()) {
             if (!entity.class) {
                 // Ignore e.g. relation entities that don't have a class
                 continue;

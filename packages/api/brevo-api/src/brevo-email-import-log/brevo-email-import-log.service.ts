@@ -1,4 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
+import { resolveEntityClass } from "@dextinity/cms-api";
 import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { EmailCampaignScopeInterface } from "src/types";
@@ -12,9 +12,14 @@ import { BrevoEmailImportLogInterface, ContactSource } from "./entity/brevo-emai
 export class BrevoEmailImportLogService {
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
-        @InjectRepository("BrevoEmailImportLog") private readonly repository: EntityRepository<BrevoEmailImportLogInterface>,
         private readonly entityManager: EntityManager,
     ) {}
+
+    // The concrete BrevoEmailImportLog entity is created by the application, so it cannot be injected via
+    // `@InjectRepository()`, which resolves its injection token while this class is being defined.
+    private get repository(): EntityRepository<BrevoEmailImportLogInterface> {
+        return this.entityManager.getRepository(resolveEntityClass<BrevoEmailImportLogInterface>("BrevoEmailImportLog"));
+    }
     public async addContactToLogs(
         email: string,
         responsibleUserId: string,

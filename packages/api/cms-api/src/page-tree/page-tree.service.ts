@@ -74,16 +74,18 @@ export class PageTreeService {
             category,
             documentType: attachedDocumentInput.type,
         });
-        await this.entityManager.persistAndFlush(newNode);
+        await this.entityManager.persist(newNode).flush();
 
         if (attachedDocumentInput.id) {
-            await this.entityManager.persistAndFlush(
-                this.attachedDocumentsRepository.create({
-                    pageTreeNodeId: newNode.id,
-                    type: attachedDocumentInput.type,
-                    documentId: attachedDocumentInput.id,
-                }),
-            );
+            await this.entityManager
+                .persist(
+                    this.attachedDocumentsRepository.create({
+                        pageTreeNodeId: newNode.id,
+                        type: attachedDocumentInput.type,
+                        documentId: attachedDocumentInput.id,
+                    }),
+                )
+                .flush();
         }
 
         return readApi.getNodeOrFail(newNode.id);
@@ -223,7 +225,7 @@ export class PageTreeService {
 
         if (input.pos !== existingNode.pos || input.parentId !== existingNode.parentId) {
             const parent = parentId ? await this.pageTreeRepository.findOneOrFail(parentId) : null;
-            await this.entityManager.persistAndFlush(existingNode.assign({ parent, parentId, pos: input.pos, slug: newSlug ?? existingNode.slug }));
+            await this.entityManager.persist(existingNode.assign({ parent, parentId, pos: input.pos, slug: newSlug ?? existingNode.slug })).flush();
 
             const qb = this.pageTreeRepository
                 .createQueryBuilder()
@@ -243,7 +245,7 @@ export class PageTreeService {
             }
 
             const nodesToIncrement = await qb.getResultList();
-            await this.entityManager.persistAndFlush(nodesToIncrement.map((c) => c.assign({ pos: c.pos + 1 })));
+            await this.entityManager.persist(nodesToIncrement.map((c) => c.assign({ pos: c.pos + 1 }))).flush();
         }
 
         return readApi.getNodeOrFail(existingNode.id);
@@ -266,7 +268,7 @@ export class PageTreeService {
             throw new Error("Requested slug is already taken");
         }
 
-        await this.entityManager.persistAndFlush(node.assign({ slug: slug }));
+        await this.entityManager.persist(node.assign({ slug: slug })).flush();
 
         return pageTreeReadApi.getNodeOrFail(id);
     }
@@ -293,7 +295,7 @@ export class PageTreeService {
         // 0 is added to avoid negative infinity for empty array
         const lastPosition = Math.max(0, ...rootNodes.map((node) => node.pos)) + 1;
 
-        await this.entityManager.persistAndFlush(node.assign({ category, parent: null, parentId: null, pos: lastPosition }));
+        await this.entityManager.persist(node.assign({ category, parent: null, parentId: null, pos: lastPosition })).flush();
     }
 
     async delete(pageTreeNode: PageTreeNodeInterface): Promise<boolean> {
@@ -314,10 +316,10 @@ export class PageTreeService {
         for (const attachedDocument of attachedDocuments) {
             if (attachedDocument.id) {
                 try {
-                    const repository = this.entityManager.getRepository(attachedDocument.type);
+                    const repository = this.entityManager.getRepository(this.entityManager.getMetadata().getByClassName(attachedDocument.type).class);
                     const document = await repository.findOneOrFail(attachedDocument.documentId);
-                    await this.entityManager.removeAndFlush(document);
-                    await this.entityManager.removeAndFlush(attachedDocument);
+                    await this.entityManager.remove(document).flush();
+                    await this.entityManager.remove(attachedDocument).flush();
                 } catch {
                     throw new Error(`documentType ${attachedDocument.type} and documentId ${attachedDocument.id} cannot resolve`);
                 }
@@ -326,7 +328,7 @@ export class PageTreeService {
 
         // 2. Delete page tree node itself
         try {
-            await this.entityManager.removeAndFlush(pageTreeNode);
+            await this.entityManager.remove(pageTreeNode).flush();
             return true;
         } catch {
             return false;
@@ -335,7 +337,7 @@ export class PageTreeService {
 
     async resolveDocument(documentType: string, documentId: string): Promise<unknown | null> {
         try {
-            const repository = this.entityManager.getRepository(documentType);
+            const repository = this.entityManager.getRepository(this.entityManager.getMetadata().getByClassName(documentType).class);
             const document = await repository.findOne(documentId);
             return document ?? null;
         } catch {

@@ -6,7 +6,8 @@ import {
     PageTreeNodeVisibility,
     PageTreeService,
 } from "@dextinity/cms-api";
-import { CreateRequestContext, EntityManager, MikroORM } from "@mikro-orm/postgresql";
+import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
+import { EntityManager, MikroORM } from "@mikro-orm/postgresql";
 import { Inject, Logger } from "@nestjs/common";
 import { Config } from "@src/config/config";
 import { CONFIG } from "@src/config/config.module";
@@ -95,7 +96,7 @@ export class FixturesCommand extends CommandRunner {
         await this.blobStorageBackendService.createFolder(damFilesDirectory);
 
         this.logger.log("Run migrations...");
-        const migrator = this.orm.getMigrator();
+        const migrator = this.orm.migrator;
         await migrator.up();
 
         const scope = { domain: "main", language: "en" };
@@ -178,14 +179,16 @@ export class FixturesCommand extends CommandRunner {
 
                     const pageInput = getDefaultPageInput();
 
-                    await this.entityManager.persistAndFlush(
-                        this.entityManager.create(Page, {
-                            id: pageId,
-                            content: pageInput.content.transformToBlockData(),
-                            seo: pageInput.seo.transformToBlockData(),
-                            stage: pageInput.stage.transformToBlockData(),
-                        }),
-                    );
+                    await this.entityManager
+                        .persist(
+                            this.entityManager.create(Page, {
+                                id: pageId,
+                                content: pageInput.content.transformToBlockData(),
+                                seo: pageInput.seo.transformToBlockData(),
+                                stage: pageInput.stage.transformToBlockData(),
+                            }),
+                        )
+                        .flush();
 
                     await this.pageTreeService.updateNodeVisibility(
                         page.id,

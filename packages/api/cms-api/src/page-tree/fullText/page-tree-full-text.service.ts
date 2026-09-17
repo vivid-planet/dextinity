@@ -2,7 +2,8 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Type } from "@nestjs/common";
 
 import { DocumentInterface } from "../../document/dto/document-interface";
-import { PAGE_TREE_DOCUMENTS, PAGE_TREE_ENTITY } from "../page-tree.constants";
+import { resolvePageTreeNodeEntity } from "../entities/resolve-page-tree-node-entity";
+import { PAGE_TREE_DOCUMENTS } from "../page-tree.constants";
 
 @Injectable()
 export class PageTreeFullTextService {
@@ -17,7 +18,7 @@ export class PageTreeFullTextService {
         const metadataStorage = this.entityManager.getMetadata();
 
         for (const entity of this.documents) {
-            const metadata = metadataStorage.get(entity.name);
+            const metadata = metadataStorage.get(entity);
             const primary = metadata.primaryKeys[0];
 
             // Find all tsvector (FullTextType) columns
@@ -74,7 +75,7 @@ export class PageTreeFullTextService {
         const metadataStorage = this.entityManager.getMetadata();
 
         for (const entity of this.documents) {
-            const metadata = metadataStorage.get(entity.name);
+            const metadata = metadataStorage.get(entity);
             const primary = metadata.primaryKeys[0];
 
             const fulltextColumns = metadata.props
@@ -113,7 +114,8 @@ export class PageTreeFullTextService {
 
         // Migrate PageTreeNode fullText column
         {
-            const pageTreeNodeMetadata = metadataStorage.get(PAGE_TREE_ENTITY);
+            const pageTreeNodeEntity = resolvePageTreeNodeEntity();
+            const pageTreeNodeMetadata = metadataStorage.get(pageTreeNodeEntity);
             const primary = pageTreeNodeMetadata.primaryKeys[0];
             const fullTextProp = pageTreeNodeMetadata.props.find((prop) => prop.name === "fullText");
 
@@ -124,7 +126,7 @@ export class PageTreeFullTextService {
                 while (true) {
                     const em = this.entityManager;
                     const entities = await em.find(
-                        PAGE_TREE_ENTITY,
+                        pageTreeNodeEntity,
                         { fullText: null },
                         { limit: pageSize, offset: 0, orderBy: { [primary]: "ASC" } },
                     );
@@ -132,7 +134,7 @@ export class PageTreeFullTextService {
                         break;
                     }
                     for (const entity of entities) {
-                        (entity as Record<string, unknown>).fullText = " "; // trigger onUpdate
+                        (entity as unknown as Record<string, unknown>).fullText = " "; // trigger onUpdate
                     }
 
                     await em.flush();

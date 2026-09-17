@@ -1,4 +1,3 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, FilterQuery } from "@mikro-orm/postgresql";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 
@@ -7,6 +6,7 @@ import { PageTreeService } from "../page-tree/page-tree.service";
 import { PageTreeNodeInterface } from "../page-tree/types";
 import { RedirectFilter } from "./dto/redirects.filter";
 import { RedirectInterface } from "./entities/redirect-entity.factory";
+import { resolveRedirectEntity } from "./entities/resolve-redirect-entity";
 import { REDIRECTS_LINK_BLOCK } from "./redirects.constants";
 import { RedirectGenerationType, RedirectSourceType } from "./redirects.enum";
 import { RedirectsLinkBlock } from "./redirects.module";
@@ -15,11 +15,16 @@ import { RedirectScopeInterface } from "./types";
 @Injectable()
 export class RedirectsService {
     constructor(
-        @InjectRepository("Redirect") private readonly repository: EntityRepository<RedirectInterface>,
         @Inject(forwardRef(() => PageTreeService)) private readonly pageTreeService: PageTreeService,
         @Inject(REDIRECTS_LINK_BLOCK) private readonly linkBlock: RedirectsLinkBlock,
         private readonly entityManager: EntityManager,
     ) {}
+
+    // The concrete redirect entity is created by the application, so it cannot be injected via `@InjectRepository()`,
+    // which resolves its injection token while this class is being defined.
+    private get repository(): EntityRepository<RedirectInterface> {
+        return this.entityManager.getRepository(resolveRedirectEntity());
+    }
 
     getFindCondition({
         query,
@@ -73,27 +78,29 @@ export class RedirectsService {
     async createAutomaticRedirects(node: PageTreeNodeInterface): Promise<void> {
         const readApi = this.pageTreeService.createReadApi({ visibility: "all" });
         const path = await readApi.nodePath(node);
-        await this.entityManager.persistAndFlush(
-            this.repository.create({
-                scope: node.scope,
-                sourceType: RedirectSourceType.path,
-                source: path,
-                target: this.linkBlock
-                    .blockInputFactory({
-                        attachedBlocks: [
-                            {
-                                type: "internal",
-                                props: {
-                                    targetPageId: node.id,
+        await this.entityManager
+            .persist(
+                this.repository.create({
+                    scope: node.scope,
+                    sourceType: RedirectSourceType.path,
+                    source: path,
+                    target: this.linkBlock
+                        .blockInputFactory({
+                            attachedBlocks: [
+                                {
+                                    type: "internal",
+                                    props: {
+                                        targetPageId: node.id,
+                                    },
                                 },
-                            },
-                        ],
-                        activeType: "internal",
-                    })
-                    .transformToBlockData(),
-                generationType: RedirectGenerationType.automatic,
-            }),
-        );
+                            ],
+                            activeType: "internal",
+                        })
+                        .transformToBlockData(),
+                    generationType: RedirectGenerationType.automatic,
+                }),
+            )
+            .flush();
 
         const childNodes = await readApi.getChildNodes(node);
 

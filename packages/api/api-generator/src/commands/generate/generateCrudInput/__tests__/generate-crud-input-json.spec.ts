@@ -1,4 +1,5 @@
-import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM } from "@mikro-orm/postgresql";
 import { InputType } from "@nestjs/graphql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { v4 as uuid } from "uuid";
@@ -50,13 +51,16 @@ describe("GenerateCrudInputJson", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityWithJsonLiteralArray],
                 }),
             );
 
-            const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithJsonLiteralArray"));
+            const out = await generateCrudInput(
+                { requiredPermission: testPermission },
+                orm.em.getMetadata().getByClassName("TestEntityWithJsonLiteralArray"),
+            );
             const formattedOut = await formatSource(out[0].content);
             //console.log(formattedOut);
             const source = parseSource(formattedOut);
@@ -91,13 +95,16 @@ describe("GenerateCrudInputJson", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityWithJsonObject],
                 }),
             );
 
-            const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithJsonObject"));
+            const out = await generateCrudInput(
+                { requiredPermission: testPermission },
+                orm.em.getMetadata().getByClassName("TestEntityWithJsonObject"),
+            );
             const formattedOut = await formatSource(out[0].content);
             //console.log(formattedOut);
             const source = parseSource(formattedOut);
@@ -131,13 +138,13 @@ describe("GenerateCrudInputJson", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityWithRecord],
                 }),
             );
 
-            const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithRecord"));
+            const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntityWithRecord"));
             const formattedOut = await formatSource(out[0].content);
             const source = parseSource(formattedOut);
 

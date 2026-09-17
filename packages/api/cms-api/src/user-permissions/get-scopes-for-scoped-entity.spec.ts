@@ -1,16 +1,5 @@
-import {
-    AnyEntity,
-    BaseEntity,
-    defineConfig,
-    Embeddable,
-    Embedded,
-    Entity,
-    ManyToOne,
-    MikroORM,
-    PrimaryKey,
-    Property,
-    Ref,
-} from "@mikro-orm/postgresql";
+import { Embeddable, Embedded, Entity, ManyToOne, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { AnyEntity, BaseEntity, defineConfig, MikroORM, Ref } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { ModuleRef } from "@nestjs/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -77,8 +66,8 @@ describe("getScopesForScopedEntity", () => {
     beforeAll(async () => {
         orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 allowGlobalContext: true,
                 entities: [Company, News, NewsComment, Product, ContentScopeEmbeddable],
             }),

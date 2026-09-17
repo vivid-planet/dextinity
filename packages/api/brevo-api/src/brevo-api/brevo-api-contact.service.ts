@@ -1,6 +1,6 @@
+import { resolveEntityClass } from "@dextinity/cms-api";
 import { Brevo } from "@getbrevo/brevo";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "src/types";
@@ -25,11 +25,17 @@ export interface CreateDoubleOptInContactData {
 export class BrevoApiContactsService {
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
-        @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
         private readonly clientFactory: BrevoApiClientFactory,
         @Optional() private readonly blacklistedContactsService: BlacklistedContactsService,
         @Optional() private readonly brevoContactLogService: BrevoEmailImportLogService,
+        private readonly entityManager: EntityManager,
     ) {}
+
+    // The concrete BrevoConfig entity is created by the application, so it cannot be injected via
+    // `@InjectRepository()`, which resolves its injection token while this class is being defined.
+    private get brevoConfigRepository(): EntityRepository<BrevoConfigInterface> {
+        return this.entityManager.getRepository(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"));
+    }
 
     public async createDoubleOptInBrevoContact(
         { email, redirectionUrl, attributes }: CreateDoubleOptInContactData,

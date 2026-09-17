@@ -1,4 +1,5 @@
-import { BaseEntity, defineConfig, Entity, ManyToOne, MikroORM, PrimaryKey, Ref } from "@mikro-orm/postgresql";
+import { Entity, ManyToOne, PrimaryKey, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM, Ref } from "@mikro-orm/postgresql";
 import { ID } from "@nestjs/graphql";
 import { Field } from "@nestjs/graphql/dist/decorators/field.decorator.js";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
@@ -47,8 +48,8 @@ describe("GenerateCrudInputRelationsString", () => {
         LazyMetadataStorage.load();
         orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [Foo, RelationTypeId, RelationTypeString],
             }),
         );
@@ -58,7 +59,7 @@ describe("GenerateCrudInputRelationsString", () => {
         await orm.close();
     });
     it("n:1 input dto should contain relation id as ID or string", async () => {
-        const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("Foo"));
+        const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("Foo"));
         const formattedOut = await formatSource(out[0].content);
         const source = parseSource(formattedOut);
 

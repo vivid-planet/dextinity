@@ -1,6 +1,6 @@
+import { resolveEntityClass } from "@dextinity/cms-api";
 import { Brevo } from "@getbrevo/brevo";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 import { EmailCampaignScopeInterface } from "src/types";
@@ -12,9 +12,15 @@ import { BrevoApiEmailTemplateList } from "./dto/brevo-api-email-templates-list"
 @Injectable()
 export class BrevoTransactionalMailsService {
     constructor(
-        @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
         private readonly clientFactory: BrevoApiClientFactory,
+        private readonly entityManager: EntityManager,
     ) {}
+
+    // The concrete BrevoConfig entity is created by the application, so it cannot be injected via
+    // `@InjectRepository()`, which resolves its injection token while this class is being defined.
+    private get brevoConfigRepository(): EntityRepository<BrevoConfigInterface> {
+        return this.entityManager.getRepository(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"));
+    }
 
     async send(options: Omit<Brevo.SendTransacEmailRequest, "sender">, scope: EmailCampaignScopeInterface): Promise<Brevo.SendTransacEmailResponse> {
         try {

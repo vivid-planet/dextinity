@@ -57,8 +57,8 @@ export function createFilesResolver({
     class FilesResolver {
         constructor(
             private readonly filesService: FilesService,
-            @InjectRepository("DamFile") private readonly filesRepository: EntityRepository<FileInterface>,
-            @InjectRepository("DamFolder") private readonly foldersRepository: EntityRepository<FolderInterface>,
+            @InjectRepository(File) private readonly filesRepository: EntityRepository<FileInterface>,
+            @InjectRepository(Folder) private readonly foldersRepository: EntityRepository<FolderInterface>,
             private readonly entityManager: EntityManager,
         ) {}
 
@@ -135,7 +135,7 @@ export function createFilesResolver({
             const entity = await this.filesRepository.findOneOrFail(id);
             entity.archived = true;
 
-            await this.entityManager.persistAndFlush(entity);
+            await this.entityManager.persist(entity).flush();
             return entity;
         }
 
@@ -160,7 +160,7 @@ export function createFilesResolver({
             const entity = await this.filesRepository.findOneOrFail(id);
             entity.archived = false;
 
-            await this.entityManager.persistAndFlush(entity);
+            await this.entityManager.persist(entity).flush();
             return entity;
         }
 

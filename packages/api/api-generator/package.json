@@ -46,9 +46,10 @@
     },
     "devDependencies": {
         "@dextinity/eslint-config": "workspace:*",
-        "@mikro-orm/cli": "^6.6.14",
-        "@mikro-orm/core": "^6.6.14",
-        "@mikro-orm/postgresql": "^6.6.14",
+        "@mikro-orm/cli": "^7.2.0",
+        "@mikro-orm/core": "^7.2.0",
+        "@mikro-orm/decorators": "^7.2.0",
+        "@mikro-orm/postgresql": "^7.2.0",
         "@nestjs/graphql": "^13.4.0",
         "@types/node": "^24.13.3",
         "@types/pluralize": "^0.0.33",
@@ -63,9 +64,10 @@
         "vitest": "^4.1.8"
     },
     "peerDependencies": {
-        "@mikro-orm/cli": "^6.0.0",
-        "@mikro-orm/core": "^6.0.0",
-        "@mikro-orm/postgresql": "^6.0.0",
+        "@mikro-orm/cli": "^7.2.0",
+        "@mikro-orm/core": "^7.2.0",
+        "@mikro-orm/decorators": "^7.2.0",
+        "@mikro-orm/postgresql": "^7.2.0",
         "@nestjs/graphql": "^13.0.0",
         "class-validator": "^0.14.0"
     },

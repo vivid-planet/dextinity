@@ -1,11 +1,11 @@
 import { CrudField, CrudGenerator } from "@dextinity/cms-api";
-import { Entity, Property } from "@mikro-orm/postgresql";
+import { Entity, Property } from "@mikro-orm/decorators/legacy";
 import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
 @Entity({
     expression:
-        'SELECT "addressAsEmbeddable_country" AS id, "addressAsEmbeddable_country" AS label, COUNT(*) AS used FROM "Manufacturer" GROUP BY "addressAsEmbeddable_country"',
+        'SELECT "addressAsEmbeddable_country" AS id, "addressAsEmbeddable_country" AS label, COUNT(*)::int AS used FROM "Manufacturer" GROUP BY "addressAsEmbeddable_country"',
 })
 // view-entity can't be saved or updated so disable create, update and delete
 @CrudGenerator({

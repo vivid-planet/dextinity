@@ -1,17 +1,6 @@
 import { CrudGenerator, EntityInfo, IsNullable, IsUndefinable, RequiredPermission } from "@dextinity/cms-api";
-import {
-    BaseEntity,
-    Embeddable,
-    Embedded,
-    Entity,
-    Enum,
-    FullTextType,
-    Index,
-    IType,
-    OptionalProps,
-    PrimaryKey,
-    Property,
-} from "@mikro-orm/postgresql";
+import { Embeddable, Embedded, Entity, Enum, Index, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, FullTextType, IType, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, InputType, ObjectType } from "@nestjs/graphql";
 import { IsNumber, IsObject, IsString } from "class-validator";
 import { v4 as uuid } from "uuid";

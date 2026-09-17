@@ -1,5 +1,5 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { resolveEntityClass } from "@dextinity/cms-api";
+import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 
@@ -22,17 +22,25 @@ export class BrevoContactsService {
     private readonly secretKey?: string;
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
-        @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
-        @Optional()
-        @InjectRepository("BrevoBlacklistedContacts")
-        @Optional()
-        private readonly blacklistedContactsRepository: EntityRepository<BlacklistedContactsInterface>,
         private readonly brevoContactsApiService: BrevoApiContactsService,
         private readonly ecgRtrListService: EcgRtrListService,
         private readonly targetGroupService: TargetGroupsService,
         @Optional() private readonly brevoEmailImportLogService: BrevoEmailImportLogService,
+        private readonly entityManager: EntityManager,
     ) {
         this.secretKey = this.config.contactsWithoutDoi?.emailHashKey;
+    }
+
+    // The concrete BrevoConfig entity is created by the application, so it cannot be injected via
+    // `@InjectRepository()`, which resolves its injection token while this class is being defined.
+    private get brevoConfigRepository(): EntityRepository<BrevoConfigInterface> {
+        return this.entityManager.getRepository(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"));
+    }
+
+    // The concrete BrevoBlacklistedContacts entity is created by the application, so it cannot be injected via
+    // `@InjectRepository()`, which resolves its injection token while this class is being defined.
+    private get blacklistedContactsRepository(): EntityRepository<BlacklistedContactsInterface> {
+        return this.entityManager.getRepository(resolveEntityClass<BlacklistedContactsInterface>("BrevoBlacklistedContacts"));
     }
 
     public async createContact({

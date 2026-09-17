@@ -67,7 +67,8 @@
             "project": ["./src/**/*.{ts,tsx}"]
         },
         "packages/api/brevo-api": {
-            "project": ["./src/**/*.{ts,tsx}"]
+            "project": ["./src/**/*.{ts,tsx}"],
+            "ignoreDependencies": ["@swc-node/register"]
         },
         "packages/site/site-react": {
             "project": ["./src/**/*.{ts,tsx}"],
@@ -101,7 +102,7 @@
                 "./src/tracing.production.ts"
             ],
             "project": ["./src/**/*.{ts,tsx}"],
-            "ignoreDependencies": ["@as-integrations/express5"],
+            "ignoreDependencies": ["@as-integrations/express5", "@swc-node/register"],
             "ignore": ["./src/**/generated/**", "**/*.generated.ts"]
         },
         "demo/site": {

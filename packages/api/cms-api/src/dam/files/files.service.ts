@@ -32,12 +32,19 @@ import { FileParams } from "./dto/file.params";
 import { FILE_TABLE_NAME, FileInterface } from "./entities/file.entity";
 import { DamFileImage } from "./entities/file-image.entity";
 import { FolderInterface } from "./entities/folder.entity";
+import { resolveFileEntity } from "./entities/resolve-dam-entity";
 import { FoldersService } from "./folders.service";
 
 const exifrSupportedMimetypes = ["image/jpeg", "image/tiff", "image/x-iiq", "image/heif", "image/heic", "image/avif", "image/png"];
 
-const withFilesSelect = (
-    qb: QueryBuilder<FileInterface>,
+// The QueryBuilder type carries the aliases, joins and selected fields of the query it was built from, so the
+// helper stays generic to preserve the caller's exact builder type. The populate hint has to stay `never` because
+// the QueryBuilder uses it contravariantly, which makes `any` incompatible with every concrete hint.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type FilesQueryBuilder = QueryBuilder<FileInterface, any, never, any, any, any, any>;
+
+const withFilesSelect = <Qb extends FilesQueryBuilder>(
+    qb: Qb,
     args: {
         query?: string;
         id?: string;
@@ -56,7 +63,7 @@ const withFilesSelect = (
         scope?: DamScopeInterface;
         imageCropArea?: ImageCropAreaInput;
     },
-): QueryBuilder<FileInterface> => {
+): Qb => {
     if (args.query) {
         qb.andWhere("file.name ILIKE ANY (ARRAY[?])", [args.query.split(" ").map((term) => `%${term}%`)]);
     }
@@ -116,7 +123,6 @@ const withFilesSelect = (
 @Injectable()
 export class FilesService {
     constructor(
-        @InjectRepository("DamFile") private readonly filesRepository: EntityRepository<FileInterface>,
         @InjectRepository(DamMediaAlternative) private readonly damMediaAlternativesRepository: EntityRepository<DamMediaAlternative>,
         @Inject(forwardRef(() => BlobStorageBackendService)) private readonly blobStorageBackendService: BlobStorageBackendService,
         private readonly foldersService: FoldersService,
@@ -125,6 +131,12 @@ export class FilesService {
         private readonly entityManager: EntityManager,
         @Optional() @Inject(DAM_DOMINANT_COLOR_CALCULATOR) private readonly dominantColorCalculator?: DominantColorCalculatorInterface,
     ) {}
+
+    // The concrete DAM file entity is created by the application, so it cannot be injected via `@InjectRepository()`, which
+    // resolves its injection token while this class is being defined.
+    private get filesRepository(): EntityRepository<FileInterface> {
+        return this.entityManager.getRepository(resolveFileEntity());
+    }
 
     private selectQueryBuilder(): QueryBuilder<FileInterface> {
         return this.filesRepository
@@ -405,7 +417,7 @@ export class FilesService {
     }
 
     async save(entity: FileInterface): Promise<FileInterface> {
-        await this.entityManager.persistAndFlush(entity);
+        await this.entityManager.persist(entity).flush();
         return entity;
     }
 
@@ -467,23 +479,20 @@ export class FilesService {
     async getFilePosition(fileId: string, args: Omit<DamFileListPositionArgs, "scope">, scope?: DamScopeInterface): Promise<number> {
         const isSearching = args.filter?.searchText !== undefined && args.filter.searchText.length > 0;
 
-        const subQb = withFilesSelect(
-            this.filesRepository
-                .createQueryBuilder("file")
-                .select(["file.id", raw(`ROW_NUMBER() OVER( ORDER BY file."${args.sortColumnName}" ${args.sortDirection} ) AS row_number`)])
-                .leftJoinAndSelect("file.folder", "folder"),
-            {
-                archived: !args.includeArchived ? false : undefined,
-                folderId: !isSearching ? args.folderId || null : undefined,
-                mimetypes: args.filter?.mimetypes,
-                query: args.filter?.searchText,
-                sortColumnName: args.sortColumnName,
-                sortDirection: args.sortDirection,
-                scope,
-            },
-        );
+        // `select()` narrows the QueryBuilder's type to the selected fields, so it runs after the filters are applied.
+        const subQb = withFilesSelect(this.filesRepository.createQueryBuilder("file"), {
+            archived: !args.includeArchived ? false : undefined,
+            folderId: !isSearching ? args.folderId || null : undefined,
+            mimetypes: args.filter?.mimetypes,
+            query: args.filter?.searchText,
+            sortColumnName: args.sortColumnName,
+            sortDirection: args.sortDirection,
+            scope,
+        })
+            .select(["file.id", raw(`ROW_NUMBER() OVER( ORDER BY file."${args.sortColumnName}" ${args.sortDirection} ) AS row_number`)])
+            .leftJoinAndSelect("file.folder", "folder");
 
-        const result: { rows: Array<{ row_number: string }> } = await this.filesRepository.getKnex().raw(
+        const rows = await this.entityManager.execute<Array<{ row_number: string }>>(
             `select "file_with_row_number".row_number
                 from "${FILE_TABLE_NAME}" as "file"
                 join (${subQb.getFormattedQuery()}) as "file_with_row_number" ON file_with_row_number.id = file.id
@@ -492,12 +501,12 @@ export class FilesService {
             [fileId],
         );
 
-        if (result.rows.length === 0) {
+        if (rows.length === 0) {
             throw new Error("File ID does not exist.");
         }
 
         // make the positions start with 0
-        return Number(result.rows[0].row_number) - 1;
+        return Number(rows[0].row_number) - 1;
     }
 
     async createCopyOfFile(file: FileInterface, { inboxFolder }: { inboxFolder: FolderInterface }) {

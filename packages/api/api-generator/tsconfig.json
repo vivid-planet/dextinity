@@ -3,6 +3,8 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "lib": ["ES2023"],
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
         "outDir": "lib",
         "rootDir": "src",
         "strict": true,

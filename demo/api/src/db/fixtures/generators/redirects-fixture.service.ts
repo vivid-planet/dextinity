@@ -5,6 +5,7 @@ import {
     REDIRECTS_LINK_BLOCK,
     RedirectsLinkBlock,
     RedirectSourceType,
+    resolveEntityClass,
 } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
@@ -70,7 +71,7 @@ export class RedirectsFixtureService {
         }
 
         for (let i = 0; i < 7000; i++) {
-            this.entityManager.create("Redirect", {
+            this.entityManager.create(resolveEntityClass("Redirect"), {
                 generationType: RedirectGenerationType.manual,
                 source: `/redirect-${i}`,
                 target: this.redirectsLinkBlock

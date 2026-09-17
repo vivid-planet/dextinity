@@ -1,4 +1,3 @@
-import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { DynamicModule, Module, Type } from "@nestjs/common";
 
 import { BrevoApiModule } from "../brevo-api/brevo-api.module";
@@ -28,7 +27,7 @@ export class TargetGroupModule {
 
         return {
             module: TargetGroupModule,
-            imports: [ConfigModule, BrevoApiModule, MikroOrmModule.forFeature(["BrevoTargetGroup"])],
+            imports: [ConfigModule, BrevoApiModule],
             providers: [TargetGroupResolver, TargetGroupsService],
             exports: [TargetGroupsService],
         };

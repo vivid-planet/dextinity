@@ -2,7 +2,7 @@
 import type { Type } from "@nestjs/common";
 import { isFunction } from "@nestjs/common/utils/shared.utils";
 import { Field } from "@nestjs/graphql";
-import type { ClassDecoratorFactory } from "@nestjs/graphql/dist/interfaces/class-decorator-factory.interface";
+import type { ClassDecoratorFactory } from "@nestjs/graphql/dist/interfaces/class-decorator-factory.interface.js";
 import { METADATA_FACTORY_NAME } from "@nestjs/graphql/dist/plugin/plugin-constants.js";
 import { getFieldsAndDecoratorForType } from "@nestjs/graphql/dist/schema-builder/utils/get-fields-and-decorator.util.js";
 import { applyFieldDecorators } from "@nestjs/graphql/dist/type-helpers/type-helpers.utils.js";

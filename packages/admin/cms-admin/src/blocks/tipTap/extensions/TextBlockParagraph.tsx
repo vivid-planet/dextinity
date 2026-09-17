@@ -9,15 +9,16 @@ import { TextBlockNodeView } from "./TextBlockNodeView";
  * block styles are configured, the `textBlockStyle` attribute. The attributes must match the API's
  * paragraph extension, otherwise the API rejects content the editor produces.
  *
- * A `styled` paragraph renders its text block style through a node view, so the editor previews it.
+ * A `styled` paragraph renders through a node view, so the editor previews its text block style or
+ * its text block's own `element`.
  */
-export function createTextBlockParagraph({ styled }: { styled: boolean }) {
+export function createTextBlockParagraph({ hasTextBlockStyles, styled }: { hasTextBlockStyles: boolean; styled: boolean }) {
     return Paragraph.extend({
         addAttributes() {
             return {
                 ...this.parent?.(),
                 ...textBlockAttribute,
-                ...(styled ? textBlockStyleAttribute : {}),
+                ...(hasTextBlockStyles ? textBlockStyleAttribute : {}),
             };
         },
 

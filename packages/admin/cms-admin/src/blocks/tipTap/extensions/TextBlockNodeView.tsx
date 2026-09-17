@@ -1,29 +1,27 @@
 import { NodeViewContent, NodeViewWrapper, type ReactNodeViewProps } from "@tiptap/react";
 import { useContext } from "react";
 
-import { getTextBlockTag } from "../textBlocks";
-import { TextBlockStyleContext } from "../TextBlockStyleContext";
+import { TextBlockContext } from "../TextBlockContext";
+import { findTextBlock, getTextBlockTag } from "../textBlocks";
 
 /**
- * Renders a paragraph/heading with its text block style applied, so the editor previews the style.
+ * Renders a paragraph/heading the way its text block does: through the selected text block style, or
+ * through the text block's own `element`. A text block with neither is rendered as its plain tag.
  */
 export function TextBlockNodeView({ node }: ReactNodeViewProps) {
-    const textBlockStyles = useContext(TextBlockStyleContext);
+    const { textBlocks, textBlockStyles } = useContext(TextBlockContext);
+    const tag = getTextBlockTag(node);
     const styleName = node.attrs.textBlockStyle as string | null;
     const style = styleName ? textBlockStyles.find((textBlockStyle) => textBlockStyle.name === styleName) : undefined;
+    const element = style?.element ?? findTextBlock({ name: node.attrs.textBlock, tag, textBlocks })?.element;
 
-    if (style) {
-        const Element = style.element;
+    if (element) {
         return (
             <NodeViewWrapper>
-                <Element data-text-block-style={styleName}>
-                    <NodeViewContent<"span"> as="span" />
-                </Element>
+                {element({ "data-text-block-style": styleName ?? undefined, children: <NodeViewContent<"span"> as="span" /> }, tag)}
             </NodeViewWrapper>
         );
     }
-
-    const tag = getTextBlockTag(node);
 
     return (
         <NodeViewWrapper as={tag}>

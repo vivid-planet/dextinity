@@ -379,8 +379,11 @@ describe("createTipTapRichTextBlock validation", () => {
         const block = createTipTapRichTextBlock(
             onlyFeatures({
                 bold: true,
-                textBlocks: undefined,
-                textBlockStyles: [{ name: "intro", appliesTo: ["paragraph"] }, { name: "highlight" }],
+                textBlocks: [
+                    { name: "paragraph", tag: "p", styles: [{ name: "intro" }, { name: "highlight" }] },
+                    { name: "heading-1", tag: "h1", styles: [{ name: "highlight" }] },
+                    { name: "heading-2", tag: "h2", styles: [{ name: "highlight" }] },
+                ],
             }),
             "TestBlockStyles",
         );
@@ -441,12 +444,11 @@ describe("createTipTapRichTextBlock validation", () => {
         const block = createTipTapRichTextBlock(
             {
                 bold: true,
-                orderedList: true,
-                unorderedList: true,
-                textBlockStyles: [
-                    { name: "intro", appliesTo: ["paragraph"] },
-                    { name: "listStyle", appliesTo: ["ordered-list", "unordered-list"] },
-                    { name: "highlight" },
+                orderedList: { styles: [{ name: "listStyle" }] },
+                unorderedList: { styles: [{ name: "listStyle" }] },
+                textBlocks: [
+                    { name: "paragraph", tag: "p", styles: [{ name: "intro" }, { name: "highlight" }] },
+                    { name: "heading-1", tag: "h1", styles: [{ name: "highlight" }] },
                 ],
             },
             "TestBlockStylesList",
@@ -1358,6 +1360,21 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(() => createTipTapRichTextBlock({ textBlocks: [] }, "TestEmptyTextBlocks")).toThrow();
         });
 
+        it("should throw when a text block offers the same style twice, because a style's name identifies it", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    { textBlocks: [{ name: "paragraph", tag: "p", styles: [{ name: "copy100" }, { name: "copy100" }] }] },
+                    "TestDuplicateStyle",
+                ),
+            ).toThrow();
+        });
+
+        it("should throw when a list offers the same style twice", () => {
+            expect(() =>
+                createTipTapRichTextBlock({ orderedList: { styles: [{ name: "list300" }, { name: "list300" }] } }, "TestDuplicateListStyle"),
+            ).toThrow();
+        });
+
         it("should throw for a duplicate text block name", () => {
             expect(() =>
                 createTipTapRichTextBlock(
@@ -1472,7 +1489,7 @@ describe("createTipTapRichTextBlock validation", () => {
             const resolvedOptions = resolveTipTapOptions({ textBlocks: headingOnly234 });
             expect(resolvedOptions.orderedList).toBe(false);
             expect(resolvedOptions.unorderedList).toBe(false);
-            expect(resolvedOptions.defaultTextBlock).toEqual({ name: "heading-2", tag: "h2", level: 2 });
+            expect(resolvedOptions.defaultTextBlock).toEqual({ name: "heading-2", tag: "h2", level: 2, styles: [] });
         });
     });
 

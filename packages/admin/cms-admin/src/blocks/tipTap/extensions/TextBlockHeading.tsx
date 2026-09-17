@@ -10,9 +10,18 @@ import { TextBlockNodeView } from "./TextBlockNodeView";
  * The attributes must match the API's heading extension, otherwise the API rejects content the
  * editor produces.
  *
- * A `styled` heading renders its text block style through a node view, so the editor previews it.
+ * A `styled` heading renders through a node view, so the editor previews its text block style or its
+ * text block's own `element`.
  */
-export function createTextBlockHeading({ defaultLevel, styled }: { defaultLevel: HeadingLevel; styled: boolean }) {
+export function createTextBlockHeading({
+    defaultLevel,
+    hasTextBlockStyles,
+    styled,
+}: {
+    defaultLevel: HeadingLevel;
+    hasTextBlockStyles: boolean;
+    styled: boolean;
+}) {
     return Heading.extend({
         addAttributes() {
             return {
@@ -20,7 +29,7 @@ export function createTextBlockHeading({ defaultLevel, styled }: { defaultLevel:
                 // `rendered: false` keeps TipTap from adding a `level` HTML attribute, the level is the tag name.
                 level: { default: defaultLevel, rendered: false },
                 ...textBlockAttribute,
-                ...(styled ? textBlockStyleAttribute : {}),
+                ...(hasTextBlockStyles ? textBlockStyleAttribute : {}),
             };
         },
 

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { FocalPoint } from "../../../file-utils/focal-point.enum";
 import type { DamFileImage } from "../../files/entities/file-image.entity";
 import type { ImageCropArea } from "../entities/image-crop-area.entity";
-import { calculateInheritAspectRatio } from "../images.util";
+import { calculateInheritAspectRatio, isUsableCropArea } from "../images.util";
 
 function makeImage(width: number, height: number): DamFileImage {
     return { width, height } as DamFileImage;
@@ -83,5 +83,25 @@ describe("calculateInheritAspectRatio", () => {
 
             expect(() => calculateInheritAspectRatio(image, cropArea)).toThrow("Missing crop dimensions");
         });
+    });
+});
+
+describe("isUsableCropArea", () => {
+    it("should accept a SMART crop area without dimensions", () => {
+        expect(isUsableCropArea(makeCropArea(FocalPoint.SMART))).toBe(true);
+    });
+
+    it("should accept a manual focal point with crop dimensions", () => {
+        expect(isUsableCropArea(makeCropArea(FocalPoint.CENTER, 50, 25))).toBe(true);
+    });
+
+    it("should reject a manual focal point without crop dimensions", () => {
+        expect(isUsableCropArea(makeCropArea(FocalPoint.CENTER))).toBe(false);
+        expect(isUsableCropArea(makeCropArea(FocalPoint.CENTER, 50))).toBe(false);
+        expect(isUsableCropArea(makeCropArea(FocalPoint.CENTER, undefined, 50))).toBe(false);
+    });
+
+    it("should reject a manual focal point with empty crop dimensions", () => {
+        expect(isUsableCropArea(makeCropArea(FocalPoint.CENTER, 0, 0))).toBe(false);
     });
 });

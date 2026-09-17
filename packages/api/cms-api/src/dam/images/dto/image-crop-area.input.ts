@@ -1,5 +1,5 @@
 import { Field, Float, InputType } from "@nestjs/graphql";
-import { IsEnum, IsNumber, IsOptional, Max, Min, ValidateIf } from "class-validator";
+import { IsEnum, IsNumber, Max, Min, ValidateIf } from "class-validator";
 
 import { FocalPoint } from "../../../file-utils/focal-point.enum";
 
@@ -11,7 +11,6 @@ export class ImageCropAreaInput {
 
     @Field(() => Float, { nullable: true })
     @ValidateIf((icz) => icz.focalPoint !== FocalPoint.SMART)
-    @IsOptional()
     @IsNumber()
     @Min(0)
     @Max(100)
@@ -19,7 +18,6 @@ export class ImageCropAreaInput {
 
     @Field(() => Float, { nullable: true })
     @ValidateIf((icz) => icz.focalPoint !== FocalPoint.SMART)
-    @IsOptional()
     @IsNumber()
     @Min(0)
     @Max(100)
@@ -27,13 +25,11 @@ export class ImageCropAreaInput {
 
     @Field(() => Float, { nullable: true })
     @ValidateIf((icz) => icz.focalPoint !== FocalPoint.SMART)
-    @IsOptional()
     @IsNumber()
     x?: number;
 
     @Field(() => Float, { nullable: true })
     @ValidateIf((icz) => icz.focalPoint !== FocalPoint.SMART)
-    @IsOptional()
     @IsNumber()
     y?: number;
 }

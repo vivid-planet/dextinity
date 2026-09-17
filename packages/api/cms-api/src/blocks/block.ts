@@ -1,5 +1,6 @@
 import type { Type } from "@nestjs/common";
 import { type ClassConstructor, instanceToPlain, plainToInstance } from "class-transformer";
+import { Equals } from "class-validator";
 import type { WarningSeverity as WarningSeverityEnum } from "src/warnings/entities/warning-severity.enum";
 
 import { AnnotationBlockMeta, getBlockFieldData, getFieldKeys } from "./decorators/field";
@@ -179,6 +180,14 @@ export interface BlockInputInterface<
 
 export type SimpleBlockInputInterface<BlockType extends BlockDataInterface = BlockDataInterface> = BlockInputInterface<BlockType, undefined>;
 export abstract class BlockInput<BlockType extends BlockDataInterface = BlockDataInterface> implements BlockInputInterface<BlockType, undefined> {
+    // class-validator rejects classes without any validation metadata, as `forbidUnknownValues` is enabled by default
+    // since v0.14. Block inputs that don't validate a single field (e.g. a block without fields) would therefore always
+    // fail to validate. This property exists so that every block input has at least one validation metadata.
+    // It must never be set: a validated property is whitelisted, so without `@Equals(undefined)` it could be sent by a
+    // client and would end up in the saved block data. As it is never set, it shows up in neither `toPlain()` nor the block meta.
+    @Equals(undefined)
+    thisBlockInputNeedsValidationMetadata____?: never;
+
     abstract transformToBlockData(): BlockType;
 
     toPlain(): CreateToPlainReturn<this> {

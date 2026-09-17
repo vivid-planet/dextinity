@@ -6,7 +6,7 @@
     "scripts": {
         "build": "run-s intl:compile && run-p gql:types generate-block-types css:types build-server && next build --webpack",
         "build-server": "tsc --project tsconfig.server.json",
-        "build-storybook": "run-s build-server && storybook build --disable-telemetry",
+        "build-storybook": "VALKEY_ENABLED=false storybook build --disable-telemetry",
         "check-node-version": "check-node-version --node $(cat ../../.nvmrc)",
         "css:types": "typed-scss-modules src --nameFormat none --exportType default --aliasPrefixes.@src src",
         "css:types:watch": "pnpm run css:types --watch",
@@ -27,10 +27,12 @@
         "lint:fix:style": "pnpm run lint:style --fix",
         "lint:prettier": "pnpm exec prettier --check '*.{ts,js,json,md,yml,yaml,css,scss}'",
         "lint:style": "pnpm exec stylelint '**/*.{css,scss}'",
-        "lint:tsc": "pnpm exec next typegen && tsc --project .",
+        "lint:tsc": "pnpm exec next typegen && run-s lint:tsc:app lint:tsc:storybook",
+        "lint:tsc:app": "tsc --project .",
+        "lint:tsc:storybook": "tsc --project tsconfig.storybook.json",
         "serve": "NODE_ENV=production node dist/server.js",
-        "storybook": "run-s build-server && storybook dev -p 26648 --no-open --disable-telemetry",
-        "test:storybook": "run-s build-server && vitest --run --project storybook"
+        "storybook": "VALKEY_ENABLED=false storybook dev -p 26648 --no-open --disable-telemetry",
+        "test:storybook": "VALKEY_ENABLED=false vitest --run --project storybook"
     },
     "dependencies": {
         "@base-ui/react": "^1.4.1",

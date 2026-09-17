@@ -33,6 +33,17 @@ export default defineConfig([
         },
     },
     {
+        // The storybook config files live outside tsconfig.json's `include`, in their own project.
+        files: [".storybook/**/*.{ts,tsx}", "vitest.config.ts"],
+        languageOptions: {
+            parserOptions: {
+                projectService: false,
+                project: ["./tsconfig.storybook.json"],
+                tsconfigRootDir: import.meta.dirname,
+            },
+        },
+    },
+    {
         files: ["next.config.*"],
         languageOptions: {
             parserOptions: {

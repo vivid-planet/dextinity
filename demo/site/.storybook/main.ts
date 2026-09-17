@@ -11,6 +11,8 @@ const config: StorybookConfig = {
     framework: {
         name: "@storybook/nextjs-vite",
         options: {
+            // Loading the app's config keeps images and aliases in sync with the site. The storybook scripts set
+            // VALKEY_ENABLED=false so it skips resolving the cache handler, which only exists after `build-server`.
             nextConfigPath: resolve(currentDirectory, "../next.config.ts"),
         },
     },

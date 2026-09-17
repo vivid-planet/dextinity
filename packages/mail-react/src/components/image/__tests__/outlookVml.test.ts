@@ -5,16 +5,22 @@ import { generateOutlookImageVml } from "../outlookVml.js";
 const image = { src: "image.jpg", width: 400, height: 200 };
 
 describe("generateOutlookImageVml", () => {
-    it("measures arcsize against the shorter side, not the width", () => {
+    it("declares the shape a pixel smaller than the image, to leave room for the stroke Outlook reserves", () => {
         const vml = generateOutlookImageVml({ ...image, borderRadius: 20 });
 
-        expect(vml).toContain(`arcsize="20%"`);
+        expect(vml).toContain(`style="width:399px;height:199px;"`);
+    });
+
+    it("measures arcsize against the whole shorter side", () => {
+        const vml = generateOutlookImageVml({ ...image, borderRadius: 20 });
+
+        expect(vml).toContain(`arcsize="10%"`);
     });
 
     it("caps arcsize at a fully rounded side", () => {
         const vml = generateOutlookImageVml({ ...image, borderRadius: 999 });
 
-        expect(vml).toContain(`arcsize="100%"`);
+        expect(vml).toContain(`arcsize="50%"`);
     });
 
     it("draws an oval for a fully rounded radius", () => {
@@ -36,5 +42,11 @@ describe("generateOutlookImageVml", () => {
         const vml = generateOutlookImageVml({ ...image, src: `image.jpg" onerror="alert(1)`, borderRadius: 20 });
 
         expect(vml).toContain(`src="image.jpg&quot; onerror=&quot;alert(1)"`);
+    });
+
+    it.each(["alt", "href"])("builds the shape when %s is null", (attribute) => {
+        const vml = generateOutlookImageVml({ ...image, borderRadius: 20, [attribute]: null });
+
+        expect(vml).toContain("<v:roundrect ");
     });
 });

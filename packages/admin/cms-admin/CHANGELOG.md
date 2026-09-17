@@ -1,5 +1,288 @@
 # @comet/cms-admin
 
+## 10.7.0
+
+### Minor Changes
+
+- ae93af6: Support heading-only TipTap rich text blocks
+
+    `paragraph` is now a feature of `createTipTapRichTextBlock` like the other text block types, enabled by default. Turning it off results in a heading-only block (e.g. a headline): the text block type select only offers headings, the editor starts with a heading instead of a paragraph, and content containing a paragraph is rejected during validation.
+
+    The `heading` options gain a `defaultLevel`, the level a newly created heading gets. It defaults to the lowest allowed level and must be one of them. `migrateFromDraftJs` uses it for Draft.js blocks that don't carry a heading level, so migrated content doesn't fall back to paragraphs the schema doesn't allow.
+
+    **Example**
+
+    A headline block that only offers H2-H4 and starts with an H3:
+
+    ```tsx
+    createTipTapRichTextBlock({
+        paragraph: false,
+        heading: { levels: [2, 3, 4], defaultLevel: 3 },
+        maxTextBlocks: 1,
+    });
+    ```
+
+    Lists are disabled in a heading-only block, because a list item's content starts with a paragraph. Enabling one explicitly throws, as does turning off `paragraph` and `heading` together, which would leave no text block type at all.
+
+- 0ba6e01: Display only warnings of the currently selected scope by default
+
+    Previously, `WarningsPage` and `LatestWarningsDashboardWidget` displayed the warnings of all scopes the user is allowed to access.
+    Now, they only display the warnings of the currently selected scope by default.
+    Switching the scope automatically updates the displayed warnings.
+    Warnings without a scope (e.g., DAM warnings) and warnings with a partial scope (e.g., only `domain`) remain visible.
+    In `WarningsPage`, filtering the `scope` column is only possible with `showAllScopes`, because it otherwise queries a single scope.
+
+    Use the new `showAllScopes` prop to restore the previous behavior:
+
+    ```tsx
+    <WarningsPage showAllScopes />
+    ```
+
+    ```tsx
+    <LatestWarningsDashboardWidget showAllScopes />
+    ```
+
+### Patch Changes
+
+- 33cfcdd: Fix an empty paragraph appearing after switching a block to a heading
+
+    Turning the editor's only (or last) block into a heading via the text block type dropdown left an empty paragraph behind it. This came from TipTap's `TrailingNode` extension, which inserts an empty paragraph after the last block whenever that block isn't of the schema's default type, so a document never ends on a block with no direct way to place the cursor after it. A heading doesn't need that: pressing Enter at its end already creates a paragraph below it, unlike a non-text block such as an inserted child block.
+
+    `createTipTapRichTextBlock` now excludes headings from that check, so switching a block to a heading (and back) no longer adds or leaves behind an extra paragraph.
+
+- 320f47a: Fix invalid HTML nesting in `textBlockStyles` node views
+
+    `TextBlockStyleParagraph` and `TextBlockStyleHeading` rendered their editable content in a `NodeViewContent`, which defaults to a `<div>`. Wrapped in a `<p>`, a heading tag, or a custom `element` that renders one of those tags, this produced invalid markup (a `<div>` inside a `<p>`/heading), which React flags as a DOM nesting warning in development. `NodeViewContent` now renders as a `<span>`, which both tags allow as content.
+    - @dextinity/admin@10.7.0
+    - @dextinity/admin-date-time@10.7.0
+    - @dextinity/admin-icons@10.7.0
+    - @dextinity/admin-rte@10.7.0
+
+## 10.6.0
+
+### Minor Changes
+
+- 65d5f1c: Add `minHeight` option to `createTipTapRichTextBlock`
+
+    The editor's content area previously had a hardcoded minimum height of 200px with no way to override it. Compact use cases (e.g. a single-line rich text field) now have a supported way to shrink it:
+
+    ```ts
+    createTipTapRichTextBlock({ minHeight: 0 });
+    ```
+
+### Patch Changes
+
+- @dextinity/admin@10.6.0
+- @dextinity/admin-date-time@10.6.0
+- @dextinity/admin-icons@10.6.0
+- @dextinity/admin-rte@10.6.0
+
+## 10.5.1
+
+### Patch Changes
+
+- d800488: Fix the DAM video block losing its playback settings when no video file is selected
+
+    `output2State` dropped `autoplay`, `loop` and `showControls` when the block had no `damFileId`, so the stored playback settings were reset as soon as the video file was removed.
+
+- 9cbbd61: Track the preview image of the video blocks as a block dependency
+
+    `createDamVideoBlock`, `YouTubeVideoBlock` and `VimeoVideoBlock` didn't report the DAM file used as preview image as a dependency, so it showed no usages and its ID wasn't remapped when copying pages between scopes, leaving a dangling reference.
+    The blocks now delegate to `PixelImageBlock` for the preview image. `createDamVideoBlock` merges the result with the dependency of its own video file.
+
+- 97fd75d: Implement `extractTextContents` in the SEO block
+
+    The SEO block only extracted the text contents of the Open Graph image, so its own texts (HTML title, meta description, Open Graph title and description) were missing wherever block text contents are used, e.g., for SEO text generation.
+    - @dextinity/admin@10.5.1
+    - @dextinity/admin-date-time@10.5.1
+    - @dextinity/admin-icons@10.5.1
+    - @dextinity/admin-rte@10.5.1
+
+## 10.5.0
+
+### Minor Changes
+
+- 0be2f59: Replace the TipTap Rich Text Block's `supports` array with one option per feature
+
+    `createTipTapRichTextBlock` now takes a single root options object with one option per editor feature, similar to TipTap's `StarterKit` configuration. Feature-specific options move into a nested options object of the feature they belong to, so `headingLevels` becomes `heading: { levels: [...] }`.
+
+    Every feature is enabled by default (except `underline`) and is disabled by passing `false`, so a configuration only has to state what deviates from the defaults instead of repeating every supported feature. Links stay the exception: they are enabled by passing the link block as `link`.
+
+    **Example**
+
+    ```ts
+    // Before
+    createTipTapRichTextBlock({
+        supports: ["bold", "italic", "strike", "sub", "sup", "heading", "ordered-list", "unordered-list"],
+        headingLevels: [2, 3],
+    });
+
+    // After
+    createTipTapRichTextBlock({
+        nonBreakingSpace: false,
+        softHyphen: false,
+        heading: { levels: [2, 3] },
+    });
+    ```
+
+    The features are named after their option: `bold`, `italic`, `underline`, `strike`, `sub`, `sup`, `heading`, `orderedList`, `unorderedList`, `nonBreakingSpace`, `softHyphen` and `link`. Additionally, `undoRedoButtons` (Admin only) shows or hides the undo/redo buttons in the toolbar; the keyboard shortcuts work regardless. The document-level limits `maxTextBlocks` and `listLevelMax` are unchanged.
+
+- ceca60a: Add an in-toolbar translate button to the TipTap rich text block
+
+    The Draft.js-based rich text block already has a toolbar button to translate a single field, with an optional dialog to review the translation before applying it. The TipTap rich text block had no equivalent, leaving document-wide translation as the only option for TipTap fields.
+
+    The button now appears in the TipTap toolbar whenever a `ContentTranslationServiceProvider` is enabled, and can be hidden per block with the new `contentTranslation` option:
+
+    ```tsx
+    createTipTapRichTextBlock({ contentTranslation: false });
+    ```
+
+### Patch Changes
+
+- @dextinity/admin@10.5.0
+- @dextinity/admin-date-time@10.5.0
+- @dextinity/admin-icons@10.5.0
+- @dextinity/admin-rte@10.5.0
+
+## 10.4.0
+
+### Minor Changes
+
+- 4b9ead5: Add `icon` option to `TipTapInlineStyle`
+
+    Custom inline styles shown in the rich text toolbar's "More options" menu can now specify an `icon`, displayed next to the label the same way Superscript/Subscript already are:
+
+    ```tsx
+    createTipTapRichTextBlock({
+        inlineStyles: [
+            {
+                name: "highlight",
+                label: <FormattedMessage id="..." defaultMessage="Highlight" />,
+                icon: RteHighlight,
+                element: (props) => <span style={{ backgroundColor: "#fff3cd" }} {...props} />,
+            },
+        ],
+    });
+    ```
+
+    `icon` is optional; menu items without one keep rendering as before.
+
+- 4b9ead5: Move custom TipTap inline styles into the toolbar's "More options" menu
+
+    Custom `inlineStyles` (e.g. a project-specific "Uppercase" style) used to render as their own always-visible dropdown in the rich text toolbar. They now appear as toggleable menu items inside the "More options" ("...") menu, next to Superscript/Subscript, matching how the previous Draft.js-based rich text editor exposed custom inline styles as toolbar toggles rather than a separate dropdown.
+
+- a00f0b2: Support wildcard values for content scope dimensions in `getContentScopesForUser`
+
+    `getContentScopesForUser` can now use the wildcard value `"*"` as the value of a content scope dimension to grant access to any value for that dimension. The wildcard is matched during the content scope check, so it does not need to be part of `availableContentScopes`.
+
+    **Example**
+
+    ```ts
+    getContentScopesForUser(user: User): ContentScopesForUser {
+        // Grant access to every language within the "main" domain
+        return [{ domain: "main", language: "*" }];
+    }
+    ```
+
+    For users with access to all content scopes, `currentUser.permissions[].contentScopes` now returns a single wildcard scope (e.g. `[{ domain: "*", language: "*" }]`) instead of the enumerated `availableContentScopes`. The default `isAllowed` and `currentUser.allowedContentScopes` handle the wildcard; a custom `isAllowed` must treat `"*"` as matching any value of a dimension.
+
+### Patch Changes
+
+- b6cbbd9: Move icons to the start of the TipTap "More options" menu items
+
+    Superscript, Subscript, and custom inline-style menu items placed their icon directly after the label using a custom flexbox layout, so the icon's horizontal position varied with the label's length. They now use MUI's `ListItemIcon`/`ListItemText` with the icon leading the label, matching MUI's own menu item convention.
+    - @dextinity/admin@10.4.0
+    - @dextinity/admin-date-time@10.4.0
+    - @dextinity/admin-icons@10.4.0
+    - @dextinity/admin-rte@10.4.0
+
+## 10.3.0
+
+### Minor Changes
+
+- 504c97f: Expose `setPageState` in the `usePage` hook returned by `createUsePage`
+
+    Until now, the page state could only be read, so features that modify a page's content had to be built into `createUsePage` itself (like `translateContent`).
+    `setPageState` allows applications to change the page's content programmatically, for instance, to apply changes suggested by an assistant.
+    The changes are applied locally only, `handleSavePage` persists them.
+
+    Additionally, the `PageState` type is exported now.
+
+    **Example**
+
+    ```tsx
+    const { pageState, setPageState } = usePage({ pageId: id });
+
+    const applySuggestedHtmlTitle = (htmlTitle: string) => {
+        setPageState((pageState) => {
+            if (!pageState?.document) {
+                return pageState;
+            }
+
+            return {
+                ...pageState,
+                document: {
+                    ...pageState.document,
+                    seo: { ...pageState.document.seo, htmlTitle },
+                },
+            };
+        });
+    };
+    ```
+
+- ddea65d: Remove the "Permissions" and "Scopes" columns from the user permissions users list
+
+    The users list now shows the name, the email and the row actions. The `permissionsCount` and `contentScopesCount` fields of `UserPermissionsUser` are deprecated and now return `0`. They will be removed in the next major version.
+
+- 66cb98a: DAM: Allow replacing a file with a file of the same category instead of the same mimetype
+
+    Previously, "Replace File" only accepted a file with the exact same mimetype, so a JPEG couldn't be replaced by a WebP even though both are pixel images. Now a file can be replaced by any file of the same category:
+
+    | Category     | Examples             |
+    | ------------ | -------------------- |
+    | `pixelImage` | JPEG, PNG, WebP      |
+    | `svgImage`   | SVG                  |
+    | `audio`      | MP3, OGG, WAV        |
+    | `video`      | MP4, WebM, QuickTime |
+    | `document`   | PDF, DOCX, VTT, ZIP  |
+
+    SVG images and pixel images remain separate categories.
+
+    Files in the `document` category still require the exact same mimetype, since their purposes vary too much: a VTT file is a video's subtitles, whereas a PDF is a download, so replacing one with the other must not be possible.
+
+    The file's usages stay unchanged. Only the extension of the file's name is adjusted to match the new file (for instance, `photo.jpg` becomes `photo.webp`). If a file with that name already exists in the same folder, a counter is appended to keep the name unique (for instance, `photo-2.webp`), and the Admin shows a snackbar informing about the new name.
+
+    The new `getDamFileCategory` helper is exported from both packages:
+
+    ```ts
+    import { getDamFileCategory } from "@dextinity/cms-api"; // or "@dextinity/cms-admin"
+
+    getDamFileCategory("image/webp"); // "pixelImage"
+    getDamFileCategory("image/svg+xml"); // "svgImage"
+    ```
+
+### Patch Changes
+
+- 12be273: Fix the block list not marking the block that is hovered in a block preview
+
+    `HoverPreviewComponent` built the block's route from `useRouteMatch`, which does not see the path of a `SubRoute`. Below a `SaveBoundary` the route therefore missed that segment and never matched the route the preview reports, so hovering a block in the preview left its list entry unmarked, and hovering a list entry left the block in the preview unmarked. The route is now built from `useSubRoutePrefix`, the prefix the block routes in `BlockPreviewContext` already use.
+
+- 876887b: Fix order of `link` and special character (`nonBreakingSpace`, `softHyphen`) buttons in the TipTap rich text block toolbar
+
+    They were swapped; `link` now appears before the special character buttons.
+
+- 0c211e9: Stop deduplicating content scopes in the user permissions API
+
+    `UserPermissionsService.getAvailableContentScopes()`, `getContentScopes()` and `getPermissionsAndContentScopes()` no longer deduplicate their content scopes. Deduplication only mattered for how the scopes are displayed, so it now happens in the admin where the lists are rendered. This also removes the `lodash.uniqwith` dependency.
+
+    Projects that consume `UserPermissionsPublicService` or the `currentUser` / `availableContentScopes` GraphQL fields directly and rely on the scopes being unique should deduplicate them on their side.
+
+- Updated dependencies [4d6408f]
+    - @dextinity/admin@10.3.0
+    - @dextinity/admin-date-time@10.3.0
+    - @dextinity/admin-rte@10.3.0
+    - @dextinity/admin-icons@10.3.0
+
 ## 10.2.0
 
 ### Minor Changes

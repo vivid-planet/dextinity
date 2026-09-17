@@ -33,6 +33,6 @@ describe("MjmlPixelImageBlock", () => {
             </MjmlMailRoot>,
         );
 
-        expect(html).toMatch(/<v:roundrect[^>]*style="width:300px;height:200px;"/);
+        expect(html).toMatch(/<v:roundrect[^>]*style="width:299px;height:199px;"/);
     });
 });

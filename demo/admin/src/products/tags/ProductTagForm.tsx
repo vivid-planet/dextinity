@@ -1,8 +1,16 @@
 import { useApolloClient, useQuery } from "@apollo/client";
-import { filterByFragment, FinalForm, type FinalFormSubmitEvent, Loading, TextField, useFormApiRef, useStackSwitchApi } from "@dextinity/admin";
+import {
+    filterByFragment,
+    FinalForm,
+    type FinalFormSubmitEvent,
+    isEqual,
+    Loading,
+    TextField,
+    useFormApiRef,
+    useStackSwitchApi,
+} from "@dextinity/admin";
 import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import type { FormApi } from "final-form";
-import isEqual from "lodash.isequal";
 import { useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 

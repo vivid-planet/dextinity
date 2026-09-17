@@ -4,6 +4,7 @@ import {
     filterByFragment,
     FinalForm,
     type FinalFormSubmitEvent,
+    isEqual,
     Loading,
     OnChangeField,
     TextField,
@@ -12,7 +13,6 @@ import {
 } from "@dextinity/admin";
 import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import type { FormApi } from "final-form";
-import isEqual from "lodash.isequal";
 import { useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 

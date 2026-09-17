@@ -7,6 +7,7 @@ import {
     FinalForm,
     FinalFormRangeInput,
     type FinalFormSubmitEvent,
+    isEqual,
     Loading,
     OnChangeField,
     SelectField,
@@ -36,7 +37,6 @@ import type {
     GQLManufacturersQueryVariables,
 } from "@src/products/ProductForm.generated";
 import { FORM_ERROR, type FormApi } from "final-form";
-import isEqual from "lodash.isequal";
 import { type ReactNode, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 

@@ -1,5 +1,5 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { FillSpace, MainContent, messages, SaveButton, Stack, StackToolbar, ToolbarActions, ToolbarTitleItem } from "@dextinity/admin";
+import { FillSpace, isEqual, MainContent, messages, SaveButton, Stack, StackToolbar, ToolbarActions, ToolbarTitleItem } from "@dextinity/admin";
 import {
     BlockAdminComponentRoot,
     BlockPreviewWithTabs,
@@ -14,7 +14,6 @@ import {
     useSiteConfig,
 } from "@dextinity/cms-admin";
 import type { FooterContentBlockInput } from "@src/blocks.generated";
-import isEqual from "lodash.isequal";
 import { type JSX, useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { useRouteMatch } from "react-router";

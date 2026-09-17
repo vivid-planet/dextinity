@@ -6,6 +6,7 @@ import {
     FinalForm,
     FinalFormInput,
     type FinalFormSubmitEvent,
+    isEqual,
     Loading,
     messages,
     SwitchField,
@@ -16,7 +17,6 @@ import {
 import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { Collapse, Divider } from "@mui/material";
 import type { FormApi } from "final-form";
-import isEqual from "lodash.isequal";
 import { useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 

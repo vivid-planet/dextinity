@@ -5,6 +5,7 @@ import {
     FinalForm,
     FinalFormInput,
     type FinalFormSubmitEvent,
+    isEqual,
     Loading,
     useFormApiRef,
     useStackSwitchApi,
@@ -19,7 +20,6 @@ import {
 } from "@dextinity/cms-admin";
 import type { GQLProductVariantMutationErrorCode } from "@src/graphql.generated";
 import { FORM_ERROR, type FormApi } from "final-form";
-import isEqual from "lodash.isequal";
 import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 

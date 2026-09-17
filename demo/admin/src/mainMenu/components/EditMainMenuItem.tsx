@@ -2,6 +2,7 @@ import { gql, useMutation } from "@apollo/client";
 import {
     Button,
     FillSpace,
+    isEqual,
     MainContent,
     messages,
     RouterPrompt,
@@ -29,7 +30,6 @@ import {
 } from "@dextinity/cms-admin";
 import { Box } from "@mui/material";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
-import isEqual from "lodash.isequal";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useRouteMatch } from "react-router-dom";

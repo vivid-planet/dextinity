@@ -277,9 +277,6 @@ importers:
       graphql:
         specifier: ^16.14.2
         version: 16.14.2
-      lodash.isequal:
-        specifier: ^4.5.0
-        version: 4.5.0
       p-debounce:
         specifier: ^4.0.0
         version: 4.0.0
@@ -362,9 +359,6 @@ importers:
       '@swc/plugin-emotion':
         specifier: ^14.0.1
         version: 14.0.1
-      '@types/lodash.isequal':
-        specifier: ^4.5.8
-        version: 4.5.8
       '@types/node':
         specifier: ^24.13.3
         version: 24.13.3

@@ -677,6 +677,15 @@ export function createTipTapRichTextBlock(
     const draftJsTextBlockMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.textBlockMap : undefined;
     const draftJsInlineStyleMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.inlineStyleMap : undefined;
 
+    for (const [draftJsBlockType, mapping] of Object.entries(draftJsTextBlockMap ?? {})) {
+        const name = typeof mapping === "string" ? undefined : mapping.textBlock;
+        // A name that no longer exists would migrate the content to whichever text block shares the
+        // DraftJS block's tag instead - silently, and only once, since the DraftJS content is gone afterwards.
+        if (name !== undefined && !resolvedOptions.textBlocks.some((textBlock) => textBlock.name === name)) {
+            throw new Error(`textBlockMap maps "${draftJsBlockType}" to the text block "${name}", which is not configured`);
+        }
+    }
+
     if (migrateFromDraftJs && baseMigrate) {
         if (baseMigrate.version == 1) {
             throw new Error("version=1 is reserved for migrateFromDraftJs, start own migrations with 2");

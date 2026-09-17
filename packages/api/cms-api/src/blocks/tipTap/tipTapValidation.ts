@@ -1,5 +1,6 @@
-import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
+
+import { getTextBlockTag, type TipTapResolvedTextBlock } from "./textBlocks";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TipTapContent = Record<string, any>;
@@ -29,20 +30,33 @@ function containsUnknownMarks(json: any, schema: Schema): boolean {
     return false;
 }
 
-export function containsInvalidHeadingLevel(content: TipTapContent, headingLevels: HeadingLevel[]): boolean {
+/**
+ * Whether the content uses a tag no text block is configured for, or names a `textBlock` that isn't
+ * configured for the tag the node is stored as. A node without a `textBlock` attribute is content
+ * written before the name was stored and stays valid - it is resolved by its tag.
+ */
+export function containsInvalidTextBlock(content: TipTapContent, textBlocks: TipTapResolvedTextBlock[]): boolean {
     if (typeof content !== "object" || content === null) {
         return false;
     }
 
-    if (content.type === "heading" && !headingLevels.includes(content.attrs?.level)) {
-        return true;
+    const tag = getTextBlockTag(content);
+    if (tag !== undefined) {
+        const name = content.attrs?.textBlock;
+        if (name != null) {
+            if (!textBlocks.some((textBlock) => textBlock.name === name && textBlock.tag === tag)) {
+                return true;
+            }
+        } else if (!textBlocks.some((textBlock) => textBlock.tag === tag)) {
+            return true;
+        }
     }
 
     if (!Array.isArray(content.content)) {
         return false;
     }
 
-    return content.content.some((child: TipTapContent) => containsInvalidHeadingLevel(child, headingLevels));
+    return content.content.some((child: TipTapContent) => containsInvalidTextBlock(child, textBlocks));
 }
 
 export function getListNestingDepth(content: TipTapContent, currentDepth = 0): number {
@@ -70,7 +84,7 @@ export function getListNestingDepth(content: TipTapContent, currentDepth = 0): n
 export function isValidTipTapContentSync(
     value: unknown,
     schema: Schema,
-    { maxTextBlocks, listLevelMax, headingLevels }: { maxTextBlocks?: number; listLevelMax?: number; headingLevels: HeadingLevel[] },
+    { maxTextBlocks, listLevelMax, textBlocks }: { maxTextBlocks?: number; listLevelMax?: number; textBlocks: TipTapResolvedTextBlock[] },
 ): boolean {
     if (typeof value !== "object" || value === null) {
         return false;
@@ -93,7 +107,7 @@ export function isValidTipTapContentSync(
             return false;
         }
 
-        if (containsInvalidHeadingLevel(value as TipTapContent, headingLevels)) {
+        if (containsInvalidTextBlock(value as TipTapContent, textBlocks)) {
             return false;
         }
 

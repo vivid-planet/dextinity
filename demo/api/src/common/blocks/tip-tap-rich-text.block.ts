@@ -35,9 +35,14 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
         ],
         inlineStyles: [{ name: "highlight" }, { name: "tag", appliesTo: ["paragraph"] }],
         migrateFromDraftJs: {
-            // Map the DraftJS `blocktypeMap` entry `paragraph-small` (configured in the admin RichTextBlock)
-            // to the equivalent TipTap textBlockStyle so legacy content keeps its smaller paragraph variant.
-            textBlockMap: { "paragraph-small": "paragraph200" },
+            textBlockMap: {
+                // The DraftJS `blocktypeMap` entry `paragraph-small` (configured in the admin RichTextBlock)
+                // maps to the equivalent TipTap textBlockStyle, so legacy content keeps its smaller paragraph variant.
+                "paragraph-small": { textBlock: "paragraph", textBlockStyle: "paragraph200" },
+                // "Display" and "Heading 1" are both stored as an h1, so the conversion has to be told
+                // which of them a DraftJS heading becomes.
+                "header-one": { textBlock: "heading-1" },
+            },
         },
     },
     {

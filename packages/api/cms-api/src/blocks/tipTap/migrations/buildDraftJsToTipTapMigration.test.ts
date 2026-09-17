@@ -187,7 +187,7 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
                 ],
                 migrateFromDraftJs: {
                     textBlockMap: {
-                        "paragraph-small": "paragraph200",
+                        "paragraph-small": { textBlock: "paragraph", textBlockStyle: "paragraph200" },
                         "headline-450": { textBlock: "heading-2", textBlockStyle: "headline450" },
                     },
                 },

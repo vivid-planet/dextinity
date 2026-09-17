@@ -214,14 +214,13 @@ export interface CreateTipTapRichTextBlockOptions {
      * falls back to a stripped-down plain-text-paragraph document if validation fails.
      *
      * Pass an object with `textBlockMap` to map DraftJS block types (e.g. `paragraph-small` from a
-     * DraftJS `blocktypeMap`) to TipTap `textBlockStyle` attribute values. Use the
-     * `{ textBlock, textBlockStyle }` form to also set the text block, for instance to convert a
-     * DraftJS block type that was rendered as `<h2>` into a TipTap heading with level 2.
+     * DraftJS `blocktypeMap`) to the text block they become and the `textBlockStyle` applied to it,
+     * for instance to convert a DraftJS block type that was rendered as `<h2>` into a heading 2.
      *
      * Pass an object with `inlineStyleMap` to map DraftJS custom inline style names (e.g.
      * `highlight` from a DraftJS `customInlineStyles`) to TipTap `inlineStyle` mark type values.
      */
-    migrateFromDraftJs?: boolean | { textBlockMap?: Record<string, string | TextBlockMapping>; inlineStyleMap?: Record<string, string> };
+    migrateFromDraftJs?: boolean | { textBlockMap?: Record<string, TextBlockMapping>; inlineStyleMap?: Record<string, string> };
 }
 
 export function resolveTipTapOptions({
@@ -678,15 +677,6 @@ export function createTipTapRichTextBlock(
 
     const draftJsTextBlockMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.textBlockMap : undefined;
     const draftJsInlineStyleMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.inlineStyleMap : undefined;
-
-    for (const [draftJsBlockType, mapping] of Object.entries(draftJsTextBlockMap ?? {})) {
-        const name = typeof mapping === "string" ? undefined : mapping.textBlock;
-        // A name that no longer exists would migrate the content to whichever text block shares the
-        // DraftJS block's tag instead - silently, and only once, since the DraftJS content is gone afterwards.
-        if (name !== undefined && !resolvedOptions.textBlocks.some((textBlock) => textBlock.name === name)) {
-            throw new Error(`textBlockMap maps "${draftJsBlockType}" to the text block "${name}", which is not configured`);
-        }
-    }
 
     const migrateVendor: MigrateVendorOptions | undefined = migrateFromDraftJs
         ? {

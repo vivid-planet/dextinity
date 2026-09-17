@@ -21,8 +21,10 @@ import { AnnotationBlockMeta, BlockField } from "../decorators/field";
 import { BlockFactoryNameOrOptions } from "../factories/types";
 import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFactoryDecorator";
 import { strictBlockInputFactoryDecorator } from "../helpers/strictBlockInputFactoryDecorator";
+import { getScopeVersions } from "../migrations/blockMigrationVersion";
 import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator";
 import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
+import type { MigrateOptions } from "../migrations/types";
 import type { SearchText, WeightedSearchText } from "../search/get-search-text";
 import { CmsBlock, CmsInlineBlock } from "./extensions/CmsBlock";
 import { CmsLink } from "./extensions/CmsLink";
@@ -706,7 +708,9 @@ export function createTipTapRichTextBlock(
         migrateFromDraftJs = false,
     } = options;
     const blockName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
-    const baseMigrate = typeof nameOrOptions !== "string" && nameOrOptions.migrate ? nameOrOptions.migrate : { migrations: [], version: 0 };
+    const baseMigrate: MigrateOptions = typeof nameOrOptions !== "string" && nameOrOptions.migrate ? nameOrOptions.migrate : {};
+    const baseMigrations = baseMigrate.migrations ?? [];
+    const baseVersion = baseMigrate.version ?? 0;
 
     const resolvedOptions = resolveTipTapOptions(options);
     const headingLevels = resolvedOptions.heading ? resolvedOptions.heading.levels : [];
@@ -728,20 +732,23 @@ export function createTipTapRichTextBlock(
     const draftJsTextBlockStyleMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.textBlockStyleMap : undefined;
     const draftJsInlineStyleMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.inlineStyleMap : undefined;
 
-    if (migrateFromDraftJs && baseMigrate) {
-        if (baseMigrate.version == 1) {
-            throw new Error("version=1 is reserved for migrateFromDraftJs, start own migrations with 2");
+    if (migrateFromDraftJs) {
+        const reserved =
+            "is reserved for migrateFromDraftJs, either continue with 2 or put your migrations in a migration scope, which counts from 1 independently";
+        if (baseVersion === 1) {
+            throw new Error(`version=1 ${reserved}`);
         }
-        for (const migration of baseMigrate.migrations) {
+        for (const migration of baseMigrations) {
             const migrationObj = new migration();
-            if (migrationObj.toVersion == 1) {
-                throw new Error("toVersion=1 is reserved for migrateFromDraftJs, start own migrations with 2");
+            if (migrationObj.toVersion === 1) {
+                throw new Error(`toVersion=1 ${reserved}`);
             }
         }
     }
-    const migrate = migrateFromDraftJs
+    const migrate: MigrateOptions = migrateFromDraftJs
         ? {
-              version: baseMigrate.version == 0 ? 1 : baseMigrate.version,
+              ...baseMigrate,
+              version: baseVersion === 0 ? 1 : baseVersion,
               migrations: [
                   buildDraftJsToTipTapMigration({
                       schema,
@@ -753,12 +760,12 @@ export function createTipTapRichTextBlock(
                       textBlockStyleMap: draftJsTextBlockStyleMap,
                       inlineStyleMap: draftJsInlineStyleMap,
                   }),
-                  ...baseMigrate.migrations,
+                  ...baseMigrations,
               ],
           }
         : baseMigrate;
 
-    @BlockDataMigrationVersion(migrate.version)
+    @BlockDataMigrationVersion(migrate.version ?? 0, getScopeVersions(migrate))
     class TipTapRichTextBlockData extends BlockData implements TipTapRichTextBlockDataInterface {
         @BlockField({ type: "tipTapRichTextBlock", childBlocks })
         tipTapContent: JSONContent;
@@ -860,8 +867,8 @@ export function createTipTapRichTextBlock(
 
     // Decorate BlockDataFactory
     let decorateBlockDataFactory = blockDataFactory;
-    if (migrate.migrations) {
-        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator(migrate.migrations, blockName);
+    if (migrate.migrations || migrate.scopes) {
+        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator(migrate, blockName);
         decorateBlockDataFactory = blockDataFactoryDecorator1(decorateBlockDataFactory);
     }
     decorateBlockDataFactory = strictBlockDataFactoryDecorator(decorateBlockDataFactory);

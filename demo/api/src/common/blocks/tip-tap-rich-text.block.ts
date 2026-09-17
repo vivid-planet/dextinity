@@ -3,7 +3,7 @@ import { ProductPriceBlock } from "@src/products/blocks/product-price.block";
 import { ProductTeaserBlock } from "@src/products/blocks/product-teaser.block";
 
 import { LinkBlock } from "./link.block";
-import { Heading1ToHeading2Migration } from "./tip-tap-rich-text/migrations/2-heading-1-to-heading-2.migration";
+import { Heading1ToHeading2Migration } from "./tip-tap-rich-text/migrations/1-heading-1-to-heading-2.migration";
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock(
     {
@@ -32,8 +32,17 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
     {
         name: "TipTapRichText",
         migrate: {
-            migrations: typeSafeBlockMigrationPipe([Heading1ToHeading2Migration]),
-            version: 2,
+            // Own migrations live in a scope, so they keep counting from 1 no matter how many
+            // migrations `migrateFromDraftJs` and future cms-api versions add to the block itself.
+            scopes: {
+                project: {
+                    version: 1,
+                    migrations: typeSafeBlockMigrationPipe([Heading1ToHeading2Migration]),
+                    // Before the scope existed, Heading1ToHeading2Migration was version 2 of the
+                    // block's own chain, so data that reached version 2 already ran it.
+                    initialVersionFromLegacy: (legacyVersion) => (legacyVersion >= 2 ? 1 : 0),
+                },
+            },
         },
     },
 );

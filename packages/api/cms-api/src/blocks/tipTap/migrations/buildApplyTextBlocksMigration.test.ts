@@ -5,13 +5,23 @@ import { buildApplyTextBlocksMigration } from "./buildApplyTextBlocksMigration";
 
 const textBlocks: TipTapTextBlock[] = [
     { name: "paragraph", tag: "p" },
+    { name: "heading-1", tag: "h1" },
+    { name: "heading-2", tag: "h2" },
+];
+
+/**
+ * The same configuration after a display headline was added above the heading 1 - both are stored as
+ * an `h1`, so a node without a name would now resolve to the display.
+ */
+const textBlocksWithDisplay: TipTapTextBlock[] = [
+    { name: "paragraph", tag: "p" },
     { name: "display", tag: "h1" },
     { name: "heading-1", tag: "h1" },
     { name: "heading-2", tag: "h2" },
 ];
 
-function migrate(tipTapContent: unknown) {
-    const Migration = buildApplyTextBlocksMigration({ toVersion: 2, textBlocks });
+function migrate(tipTapContent: unknown, configuredTextBlocks = textBlocks) {
+    const Migration = buildApplyTextBlocksMigration({ toVersion: 2, textBlocks: configuredTextBlocks });
     return new Migration().apply({ $$version: 1, tipTapContent });
 }
 
@@ -37,12 +47,20 @@ describe("buildApplyTextBlocksMigration", () => {
         });
     });
 
-    it("assigns a legacy node to the first text block with its tag when several share it", () => {
-        const migrated = migrate({ type: "doc", content: [{ type: "heading", attrs: { level: 1 } }] });
+    it("pins existing content to its text block before another one starts sharing the tag", () => {
+        const legacyContent = { type: "doc", content: [{ type: "heading", attrs: { level: 1 } }] };
 
-        expect(migrated).toEqual({
+        // Unmigrated, the heading falls back to the first text block with its tag - the display.
+        expect(migrate(legacyContent, textBlocksWithDisplay)).toEqual({
             $$version: 2,
             tipTapContent: { type: "doc", content: [{ type: "heading", attrs: { level: 1, textBlock: "display" } }] },
+        });
+
+        const { tipTapContent } = migrate(legacyContent);
+
+        expect(migrate(tipTapContent, textBlocksWithDisplay)).toEqual({
+            $$version: 2,
+            tipTapContent: { type: "doc", content: [{ type: "heading", attrs: { level: 1, textBlock: "heading-1" } }] },
         });
     });
 

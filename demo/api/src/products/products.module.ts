@@ -4,6 +4,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@src/config/config.module";
 import { TranslationModule } from "@src/translation/translation.module";
 
+import { ProductLinkBlockTransformerService } from "./blocks/product-link-block-transformer.service";
 import { ProductPriceBlockTransformerService } from "./blocks/product-price-block-transformer.service";
 import { CustomProductResolver } from "./custom-product.resolver";
 import { Manufacturer } from "./entities/manufacturer.entity";
@@ -16,6 +17,7 @@ import { ProductStatistics } from "./entities/product-statistics.entity";
 import { ProductTag } from "./entities/product-tag.entity";
 import { ProductToTag } from "./entities/product-to-tag.entity";
 import { ProductVariant } from "./entities/product-variant.entity";
+import { ExtendedProductResolver } from "./extended-product.resolver";
 import { ManufacturerResolver } from "./generated/manufacturer.resolver";
 import { ManufacturerCountryResolver } from "./generated/manufacturer-country.resolver";
 import { ProductResolver } from "./generated/product.resolver";
@@ -72,6 +74,8 @@ import { ProductPublishedMail } from "./published-mail/product-published.mail";
         ProductService,
         ProductVariantService,
         ProductPriceBlockTransformerService,
+        ProductLinkBlockTransformerService,
+        ExtendedProductResolver,
     ],
     exports: [],
 })

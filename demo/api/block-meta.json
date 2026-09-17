@@ -1632,7 +1632,8 @@
                                 "damFileDownload": "DamFileDownloadLink",
                                 "email": "EmailLink",
                                 "phone": "PhoneLink",
-                                "news": "NewsLink"
+                                "news": "NewsLink",
+                                "product": "ProductLink"
                             },
                             "nullable": false
                         }
@@ -1664,7 +1665,8 @@
                                 "damFileDownload": "DamFileDownloadLink",
                                 "email": "EmailLink",
                                 "phone": "PhoneLink",
-                                "news": "NewsLink"
+                                "news": "NewsLink",
+                                "product": "ProductLink"
                             },
                             "nullable": false
                         }
@@ -1693,7 +1695,8 @@
                                 "damFileDownload": "DamFileDownloadLink",
                                 "email": "EmailLink",
                                 "phone": "PhoneLink",
-                                "news": "NewsLink"
+                                "news": "NewsLink",
+                                "product": "ProductLink"
                             },
                             "nullable": false
                         }
@@ -2559,7 +2562,9 @@
                                 "table": "Table",
                                 "tipTapTable": "TipTapTable",
                                 "tipTapRichText": "TipTapRichText",
+                                "productTypes": "ProductTypes",
                                 "productList": "ProductList",
+                                "productDetail": "ProductDetail",
                                 "pageTreeIndex": "PageTreeIndex",
                                 "contactForm": "ContactForm"
                             },
@@ -2628,7 +2633,9 @@
                                 "table": "Table",
                                 "tipTapTable": "TipTapTable",
                                 "tipTapRichText": "TipTapRichText",
+                                "productTypes": "ProductTypes",
                                 "productList": "ProductList",
+                                "productDetail": "ProductDetail",
                                 "pageTreeIndex": "PageTreeIndex",
                                 "contactForm": "ContactForm"
                             },
@@ -2908,53 +2915,72 @@
         ]
     },
     {
+        "name": "ProductDetail",
+        "fields": [
+            {
+                "name": "id",
+                "kind": "String",
+                "nullable": true
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "id",
+                "kind": "String",
+                "nullable": true
+            }
+        ]
+    },
+    {
+        "name": "ProductLink",
+        "fields": [
+            {
+                "name": "id",
+                "kind": "String",
+                "nullable": true
+            },
+            {
+                "name": "product",
+                "kind": "NestedObject",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "slug",
+                            "kind": "String",
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": true
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "id",
+                "kind": "String",
+                "nullable": true
+            }
+        ]
+    },
+    {
         "name": "ProductList",
         "fields": [
             {
-                "name": "types",
-                "kind": "Enum",
-                "enum": [
-                    "cap",
-                    "shirt",
-                    "tie",
-                    "pants",
-                    "jacket",
-                    "shoes",
-                    "socks",
-                    "mug",
-                    "pen",
-                    "calendar",
-                    "notebook",
-                    "bag",
-                    "watch",
-                    "sunglasses",
-                    "wallet"
-                ],
+                "name": "ids",
+                "kind": "String",
                 "nullable": false,
                 "array": true
             }
         ],
         "inputFields": [
             {
-                "name": "types",
-                "kind": "Enum",
-                "enum": [
-                    "cap",
-                    "shirt",
-                    "tie",
-                    "pants",
-                    "jacket",
-                    "shoes",
-                    "socks",
-                    "mug",
-                    "pen",
-                    "calendar",
-                    "notebook",
-                    "bag",
-                    "watch",
-                    "sunglasses",
-                    "wallet"
-                ],
+                "name": "ids",
+                "kind": "String",
                 "nullable": false,
                 "array": true
             }
@@ -3015,6 +3041,59 @@
                 "name": "productId",
                 "kind": "String",
                 "nullable": true
+            }
+        ]
+    },
+    {
+        "name": "ProductTypes",
+        "fields": [
+            {
+                "name": "types",
+                "kind": "Enum",
+                "enum": [
+                    "cap",
+                    "shirt",
+                    "tie",
+                    "pants",
+                    "jacket",
+                    "shoes",
+                    "socks",
+                    "mug",
+                    "pen",
+                    "calendar",
+                    "notebook",
+                    "bag",
+                    "watch",
+                    "sunglasses",
+                    "wallet"
+                ],
+                "nullable": false,
+                "array": true
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "types",
+                "kind": "Enum",
+                "enum": [
+                    "cap",
+                    "shirt",
+                    "tie",
+                    "pants",
+                    "jacket",
+                    "shoes",
+                    "socks",
+                    "mug",
+                    "pen",
+                    "calendar",
+                    "notebook",
+                    "bag",
+                    "watch",
+                    "sunglasses",
+                    "wallet"
+                ],
+                "nullable": false,
+                "array": true
             }
         ]
     },

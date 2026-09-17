@@ -38,6 +38,7 @@ jobs:
                   path: |
                       packages/*/junit-unit.xml
                       packages/*/*/junit-unit.xml
+                      demo/*/junit-unit.xml
                   overwrite: true
 
     test-storybook:

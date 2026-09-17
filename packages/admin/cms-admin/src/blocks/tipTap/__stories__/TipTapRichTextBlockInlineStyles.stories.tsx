@@ -290,9 +290,17 @@ const CombinedStylesBlock = createTipTapRichTextBlock({
         {
             name: "intro",
             label: "Intro Text",
-            appliesTo: ["paragraph"],
             element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
         },
+    ],
+    textBlocks: [
+        { name: "paragraph", tag: "paragraph", label: "Paragraph", styles: ["intro"] },
+        { name: "heading-1", tag: "heading-1", label: "Heading 1" },
+        { name: "heading-2", tag: "heading-2", label: "Heading 2" },
+        { name: "heading-3", tag: "heading-3", label: "Heading 3" },
+        { name: "heading-4", tag: "heading-4", label: "Heading 4" },
+        { name: "heading-5", tag: "heading-5", label: "Heading 5" },
+        { name: "heading-6", tag: "heading-6", label: "Heading 6" },
     ],
     inlineStyles: [
         {

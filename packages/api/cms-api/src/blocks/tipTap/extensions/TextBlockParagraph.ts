@@ -1,9 +1,12 @@
 import Paragraph from "@tiptap/extension-paragraph";
 
-export const TextBlockStyleParagraph = Paragraph.extend({
+export const TextBlockParagraph = Paragraph.extend({
     addAttributes() {
         return {
             ...this.parent?.(),
+            textBlockName: {
+                default: null,
+            },
             textBlockStyle: {
                 default: null,
             },

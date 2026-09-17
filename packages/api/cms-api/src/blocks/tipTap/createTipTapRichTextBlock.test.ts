@@ -20,7 +20,7 @@ const onlyFeatures = (options: CreateTipTapRichTextBlockOptions = {}): CreateTip
     strike: false,
     sub: false,
     sup: false,
-    heading: false,
+    textBlocks: [{ name: "paragraph", tag: "paragraph" }],
     orderedList: false,
     unorderedList: false,
     nonBreakingSpace: false,
@@ -34,7 +34,7 @@ describe("createTipTapRichTextBlock validation", () => {
 
         it("should accept a valid empty document", async () => {
             const input = block.blockInputFactory({
-                tipTapContent: { type: "doc", content: [{ type: "paragraph" }] },
+                tipTapContent: { type: "doc", content: [{ type: "paragraph", attrs: { textBlockName: "paragraph" } }] },
             });
             const errors = await validate(input);
             expect(errors).toHaveLength(0);
@@ -44,7 +44,7 @@ describe("createTipTapRichTextBlock validation", () => {
             const input = block.blockInputFactory({
                 tipTapContent: {
                     type: "doc",
-                    content: [{ type: "paragraph", content: [{ type: "text", text: "Hello world" }] }],
+                    content: [{ type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Hello world" }] }],
                 },
             });
             const errors = await validate(input);
@@ -58,6 +58,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [{ type: "text", marks: [{ type: "bold" }], text: "Bold text" }],
                         },
                     ],
@@ -74,6 +75,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [{ type: "text", marks: [{ type: "italic" }, { type: "strike" }], text: "Styled" }],
                         },
                     ],
@@ -90,6 +92,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [{ type: "text", marks: [{ type: "underline" }], text: "Underlined" }],
                         },
                     ],
@@ -104,8 +107,16 @@ describe("createTipTapRichTextBlock validation", () => {
                 tipTapContent: {
                     type: "doc",
                     content: [
-                        { type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Title" }] },
-                        { type: "heading", attrs: { level: 3 }, content: [{ type: "text", text: "Subtitle" }] },
+                        {
+                            type: "heading",
+                            attrs: { level: 1, textBlockName: "heading-1" },
+                            content: [{ type: "text", text: "Title" }],
+                        },
+                        {
+                            type: "heading",
+                            attrs: { level: 3, textBlockName: "heading-3" },
+                            content: [{ type: "text", text: "Subtitle" }],
+                        },
                     ],
                 },
             });
@@ -120,11 +131,23 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "orderedList",
-                            content: [{ type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "One" }] }] }],
+                            content: [
+                                {
+                                    type: "listItem",
+                                    content: [{ type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "One" }] }],
+                                },
+                            ],
                         },
                         {
                             type: "bulletList",
-                            content: [{ type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "Bullet" }] }] }],
+                            content: [
+                                {
+                                    type: "listItem",
+                                    content: [
+                                        { type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Bullet" }] },
+                                    ],
+                                },
+                            ],
                         },
                     ],
                 },
@@ -140,6 +163,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [
                                 { type: "text", marks: [{ type: "superscript" }], text: "sup" },
                                 { type: "text", marks: [{ type: "subscript" }], text: "sub" },
@@ -159,6 +183,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [
                                 { type: "text", text: "before" },
                                 { type: "nonBreakingSpace" },
@@ -259,6 +284,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [{ type: "text", marks: [{ type: "bold" }], text: "Bold" }],
                         },
                     ],
@@ -349,6 +375,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [{ type: "text", marks: [{ type: "underline" }], text: "Underlined" }],
                         },
                     ],
@@ -363,8 +390,16 @@ describe("createTipTapRichTextBlock validation", () => {
         const block = createTipTapRichTextBlock(
             onlyFeatures({
                 bold: true,
-                heading: true,
-                textBlockStyles: [{ name: "intro", appliesTo: ["paragraph"] }, { name: "highlight" }],
+                textBlockStyles: [{ name: "intro" }, { name: "highlight" }],
+                textBlocks: [
+                    { name: "paragraph", tag: "paragraph", styles: ["intro", "highlight"] },
+                    { name: "heading-1", tag: "heading-1", styles: ["highlight"] },
+                    { name: "heading-2", tag: "heading-2", styles: ["highlight"] },
+                    { name: "heading-3", tag: "heading-3", styles: ["highlight"] },
+                    { name: "heading-4", tag: "heading-4", styles: ["highlight"] },
+                    { name: "heading-5", tag: "heading-5", styles: ["highlight"] },
+                    { name: "heading-6", tag: "heading-6", styles: ["highlight"] },
+                ],
             }),
             "TestBlockStyles",
         );
@@ -376,7 +411,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "paragraph",
-                            attrs: { textBlockStyle: "intro" },
+                            attrs: { textBlockName: "paragraph", textBlockStyle: "intro" },
                             content: [{ type: "text", text: "Intro text" }],
                         },
                     ],
@@ -393,7 +428,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "heading",
-                            attrs: { level: 1, textBlockStyle: "highlight" },
+                            attrs: { level: 1, textBlockName: "heading-1", textBlockStyle: "highlight" },
                             content: [{ type: "text", text: "Highlighted heading" }],
                         },
                     ],
@@ -410,8 +445,78 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "paragraph",
-                            attrs: { textBlockStyle: null },
+                            attrs: { textBlockName: "paragraph", textBlockStyle: null },
                             content: [{ type: "text", text: "Default" }],
+                        },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
+        });
+    });
+
+    describe("schema with a required text block style (defaultStyle configured)", () => {
+        const block = createTipTapRichTextBlock(
+            onlyFeatures({
+                bold: true,
+                textBlockStyles: [{ name: "intro" }, { name: "highlight" }],
+                textBlocks: [
+                    { name: "paragraph", tag: "paragraph", styles: ["intro"], defaultStyle: "intro" },
+                    { name: "heading-1", tag: "heading-1", styles: ["highlight"] },
+                    { name: "heading-2", tag: "heading-2" },
+                    { name: "heading-3", tag: "heading-3" },
+                    { name: "heading-4", tag: "heading-4" },
+                    { name: "heading-5", tag: "heading-5" },
+                    { name: "heading-6", tag: "heading-6" },
+                ],
+            }),
+            "TestRequiredStyle",
+        );
+
+        it("should reject a paragraph missing its required textBlockStyle", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "paragraph",
+                            attrs: { textBlockName: "paragraph", textBlockStyle: null },
+                            content: [{ type: "text", text: "Missing style" }],
+                        },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors.length).toBeGreaterThan(0);
+        });
+
+        it("should accept a paragraph with its required textBlockStyle set", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "paragraph",
+                            attrs: { textBlockName: "paragraph", textBlockStyle: "intro" },
+                            content: [{ type: "text", text: "Styled" }],
+                        },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
+        });
+
+        it("should accept a heading-1 without a style, since it has no defaultStyle", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "heading",
+                            attrs: { level: 1, textBlockName: "heading-1", textBlockStyle: null },
+                            content: [{ type: "text", text: "Optional style" }],
                         },
                     ],
                 },
@@ -425,13 +530,18 @@ describe("createTipTapRichTextBlock validation", () => {
         const block = createTipTapRichTextBlock(
             {
                 bold: true,
-                heading: true,
                 orderedList: true,
                 unorderedList: true,
-                textBlockStyles: [
-                    { name: "intro", appliesTo: ["paragraph"] },
-                    { name: "listStyle", appliesTo: ["ordered-list", "unordered-list"] },
-                    { name: "highlight" },
+                textBlockStyles: [{ name: "intro" }, { name: "listStyle" }, { name: "highlight" }],
+                listStyles: ["listStyle", "highlight"],
+                textBlocks: [
+                    { name: "paragraph", tag: "paragraph", styles: ["intro", "highlight"] },
+                    { name: "heading-1", tag: "heading-1", styles: ["highlight"] },
+                    { name: "heading-2", tag: "heading-2", styles: ["highlight"] },
+                    { name: "heading-3", tag: "heading-3", styles: ["highlight"] },
+                    { name: "heading-4", tag: "heading-4", styles: ["highlight"] },
+                    { name: "heading-5", tag: "heading-5", styles: ["highlight"] },
+                    { name: "heading-6", tag: "heading-6", styles: ["highlight"] },
                 ],
             },
             "TestBlockStylesList",
@@ -450,7 +560,7 @@ describe("createTipTapRichTextBlock validation", () => {
                                     content: [
                                         {
                                             type: "paragraph",
-                                            attrs: { textBlockStyle: "listStyle" },
+                                            attrs: { textBlockName: "paragraph", textBlockStyle: "listStyle" },
                                             content: [{ type: "text", text: "Styled list item" }],
                                         },
                                     ],
@@ -477,7 +587,7 @@ describe("createTipTapRichTextBlock validation", () => {
                                     content: [
                                         {
                                             type: "paragraph",
-                                            attrs: { textBlockStyle: "highlight" },
+                                            attrs: { textBlockName: "paragraph", textBlockStyle: "highlight" },
                                             content: [{ type: "text", text: "Highlighted bullet" }],
                                         },
                                     ],
@@ -504,7 +614,7 @@ describe("createTipTapRichTextBlock validation", () => {
                                     content: [
                                         {
                                             type: "paragraph",
-                                            attrs: { textBlockStyle: null },
+                                            attrs: { textBlockName: "paragraph", textBlockStyle: null },
                                             content: [{ type: "text", text: "Default bullet" }],
                                         },
                                     ],
@@ -535,6 +645,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [{ type: "text", marks: [{ type: "inlineStyle", attrs: { type: "highlight" } }], text: "Highlighted" }],
                         },
                     ],
@@ -551,6 +662,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [{ type: "text", marks: [{ type: "bold" }, { type: "inlineStyle", attrs: { type: "tag" } }], text: "Bold Tag" }],
                         },
                     ],
@@ -564,7 +676,7 @@ describe("createTipTapRichTextBlock validation", () => {
             const input = block.blockInputFactory({
                 tipTapContent: {
                     type: "doc",
-                    content: [{ type: "paragraph", content: [{ type: "text", text: "Plain text" }] }],
+                    content: [{ type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Plain text" }] }],
                 },
             });
             const errors = await validate(input);
@@ -596,7 +708,6 @@ describe("createTipTapRichTextBlock validation", () => {
         const block = createTipTapRichTextBlock(
             {
                 bold: true,
-                heading: true,
                 inlineStyles: [
                     { name: "highlight" },
                     { name: "tag", appliesTo: ["paragraph"] },
@@ -613,7 +724,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "heading",
-                            attrs: { level: 1 },
+                            attrs: { level: 1, textBlockName: "heading-1" },
                             content: [{ type: "text", marks: [{ type: "inlineStyle", attrs: { type: "highlight" } }], text: "Highlight heading" }],
                         },
                     ],
@@ -630,6 +741,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [{ type: "text", marks: [{ type: "inlineStyle", attrs: { type: "tag" } }], text: "Tagged" }],
                         },
                     ],
@@ -663,7 +775,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "heading",
-                            attrs: { level: 1 },
+                            attrs: { level: 1, textBlockName: "heading-1" },
                             content: [{ type: "text", marks: [{ type: "inlineStyle", attrs: { type: "heading-accent" } }], text: "Accent heading" }],
                         },
                     ],
@@ -718,7 +830,7 @@ describe("createTipTapRichTextBlock validation", () => {
             const input = block.blockInputFactory({
                 tipTapContent: {
                     type: "doc",
-                    content: [{ type: "paragraph", content: [{ type: "text", text: "Plain text" }] }],
+                    content: [{ type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Plain text" }] }],
                 },
             });
             const errors = await validate(input);
@@ -769,6 +881,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [
                                 {
                                     type: "text",
@@ -803,7 +916,7 @@ describe("createTipTapRichTextBlock validation", () => {
             const input = block.blockInputFactory({
                 tipTapContent: {
                     type: "doc",
-                    content: [{ type: "paragraph", content: [{ type: "text", text: "No links" }] }],
+                    content: [{ type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "No links" }] }],
                 },
             });
             const errors = await validate(input);
@@ -817,6 +930,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [
                                 {
                                     type: "text",
@@ -881,7 +995,7 @@ describe("createTipTapRichTextBlock validation", () => {
             const blockData = block.blockDataFactory({
                 tipTapContent: {
                     type: "doc",
-                    content: [{ type: "paragraph", content: [{ type: "text", text: "No links" }] }],
+                    content: [{ type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "No links" }] }],
                 },
             });
 
@@ -929,8 +1043,8 @@ describe("createTipTapRichTextBlock validation", () => {
                 tipTapContent: {
                     type: "doc",
                     content: [
-                        { type: "paragraph", content: [{ type: "text", text: "First" }] },
-                        { type: "paragraph", content: [{ type: "text", text: "Second" }] },
+                        { type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "First" }] },
+                        { type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Second" }] },
                     ],
                 },
             });
@@ -942,7 +1056,7 @@ describe("createTipTapRichTextBlock validation", () => {
             const input = block.blockInputFactory({
                 tipTapContent: {
                     type: "doc",
-                    content: [{ type: "paragraph", content: [{ type: "text", text: "Only one" }] }],
+                    content: [{ type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Only one" }] }],
                 },
             });
             const errors = await validate(input);
@@ -999,6 +1113,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "paragraph",
+                            attrs: { textBlockName: "paragraph" },
                             content: [
                                 { type: "text", text: "Hello " },
                                 { type: "placeholder", attrs: { name: "firstName" } },
@@ -1061,8 +1176,18 @@ describe("createTipTapRichTextBlock validation", () => {
                         {
                             type: "bulletList",
                             content: [
-                                { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "Item 1" }] }] },
-                                { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "Item 2" }] }] },
+                                {
+                                    type: "listItem",
+                                    content: [
+                                        { type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Item 1" }] },
+                                    ],
+                                },
+                                {
+                                    type: "listItem",
+                                    content: [
+                                        { type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Item 2" }] },
+                                    ],
+                                },
                             ],
                         },
                     ],
@@ -1083,13 +1208,19 @@ describe("createTipTapRichTextBlock validation", () => {
                                 {
                                     type: "listItem",
                                     content: [
-                                        { type: "paragraph", content: [{ type: "text", text: "Item 1" }] },
+                                        { type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Item 1" }] },
                                         {
                                             type: "bulletList",
                                             content: [
                                                 {
                                                     type: "listItem",
-                                                    content: [{ type: "paragraph", content: [{ type: "text", text: "Nested" }] }],
+                                                    content: [
+                                                        {
+                                                            type: "paragraph",
+                                                            attrs: { textBlockName: "paragraph" },
+                                                            content: [{ type: "text", text: "Nested" }],
+                                                        },
+                                                    ],
                                                 },
                                             ],
                                         },
@@ -1206,8 +1337,12 @@ describe("createTipTapRichTextBlock validation", () => {
                 tipTapContent: {
                     type: "doc",
                     content: [
-                        { type: "paragraph", content: [{ type: "text", text: "Just text" }] },
-                        { type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Heading" }] },
+                        { type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Just text" }] },
+                        {
+                            type: "heading",
+                            attrs: { level: 1, textBlockName: "heading-1" },
+                            content: [{ type: "text", text: "Heading" }],
+                        },
                     ],
                 },
             });
@@ -1224,7 +1359,14 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "bulletList",
-                            content: [{ type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "Item" }] }] }],
+                            content: [
+                                {
+                                    type: "listItem",
+                                    content: [
+                                        { type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Item" }] },
+                                    ],
+                                },
+                            ],
                         },
                     ],
                 },
@@ -1265,13 +1407,23 @@ describe("createTipTapRichTextBlock validation", () => {
     });
 
     describe("heading levels option", () => {
-        const block = createTipTapRichTextBlock({ heading: { levels: [2, 3, 4] } }, "TestHeadingLevels");
+        const block = createTipTapRichTextBlock(
+            {
+                textBlocks: [
+                    { name: "paragraph", tag: "paragraph" },
+                    { name: "heading-2", tag: "heading-2" },
+                    { name: "heading-3", tag: "heading-3" },
+                    { name: "heading-4", tag: "heading-4" },
+                ],
+            },
+            "TestHeadingLevels",
+        );
 
         it("should accept a heading within the allowed levels", async () => {
             const input = block.blockInputFactory({
                 tipTapContent: {
                     type: "doc",
-                    content: [{ type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "Heading" }] }],
+                    content: [{ type: "heading", attrs: { level: 2, textBlockName: "heading-2" }, content: [{ type: "text", text: "Heading" }] }],
                 },
             });
             const errors = await validate(input);
@@ -1290,19 +1442,11 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(errors[0].property).toBe("tipTapContent");
         });
 
-        it("should throw when the heading levels are invalid", () => {
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [] } }, "TestInvalidHeadingLevelsEmpty")).toThrow();
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [0, 2, 3] } }, "TestInvalidHeadingLevelsZero")).toThrow();
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [1, 7] } }, "TestInvalidHeadingLevelsSeven")).toThrow();
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [1, 1, 2] } }, "TestInvalidHeadingLevelsDuplicate")).toThrow();
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [1.5, 2] } }, "TestInvalidHeadingLevelsFraction")).toThrow();
-        });
-
         it("should accept content without headings regardless of the heading levels", async () => {
             const input = block.blockInputFactory({
                 tipTapContent: {
                     type: "doc",
-                    content: [{ type: "paragraph", content: [{ type: "text", text: "Just text" }] }],
+                    content: [{ type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Just text" }] }],
                 },
             });
             const errors = await validate(input);
@@ -1310,9 +1454,16 @@ describe("createTipTapRichTextBlock validation", () => {
         });
     });
 
-    describe("heading-only schema (paragraph: false)", () => {
+    describe("heading-only schema (no paragraph textBlocks entry)", () => {
         const block = createTipTapRichTextBlock(
-            onlyFeatures({ paragraph: false, heading: { levels: [2, 3, 4], defaultLevel: 3 }, bold: true }),
+            onlyFeatures({
+                bold: true,
+                textBlocks: [
+                    { name: "heading-3", tag: "heading-3" },
+                    { name: "heading-2", tag: "heading-2" },
+                    { name: "heading-4", tag: "heading-4" },
+                ],
+            }),
             "TestHeadingOnly",
         );
 
@@ -1320,7 +1471,7 @@ describe("createTipTapRichTextBlock validation", () => {
             const input = block.blockInputFactory({
                 tipTapContent: {
                     type: "doc",
-                    content: [{ type: "heading", attrs: { level: 3 }, content: [{ type: "text", text: "Headline" }] }],
+                    content: [{ type: "heading", attrs: { level: 3, textBlockName: "heading-3" }, content: [{ type: "text", text: "Headline" }] }],
                 },
             });
             const errors = await validate(input);
@@ -1350,24 +1501,73 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(errors).toHaveLength(1);
         });
 
-        it("should throw when the heading defaultLevel is not one of the allowed levels", () => {
-            expect(() => createTipTapRichTextBlock({ heading: { levels: [2, 3, 4], defaultLevel: 1 } }, "TestInvalidDefaultHeadingLevel")).toThrow();
+        it("should throw when textBlocks is empty", () => {
+            expect(() => createTipTapRichTextBlock(onlyFeatures({ textBlocks: [] }), "TestNoTextBlockTypeLeft")).toThrow();
         });
 
-        it("should throw when paragraphs are disabled without headings", () => {
-            expect(() => createTipTapRichTextBlock(onlyFeatures({ paragraph: false }), "TestNoTextBlockTypeLeft")).toThrow();
+        it("should throw when lists are enabled without a paragraph textBlocks entry", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    { textBlocks: [{ name: "heading-1", tag: "heading-1" }], orderedList: true },
+                    "TestHeadingOnlyWithOrderedList",
+                ),
+            ).toThrow();
+            expect(() =>
+                createTipTapRichTextBlock(
+                    { textBlocks: [{ name: "heading-1", tag: "heading-1" }], unorderedList: true },
+                    "TestHeadingOnlyWithUnorderedList",
+                ),
+            ).toThrow();
         });
 
-        it("should throw when lists are enabled without paragraphs", () => {
-            expect(() => createTipTapRichTextBlock({ paragraph: false, orderedList: true }, "TestHeadingOnlyWithOrderedList")).toThrow();
-            expect(() => createTipTapRichTextBlock({ paragraph: false, unorderedList: true }, "TestHeadingOnlyWithUnorderedList")).toThrow();
-        });
-
-        it("should disable lists by default when paragraphs are disabled", () => {
-            const resolvedOptions = resolveTipTapOptions({ paragraph: false });
+        it("should disable lists by default when there is no paragraph textBlocks entry", () => {
+            const textBlocks: CreateTipTapRichTextBlockOptions["textBlocks"] = [{ name: "heading-1", tag: "heading-1" }];
+            const resolvedOptions = resolveTipTapOptions({ textBlocks });
             expect(resolvedOptions.orderedList).toBe(false);
             expect(resolvedOptions.unorderedList).toBe(false);
-            expect(resolvedOptions.heading).toEqual({ levels: [1, 2, 3, 4, 5, 6], defaultLevel: 1 });
+            expect(resolvedOptions.textBlocks).toEqual(textBlocks);
+        });
+    });
+
+    describe("defaultTextBlock option", () => {
+        const textBlocks: CreateTipTapRichTextBlockOptions["textBlocks"] = [
+            { name: "heading-2", tag: "heading-2" },
+            { name: "heading-3", tag: "heading-3" },
+            { name: "heading-4", tag: "heading-4" },
+        ];
+
+        it("should default to textBlocks[0] when not set", () => {
+            const resolvedOptions = resolveTipTapOptions({ textBlocks });
+            expect(resolvedOptions.defaultTextBlock).toEqual({ name: "heading-2", tag: "heading-2" });
+        });
+
+        it("should resolve to the named entry, independent of textBlocks order", () => {
+            const resolvedOptions = resolveTipTapOptions({ textBlocks, defaultTextBlock: "heading-3" });
+            expect(resolvedOptions.defaultTextBlock).toEqual({ name: "heading-3", tag: "heading-3" });
+            // The dropdown order (textBlocks itself) is untouched by defaultTextBlock.
+            expect(resolvedOptions.textBlocks).toEqual(textBlocks);
+        });
+
+        it("should throw when defaultTextBlock references an unknown name", () => {
+            expect(() => resolveTipTapOptions({ textBlocks, defaultTextBlock: "unknown" })).toThrow();
+        });
+
+        it("should use defaultTextBlock, not textBlocks[0], for an empty DraftJS migration in a heading-only schema", () => {
+            const block = createTipTapRichTextBlock(
+                {
+                    textBlocks,
+                    defaultTextBlock: "heading-3",
+                    migrateFromDraftJs: true,
+                },
+                "TestDefaultTextBlockEmptyMigration",
+            );
+
+            const data = block.blockDataFactory({ draftContent: { blocks: [], entityMap: {} } });
+
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [{ type: "heading", attrs: { level: 3, textBlockName: "heading-3", textBlockStyle: null } }],
+            });
         });
     });
 
@@ -1380,7 +1580,7 @@ describe("createTipTapRichTextBlock validation", () => {
         const cmsBlockNode = (blockType: string, data: unknown) => ({
             type: "doc",
             content: [
-                { type: "paragraph", content: [{ type: "text", text: "intro" }] },
+                { type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "intro" }] },
                 { type: "cmsBlock", attrs: { blockType, data } },
             ],
         });
@@ -1443,6 +1643,7 @@ describe("createTipTapRichTextBlock validation", () => {
             content: [
                 {
                     type: "paragraph",
+                    attrs: { textBlockName: "paragraph" },
                     content: [
                         { type: "text", text: "price " },
                         { type: "cmsInlineBlock", attrs: { blockType, data } },
@@ -1502,7 +1703,7 @@ describe("createTipTapRichTextBlock block typing", () => {
         const input = block.blockInputFactory({
             tipTapContent: {
                 type: "doc",
-                content: [{ type: "paragraph", content: [{ type: "text", text: "Typed" }] }],
+                content: [{ type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Typed" }] }],
             },
         });
 
@@ -1514,7 +1715,7 @@ describe("createTipTapRichTextBlock block typing", () => {
             .blockInputFactory({
                 tipTapContent: {
                     type: "doc",
-                    content: [{ type: "paragraph", content: [{ type: "text", text: "Typed data" }] }],
+                    content: [{ type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Typed data" }] }],
                 },
             })
             .transformToBlockData();
@@ -1526,7 +1727,7 @@ describe("createTipTapRichTextBlock block typing", () => {
         const blockData = block.blockDataFactory({
             tipTapContent: {
                 type: "doc",
-                content: [{ type: "paragraph", content: [{ type: "text", text: "Factory data" }] }],
+                content: [{ type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Factory data" }] }],
             },
         });
 
@@ -1537,7 +1738,7 @@ describe("createTipTapRichTextBlock block typing", () => {
         const input: TipTapRichTextBlockInputInterface = block.blockInputFactory({
             tipTapContent: {
                 type: "doc",
-                content: [{ type: "paragraph", content: [{ type: "text", text: "Interfaces" }] }],
+                content: [{ type: "paragraph", attrs: { textBlockName: "paragraph" }, content: [{ type: "text", text: "Interfaces" }] }],
             },
         });
         const blockData: TipTapRichTextBlockDataInterface = input.transformToBlockData();

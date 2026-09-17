@@ -12,21 +12,35 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
             productPrice: { block: ProductPriceBlock, display: "inline" },
             productTeaser: { block: ProductTeaserBlock, display: "block" },
         },
-        textBlockStyles: [
-            { name: "paragraph300", appliesTo: ["paragraph"] },
-            { name: "paragraph200", appliesTo: ["paragraph"] },
-            { name: "eyebrow600", appliesTo: ["paragraph"] },
-            { name: "eyebrow550", appliesTo: ["paragraph"] },
-            { name: "eyebrow500", appliesTo: ["paragraph"] },
-            { name: "eyebrow450", appliesTo: ["paragraph"] },
-            { name: "list300", appliesTo: ["ordered-list", "unordered-list"] },
-            { name: "list200", appliesTo: ["ordered-list", "unordered-list"] },
+        textBlocks: [
+            {
+                name: "paragraph",
+                tag: "paragraph",
+                styles: ["paragraph300", "paragraph200", "eyebrow600", "eyebrow550", "eyebrow500", "eyebrow450"],
+            },
+            { name: "heading-1", tag: "heading-1" },
+            { name: "heading-2", tag: "heading-2" },
+            { name: "heading-3", tag: "heading-3" },
+            { name: "heading-4", tag: "heading-4" },
+            { name: "heading-5", tag: "heading-5" },
+            { name: "heading-6", tag: "heading-6" },
         ],
+        textBlockStyles: [
+            { name: "paragraph300" },
+            { name: "paragraph200" },
+            { name: "eyebrow600" },
+            { name: "eyebrow550" },
+            { name: "eyebrow500" },
+            { name: "eyebrow450" },
+            { name: "list300" },
+            { name: "list200" },
+        ],
+        listStyles: ["list300", "list200"],
         inlineStyles: [{ name: "highlight" }, { name: "tag", appliesTo: ["paragraph"] }],
         migrateFromDraftJs: {
             // Map the DraftJS `blocktypeMap` entry `paragraph-small` (configured in the admin RichTextBlock)
             // to the equivalent TipTap textBlockStyle so legacy content keeps its smaller paragraph variant.
-            textBlockStyleMap: { "paragraph-small": "paragraph200" },
+            textBlockMap: { "paragraph-small": "paragraph200" },
         },
     },
     {

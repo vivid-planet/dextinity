@@ -6,7 +6,7 @@
     "scripts": {
         "build": "run-s intl:compile && run-p gql:types generate-block-types css:types build-server && next build --webpack",
         "build-server": "tsc --project tsconfig.server.json",
-        "build-storybook": "VALKEY_ENABLED=false storybook build --disable-telemetry",
+        "build-storybook": "storybook build --disable-telemetry",
         "check-node-version": "check-node-version --node $(cat ../../.nvmrc)",
         "css:types": "typed-scss-modules src --nameFormat none --exportType default --aliasPrefixes.@src src",
         "css:types:watch": "pnpm run css:types --watch",
@@ -31,9 +31,9 @@
         "lint:tsc:app": "tsc --project .",
         "lint:tsc:storybook": "tsc --project tsconfig.storybook.json",
         "serve": "NODE_ENV=production node dist/server.js",
-        "storybook": "VALKEY_ENABLED=false storybook dev -p 26648 --no-open --disable-telemetry",
+        "storybook": "storybook dev -p 26648 --no-open --disable-telemetry",
         "test": "pnpm run test:unit && pnpm run test:storybook",
-        "test:storybook": "VALKEY_ENABLED=false vitest --run --project storybook --outputFile.junit=./junit-storybook.xml",
+        "test:storybook": "vitest --run --project storybook --outputFile.junit=./junit-storybook.xml",
         "test:unit": "vitest --run --project unit --outputFile.junit=./junit-unit.xml",
         "test:watch": "vitest --watch"
     },

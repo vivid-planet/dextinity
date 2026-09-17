@@ -3,31 +3,13 @@ import type { ClassConstructor } from "class-transformer";
 
 import { BlockMigration } from "../../migrations/BlockMigration";
 import type { BlockMigrationInterface } from "../../migrations/types";
-import { findTextBlock, getTextBlockTag, resolveTextBlocks, type TipTapTextBlock } from "../textBlocks";
+import { applyTextBlocks, resolveTextBlocks, type TipTapTextBlock } from "../textBlocks";
 
 interface From {
     tipTapContent: JSONContent;
 }
 
 type To = From;
-
-function applyTextBlocks(node: JSONContent, textBlocks: ReturnType<typeof resolveTextBlocks>): JSONContent {
-    let result = node;
-
-    const tag = getTextBlockTag(node);
-    if (tag !== undefined) {
-        const textBlock = findTextBlock({ name: node.attrs?.textBlock, tag, textBlocks });
-        if (textBlock && node.attrs?.textBlock !== textBlock.name) {
-            result = { ...node, attrs: { ...node.attrs, textBlock: textBlock.name } };
-        }
-    }
-
-    if (Array.isArray(result.content)) {
-        result = { ...result, content: result.content.map((child) => applyTextBlocks(child, textBlocks)) };
-    }
-
-    return result;
-}
 
 /**
  * Builds a migration that writes the `textBlock` attribute onto every paragraph/heading node: the

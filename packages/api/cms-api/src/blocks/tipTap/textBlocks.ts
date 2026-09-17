@@ -123,3 +123,26 @@ export function getTextBlockTag(node: JSONContent): TipTapTextBlockTag | undefin
     }
     return undefined;
 }
+
+/**
+ * Names the text block of every paragraph/heading node that doesn't name one yet, and replaces a
+ * name that doesn't belong to the node's tag - which is what a migration changing the tag leaves
+ * behind.
+ */
+export function applyTextBlocks(content: JSONContent, textBlocks: TipTapResolvedTextBlock[]): JSONContent {
+    let result = content;
+
+    const tag = getTextBlockTag(content);
+    if (tag !== undefined) {
+        const textBlock = findTextBlock({ name: content.attrs?.textBlock, tag, textBlocks });
+        if (textBlock && content.attrs?.textBlock !== textBlock.name) {
+            result = { ...content, attrs: { ...content.attrs, textBlock: textBlock.name } };
+        }
+    }
+
+    if (Array.isArray(result.content)) {
+        result = { ...result, content: result.content.map((child) => applyTextBlocks(child, textBlocks)) };
+    }
+
+    return result;
+}

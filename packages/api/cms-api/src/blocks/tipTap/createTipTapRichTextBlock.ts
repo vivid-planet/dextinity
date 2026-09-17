@@ -34,6 +34,7 @@ import { createTextBlockParagraph } from "./extensions/TextBlockParagraph";
 import { buildDraftJsToTipTapMigration } from "./migrations/buildDraftJsToTipTapMigration";
 import type { TextBlockMapping } from "./migrations/convertDraftJsToTipTap";
 import {
+    applyTextBlocks,
     defaultTextBlocks,
     findDefaultTextBlock,
     getHeadingLevels,
@@ -804,7 +805,10 @@ export function createTipTapRichTextBlock(
     }
 
     const blockDataFactory: BlockDataFactory<TipTapRichTextBlockData> = (o) => {
-        let tipTapContent = o.tipTapContent;
+        // Content written before the attribute existed, or by a text block that has since been
+        // removed, names no text block. Resolving it here keeps the site from having to fall back to
+        // the node's tag, and doesn't touch what is stored.
+        let tipTapContent = applyTextBlocks(o.tipTapContent, resolvedOptions.textBlocks);
         if (LinkBlock) {
             tipTapContent = mapLinkMarksData(tipTapContent, (data) => LinkBlock.blockDataFactory(data));
         }

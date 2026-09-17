@@ -31,16 +31,6 @@ const textBlockToVariant: Record<string, TypographyVariant> = {
     "heading-5": "headline350",
 };
 
-// Content written before the text block was stored with the node only carries its level.
-const headingLevelToVariant: Record<1 | 2 | 3 | 4 | 5 | 6, TypographyVariant> = {
-    1: "headline600",
-    2: "headline550",
-    3: "headline500",
-    4: "headline450",
-    5: "headline400",
-    6: "headline350",
-};
-
 const renderCmsBlock: TipTapNodeHandler = ({ node }) => {
     if (node.attrs?.blockType === "productPrice") {
         return <ProductPriceBlock data={node.attrs?.data as ProductPriceBlockData} />;
@@ -57,16 +47,11 @@ const nodeMapping: Record<string, TipTapNodeHandler> = {
             {children}
         </Typography>
     ),
-    heading: ({ node, children }) => {
-        const level = (node.attrs?.level as 1 | 2 | 3 | 4 | 5 | 6) ?? 1;
-        const textBlock = node.attrs?.textBlock as string | null | undefined;
-        const variant = (textBlock ? textBlockToVariant[textBlock] : undefined) ?? headingLevelToVariant[level];
-        return (
-            <Typography variant={variant} bottomSpacing className={styles.text}>
-                {children}
-            </Typography>
-        );
-    },
+    heading: ({ node, children }) => (
+        <Typography variant={textBlockToVariant[node.attrs?.textBlock as string]} bottomSpacing className={styles.text}>
+            {children}
+        </Typography>
+    ),
     listItem: ({ node, children }) => {
         const firstParagraph = node.content?.find((child) => child.type === "paragraph");
         const textBlockStyle = (firstParagraph?.attrs?.textBlockStyle as TypographyVariant | null) ?? undefined;

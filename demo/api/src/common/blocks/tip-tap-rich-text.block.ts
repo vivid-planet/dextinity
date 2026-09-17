@@ -19,9 +19,11 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
             { name: "eyebrow550", appliesTo: ["paragraph"] },
             { name: "eyebrow500", appliesTo: ["paragraph"] },
             { name: "eyebrow450", appliesTo: ["paragraph"] },
+            { name: "headline300", appliesTo: ["heading-2"] },
             { name: "list300", appliesTo: ["ordered-list", "unordered-list"] },
             { name: "list200", appliesTo: ["ordered-list", "unordered-list"] },
         ],
+        defaultTextBlockStyles: { paragraph: "paragraph300", "heading-2": "headline300" },
         inlineStyles: [{ name: "highlight" }, { name: "tag", appliesTo: ["paragraph"] }],
         migrateFromDraftJs: {
             // Map the DraftJS `blocktypeMap` entry `paragraph-small` (configured in the admin RichTextBlock)

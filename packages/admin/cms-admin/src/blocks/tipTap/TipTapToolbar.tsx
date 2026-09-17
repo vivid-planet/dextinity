@@ -46,6 +46,7 @@ import type {
     TipTapPlaceholder,
     TipTapResolvedOptions,
     TipTapTextBlockStyle,
+    TipTapTextBlockStyleTargetType,
     TipTapTextBlockType,
 } from "./createTipTapRichTextBlock";
 import { TipTapBlockDialog } from "./TipTapBlockDialog";
@@ -162,6 +163,7 @@ export const TipTapToolbar = ({
     editor,
     resolvedOptions,
     textBlockStyles,
+    defaultTextBlockStyles,
     inlineStyles,
     placeholders,
     linkBlock,
@@ -173,6 +175,7 @@ export const TipTapToolbar = ({
     editor: Editor;
     resolvedOptions: TipTapResolvedOptions;
     textBlockStyles: TipTapTextBlockStyle[];
+    defaultTextBlockStyles: Partial<Record<TipTapTextBlockStyleTargetType, string>>;
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
     linkBlock?: BlockInterface & LinkBlockInterface;
@@ -450,9 +453,11 @@ export const TipTapToolbar = ({
                             MenuProps={{ elevation: 1 }}
                             sx={selectSx}
                         >
-                            <MenuItem value="" dense>
-                                <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockStyle.default" defaultMessage="Default" />
-                            </MenuItem>
+                            {!defaultTextBlockStyles[editorState.activeTipTapTextBlockType as TipTapTextBlockStyleTargetType] && (
+                                <MenuItem value="" dense>
+                                    <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockStyle.default" defaultMessage="Default" />
+                                </MenuItem>
+                            )}
                             {applicableTextBlockStyles.map((style) => (
                                 <MenuItem key={style.name} value={style.name} dense>
                                     {style.label}

@@ -63,7 +63,6 @@
         "file-type": "^21.3.4",
         "graphql-parse-resolve-info": "^4.14.1",
         "graphql-scalars": "^1.25.0",
-        "hasha": "^5.2.2",
         "html-to-text": "^9.0.5",
         "jose": "^5.10.0",
         "jsdom": "^28.1.0",

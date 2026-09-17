@@ -4,7 +4,6 @@ import { forwardRef, Inject, Injectable, Optional } from "@nestjs/common";
 import { createHmac } from "crypto";
 import exifr from "exifr";
 import { createReadStream } from "fs";
-import * as hasha from "hasha";
 import { basename, extname, parse } from "path";
 import probe from "probe-image-size";
 import * as rimraf from "rimraf";
@@ -15,7 +14,7 @@ import { DextinityEntityNotFoundException } from "../../common/errors/entity-not
 import { DextinityValidationException } from "../../common/errors/validation.exception";
 import { SortDirection } from "../../common/sorting/sort-direction.enum";
 import { FileUploadInput } from "../../file-utils/file-upload.input";
-import { slugifyFilename } from "../../file-utils/files.utils";
+import { calculateFileHash, slugifyFilename } from "../../file-utils/files.utils";
 import { FocalPoint } from "../../file-utils/focal-point.enum";
 import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
 import { DextinityImageResolutionException } from "../common/errors/image-resolution.exception";
@@ -220,7 +219,7 @@ export class FilesService {
     }
 
     async calculateHashForFile(filePath: string): Promise<string> {
-        return hasha.fromFile(filePath, { algorithm: "md5" });
+        return calculateFileHash(filePath);
     }
 
     async findOneByFilenameAndFolder(

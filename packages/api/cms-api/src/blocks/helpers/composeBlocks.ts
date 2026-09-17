@@ -14,6 +14,7 @@ import {
     registerBlock,
     TransformBlockResponse,
 } from "../block";
+import { getScopeVersions } from "../migrations/blockMigrationVersion";
 import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator";
 import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
 import { strictBlockDataFactoryDecorator } from "./strictBlockDataFactoryDecorator";
@@ -43,7 +44,7 @@ export function composeBlocks<BlockMap extends BaseBlockMap>(
     { blocks }: Options<BlockMap>,
     name: string,
 ): Block<BlockDataInterface, CompositeBlockInputInterface<BlockMap>> {
-    @BlockDataMigrationVersion(MIGRATE.version)
+    @BlockDataMigrationVersion(MIGRATE.version ?? 0, getScopeVersions(MIGRATE))
     class CompositeBlock extends BlockData implements BlockDataInterface {
         public _blockMap: Record<keyof BlockMap, BlockDataInterface>;
 
@@ -119,8 +120,8 @@ export function composeBlocks<BlockMap extends BaseBlockMap>(
 
     // Decorate BlockDataFactory
     let decorateBlockDataFactory = blockDataFactory;
-    if (MIGRATE.migrations) {
-        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator(MIGRATE.migrations, name);
+    if (MIGRATE.migrations || MIGRATE.scopes) {
+        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator(MIGRATE, name);
         decorateBlockDataFactory = blockDataFactoryDecorator1(decorateBlockDataFactory);
     }
     decorateBlockDataFactory = strictBlockDataFactoryDecorator(decorateBlockDataFactory);

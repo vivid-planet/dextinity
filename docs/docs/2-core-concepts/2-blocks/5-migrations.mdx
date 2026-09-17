@@ -202,6 +202,76 @@ export class ChangeEyebrowMigration
 
 </details>
 
+## Migration scopes
+
+The block's `version` is a single counter, so it can only be advanced by one party.
+That becomes a problem when a block is configured by a project but also receives migrations from a library, for instance a `createTipTapRichTextBlock` with `migrateFromDraftJs` enabled: the library takes version 1, and the project has to know that and continue with 2.
+As soon as the library adds another migration, the numbers collide.
+
+A _migration scope_ is a second, independent chain of migrations for the same block.
+Each scope counts its versions from 1, regardless of the block's `version` and of every other scope.
+
+```ts
+export const RichTextBlock = createTipTapRichTextBlock(
+    { link: LinkBlock, migrateFromDraftJs: true },
+    {
+        name: "RichText",
+        migrate: {
+            // highlight-start
+            scopes: {
+                project: {
+                    version: 1,
+                    migrations: typeSafeBlockMigrationPipe([ChangeEyebrowMigration]),
+                },
+            },
+            // highlight-end
+        },
+    },
+);
+```
+
+The scope's counters are stored per block instance in `$$versions`, next to the block's own `$$version`:
+
+```json
+{ "$$version": 1, "$$versions": { "project": 1 } }
+```
+
+Pick a scope name that identifies who owns the chain, for instance your application's name.
+The block's own migrations run first, then the scopes in the order in which they are declared.
+
+:::note
+
+You only need a scope when someone other than you adds migrations to the block.
+For a block your project fully owns, keep using `version` and `migrations` — the counter cannot collide with anything.
+
+:::
+
+:::caution
+
+Because each scope advances on its own, a scope's migrations may run before or after the block's own migrations depending on when they were added.
+Only type and touch the fields your migration changes, and spread the rest through, so a migration stays correct no matter what the other chain did to the data.
+
+:::
+
+### Moving an existing migration into a scope
+
+Block instances that were saved before the scope existed only carry `$$version`, so the scope starts at 0 for them and its migrations run.
+That is what you want for a new scope, but not when you move a migration that has already run into one — it would run a second time.
+
+`initialVersionFromLegacy` derives the scope's starting version from the legacy counter for that data:
+
+```ts
+scopes: {
+    project: {
+        version: 1,
+        migrations: typeSafeBlockMigrationPipe([ChangeEyebrowMigration]),
+        // `ChangeEyebrowMigration` used to be version 2 of the block's own chain,
+        // so data that reached version 2 has already run it
+        initialVersionFromLegacy: (legacyVersion) => (legacyVersion >= 2 ? 1 : 0),
+    },
+},
+```
+
 ## FAQ
 
 ### When do I need a migration?
@@ -217,6 +287,10 @@ You don't necessarily need a migration when
 - removing an existing field from the block
 - adding an additionally supported block to a `BlocksBlock` or an `OneOfBlock`
 - removing a supported block from a `BlocksBlock` or an `OneOfBlock`
+
+### Do I need a migration scope?
+
+Only if migrations for the block come from somewhere other than your own code, see [Migration scopes](#migration-scopes).
 
 ### How do I test a migration?
 

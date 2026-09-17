@@ -7,9 +7,12 @@ interface BlockDataConstructorInterface {
 
 // ClassDecorator for BlockData-Class
 // adds the current version to the returned value in transformToSave
-export function BlockDataMigrationVersion(versionNumber: number) {
+export function BlockDataMigrationVersion(versionNumber: number, scopeVersions?: Record<string, number>) {
     return function BlockDataMigrationVersionClassDecorator(constructor: BlockDataConstructorInterface): void {
-        if (versionNumber > 0) {
+        const scopeVersionsToSave = Object.fromEntries(Object.entries(scopeVersions ?? {}).filter(([, version]) => version > 0));
+        const hasScopeVersions = Object.keys(scopeVersionsToSave).length > 0;
+
+        if (versionNumber > 0 || hasScopeVersions) {
             const originalTransformToSave = constructor.prototype.transformToSave;
 
             // Decorate original transformToSave
@@ -20,7 +23,8 @@ export function BlockDataMigrationVersion(versionNumber: number) {
 
                 return {
                     ...result,
-                    $$version: versionNumber,
+                    ...(versionNumber > 0 ? { $$version: versionNumber } : {}),
+                    ...(hasScopeVersions ? { $$versions: scopeVersionsToSave } : {}),
                 };
             };
 
@@ -35,6 +39,9 @@ export function BlockDataMigrationVersion(versionNumber: number) {
                 if (typeof result === "object" && result !== null) {
                     if ("$$version" in result) {
                         delete result.$$version;
+                    }
+                    if ("$$versions" in result) {
+                        delete result.$$versions;
                     }
                 }
                 return result;

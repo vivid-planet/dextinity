@@ -16,6 +16,7 @@ import {
 import { AnnotationBlockMeta, BlockField } from "../decorators/field";
 import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFactoryDecorator";
 import { strictBlockInputFactoryDecorator } from "../helpers/strictBlockInputFactoryDecorator";
+import { getScopeVersions } from "../migrations/blockMigrationVersion";
 import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator";
 import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
 import { SearchText } from "../search/get-search-text";
@@ -79,7 +80,7 @@ export function createRichTextBlock<LinkBlock extends Block>(
     const blockName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
     const migrate = typeof nameOrOptions !== "string" && nameOrOptions.migrate ? nameOrOptions.migrate : { migrations: [], version: 0 };
 
-    @BlockDataMigrationVersion(migrate.version)
+    @BlockDataMigrationVersion(migrate.version ?? 0, getScopeVersions(migrate))
     class RichTextBlockData extends BlockData {
         @BlockField({ type: "json" })
         draftContent: RawDraftContentState;
@@ -190,8 +191,8 @@ export function createRichTextBlock<LinkBlock extends Block>(
 
     // Decorate BlockDataFactory
     let decorateBlockDataFactory = blockDataFactory;
-    if (migrate.migrations) {
-        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator(migrate.migrations, blockName);
+    if (migrate.migrations || migrate.scopes) {
+        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator(migrate, blockName);
         decorateBlockDataFactory = blockDataFactoryDecorator1(decorateBlockDataFactory);
     }
     decorateBlockDataFactory = strictBlockDataFactoryDecorator(decorateBlockDataFactory);

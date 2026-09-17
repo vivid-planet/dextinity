@@ -184,7 +184,13 @@ export default defineConfig({
             script: "pnpm --filter dextinity-demo-admin run start",
             group: ["demo-admin", "demo"],
             waitOn: [
-                ...waitOnPackages("@dextinity/admin", "@dextinity/admin-icons", "@dextinity/admin-rte", "@dextinity/cms-admin", "@dextinity/brevo-admin"),
+                ...waitOnPackages(
+                    "@dextinity/admin",
+                    "@dextinity/admin-icons",
+                    "@dextinity/admin-rte",
+                    "@dextinity/cms-admin",
+                    "@dextinity/brevo-admin",
+                ),
                 "tcp:$API_PORT",
             ],
         },

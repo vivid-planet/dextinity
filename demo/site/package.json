@@ -32,7 +32,10 @@
         "lint:tsc:storybook": "tsc --project tsconfig.storybook.json",
         "serve": "NODE_ENV=production node dist/server.js",
         "storybook": "VALKEY_ENABLED=false storybook dev -p 26648 --no-open --disable-telemetry",
-        "test:storybook": "VALKEY_ENABLED=false vitest --run --project storybook"
+        "test": "pnpm run test:unit && pnpm run test:storybook",
+        "test:storybook": "VALKEY_ENABLED=false vitest --run --project storybook --outputFile.junit=./junit-storybook.xml",
+        "test:unit": "vitest --run --project unit --outputFile.junit=./junit-unit.xml",
+        "test:watch": "vitest --watch"
     },
     "dependencies": {
         "@base-ui/react": "^1.4.1",
@@ -90,6 +93,7 @@
         "eslint": "^9.39.4",
         "eslint-plugin-storybook": "^10.3.5",
         "graphql": "^16.14.2",
+        "jsdom": "^28.1.0",
         "npm-run-all2": "^8.0.4",
         "playwright": "^1.62.0",
         "prettier": "^3.6.2",
@@ -100,6 +104,7 @@
         "stylelint-config-standard-scss": "^16.0.0",
         "typed-scss-modules": "^8.1.1",
         "typescript": "^5.9.3",
+        "vite-tsconfig-paths": "^6.0.4",
         "vitest": "^4.1.8"
     },
     "engines": {

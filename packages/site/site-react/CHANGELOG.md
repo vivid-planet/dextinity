@@ -1,5 +1,13 @@
 # @comet/site-react
 
+## 10.7.0
+
+### Patch Changes
+
+- ae93af6: Treat a document with only empty headings as empty in `hasTipTapRichTextContent`
+
+    An empty heading renders nothing, just like an empty paragraph, so a heading-only TipTap rich text block now shows the preview skeleton while it has no text.
+
 ## 10.6.0
 
 ### Minor Changes

@@ -5,7 +5,7 @@
             "entry": ["dev-pm.config.ts"],
             "project": ["*.{js,ts,tsx}"],
             "ignoreDependencies": ["open-cli"],
-            "ignoreBinaries": ["oauth2-proxy", "playwright"]
+            "ignoreBinaries": ["oauth2-proxy", "peers", "playwright"]
         },
         "packages/cli": {
             "project": ["./src/**/*.{ts,tsx}"]

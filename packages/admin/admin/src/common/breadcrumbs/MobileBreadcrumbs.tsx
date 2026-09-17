@@ -15,6 +15,7 @@ import {
     PageTreeVerticalLine,
     Root,
     Separator,
+    StartAdornment,
     ToolbarContainer,
 } from "./Breadcrumbs.slots";
 
@@ -28,18 +29,20 @@ const ExpandedMenuEntry = ({
     item,
     indentation,
     isCurrentItem,
+    onClick,
     slotProps,
 }: {
     item: Breadcrumb;
     indentation: number;
     isCurrentItem: boolean;
+    onClick: () => void;
     slotProps?: BreadcrumbsSlotProps;
 }) => {
     const Wrapper = isCurrentItem ? ExpandedMenuActiveItemWrapper : ExpandedMenuSubitemWrapper;
     const wrapperSlotProps = isCurrentItem ? slotProps?.expandedMenuActiveItemWrapper : slotProps?.expandedMenuSubitemWrapper;
 
     return (
-        <Wrapper ownerState={{ indentation }} {...wrapperSlotProps}>
+        <Wrapper ownerState={{ indentation }} to={item.url} onClick={onClick} {...wrapperSlotProps}>
             {indentation > 0 && <PageTreeVerticalLine {...slotProps?.pageTreeVerticalLine} />}
             {isCurrentItem ? (
                 <ExpandedMenuActiveItem variant="subtitle2" {...slotProps?.expandedMenuActiveItem}>
@@ -54,13 +57,23 @@ const ExpandedMenuEntry = ({
     );
 };
 
-export const MobileBreadcrumbs = ({ items, separatorIcon, openMenuIcon, closeMenuIcon, slotProps, ...restProps }: MobileBreadcrumbsProps) => {
+export const MobileBreadcrumbs = ({
+    items,
+    startAdornment,
+    separatorIcon,
+    openMenuIcon,
+    closeMenuIcon,
+    slotProps,
+    ...restProps
+}: MobileBreadcrumbsProps) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const currentItem = items[items.length - 1];
 
     return (
-        <MobileRootButton onClick={() => setIsMenuOpen((prev) => !prev)} {...slotProps?.mobileRootButton}>
-            <Root {...slotProps?.root} {...restProps}>
+        <Root {...slotProps?.root} {...restProps}>
+            {Boolean(startAdornment) && <StartAdornment {...slotProps?.startAdornment}>{startAdornment}</StartAdornment>}
+
+            <MobileRootButton onClick={() => setIsMenuOpen((prev) => !prev)} {...slotProps?.mobileRootButton}>
                 <ToolbarContainer {...slotProps?.toolbarContainer}>
                     {items.length > 1 && (
                         <>
@@ -70,23 +83,23 @@ export const MobileBreadcrumbs = ({ items, separatorIcon, openMenuIcon, closeMen
                     )}
                     <ActiveItem {...slotProps?.activeItem}>{currentItem.title}</ActiveItem>
                 </ToolbarContainer>
-
-                {isMenuOpen && (
-                    <ExpandedMenu {...slotProps?.expandedMenu}>
-                        {items.map((item, index) => (
-                            <ExpandedMenuEntry
-                                key={item.url}
-                                item={item}
-                                indentation={index}
-                                isCurrentItem={index === items.length - 1}
-                                slotProps={slotProps}
-                            />
-                        ))}
-                    </ExpandedMenu>
-                )}
-
                 <MobileMenuIcon {...slotProps?.mobileMenuIcon}>{isMenuOpen ? closeMenuIcon : openMenuIcon}</MobileMenuIcon>
-            </Root>
-        </MobileRootButton>
+            </MobileRootButton>
+
+            {isMenuOpen && (
+                <ExpandedMenu {...slotProps?.expandedMenu}>
+                    {items.map((item, index) => (
+                        <ExpandedMenuEntry
+                            key={item.url}
+                            item={item}
+                            indentation={index}
+                            isCurrentItem={index === items.length - 1}
+                            onClick={() => setIsMenuOpen(false)}
+                            slotProps={slotProps}
+                        />
+                    ))}
+                </ExpandedMenu>
+            )}
+        </Root>
     );
 };

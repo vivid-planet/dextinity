@@ -1,7 +1,7 @@
 import type { JSONContent } from "@tiptap/core";
 
 import type { Block } from "../../block";
-import type { TipTapSupports } from "../createTipTapRichTextBlock";
+import type { TipTapResolvedOptions } from "../createTipTapRichTextBlock";
 
 interface DraftJsInlineStyleRange {
     style: string;
@@ -57,7 +57,7 @@ interface TextBlockStyleMapping {
 }
 
 interface ConvertOptions {
-    supports?: TipTapSupports[];
+    resolvedOptions: TipTapResolvedOptions;
     link?: Block;
     /**
      * Maps DraftJS block types (e.g. custom `paragraph-small`) to a TipTap `textBlockStyle`
@@ -81,13 +81,15 @@ interface ConvertOptions {
     listLevelMax?: number;
 }
 
-const INLINE_STYLE_TO_MARK: Record<string, { mark: string; supports: TipTapSupports }> = {
-    BOLD: { mark: "bold", supports: "bold" },
-    ITALIC: { mark: "italic", supports: "italic" },
-    UNDERLINE: { mark: "underline", supports: "underline" },
-    STRIKETHROUGH: { mark: "strike", supports: "strike" },
-    SUP: { mark: "superscript", supports: "sup" },
-    SUB: { mark: "subscript", supports: "sub" },
+type TipTapMarkOption = "bold" | "italic" | "underline" | "strike" | "sup" | "sub";
+
+const INLINE_STYLE_TO_MARK: Record<string, { mark: string; option: TipTapMarkOption }> = {
+    BOLD: { mark: "bold", option: "bold" },
+    ITALIC: { mark: "italic", option: "italic" },
+    UNDERLINE: { mark: "underline", option: "underline" },
+    STRIKETHROUGH: { mark: "strike", option: "strike" },
+    SUP: { mark: "superscript", option: "sup" },
+    SUB: { mark: "subscript", option: "sub" },
 };
 
 const HEADER_TYPE_TO_LEVEL: Record<string, number> = {
@@ -109,8 +111,12 @@ const TEXT_BLOCK_TYPE_TO_HEADING_LEVEL: Record<TipTapTextBlockStyleTargetType, n
     "heading-6": 6,
 };
 
-function makeEmptyDoc(): JSONContent {
-    return { type: "doc", content: [{ type: "paragraph" }] };
+/**
+ * Builds a document with a single empty text block, matching the target schema's default text block
+ * type (a paragraph, or a heading for a heading-only schema).
+ */
+export function buildEmptyTipTapDoc(resolvedOptions: TipTapResolvedOptions): JSONContent {
+    return { type: "doc", content: [makeTextBlockNode([], { resolvedOptions })] };
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -122,13 +128,19 @@ interface InlineSegment {
     marks: NonNullable<JSONContent["marks"]>;
 }
 
-function buildInlineContent(
-    block: DraftJsBlock,
-    entityMap: Record<string, DraftJsEntity>,
-    supports: Set<TipTapSupports>,
-    hasLink: boolean,
-    inlineStyleMap: Record<string, string>,
-): JSONContent[] {
+function buildInlineContent({
+    block,
+    entityMap,
+    resolvedOptions,
+    hasLink,
+    inlineStyleMap,
+}: {
+    block: DraftJsBlock;
+    entityMap: Record<string, DraftJsEntity>;
+    resolvedOptions: TipTapResolvedOptions;
+    hasLink: boolean;
+    inlineStyleMap: Record<string, string>;
+}): JSONContent[] {
     const text = block.text ?? "";
     if (text.length === 0) {
         return [];
@@ -176,7 +188,7 @@ function buildInlineContent(
         for (const range of styleRanges) {
             if (range.start <= start && range.end >= end) {
                 const mapping = INLINE_STYLE_TO_MARK[range.style];
-                if (mapping && supports.has(mapping.supports)) {
+                if (mapping && resolvedOptions[mapping.option]) {
                     if (!marks.some((mark) => mark.type === mapping.mark)) {
                         marks.push({ type: mapping.mark });
                     }
@@ -205,7 +217,7 @@ function buildInlineContent(
         segments.push({ text: segmentText, marks });
     }
 
-    return segments.flatMap((segment) => splitAtomChars(segment.text, segment.marks, supports));
+    return segments.flatMap((segment) => splitAtomChars(segment.text, segment.marks, resolvedOptions));
 }
 
 const NBSP_CHAR = "\u00a0";
@@ -223,11 +235,10 @@ function makeTextNode(text: string, marks: NonNullable<JSONContent["marks"]>): J
 // RTE persists non-breaking-spaces and soft-hyphens) becomes a dedicated TipTap atom node
 // when the corresponding feature is supported. Otherwise the characters are preserved as-is
 // inside the surrounding text node.
-function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, supports: Set<TipTapSupports>): JSONContent[] {
-    const supportsNbsp = supports.has("non-breaking-space");
-    const supportsShy = supports.has("soft-hyphen");
+function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, resolvedOptions: TipTapResolvedOptions): JSONContent[] {
+    const { nonBreakingSpace, softHyphen } = resolvedOptions;
 
-    if ((!supportsNbsp && !supportsShy) || (!text.includes(NBSP_CHAR) && !text.includes(SOFT_HYPHEN_CHAR))) {
+    if ((!nonBreakingSpace && !softHyphen) || (!text.includes(NBSP_CHAR) && !text.includes(SOFT_HYPHEN_CHAR))) {
         return text.length === 0 ? [] : [makeTextNode(text, marks)];
     }
 
@@ -241,10 +252,10 @@ function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, 
     };
 
     for (const char of text) {
-        if (char === NBSP_CHAR && supportsNbsp) {
+        if (char === NBSP_CHAR && nonBreakingSpace) {
             flushBuffer();
             nodes.push({ type: "nonBreakingSpace" });
-        } else if (char === SOFT_HYPHEN_CHAR && supportsShy) {
+        } else if (char === SOFT_HYPHEN_CHAR && softHyphen) {
             flushBuffer();
             nodes.push({ type: "softHyphen" });
         } else {
@@ -257,8 +268,15 @@ function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, 
 
 function makeTextBlockNode(
     inlineContent: JSONContent[],
-    { headingLevel, textBlockStyle }: { headingLevel?: number; textBlockStyle?: string } = {},
+    {
+        headingLevel: explicitHeadingLevel,
+        textBlockStyle,
+        resolvedOptions,
+    }: { headingLevel?: number; textBlockStyle?: string; resolvedOptions: TipTapResolvedOptions },
 ): JSONContent {
+    // A heading-only schema has no paragraph to fall back to.
+    const headingLevel =
+        explicitHeadingLevel ?? (resolvedOptions.paragraph || resolvedOptions.heading === false ? undefined : resolvedOptions.heading.defaultLevel);
     const node: JSONContent = { type: headingLevel !== undefined ? "heading" : "paragraph" };
 
     const attrs: JSONContent["attrs"] = {};
@@ -278,18 +296,18 @@ function makeTextBlockNode(
     return node;
 }
 
-function makeListItem(inlineContent: JSONContent[]): JSONContent {
+function makeListItem(inlineContent: JSONContent[], resolvedOptions: TipTapResolvedOptions): JSONContent {
     return {
         type: "listItem",
-        content: [makeTextBlockNode(inlineContent)],
+        content: [makeTextBlockNode(inlineContent, { resolvedOptions })],
     };
 }
 
 type ListType = "orderedList" | "bulletList";
 
-const LIST_BLOCK_TYPE_TO_LIST: Record<string, { listType: ListType; supports: TipTapSupports }> = {
-    "unordered-list-item": { listType: "bulletList", supports: "unordered-list" },
-    "ordered-list-item": { listType: "orderedList", supports: "ordered-list" },
+const LIST_BLOCK_TYPE_TO_LIST: Record<string, { listType: ListType; option: "orderedList" | "unorderedList" }> = {
+    "unordered-list-item": { listType: "bulletList", option: "unorderedList" },
+    "ordered-list-item": { listType: "orderedList", option: "orderedList" },
 };
 
 interface OpenList {
@@ -304,12 +322,13 @@ function normalizeTextBlockStyleMapping(mapping: string | TextBlockStyleMapping 
     return typeof mapping === "string" ? { textBlockStyle: mapping } : mapping;
 }
 
-export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined | null, options: ConvertOptions = {}): JSONContent {
+export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined | null, options: ConvertOptions): JSONContent {
+    const resolvedOptions = options.resolvedOptions;
+
     if (!draftContent || !Array.isArray(draftContent.blocks) || draftContent.blocks.length === 0) {
-        return makeEmptyDoc();
+        return buildEmptyTipTapDoc(resolvedOptions);
     }
 
-    const supports = new Set<TipTapSupports>(options.supports ?? []);
     const hasLink = !!options.link;
     const textBlockStyleMap = options.textBlockStyleMap ?? {};
     const inlineStyleMap = options.inlineStyleMap ?? {};
@@ -363,14 +382,14 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
             openLists.push({ type: listType, items: [] });
         }
 
-        openLists[openLists.length - 1].items.push(makeListItem(inlineContent));
+        openLists[openLists.length - 1].items.push(makeListItem(inlineContent, resolvedOptions));
     };
 
     for (const block of draftContent.blocks) {
-        const inlineContent = buildInlineContent(block, entityMap, supports, hasLink, inlineStyleMap);
+        const inlineContent = buildInlineContent({ block, entityMap, resolvedOptions, hasLink, inlineStyleMap });
 
         const listMapping = LIST_BLOCK_TYPE_TO_LIST[block.type];
-        if (listMapping && supports.has(listMapping.supports)) {
+        if (listMapping && resolvedOptions[listMapping.option]) {
             addListItem(listMapping.listType, block.depth ?? 0, inlineContent);
             continue;
         }
@@ -383,7 +402,8 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
 
         topLevel.push(
             makeTextBlockNode(inlineContent, {
-                headingLevel: headingLevel !== undefined && supports.has("heading") ? headingLevel : undefined,
+                resolvedOptions,
+                headingLevel: headingLevel !== undefined && resolvedOptions.heading !== false ? headingLevel : undefined,
                 textBlockStyle: mapping?.textBlockStyle,
             }),
         );
@@ -392,27 +412,24 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
     flushLists();
 
     if (topLevel.length === 0) {
-        return makeEmptyDoc();
+        return buildEmptyTipTapDoc(resolvedOptions);
     }
 
     return { type: "doc", content: topLevel };
 }
 
-export function buildStrippedTipTapDoc(draftContent: DraftJsContent | undefined | null): JSONContent {
+export function buildStrippedTipTapDoc(draftContent: DraftJsContent | undefined | null, resolvedOptions: TipTapResolvedOptions): JSONContent {
     if (!draftContent || !Array.isArray(draftContent.blocks) || draftContent.blocks.length === 0) {
-        return makeEmptyDoc();
+        return buildEmptyTipTapDoc(resolvedOptions);
     }
 
     const content: JSONContent[] = draftContent.blocks.map((block) => {
         const text = block.text ?? "";
-        if (text.length === 0) {
-            return { type: "paragraph" };
-        }
-        return { type: "paragraph", content: [{ type: "text", text }] };
+        return makeTextBlockNode(text.length === 0 ? [] : [{ type: "text", text }], { resolvedOptions });
     });
 
     if (content.length === 0) {
-        return makeEmptyDoc();
+        return buildEmptyTipTapDoc(resolvedOptions);
     }
 
     return { type: "doc", content };

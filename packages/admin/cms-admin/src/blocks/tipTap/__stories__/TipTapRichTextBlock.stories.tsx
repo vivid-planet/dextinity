@@ -1,7 +1,7 @@
 import { Box, chipClasses, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type HTMLAttributes, type ReactNode, useState } from "react";
+import { type HTMLAttributes, type ReactNode, type SetStateAction, useRef, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "../createTipTapRichTextBlock";
@@ -1302,13 +1302,28 @@ export const ExternalContentUpdate: StoryObj<typeof ExternalContentUpdateStory> 
 // state after later keystrokes already reached the editor.
 function LaggingStateStory() {
     const [state, setState] = useState<TipTapRichTextBlockState>(TipTapRichTextBlock.defaultValues());
+    const pendingUpdates = useRef<SetStateAction<TipTapRichTextBlockState>[]>([]);
 
     return (
         <StoryWrapper state={state}>
+            <button type="button" onClick={() => setState(contentFromOutside)}>
+                Update from outside
+            </button>
+            <button
+                type="button"
+                onClick={() => {
+                    const oldestUpdate = pendingUpdates.current.shift();
+                    if (oldestUpdate) {
+                        setState(oldestUpdate);
+                    }
+                }}
+            >
+                Apply oldest update
+            </button>
             <TipTapRichTextBlock.AdminComponent
                 state={state}
                 updateState={(setStateAction) => {
-                    setTimeout(() => setState(setStateAction), 50);
+                    pendingUpdates.current.push(setStateAction);
                 }}
             />
         </StoryWrapper>
@@ -1318,7 +1333,7 @@ function LaggingStateStory() {
 export const LaggingState: StoryObj<typeof LaggingStateStory> = {
     render: () => <LaggingStateStory />,
     play: async ({ canvas, userEvent, step }) => {
-        await step("State arriving late does not undo what was typed since", async () => {
+        await step("An update that arrives late does not undo what was typed since", async () => {
             await waitFor(
                 () => {
                     expect(canvas.getByRole("textbox")).toBeInTheDocument();
@@ -1330,15 +1345,41 @@ export const LaggingState: StoryObj<typeof LaggingStateStory> = {
             await userEvent.click(editor);
             await userEvent.keyboard("Text written by the user");
 
-            // The editor shows the text as it is typed, so only the state catching up tells us that
-            // the delayed updates have landed — and that none of them reset the editor on arrival.
+            // The oldest update carries the content of the first keystroke, which the ones after it
+            // have long superseded in the editor.
+            await userEvent.click(canvas.getByRole("button", { name: "Apply oldest update" }));
+
             await waitFor(
                 () => {
-                    expect(canvas.getByTestId("state-preview")).toHaveTextContent("Text written by the user");
+                    expect(canvas.getByTestId("state-preview")).toHaveTextContent('"text": "T"');
                 },
                 { timeout: 3000 },
             );
             expect(editor).toHaveTextContent("Text written by the user");
+        });
+
+        await step("Content set from outside survives the updates that are still in flight", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(canvas.getByRole("button", { name: "Update from outside" }));
+
+            await waitFor(
+                () => {
+                    expect(editor).toHaveTextContent("Text written by the agent");
+                },
+                { timeout: 3000 },
+            );
+
+            // The updates typing left behind arrive after the content from outside. The state falling
+            // back to them is the lagging parent's doing; the editor has to keep what it was given.
+            await userEvent.click(canvas.getByRole("button", { name: "Apply oldest update" }));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByTestId("state-preview")).toHaveTextContent('"text": "Te"');
+                },
+                { timeout: 3000 },
+            );
+            expect(editor).toHaveTextContent("Text written by the agent");
         });
     },
 };

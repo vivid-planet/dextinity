@@ -623,9 +623,10 @@ export const TipTapEditor = ({
 }: TipTapEditorProps) => {
     const childBlocksByKey: Record<string, BlockInterface> = Object.fromEntries(Object.entries(childBlocks).map(([key, { block }]) => [key, block]));
 
-    // Content the editor emitted that hasn't come back through state yet. Matched by identity, not by
-    // value: content set from outside can be equal to one of these and still has to be applied.
-    const contentEmittedByEditor = useRef<JSONContent[]>([]);
+    // Content the editor emitted, to tell it from content set from outside once it comes back through
+    // the state. Held by identity, because a state update that is rendered after later keystrokes
+    // already reached the editor would otherwise undo them.
+    const contentFromEditor = useRef(new WeakSet<JSONContent>());
 
     const extensions = buildTipTapExtensions({
         resolvedOptions,
@@ -671,28 +672,15 @@ export const TipTapEditor = ({
             }
 
             const content = editor.getJSON();
-            contentEmittedByEditor.current.push(content);
+            contentFromEditor.current.add(content);
             updateState({ tipTapContent: content });
         },
     });
 
-    // useEditor applies its content once, at creation, so content set from outside needs re-syncing here.
+    // useEditor applies its content option once, at creation, so content set from outside — by an agent
+    // rewriting the text, or by a grid row re-rendering — has to be applied to the editor here.
     useEffect(() => {
-        if (!editor) {
-            return;
-        }
-
-        // React can render a keystroke's state after later keystrokes already reached the editor, so
-        // applying anything the editor emitted itself would undo those later keystrokes.
-        const emittedIndex = contentEmittedByEditor.current.indexOf(state.tipTapContent);
-        if (emittedIndex >= 0) {
-            contentEmittedByEditor.current.splice(0, emittedIndex + 1);
-            return;
-        }
-
-        contentEmittedByEditor.current.length = 0;
-
-        if (isEqual(state.tipTapContent, editor.getJSON())) {
+        if (!editor || contentFromEditor.current.has(state.tipTapContent) || isEqual(state.tipTapContent, editor.getJSON())) {
             return;
         }
 

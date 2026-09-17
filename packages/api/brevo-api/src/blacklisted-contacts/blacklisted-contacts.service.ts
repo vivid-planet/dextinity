@@ -1,6 +1,6 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
+import { resolveEntityClass } from "@dextinity/cms-api";
 import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
-import { Inject, Injectable, Optional } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { EmailCampaignScopeInterface } from "src/types";
 
 import { BrevoModuleConfig } from "../config/brevo-module.config";
@@ -13,13 +13,14 @@ export class BlacklistedContactsService {
     private readonly secretKey?: string;
 
     constructor(
-        @Optional()
-        @InjectRepository("BrevoBlacklistedContacts")
-        private readonly repository: EntityRepository<BlacklistedContactsInterface>,
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
         private readonly entityManager: EntityManager,
     ) {
         this.secretKey = this.config.contactsWithoutDoi?.emailHashKey;
+    }
+
+    private get repository(): EntityRepository<BlacklistedContactsInterface> {
+        return this.entityManager.getRepository(resolveEntityClass<BlacklistedContactsInterface>("BrevoBlacklistedContacts"));
     }
 
     public async addBlacklistedContacts(emails: string[], scope: EmailCampaignScopeInterface): Promise<BlacklistedContactsInterface[]> {

@@ -101,7 +101,7 @@
                 "./src/tracing.production.ts"
             ],
             "project": ["./src/**/*.{ts,tsx}"],
-            "ignoreDependencies": ["@as-integrations/express5"],
+            "ignoreDependencies": ["@as-integrations/express5", "@swc-node/register"],
             "ignore": ["./src/**/generated/**", "**/*.generated.ts"]
         },
         "demo/site": {

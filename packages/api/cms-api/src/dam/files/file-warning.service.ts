@@ -6,6 +6,7 @@ import { CreateWarningsServiceInterface } from "../../warnings/decorators/create
 import { DamConfig } from "../dam.config";
 import { DAM_CONFIG } from "../dam.constants";
 import { FileInterface } from "./entities/file.entity";
+import { resolveFileEntity } from "./entities/resolve-dam-entity";
 
 @Injectable()
 export class FileWarningService implements CreateWarningsServiceInterface<FileInterface> {
@@ -41,7 +42,7 @@ export class FileWarningService implements CreateWarningsServiceInterface<FileIn
         let offset = 0;
         const limit = 50;
         do {
-            files = await this.entityManager.getRepository<FileInterface>("DamFile").find(
+            files = await this.entityManager.getRepository(resolveFileEntity()).find(
                 {
                     $or: filterQuery,
                 },

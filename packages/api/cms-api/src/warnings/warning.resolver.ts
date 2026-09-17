@@ -1,5 +1,5 @@
 import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, raw } from "@mikro-orm/postgresql";
+import { EntityManager, EntityRepository, type QBFilterQuery, type QueryBuilder, raw, type RawQueryFragment } from "@mikro-orm/postgresql";
 import { UnauthorizedException } from "@nestjs/common";
 import { Args, ID, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
@@ -116,14 +116,19 @@ export class WarningResolver {
         // entity tables, so an unconditional join would slow the common case (and the count query). It's
         // keyed by entity name + id from the warning's `sourceInfo`.
         if (referencesEntityInfo(where) || referencesEntityInfo(orderBy)) {
-            const entityInfoQueryBuilder = this.entityManager.createQueryBuilder(EntityInfoObject, "entityInfo");
-            queryBuilder.leftJoin(entityInfoQueryBuilder, "entityInfo", {
+            const entityInfoQueryBuilder: QueryBuilder<EntityInfoObject> = this.entityManager.createQueryBuilder(EntityInfoObject);
+            const joinCondition: Record<string, RawQueryFragment> = {
                 "entityInfo.entityName": raw(`"warning"."sourceInfo"->>'rootEntityName'`),
                 "entityInfo.id": raw(`"warning"."sourceInfo"->>'targetId'`),
-            });
+            };
+            queryBuilder.leftJoin(entityInfoQueryBuilder, "entityInfo", joinCondition);
         }
 
-        queryBuilder.where(where).limit(limit).offset(offset);
+        // The EntityInfo join is conditional, so the QueryBuilder cannot statically track the "entityInfo" alias.
+        queryBuilder
+            .where(where as QBFilterQuery<Warning, "warning">)
+            .limit(limit)
+            .offset(offset);
 
         if (orderBy) {
             queryBuilder.orderBy(orderBy);

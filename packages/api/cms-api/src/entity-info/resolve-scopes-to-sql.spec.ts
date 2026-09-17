@@ -1,4 +1,5 @@
-import { BaseEntity, defineConfig, Embeddable, Embedded, Entity, ManyToOne, MikroORM, PrimaryKey, Property, Ref } from "@mikro-orm/postgresql";
+import { Embeddable, Embedded, Entity, ManyToOne, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM, Ref } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -70,8 +71,8 @@ describe("resolveScopesToSql", () => {
     beforeAll(async () => {
         orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [Company, News, NewsComment, Product, GlobalEntity, ContentScopeEmbeddable],
             }),
         );
@@ -82,7 +83,7 @@ describe("resolveScopesToSql", () => {
     });
 
     function metadataFor(entityName: string) {
-        return orm.em.getMetadata().get(entityName);
+        return orm.em.getMetadata().getByClassName(entityName);
     }
 
     describe("scope property (simple case)", () => {

@@ -1,5 +1,7 @@
-import { CreateRequestContext, EntityRepository, MikroORM } from "@mikro-orm/core";
-import { InjectRepository } from "@mikro-orm/nestjs";
+import { resolveEntityClass } from "@dextinity/cms-api";
+import { MikroORM } from "@mikro-orm/core";
+import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
+import { EntityManager, type EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Logger, Type } from "@nestjs/common";
 import { isUUID, validateSync } from "class-validator";
 import { InvalidOptionArgumentError } from "commander";
@@ -32,10 +34,17 @@ export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCa
             private readonly orm: MikroORM, // necessary for @CreateRequestContext() to work
             @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
             private readonly brevoContactImportService: BrevoContactImportService,
-            @InjectRepository("BrevoTargetGroup") private readonly targetGroupRepository: EntityRepository<TargetGroupInterface>,
-            @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
+            private readonly entityManager: EntityManager,
         ) {
             super();
+        }
+
+        private get targetGroupRepository(): EntityRepository<TargetGroupInterface> {
+            return this.entityManager.getRepository(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"));
+        }
+
+        private get brevoConfigRepository(): EntityRepository<BrevoConfigInterface> {
+            return this.entityManager.getRepository(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"));
         }
 
         async run(passedParams: string[], options: CommandOptions): Promise<void> {

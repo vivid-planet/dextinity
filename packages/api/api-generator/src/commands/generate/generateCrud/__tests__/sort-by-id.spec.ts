@@ -1,5 +1,6 @@
 import { CrudField } from "@dextinity/cms-api";
-import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
@@ -36,13 +37,13 @@ describe("sort by id", () => {
         LazyMetadataStorage.load();
         const orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [TestEntity1],
             }),
         );
 
-        const sortProps = buildSortProps(orm.em.getMetadata().get("TestEntity1"));
+        const sortProps = buildSortProps(orm.em.getMetadata().getByClassName("TestEntity1"));
         expect(sortProps).toEqual(["id"]);
 
         await orm.close();
@@ -52,13 +53,13 @@ describe("sort by id", () => {
         LazyMetadataStorage.load();
         const orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [TestEntity2],
             }),
         );
 
-        const sortProps = buildSortProps(orm.em.getMetadata().get("TestEntity2"));
+        const sortProps = buildSortProps(orm.em.getMetadata().getByClassName("TestEntity2"));
         expect(sortProps).toEqual(["id"]);
         await orm.close();
     });
@@ -67,16 +68,16 @@ describe("sort by id", () => {
         LazyMetadataStorage.load();
         const orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [TestEntity3],
             }),
         );
 
-        const sortProps = buildSortProps(orm.em.getMetadata().get("TestEntity3"));
+        const sortProps = buildSortProps(orm.em.getMetadata().getByClassName("TestEntity3"));
         expect(sortProps).toEqual(["name"]);
 
-        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntity3"));
+        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntity3"));
         const formattedOut = await formatGeneratedFiles(out);
 
         const file = formattedOut.find((file) => file.name === "dto/test-entity3s.args.ts");

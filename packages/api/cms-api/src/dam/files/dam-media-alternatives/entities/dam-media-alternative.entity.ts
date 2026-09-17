@@ -1,9 +1,11 @@
-import { BaseEntity, Entity, Enum, ManyToOne, PrimaryKey, Property, Ref } from "@mikro-orm/core";
+import { BaseEntity, Ref } from "@mikro-orm/core";
+import { Entity, Enum, ManyToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
 import { ScopedEntity } from "../../../../user-permissions/decorators/scoped-entity.decorator";
-import { FILE_ENTITY, FileInterface } from "../../entities/file.entity";
+import { FileInterface } from "../../entities/file.entity";
+import { resolveFileEntity } from "../../entities/resolve-dam-entity";
 
 export enum DamMediaAlternativeType {
     captions = "captions",
@@ -30,7 +32,7 @@ export class DamMediaAlternative extends BaseEntity {
     type: DamMediaAlternativeType;
 
     @ManyToOne({
-        entity: () => FILE_ENTITY,
+        entity: () => resolveFileEntity(),
         inversedBy: (file: FileInterface) => file.alternativesForThisFile,
         deleteRule: "cascade",
         ref: true,
@@ -38,7 +40,7 @@ export class DamMediaAlternative extends BaseEntity {
     for: Ref<FileInterface>;
 
     @ManyToOne({
-        entity: () => FILE_ENTITY,
+        entity: () => resolveFileEntity(),
         inversedBy: (file: FileInterface) => file.thisFileIsAlternativeFor,
         deleteRule: "cascade",
         ref: true,

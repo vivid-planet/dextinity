@@ -32,7 +32,7 @@ export class UserContentScopesResolver {
         } else {
             entity = this.repository.create({ userId, contentScopes });
         }
-        await this.entityManager.persistAndFlush(entity);
+        await this.entityManager.persist(entity).flush();
         return true;
     }
 

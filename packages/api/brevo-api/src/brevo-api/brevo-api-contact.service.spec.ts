@@ -1,5 +1,6 @@
 import { Brevo, BrevoError } from "@getbrevo/brevo";
-import { getRepositoryToken } from "@mikro-orm/nestjs";
+import { Entity, PrimaryKey } from "@mikro-orm/decorators/legacy";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Test, type TestingModule } from "@nestjs/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -8,6 +9,13 @@ import { BrevoApiClientFactory } from "./brevo-api-client.factory";
 import { BrevoApiContactsService } from "./brevo-api-contact.service";
 
 const scope = { domain: "main" };
+
+// Decorating a stand-in entity registers "BrevoConfig" in MikroORM's metadata, which is all `resolveEntityClass()` needs.
+@Entity({ tableName: "BrevoConfig" })
+class BrevoConfig {
+    @PrimaryKey({ columnType: "uuid" })
+    id!: string;
+}
 
 describe("BrevoApiContactsService", () => {
     let service: BrevoApiContactsService;
@@ -21,7 +29,7 @@ describe("BrevoApiContactsService", () => {
             providers: [
                 BrevoApiContactsService,
                 { provide: BREVO_MODULE_CONFIG, useValue: { brevo: {} } },
-                { provide: getRepositoryToken("BrevoConfig"), useValue: {} },
+                { provide: EntityManager, useValue: { getRepository: (entity: unknown) => (entity === BrevoConfig ? {} : undefined) } },
                 { provide: BrevoApiClientFactory, useValue: { getClient: () => ({ contacts: contactsApi }) } },
             ],
         }).compile();

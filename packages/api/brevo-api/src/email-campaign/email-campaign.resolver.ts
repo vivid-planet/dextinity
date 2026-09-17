@@ -1,5 +1,11 @@
-import { AffectedEntity, extractGraphqlFields, PaginatedResponseFactory, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
-import { InjectRepository } from "@mikro-orm/nestjs";
+import {
+    AffectedEntity,
+    extractGraphqlFields,
+    PaginatedResponseFactory,
+    RequiredPermission,
+    resolveEntityClass,
+    validateNotModified,
+} from "@dextinity/cms-api";
 import { EntityManager, EntityRepository, FindOptions, wrap } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Info, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
@@ -45,9 +51,15 @@ export function createEmailCampaignsResolver({
             private readonly brevoApiCampaignsService: BrevoApiCampaignsService,
             private readonly ecgRtrListService: EcgRtrListService,
             private readonly entityManager: EntityManager,
-            @InjectRepository("BrevoEmailCampaign") private readonly repository: EntityRepository<EmailCampaignInterface>,
-            @InjectRepository("BrevoTargetGroup") private readonly targetGroupRepository: EntityRepository<TargetGroupInterface>,
         ) {}
+
+        private get repository(): EntityRepository<EmailCampaignInterface> {
+            return this.entityManager.getRepository(resolveEntityClass<EmailCampaignInterface>("BrevoEmailCampaign"));
+        }
+
+        private get targetGroupRepository(): EntityRepository<TargetGroupInterface> {
+            return this.entityManager.getRepository(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"));
+        }
 
         @Query(() => BrevoEmailCampaign)
         @AffectedEntity(BrevoEmailCampaign)

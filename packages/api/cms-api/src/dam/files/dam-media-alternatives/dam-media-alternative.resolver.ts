@@ -11,7 +11,7 @@ import { extractGraphqlFields } from "../../../common/graphql/extract-graphql-fi
 import { AffectedEntity } from "../../../user-permissions/decorators/affected-entity.decorator";
 import { RequiredPermission } from "../../../user-permissions/decorators/required-permission.decorator";
 import { DamScopeInterface } from "../../types";
-import { FILE_ENTITY, FileInterface } from "../entities/file.entity";
+import { FileInterface } from "../entities/file.entity";
 import { DamMediaAlternativeInput, DamMediaAlternativeUpdateInput } from "./dto/dam-media-alternative.input";
 import { DamMediaAlternativesArgs } from "./dto/dam-media-alternatives.args";
 import { PaginatedDamMediaAlternatives } from "./dto/paginated-dam-media-alternatives";
@@ -32,7 +32,7 @@ export function createDamMediaAlternativeResolver({
         constructor(
             private readonly entityManager: EntityManager,
             @InjectRepository(DamMediaAlternative) private readonly repository: EntityRepository<DamMediaAlternative>,
-            @InjectRepository(FILE_ENTITY) private readonly damFileRepository: EntityRepository<FileInterface>,
+            @InjectRepository(File) private readonly damFileRepository: EntityRepository<FileInterface>,
         ) {}
 
         @Query(() => DamMediaAlternative)

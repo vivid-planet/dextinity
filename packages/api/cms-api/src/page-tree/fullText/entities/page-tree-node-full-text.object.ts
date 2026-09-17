@@ -1,7 +1,7 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { FullTextType } from "@mikro-orm/postgresql";
 
-import { PAGE_TREE_ENTITY } from "../../page-tree.constants";
+import { resolvePageTreeNodeEntity } from "../../entities/resolve-page-tree-node-entity";
 import { PageTreeNodeInterface } from "../../types";
 
 // Note: This file is intentionally not named *.entity.ts to exclude it from MikroORM's CLI migration glob pattern.
@@ -12,7 +12,7 @@ export class PageTreeNodeFullText {
     @PrimaryKey({ columnType: "uuid", persist: false })
     pageTreeNodeId: string;
 
-    @ManyToOne(() => PAGE_TREE_ENTITY, { joinColumn: "pageTreeNodeId" })
+    @ManyToOne(() => resolvePageTreeNodeEntity(), { joinColumn: "pageTreeNodeId" })
     pageTreeNode: PageTreeNodeInterface;
 
     @Property({ type: FullTextType })

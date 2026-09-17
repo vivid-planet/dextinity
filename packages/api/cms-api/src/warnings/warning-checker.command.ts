@@ -1,4 +1,5 @@
-import { CreateRequestContext, EntityClass, MikroORM } from "@mikro-orm/core";
+import { EntityClass, MikroORM } from "@mikro-orm/core";
+import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { ModuleRef, Reflector } from "@nestjs/core";
@@ -18,7 +19,8 @@ import { WarningService } from "./warning.service";
 interface RootBlockEntityData {
     primaryKey: string;
     tableName: string;
-    className: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    entity: EntityClass<any>;
     hasScope: boolean;
     rootBlockData: Array<{ block: Block; column: string }>;
 }
@@ -50,17 +52,17 @@ export class WarningCheckerCommand extends CommandRunner {
         const startDate = new Date();
 
         for (const data of this.groupRootBlockDataByEntity()) {
-            const { tableName, className, rootBlockData, hasScope } = data;
+            const { tableName, entity, rootBlockData, hasScope } = data;
 
             const queryBuilderLimit = 100;
-            const baseQueryBuilder = this.entityManager.createQueryBuilder(className);
+            const baseQueryBuilder = this.entityManager.createQueryBuilder(entity);
 
             const selectFields = [`${data.primaryKey} as id`, ...rootBlockData.map(({ column }) => column)];
             if (hasScope) {
                 selectFields.push("scope");
             }
 
-            baseQueryBuilder.select(selectFields).from(tableName).limit(queryBuilderLimit);
+            baseQueryBuilder.select(selectFields).limit(queryBuilderLimit);
             let rootBlocks: RootBlockData[] = [];
             let offset = 0;
 
@@ -75,7 +77,6 @@ export class WarningCheckerCommand extends CommandRunner {
                         const blockData = rootBlock[column] as BlockData;
 
                         if (!scope) {
-                            const entity = this.orm.getMetadata().get(className).class;
                             const scoped = this.reflector.getAllAndOverride<ScopedEntityMeta>(SCOPED_ENTITY_METADATA_KEY, [entity]);
 
                             if (scoped) {
@@ -142,7 +143,7 @@ export class WarningCheckerCommand extends CommandRunner {
         const metadataStorage = this.orm.em.getMetadata();
 
         for (const entity of entities) {
-            const entityMetadata = metadataStorage.get(entity.name);
+            const entityMetadata = metadataStorage.get(entity);
             const createWarnings = this.reflector.getAllAndOverride<CreateWarningsMeta>(CREATE_WARNINGS_METADATA_KEY, [entity]);
             if (createWarnings) {
                 const repository = this.entityManager.getRepository(entity);
@@ -225,7 +226,7 @@ export class WarningCheckerCommand extends CommandRunner {
         const rootBlockEntityData = new Map<string, RootBlockEntityData>();
 
         for (const {
-            metadata: { tableName, className, primaryKeys, definedProperties },
+            metadata: { tableName, className, class: entity, primaryKeys, definedProperties },
             block,
             column,
         } of this.discoverService.discoverRootBlocks()) {
@@ -234,7 +235,7 @@ export class WarningCheckerCommand extends CommandRunner {
             if (!rootBlockEntityData.has(key)) {
                 rootBlockEntityData.set(key, {
                     tableName,
-                    className,
+                    entity,
                     hasScope: "scope" in definedProperties,
                     rootBlockData: [],
                     primaryKey: primaryKeys[0],

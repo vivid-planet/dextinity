@@ -1,5 +1,6 @@
 import { createMock } from "@golevelup/ts-vitest";
-import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey } from "@mikro-orm/postgresql";
+import { Entity, PrimaryKey, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM } from "@mikro-orm/postgresql";
 import { ExecutionContext } from "@nestjs/common";
 import { ModuleRef, Reflector } from "@nestjs/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -105,9 +106,9 @@ describe("UserPermissionsGuard", () => {
         reflector = new Reflector();
         orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
                 entities: [TestEntity, TestEntityWithUuidType, TestEntityWithUuidColumnType],
-                connect: false,
                 allowGlobalContext: true,
             }),
         );

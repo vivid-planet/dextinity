@@ -1,4 +1,5 @@
-import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey } from "@mikro-orm/postgresql";
+import { Entity, PrimaryKey, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { describe, expect, it } from "vitest";
 
@@ -16,13 +17,13 @@ describe("GenerateCrudInput", () => {
         LazyMetadataStorage.load();
         const orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [TestEntity],
             }),
         );
 
-        const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntity"), {
+        const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntity"), {
             nested: false,
             excludeFields: [],
             generateUpdateInput: false,

@@ -60,7 +60,7 @@ export function createRedirectsResolver({
     class RedirectsResolver {
         constructor(
             private readonly redirectService: RedirectsService,
-            @InjectRepository("Redirect") private readonly repository: EntityRepository<RedirectInterface>,
+            @InjectRepository(Redirect) private readonly repository: EntityRepository<RedirectInterface>,
             private readonly pageTreeReadApi: PageTreeReadApiService,
             private readonly entityManager: EntityManager,
             @Inject(REDIRECTS_TARGET_URL_SERVICE) private readonly targetUrlService: RedirectTargetUrlServiceInterface,
@@ -220,7 +220,7 @@ export function createRedirectsResolver({
                 ...input,
                 target: input.target.transformToBlockData(),
             });
-            await this.entityManager.persistAndFlush(entity);
+            await this.entityManager.persist(entity).flush();
             return this.repository.findOneOrFail(entity.id);
         }
 
@@ -241,7 +241,7 @@ export function createRedirectsResolver({
             }
 
             wrap(redirect).assign({ ...input, target: input.target.transformToBlockData() });
-            await this.entityManager.persistAndFlush(redirect);
+            await this.entityManager.persist(redirect).flush();
             return this.repository.findOneOrFail(id);
         }
 
@@ -254,7 +254,7 @@ export function createRedirectsResolver({
             const redirect = await this.repository.findOneOrFail(id);
 
             wrap(redirect).assign({ active: input.active, activatedAt: input.active ? new Date() : null });
-            await this.entityManager.persistAndFlush(redirect);
+            await this.entityManager.persist(redirect).flush();
 
             return this.repository.findOneOrFail(id);
         }
@@ -263,7 +263,7 @@ export function createRedirectsResolver({
         @AffectedEntity(Redirect)
         async deleteRedirect(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
             const entity = await this.repository.findOneOrFail(id);
-            await this.entityManager.removeAndFlush(entity);
+            await this.entityManager.remove(entity).flush();
             return true;
         }
 
@@ -274,7 +274,7 @@ export function createRedirectsResolver({
             if (entities.length !== ids.length) {
                 throw new Error("Couldn't find all redirects that were passed as input");
             }
-            await this.entityManager.removeAndFlush(entities);
+            await this.entityManager.remove(entities).flush();
             return true;
         }
     }

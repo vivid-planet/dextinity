@@ -1,19 +1,5 @@
-import {
-    BaseEntity,
-    BigIntType,
-    Cascade,
-    Collection,
-    Embedded,
-    Entity,
-    Enum,
-    Index,
-    ManyToOne,
-    OneToMany,
-    OneToOne,
-    OptionalProps,
-    PrimaryKey,
-    Property,
-} from "@mikro-orm/postgresql";
+import { Embedded, Entity, Enum, Index, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, BigIntType, Cascade, Collection, OptionalProps } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { GraphQLBigInt } from "graphql-scalars";
@@ -29,6 +15,7 @@ import { DamFileAiContentType } from "./ai-content-type.enum";
 import { DamFileImage } from "./file-image.entity";
 import { FolderInterface } from "./folder.entity";
 import { License } from "./license.embeddable";
+import { resolveFileEntity } from "./resolve-dam-entity";
 
 export interface FileInterface extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt" | "archived" | "copies" | "alternativesForThisFile" | "thisFileIsAlternativeFor";
@@ -91,14 +78,14 @@ export function createFileEntity({ Scope, Folder }: { Scope?: Type<DamScopeInter
         contentHash: string;
 
         @ManyToOne({
-            entity: FILE_ENTITY,
+            entity: () => resolveFileEntity(),
             inversedBy: (file: FileInterface) => file.copies,
             joinColumn: "copyOfId",
             nullable: true,
         })
         copyOf?: FileInterface;
 
-        @OneToMany(FILE_ENTITY, (file: FileInterface) => file.copyOf)
+        @OneToMany(() => resolveFileEntity(), (file: FileInterface) => file.copyOf)
         copies: FileInterface[];
 
         @Field({ nullable: true })

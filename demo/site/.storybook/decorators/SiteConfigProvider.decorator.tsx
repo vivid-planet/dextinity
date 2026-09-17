@@ -1,8 +1,8 @@
-import type { PublicSiteConfig, SiteConfig } from "@src/site-configs.d";
-import { SiteConfigProvider } from "@src/util/SiteConfigProvider";
 import type { Decorator } from "@storybook/nextjs-vite";
 
 import getSiteConfigs from "../../../site-configs/site-configs";
+import type { PublicSiteConfig, SiteConfig } from "../../src/site-configs.d";
+import { SiteConfigProvider } from "../../src/util/SiteConfigProvider";
 
 // The CLI exports only the types of this transformation, so `dextinity inject-site-configs` and this have to stay in sync.
 function toPublicSiteConfig({ public: publicConfig, ...siteConfig }: SiteConfig): PublicSiteConfig {

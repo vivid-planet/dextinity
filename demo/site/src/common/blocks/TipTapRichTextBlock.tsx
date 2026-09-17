@@ -22,6 +22,16 @@ import styles from "./RichTextBlock.module.scss";
 
 type TypographyVariant = TypographyProps<"p">["variant"];
 
+const textBlockToVariant: Record<string, TypographyVariant> = {
+    display: "headline600",
+    "heading-1": "headline550",
+    "heading-2": "headline500",
+    "heading-3": "headline450",
+    "heading-4": "headline400",
+    "heading-5": "headline350",
+};
+
+// Content written before the text block was stored with the node only carries its level.
 const headingLevelToVariant: Record<1 | 2 | 3 | 4 | 5 | 6, TypographyVariant> = {
     1: "headline600",
     2: "headline550",
@@ -49,8 +59,10 @@ const nodeMapping: Record<string, TipTapNodeHandler> = {
     ),
     heading: ({ node, children }) => {
         const level = (node.attrs?.level as 1 | 2 | 3 | 4 | 5 | 6) ?? 1;
+        const textBlock = node.attrs?.textBlock as string | null | undefined;
+        const variant = (textBlock ? textBlockToVariant[textBlock] : undefined) ?? headingLevelToVariant[level];
         return (
-            <Typography variant={headingLevelToVariant[level]} bottomSpacing className={styles.text}>
+            <Typography variant={variant} bottomSpacing className={styles.text}>
                 {children}
             </Typography>
         );

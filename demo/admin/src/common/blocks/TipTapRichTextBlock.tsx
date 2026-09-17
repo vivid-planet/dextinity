@@ -13,6 +13,17 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
         productPrice: { block: ProductPriceBlock, display: "inline" },
         productTeaser: { block: ProductTeaserBlock, display: "block" },
     },
+    // "Display" and "Heading 1" are both stored as an h1 and told apart by the node's textBlock
+    // attribute, which the site reads to pick the typography.
+    textBlocks: [
+        { name: "paragraph", tag: "p", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.paragraph" defaultMessage="Paragraph" /> },
+        { name: "display", tag: "h1", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.display" defaultMessage="Display" /> },
+        { name: "heading-1", tag: "h1", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.heading1" defaultMessage="Heading 1" /> },
+        { name: "heading-2", tag: "h2", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.heading2" defaultMessage="Heading 2" /> },
+        { name: "heading-3", tag: "h3", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.heading3" defaultMessage="Heading 3" /> },
+        { name: "heading-4", tag: "h4", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.heading4" defaultMessage="Heading 4" /> },
+        { name: "heading-5", tag: "h5", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.heading5" defaultMessage="Heading 5" /> },
+    ],
     textBlockStyles: [
         {
             name: "paragraph300",

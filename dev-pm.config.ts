@@ -273,6 +273,7 @@ export default defineConfig({
         {
             name: "demo-site-storybook",
             script: "pnpm --filter dextinity-demo-site run storybook",
+            group: ["demo-site", "demo"],
             waitOn: waitOnPackages("@dextinity/site-nextjs"),
         },
 

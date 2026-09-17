@@ -1,7 +1,7 @@
 import { NodeViewContent, NodeViewWrapper, type ReactNodeViewProps } from "@tiptap/react";
 import { useContext } from "react";
 
-import type { TipTapTextBlockTag } from "../textBlocks";
+import { getTextBlockTag } from "../textBlocks";
 import { TextBlockStyleContext } from "../TextBlockStyleContext";
 
 /**
@@ -23,7 +23,7 @@ export function TextBlockNodeView({ node }: ReactNodeViewProps) {
         );
     }
 
-    const tag: TipTapTextBlockTag = node.type.name === "heading" ? (`h${node.attrs.level}` as TipTapTextBlockTag) : "p";
+    const tag = getTextBlockTag(node);
 
     return (
         <NodeViewWrapper as={tag}>

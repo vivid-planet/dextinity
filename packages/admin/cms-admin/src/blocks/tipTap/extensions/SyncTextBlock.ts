@@ -1,7 +1,7 @@
 import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 
-import { findTextBlock, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks";
+import { findTextBlock, getTextBlockTag, type TipTapResolvedTextBlock } from "../textBlocks";
 
 /**
  * Re-resolves a node's `textBlock` attribute when it no longer belongs to the tag the node is stored
@@ -35,8 +35,7 @@ export function createSyncTextBlock({ textBlocks }: { textBlocks: TipTapResolved
                                 return;
                             }
 
-                            const tag: TipTapTextBlockTag = node.type.name === "heading" ? (`h${node.attrs.level}` as TipTapTextBlockTag) : "p";
-                            const textBlock = findTextBlock({ name: node.attrs.textBlock, tag, textBlocks });
+                            const textBlock = findTextBlock({ name: node.attrs.textBlock, tag: getTextBlockTag(node), textBlocks });
 
                             if (textBlock && textBlock.name !== node.attrs.textBlock) {
                                 transaction.setNodeAttribute(pos, "textBlock", textBlock.name);

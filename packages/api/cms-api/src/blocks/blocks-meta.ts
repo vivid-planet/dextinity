@@ -9,9 +9,16 @@ type BlockMetaField =
       }
     | {
           name: string;
+          kind: "RichTextBlock";
+          nullable: boolean;
+          linkBlock: string;
+      }
+    | {
+          name: string;
           kind: "TipTapRichTextBlock";
           nullable: boolean;
           childBlocks: Record<string, string>;
+          linkBlock?: string;
       }
     | {
           name: string;
@@ -64,12 +71,20 @@ function extractFromBlockMeta(blockMeta: BlockMetaInterface): BlockMetaField[] {
                 nullable: field.nullable,
                 array: field.array,
             };
+        } else if (field.kind === BlockMetaFieldKind.RichTextBlock) {
+            return {
+                name: field.name,
+                kind: field.kind,
+                nullable: field.nullable,
+                linkBlock: field.linkBlock.name,
+            };
         } else if (field.kind === BlockMetaFieldKind.TipTapRichTextBlock) {
             return {
                 name: field.name,
                 kind: field.kind,
                 nullable: field.nullable,
                 childBlocks: Object.fromEntries(Object.entries(field.childBlocks).map(([blockType, block]) => [blockType, block.name])),
+                linkBlock: field.linkBlock?.name,
             };
         } else if (field.kind === BlockMetaFieldKind.Enum) {
             return {

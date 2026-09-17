@@ -19,9 +19,8 @@ function changeHeading1ToHeading2(node: TipTapRichTextBlockContent): TipTapRichT
     return result;
 }
 
-// `toVersion` is 2 because `migrateFromDraftJs` prepends the DraftJS->TipTap migration as version 1.
 export class Heading1ToHeading2Migration extends BlockMigration<(from: From) => To> implements BlockMigrationInterface {
-    public readonly toVersion = 2;
+    public readonly toVersion = 1;
 
     protected migrate(from: From): To {
         return { tipTapContent: changeHeading1ToHeading2(from.tipTapContent) };

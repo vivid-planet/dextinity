@@ -1,7 +1,11 @@
+import type { JSONContent } from "@tiptap/core";
 import { describe, expect, it } from "vitest";
 
 import { ExternalLinkBlock } from "../../externalLink/external-link.block";
 import { createLinkBlock } from "../../factories/createLinkBlock";
+import { BlockMigration } from "../../migrations/BlockMigration";
+import type { BlockMigrationInterface } from "../../migrations/types";
+import { typeSafeBlockMigrationPipe } from "../../migrations/typeSafeBlockMigrationPipe";
 import { createTipTapRichTextBlock } from "../createTipTapRichTextBlock";
 import type { DraftJsContent } from "./convertDraftJsToTipTap";
 
@@ -359,5 +363,68 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             // so the migration falls back to the empty doc.
             expect(data.tipTapContent).toEqual({ type: "doc", content: [{ type: "paragraph" }] });
         });
+    });
+});
+
+describe("createTipTapRichTextBlock with migrateFromDraftJs and a migration scope", () => {
+    interface ScopedMigrationData {
+        tipTapContent: JSONContent;
+    }
+
+    const scopedParagraph = { type: "paragraph", content: [{ type: "text", text: "scoped" }] };
+
+    class AppendScopedParagraphMigration
+        extends BlockMigration<(from: ScopedMigrationData) => ScopedMigrationData>
+        implements BlockMigrationInterface
+    {
+        // The DraftJS migration occupies version 1 of the block's own chain, the scope counts separately
+        public readonly toVersion = 1;
+
+        protected migrate({ tipTapContent }: ScopedMigrationData): ScopedMigrationData {
+            return { tipTapContent: { ...tipTapContent, content: [...(tipTapContent.content ?? []), scopedParagraph] } };
+        }
+    }
+
+    const block = createTipTapRichTextBlock(
+        { migrateFromDraftJs: true },
+        {
+            name: "MigratedRichTextWithScope",
+            migrate: {
+                scopes: { project: { version: 1, migrations: typeSafeBlockMigrationPipe([AppendScopedParagraphMigration]) } },
+            },
+        },
+    );
+
+    it("applies the DraftJS migration before the scoped migration", () => {
+        const data = block.blockDataFactory({
+            draftContent: {
+                blocks: [draftBlock({ type: "unstyled", text: "Hello" })],
+                entityMap: {},
+            },
+        });
+
+        expect(data.tipTapContent).toEqual({
+            type: "doc",
+            content: [{ type: "paragraph", content: [{ type: "text", text: "Hello" }] }, scopedParagraph],
+        });
+    });
+
+    it("applies the scoped migration to data that already ran the DraftJS migration", () => {
+        const data = block.blockDataFactory({
+            tipTapContent: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "already migrated" }] }] },
+            $$version: 1,
+        });
+
+        expect(data.tipTapContent).toEqual({
+            type: "doc",
+            content: [{ type: "paragraph", content: [{ type: "text", text: "already migrated" }] }, scopedParagraph],
+        });
+    });
+
+    it("is a no-op once both chains are up to date", () => {
+        const tipTapContent = { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "done" }] }, scopedParagraph] };
+        const data = block.blockDataFactory({ tipTapContent, $$version: 1, $$versions: { project: 1 } });
+
+        expect(data.tipTapContent).toEqual(tipTapContent);
     });
 });

@@ -1,5 +1,11 @@
 # @comet/admin
 
+## 10.7.1
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.7.1
+
 ## 10.7.0
 
 ### Patch Changes

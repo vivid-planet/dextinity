@@ -1,5 +1,17 @@
 # @comet/cms-api
 
+## 10.7.1
+
+### Patch Changes
+
+- 8538d98: Fix DAM file URLs (both inline "open in new tab" and download links) missing the file extension, which caused browsers to save downloaded files without their extension (e.g. `.pdf`).
+
+    Requests for a DAM file URL whose filename segment no longer matches the file (for instance, a URL generated before this fix) now get a permanent redirect to the current canonical URL instead of being served under the stale filename.
+
+- 8fbfbce: Replace the `hasha` dependency with Node's built-in `crypto`
+
+    `hasha` isn't needed — Node's `crypto` covers everything we use it for. Hashing now uses `crypto` directly, producing identical hex-encoded MD5 hashes, so existing `contentHash` values and scaled-image cache paths remain valid.
+
 ## 10.7.0
 
 ### Minor Changes

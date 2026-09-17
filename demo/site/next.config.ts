@@ -61,8 +61,6 @@ const nextConfig: NextConfig = {
         },
     ],
     // eslint-disable-next-line no-restricted-syntax -- VALKEY_ENABLED is a server-start-time flag for cache handler setup
-    // The path is built instead of resolved: resolving compiles to require.resolve, which throws while the config is
-    // being read when dist/ has not been built yet. That broke every tool that only reads the config, such as Storybook.
     cacheHandler: process.env.VALKEY_ENABLED === "true" ? join(dirname(fileURLToPath(import.meta.url)), "dist/cache-handler.js") : undefined,
     // eslint-disable-next-line no-restricted-syntax -- VALKEY_ENABLED is a server-start-time flag for cache handler setup
     cacheMaxMemorySize: process.env.VALKEY_ENABLED === "true" ? 0 : undefined, // disable default in-memory caching

@@ -974,6 +974,22 @@ export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
             );
         });
 
+        await step("A keyboard shortcut updates the stored text block along with the level", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Alt>}3{/Alt}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 3 })).toBeInTheDocument();
+                    // A name that doesn't belong to the node's tag is content the API rejects.
+                    expect(canvas.getByText(/"textBlock": "heading-3"/)).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+
         await step("Keyboard shortcut for a disallowed level (Mod-Alt-1) does not apply Heading 1", async () => {
             const editor = canvas.getByRole("textbox");
             await userEvent.click(editor);

@@ -27,6 +27,7 @@ import { InlineStyleMark } from "./extensions/InlineStyleMark";
 import { NonBreakingSpace } from "./extensions/NonBreakingSpace";
 import { Placeholder } from "./extensions/Placeholder";
 import { SoftHyphen } from "./extensions/SoftHyphen";
+import { createSyncTextBlock } from "./extensions/SyncTextBlock";
 import { createTextBlockHeading } from "./extensions/TextBlockHeading";
 import { createTextBlockParagraph } from "./extensions/TextBlockParagraph";
 import { InlineStyleContext } from "./InlineStyleContext";
@@ -538,6 +539,7 @@ function buildTipTapExtensions({
                       .configure({ levels: headingLevels }),
               ]
             : []),
+        createSyncTextBlock(resolvedOptions),
         ...(hasInlineStyles ? [InlineStyleMark] : []),
         ...(resolvedOptions.sup ? [Superscript] : []),
         ...(resolvedOptions.sub ? [Subscript] : []),

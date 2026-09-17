@@ -32,6 +32,10 @@ describe("createDamVideoBlock", () => {
         expect(createDamVideoBlock().name).toBe("DamVideo");
     });
 
+    it("should allow setting the name", () => {
+        expect(createDamVideoBlock({ name: "TeaserVideo" }).name).toBe("TeaserVideo");
+    });
+
     it("should allow overriding the tags", () => {
         expect(createDamVideoBlock({ tags: ["Movie"] }).tags).toEqual(["Movie"]);
     });
@@ -64,6 +68,48 @@ describe("createDamVideoBlock", () => {
             const block = createDamVideoBlock();
 
             expect(block.dependencies?.(createState())).toEqual([]);
+        });
+    });
+
+    describe("when the API block doesn't support a preview image", () => {
+        // Its stored data has no previewImage at all, so every state and output of the Admin block has to cope
+        // with a missing one.
+        const block = createDamVideoBlock({ name: "TeaserVideo", supports: [] });
+        const storedInput = { damFileId: "video-1" } as unknown as Parameters<typeof block.input2State>[0];
+
+        it("should turn a missing preview image into an empty one", () => {
+            expect(block.input2State(storedInput).previewImage).toEqual({});
+        });
+
+        it("should create a preview state", () => {
+            const state = block.input2State(storedInput);
+
+            expect(() =>
+                block.createPreviewState(state, { apiUrl: "https://example.com", damBasePath: "dam" } as unknown as Parameters<
+                    typeof block.createPreviewState
+                >[1]),
+            ).not.toThrow();
+        });
+
+        it("should create output with an empty preview image", () => {
+            expect(block.state2Output(block.input2State(storedInput))).toMatchObject({ previewImage: {} });
+        });
+
+        it("should return only the video file as dependency", () => {
+            expect(block.dependencies?.(block.input2State(storedInput))).toEqual([]);
+        });
+
+        it("should create state from output without querying the preview image", async () => {
+            const apolloClient = { query: async () => ({ data: { damFile: videoDamFile } }) };
+            const context = { apolloClient } as unknown as Parameters<typeof block.output2State>[1];
+
+            await expect(block.output2State(storedInput, context)).resolves.toMatchObject({ previewImage: {} });
+        });
+
+        it("should replace the video file without a preview image", () => {
+            expect(
+                block.replaceDependenciesInOutput(storedInput, [{ type: "DamFile", originalId: "video-1", replaceWithId: "video-2" }]),
+            ).toMatchObject({ damFileId: "video-2" });
         });
     });
 

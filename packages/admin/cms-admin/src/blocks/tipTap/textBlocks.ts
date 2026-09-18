@@ -1,5 +1,6 @@
-import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import type { ReactNode } from "react";
+
+type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 /**
  * HTML element a text block is stored and rendered as: `p` for a paragraph, `h1`-`h6` for a heading
@@ -82,11 +83,24 @@ export function findDefaultTextBlock({
 }
 
 /**
- * The text block a paragraph/heading node belongs to: the one matching the node's stored `textBlock`
- * name, or - for content written before the name was stored, or by a text block that has since been
- * removed - the first one with a matching tag.
+ * The text block a node belongs to: the one it names, or - for a name that is no longer configured -
+ * none, so the caller can fall back to the default text block.
  */
 export function findTextBlock({
+    name,
+    textBlocks,
+}: {
+    name?: string | null;
+    textBlocks: TipTapResolvedTextBlock[];
+}): TipTapResolvedTextBlock | undefined {
+    return textBlocks.find((textBlock) => textBlock.name === name);
+}
+
+/**
+ * The text block an element parsed from HTML becomes: the one it names, or - for HTML from outside
+ * the editor, e.g. pasted or returned by the content translation - the first one with its tag.
+ */
+export function parseTextBlock({
     name,
     tag,
     textBlocks,
@@ -95,22 +109,21 @@ export function findTextBlock({
     tag: TipTapTextBlockTag;
     textBlocks: TipTapResolvedTextBlock[];
 }): TipTapResolvedTextBlock | undefined {
-    const byName = name ? textBlocks.find((textBlock) => textBlock.name === name && textBlock.tag === tag) : undefined;
-    return byName ?? textBlocks.find((textBlock) => textBlock.tag === tag);
+    return findTextBlock({ name, textBlocks }) ?? textBlocks.find((textBlock) => textBlock.tag === tag);
 }
 
 /**
- * The heading levels the text blocks use, in configuration order and without duplicates.
+ * One text block per tag, keeping the first of several sharing one - for the shortcuts and input
+ * rules, which address a text block by its tag and can't tell two of them apart.
  */
-export const getHeadingLevels = (textBlocks: TipTapResolvedTextBlock[]): HeadingLevel[] => [
-    ...new Set(textBlocks.map((textBlock) => textBlock.level).filter((level): level is HeadingLevel => level !== undefined)),
-];
+export function findTextBlockPerTag(textBlocks: TipTapResolvedTextBlock[]): TipTapResolvedTextBlock[] {
+    return textBlocks.filter((textBlock, index) => textBlocks.findIndex((candidate) => candidate.tag === textBlock.tag) === index);
+}
+
+/**
+ * Whether a list item can hold the text block. Its content starts with a paragraph, and a heading is
+ * the same node type as one, so the schema can't refuse it - the editor has to.
+ */
+export const isTextBlockAllowedInListItem = (textBlock: TipTapResolvedTextBlock): boolean => textBlock.tag === "p";
 
 export const hasParagraphTextBlock = (textBlocks: TipTapResolvedTextBlock[]): boolean => textBlocks.some((textBlock) => textBlock.tag === "p");
-
-/**
- * The tag a paragraph or heading node is stored as.
- */
-export function getTextBlockTag(node: { type: { name: string }; attrs: { level?: number } }): TipTapTextBlockTag {
-    return node.type.name === "heading" ? (`h${node.attrs.level}` as TipTapTextBlockTag) : "p";
-}

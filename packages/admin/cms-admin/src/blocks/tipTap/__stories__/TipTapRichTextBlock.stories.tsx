@@ -92,12 +92,12 @@ const readOnlyState: TipTapRichTextBlockState = {
         type: "doc",
         content: [
             {
-                type: "heading",
-                attrs: { level: 1 },
+                type: "textBlock",
+                attrs: { textBlock: "heading-1" },
                 content: [{ type: "text", text: "Read-only content" }],
             },
             {
-                type: "paragraph",
+                type: "textBlock",
                 attrs: { textBlockStyle: "intro" },
                 content: [
                     { type: "text", text: "This content is rendered " },
@@ -381,7 +381,7 @@ function PlaceholdersWithContentStory() {
             type: "doc",
             content: [
                 {
-                    type: "paragraph",
+                    type: "textBlock",
                     content: [
                         { type: "text", text: "Hello " },
                         { type: "placeholder", attrs: { name: "firstName" } },
@@ -391,7 +391,7 @@ function PlaceholdersWithContentStory() {
                     ],
                 },
                 {
-                    type: "paragraph",
+                    type: "textBlock",
                     content: [
                         { type: "text", text: "Your registered email is: " },
                         { type: "placeholder", attrs: { name: "email" } },
@@ -1020,7 +1020,7 @@ const longTextContent: TipTapRichTextBlockState = {
     tipTapContent: {
         type: "doc",
         content: Array.from({ length: 30 }, (_, index) => ({
-            type: "paragraph",
+            type: "textBlock",
             content: [{ type: "text", text: `Paragraph ${index + 1}: enough text to make the container scroll past the toolbar.` }],
         })),
     },
@@ -1259,7 +1259,7 @@ export const HeadingOnlyWithTextBlockStyles: StoryObj<typeof HeadingOnlyWithText
 const contentFromOutside: TipTapRichTextBlockState = {
     tipTapContent: {
         type: "doc",
-        content: [{ type: "paragraph", content: [{ type: "text", text: "Text written by the agent" }] }],
+        content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Text written by the agent" }] }],
     },
 };
 
@@ -1368,6 +1368,82 @@ export const LaggingState: StoryObj<typeof LaggingStateStory> = {
                 { timeout: 3000 },
             );
             expect(editor).toHaveTextContent("Text written by the user");
+        });
+    },
+};
+
+const ListTextBlockBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p" },
+        { name: "heading-2", label: "Heading 2", tag: "h2" },
+    ],
+});
+
+function ListTextBlockStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(ListTextBlockBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <ListTextBlockBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const ListTextBlock: StoryObj<typeof ListTextBlockStory> = {
+    render: () => <ListTextBlockStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("A heading turned into a list becomes a paragraph", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("Heading in a list");
+
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("h2")).toBeTruthy();
+                },
+                { timeout: 3000 },
+            );
+
+            // TipTap binds list shortcuts to Mod-Shift-{7,8}: Meta on Mac, Control elsewhere
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Shift>}8{/Shift}{/${mod}}`);
+
+            // The heading is wrapped into a list item, where only a paragraph text block belongs.
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("li")).toBeTruthy();
+                    expect(editor.querySelector("li h2")).toBeFalsy();
+                    expect(editor.querySelector("li p")).toBeTruthy();
+                },
+                { timeout: 3000 },
+            );
+            expect(editor).toHaveTextContent("Heading in a list");
+        });
+
+        await step("Choosing a heading inside a list takes the content out of the list", async () => {
+            const editor = canvas.getByRole("textbox");
+
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("h2")).toBeTruthy();
+                    expect(editor.querySelector("li")).toBeFalsy();
+                },
+                { timeout: 3000 },
+            );
+            expect(editor).toHaveTextContent("Heading in a list");
         });
     },
 };

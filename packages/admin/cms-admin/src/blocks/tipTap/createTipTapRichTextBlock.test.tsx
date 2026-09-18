@@ -46,7 +46,7 @@ describe("createTipTapRichTextBlock", () => {
             defaultTextBlock: "heading-1",
         });
         expect(block.defaultValues()).toEqual({
-            tipTapContent: { type: "doc", content: [{ type: "heading", attrs: { level: 1, textBlock: "heading-1" } }] },
+            tipTapContent: { type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "heading-1" } }] },
         });
     });
 
@@ -59,7 +59,7 @@ describe("createTipTapRichTextBlock", () => {
             defaultTextBlock: "heading-3",
         });
         expect(block.defaultValues()).toEqual({
-            tipTapContent: { type: "doc", content: [{ type: "heading", attrs: { level: 3, textBlock: "heading-3" } }] },
+            tipTapContent: { type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "heading-3" } }] },
         });
     });
 
@@ -91,7 +91,7 @@ describe("createTipTapRichTextBlock", () => {
                     type: "doc",
                     content: [
                         {
-                            type: "paragraph",
+                            type: "textBlock",
                             attrs: { textBlock: "paragraph" },
                             content: [
                                 { type: "text", text: "A " },
@@ -141,9 +141,9 @@ describe("createTipTapRichTextBlock", () => {
                 tipTapContent: {
                     type: "doc",
                     content: [
-                        { type: "paragraph", content: [{ type: "text", text: "Before" }] },
+                        { type: "textBlock", content: [{ type: "text", text: "Before" }] },
                         { type: "cmsBlock", attrs: { blockType: "structured", data: { nested: { value: "keep me" } } } },
-                        { type: "paragraph", content: [{ type: "text", text: "After" }] },
+                        { type: "textBlock", content: [{ type: "text", text: "After" }] },
                     ],
                 },
             };
@@ -178,7 +178,7 @@ describe("createTipTapRichTextBlock", () => {
                     type: "doc",
                     content: [
                         {
-                            type: "paragraph",
+                            type: "textBlock",
                             content: [
                                 { type: "text", text: "Before " },
                                 // `false` is a valid (if unusual) value for a link mark's `data`: `setCmsLink`'s
@@ -208,7 +208,7 @@ describe("createTipTapRichTextBlock", () => {
                     type: "doc",
                     content: [
                         {
-                            type: "paragraph",
+                            type: "textBlock",
                             content: [
                                 { type: "text", text: "Hello " },
                                 { type: "placeholder", attrs: { name: "firstName" } },
@@ -247,7 +247,7 @@ describe("createTipTapRichTextBlock", () => {
                     type: "doc",
                     content: [
                         {
-                            type: "paragraph",
+                            type: "textBlock",
                             content: [
                                 { type: "text", text: "Before " },
                                 { type: "text", marks: [{ type: "link", attrs: { data: { url: "https://example.com" } } }], text: "link" },

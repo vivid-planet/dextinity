@@ -1,6 +1,6 @@
 import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
 
-import { getTextBlockTag, type TipTapResolvedTextBlock } from "./textBlocks";
+import type { TipTapResolvedTextBlock } from "./textBlocks";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TipTapContent = Record<string, any>;
@@ -31,23 +31,25 @@ function containsUnknownMarks(json: any, schema: Schema): boolean {
 }
 
 /**
- * Whether the content uses a tag no text block is configured for, or names a `textBlock` that isn't
- * configured for the tag the node is stored as. A node without a `textBlock` attribute is content
- * written before the name was stored and stays valid - it is resolved by its tag.
+ * Whether the content names a text block that isn't configured, or holds one inside a list item that
+ * isn't stored as a `p`. The name is all a node carries, so an unknown one would leave the API
+ * without a tag to render it as, and a node that names none takes the schema's default text block.
+ *
+ * A list item's content expression matches node types, and every text block is the same node, so it
+ * can't keep a heading out - only this check can.
  */
-export function containsInvalidTextBlock(content: TipTapContent, textBlocks: TipTapResolvedTextBlock[]): boolean {
+export function containsInvalidTextBlock(content: TipTapContent, textBlocks: TipTapResolvedTextBlock[], insideListItem = false): boolean {
     if (typeof content !== "object" || content === null) {
         return false;
     }
 
-    const tag = getTextBlockTag(content);
-    if (tag !== undefined) {
+    if (content.type === "textBlock") {
         const name = content.attrs?.textBlock;
-        if (name != null) {
-            if (!textBlocks.some((textBlock) => textBlock.name === name && textBlock.tag === tag)) {
-                return true;
-            }
-        } else if (!textBlocks.some((textBlock) => textBlock.tag === tag)) {
+        const textBlock = textBlocks.find((candidate) => candidate.name === name);
+        if (name != null && !textBlock) {
+            return true;
+        }
+        if (insideListItem && textBlock && textBlock.tag !== "p") {
             return true;
         }
     }
@@ -56,7 +58,8 @@ export function containsInvalidTextBlock(content: TipTapContent, textBlocks: Tip
         return false;
     }
 
-    return content.content.some((child: TipTapContent) => containsInvalidTextBlock(child, textBlocks));
+    const childrenInsideListItem = content.type === "listItem" || insideListItem;
+    return content.content.some((child: TipTapContent) => containsInvalidTextBlock(child, textBlocks, childrenInsideListItem));
 }
 
 export function getListNestingDepth(content: TipTapContent, currentDepth = 0): number {

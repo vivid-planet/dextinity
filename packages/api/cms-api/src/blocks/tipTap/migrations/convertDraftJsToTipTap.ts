@@ -2,7 +2,7 @@ import type { JSONContent } from "@tiptap/core";
 
 import type { Block } from "../../block";
 import type { TipTapResolvedOptions } from "../createTipTapRichTextBlock";
-import { findTextBlock, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks";
+import { findTextBlockForTag, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks";
 
 interface DraftJsInlineStyleRange {
     style: string;
@@ -95,6 +95,36 @@ const HEADER_TYPE_TO_LEVEL: Record<string, number> = {
     "header-five": 5,
     "header-six": 6,
 };
+
+/**
+ * Rejects a configuration in which a DraftJS heading could become either of two text blocks sharing
+ * its tag. The conversion would pick the first of them, and it runs once - the DraftJS content is
+ * gone afterwards - so the choice has to be written down instead of guessed.
+ */
+export function assertDraftJsHeadingsAreUnambiguous({
+    resolvedOptions,
+    textBlockMap = {},
+}: {
+    resolvedOptions: TipTapResolvedOptions;
+    textBlockMap?: Record<string, TextBlockMapping>;
+}): void {
+    const { textBlocks, defaultTextBlock } = resolvedOptions;
+
+    for (const [draftJsType, level] of Object.entries(HEADER_TYPE_TO_LEVEL)) {
+        const tag = `h${level}` as TipTapTextBlockTag;
+        if (defaultTextBlock.tag === tag || textBlockMap[draftJsType] !== undefined) {
+            continue;
+        }
+
+        const textBlocksSharingTag = textBlocks.filter((textBlock) => textBlock.tag === tag);
+        if (textBlocksSharingTag.length > 1) {
+            const names = textBlocksSharingTag.map((textBlock) => `"${textBlock.name}"`).join(", ");
+            throw new Error(
+                `The text blocks ${names} share the tag "${tag}", so migrateFromDraftJs cannot tell which one a "${draftJsType}" block becomes. Name it in textBlockMap under "${draftJsType}", or make it the defaultTextBlock.`,
+            );
+        }
+    }
+}
 
 /**
  * Builds a document with a single empty text block, matching the target schema's default text block
@@ -252,10 +282,10 @@ function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, 
 }
 
 /**
- * The text block a DraftJS block is converted to: the one the `textBlockMap` names, the first one
- * matching the heading level the DraftJS block type implies, or - for anything else - the first
- * paragraph text block. Falls back to the schema's default text block, so a heading-only schema
- * still gets a valid text block for a DraftJS paragraph.
+ * The text block a DraftJS block is converted to: the one `textBlockMap` names, or the one carrying
+ * the tag the DraftJS block type implies. Several text blocks may carry that tag, so the default
+ * text block wins over the first of them - `assertDraftJsHeadingsAreUnambiguous` rejects the
+ * configurations that leaves undecided.
  */
 function resolveTargetTextBlock({
     name,
@@ -274,24 +304,21 @@ function resolveTargetTextBlock({
         }
     }
     const tag: TipTapTextBlockTag = headingLevel !== undefined ? (`h${headingLevel}` as TipTapTextBlockTag) : "p";
-    return findTextBlock({ tag, textBlocks }) ?? defaultTextBlock;
+    if (defaultTextBlock.tag === tag) {
+        return defaultTextBlock;
+    }
+    return findTextBlockForTag({ tag, textBlocks }) ?? defaultTextBlock;
 }
 
 function makeTextBlockNode(
     inlineContent: JSONContent[],
     { textBlock, textBlockStyle }: { textBlock: TipTapResolvedTextBlock; textBlockStyle?: string },
 ): JSONContent {
-    const node: JSONContent = { type: textBlock.level !== undefined ? "heading" : "paragraph" };
+    const node: JSONContent = { type: "textBlock", attrs: { textBlock: textBlock.name } };
 
-    const attrs: JSONContent["attrs"] = { textBlock: textBlock.name };
-    if (textBlock.level !== undefined) {
-        attrs.level = textBlock.level;
-    }
     if (textBlockStyle !== undefined) {
-        attrs.textBlockStyle = textBlockStyle;
+        node.attrs = { ...node.attrs, textBlockStyle };
     }
-    node.attrs = attrs;
-
     if (inlineContent.length > 0) {
         node.content = inlineContent;
     }

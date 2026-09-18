@@ -29,12 +29,10 @@ const nonBreakingSpace = String.fromCodePoint(0xa0);
 const softHyphen = String.fromCodePoint(0xad);
 
 const defaultTipTapNodeMapping: Record<string, TipTapNodeHandler> = {
-    paragraph: ({ children }) => <p>{children}</p>,
-    heading: ({ node, children }) => {
-        const level = (node.attrs?.level as 1 | 2 | 3 | 4 | 5 | 6) ?? 1;
-        const Tag = `h${level}` as const;
-        return <Tag>{children}</Tag>;
-    },
+    // Which tag a text block renders as follows from the block's configuration, which the site
+    // doesn't have - so a paragraph is the only sensible default, and a block with headings needs
+    // its own `textBlock` handler.
+    textBlock: ({ children }) => <p>{children}</p>,
     bulletList: ({ children }) => <ul>{children}</ul>,
     orderedList: ({ children }) => <ol>{children}</ol>,
     listItem: ({ children }) => <li>{children}</li>,
@@ -94,9 +92,9 @@ export function renderTipTapRichText({ content, nodeMapping, markMapping }: Rend
     return renderNode(content, undefined);
 }
 
-// An empty text block renders nothing, no matter which type it has. A heading-only block starts
-// out with an empty heading, just like a regular rich text block starts out with an empty paragraph.
-const isEmptyableTextBlock = (node: TipTapNode): boolean => node.type === "paragraph" || node.type === "heading";
+// An empty text block renders nothing, no matter which text block it is: a block starts out with an
+// empty one, whether that is a paragraph or - for a headline block - a heading.
+const isEmptyableTextBlock = (node: TipTapNode): boolean => node.type === "textBlock";
 
 export function hasTipTapRichTextContent(content: TipTapNode | null | undefined): boolean {
     if (!content?.content || !Array.isArray(content.content)) {

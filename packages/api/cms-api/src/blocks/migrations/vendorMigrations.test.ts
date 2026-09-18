@@ -14,7 +14,7 @@ interface Data {
 
 // Each migration appends its name to the chain it belongs to, so the resulting arrays show
 // which migrations ran, and in which order
-function buildAppendMigration(chain: keyof Data, name: string, migrationToVersion: number) {
+function buildAppendMigration({ chain, name, toVersion: migrationToVersion }: { chain: keyof Data; name: string; toVersion: number }) {
     return class AppendMigration extends BlockMigration<(from: Data) => Data> implements BlockMigrationInterface {
         public readonly toVersion = migrationToVersion;
 
@@ -29,12 +29,12 @@ describe("vendor block migrations", () => {
         const migrated = applyBlockMigrations(
             {},
             {
-                migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([buildAppendMigration("own", "own1", 1)]) },
+                migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([buildAppendMigration({ chain: "own", name: "own1", toVersion: 1 })]) },
                 migrateVendor: {
                     version: 2,
                     migrations: typeSafeBlockMigrationPipe([
-                        buildAppendMigration("vendor", "vendor1", 1),
-                        buildAppendMigration("vendor", "vendor2", 2),
+                        buildAppendMigration({ chain: "vendor", name: "vendor1", toVersion: 1 }),
+                        buildAppendMigration({ chain: "vendor", name: "vendor2", toVersion: 2 }),
                     ]),
                 },
             },
@@ -86,13 +86,16 @@ describe("vendor block migrations", () => {
             {
                 migrate: {
                     version: 2,
-                    migrations: typeSafeBlockMigrationPipe([buildAppendMigration("own", "own1", 1), buildAppendMigration("own", "own2", 2)]),
+                    migrations: typeSafeBlockMigrationPipe([
+                        buildAppendMigration({ chain: "own", name: "own1", toVersion: 1 }),
+                        buildAppendMigration({ chain: "own", name: "own2", toVersion: 2 }),
+                    ]),
                 },
                 migrateVendor: {
                     version: 2,
                     migrations: typeSafeBlockMigrationPipe([
-                        buildAppendMigration("vendor", "vendor1", 1),
-                        buildAppendMigration("vendor", "vendor2", 2),
+                        buildAppendMigration({ chain: "vendor", name: "vendor1", toVersion: 1 }),
+                        buildAppendMigration({ chain: "vendor", name: "vendor2", toVersion: 2 }),
                     ]),
                 },
             },
@@ -110,8 +113,11 @@ describe("vendor block migrations", () => {
         const rawData = { vendor: ["vendor1"], own: ["own1"], $$version: 1, $$vendorVersion: 1 };
 
         const migrated = applyBlockMigrations(rawData, {
-            migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([buildAppendMigration("own", "own1", 1)]) },
-            migrateVendor: { version: 1, migrations: typeSafeBlockMigrationPipe([buildAppendMigration("vendor", "vendor1", 1)]) },
+            migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([buildAppendMigration({ chain: "own", name: "own1", toVersion: 1 })]) },
+            migrateVendor: {
+                version: 1,
+                migrations: typeSafeBlockMigrationPipe([buildAppendMigration({ chain: "vendor", name: "vendor1", toVersion: 1 })]),
+            },
         });
 
         expect(migrated).toEqual(rawData);
@@ -131,7 +137,10 @@ describe("vendor block migrations", () => {
             { vendor: ["vendor1"], $$vendorVersion: 1 },
             {
                 migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([ReplaceDataMigration]) },
-                migrateVendor: { version: 1, migrations: typeSafeBlockMigrationPipe([buildAppendMigration("vendor", "vendor1", 1)]) },
+                migrateVendor: {
+                    version: 1,
+                    migrations: typeSafeBlockMigrationPipe([buildAppendMigration({ chain: "vendor", name: "vendor1", toVersion: 1 })]),
+                },
             },
         );
 
@@ -142,7 +151,10 @@ describe("vendor block migrations", () => {
         // Both migrations were versions 1 and 2 of the block before they moved
         const migrateVendor = {
             version: 2,
-            migrations: typeSafeBlockMigrationPipe([buildAppendMigration("vendor", "vendor1", 1), buildAppendMigration("vendor", "vendor2", 2)]),
+            migrations: typeSafeBlockMigrationPipe([
+                buildAppendMigration({ chain: "vendor", name: "vendor1", toVersion: 1 }),
+                buildAppendMigration({ chain: "vendor", name: "vendor2", toVersion: 2 }),
+            ]),
             legacyVersions: 2,
         };
 
@@ -170,11 +182,14 @@ describe("vendor block migrations", () => {
                 {
                     migrate: {
                         version: 2,
-                        migrations: typeSafeBlockMigrationPipe([buildAppendMigration("own", "own1", 1), buildAppendMigration("own", "own2", 2)]),
+                        migrations: typeSafeBlockMigrationPipe([
+                            buildAppendMigration({ chain: "own", name: "own1", toVersion: 1 }),
+                            buildAppendMigration({ chain: "own", name: "own2", toVersion: 2 }),
+                        ]),
                     },
                     migrateVendor: {
                         version: 1,
-                        migrations: typeSafeBlockMigrationPipe([buildAppendMigration("vendor", "vendor1", 1)]),
+                        migrations: typeSafeBlockMigrationPipe([buildAppendMigration({ chain: "vendor", name: "vendor1", toVersion: 1 })]),
                         legacyVersions: 1,
                     },
                 },
@@ -195,7 +210,7 @@ describe("vendor block migrations", () => {
             applyBlockMigrations(
                 {},
                 {
-                    migrateVendor: { version: 2, migrations: [buildAppendMigration("vendor", "vendor2", 2)] },
+                    migrateVendor: { version: 2, migrations: [buildAppendMigration({ chain: "vendor", name: "vendor2", toVersion: 2 })] },
                     blockName: "VendorOutOfSequence",
                 },
             ),

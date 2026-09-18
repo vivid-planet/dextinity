@@ -3,6 +3,7 @@ import type { ClassConstructor } from "class-transformer";
 import type { BlockMigrationInterface, BlockMigrationVersionField, MigrateOptions, MigrateVendorOptions, VersionDataInterface } from "./types";
 
 interface ApplyMigrationsOptions {
+    migrations?: ClassConstructor<BlockMigrationInterface>[];
     blockName?: string;
     versionField?: BlockMigrationVersionField;
 }
@@ -11,8 +12,7 @@ interface ApplyMigrationsOptions {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function applyMigrations<T = any>(
     rawData: T,
-    migrationClasses?: ClassConstructor<BlockMigrationInterface>[],
-    { blockName, versionField = "$$version" }: ApplyMigrationsOptions = {},
+    { migrations: migrationClasses, blockName, versionField = "$$version" }: ApplyMigrationsOptions,
 ): T {
     if (!migrationClasses || migrationClasses.length < 1) {
         return rawData;
@@ -49,9 +49,9 @@ export interface BlockMigrateOptions {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function applyBlockMigrations<T = any>(rawData: T, { migrate, migrateVendor, blockName }: BlockMigrateOptions): T {
     const data = splitLegacyVersion(rawData, migrateVendor?.legacyVersions);
-    const vendorMigrated = applyMigrations(data, migrateVendor?.migrations, { blockName, versionField: "$$vendorVersion" });
+    const vendorMigrated = applyMigrations(data, { migrations: migrateVendor?.migrations, blockName, versionField: "$$vendorVersion" });
 
-    return applyMigrations(vendorMigrated, migrate?.migrations, { blockName });
+    return applyMigrations(vendorMigrated, { migrations: migrate?.migrations, blockName });
 }
 
 // Migrations that moved into the vendor chain counted in `$$version` before the move, so block

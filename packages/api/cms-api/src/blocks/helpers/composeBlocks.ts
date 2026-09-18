@@ -152,6 +152,8 @@ export function composeBlocks<BlockMap extends BaseBlockMap>(
                 };
             }),
         },
+        blockDataClass: CompositeBlock,
+        blockInputClass: CompositeBlockInput,
     };
 
     registerBlock(block);

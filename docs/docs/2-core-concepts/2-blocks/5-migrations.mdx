@@ -254,15 +254,15 @@ Only type and touch the fields your migration changes, and spread the rest throu
 
 ### Extending a block that has vendor migrations
 
-An application can extend a block it doesn't own by extending its data and input classes, and add migrations of its own:
+An application can extend a block it doesn't own by extending the classes it is built from, `blockDataClass` and `blockInputClass`, and add migrations of its own:
 
 ```ts title="captioned-you-tube-video.block.ts"
-class CaptionedYouTubeVideoBlockData extends YouTubeVideoBlockData {
+class CaptionedYouTubeVideoBlockData extends YouTubeVideoBlock.blockDataClass {
     @BlockField()
     caption: string;
 }
 
-class CaptionedYouTubeVideoBlockInput extends YouTubeVideoBlockInput {
+class CaptionedYouTubeVideoBlockInput extends YouTubeVideoBlock.blockInputClass {
     @BlockField()
     caption: string;
 

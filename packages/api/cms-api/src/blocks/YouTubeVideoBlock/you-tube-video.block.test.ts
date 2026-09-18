@@ -5,7 +5,7 @@ import { BlockField } from "../decorators/field";
 import { BlockMigration } from "../migrations/BlockMigration";
 import type { BlockMigrationInterface } from "../migrations/types";
 import { typeSafeBlockMigrationPipe } from "../migrations/typeSafeBlockMigrationPipe";
-import { YouTubeVideoBlock, YouTubeVideoBlockData, YouTubeVideoBlockInput } from "./you-tube-video.block";
+import { YouTubeVideoBlock } from "./you-tube-video.block";
 
 describe("YouTubeVideoBlock migrations", () => {
     it("migrates block instances that were never migrated", () => {
@@ -60,12 +60,12 @@ describe("a block extending YouTubeVideoBlock", () => {
         }
     }
 
-    class CaptionedYouTubeVideoBlockData extends YouTubeVideoBlockData {
+    class CaptionedYouTubeVideoBlockData extends YouTubeVideoBlock.blockDataClass {
         @BlockField()
         caption: string;
     }
 
-    class CaptionedYouTubeVideoBlockInput extends YouTubeVideoBlockInput {
+    class CaptionedYouTubeVideoBlockInput extends YouTubeVideoBlock.blockInputClass {
         @BlockField()
         caption: string;
 

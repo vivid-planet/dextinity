@@ -59,7 +59,7 @@ export { AnnotationBlockMeta, BlockField } from "./blocks/decorators/field";
 export { RootBlock } from "./blocks/decorators/root-block";
 export { RootBlockEntity } from "./blocks/decorators/root-block-entity";
 export { EmailLinkBlock } from "./blocks/email-link.block";
-export { ExternalLinkBlock, ExternalLinkBlockData, ExternalLinkBlockInput } from "./blocks/externalLink/external-link.block";
+export { ExternalLinkBlock } from "./blocks/externalLink/external-link.block";
 export { ColumnsBlockFactory } from "./blocks/factories/columns-block.factory";
 export {
     BaseBlocksBlockItemData,
@@ -111,7 +111,7 @@ export {
 export { transformToBlockSaveIndex } from "./blocks/transformToBlockSaveIndex/transformToBlockSaveIndex";
 export { IsLinkTarget } from "./blocks/validator/is-link-target.validator";
 export { VimeoVideoBlock } from "./blocks/vimeo-video.block";
-export { YouTubeVideoBlock, YouTubeVideoBlockData, YouTubeVideoBlockInput } from "./blocks/YouTubeVideoBlock/you-tube-video.block";
+export { YouTubeVideoBlock } from "./blocks/YouTubeVideoBlock/you-tube-video.block";
 export { BUILDS_CONFIG, BUILDS_MODULE_OPTIONS } from "./builds/builds.constants";
 export { BuildsModule } from "./builds/builds.module";
 export { BuildsResolver } from "./builds/builds.resolver";
@@ -177,7 +177,7 @@ export { DamFileDownloadLinkBlock } from "./dam/blocks/dam-file-download-link.bl
 export { DamImageBlock } from "./dam/blocks/dam-image.block";
 export { PixelImageBlock } from "./dam/blocks/pixel-image.block";
 export { SvgImageBlock } from "./dam/blocks/svg-image.block";
-export { DamVideoBlock, DamVideoBlockData, DamVideoBlockInput } from "./dam/blocks/video/dam-video.block";
+export { DamVideoBlock } from "./dam/blocks/video/dam-video.block";
 export { DextinityImageResolutionException } from "./dam/common/errors/image-resolution.exception";
 export { damDefaultAcceptedMimetypes } from "./dam/common/mimeTypes/dam-default-accepted-mimetypes";
 export { type DamFileCategory, getDamFileCategory } from "./dam/common/mimeTypes/dam-file-category";

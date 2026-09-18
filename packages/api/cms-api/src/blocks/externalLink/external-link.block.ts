@@ -6,7 +6,7 @@ import { typeSafeBlockMigrationPipe } from "../migrations/typeSafeBlockMigration
 import { IsLinkTarget } from "../validator/is-link-target.validator";
 import { AddNoFollowMigration } from "./migrations/1-add-no-follow.migration";
 
-export class ExternalLinkBlockData extends BlockData {
+class ExternalLinkBlockData extends BlockData {
     @BlockField({ nullable: true })
     targetUrl?: string;
 
@@ -17,7 +17,7 @@ export class ExternalLinkBlockData extends BlockData {
     noFollow: boolean;
 }
 
-export class ExternalLinkBlockInput extends BlockInput {
+class ExternalLinkBlockInput extends BlockInput {
     @IsOptional()
     @IsLinkTarget()
     @BlockField({ nullable: true })

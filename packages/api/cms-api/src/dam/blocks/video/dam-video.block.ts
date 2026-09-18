@@ -9,7 +9,7 @@ import { FILE_ENTITY } from "../../files/entities/file.entity";
 import { DamVideoBlockTransformerService } from "./dam-video-block-transformer.service";
 import { AddPreviewImageMigration } from "./migrations/1-add-preview-image.migration";
 
-class DamVideoBlockData extends BaseVideoBlockData {
+export class DamVideoBlockData extends BaseVideoBlockData {
     damFileId?: string;
 
     async transformToPlain() {
@@ -32,7 +32,7 @@ class DamVideoBlockData extends BaseVideoBlockData {
     }
 }
 
-class DamVideoBlockInput extends BaseVideoBlockInput {
+export class DamVideoBlockInput extends BaseVideoBlockInput {
     @BlockField({ nullable: true })
     @IsUUID()
     @IsOptional()
@@ -150,5 +150,3 @@ export const DamVideoBlock = createBlock(DamVideoBlockData, DamVideoBlockInput, 
         legacyVersions: 1,
     },
 });
-
-export type { DamVideoBlockData };

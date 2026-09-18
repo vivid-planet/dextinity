@@ -5,6 +5,7 @@ import type { WarningSeverity as WarningSeverityEnum } from "src/warnings/entiti
 import { AnnotationBlockMeta, getBlockFieldData, getFieldKeys } from "./decorators/field";
 import { strictBlockDataFactoryDecorator } from "./helpers/strictBlockDataFactoryDecorator";
 import { strictBlockInputFactoryDecorator } from "./helpers/strictBlockInputFactoryDecorator";
+import { getBlockDataMigrateVendor, setBlockDataMigrateVendor } from "./migrations/blockDataMigrateVendor";
 import { createAppliedMigrationsBlockDataFactoryDecorator } from "./migrations/createAppliedMigrationsBlockDataFactoryDecorator";
 import { BlockDataMigrationVersion } from "./migrations/decorators/BlockDataMigrationVersion";
 import type { MigrateOptions, MigrateVendorOptions } from "./migrations/types";
@@ -290,9 +291,15 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
             ? nameOrOptions
             : { blockMeta: undefined, blockInputMeta: undefined, name: nameOrOptions, migrate: undefined, migrateVendor: undefined };
 
-    if (options.migrate || options.migrateVendor) {
+    if (options.migrateVendor) {
+        setBlockDataMigrateVendor(BlockData, options.migrateVendor);
+    }
+    // A block extending another block's data inherits its vendor migrations
+    const migrateVendor = getBlockDataMigrateVendor(BlockData);
+
+    if (options.migrate || migrateVendor) {
         // Overwrite the transformToSave of BlockDate to append the version numbers
-        BlockDataMigrationVersion(options.migrate?.version, options.migrateVendor?.version)(BlockData);
+        BlockDataMigrationVersion(options.migrate?.version, migrateVendor?.version)(BlockData);
     }
 
     const blockDataFactory: BlockDataFactory<BlockType> = (o) => {
@@ -303,10 +310,10 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
 
     // Decorate BlockDataFactory
     let decorateBlockDataFactory = blockDataFactory;
-    if (options.migrate || options.migrateVendor) {
+    if (options.migrate || migrateVendor) {
         const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator({
             migrate: options.migrate,
-            migrateVendor: options.migrateVendor,
+            migrateVendor,
             blockName: options.name,
         });
         decorateBlockDataFactory = blockDataFactoryDecorator1(decorateBlockDataFactory);

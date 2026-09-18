@@ -252,6 +252,43 @@ Only type and touch the fields your migration changes, and spread the rest throu
 
 :::
 
+### Extending a block that has vendor migrations
+
+An application can extend a block it doesn't own by extending its data and input classes, and add migrations of its own:
+
+```ts title="captioned-you-tube-video.block.ts"
+class CaptionedYouTubeVideoBlockData extends YouTubeVideoBlockData {
+    @BlockField()
+    caption: string;
+}
+
+class CaptionedYouTubeVideoBlockInput extends YouTubeVideoBlockInput {
+    @BlockField()
+    caption: string;
+
+    transformToBlockData(): CaptionedYouTubeVideoBlockData {
+        return blockInputToData(CaptionedYouTubeVideoBlockData, this);
+    }
+}
+
+export const CaptionedYouTubeVideoBlock = createBlock(
+    CaptionedYouTubeVideoBlockData,
+    CaptionedYouTubeVideoBlockInput,
+    {
+        name: "CaptionedYouTubeVideo",
+        // highlight-start
+        migrate: {
+            version: 1,
+            migrations: typeSafeBlockMigrationPipe([AddCaptionMigration]),
+        },
+        // highlight-end
+    },
+);
+```
+
+The vendor migrations belong to the data, so they are inherited along with it: the extending block runs them before its own, without declaring them.
+Its own migrations start at 1, whatever the extended block's vendor chain is counting at.
+
 ### Moving existing migrations into the vendor chain
 
 Migrations that already ran counted in `$$version`, so block instances saved back then carry both chains in that one counter.

@@ -203,6 +203,82 @@ describe("vendor block migrations", () => {
     });
 });
 
+describe("block extending a block with vendor migrations", () => {
+    // Appends its name to `text`, so the saved value shows which migrations ran
+    function buildAppendTextMigration(name: string, migrationToVersion: number) {
+        return class AppendTextMigration extends BlockMigration<(from: { text: string }) => { text: string }> implements BlockMigrationInterface {
+            public readonly toVersion = migrationToVersion;
+
+            protected migrate({ text }: { text: string }): { text: string } {
+                return { text: `${text}+${name}` };
+            }
+        };
+    }
+
+    // The library provides a block and the migrations for the data it defines
+    class LibraryBlockData extends BlockData {
+        @BlockField()
+        text: string;
+    }
+
+    class LibraryBlockInput extends BlockInput {
+        @BlockField()
+        text: string;
+
+        transformToBlockData(): LibraryBlockData {
+            return blockInputToData(LibraryBlockData, this);
+        }
+    }
+
+    const LibraryBlock = createBlock(LibraryBlockData, LibraryBlockInput, {
+        name: "Library",
+        migrateVendor: { version: 1, migrations: typeSafeBlockMigrationPipe([buildAppendTextMigration("vendor1", 1)]) },
+    });
+
+    // The application extends that block and brings migrations of its own
+    class ExtendedBlockData extends LibraryBlockData {
+        @BlockField({ nullable: true })
+        subtitle?: string;
+    }
+
+    class ExtendedBlockInput extends LibraryBlockInput {
+        @BlockField({ nullable: true })
+        subtitle?: string;
+
+        transformToBlockData(): ExtendedBlockData {
+            return blockInputToData(ExtendedBlockData, this);
+        }
+    }
+
+    const ExtendedBlock = createBlock(ExtendedBlockData, ExtendedBlockInput, {
+        name: "Extended",
+        migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([buildAppendTextMigration("own1", 1)]) },
+    });
+
+    it("runs the inherited vendor migrations before its own", () => {
+        expect(transformToBlockSave(ExtendedBlock.blockDataFactory({ text: "hello" }))).toEqual({
+            text: "hello+vendor1+own1",
+            $$version: 1,
+            $$vendorVersion: 1,
+        });
+    });
+
+    it("doesn't re-run a chain the block instance is up to date with", () => {
+        expect(transformToBlockSave(ExtendedBlock.blockDataFactory({ text: "hello+vendor1", $$vendorVersion: 1 }))).toEqual({
+            text: "hello+vendor1+own1",
+            $$version: 1,
+            $$vendorVersion: 1,
+        });
+    });
+
+    it("leaves the block it extends alone", () => {
+        expect(transformToBlockSave(LibraryBlock.blockDataFactory({ text: "hello" }))).toEqual({
+            text: "hello+vendor1",
+            $$vendorVersion: 1,
+        });
+    });
+});
+
 describe("block with vendor migrations", () => {
     // Appends its name to `text`, so the saved value shows which migrations ran
     function buildAppendTextMigration(name: string, migrationToVersion: number) {

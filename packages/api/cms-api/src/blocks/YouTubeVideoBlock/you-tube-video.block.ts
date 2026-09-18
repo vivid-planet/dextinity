@@ -8,12 +8,12 @@ import { IsValidYouTubeIdentifier } from "../validator/is-valid-you-tube-identif
 import { RemoveAspectRatioMigration } from "./migrations/1-remove-aspect-ratio.migration";
 import { AddPreviewImageMigration } from "./migrations/2-add-preview-image.migration";
 
-class YouTubeVideoBlockData extends BaseVideoBlockData {
+export class YouTubeVideoBlockData extends BaseVideoBlockData {
     @BlockField({ nullable: true })
     youtubeIdentifier?: string;
 }
 
-class YouTubeVideoBlockInput extends BaseVideoBlockInput {
+export class YouTubeVideoBlockInput extends BaseVideoBlockInput {
     @IsOptional()
     @IsString()
     @BlockField({ nullable: true })

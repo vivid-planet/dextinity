@@ -26,14 +26,7 @@ createBlock(VideoBlockData, VideoBlockInput, {
 
 The migrations of the blocks Dextinity ships — `ExternalLinkBlock`, `YouTubeVideoBlock`, `DamVideoBlock` and the Draft.js migration of `createTipTapRichTextBlock` — moved into their vendor chain. Existing content doesn't need to be touched: the version it was saved with is split into the two counters when it is loaded.
 
-A block extending one of those blocks inherits its vendor migrations along with its data, so it runs them before its own migrations without declaring them, and its own migrations start at 1. A block exposes the classes it is built from as `blockDataClass` and `blockInputClass`, so it can be extended:
-
-```ts
-class CaptionedYouTubeVideoBlockData extends YouTubeVideoBlock.blockDataClass {
-    @BlockField()
-    caption: string;
-}
-```
+A block that extends the data of a block with vendor migrations inherits them, so it runs them before its own migrations without declaring them, and its own migrations start at 1.
 
 Deploy this before content is saved with it: once a block instance has been saved with `$$vendorVersion`, an older Dextinity version reads its vendor chain as unmigrated and migrates it a second time.
 

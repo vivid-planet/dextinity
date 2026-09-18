@@ -260,9 +260,6 @@ export type Block<BlockType extends BlockDataInterface = BlockDataInterface, Blo
     blockInputFactory: BlockInputFactory<BlockInputType>;
     blockMeta: BlockMetaInterface;
     blockInputMeta: BlockMetaInterface;
-    // The classes the block is built from, so a block can extend another block's data and input
-    blockDataClass: ClassConstructor<BlockType>;
-    blockInputClass: ClassConstructor<BlockInputType>;
 };
 
 const blocks: Block[] = [];
@@ -332,8 +329,6 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
         blockInputFactory: decorateBlockInputFactory,
         blockMeta: options.blockMeta ? options.blockMeta : new AnnotationBlockMeta(BlockData),
         blockInputMeta: options.blockInputMeta ? options.blockInputMeta : new AnnotationBlockMeta(BlockInput),
-        blockDataClass: BlockData,
-        blockInputClass: BlockInput,
     };
 
     const finalBlock = overwrite(block);

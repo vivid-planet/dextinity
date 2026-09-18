@@ -38,10 +38,10 @@ class ExternalLinkBlockInput extends BlockInput {
 
 export const ExternalLinkBlock = createBlock(ExternalLinkBlockData, ExternalLinkBlockInput, {
     name: "ExternalLink",
-    migrate: {
-        vendorVersion: 1,
-        vendorMigrations: typeSafeBlockMigrationPipe([AddNoFollowMigration]),
+    migrateVendor: {
+        version: 1,
+        migrations: typeSafeBlockMigrationPipe([AddNoFollowMigration]),
         // The migration counted in the block's version before it moved into the vendor chain
-        legacyVendorVersions: 1,
+        legacyVersions: 1,
     },
 });

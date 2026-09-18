@@ -29,13 +29,14 @@ describe("vendor block migrations", () => {
         const migrated = applyBlockMigrations(
             {},
             {
-                version: 1,
-                migrations: typeSafeBlockMigrationPipe([buildAppendMigration("own", "own1", 1)]),
-                vendorVersion: 2,
-                vendorMigrations: typeSafeBlockMigrationPipe([
-                    buildAppendMigration("vendor", "vendor1", 1),
-                    buildAppendMigration("vendor", "vendor2", 2),
-                ]),
+                migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([buildAppendMigration("own", "own1", 1)]) },
+                migrateVendor: {
+                    version: 2,
+                    migrations: typeSafeBlockMigrationPipe([
+                        buildAppendMigration("vendor", "vendor1", 1),
+                        buildAppendMigration("vendor", "vendor2", 2),
+                    ]),
+                },
             },
         );
 
@@ -71,10 +72,8 @@ describe("vendor block migrations", () => {
         applyBlockMigrations(
             {},
             {
-                version: 1,
-                migrations: typeSafeBlockMigrationPipe([RecordingOwnMigration]),
-                vendorVersion: 1,
-                vendorMigrations: typeSafeBlockMigrationPipe([RecordingVendorMigration]),
+                migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([RecordingOwnMigration]) },
+                migrateVendor: { version: 1, migrations: typeSafeBlockMigrationPipe([RecordingVendorMigration]) },
             },
         );
 
@@ -85,13 +84,17 @@ describe("vendor block migrations", () => {
         const migrated = applyBlockMigrations(
             { vendor: ["vendor1"], own: ["own1"], $$version: 1, $$vendorVersion: 1 },
             {
-                version: 2,
-                migrations: typeSafeBlockMigrationPipe([buildAppendMigration("own", "own1", 1), buildAppendMigration("own", "own2", 2)]),
-                vendorVersion: 2,
-                vendorMigrations: typeSafeBlockMigrationPipe([
-                    buildAppendMigration("vendor", "vendor1", 1),
-                    buildAppendMigration("vendor", "vendor2", 2),
-                ]),
+                migrate: {
+                    version: 2,
+                    migrations: typeSafeBlockMigrationPipe([buildAppendMigration("own", "own1", 1), buildAppendMigration("own", "own2", 2)]),
+                },
+                migrateVendor: {
+                    version: 2,
+                    migrations: typeSafeBlockMigrationPipe([
+                        buildAppendMigration("vendor", "vendor1", 1),
+                        buildAppendMigration("vendor", "vendor2", 2),
+                    ]),
+                },
             },
         );
 
@@ -107,10 +110,8 @@ describe("vendor block migrations", () => {
         const rawData = { vendor: ["vendor1"], own: ["own1"], $$version: 1, $$vendorVersion: 1 };
 
         const migrated = applyBlockMigrations(rawData, {
-            version: 1,
-            migrations: typeSafeBlockMigrationPipe([buildAppendMigration("own", "own1", 1)]),
-            vendorVersion: 1,
-            vendorMigrations: typeSafeBlockMigrationPipe([buildAppendMigration("vendor", "vendor1", 1)]),
+            migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([buildAppendMigration("own", "own1", 1)]) },
+            migrateVendor: { version: 1, migrations: typeSafeBlockMigrationPipe([buildAppendMigration("vendor", "vendor1", 1)]) },
         });
 
         expect(migrated).toEqual(rawData);
@@ -129,10 +130,8 @@ describe("vendor block migrations", () => {
         const migrated = applyBlockMigrations(
             { vendor: ["vendor1"], $$vendorVersion: 1 },
             {
-                version: 1,
-                migrations: typeSafeBlockMigrationPipe([ReplaceDataMigration]),
-                vendorVersion: 1,
-                vendorMigrations: typeSafeBlockMigrationPipe([buildAppendMigration("vendor", "vendor1", 1)]),
+                migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([ReplaceDataMigration]) },
+                migrateVendor: { version: 1, migrations: typeSafeBlockMigrationPipe([buildAppendMigration("vendor", "vendor1", 1)]) },
             },
         );
 
@@ -141,29 +140,26 @@ describe("vendor block migrations", () => {
 
     describe("migrations moved into the vendor chain", () => {
         // Both migrations were versions 1 and 2 of the block before they moved
-        const migrate = {
-            vendorVersion: 2,
-            vendorMigrations: typeSafeBlockMigrationPipe([
-                buildAppendMigration("vendor", "vendor1", 1),
-                buildAppendMigration("vendor", "vendor2", 2),
-            ]),
-            legacyVendorVersions: 2,
+        const migrateVendor = {
+            version: 2,
+            migrations: typeSafeBlockMigrationPipe([buildAppendMigration("vendor", "vendor1", 1), buildAppendMigration("vendor", "vendor2", 2)]),
+            legacyVersions: 2,
         };
 
         it("doesn't re-run a migration the block instance ran under the legacy counter", () => {
-            const migrated = applyBlockMigrations({ vendor: ["vendor1", "vendor2"], $$version: 2 }, migrate);
+            const migrated = applyBlockMigrations({ vendor: ["vendor1", "vendor2"], $$version: 2 }, { migrateVendor });
 
             expect(migrated).toEqual({ vendor: ["vendor1", "vendor2"], $$vendorVersion: 2 });
         });
 
         it("continues where the legacy counter left off", () => {
-            const migrated = applyBlockMigrations({ vendor: ["vendor1"], $$version: 1 }, migrate);
+            const migrated = applyBlockMigrations({ vendor: ["vendor1"], $$version: 1 }, { migrateVendor });
 
             expect(migrated).toEqual({ vendor: ["vendor1", "vendor2"], $$vendorVersion: 2 });
         });
 
         it("applies all migrations to a block instance that predates them", () => {
-            const migrated = applyBlockMigrations({}, migrate);
+            const migrated = applyBlockMigrations({}, { migrateVendor });
 
             expect(migrated).toEqual({ vendor: ["vendor1", "vendor2"], $$vendorVersion: 2 });
         });
@@ -172,11 +168,15 @@ describe("vendor block migrations", () => {
             const migrated = applyBlockMigrations(
                 { vendor: ["vendor1"], own: ["own1"], $$version: 2 },
                 {
-                    version: 2,
-                    migrations: typeSafeBlockMigrationPipe([buildAppendMigration("own", "own1", 1), buildAppendMigration("own", "own2", 2)]),
-                    vendorVersion: 1,
-                    vendorMigrations: typeSafeBlockMigrationPipe([buildAppendMigration("vendor", "vendor1", 1)]),
-                    legacyVendorVersions: 1,
+                    migrate: {
+                        version: 2,
+                        migrations: typeSafeBlockMigrationPipe([buildAppendMigration("own", "own1", 1), buildAppendMigration("own", "own2", 2)]),
+                    },
+                    migrateVendor: {
+                        version: 1,
+                        migrations: typeSafeBlockMigrationPipe([buildAppendMigration("vendor", "vendor1", 1)]),
+                        legacyVersions: 1,
+                    },
                 },
             );
 
@@ -186,13 +186,19 @@ describe("vendor block migrations", () => {
         it("doesn't touch a block instance that already counts both chains", () => {
             const rawData = { vendor: ["vendor1", "vendor2"], $$vendorVersion: 2 };
 
-            expect(applyBlockMigrations(rawData, migrate)).toEqual(rawData);
+            expect(applyBlockMigrations(rawData, { migrateVendor })).toEqual(rawData);
         });
     });
 
     it("requires the vendor migrations to start counting at 1", () => {
         expect(() =>
-            applyBlockMigrations({}, { vendorVersion: 2, vendorMigrations: [buildAppendMigration("vendor", "vendor2", 2)] }, "VendorOutOfSequence"),
+            applyBlockMigrations(
+                {},
+                {
+                    migrateVendor: { version: 2, migrations: [buildAppendMigration("vendor", "vendor2", 2)] },
+                    blockName: "VendorOutOfSequence",
+                },
+            ),
         ).toThrowError(/the vendor migrations of Block VendorOutOfSequence/);
     });
 });
@@ -228,8 +234,10 @@ describe("block with vendor migrations", () => {
         migrate: {
             version: 2,
             migrations: typeSafeBlockMigrationPipe([buildAppendTextMigration("own1", 1), buildAppendTextMigration("own2", 2)]),
-            vendorVersion: 1,
-            vendorMigrations: typeSafeBlockMigrationPipe([buildAppendTextMigration("vendor1", 1)]),
+        },
+        migrateVendor: {
+            version: 1,
+            migrations: typeSafeBlockMigrationPipe([buildAppendTextMigration("vendor1", 1)]),
         },
     });
 

@@ -7,7 +7,7 @@ import { strictBlockDataFactoryDecorator } from "./helpers/strictBlockDataFactor
 import { strictBlockInputFactoryDecorator } from "./helpers/strictBlockInputFactoryDecorator";
 import { createAppliedMigrationsBlockDataFactoryDecorator } from "./migrations/createAppliedMigrationsBlockDataFactoryDecorator";
 import { BlockDataMigrationVersion } from "./migrations/decorators/BlockDataMigrationVersion";
-import type { MigrateOptions } from "./migrations/types";
+import type { MigrateOptions, MigrateVendorOptions } from "./migrations/types";
 import type { SearchText } from "./search/get-search-text";
 
 export interface BlockTransformerServiceInterface<
@@ -263,12 +263,13 @@ export type Block<BlockType extends BlockDataInterface = BlockDataInterface, Blo
 
 const blocks: Block[] = [];
 
-export type { MigrateOptions };
+export type { MigrateOptions, MigrateVendorOptions };
 interface CreateBlockOptions {
     name: string;
     blockMeta?: BlockMetaInterface;
     blockInputMeta?: BlockMetaInterface;
     migrate?: MigrateOptions;
+    migrateVendor?: MigrateVendorOptions;
 }
 
 export function createBlock<BlockType extends BlockDataInterface, BlockInputType extends BlockInputInterface>(
@@ -287,11 +288,11 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
     const options: CreateBlockOptions =
         typeof nameOrOptions !== "string"
             ? nameOrOptions
-            : { blockMeta: undefined, blockInputMeta: undefined, name: nameOrOptions, migrate: undefined };
+            : { blockMeta: undefined, blockInputMeta: undefined, name: nameOrOptions, migrate: undefined, migrateVendor: undefined };
 
-    if (options.migrate) {
+    if (options.migrate || options.migrateVendor) {
         // Overwrite the transformToSave of BlockDate to append the version numbers
-        BlockDataMigrationVersion(options.migrate.version, options.migrate.vendorVersion)(BlockData);
+        BlockDataMigrationVersion(options.migrate?.version, options.migrateVendor?.version)(BlockData);
     }
 
     const blockDataFactory: BlockDataFactory<BlockType> = (o) => {
@@ -302,8 +303,12 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
 
     // Decorate BlockDataFactory
     let decorateBlockDataFactory = blockDataFactory;
-    if (options.migrate) {
-        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator(options.migrate, options.name);
+    if (options.migrate || options.migrateVendor) {
+        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator({
+            migrate: options.migrate,
+            migrateVendor: options.migrateVendor,
+            blockName: options.name,
+        });
         decorateBlockDataFactory = blockDataFactoryDecorator1(decorateBlockDataFactory);
     }
     decorateBlockDataFactory = strictBlockDataFactoryDecorator(decorateBlockDataFactory);

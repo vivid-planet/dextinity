@@ -1,6 +1,6 @@
 import type { ClassConstructor } from "class-transformer";
 
-import type { BlockMigrationInterface, BlockMigrationVersionField, MigrateOptions, VersionDataInterface } from "./types";
+import type { BlockMigrationInterface, BlockMigrationVersionField, MigrateOptions, MigrateVendorOptions, VersionDataInterface } from "./types";
 
 interface ApplyMigrationsOptions {
     // useful as debug output
@@ -40,20 +40,27 @@ export function applyMigrations<T = any>(
     return migrations.reduce((acc, migration) => (migration.supports(acc, versionField) ? migration.apply(acc, versionField) : acc), rawData);
 }
 
+export interface BlockMigrateOptions {
+    migrate?: MigrateOptions;
+    migrateVendor?: MigrateVendorOptions;
+    // useful as debug output
+    blockName?: string;
+}
+
 // Applies the migrations shipped with the block before the block's own migrations
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function applyBlockMigrations<T = any>(rawData: T, migrate: MigrateOptions, blockName?: string): T {
-    const data = splitLegacyVersion(rawData, migrate.legacyVendorVersions);
-    const vendorMigrated = applyMigrations(data, migrate.vendorMigrations, { blockName, versionField: "$$vendorVersion" });
+export function applyBlockMigrations<T = any>(rawData: T, { migrate, migrateVendor, blockName }: BlockMigrateOptions): T {
+    const data = splitLegacyVersion(rawData, migrateVendor?.legacyVersions);
+    const vendorMigrated = applyMigrations(data, migrateVendor?.migrations, { blockName, versionField: "$$vendorVersion" });
 
-    return applyMigrations(vendorMigrated, migrate.migrations, { blockName });
+    return applyMigrations(vendorMigrated, migrate?.migrations, { blockName });
 }
 
 // Migrations that moved into the vendor chain counted in `$$version` before the move, so block
 // instances saved back then carry both chains in that one counter and have to be split up first
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function splitLegacyVersion<T = any>(rawData: T, legacyVendorVersions?: number): T {
-    if (legacyVendorVersions === undefined || typeof rawData !== "object" || rawData === null) {
+function splitLegacyVersion<T = any>(rawData: T, legacyVersions?: number): T {
+    if (legacyVersions === undefined || typeof rawData !== "object" || rawData === null) {
         return rawData;
     }
 
@@ -63,7 +70,7 @@ function splitLegacyVersion<T = any>(rawData: T, legacyVendorVersions?: number):
     }
 
     const { $$version: legacyVersion = 0, ...data } = versionData;
-    const vendorVersion = Math.min(legacyVersion, legacyVendorVersions);
+    const vendorVersion = Math.min(legacyVersion, legacyVersions);
     const version = legacyVersion - vendorVersion;
 
     // A counter of 0 is the same as no counter at all, and shouldn't end up in the saved block data

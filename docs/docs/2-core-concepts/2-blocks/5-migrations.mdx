@@ -208,30 +208,28 @@ A block can receive migrations from two sides: from the application that uses it
 `createTipTapRichTextBlock` with `migrateFromDraftJs` is such a library migration — it converts Draft.js content into TipTap content.
 Both sides need to add migrations without knowing about each other, which a single `version` counter can't support.
 
-Therefore, migrations that ship with the block live in a chain of their own, declared with `vendorVersion` and `vendorMigrations`.
-A block factory adds them to the `migrate` option it receives from the application:
+Therefore, the migrations that ship with a block are declared in `migrateVendor`, next to the `migrate` option the application fills:
 
 ```ts title="createVideoBlock.ts (library)"
 export function createVideoBlock(nameOrOptions: BlockFactoryNameOrOptions = "Video"): Block {
-    const { name, migrate = {} } =
-        typeof nameOrOptions === "string" ? { name: nameOrOptions } : nameOrOptions;
+    const options = typeof nameOrOptions === "string" ? { name: nameOrOptions } : nameOrOptions;
 
     return createBlock(VideoBlockData, VideoBlockInput, {
-        name,
-        migrate: {
-            ...migrate,
-            // highlight-start
-            vendorVersion: 1,
-            vendorMigrations: typeSafeBlockMigrationPipe([ChangeAspectRatioMigration]),
-            // highlight-end
+        ...options,
+        // highlight-start
+        migrateVendor: {
+            version: 1,
+            migrations: typeSafeBlockMigrationPipe([ChangeAspectRatioMigration]),
         },
+        // highlight-end
     });
 }
 ```
 
-A block that is entirely owned by the library declares only the vendor chain.
+Both options are separate on purpose: `migrate` belongs to the application, so the library must not merge its own migrations into it, and the application can't overwrite the library's.
+A block that is entirely owned by the library declares only `migrateVendor`.
 
-The vendor chain counts its versions from 1, independently of the block's `version`, and its counter is stored per block instance in `$$vendorVersion`:
+`migrateVendor` counts its versions from 1, independently of the block's `version`, and its counter is stored per block instance in `$$vendorVersion`:
 
 ```json
 { "$$version": 2, "$$vendorVersion": 1 }
@@ -242,8 +240,8 @@ Existing block instances are unaffected by a new vendor chain, because `$$vendor
 
 :::note
 
-`vendorVersion` and `vendorMigrations` are meant for libraries that provide blocks, for instance Dextinity itself or a package shared between your projects.
-For the blocks of your application, keep using `version` and `migrations` — their counter cannot collide with anything.
+`migrateVendor` is meant for libraries that provide blocks, for instance Dextinity itself or a package shared between your projects.
+For the blocks of your application, keep using `migrate` — its counter cannot collide with anything.
 
 :::
 
@@ -257,19 +255,19 @@ Only type and touch the fields your migration changes, and spread the rest throu
 ### Moving existing migrations into the vendor chain
 
 Migrations that already ran counted in `$$version`, so block instances saved back then carry both chains in that one counter.
-`legacyVendorVersions` states how many of those versions belong to the vendor chain, so the counter is split up when such a block instance is loaded and no migration runs twice:
+`legacyVersions` states how many of those versions belong to the vendor chain, so the counter is split up when such a block instance is loaded and no migration runs twice:
 
 ```ts
-migrate: {
-    vendorVersion: 2,
-    vendorMigrations: typeSafeBlockMigrationPipe([RemoveAspectRatioMigration, AddPreviewImageMigration]),
+migrateVendor: {
+    version: 2,
+    migrations: typeSafeBlockMigrationPipe([RemoveAspectRatioMigration, AddPreviewImageMigration]),
     // highlight-next-line
-    legacyVendorVersions: 2,
+    legacyVersions: 2,
 },
 ```
 
 The vendor migrations keep their `toVersion`, as they counted from 1 in `$$version` as well.
-The block's own migrations start at 1 again once the versions before them have moved out of `$$version`, and `legacyVendorVersions` stays at the number of versions that moved, no matter how many migrations either chain adds later.
+The block's own migrations start at 1 again once the versions before them have moved out of `$$version`, and `legacyVersions` stays at the number of versions that moved, no matter how many migrations either chain adds later.
 
 ## FAQ
 
@@ -287,7 +285,7 @@ You don't necessarily need a migration when
 - adding an additionally supported block to a `BlocksBlock` or an `OneOfBlock`
 - removing a supported block from a `BlocksBlock` or an `OneOfBlock`
 
-### Do I need `vendorMigrations`?
+### Do I need `migrateVendor`?
 
 Only if you provide the block to someone who adds migrations to it as well, see [Vendor migrations](#vendor-migrations).
 

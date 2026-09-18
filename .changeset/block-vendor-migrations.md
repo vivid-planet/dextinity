@@ -6,7 +6,7 @@ Add vendor migrations to blocks
 
 A block's `version` is a single counter, so only one party can advance it. That doesn't work for a block that receives migrations from the library providing it as well as from the application using it: `createTipTapRichTextBlock` with `migrateFromDraftJs` took version 1, so the application had to know that and start its own migrations at 2 — and the numbers collided as soon as the library added a migration of its own.
 
-Migrations that ship with a block are therefore declared separately, with `vendorVersion` and `vendorMigrations`. They form a chain of their own, counting from 1 independently of the block's `version`, stored per block instance in `$$vendorVersion`. Vendor migrations run before the block's own migrations.
+The migrations that ship with a block are therefore declared in `migrateVendor`, next to the `migrate` option the application fills. They form a chain of their own, counting from 1 independently of the block's `version`, stored per block instance in `$$vendorVersion`, and they run before the block's own migrations. Both options stay separate, so neither side can overwrite the other's migrations.
 
 **Example**
 
@@ -16,8 +16,10 @@ createBlock(VideoBlockData, VideoBlockInput, {
     migrate: {
         version: 1,
         migrations: typeSafeBlockMigrationPipe([ChangeTitleMigration]),
-        vendorVersion: 1,
-        vendorMigrations: typeSafeBlockMigrationPipe([ChangeAspectRatioMigration]),
+    },
+    migrateVendor: {
+        version: 1,
+        migrations: typeSafeBlockMigrationPipe([ChangeAspectRatioMigration]),
     },
 });
 ```

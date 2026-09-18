@@ -29,7 +29,10 @@ type InputFactoryProps<BlockMap extends BaseBlockMap> = {
     [Name in keyof BlockMap]: ExtractBlockInputFactoryProps<BlockMap[Name]>;
 };
 
-const MIGRATE: MigrateOptions = {}; // placeholder for future migrations
+const MIGRATE: MigrateOptions = {
+    migrations: [],
+    version: 0,
+}; // placeholder for future migrations
 
 interface CompositeBlockInputInterface<BlockMap extends BaseBlockMap> extends BlockInputInterface {
     transformToBlockData(): BlockDataInterface;
@@ -117,7 +120,7 @@ export function composeBlocks<BlockMap extends BaseBlockMap>(
     // Decorate BlockDataFactory
     let decorateBlockDataFactory = blockDataFactory;
     if (MIGRATE.migrations) {
-        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator(MIGRATE, name);
+        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator({ migrate: MIGRATE, blockName: name });
         decorateBlockDataFactory = blockDataFactoryDecorator1(decorateBlockDataFactory);
     }
     decorateBlockDataFactory = strictBlockDataFactoryDecorator(decorateBlockDataFactory);

@@ -23,7 +23,7 @@ import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFacto
 import { strictBlockInputFactoryDecorator } from "../helpers/strictBlockInputFactoryDecorator";
 import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator";
 import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
-import type { MigrateOptions } from "../migrations/types";
+import type { MigrateVendorOptions } from "../migrations/types";
 import type { SearchText, WeightedSearchText } from "../search/get-search-text";
 import { CmsBlock, CmsInlineBlock } from "./extensions/CmsBlock";
 import { CmsLink } from "./extensions/CmsLink";
@@ -707,7 +707,7 @@ export function createTipTapRichTextBlock(
         migrateFromDraftJs = false,
     } = options;
     const blockName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
-    const migrateOptions: MigrateOptions = typeof nameOrOptions !== "string" && nameOrOptions.migrate ? nameOrOptions.migrate : {};
+    const migrate = typeof nameOrOptions !== "string" ? nameOrOptions.migrate : undefined;
 
     const resolvedOptions = resolveTipTapOptions(options);
     const headingLevels = resolvedOptions.heading ? resolvedOptions.heading.levels : [];
@@ -729,13 +729,10 @@ export function createTipTapRichTextBlock(
     const draftJsTextBlockStyleMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.textBlockStyleMap : undefined;
     const draftJsInlineStyleMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.inlineStyleMap : undefined;
 
-    const migrate: MigrateOptions = migrateFromDraftJs
+    const migrateVendor: MigrateVendorOptions | undefined = migrateFromDraftJs
         ? {
-              ...migrateOptions,
-              vendorVersion: 1,
-              // The DraftJS migration was version 1 of the block before it moved into the vendor chain
-              legacyVendorVersions: 1,
-              vendorMigrations: [
+              version: 1,
+              migrations: [
                   buildDraftJsToTipTapMigration({
                       schema,
                       resolvedOptions,
@@ -747,10 +744,12 @@ export function createTipTapRichTextBlock(
                       inlineStyleMap: draftJsInlineStyleMap,
                   }),
               ],
+              // The DraftJS migration was version 1 of the block before it moved into the vendor chain
+              legacyVersions: 1,
           }
-        : migrateOptions;
+        : undefined;
 
-    @BlockDataMigrationVersion(migrate.version, migrate.vendorVersion)
+    @BlockDataMigrationVersion(migrate?.version, migrateVendor?.version)
     class TipTapRichTextBlockData extends BlockData implements TipTapRichTextBlockDataInterface {
         @BlockField({ type: "tipTapRichTextBlock", childBlocks })
         tipTapContent: JSONContent;
@@ -852,8 +851,8 @@ export function createTipTapRichTextBlock(
 
     // Decorate BlockDataFactory
     let decorateBlockDataFactory = blockDataFactory;
-    if (migrate.migrations || migrate.vendorMigrations) {
-        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator(migrate, blockName);
+    if (migrate || migrateVendor) {
+        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator({ migrate, migrateVendor, blockName });
         decorateBlockDataFactory = blockDataFactoryDecorator1(decorateBlockDataFactory);
     }
     decorateBlockDataFactory = strictBlockDataFactoryDecorator(decorateBlockDataFactory);

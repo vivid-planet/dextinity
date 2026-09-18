@@ -46,22 +46,22 @@ The TipTap Rich Text Block only replaces the Draft.js-based `RichTextBlock`. It 
 
 Most features of the Draft.js `RichTextBlock` have a direct equivalent in the TipTap Rich Text Block.
 
-| Draft.js `RichTextBlock`                        | TipTap Rich Text Block                                                                       |
-| ----------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `createRichTextBlock`                           | `createTipTapRichTextBlock`                                                                  |
-| `rte.supports` (`SupportedThings[]`)            | one option per feature ([Features](#features))                                               |
-| `bold`, `italic`, `strikethrough`, `sub`, `sup` | `bold`, `italic`, `strike`, `sub`, `sup`                                                     |
-| `header-one` … `header-six`                     | [`textBlocks`](#text-blocks) + the text block type select (Heading 1–6)                      |
-| `rte.standardBlockType`                         | [`defaultTextBlock`](#text-blocks)                                                           |
-| `ordered-list`, `unordered-list`                | `orderedList`, `unorderedList`                                                               |
-| `history`                                       | `undoRedoButtons` (Admin only)                                                               |
-| `link`, `links-remove`                          | `link` (pass the link block)                                                                 |
-| `non-breaking-space`, `soft-hyphen`             | `nonBreakingSpace`, `softHyphen`                                                             |
-| `rte.blocktypeMap` (custom block types)         | [`textBlockStyles`](#text-block-type-and-styling-selects) + the styling select               |
-| `rte.customInlineStyles`                        | [`inlineStyles`](#text-block-type-and-styling-selects) + the inline style select             |
-| `rte.listLevelMax`                              | `listLevelMax`                                                                               |
-| `rte.maxBlocks`                                 | `maxTextBlocks`                                                                              |
-| Site rendering with `redraft` + `Renderers`     | Site rendering with `renderTipTapRichText` + `nodeMapping`/`markMapping`                     |
+| Draft.js `RichTextBlock`                        | TipTap Rich Text Block                                                           |
+| ----------------------------------------------- | -------------------------------------------------------------------------------- |
+| `createRichTextBlock`                           | `createTipTapRichTextBlock`                                                      |
+| `rte.supports` (`SupportedThings[]`)            | one option per feature ([Features](#features))                                   |
+| `bold`, `italic`, `strikethrough`, `sub`, `sup` | `bold`, `italic`, `strike`, `sub`, `sup`                                         |
+| `header-one` … `header-six`                     | [`textBlocks`](#text-blocks) + the text block type select (Heading 1–6)          |
+| `rte.standardBlockType`                         | [`defaultTextBlock`](#text-blocks)                                               |
+| `ordered-list`, `unordered-list`                | `orderedList`, `unorderedList`                                                   |
+| `history`                                       | `undoRedoButtons` (Admin only)                                                   |
+| `link`, `links-remove`                          | `link` (pass the link block)                                                     |
+| `non-breaking-space`, `soft-hyphen`             | `nonBreakingSpace`, `softHyphen`                                                 |
+| `rte.blocktypeMap` (custom block types)         | [`textBlockStyles`](#text-block-type-and-styling-selects) + the styling select   |
+| `rte.customInlineStyles`                        | [`inlineStyles`](#text-block-type-and-styling-selects) + the inline style select |
+| `rte.listLevelMax`                              | `listLevelMax`                                                                   |
+| `rte.maxBlocks`                                 | `maxTextBlocks`                                                                  |
+| Site rendering with `redraft` + `Renderers`     | Site rendering with `renderTipTapRichText` + `nodeMapping`/`markMapping`         |
 
 ### Setup
 
@@ -119,8 +119,9 @@ import { LinkBlockData, TipTapRichTextBlockData } from "@src/blocks.generated";
 import { LinkBlock } from "./LinkBlock";
 
 const nodeMapping: Record<string, TipTapNodeHandler> = {
-    // Override the defaults or handle additional node types, e.g. styled paragraphs/headings.
-    paragraph: ({ children }) => <p>{children}</p>,
+    // Render each text block by its name, and handle the node types the defaults don't cover.
+    textBlock: ({ node, children }) =>
+        node.attrs?.textBlock === "heading-1" ? <h1>{children}</h1> : <p>{children}</p>,
 };
 
 const markMapping: Record<string, TipTapMarkHandler> = {
@@ -144,7 +145,7 @@ export function TipTapRichTextBlock({ data }: PropsWithData<TipTapRichTextBlockD
 }
 ```
 
-`renderTipTapRichText` ships default mappings for the standard nodes and marks (`paragraph` → `<p>`, `heading` → `<h1>`…`<h6>`, `bulletList` → `<ul>`, `orderedList` → `<ol>`, `listItem` → `<li>`, `bold` → `<strong>`, `italic` → `<em>`, `strike` → `<s>`, `superscript` → `<sup>`, `subscript` → `<sub>`, and the special-character nodes). Your `nodeMapping`/`markMapping` are merged over the defaults; supply handlers for anything the defaults don't cover (`link`, `inlineStyle`, `cmsBlock`/`cmsInlineBlock`, `placeholder`, styled text blocks).
+`renderTipTapRichText` ships default mappings for the standard nodes and marks (`textBlock` → `<p>`, `bulletList` → `<ul>`, `orderedList` → `<ol>`, `listItem` → `<li>`, `bold` → `<strong>`, `italic` → `<em>`, `strike` → `<s>`, `superscript` → `<sup>`, `subscript` → `<sub>`, and the special-character nodes). Your `nodeMapping`/`markMapping` are merged over the defaults; supply handlers for anything the defaults don't cover (`link`, `inlineStyle`, `cmsBlock`/`cmsInlineBlock`, `placeholder`). A block with headings needs its own `textBlock` handler, since which tag a text block renders as follows from the block's configuration, which the site doesn't have.
 
 :::note
 
@@ -205,7 +206,7 @@ To perform an in-place replacement, register the TipTap block wherever the old `
 The migration converts:
 
 - inline styles `BOLD`, `ITALIC`, `STRIKETHROUGH`, `SUP`, `SUB` → the corresponding TipTap marks,
-- `header-one` … `header-six` → heading nodes,
+- `header-one` … `header-six` → the text blocks with the matching heading tag,
 - ordered/unordered list items → TipTap lists,
 - `LINK` entities → TipTap `link` marks,
 - ` ` / `­` → non-breaking-space / soft-hyphen nodes.
@@ -230,7 +231,9 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
     // highlight-start
     migrateFromDraftJs: {
         // Map the Draft.js `blocktypeMap` entry to a text block and its `textBlockStyle`.
-        textBlockMap: { "paragraph-small": { textBlock: "paragraph", textBlockStyle: "paragraph200" } },
+        textBlockMap: {
+            "paragraph-small": { textBlock: "paragraph", textBlockStyle: "paragraph200" },
+        },
         // Map a Draft.js `customInlineStyles` name to a TipTap `inlineStyle`.
         inlineStyleMap: { HIGHLIGHT: "highlight" },
     },
@@ -383,24 +386,52 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
 ```tsx title="TipTapRichTextBlock.tsx (Admin)"
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
     textBlocks: [
-        { name: "paragraph", tag: "p", label: <FormattedMessage id="tipTapRichText.paragraph" defaultMessage="Paragraph" /> },
-        { name: "display", tag: "h1", label: <FormattedMessage id="tipTapRichText.display" defaultMessage="Display" /> },
-        { name: "heading-1", tag: "h1", label: <FormattedMessage id="tipTapRichText.heading1" defaultMessage="Heading 1" /> },
-        { name: "heading-2", tag: "h2", label: <FormattedMessage id="tipTapRichText.heading2" defaultMessage="Heading 2" /> },
+        {
+            name: "paragraph",
+            tag: "p",
+            label: <FormattedMessage id="tipTapRichText.paragraph" defaultMessage="Paragraph" />,
+        },
+        {
+            name: "display",
+            tag: "h1",
+            label: <FormattedMessage id="tipTapRichText.display" defaultMessage="Display" />,
+        },
+        {
+            name: "heading-1",
+            tag: "h1",
+            label: <FormattedMessage id="tipTapRichText.heading1" defaultMessage="Heading 1" />,
+        },
+        {
+            name: "heading-2",
+            tag: "h2",
+            label: <FormattedMessage id="tipTapRichText.heading2" defaultMessage="Heading 2" />,
+        },
     ],
     defaultTextBlock: "paragraph",
 });
 ```
 
-Several text blocks may share a `tag`, as `display` and `heading-1` do above: both are stored as an `h1`, and the node's `textBlock` attribute names which one it is. That covers a design where a display headline sits above a regular heading 1 without being a style of it. On the site, read `node.attrs.textBlock` to tell them apart:
+Every paragraph and heading is stored as one `textBlock` node that names its text block — the tag lives in the configuration, not in the content:
+
+```json
+{
+    "type": "textBlock",
+    "attrs": { "textBlock": "heading-2" },
+    "content": [{ "type": "text", "text": "Headline" }]
+}
+```
+
+Several text blocks may therefore share a `tag`, as `display` and `heading-1` do above: both render as an `h1`, and the name tells them apart. That covers a design where a display headline sits above a regular heading 1 without being a style of it. On the site, one handler renders every text block by its name:
 
 ```tsx title="TipTapRichTextBlock.tsx (Site)"
 const nodeMapping: Record<string, TipTapNodeHandler> = {
-    heading: ({ node, children }) => <Headline variant={node.attrs?.textBlock}>{children}</Headline>,
+    textBlock: ({ node, children }) => (
+        <Headline variant={node.attrs?.textBlock}>{children}</Headline>
+    ),
 };
 ```
 
-The API fills the `textBlock` attribute in when it reads content that doesn't carry it - resolved by the node's tag - so the site can rely on the attribute without falling back to the tag itself.
+Because the name is all the content carries, renaming or removing a text block leaves the content it belongs to without a tag to render as: the API rejects it, and it needs a [migration](./5-migrations.mdx). Changing a text block's `tag`, on the other hand, takes effect without one.
 
 `defaultTextBlock` names the text block new content starts with, so the select's order can be chosen independently of it. It defaults to the first entry.
 
@@ -431,32 +462,9 @@ Lists are disabled without a `p` text block, because a list item's content start
 
 :::caution Existing content
 
-The API rejects content the configuration doesn't allow: a tag no text block uses, or a `textBlock` attribute that names a text block not configured for the tag the node is stored as. Narrowing `textBlocks` for a block that already holds content therefore requires a [migration](./5-migrations.mdx).
+The API rejects content the configuration doesn't allow: a text block that isn't configured, whether it was removed, renamed, or never existed. Narrowing `textBlocks` for a block that already holds content therefore requires a [migration](./5-migrations.mdx).
 
-A node written before the `textBlock` attribute existed doesn't carry a name and is resolved by its tag when read, so content from before this option keeps working without a migration. That resolution picks the first text block with a matching tag, which only stays stable as long as no second text block uses the same tag: adding a `display` above an existing `heading-1` turns every stored `h1` into a `display`. `buildApplyTextBlocksMigration` writes the resolved name into the content once. Run it with the configuration that is live today, and the existing content keeps the text block it has:
-
-```ts title="tip-tap-rich-text.block.ts"
-import { buildApplyTextBlocksMigration, createTipTapRichTextBlock, type TipTapTextBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
-
-const textBlocks: TipTapTextBlock[] = [
-    { name: "paragraph", tag: "p" },
-    { name: "heading-1", tag: "h1" },
-];
-
-export const TipTapRichTextBlock = createTipTapRichTextBlock(
-    { textBlocks },
-    {
-        name: "TipTapRichText",
-        migrate: {
-            version: 2,
-            // highlight-next-line
-            migrations: typeSafeBlockMigrationPipe([buildApplyTextBlocksMigration({ toVersion: 2, textBlocks })]),
-        },
-    },
-);
-```
-
-Once it has run, a `display` text block can be added above `heading-1` without touching the content that is already there. Place it after any migration that changes a node's tag (for instance one that bumps heading levels), since it resolves the tag a node has at the point it runs.
+Content written before the text blocks became one node — paragraphs and headings with a `level` — does not fit the current schema either. How it is converted is still being decided; until then this block only reads content the current editor wrote.
 
 :::
 

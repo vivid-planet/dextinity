@@ -30,4 +30,20 @@ The API takes the same option without the labels.
 - `heading: { defaultLevel }` → `defaultTextBlock`, which names the text block new content starts with and defaults to the first one.
 - `migrateFromDraftJs`' `textBlockStyleMap` → `textBlockMap`, which now takes a `{ textBlock, textBlockStyle }` object for every DraftJS block type: `textBlock` names the text block the block becomes (instead of the tag the previous `textBlockType` named), `textBlockStyle` stays optional.
 
-A paragraph/heading node now stores the text block it belongs to in its `textBlock` attribute, next to the existing `textBlockStyle`. Content written before this change keeps working: a node without a `textBlock` falls back to the first text block with a matching tag, and the API fills the attribute in when it reads the content, so the site can rely on it. Before a second text block for that tag is added — a `display` above an existing `heading-1`, which would otherwise take over that content — `buildApplyTextBlocksMigration` writes the resolved name into the content once.
+**The stored format changes**
+
+Every paragraph and heading is now one `textBlock` node that names its text block, instead of a `paragraph`/`heading` node with a `level`:
+
+```json
+{ "type": "textBlock", "attrs": { "textBlock": "heading-2" }, "content": [{ "type": "text", "text": "Headline" }] }
+```
+
+The tag lives in the configuration, so changing a text block's `tag` takes effect without a migration, while renaming or removing one invalidates the content that names it.
+
+On the site, `renderTipTapRichText` renders a `textBlock` as a `<p>` by default; a block with headings needs its own handler, which reads the name:
+
+```tsx
+const nodeMapping: Record<string, TipTapNodeHandler> = {
+    textBlock: ({ node, children }) => <Headline variant={node.attrs?.textBlock}>{children}</Headline>,
+};
+```

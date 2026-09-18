@@ -82,11 +82,24 @@ export function findDefaultTextBlock({
 }
 
 /**
- * The text block a paragraph/heading node belongs to: the one matching the node's stored `textBlock`
- * name, or - for content written before the name was stored, or by a text block that has since been
- * removed - the first one with a matching tag.
+ * The text block a node belongs to: the one it names, or - for a name that is no longer configured -
+ * none, so the caller can fall back to the default text block.
  */
 export function findTextBlock({
+    name,
+    textBlocks,
+}: {
+    name?: string | null;
+    textBlocks: TipTapResolvedTextBlock[];
+}): TipTapResolvedTextBlock | undefined {
+    return textBlocks.find((textBlock) => textBlock.name === name);
+}
+
+/**
+ * The text block an element parsed from HTML becomes: the one it names, or - for HTML from outside
+ * the editor, e.g. pasted or returned by the content translation - the first one with its tag.
+ */
+export function parseTextBlock({
     name,
     tag,
     textBlocks,
@@ -95,22 +108,7 @@ export function findTextBlock({
     tag: TipTapTextBlockTag;
     textBlocks: TipTapResolvedTextBlock[];
 }): TipTapResolvedTextBlock | undefined {
-    const byName = name ? textBlocks.find((textBlock) => textBlock.name === name && textBlock.tag === tag) : undefined;
-    return byName ?? textBlocks.find((textBlock) => textBlock.tag === tag);
+    return findTextBlock({ name, textBlocks }) ?? textBlocks.find((textBlock) => textBlock.tag === tag);
 }
-
-/**
- * The heading levels the text blocks use, in configuration order and without duplicates.
- */
-export const getHeadingLevels = (textBlocks: TipTapResolvedTextBlock[]): HeadingLevel[] => [
-    ...new Set(textBlocks.map((textBlock) => textBlock.level).filter((level): level is HeadingLevel => level !== undefined)),
-];
 
 export const hasParagraphTextBlock = (textBlocks: TipTapResolvedTextBlock[]): boolean => textBlocks.some((textBlock) => textBlock.tag === "p");
-
-/**
- * The tag a paragraph or heading node is stored as.
- */
-export function getTextBlockTag(node: { type: { name: string }; attrs: { level?: number } }): TipTapTextBlockTag {
-    return node.type.name === "heading" ? (`h${node.attrs.level}` as TipTapTextBlockTag) : "p";
-}

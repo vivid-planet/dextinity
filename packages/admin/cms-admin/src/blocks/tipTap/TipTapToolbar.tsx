@@ -48,7 +48,7 @@ import type {
     TipTapTextBlockStyle,
     TipTapTextBlockType,
 } from "./createTipTapRichTextBlock";
-import { findTextBlock, hasParagraphTextBlock, type TipTapTextBlockTag } from "./textBlocks";
+import { findTextBlock } from "./textBlocks";
 import { TipTapBlockDialog } from "./TipTapBlockDialog";
 import { TipTapLinkDialog } from "./TipTapLinkDialog";
 
@@ -194,18 +194,13 @@ export const TipTapToolbar = ({
     const specialChars = resolvedOptions.nonBreakingSpace || resolvedOptions.softHyphen;
     const hasLink = resolvedOptions.link && !!linkBlock;
     const textBlocks = resolvedOptions.textBlocks;
-    const hasParagraph = hasParagraphTextBlock(textBlocks);
     const hasPlaceholders = placeholders.length > 0;
     const hasChildBlocks = Object.keys(childBlocks).length > 0;
 
     const editorState = useEditorState({
         editor,
         selector: ({ editor: e }: { editor: Editor }) => {
-            const attrs = e.isActive("heading") || !hasParagraph ? e.getAttributes("heading") : e.getAttributes("paragraph");
-            const activeTextBlock = (() => {
-                const tag: TipTapTextBlockTag = e.isActive("heading") ? (`h${attrs.level}` as TipTapTextBlockTag) : "p";
-                return findTextBlock({ name: attrs.textBlock, tag, textBlocks }) ?? resolvedOptions.defaultTextBlock;
-            })();
+            const activeTextBlock = findTextBlock({ name: e.getAttributes("textBlock").textBlock, textBlocks }) ?? resolvedOptions.defaultTextBlock;
             const activeTipTapTextBlockType: TipTapTextBlockType = (() => {
                 if (e.isActive("orderedList")) {
                     return "ordered-list";
@@ -213,12 +208,7 @@ export const TipTapToolbar = ({
                 if (e.isActive("bulletList")) {
                     return "unordered-list";
                 }
-                for (let level = 1; level <= 6; level++) {
-                    if (e.isActive("heading", { level })) {
-                        return `heading-${level}` as TipTapTextBlockType;
-                    }
-                }
-                return "paragraph";
+                return activeTextBlock.level !== undefined ? (`heading-${activeTextBlock.level}` as TipTapTextBlockType) : "paragraph";
             })();
             // Calculate current list nesting depth for listLevelMax enforcement.
             // The list item node only exists in the schema when lists are enabled.
@@ -240,7 +230,7 @@ export const TipTapToolbar = ({
             return {
                 activeTextBlock: activeTextBlock.name,
                 activeTipTapTextBlockType,
-                activeTextBlockStyle: (attrs.textBlockStyle as string) ?? "",
+                activeTextBlockStyle: (e.getAttributes("textBlock").textBlockStyle as string) ?? "",
                 canUndo: e.can().undo(),
                 canRedo: e.can().redo(),
                 canIndent,
@@ -348,13 +338,8 @@ export const TipTapToolbar = ({
             return;
         }
 
-        const nodeType = textBlock.level !== undefined ? "heading" : "paragraph";
-        if (textBlock.level !== undefined) {
-            editor.chain().focus().setHeading({ level: textBlock.level }).run();
-        } else {
-            editor.chain().focus().setParagraph().run();
-        }
-        editor.chain().updateAttributes(nodeType, { textBlock: textBlock.name }).run();
+        // Switching the type only renames the node's text block - the tag follows from the configuration.
+        editor.chain().focus().updateAttributes("textBlock", { textBlock: textBlock.name }).run();
 
         // Clear textBlockStyle if it's not applicable to the new text block type
         if (textBlockStyles.length > 0) {
@@ -363,16 +348,18 @@ export const TipTapToolbar = ({
                 const newType: TipTapTextBlockType = textBlock.level !== undefined ? `heading-${textBlock.level}` : "paragraph";
                 const styleConfig = textBlockStyles.find((style) => style.name === activeTextBlockStyle);
                 if (styleConfig?.appliesTo && !styleConfig.appliesTo.includes(newType)) {
-                    editor.chain().updateAttributes(nodeType, { textBlockStyle: null }).run();
+                    editor.chain().updateAttributes("textBlock", { textBlockStyle: null }).run();
                 }
             }
         }
     };
 
     const handleTextBlockStyleChange = (e: SelectChangeEvent) => {
-        const value = e.target.value || null;
-        const nodeType = editor.isActive("heading") || !hasParagraph ? "heading" : "paragraph";
-        editor.chain().focus().updateAttributes(nodeType, { textBlockStyle: value }).run();
+        editor
+            .chain()
+            .focus()
+            .updateAttributes("textBlock", { textBlockStyle: e.target.value || null })
+            .run();
     };
 
     return (

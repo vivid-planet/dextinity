@@ -1,6 +1,6 @@
 import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
 
-import { getTextBlockTag, type TipTapResolvedTextBlock } from "./textBlocks";
+import type { TipTapResolvedTextBlock } from "./textBlocks";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TipTapContent = Record<string, any>;
@@ -31,25 +31,18 @@ function containsUnknownMarks(json: any, schema: Schema): boolean {
 }
 
 /**
- * Whether the content uses a tag no text block is configured for, or names a `textBlock` that isn't
- * configured for the tag the node is stored as. A node without a `textBlock` attribute is content
- * written before the name was stored and stays valid - it is resolved by its tag.
+ * Whether the content names a text block that isn't configured. The name is all a node carries, so
+ * an unknown one would leave the API without a tag to render it as. A node that names none takes
+ * the schema's default text block.
  */
 export function containsInvalidTextBlock(content: TipTapContent, textBlocks: TipTapResolvedTextBlock[]): boolean {
     if (typeof content !== "object" || content === null) {
         return false;
     }
 
-    const tag = getTextBlockTag(content);
-    if (tag !== undefined) {
-        const name = content.attrs?.textBlock;
-        if (name != null) {
-            if (!textBlocks.some((textBlock) => textBlock.name === name && textBlock.tag === tag)) {
-                return true;
-            }
-        } else if (!textBlocks.some((textBlock) => textBlock.tag === tag)) {
-            return true;
-        }
+    const name = content.attrs?.textBlock;
+    if (content.type === "textBlock" && name != null && !textBlocks.some((textBlock) => textBlock.name === name)) {
+        return true;
     }
 
     if (!Array.isArray(content.content)) {

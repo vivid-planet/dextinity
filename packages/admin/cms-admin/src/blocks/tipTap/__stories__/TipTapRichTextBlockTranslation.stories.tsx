@@ -47,7 +47,7 @@ const TranslationBlock = createTipTapRichTextBlock({
 });
 
 const translationInitialState: TipTapRichTextBlockState = {
-    tipTapContent: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "Hello world" }] }] },
+    tipTapContent: { type: "doc", content: [{ type: "textBlock", content: [{ type: "text", text: "Hello world" }] }] },
 };
 
 function TranslationProvider({ children, showApplyTranslationDialog }: PropsWithChildren<{ showApplyTranslationDialog?: boolean }>) {

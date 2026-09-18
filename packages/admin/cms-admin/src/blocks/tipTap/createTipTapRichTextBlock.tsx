@@ -27,15 +27,13 @@ import { InlineStyleMark } from "./extensions/InlineStyleMark";
 import { NonBreakingSpace } from "./extensions/NonBreakingSpace";
 import { Placeholder } from "./extensions/Placeholder";
 import { SoftHyphen } from "./extensions/SoftHyphen";
-import { createSyncTextBlock } from "./extensions/SyncTextBlock";
-import { createTextBlockHeading } from "./extensions/TextBlockHeading";
-import { createTextBlockParagraph } from "./extensions/TextBlockParagraph";
+import { createTextBlock } from "./extensions/TextBlock";
+import { TextBlockListItem } from "./extensions/TextBlockListItem";
 import { InlineStyleContext } from "./InlineStyleContext";
 import { createListLevelMaxExtension, getListNestingDepthFromJson, trimListNesting } from "./listLevelMaxHelpers";
 import {
     allHeadingLevels,
     findDefaultTextBlock,
-    getHeadingLevels,
     hasParagraphTextBlock,
     resolveTextBlocks,
     type TipTapResolvedTextBlock,
@@ -306,17 +304,9 @@ function getPlainTextFromContent(content: JSONContent): string {
     return text;
 }
 
-// TipTap's own priority for the paragraph extension, which makes the paragraph the schema's first
-// block node and therefore ProseMirror's default block type.
-const paragraphPriority = 1000;
-
 const buildEmptyContent = ({ defaultTextBlock }: TipTapResolvedOptions): JSONContent => ({
     type: "doc",
-    content: [
-        defaultTextBlock.level !== undefined
-            ? { type: "heading", attrs: { level: defaultTextBlock.level, textBlock: defaultTextBlock.name } }
-            : { type: "paragraph", attrs: { textBlock: defaultTextBlock.name } },
-    ],
+    content: [{ type: "textBlock", attrs: { textBlock: defaultTextBlock.name } }],
 });
 
 const isCmsBlockNode = (content: JSONContent): boolean => content.type === "cmsBlock" || content.type === "cmsInlineBlock";
@@ -490,7 +480,6 @@ function buildTipTapExtensions({
     const hasBlockChildBlocks = childBlockEntries.some((childBlock) => childBlock.display === "block");
     const hasInlineChildBlocks = childBlockEntries.some((childBlock) => childBlock.display === "inline");
     const hasParagraph = hasParagraphTextBlock(resolvedOptions.textBlocks);
-    const headingLevels = getHeadingLevels(resolvedOptions.textBlocks);
 
     return [
         StarterKit.configure({
@@ -498,48 +487,25 @@ function buildTipTapExtensions({
             italic: resolvedOptions.italic ? {} : false,
             underline: resolvedOptions.underline ? {} : false,
             strike: resolvedOptions.strike ? {} : false,
-            // Paragraph and heading are added separately below to carry the text block attributes.
+            // Every paragraph and heading is one textBlock node, added below.
             heading: false,
             paragraph: false,
             orderedList: resolvedOptions.orderedList ? {} : false,
             bulletList: resolvedOptions.unorderedList ? {} : false,
             // A list item's content starts with a paragraph, so lists cannot exist without one.
-            listItem: hasParagraph ? undefined : false,
+            // TextBlockListItem replaces it, holding text blocks instead of paragraphs.
+            listItem: false,
             listKeymap: hasParagraph ? undefined : false,
             blockquote: false,
             code: false,
             codeBlock: false,
             link: false,
-            // A heading is directly editable (Enter at its end already creates a paragraph below it), so it
+            // A text block is directly editable (Enter at its end already creates the next one), so it
             // doesn't need TrailingNode's own empty paragraph the way a trailing atom node (e.g. a child block) does.
-            trailingNode: { notAfter: ["heading"] },
+            trailingNode: { notAfter: ["textBlock"] },
         }),
-        ...(hasParagraph ? [createTextBlockParagraph({ styled: hasTextBlockStyles })] : []),
-        ...(headingLevels.length > 0
-            ? [
-                  createTextBlockHeading({
-                      defaultLevel: resolvedOptions.defaultTextBlock.level ?? headingLevels[0],
-                      styled: hasTextBlockStyles,
-                  })
-                      // For a heading-only block, the heading takes the position paragraphs would otherwise
-                      // hold by priority, making it the schema's default block type, and its own shortcuts
-                      // replace the ones that would toggle back to a paragraph.
-                      .extend(
-                          hasParagraph
-                              ? {}
-                              : {
-                                    priority: paragraphPriority,
-                                    addKeyboardShortcuts() {
-                                        return Object.fromEntries(
-                                            headingLevels.map((level) => [`Mod-Alt-${level}`, () => this.editor.commands.setHeading({ level })]),
-                                        );
-                                    },
-                                },
-                      )
-                      .configure({ levels: headingLevels }),
-              ]
-            : []),
-        createSyncTextBlock(resolvedOptions),
+        createTextBlock({ ...resolvedOptions, styled: hasTextBlockStyles }),
+        ...(hasParagraph ? [TextBlockListItem] : []),
         ...(hasInlineStyles ? [InlineStyleMark] : []),
         ...(resolvedOptions.sup ? [Superscript] : []),
         ...(resolvedOptions.sub ? [Subscript] : []),

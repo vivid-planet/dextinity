@@ -1,4 +1,3 @@
-import type { JSONContent } from "@tiptap/core";
 import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 
 /**
@@ -85,64 +84,16 @@ export function findDefaultTextBlock<T extends TipTapResolvedTextBlock>({
 }
 
 /**
- * The text block a paragraph/heading node belongs to: the one matching the node's stored `textBlock`
- * name, or - for content written before the name was stored, or by a text block that has since been
- * removed - the first one with a matching tag.
+ * The text block with the tag a DraftJS block type implies, so a converted heading keeps its level.
  */
-export function findTextBlock<T extends TipTapResolvedTextBlock>({
-    name,
+export function findTextBlockForTag<T extends TipTapResolvedTextBlock>({
     tag,
     textBlocks,
 }: {
-    name?: string | null;
     tag: TipTapTextBlockTag;
     textBlocks: T[];
 }): T | undefined {
-    const byName = name ? textBlocks.find((textBlock) => textBlock.name === name && textBlock.tag === tag) : undefined;
-    return byName ?? textBlocks.find((textBlock) => textBlock.tag === tag);
+    return textBlocks.find((textBlock) => textBlock.tag === tag);
 }
-
-/**
- * The heading levels the text blocks use, in configuration order and without duplicates.
- */
-export const getHeadingLevels = (textBlocks: TipTapResolvedTextBlock[]): HeadingLevel[] => [
-    ...new Set(textBlocks.map((textBlock) => textBlock.level).filter((level): level is HeadingLevel => level !== undefined)),
-];
 
 export const hasParagraphTextBlock = (textBlocks: TipTapResolvedTextBlock[]): boolean => textBlocks.some((textBlock) => textBlock.tag === "p");
-
-/**
- * The tag a paragraph/heading node is stored as, `undefined` for any other node.
- */
-export function getTextBlockTag(node: JSONContent): TipTapTextBlockTag | undefined {
-    if (node.type === "paragraph") {
-        return "p";
-    }
-    if (node.type === "heading" && node.attrs?.level) {
-        return `h${node.attrs.level}` as TipTapTextBlockTag;
-    }
-    return undefined;
-}
-
-/**
- * Names the text block of every paragraph/heading node that doesn't name one yet, and replaces a
- * name that doesn't belong to the node's tag - which is what a migration changing the tag leaves
- * behind.
- */
-export function applyTextBlocks(content: JSONContent, textBlocks: TipTapResolvedTextBlock[]): JSONContent {
-    let result = content;
-
-    const tag = getTextBlockTag(content);
-    if (tag !== undefined) {
-        const textBlock = findTextBlock({ name: content.attrs?.textBlock, tag, textBlocks });
-        if (textBlock && content.attrs?.textBlock !== textBlock.name) {
-            result = { ...content, attrs: { ...content.attrs, textBlock: textBlock.name } };
-        }
-    }
-
-    if (Array.isArray(result.content)) {
-        result = { ...result, content: result.content.map((child) => applyTextBlocks(child, textBlocks)) };
-    }
-
-    return result;
-}

@@ -2,7 +2,7 @@ import type { JSONContent } from "@tiptap/core";
 
 import type { Block } from "../../block";
 import type { TipTapResolvedOptions } from "../createTipTapRichTextBlock";
-import { findTextBlock, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks";
+import { findTextBlockForTag, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks";
 
 interface DraftJsInlineStyleRange {
     style: string;
@@ -274,24 +274,18 @@ function resolveTargetTextBlock({
         }
     }
     const tag: TipTapTextBlockTag = headingLevel !== undefined ? (`h${headingLevel}` as TipTapTextBlockTag) : "p";
-    return findTextBlock({ tag, textBlocks }) ?? defaultTextBlock;
+    return findTextBlockForTag({ tag, textBlocks }) ?? defaultTextBlock;
 }
 
 function makeTextBlockNode(
     inlineContent: JSONContent[],
     { textBlock, textBlockStyle }: { textBlock: TipTapResolvedTextBlock; textBlockStyle?: string },
 ): JSONContent {
-    const node: JSONContent = { type: textBlock.level !== undefined ? "heading" : "paragraph" };
+    const node: JSONContent = { type: "textBlock", attrs: { textBlock: textBlock.name } };
 
-    const attrs: JSONContent["attrs"] = { textBlock: textBlock.name };
-    if (textBlock.level !== undefined) {
-        attrs.level = textBlock.level;
-    }
     if (textBlockStyle !== undefined) {
-        attrs.textBlockStyle = textBlockStyle;
+        node.attrs = { ...node.attrs, textBlockStyle };
     }
-    node.attrs = attrs;
-
     if (inlineContent.length > 0) {
         node.content = inlineContent;
     }

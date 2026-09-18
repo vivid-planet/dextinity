@@ -286,6 +286,23 @@ describe("block extending a block with vendor migrations", () => {
         });
     });
 
+    it("rejects vendor migrations of its own, as both chains would count in the same version", () => {
+        class TwoVendorChainsBlockData extends LibraryBlockData {}
+
+        class TwoVendorChainsBlockInput extends LibraryBlockInput {
+            transformToBlockData(): TwoVendorChainsBlockData {
+                return blockInputToData(TwoVendorChainsBlockData, this);
+            }
+        }
+
+        expect(() =>
+            createBlock(TwoVendorChainsBlockData, TwoVendorChainsBlockInput, {
+                name: "TwoVendorChains",
+                migrateVendor: { version: 1, migrations: typeSafeBlockMigrationPipe([buildAppendTextMigration("vendor2", 1)]) },
+            }),
+        ).toThrowError(/Block TwoVendorChains declares vendor migrations/);
+    });
+
     it("leaves the block it extends alone", () => {
         expect(transformToBlockSave(LibraryBlock.blockDataFactory({ text: "hello" }))).toEqual({
             text: "hello+vendor1",

@@ -291,11 +291,19 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
             ? nameOrOptions
             : { blockMeta: undefined, blockInputMeta: undefined, name: nameOrOptions, migrate: undefined, migrateVendor: undefined };
 
+    // A block extending another block's data inherits its vendor migrations
+    const inheritedMigrateVendor = getBlockDataMigrateVendor(BlockData);
+
+    if (options.migrateVendor && inheritedMigrateVendor && inheritedMigrateVendor !== options.migrateVendor) {
+        throw new Error(
+            `Block ${options.name} declares vendor migrations although the block it extends has them as well. Both chains would count in $$vendorVersion, so the vendor migrations of a block can only come from one library. Declare them in migrate instead.`,
+        );
+    }
+
     if (options.migrateVendor) {
         setBlockDataMigrateVendor(BlockData, options.migrateVendor);
     }
-    // A block extending another block's data inherits its vendor migrations
-    const migrateVendor = getBlockDataMigrateVendor(BlockData);
+    const migrateVendor = options.migrateVendor ?? inheritedMigrateVendor;
 
     if (options.migrate || migrateVendor) {
         // Overwrite the transformToSave of BlockDate to append the version numbers

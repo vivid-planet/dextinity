@@ -242,6 +242,7 @@ Existing block instances are unaffected by a new vendor chain, because `$$vendor
 
 `migrateVendor` is meant for libraries that provide blocks, for instance Dextinity itself or a package shared between your projects.
 For the blocks of your application, keep using `migrate` — its counter cannot collide with anything.
+The vendor migrations of a block can only come from one library: a block extending a block that has them can't declare its own, and puts its migrations in `migrate`.
 
 :::
 

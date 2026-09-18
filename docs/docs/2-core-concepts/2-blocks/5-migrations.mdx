@@ -286,23 +286,6 @@ The vendor migrations belong to the data, so they are inherited along with it: t
 Its own migrations start at 1, whatever the extended block's vendor chain is counting at.
 The data and input classes have to be exported by the library for this, which is why `VideoBlockData` above is imported from it rather than taken from `VideoBlock`.
 
-### Moving existing migrations into the vendor chain
-
-Migrations that already ran counted in `$$version`, so block instances saved back then carry both chains in that one counter.
-`legacyVersions` states how many of those versions belong to the vendor chain, so the counter is split up when such a block instance is loaded and no migration runs twice:
-
-```ts
-migrateVendor: {
-    version: 2,
-    migrations: typeSafeBlockMigrationPipe([RemoveAspectRatioMigration, AddPreviewImageMigration]),
-    // highlight-next-line
-    legacyVersions: 2,
-},
-```
-
-The vendor migrations keep their `toVersion`, as they counted from 1 in `$$version` as well.
-The block's own migrations start at 1 again once the versions before them have moved out of `$$version`, and `legacyVersions` stays at the number of versions that moved, no matter how many migrations either chain adds later.
-
 ## FAQ
 
 ### When do I need a migration?

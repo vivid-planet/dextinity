@@ -120,7 +120,7 @@ export function composeBlocks<BlockMap extends BaseBlockMap>(
     // Decorate BlockDataFactory
     let decorateBlockDataFactory = blockDataFactory;
     if (MIGRATE.migrations) {
-        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator(MIGRATE.migrations, name);
+        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator({ migrate: MIGRATE, blockName: name });
         decorateBlockDataFactory = blockDataFactoryDecorator1(decorateBlockDataFactory);
     }
     decorateBlockDataFactory = strictBlockDataFactoryDecorator(decorateBlockDataFactory);

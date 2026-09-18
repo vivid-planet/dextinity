@@ -202,6 +202,91 @@ export class ChangeEyebrowMigration
 
 </details>
 
+## Vendor migrations
+
+A block can receive migrations from two sides: from the application that uses it, and from the library that provides it.
+`createTipTapRichTextBlock` with `migrateFromDraftJs` is such a library migration — it converts Draft.js content into TipTap content.
+Both sides need to add migrations without knowing about each other, which a single `version` counter can't support.
+
+Therefore, the migrations that ship with a block are declared in `migrateVendor`, next to the `migrate` option the application fills:
+
+```ts title="createVideoBlock.ts (library)"
+export function createVideoBlock(nameOrOptions: BlockFactoryNameOrOptions = "Video"): Block {
+    const options = typeof nameOrOptions === "string" ? { name: nameOrOptions } : nameOrOptions;
+
+    return createBlock(VideoBlockData, VideoBlockInput, {
+        ...options,
+        // highlight-start
+        migrateVendor: {
+            version: 1,
+            migrations: typeSafeBlockMigrationPipe([ChangeAspectRatioMigration]),
+        },
+        // highlight-end
+    });
+}
+```
+
+Both options are separate on purpose: `migrate` belongs to the application, so the library must not merge its own migrations into it, and the application can't overwrite the library's.
+A block that is entirely owned by the library declares only `migrateVendor`.
+
+`migrateVendor` counts its versions from 1, independently of the block's `version`, and its counter is stored per block instance in `$$vendorVersion`:
+
+```json
+{ "$$version": 2, "$$vendorVersion": 1 }
+```
+
+The vendor migrations run first, then the block's own migrations.
+Existing block instances are unaffected by a new vendor chain, because `$$vendorVersion` is `0` for them.
+
+:::note
+
+`migrateVendor` is meant for libraries that provide blocks, for instance Dextinity itself or a package shared between your projects.
+For the blocks of your application, keep using `migrate` — its counter cannot collide with anything.
+The vendor migrations of a block can only come from one library: a block extending a block that has them can't declare its own, and puts its migrations in `migrate`.
+
+:::
+
+:::caution
+
+Because both chains advance on their own, a vendor migration may be added after the block's own migrations have run.
+Only type and touch the fields your migration changes, and spread the rest through, so a migration stays correct no matter what the other chain did to the data.
+
+:::
+
+### Extending a block that has vendor migrations
+
+A block that extends the data of a block with vendor migrations inherits them, and brings migrations of its own:
+
+```ts title="captioned-video.block.ts"
+class CaptionedVideoBlockData extends VideoBlockData {
+    @BlockField()
+    caption: string;
+}
+
+class CaptionedVideoBlockInput extends VideoBlockInput {
+    @BlockField()
+    caption: string;
+
+    transformToBlockData(): CaptionedVideoBlockData {
+        return blockInputToData(CaptionedVideoBlockData, this);
+    }
+}
+
+export const CaptionedVideoBlock = createBlock(CaptionedVideoBlockData, CaptionedVideoBlockInput, {
+    name: "CaptionedVideo",
+    // highlight-start
+    migrate: {
+        version: 1,
+        migrations: typeSafeBlockMigrationPipe([AddCaptionMigration]),
+    },
+    // highlight-end
+});
+```
+
+The vendor migrations belong to the data, so they are inherited along with it: the extending block runs them before its own, without declaring them.
+Its own migrations start at 1, whatever the extended block's vendor chain is counting at.
+The data and input classes have to be exported by the library for this, which is why `VideoBlockData` above is imported from it rather than taken from `VideoBlock`.
+
 ## FAQ
 
 ### When do I need a migration?
@@ -217,6 +302,10 @@ You don't necessarily need a migration when
 - removing an existing field from the block
 - adding an additionally supported block to a `BlocksBlock` or an `OneOfBlock`
 - removing a supported block from a `BlocksBlock` or an `OneOfBlock`
+
+### Do I need `migrateVendor`?
+
+Only if you provide the block to someone who adds migrations to it as well, see [Vendor migrations](#vendor-migrations).
 
 ### How do I test a migration?
 

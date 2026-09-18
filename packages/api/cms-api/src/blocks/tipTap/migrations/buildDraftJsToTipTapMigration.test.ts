@@ -1,7 +1,11 @@
+import type { JSONContent } from "@tiptap/core";
 import { describe, expect, it } from "vitest";
 
 import { ExternalLinkBlock } from "../../externalLink/external-link.block";
 import { createLinkBlock } from "../../factories/createLinkBlock";
+import { BlockMigration } from "../../migrations/BlockMigration";
+import type { BlockMigrationInterface } from "../../migrations/types";
+import { typeSafeBlockMigrationPipe } from "../../migrations/typeSafeBlockMigrationPipe";
 import { createTipTapRichTextBlock } from "../createTipTapRichTextBlock";
 import type { DraftJsContent } from "./convertDraftJsToTipTap";
 
@@ -358,6 +362,81 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             // Both the converted doc (3 blocks) and the stripped doc (3 blocks) exceed maxTextBlocks,
             // so the migration falls back to the empty doc.
             expect(data.tipTapContent).toEqual({ type: "doc", content: [{ type: "paragraph" }] });
+        });
+    });
+});
+
+describe("createTipTapRichTextBlock with migrateFromDraftJs and the block's own migrations", () => {
+    interface OwnMigrationData {
+        tipTapContent: JSONContent;
+    }
+
+    const appendedParagraph = { type: "paragraph", content: [{ type: "text", text: "appended" }] };
+
+    class AppendParagraphMigration extends BlockMigration<(from: OwnMigrationData) => OwnMigrationData> implements BlockMigrationInterface {
+        // The DraftJS migration counts in the vendor chain, so the block's own migrations start at 1
+        public readonly toVersion = 1;
+
+        protected migrate({ tipTapContent }: OwnMigrationData): OwnMigrationData {
+            return { tipTapContent: { ...tipTapContent, content: [...(tipTapContent.content ?? []), appendedParagraph] } };
+        }
+    }
+
+    const block = createTipTapRichTextBlock(
+        { migrateFromDraftJs: true },
+        {
+            name: "MigratedRichTextWithOwnMigration",
+            migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([AppendParagraphMigration]) },
+        },
+    );
+
+    function tipTapDoc(text: string, content: JSONContent[] = []): JSONContent {
+        return { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text }] }, ...content] };
+    }
+
+    it("applies the DraftJS migration before the block's own migration", () => {
+        const data = block.blockDataFactory({
+            draftContent: { blocks: [draftBlock({ type: "unstyled", text: "Hello" })], entityMap: {} },
+        });
+
+        expect(data.tipTapContent).toEqual(tipTapDoc("Hello", [appendedParagraph]));
+    });
+
+    it("applies the block's own migration to data that already ran the DraftJS migration", () => {
+        const data = block.blockDataFactory({ tipTapContent: tipTapDoc("already converted"), $$vendorVersion: 1 });
+
+        expect(data.tipTapContent).toEqual(tipTapDoc("already converted", [appendedParagraph]));
+    });
+
+    it("is a no-op once both chains are up to date", () => {
+        const tipTapContent = tipTapDoc("done", [appendedParagraph]);
+        const data = block.blockDataFactory({ tipTapContent, $$version: 1, $$vendorVersion: 1 });
+
+        expect(data.tipTapContent).toEqual(tipTapContent);
+    });
+
+    describe("data saved before the DraftJS migration moved into the vendor chain", () => {
+        it("doesn't convert content a second time and applies the block's own migration", () => {
+            // `$$version: 1` was the DraftJS migration, the block's own migrations continued from 2
+            const data = block.blockDataFactory({ tipTapContent: tipTapDoc("already converted"), $$version: 1 });
+
+            expect(data.tipTapContent).toEqual(tipTapDoc("already converted", [appendedParagraph]));
+        });
+
+        it("doesn't re-run a migration that ran under the legacy numbering", () => {
+            const tipTapContent = tipTapDoc("already converted", [appendedParagraph]);
+            const data = block.blockDataFactory({ tipTapContent, $$version: 2 });
+
+            expect(data.tipTapContent).toEqual(tipTapContent);
+        });
+
+        it("runs both chains for data that predates the DraftJS migration", () => {
+            const data = block.blockDataFactory({
+                draftContent: { blocks: [draftBlock({ type: "unstyled", text: "Hello" })], entityMap: {} },
+                $$version: 0,
+            });
+
+            expect(data.tipTapContent).toEqual(tipTapDoc("Hello", [appendedParagraph]));
         });
     });
 });

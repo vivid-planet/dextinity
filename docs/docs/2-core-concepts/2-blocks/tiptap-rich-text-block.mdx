@@ -258,29 +258,6 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
 
 `textBlockType` accepts `paragraph` and `heading-1` … `heading-6`. Both parts are optional: pass only `textBlockType` to change the tag without applying a style, or only `textBlockStyle` (equivalent to the plain string form) to keep the text block type derived from the Draft.js block type.
 
-#### Migration versioning
-
-`migrateFromDraftJs` reserves **version 1** for the injected Draft.js → TipTap migration. Your own [block migrations](./5-migrations.mdx) must therefore start at **version 2**:
-
-```ts title="tip-tap-rich-text.block.ts"
-import { createTipTapRichTextBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
-
-export const TipTapRichTextBlock = createTipTapRichTextBlock(
-    {
-        link: LinkBlock,
-        migrateFromDraftJs: true,
-    },
-    {
-        name: "TipTapRichText",
-        migrate: {
-            // highlight-next-line
-            version: 2, // 1 is reserved for the Draft.js migration
-            migrations: typeSafeBlockMigrationPipe([Heading1ToHeading2Migration]),
-        },
-    },
-);
-```
-
 ## New features
 
 Beyond replacing the old block, the TipTap Rich Text Block adds capabilities the Draft.js block did not have.

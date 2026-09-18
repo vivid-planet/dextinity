@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type HTMLAttributes, type ReactNode, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
-import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "../createTipTapRichTextBlock";
+import { createTipTapRichTextBlock, type TipTapRichTextBlockState, type TipTapTextBlock } from "../createTipTapRichTextBlock";
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
@@ -92,12 +92,12 @@ const readOnlyState: TipTapRichTextBlockState = {
         type: "doc",
         content: [
             {
-                type: "heading",
-                attrs: { level: 1 },
+                type: "textBlock",
+                attrs: { textBlock: "heading-1" },
                 content: [{ type: "text", text: "Read-only content" }],
             },
             {
-                type: "paragraph",
+                type: "textBlock",
                 attrs: { textBlockStyle: "intro" },
                 content: [
                     { type: "text", text: "This content is rendered " },
@@ -160,7 +160,7 @@ const BoldOnlyBlock = createTipTapRichTextBlock({
     strike: false,
     sub: false,
     sup: false,
-    heading: false,
+    textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }],
     orderedList: false,
     unorderedList: false,
     nonBreakingSpace: false,
@@ -363,7 +363,7 @@ const PlaceholdersWithContentBlock = createTipTapRichTextBlock({
     strike: false,
     sub: false,
     sup: false,
-    heading: false,
+    textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }],
     orderedList: false,
     unorderedList: false,
     nonBreakingSpace: false,
@@ -381,7 +381,7 @@ function PlaceholdersWithContentStory() {
             type: "doc",
             content: [
                 {
-                    type: "paragraph",
+                    type: "textBlock",
                     content: [
                         { type: "text", text: "Hello " },
                         { type: "placeholder", attrs: { name: "firstName" } },
@@ -391,7 +391,7 @@ function PlaceholdersWithContentStory() {
                     ],
                 },
                 {
-                    type: "paragraph",
+                    type: "textBlock",
                     content: [
                         { type: "text", text: "Your registered email is: " },
                         { type: "placeholder", attrs: { name: "email" } },
@@ -918,7 +918,14 @@ export const ListLevelMax: StoryObj<typeof ListLevelMaxStory> = {
     },
 };
 
-const HeadingLevelsBlock = createTipTapRichTextBlock({ heading: { levels: [2, 3, 4] } });
+const HeadingLevelsBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p" },
+        { name: "heading-2", label: "Heading 2", tag: "h2" },
+        { name: "heading-3", label: "Heading 3", tag: "h3" },
+        { name: "heading-4", label: "Heading 4", tag: "h4" },
+    ],
+});
 
 function HeadingLevelsStory() {
     const [state, setState] = useState<TipTapRichTextBlockState>(HeadingLevelsBlock.defaultValues());
@@ -971,6 +978,22 @@ export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
             );
         });
 
+        await step("A keyboard shortcut updates the stored text block along with the level", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Alt>}3{/Alt}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 3 })).toBeInTheDocument();
+                    // A name that doesn't belong to the node's tag is content the API rejects.
+                    expect(canvas.getByText(/"textBlock": "heading-3"/)).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+
         await step("Keyboard shortcut for a disallowed level (Mod-Alt-1) does not apply Heading 1", async () => {
             const editor = canvas.getByRole("textbox");
             await userEvent.click(editor);
@@ -997,7 +1020,7 @@ const longTextContent: TipTapRichTextBlockState = {
     tipTapContent: {
         type: "doc",
         content: Array.from({ length: 30 }, (_, index) => ({
-            type: "paragraph",
+            type: "textBlock",
             content: [{ type: "text", text: `Paragraph ${index + 1}: enough text to make the container scroll past the toolbar.` }],
         })),
     },
@@ -1076,9 +1099,15 @@ export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
     },
 };
 
+const headingOnlyTextBlocks: TipTapTextBlock[] = [
+    { name: "heading-2", label: "Heading 2", tag: "h2" },
+    { name: "heading-3", label: "Heading 3", tag: "h3" },
+    { name: "heading-4", label: "Heading 4", tag: "h4" },
+];
+
 const HeadingOnlyBlock = createTipTapRichTextBlock({
-    paragraph: false,
-    heading: { levels: [2, 3, 4], defaultLevel: 3 },
+    textBlocks: headingOnlyTextBlocks,
+    defaultTextBlock: "heading-3",
     nonBreakingSpace: false,
     softHyphen: false,
 });
@@ -1156,8 +1185,8 @@ export const HeadingOnly: StoryObj<typeof HeadingOnlyStory> = {
 };
 
 const HeadingOnlyWithTextBlockStylesBlock = createTipTapRichTextBlock({
-    paragraph: false,
-    heading: { levels: [2, 3, 4], defaultLevel: 3 },
+    textBlocks: headingOnlyTextBlocks,
+    defaultTextBlock: "heading-3",
     textBlockStyles: [
         {
             name: "headline550",

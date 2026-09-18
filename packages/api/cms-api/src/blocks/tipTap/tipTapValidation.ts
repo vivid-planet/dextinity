@@ -1,5 +1,6 @@
-import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
+
+import type { TipTapResolvedTextBlock } from "./textBlocks";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TipTapContent = Record<string, any>;
@@ -29,12 +30,18 @@ function containsUnknownMarks(json: any, schema: Schema): boolean {
     return false;
 }
 
-export function containsInvalidHeadingLevel(content: TipTapContent, headingLevels: HeadingLevel[]): boolean {
+/**
+ * Whether the content names a text block that isn't configured. The name is all a node carries, so
+ * an unknown one would leave the API without a tag to render it as. A node that names none takes
+ * the schema's default text block.
+ */
+export function containsInvalidTextBlock(content: TipTapContent, textBlocks: TipTapResolvedTextBlock[]): boolean {
     if (typeof content !== "object" || content === null) {
         return false;
     }
 
-    if (content.type === "heading" && !headingLevels.includes(content.attrs?.level)) {
+    const name = content.attrs?.textBlock;
+    if (content.type === "textBlock" && name != null && !textBlocks.some((textBlock) => textBlock.name === name)) {
         return true;
     }
 
@@ -42,7 +49,7 @@ export function containsInvalidHeadingLevel(content: TipTapContent, headingLevel
         return false;
     }
 
-    return content.content.some((child: TipTapContent) => containsInvalidHeadingLevel(child, headingLevels));
+    return content.content.some((child: TipTapContent) => containsInvalidTextBlock(child, textBlocks));
 }
 
 export function getListNestingDepth(content: TipTapContent, currentDepth = 0): number {
@@ -70,7 +77,7 @@ export function getListNestingDepth(content: TipTapContent, currentDepth = 0): n
 export function isValidTipTapContentSync(
     value: unknown,
     schema: Schema,
-    { maxTextBlocks, listLevelMax, headingLevels }: { maxTextBlocks?: number; listLevelMax?: number; headingLevels: HeadingLevel[] },
+    { maxTextBlocks, listLevelMax, textBlocks }: { maxTextBlocks?: number; listLevelMax?: number; textBlocks: TipTapResolvedTextBlock[] },
 ): boolean {
     if (typeof value !== "object" || value === null) {
         return false;
@@ -93,7 +100,7 @@ export function isValidTipTapContentSync(
             return false;
         }
 
-        if (containsInvalidHeadingLevel(value as TipTapContent, headingLevels)) {
+        if (containsInvalidTextBlock(value as TipTapContent, textBlocks)) {
             return false;
         }
 

@@ -3,7 +3,6 @@ import type { ClassConstructor } from "class-transformer";
 import type { BlockMigrationInterface, BlockMigrationVersionField, MigrateOptions, MigrateVendorOptions, VersionDataInterface } from "./types";
 
 interface ApplyMigrationsOptions {
-    // useful as debug output
     blockName?: string;
     versionField?: BlockMigrationVersionField;
 }
@@ -43,7 +42,6 @@ export function applyMigrations<T = any>(
 export interface BlockMigrateOptions {
     migrate?: MigrateOptions;
     migrateVendor?: MigrateVendorOptions;
-    // useful as debug output
     blockName?: string;
 }
 

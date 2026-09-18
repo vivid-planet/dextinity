@@ -3,7 +3,7 @@ import { ProductPriceBlock } from "@src/products/blocks/product-price.block";
 import { ProductTeaserBlock } from "@src/products/blocks/product-teaser.block";
 
 import { LinkBlock } from "./link.block";
-import { Heading1ToHeading2Migration } from "./tip-tap-rich-text/migrations/2-heading-1-to-heading-2.migration";
+import { Heading1ToHeading2Migration } from "./tip-tap-rich-text/migrations/1-heading-1-to-heading-2.migration";
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock(
     {
@@ -33,7 +33,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
         name: "TipTapRichText",
         migrate: {
             migrations: typeSafeBlockMigrationPipe([Heading1ToHeading2Migration]),
-            version: 2,
+            version: 1,
         },
     },
 );

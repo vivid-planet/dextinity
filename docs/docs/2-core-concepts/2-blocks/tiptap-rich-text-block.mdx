@@ -260,7 +260,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
 
 #### Migration versioning
 
-`migrateFromDraftJs` reserves **version 1** for the injected Draft.js → TipTap migration. Your own [block migrations](./5-migrations.mdx) must therefore start at **version 2**:
+The injected Draft.js → TipTap migration is a [vendor migration](./5-migrations.mdx#vendor-migrations), so it doesn't occupy a version of the block. Your own [block migrations](./5-migrations.mdx) start at **version 1** as for any other block:
 
 ```ts title="tip-tap-rich-text.block.ts"
 import { createTipTapRichTextBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
@@ -274,12 +274,15 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
         name: "TipTapRichText",
         migrate: {
             // highlight-next-line
-            version: 2, // 1 is reserved for the Draft.js migration
+            version: 1,
             migrations: typeSafeBlockMigrationPipe([Heading1ToHeading2Migration]),
         },
     },
 );
 ```
+
+The Draft.js migration used to be version 1 of the block, with own migrations starting at 2.
+Existing content keeps being migrated correctly: the version it was saved with is split into the two counters when it is loaded.
 
 ## New features
 

@@ -1,11 +1,20 @@
 import type { ClassConstructor } from "class-transformer";
 
-import type { BlockMigrationInterface } from "./types";
+import type { BlockMigrationInterface, BlockMigrationVersionField, MigrateOptions } from "./types";
+
+interface ApplyMigrationsOptions {
+    // useful as debug output
+    blockName?: string;
+    versionField?: BlockMigrationVersionField;
+}
 
 // Applies all Migration to a raw json-data from the database
-// the argument `blockName` is useful as debug output
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function applyMigrations<T = any>(rawData: T, migrationClasses?: ClassConstructor<BlockMigrationInterface>[], blockName?: string): T {
+export function applyMigrations<T = any>(
+    rawData: T,
+    migrationClasses?: ClassConstructor<BlockMigrationInterface>[],
+    { blockName, versionField = "$$version" }: ApplyMigrationsOptions = {},
+): T {
     if (!migrationClasses || migrationClasses.length < 1) {
         return rawData;
     }
@@ -17,7 +26,8 @@ export function applyMigrations<T = any>(rawData: T, migrationClasses?: ClassCon
     function testMigrationsAreInSequence(migrations: BlockMigrationInterface[]): boolean {
         migrations.forEach((c, index) => {
             if (c.toVersion !== index + 1) {
-                throw new Error(`The versionTo numbers in Block ${blockName} are either not starting with 1, not ascending or not unique.`);
+                const chain = versionField === "$$vendorVersion" ? `the vendor migrations of Block ${blockName}` : `Block ${blockName}`;
+                throw new Error(`The versionTo numbers in ${chain} are either not starting with 1, not ascending or not unique.`);
             }
         });
 
@@ -27,5 +37,13 @@ export function applyMigrations<T = any>(rawData: T, migrationClasses?: ClassCon
     testMigrationsAreInSequence(migrations);
 
     // Apply migrations
-    return migrations.reduce((acc, migration) => (migration.supports(acc) ? migration.apply(acc) : acc), rawData);
+    return migrations.reduce((acc, migration) => (migration.supports(acc, versionField) ? migration.apply(acc, versionField) : acc), rawData);
+}
+
+// Applies the migrations shipped with the block before the block's own migrations
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function applyBlockMigrations<T = any>(rawData: T, migrate: MigrateOptions, blockName?: string): T {
+    const vendorMigrated = applyMigrations(rawData, migrate.vendorMigrations, { blockName, versionField: "$$vendorVersion" });
+
+    return applyMigrations(vendorMigrated, migrate.migrations, { blockName });
 }

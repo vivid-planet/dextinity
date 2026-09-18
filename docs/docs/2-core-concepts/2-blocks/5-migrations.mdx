@@ -202,6 +202,56 @@ export class ChangeEyebrowMigration
 
 </details>
 
+## Vendor migrations
+
+A block can receive migrations from two sides: from the application that uses it, and from the library that provides it.
+`createTipTapRichTextBlock` with `migrateFromDraftJs` is such a library migration — it converts Draft.js content into TipTap content.
+Both sides need to add migrations without knowing about each other, which a single `version` counter can't support.
+
+Therefore, migrations that ship with the block live in a chain of their own, declared with `vendorVersion` and `vendorMigrations`.
+A block factory adds them to the `migrate` option it receives from the application:
+
+```ts title="createVideoBlock.ts (library)"
+export function createVideoBlock(nameOrOptions: BlockFactoryNameOrOptions = "Video"): Block {
+    const { name, migrate = { version: 0, migrations: [] } } =
+        typeof nameOrOptions === "string" ? { name: nameOrOptions } : nameOrOptions;
+
+    return createBlock(VideoBlockData, VideoBlockInput, {
+        name,
+        migrate: {
+            ...migrate,
+            // highlight-start
+            vendorVersion: 1,
+            vendorMigrations: typeSafeBlockMigrationPipe([ChangeAspectRatioMigration]),
+            // highlight-end
+        },
+    });
+}
+```
+
+The vendor chain counts its versions from 1, independently of the block's `version`, and its counter is stored per block instance in `$$vendorVersion`:
+
+```json
+{ "$$version": 2, "$$vendorVersion": 1 }
+```
+
+The vendor migrations run first, then the block's own migrations.
+Existing block instances are unaffected by a new vendor chain, because `$$vendorVersion` is `0` for them.
+
+:::note
+
+`vendorVersion` and `vendorMigrations` are meant for libraries that provide blocks, for instance Dextinity itself or a package shared between your projects.
+For the blocks of your application, keep using `version` and `migrations` — their counter cannot collide with anything.
+
+:::
+
+:::caution
+
+Because both chains advance on their own, a vendor migration may be added after the block's own migrations have run.
+Only type and touch the fields your migration changes, and spread the rest through, so a migration stays correct no matter what the other chain did to the data.
+
+:::
+
 ## FAQ
 
 ### When do I need a migration?
@@ -217,6 +267,10 @@ You don't necessarily need a migration when
 - removing an existing field from the block
 - adding an additionally supported block to a `BlocksBlock` or an `OneOfBlock`
 - removing a supported block from a `BlocksBlock` or an `OneOfBlock`
+
+### Do I need `vendorMigrations`?
+
+Only if you provide the block to someone who adds migrations to it as well, see [Vendor migrations](#vendor-migrations).
 
 ### How do I test a migration?
 

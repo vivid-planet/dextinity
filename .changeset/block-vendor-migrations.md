@@ -1,0 +1,43 @@
+---
+"@dextinity/cms-api": minor
+---
+
+Add vendor migrations to blocks
+
+A block's `version` is a single counter, so only one party can advance it. That doesn't work for a block that receives migrations from the library providing it as well as from the application using it: `createTipTapRichTextBlock` with `migrateFromDraftJs` took version 1, so the application had to know that and start its own migrations at 2 — and the numbers collided as soon as the library added a migration of its own.
+
+Migrations that ship with a block are therefore declared separately, with `vendorVersion` and `vendorMigrations`. They form a chain of their own, counting from 1 independently of the block's `version`, stored per block instance in `$$vendorVersion`. Vendor migrations run before the block's own migrations.
+
+**Example**
+
+```ts
+createBlock(VideoBlockData, VideoBlockInput, {
+    name: "Video",
+    migrate: {
+        version: 1,
+        migrations: typeSafeBlockMigrationPipe([ChangeTitleMigration]),
+        vendorVersion: 1,
+        vendorMigrations: typeSafeBlockMigrationPipe([ChangeAspectRatioMigration]),
+    },
+});
+```
+
+**Migrating existing `migrateFromDraftJs` blocks**
+
+The Draft.js → TipTap migration is now a vendor migration, so it no longer occupies version 1 of the block. Renumber the migrations of a block that uses `migrateFromDraftJs`, so they start at 1 again:
+
+```diff
+ export const TipTapRichTextBlock = createTipTapRichTextBlock(
+     { link: LinkBlock, migrateFromDraftJs: true },
+     {
+         name: "TipTapRichText",
+         migrate: {
+-            version: 2,
++            version: 1,
+             migrations: typeSafeBlockMigrationPipe([Heading1ToHeading2Migration]),
+         },
+     },
+ );
+```
+
+Lower the `toVersion` of each of those migrations by one as well. Existing content doesn't need to be touched: the version it was saved with is split into the two counters when it is loaded.

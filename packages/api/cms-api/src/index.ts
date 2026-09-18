@@ -95,7 +95,7 @@ export { strictBlockDataFactoryDecorator } from "./blocks/helpers/strictBlockDat
 export { strictBlockInputFactoryDecorator } from "./blocks/helpers/strictBlockInputFactoryDecorator";
 export { BlockMigration } from "./blocks/migrations/BlockMigration";
 export { BlockDataMigrationVersion } from "./blocks/migrations/decorators/BlockDataMigrationVersion";
-export { BlockMigrationInterface } from "./blocks/migrations/types";
+export { BlockMigrationInterface, BlockMigrationVersionField, MigrateOptions } from "./blocks/migrations/types";
 export { typeSafeBlockMigrationPipe } from "./blocks/migrations/typeSafeBlockMigrationPipe";
 export { PhoneLinkBlock } from "./blocks/phone-link.block";
 export { RootBlockType } from "./blocks/root-block-type";

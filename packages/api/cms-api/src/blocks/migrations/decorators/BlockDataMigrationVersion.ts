@@ -7,7 +7,7 @@ interface BlockDataConstructorInterface {
 
 // ClassDecorator for BlockData-Class
 // adds the current versions to the returned value in transformToSave
-export function BlockDataMigrationVersion(versionNumber: number, vendorVersionNumber = 0) {
+export function BlockDataMigrationVersion(versionNumber = 0, vendorVersionNumber = 0) {
     return function BlockDataMigrationVersionClassDecorator(constructor: BlockDataConstructorInterface): void {
         if (versionNumber > 0 || vendorVersionNumber > 0) {
             const originalTransformToSave = constructor.prototype.transformToSave;

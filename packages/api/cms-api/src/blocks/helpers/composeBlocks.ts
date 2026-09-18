@@ -29,10 +29,7 @@ type InputFactoryProps<BlockMap extends BaseBlockMap> = {
     [Name in keyof BlockMap]: ExtractBlockInputFactoryProps<BlockMap[Name]>;
 };
 
-const MIGRATE: MigrateOptions = {
-    migrations: [],
-    version: 0,
-}; // placeholder for future migrations
+const MIGRATE: MigrateOptions = {}; // placeholder for future migrations
 
 interface CompositeBlockInputInterface<BlockMap extends BaseBlockMap> extends BlockInputInterface {
     transformToBlockData(): BlockDataInterface;

@@ -35,7 +35,6 @@ import { TextBlockStyleHeading } from "./extensions/TextBlockStyleHeading";
 import { TextBlockStyleParagraph } from "./extensions/TextBlockStyleParagraph";
 import { buildDraftJsToTipTapMigration } from "./migrations/buildDraftJsToTipTapMigration";
 import type { TextBlockStyleMapping } from "./migrations/convertDraftJsToTipTap";
-import { splitLegacyDraftJsVersion } from "./migrations/splitLegacyDraftJsVersion";
 import { containsInvalidHeadingLevel, getListNestingDepth } from "./tipTapValidation";
 
 export type { JSONContent as TipTapRichTextBlockContent } from "@tiptap/core";
@@ -708,8 +707,7 @@ export function createTipTapRichTextBlock(
         migrateFromDraftJs = false,
     } = options;
     const blockName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
-    const migrateOptions: MigrateOptions =
-        typeof nameOrOptions !== "string" && nameOrOptions.migrate ? nameOrOptions.migrate : { migrations: [], version: 0 };
+    const migrateOptions: MigrateOptions = typeof nameOrOptions !== "string" && nameOrOptions.migrate ? nameOrOptions.migrate : {};
 
     const resolvedOptions = resolveTipTapOptions(options);
     const headingLevels = resolvedOptions.heading ? resolvedOptions.heading.levels : [];
@@ -735,6 +733,8 @@ export function createTipTapRichTextBlock(
         ? {
               ...migrateOptions,
               vendorVersion: 1,
+              // The DraftJS migration was version 1 of the block before it moved into the vendor chain
+              legacyVendorVersions: 1,
               vendorMigrations: [
                   buildDraftJsToTipTapMigration({
                       schema,
@@ -855,11 +855,6 @@ export function createTipTapRichTextBlock(
     if (migrate.migrations || migrate.vendorMigrations) {
         const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator(migrate, blockName);
         decorateBlockDataFactory = blockDataFactoryDecorator1(decorateBlockDataFactory);
-    }
-    if (migrateFromDraftJs) {
-        const migratedBlockDataFactory = decorateBlockDataFactory;
-        // Has to run before the migrations, as they read the counter of each chain
-        decorateBlockDataFactory = (value) => migratedBlockDataFactory(splitLegacyDraftJsVersion(value));
     }
     decorateBlockDataFactory = strictBlockDataFactoryDecorator(decorateBlockDataFactory);
 

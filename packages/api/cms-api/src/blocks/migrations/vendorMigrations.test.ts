@@ -139,13 +139,60 @@ describe("vendor block migrations", () => {
         expect(migrated).toEqual({ own: ["own1"], $$version: 1, $$vendorVersion: 1 });
     });
 
+    describe("migrations moved into the vendor chain", () => {
+        // Both migrations were versions 1 and 2 of the block before they moved
+        const migrate = {
+            vendorVersion: 2,
+            vendorMigrations: typeSafeBlockMigrationPipe([
+                buildAppendMigration("vendor", "vendor1", 1),
+                buildAppendMigration("vendor", "vendor2", 2),
+            ]),
+            legacyVendorVersions: 2,
+        };
+
+        it("doesn't re-run a migration the block instance ran under the legacy counter", () => {
+            const migrated = applyBlockMigrations({ vendor: ["vendor1", "vendor2"], $$version: 2 }, migrate);
+
+            expect(migrated).toEqual({ vendor: ["vendor1", "vendor2"], $$vendorVersion: 2 });
+        });
+
+        it("continues where the legacy counter left off", () => {
+            const migrated = applyBlockMigrations({ vendor: ["vendor1"], $$version: 1 }, migrate);
+
+            expect(migrated).toEqual({ vendor: ["vendor1", "vendor2"], $$vendorVersion: 2 });
+        });
+
+        it("applies all migrations to a block instance that predates them", () => {
+            const migrated = applyBlockMigrations({}, migrate);
+
+            expect(migrated).toEqual({ vendor: ["vendor1", "vendor2"], $$vendorVersion: 2 });
+        });
+
+        it("leaves the block's own versions in place when only some of them moved", () => {
+            const migrated = applyBlockMigrations(
+                { vendor: ["vendor1"], own: ["own1"], $$version: 2 },
+                {
+                    version: 2,
+                    migrations: typeSafeBlockMigrationPipe([buildAppendMigration("own", "own1", 1), buildAppendMigration("own", "own2", 2)]),
+                    vendorVersion: 1,
+                    vendorMigrations: typeSafeBlockMigrationPipe([buildAppendMigration("vendor", "vendor1", 1)]),
+                    legacyVendorVersions: 1,
+                },
+            );
+
+            expect(migrated).toEqual({ vendor: ["vendor1"], own: ["own1", "own2"], $$version: 2, $$vendorVersion: 1 });
+        });
+
+        it("doesn't touch a block instance that already counts both chains", () => {
+            const rawData = { vendor: ["vendor1", "vendor2"], $$vendorVersion: 2 };
+
+            expect(applyBlockMigrations(rawData, migrate)).toEqual(rawData);
+        });
+    });
+
     it("requires the vendor migrations to start counting at 1", () => {
         expect(() =>
-            applyBlockMigrations(
-                {},
-                { version: 0, migrations: [], vendorVersion: 2, vendorMigrations: [buildAppendMigration("vendor", "vendor2", 2)] },
-                "VendorOutOfSequence",
-            ),
+            applyBlockMigrations({}, { vendorVersion: 2, vendorMigrations: [buildAppendMigration("vendor", "vendor2", 2)] }, "VendorOutOfSequence"),
         ).toThrowError(/the vendor migrations of Block VendorOutOfSequence/);
     });
 });

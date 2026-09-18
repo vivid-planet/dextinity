@@ -30,10 +30,13 @@ export interface BlockMigrationInterface<Fn extends BlockMigrationTransformFn = 
 }
 
 export interface MigrateOptions {
-    migrations: ClassConstructor<BlockMigrationInterface>[];
-    version: number;
+    migrations?: ClassConstructor<BlockMigrationInterface>[];
+    version?: number;
     // Migrations shipped with the block by the library providing it. They form a chain of their own,
     // counted from 1 in `$$vendorVersion`, and run before the block's own migrations.
     vendorMigrations?: ClassConstructor<BlockMigrationInterface>[];
     vendorVersion?: number;
+    // Number of versions that counted in `$$version` before they moved into the vendor chain.
+    // Block instances saved back then know only `$$version` and are split into both counters on load.
+    legacyVendorVersions?: number;
 }

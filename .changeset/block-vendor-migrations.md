@@ -22,6 +22,10 @@ createBlock(VideoBlockData, VideoBlockInput, {
 });
 ```
 
+The migrations of the blocks Dextinity ships — `ExternalLinkBlock`, `YouTubeVideoBlock`, `DamVideoBlock` and the Draft.js migration of `createTipTapRichTextBlock` — moved into their vendor chain. Existing content doesn't need to be touched: the version it was saved with is split into the two counters when it is loaded.
+
+Deploy this before content is saved with it: once a block instance has been saved with `$$vendorVersion`, an older Dextinity version reads its vendor chain as unmigrated and migrates it a second time.
+
 **Migrating existing `migrateFromDraftJs` blocks**
 
 The Draft.js → TipTap migration is now a vendor migration, so it no longer occupies version 1 of the block. Renumber the migrations of a block that uses `migrateFromDraftJs`, so they start at 1 again:
@@ -40,4 +44,4 @@ The Draft.js → TipTap migration is now a vendor migration, so it no longer occ
  );
 ```
 
-Lower the `toVersion` of each of those migrations by one as well. Existing content doesn't need to be touched: the version it was saved with is split into the two counters when it is loaded.
+Lower the `toVersion` of each of those migrations by one as well.

@@ -264,7 +264,7 @@ export type Block<BlockType extends BlockDataInterface = BlockDataInterface, Blo
 
 const blocks: Block[] = [];
 
-export type { MigrateOptions, MigrateVendorOptions };
+export type { MigrateOptions };
 interface CreateBlockOptions {
     name: string;
     blockMeta?: BlockMetaInterface;

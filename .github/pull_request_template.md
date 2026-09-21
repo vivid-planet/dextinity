@@ -35,9 +35,10 @@ belongs in the description above either way.
 ## Changeset
 
 <!--
-Only fill this in when you deliberately don't add a changeset, so reviewers know it isn't
-an oversight: "None needed — Demo only". Delete this section when the pull request
-contains a changeset.
+Only fill this in when the pull request has no changeset and it isn't obvious why: "None
+needed — internal refactoring only", so reviewers know it isn't an oversight. Delete this
+section when the pull request contains a changeset, and when the change obviously needs
+none, for instance a repository-only change such as updating this template.
 -->
 
 ## Open TODOs/questions

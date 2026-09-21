@@ -69,6 +69,9 @@ A changeset should not be added when:
 
 In general, you should add a changeset when you want your change to result in a new package version.
 
+If you don't add a changeset, explain why in the pull request description's "Changeset" section, but only when the reason isn't obvious from the diff.
+Changes that clearly need no changeset, for instance repository-only changes such as updating the pull request template, don't need that section at all.
+
 #### Changeset writing guidelines
 
 Follow this guidelines when writing a changeset:

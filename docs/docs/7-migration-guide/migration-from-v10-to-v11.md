@@ -121,3 +121,26 @@ If your project has to keep its own consumer, handle the new kind wherever you s
       // …
   }
 ```
+
+## Agent features
+
+### Get the `dev-pm` skill from `dev-process-manager`
+
+The `dev-pm` skill is no longer shipped by `@dextinity/agent-features`. It now comes with `dev-process-manager` itself, so it stays in sync with the tool it documents.
+
+Update `dev-process-manager` to at least `4.1.0` and reinstall the agent features:
+
+```sh
+npm install --save-dev dev-process-manager@^4.1.0
+npx @dextinity/cli install-agent-features
+```
+
+`install-agent-features` discovers the skill in `node_modules/dev-process-manager/skills/` and symlinks it into `.agents/skills/` and `.claude/skills/` as before, so nothing else changes for agents.
+
+If you don't update `dev-process-manager`, remove the stale copy so agents don't load an outdated version:
+
+```sh
+rm -rf .agents/skills/dev-pm .claude/skills/dev-pm
+```
+
+The other skills, the rules under `rules/coding-guidelines/` and the `agent-features.json` format are unchanged.

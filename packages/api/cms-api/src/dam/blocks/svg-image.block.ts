@@ -120,6 +120,7 @@ class InputMeta extends AnnotationBlockMeta {
 
 export const SvgImageBlock = createBlock(SvgImageBlockData, SvgImageBlockInput, {
     name: "SvgImage",
+    description: "An SVG file from the Digital Asset Management.",
     blockMeta: new Meta(SvgImageBlockData),
     blockInputMeta: new InputMeta(SvgImageBlockInput),
 });

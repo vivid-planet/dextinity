@@ -16,6 +16,7 @@ import { ChildBlockInput } from "../decorators/child-block-input";
 import { BlockField } from "../decorators/field";
 import { SearchText } from "../search/get-search-text";
 import { BlockFactoryNameOrOptions } from "./types";
+import { withDefaultDescription } from "./withDefaultDescription";
 
 interface CreateTextLinkBlockOptions<LinkBlock extends Block> {
     link: LinkBlock;
@@ -56,5 +57,5 @@ export function createTextLinkBlock<LinkBlock extends Block>(
         }
     }
 
-    return createBlock(TextLinkBlockData, TextLinkBlockInput, name);
+    return createBlock(TextLinkBlockData, TextLinkBlockInput, withDefaultDescription(name, "A link together with the text that is shown for it."));
 }

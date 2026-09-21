@@ -1,6 +1,7 @@
 [
     {
         "name": "Anchor",
+        "description": "A named position in the page content that links can jump to.",
         "fields": [
             {
                 "name": "name",
@@ -18,6 +19,7 @@
     },
     {
         "name": "DamFileDownloadLink",
+        "description": "A link to a file from the Digital Asset Management. The file is either opened in a new tab or downloaded.",
         "fields": [
             {
                 "name": "file",
@@ -97,6 +99,7 @@
     },
     {
         "name": "DamImage",
+        "description": "An image from the Digital Asset Management, either a pixel image or an SVG.",
         "fields": [
             {
                 "name": "attachedBlocks",
@@ -183,6 +186,7 @@
     },
     {
         "name": "DamVideo",
+        "description": "A video file from the Digital Asset Management, with a preview image and playback settings.",
         "fields": [
             {
                 "name": "autoplay",
@@ -329,6 +333,7 @@
     },
     {
         "name": "EmailLink",
+        "description": "A link that opens a new email to the given address.",
         "fields": [
             {
                 "name": "email",
@@ -346,6 +351,7 @@
     },
     {
         "name": "ExternalLink",
+        "description": "A link to a URL outside of this application.",
         "fields": [
             {
                 "name": "targetUrl",
@@ -383,6 +389,7 @@
     },
     {
         "name": "InternalLink",
+        "description": "A link to another page of the page tree, optionally to an anchor on that page.",
         "fields": [
             {
                 "name": "targetPageAnchor",
@@ -439,6 +446,7 @@
     },
     {
         "name": "Link",
+        "description": "A link whose target is one of the supported link blocks, for instance a page of the page tree or an external URL.",
         "fields": [
             {
                 "name": "title",
@@ -541,6 +549,7 @@
     },
     {
         "name": "OptionalPixelImage",
+        "description": "An optional PixelImage block. Its content is only used while it is enabled.",
         "fields": [
             {
                 "name": "block",
@@ -570,6 +579,7 @@
     },
     {
         "name": "PhoneLink",
+        "description": "A link that dials the given phone number.",
         "fields": [
             {
                 "name": "phone",
@@ -587,6 +597,7 @@
     },
     {
         "name": "PixelImage",
+        "description": "An image file from the Digital Asset Management, together with the crop area the editor has chosen.",
         "fields": [
             {
                 "name": "damFile",
@@ -822,6 +833,7 @@
     },
     {
         "name": "RichText",
+        "description": "Formatted text, edited in the Draft.js based rich text editor.",
         "fields": [
             {
                 "name": "draftContent",
@@ -839,6 +851,7 @@
     },
     {
         "name": "Seo",
+        "description": "The metadata of a page for search engines and social networks: title, description, preview image, sitemap settings and canonical URL.",
         "fields": [
             {
                 "name": "htmlTitle",
@@ -1030,6 +1043,7 @@
     },
     {
         "name": "Space",
+        "description": "Vertical space between two blocks, as a height in pixels.",
         "fields": [
             {
                 "name": "height",
@@ -1047,6 +1061,7 @@
     },
     {
         "name": "SvgImage",
+        "description": "An SVG file from the Digital Asset Management.",
         "fields": [
             {
                 "name": "damFile",
@@ -1118,6 +1133,7 @@
     },
     {
         "name": "Table",
+        "description": "A table whose cells contain rich text.",
         "fields": [
             {
                 "name": "columns",
@@ -1265,6 +1281,7 @@
     },
     {
         "name": "TextImage",
+        "description": "Rich text with an image beside it, either on the left or on the right.",
         "fields": [
             {
                 "name": "text",
@@ -1324,6 +1341,7 @@
     },
     {
         "name": "TextLink",
+        "description": "A link together with the text that is shown for it.",
         "fields": [
             {
                 "name": "text",
@@ -1353,6 +1371,7 @@
     },
     {
         "name": "TipTapRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor.",
         "fields": [
             {
                 "name": "tipTapContent",
@@ -1372,6 +1391,7 @@
     },
     {
         "name": "VimeoVideo",
+        "description": "A video hosted on Vimeo, with a preview image and playback settings.",
         "fields": [
             {
                 "name": "autoplay",
@@ -1431,6 +1451,7 @@
     },
     {
         "name": "YouTubeVideo",
+        "description": "A video hosted on YouTube, with a preview image and playback settings.",
         "fields": [
             {
                 "name": "autoplay",

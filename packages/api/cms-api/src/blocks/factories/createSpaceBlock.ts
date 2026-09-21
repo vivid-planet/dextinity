@@ -3,6 +3,7 @@ import { IsEnum } from "class-validator";
 import { Block, BlockData, BlockDataInterface, BlockInput, blockInputToData, createBlock, SimpleBlockInputInterface } from "../block";
 import { BlockField } from "../decorators/field";
 import { BlockFactoryNameOrOptions } from "./types";
+import { withDefaultDescription } from "./withDefaultDescription";
 
 interface CreateSpaceBlockOptions<SpacingOptions extends string[] | Record<string, string>> {
     spacing: SpacingOptions;
@@ -35,5 +36,9 @@ export function createSpaceBlock<SpacingOptions extends string[] | Record<string
         }
     }
 
-    return createBlock(SpaceBlockData, SpaceBlockInput, nameOrOptions);
+    return createBlock(
+        SpaceBlockData,
+        SpaceBlockInput,
+        withDefaultDescription(nameOrOptions, "Vertical space between two blocks, in one of the spacings the application offers."),
+    );
 }

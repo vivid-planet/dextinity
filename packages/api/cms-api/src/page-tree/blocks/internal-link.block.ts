@@ -98,6 +98,7 @@ class Meta extends AnnotationBlockMeta {
 
 export const InternalLinkBlock = createBlock(InternalLinkBlockData, InternalLinkBlockInput, {
     name: "InternalLink",
+    description: "A link to another page of the page tree, optionally to an anchor on that page.",
     blockMeta: new Meta(InternalLinkBlockData),
 });
 

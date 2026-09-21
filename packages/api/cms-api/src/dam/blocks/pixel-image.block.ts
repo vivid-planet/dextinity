@@ -240,6 +240,7 @@ function cropArea(nullable: boolean): BlockMetaField {
 
 export const PixelImageBlock = createBlock(PixelImageBlockData, PixelImageBlockInput, {
     name: "PixelImage",
+    description: "An image file from the Digital Asset Management, together with the crop area the editor has chosen.",
     blockMeta: new Meta(PixelImageBlockData),
     blockInputMeta: new InputMeta(PixelImageBlockInput),
 });

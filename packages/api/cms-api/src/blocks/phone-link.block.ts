@@ -20,4 +20,7 @@ class PhoneLinkBlockInput extends BlockInput {
     }
 }
 
-export const PhoneLinkBlock = createBlock(PhoneLinkBlockData, PhoneLinkBlockInput, "PhoneLink");
+export const PhoneLinkBlock = createBlock(PhoneLinkBlockData, PhoneLinkBlockInput, {
+    name: "PhoneLink",
+    description: "A link that dials the given phone number.",
+});

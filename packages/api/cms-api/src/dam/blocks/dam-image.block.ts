@@ -10,7 +10,10 @@ const DamImageBlock: OneOfBlock<{ pixelImage: typeof PixelImageBlock; svgImage: 
         },
         allowEmpty: false,
     },
-    "DamImage",
+    {
+        name: "DamImage",
+        description: "An image from the Digital Asset Management, either a pixel image or an SVG.",
+    },
 );
 
 export { DamImageBlock };

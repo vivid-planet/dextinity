@@ -13,6 +13,7 @@ import {
 import { ChildBlock } from "../decorators/child-block";
 import { ChildBlockInput } from "../decorators/child-block-input";
 import { BlockFactoryNameOrOptions } from "./types";
+import { withDefaultDescription } from "./withDefaultDescription";
 
 interface CreateImageLinkBlockOptions<LinkBlock extends Block, ImageBlock extends Block> {
     image?: ImageBlock;
@@ -52,5 +53,5 @@ export function createImageLinkBlock<LinkBlock extends Block, ImageBlock extends
         }
     }
 
-    return createBlock(ImageLinkBlockData, ImageLinkBlockInput, nameOrOptions);
+    return createBlock(ImageLinkBlockData, ImageLinkBlockInput, withDefaultDescription(nameOrOptions, "An image that links somewhere."));
 }

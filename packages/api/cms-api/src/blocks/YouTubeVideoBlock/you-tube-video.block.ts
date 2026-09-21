@@ -27,6 +27,7 @@ class YouTubeVideoBlockInput extends BaseVideoBlockInput {
 
 export const YouTubeVideoBlock = createBlock(YouTubeVideoBlockData, YouTubeVideoBlockInput, {
     name: "YouTubeVideo",
+    description: "A video hosted on YouTube, with a preview image and playback settings.",
     migrateVendor: {
         version: 2,
         migrations: typeSafeBlockMigrationPipe([RemoveAspectRatioMigration, AddPreviewImageMigration]),

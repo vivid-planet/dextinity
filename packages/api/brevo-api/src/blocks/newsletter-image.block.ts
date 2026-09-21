@@ -24,4 +24,5 @@ class NewsletterImageBlockInput extends BlockInput {
 }
 export const NewsletterImageBlock = createBlock(NewsletterImageBlockData, NewsletterImageBlockInput, {
     name: "NewsletterImage",
+    description: "An image in the content of an email campaign.",
 });

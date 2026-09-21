@@ -21,4 +21,7 @@ class VimeoVideoBlockInput extends BaseVideoBlockInput {
     }
 }
 
-export const VimeoVideoBlock = createBlock(VimeoVideoBlockData, VimeoVideoBlockInput, "VimeoVideo");
+export const VimeoVideoBlock = createBlock(VimeoVideoBlockData, VimeoVideoBlockInput, {
+    name: "VimeoVideo",
+    description: "A video hosted on Vimeo, with a preview image and playback settings.",
+});

@@ -88,5 +88,8 @@ export function createTextImageBlock<TextBlock extends Block, ImageBlock extends
         }
     }
 
-    return createBlock(TextImageBlockData, TextImageBlockInput, "TextImage");
+    return createBlock(TextImageBlockData, TextImageBlockInput, {
+        name: "TextImage",
+        description: "Rich text with an image beside it, either on the left or on the right.",
+    });
 }

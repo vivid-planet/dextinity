@@ -19,6 +19,7 @@ import {
 } from "../block";
 import { BlockField } from "../decorators/field";
 import { BlockFactoryNameOrOptions } from "./types";
+import { withDefaultDescription } from "./withDefaultDescription";
 
 export interface OptionalBlockInputInterface<DecoratedBlockInput extends BlockInputInterface> extends SimpleBlockInputInterface {
     block?: DecoratedBlockInput;
@@ -76,5 +77,9 @@ export function createOptionalBlock<DecoratedBlock extends Block>(
         }
     }
 
-    return createBlock(BlockOptional, BlockOptionalInput, nameOrOptions);
+    return createBlock(
+        BlockOptional,
+        BlockOptionalInput,
+        withDefaultDescription(nameOrOptions, `An optional ${block.name} block. Its content is only used while it is enabled.`),
+    );
 }

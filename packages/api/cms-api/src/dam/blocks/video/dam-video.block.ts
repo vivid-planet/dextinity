@@ -142,6 +142,7 @@ class Meta extends AnnotationBlockMeta {
 
 export const DamVideoBlock = createBlock(DamVideoBlockData, DamVideoBlockInput, {
     name: "DamVideo",
+    description: "A video file from the Digital Asset Management, with a preview image and playback settings.",
     blockMeta: new Meta(DamVideoBlockData),
     migrateVendor: {
         version: 1,

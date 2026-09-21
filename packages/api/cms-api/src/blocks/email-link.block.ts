@@ -19,4 +19,7 @@ class EmailLinkBlockInput extends BlockInput {
     }
 }
 
-export const EmailLinkBlock = createBlock(EmailLinkBlockData, EmailLinkBlockInput, "EmailLink");
+export const EmailLinkBlock = createBlock(EmailLinkBlockData, EmailLinkBlockInput, {
+    name: "EmailLink",
+    description: "A link that opens a new email to the given address.",
+});

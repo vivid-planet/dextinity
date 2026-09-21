@@ -6,6 +6,7 @@ import { ChildBlock } from "../decorators/child-block";
 import { ChildBlockInput } from "../decorators/child-block-input";
 import { BlockField } from "../decorators/field";
 import { BlockFactoryNameOrOptions } from "./types";
+import { withDefaultDescription } from "./withDefaultDescription";
 
 type CreateTableBlockOptions = {
     richText: Block;
@@ -130,5 +131,5 @@ export function createTableBlock({ richText: RichTextBlock }: CreateTableBlockOp
         }
     }
 
-    return createBlock(TableBlockData, TableBlockInput, nameOrOptions);
+    return createBlock(TableBlockData, TableBlockInput, withDefaultDescription(nameOrOptions, "A table whose cells contain rich text."));
 }

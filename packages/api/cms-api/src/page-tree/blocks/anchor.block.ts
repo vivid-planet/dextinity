@@ -19,6 +19,9 @@ class AnchorBlockInput extends BlockInput {
     }
 }
 
-const AnchorBlock = createBlock(AnchorBlockData, AnchorBlockInput, "Anchor");
+const AnchorBlock = createBlock(AnchorBlockData, AnchorBlockInput, {
+    name: "Anchor",
+    description: "A named position in the page content that links can jump to.",
+});
 
 export { AnchorBlock };

@@ -38,6 +38,7 @@ class ExternalLinkBlockInput extends BlockInput {
 
 export const ExternalLinkBlock = createBlock(ExternalLinkBlockData, ExternalLinkBlockInput, {
     name: "ExternalLink",
+    description: "A link to a URL outside of this application.",
     migrateVendor: {
         version: 1,
         migrations: typeSafeBlockMigrationPipe([AddNoFollowMigration]),

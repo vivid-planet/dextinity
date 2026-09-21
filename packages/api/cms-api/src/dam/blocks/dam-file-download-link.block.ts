@@ -111,5 +111,6 @@ class Meta extends AnnotationBlockMeta {
 
 export const DamFileDownloadLinkBlock = createBlock(DamFileDownloadLinkBlockData, DamFileDownloadLinkBlockInput, {
     name: "DamFileDownloadLink",
+    description: "A link to a file from the Digital Asset Management. The file is either opened in a new tab or downloaded.",
     blockMeta: new Meta(DamFileDownloadLinkBlockData),
 });

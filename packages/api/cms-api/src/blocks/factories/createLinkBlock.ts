@@ -11,6 +11,7 @@ import {
     createOneOfBlock,
     CreateOneOfBlockOptions,
 } from "./createOneOfBlock";
+import { withDefaultDescription } from "./withDefaultDescription";
 
 function createLinkBlock<BlockMap extends Record<string, Block<BlockDataInterface, BlockInputInterface>>>(
     { supportedBlocks, allowEmpty = false }: CreateOneOfBlockOptions<BlockMap>,
@@ -37,7 +38,13 @@ function createLinkBlock<BlockMap extends Record<string, Block<BlockDataInterfac
         title?: string;
     }
 
-    return createOneOfBlock({ supportedBlocks, allowEmpty, OneOfBlockData: LinkBlockData, OneOfBlockInput: LinkBlockInput }, nameOrOptions);
+    return createOneOfBlock(
+        { supportedBlocks, allowEmpty, OneOfBlockData: LinkBlockData, OneOfBlockInput: LinkBlockInput },
+        withDefaultDescription(
+            nameOrOptions,
+            "A link whose target is one of the supported link blocks, for instance a page of the page tree or an external URL.",
+        ),
+    );
 }
 
 export { createLinkBlock };

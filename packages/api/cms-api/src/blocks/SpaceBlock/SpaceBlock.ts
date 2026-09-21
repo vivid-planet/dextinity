@@ -25,6 +25,7 @@ class SpaceBlockInput extends BlockInput {
 /** @deprecated The `SpaceBlock` is deprecated. It will be removed in the next major version. Use `createSpaceBlock` instead. */
 export const SpaceBlock = createBlock(SpaceBlockData, SpaceBlockInput, {
     name: "Space",
+    description: "Vertical space between two blocks, as a height in pixels.",
     // demoMigrations:
     // migrate: {
     //     migrations: typeSafeBlockMigrationPipe([MigrationTo1, MigrationTo2]),

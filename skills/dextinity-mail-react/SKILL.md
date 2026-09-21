@@ -19,25 +19,28 @@ Before implementing any visual technique — even things that seem basic like ro
 
 Keep these open during email development:
 
-| Resource                       | What it's for                                                                    | URL                                  |
-| ------------------------------ | -------------------------------------------------------------------------------- | ------------------------------------ |
-| **Can I email**                | Check CSS/HTML feature support across email clients (like caniuse.com for email) | https://www.caniemail.com/           |
-| **MJML Documentation**         | Full reference for all MJML tags and their attributes                            | https://documentation.mjml.io/       |
-| **Litmus Blog & Resources**    | Email development best practices, testing guides, client quirks                  | https://www.litmus.com/blog/         |
-| **Campaign Monitor CSS Guide** | Comprehensive CSS support tables per email client                                | https://www.campaignmonitor.com/css/ |
-| **Bulletproof Backgrounds**    | VML-based background image generator for Outlook                                 | https://www.backgrounds.cm/          |
-| **Bulletproof Buttons**        | VML-based rounded button generator for Outlook                                   | https://www.buttons.cm/              |
+| Resource                       | What it's for                                                                    | URL                                                      |
+| ------------------------------ | -------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| **Can I email**                | Check CSS/HTML feature support across email clients (like caniuse.com for email) | https://www.caniemail.com/                               |
+| **Gmail CSS support**          | Google's own list of the CSS properties and selectors Gmail applies              | https://developers.google.com/workspace/gmail/design/css |
+| **MJML Documentation**         | Full reference for all MJML tags and their attributes                            | https://documentation.mjml.io/                           |
+| **Litmus Blog & Resources**    | Email development best practices, testing guides, client quirks                  | https://www.litmus.com/blog/                             |
+| **Campaign Monitor CSS Guide** | Comprehensive CSS support tables per email client                                | https://www.campaignmonitor.com/css/                     |
+| **Bulletproof Backgrounds**    | VML-based background image generator for Outlook                                 | https://www.backgrounds.cm/                              |
+| **Bulletproof Buttons**        | VML-based rounded button generator for Outlook                                   | https://www.buttons.cm/                                  |
 
 ### The Research Habit
 
 When implementing any visual feature:
 
-1. Check [Can I email](https://www.caniemail.com/) for the CSS properties involved
+1. Check [Can I email](https://www.caniemail.com/) for the CSS properties and selectors involved
 2. If the property isn't supported in Outlook, search for VML workarounds or provide a graceful fallback (skipping border-radius is generally acceptable)
 3. Test in Storybook with the MJML Warnings panel open
 4. When uncertain, consult the Litmus blog or Campaign Monitor guide for known patterns
 
 This applies to seemingly simple things: `border-radius`, `background-image`, `flexbox`, `gap`, custom fonts — all have partial or no support in major email clients.
+
+For which selectors reach which clients, see [`styling-and-customization.md`](references/styling-and-customization.md) → Selectors That Reach Every Client.
 
 ### Library Documentation
 
@@ -91,7 +94,9 @@ const halfGap = columnGap / 2;
 
 On mobile, reset the gap padding so content stretches full-width, and add a vertical margin between the stacked columns. Column padding compiles to an inner `<td>`, so target it via `.className > table > tbody > tr > td`.
 
-→ For complete two-column patterns (equal-width and fixed+fluid) with responsive styles, CSS targeting rules, and the `direction="rtl"` technique for controlling mobile stack order, read [`references/layout-patterns.md`](references/layout-patterns.md).
+Set `disableResponsiveBehavior` on **every** section with more than one column. It wraps the columns in an `MjmlGroup`, which is what makes MJML write their widths inline; without it the widths exist only in a `min-width` media query, and clients that drop that query — GMX and Web.de, for example — show the columns stacked. The group never stacks by itself, so write the mobile stacking into `registerStyles`, and target the column container one level deeper (`… > td > div`).
+
+→ For complete patterns — two columns, three or more, fixed+fluid — with responsive styles, CSS targeting rules, the stacking strategies, and the `direction="rtl"` technique for controlling mobile stack order, read [`references/layout-patterns.md`](references/layout-patterns.md).
 
 ### Ending Tags
 
@@ -115,11 +120,23 @@ Email styling follows a **desktop-first** approach:
 
 Never rely on `<style>` blocks for base/desktop layout. Set all default styles inline via MJML component props.
 
+MJML breaks this rule for column widths: it puts them in a `min-width` media query, so a multi-column section stacks in any client that drops that query — GMX and Web.de, for example. See [Multi-Column Layouts](#multi-column-layouts).
+
 ### Prefer Theme Breakpoints
 
 Always use `theme.breakpoints.*.belowMediaQuery` inside `registerStyles` instead of hardcoding media query values. This keeps responsive styles in sync with the theme configuration. If a breakpoint value is needed repeatedly but doesn't exist in the theme, add it via `createBreakpoint` and module augmentation rather than duplicating raw media queries. Reserve hardcoded media queries for genuinely one-off values.
 
 → For the full `registerStyles` API, `css` helper, and custom component patterns, read [`references/styling-and-customization.md`](references/styling-and-customization.md).
+
+### Switching Content by Breakpoint
+
+Sometimes you cannot make both views from the same HTML, because the mobile view needs a different structure than the desktop view. Then put both layouts in the email and hide one of them: inline styles hide the mobile layout, and a media query in `registerStyles` switches the two.
+
+Two layouts make twice as much markup, so first try to make one layout that works at each width. The column patterns already stack on mobile.
+
+The default layout is the one that shows when the `<style>` block is gone, so if it has columns its section needs `disableResponsiveBehavior` as well.
+
+→ For the hiding styles, the extra step classic Outlook needs, and what to avoid, read [`references/layout-patterns.md`](references/layout-patterns.md) → Breakpoint Content Switch.
 
 ---
 
@@ -153,11 +170,49 @@ Outlook calculates line-height using its own rules, causing unexpected vertical 
 
 ### No CSS `background-image` in Outlook
 
-Outlook ignores `background-image` entirely. Use a VML-based workaround for Outlook support, or provide a `background-color` fallback for graceful degradation. See [Bulletproof Backgrounds](https://www.backgrounds.cm/).
+Classic Outlook ignores `background-image` entirely. Use a VML-based workaround for Outlook support, or provide a `background-color` fallback for graceful degradation. See [Bulletproof Backgrounds](https://www.backgrounds.cm/).
 
 ### No CSS `border-radius` in Outlook
 
-Outlook ignores `border-radius` — rounded corners render as sharp rectangles. The workaround is VML `v:roundrect` in conditional comments (`<!--[if mso]>`). See [Bulletproof Buttons](https://www.buttons.cm/) and the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
+Classic Outlook ignores `border-radius` entirely — rounded corners on buttons, containers, or any other element render as sharp rectangles.
+
+`MjmlImage` and `HtmlImage` handle images for you, as long as `width` and `height` are given in pixels and `borderRadius` is a single pixel value or `"50%"`. Other values — a percentage width, `1em`, `16px 4px` — leave the image square in Outlook.
+
+Everything else, buttons and containers included, needs a VML `v:roundrect` written by hand, inside a conditional comment. Give the shape a fixed pixel `width` and `height` — it cannot be fluid:
+
+```html
+<!--[if mso]>
+    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="18%" stroked="f" style="width:200px;height:44px;">
+        <center>Button label</center>
+    </v:roundrect>
+<![endif]-->
+```
+
+Set `arcsize` to the corner radius divided by the shorter side, capped at `50%` — `8px` on a `44px`-high button gives `18%`. Do not take the value from the VML specification; it is twice what Outlook needs.
+
+See the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
+
+### No CSS `calc()`
+
+Yahoo Mail (webmail and both mobile apps) and Outlook.com drop every declaration whose value contains a `calc()`, single-unit expressions such as `calc(300px - 200px)` included. The declaration disappears, so the element keeps the value the `calc()` was meant to override — a plausible wrong width rather than no width.
+
+Where an element has to fill the space next to a fixed-width one, let the table compute the width: the fixed cells get their pixel width, and the flexible cell gets `width="100%"`, so the table gives it whatever the fixed cells leave ([Good Email Code](https://www.goodemailcode.com/email-code/columns.html)). Where a `calc()` is unavoidable, put a plain value before it in the same rule, chosen so the row still fits at the narrowest viewport the media query covers:
+
+```css
+.fluidColumn {
+    width: 40% !important;
+    width: calc(100% - 192px) !important;
+}
+```
+
+The asymmetric two-column layout in [`references/layout-patterns.md`](references/layout-patterns.md) uses this fallback.
+
+### `height` Becomes `min-height` in Yahoo Mail
+
+Yahoo Mail rewrites `height` into `min-height`, which is only a lower limit — it can make an element taller, never shorter — and does nothing at all on a `<td>`:
+
+- An `<img>` that a media query shrinks with `height` keeps its original size — use `max-height`.
+- A row whose height comes only from `height` on a `<td>` collapses to nothing, and the cell's background disappears with it — put the height on a `<div>` inside the cell, or use padding.
 
 ---
 
@@ -451,10 +506,13 @@ Key behaviors:
     ```
 
 - **Lists** render as a table inside one text component, with a row per item, a marker cell and a text cell — the indent and the marker gap are cell padding, which is the only spacing Outlook on Windows applies reliably.
+- **A block type is a list when it declares a kind**: `{ variant: "copyLarge", list: "unordered" }`. `unordered-list-item` and `ordered-list-item` are draft-js's own list types, and they default to their kind. Every other block type is a paragraph unless it sets `list`. Use it for a list in a second text variant. A draft block has only one block type, so that list needs a custom block type. One `createRichTextBlock` call renders every variant. Two adjacent list block types render as two tables, and the numbered one starts again at `1.` Draft-js indents `unordered-list-item` and `ordered-list-item` only, so an editor cannot nest a custom list block type.
 - **List spacing** comes from the theme's `list.indent` (before the marker), `list.markerGap` (between the marker and the text) and `list.itemSpacing` (between items, and above a nested level's first item), all responsive and all applying to every list the block renders. To override it, register a rule scoped to a list's type, depth or variant modifier with `{ inline: true }`, which has MJML write the declaration into the cell's `style` attribute at compile time so it also reaches Outlook.
 - **List markers** come from the theme's `list.unorderedMarker` and `list.orderedMarker`, each either a fixed node (`unorderedMarker: "▪"`) or a function of the item's `index` and its list's `depth`.
 - Spacing between blocks comes from the theme's `bottomSpacing` (the last block gets none); headings are styled text, not semantic `<h1>` elements.
 - Rendered elements carry `richTextBlock__text`, `richTextBlock__list`, `richTextBlock__listItem`, `richTextBlock__listItemMarker`, `richTextBlock__listItemText`, and `richTextBlock__link` class names for targeting with `registerStyles`. The list table also carries `richTextBlock__list--ordered` or `richTextBlock__list--unordered`, and `richTextBlock__list--depth<Level>` naming its nesting level, counting the outermost as zero, with `richTextBlock__list--nested` on every level below that one. Only the outermost table names the text variant its items render with, such as `richTextBlock__list--variantBody`, and a rule scoped to that modifier applies to the nested levels as well. The rows carry `richTextBlock__listItem--itemSpacing`, or `richTextBlock__listItem--blockSpacing` on the last row when spacing follows the list, and `richTextBlock__listItem--itemSpacingAbove` on a nested level's first row, which carries the item spacing as `padding-top`. The cells restate the text styles inline, so a rule targeting list text needs `!important`.
+
+→ To register a custom list block type across the admin RTE and the mail block, read [`references/rich-text-list-block-types.md`](references/rich-text-list-block-types.md).
 
 ---
 
@@ -547,6 +605,8 @@ const { html, mjmlWarnings } = renderMailHtml(
 - **Client** (`@dextinity/mail-react/client`) — uses `mjml-browser`, works without `fs`
 - `renderMailHtml` is **not** on the main `@dextinity/mail-react` barrel — always import from `/server` or `/client`
 - Returns `{ html: string; mjmlWarnings: MjmlWarning[] }` — warnings are collected, not thrown
+- A framework that bundles server code (Next.js) must list `mjml` in the application's own `package.json` too, or rendering fails at runtime
+- Nothing imports it directly — add `mjml` to `ignoreDependencies` in `knip.json` rather than removing it as unused
 
 ### Logging MJML Warnings
 

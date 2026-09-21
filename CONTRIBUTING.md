@@ -5,7 +5,7 @@ By participating in this project, you agree to abide by its terms.
 
 ## Development
 
-To run Comet DXP locally, see [Getting started](README.md#getting-started) in our README.
+To run Dextinity locally, see [Getting started](README.md#getting-started) in our README.
 
 ## Versioning & branches
 
@@ -33,18 +33,18 @@ Therefore, make sure to keep the description up-to-date as the pull request chan
 
 Your description should include:
 
--   The problem you're facing
--   Your solution to the problem
--   An example usage of your change
+- The problem you're facing
+- Your solution to the problem
+- An example usage of your change
 
 ### Example
 
 Make sure to provide an example of your change if your change includes a new API.
 This can be either:
 
--   A unit test (preferred)
--   The implementation in Demo
--   A development story in Storybook
+- A unit test (preferred)
+- The implementation in Demo
+- A development story in Storybook
 
 ### Screenshots/screencasts
 
@@ -58,14 +58,14 @@ Changes are documented using [changesets](https://github.com/changesets/changese
 
 A changeset should be added when:
 
--   changing the package's public API (`src/index.ts`), for instance, adding a new component
--   fixing a bug
--   making a visual change, for instance, changing a component's design
+- changing the package's public API (`src/index.ts`), for instance, adding a new component
+- fixing a bug
+- making a visual change, for instance, changing a component's design
 
 A changeset should not be added when:
 
--   making a package internal change
--   changing the dev setup or workflows
+- making a package internal change
+- changing the dev setup or workflows
 
 In general, you should add a changeset when you want your change to result in a new package version.
 
@@ -73,11 +73,11 @@ In general, you should add a changeset when you want your change to result in a 
 
 Follow this guidelines when writing a changeset:
 
--   Use active voice: "Add new thing" vs. "A new thing is added"
--   The first line should be the title (without a period at the end): "Add new alert component"
--   If necessary, provide additional information in the description
--   Use backticks to highlight code: Add new `Alert` component
--   Use bold formatting for "headlines" in the description: **Example**
+- Use active voice: "Add new thing" vs. "A new thing is added"
+- The first line should be the title (without a period at the end): "Add new alert component"
+- If necessary, provide additional information in the description
+- Use backticks to highlight code: Add new `Alert` component
+- Use bold formatting for "headlines" in the description: **Example**
 
 Example for a good changeset:
 
@@ -136,9 +136,9 @@ Anything that needs to be done before merging the pull request, for instance, ad
 
 Further information that helps reviewing the pull request, for instance:
 
--   Alternative solutions you have considered
--   Related pull requests
--   Links to relevant tasks, documentation, blog posts etc.
+- Alternative solutions you have considered
+- Related pull requests
+- Links to relevant tasks, documentation, blog posts etc.
 
 > [!WARNING]
 > Make sure that everything required to understand your change is in the pull request description.

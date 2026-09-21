@@ -1,17 +1,27 @@
-import { greyPalette } from "@dextinity/admin";
-import { Box } from "@mui/material";
+import { greyPalette, useContentTranslationService, useErrorDialog } from "@dextinity/admin";
+import { Box, type SvgIconProps } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { Extension } from "@tiptap/core";
+import { Extension, type Extensions } from "@tiptap/core";
+import { Heading, type Level as HeadingLevel } from "@tiptap/extension-heading";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import { EditorContent, type JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { type ComponentType, type HTMLAttributes, type ReactNode, useEffect } from "react";
+import {
+    type ComponentType,
+    type ForwardRefExoticComponent,
+    type HTMLAttributes,
+    type ReactNode,
+    type RefAttributes,
+    useEffect,
+    useState,
+} from "react";
 import { FormattedMessage } from "react-intl";
 
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface, type ReadOnlyBlockRenderInterface } from "../types";
 import { ChildBlocksContext } from "./ChildBlocksContext";
+import { translateTipTapContent } from "./contentTranslation";
 import { CmsBlock, CmsInlineBlock } from "./extensions/CmsBlock";
 import { CmsLink } from "./extensions/CmsLink";
 import { InlineStyleMark } from "./extensions/InlineStyleMark";
@@ -23,38 +33,113 @@ import { TextBlockStyleParagraph } from "./extensions/TextBlockStyleParagraph";
 import { InlineStyleContext } from "./InlineStyleContext";
 import { createListLevelMaxExtension, getListNestingDepthFromJson, trimListNesting } from "./listLevelMaxHelpers";
 import { TextBlockStyleContext } from "./TextBlockStyleContext";
+import { TipTapContentTranslationDialog } from "./TipTapContentTranslationDialog";
 import { TipTapToolbar } from "./TipTapToolbar";
 
-export type TipTapSupports =
-    | "history"
-    | "bold"
-    | "italic"
-    | "underline"
-    | "strike"
-    | "sub"
-    | "sup"
-    | "heading"
-    | "ordered-list"
-    | "unordered-list"
-    | "non-breaking-space"
-    | "soft-hyphen"
-    | "link";
-
-const defaultSupports: TipTapSupports[] = [
-    "history",
-    "heading",
-    "bold",
-    "italic",
-    "strike",
-    "sub",
-    "sup",
-    "ordered-list",
-    "unordered-list",
-    "non-breaking-space",
-    "soft-hyphen",
-];
-
 export type { JSONContent as TipTapRichTextBlockContent } from "@tiptap/core";
+
+interface TipTapHeadingOptions {
+    /**
+     * Limits the selectable heading levels (1-6). Defaults to all levels ([1, 2, 3, 4, 5, 6]).
+     * Must be a non-empty array of unique integers between 1 and 6, otherwise an error is thrown.
+     */
+    levels?: number[];
+    /**
+     * Heading level used for newly created headings. Defaults to the lowest allowed level.
+     * Must be one of `levels`, otherwise an error is thrown.
+     */
+    defaultLevel?: number;
+}
+
+/**
+ * The block's options with the defaults applied and the heading levels validated.
+ */
+export interface TipTapResolvedOptions {
+    undoRedoButtons: boolean;
+    bold: boolean;
+    italic: boolean;
+    underline: boolean;
+    strike: boolean;
+    sub: boolean;
+    sup: boolean;
+    paragraph: boolean;
+    heading: false | { levels: HeadingLevel[]; defaultLevel: HeadingLevel };
+    orderedList: boolean;
+    unorderedList: boolean;
+    nonBreakingSpace: boolean;
+    softHyphen: boolean;
+    link: boolean;
+    contentTranslation: boolean;
+}
+
+const allHeadingLevels: HeadingLevel[] = [1, 2, 3, 4, 5, 6];
+
+function isValidHeadingLevels(headingLevels: number[]): headingLevels is HeadingLevel[] {
+    return (
+        headingLevels.length > 0 &&
+        new Set(headingLevels).size === headingLevels.length &&
+        headingLevels.every((level) => Number.isInteger(level) && level >= 1 && level <= 6)
+    );
+}
+
+function resolveTipTapOptions({
+    undoRedoButtons = true,
+    bold = true,
+    italic = true,
+    underline = false,
+    strike = true,
+    sub = true,
+    sup = true,
+    paragraph = true,
+    heading = true,
+    orderedList,
+    unorderedList,
+    nonBreakingSpace = true,
+    softHyphen = true,
+    link,
+    contentTranslation = true,
+}: TipTapRichTextBlockFactoryOptions = {}): TipTapResolvedOptions {
+    const headingOptions = heading !== false && heading !== true ? heading : {};
+    const headingLevels = headingOptions.levels ?? allHeadingLevels;
+
+    if (!isValidHeadingLevels(headingLevels)) {
+        throw new Error("heading levels must be a non-empty array of unique integers between 1 and 6");
+    }
+
+    if (headingOptions.defaultLevel !== undefined && !headingLevels.includes(headingOptions.defaultLevel as HeadingLevel)) {
+        throw new Error(`heading defaultLevel must be one of the allowed levels (${headingLevels.join(", ")})`);
+    }
+
+    const defaultHeadingLevel = (headingOptions.defaultLevel ?? Math.min(...headingLevels)) as HeadingLevel;
+
+    if (!paragraph) {
+        if (heading === false) {
+            throw new Error("paragraph: false requires headings, otherwise no text block type is left");
+        }
+        if (orderedList || unorderedList) {
+            throw new Error("Lists require paragraphs, because a list item's content starts with a paragraph");
+        }
+    }
+
+    return {
+        undoRedoButtons,
+        bold,
+        italic,
+        underline,
+        strike,
+        sub,
+        sup,
+        paragraph,
+        heading: heading === false ? false : { levels: headingLevels, defaultLevel: defaultHeadingLevel },
+        // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
+        orderedList: orderedList ?? paragraph,
+        unorderedList: unorderedList ?? paragraph,
+        nonBreakingSpace,
+        softHyphen,
+        link: !!link,
+        contentTranslation,
+    };
+}
 
 export type TipTapTextBlockType =
     | "paragraph"
@@ -87,6 +172,10 @@ export interface TipTapInlineStyle {
      */
     appliesTo?: TipTapTextBlockType[];
     element: ComponentType<HTMLAttributes<HTMLElement>>;
+    /**
+     * Displayed next to the label in the toolbar's "More options" menu, matching Superscript/Subscript.
+     */
+    icon?: ForwardRefExoticComponent<Omit<SvgIconProps, "ref"> & RefAttributes<SVGSVGElement>>;
 }
 
 export interface TipTapRichTextBlockState {
@@ -116,11 +205,75 @@ export interface TipTapChildBlock {
 }
 
 interface TipTapRichTextBlockFactoryOptions {
-    supports?: TipTapSupports[];
+    /**
+     * Shows the undo/redo buttons in the toolbar. The keyboard shortcuts work regardless. Defaults to `true`.
+     */
+    undoRedoButtons?: boolean;
+    /**
+     * Enables bold text. Defaults to `true`.
+     */
+    bold?: boolean;
+    /**
+     * Enables italic text. Defaults to `true`.
+     */
+    italic?: boolean;
+    /**
+     * Enables underlined text. Defaults to `false`.
+     */
+    underline?: boolean;
+    /**
+     * Enables struck-through text. Defaults to `true`.
+     */
+    strike?: boolean;
+    /**
+     * Enables subscript text. Defaults to `true`.
+     */
+    sub?: boolean;
+    /**
+     * Enables superscript text. Defaults to `true`.
+     */
+    sup?: boolean;
+    /**
+     * Enables paragraphs. Defaults to `true`.
+     *
+     * Pass `false` for a heading-only block (e.g. a headline): the editor starts with a heading
+     * instead of a paragraph and the text block type select only offers headings. Requires
+     * headings, and disables lists, because a list item's content starts with a paragraph.
+     */
+    paragraph?: boolean;
+    /**
+     * Enables headings. Defaults to `true` (all levels).
+     * Pass an options object to limit the selectable heading `levels` or to set the `defaultLevel`.
+     */
+    heading?: boolean | TipTapHeadingOptions;
+    /**
+     * Enables ordered lists. Defaults to `true`.
+     */
+    orderedList?: boolean;
+    /**
+     * Enables unordered lists. Defaults to `true`.
+     */
+    unorderedList?: boolean;
+    /**
+     * Enables non-breaking spaces. Defaults to `true`.
+     */
+    nonBreakingSpace?: boolean;
+    /**
+     * Enables soft hyphens. Defaults to `true`.
+     */
+    softHyphen?: boolean;
+    /**
+     * Enables links by passing the link block that is used for them. Disabled by default.
+     */
+    link?: BlockInterface & LinkBlockInterface;
+    /**
+     * Shows the in-toolbar "Translate" button. Defaults to `true`. Set to `false` to hide it, e.g.
+     * to avoid a nested translate button when this block is rendered inside another translation UI.
+     */
+    contentTranslation?: boolean;
     textBlockStyles?: TipTapTextBlockStyle[];
     inlineStyles?: TipTapInlineStyle[];
     placeholders?: TipTapPlaceholder[];
-    link?: BlockInterface & LinkBlockInterface;
     /**
      * Child blocks that can be inserted into the editor via the toolbar's "+" menu, keyed by a
      * stable key. The key (not the block's name) is stored in the content, so blocks can be
@@ -141,6 +294,10 @@ interface TipTapRichTextBlockFactoryOptions {
      * A value of 1 means only a flat list (no nesting), 2 allows one level of sub-lists, etc.
      */
     listLevelMax?: number;
+    /**
+     * Minimum height (in px) of the editor's content area. Defaults to `200`.
+     */
+    minHeight?: number;
 }
 
 function getPlainTextFromContent(content: JSONContent): string {
@@ -156,7 +313,54 @@ function getPlainTextFromContent(content: JSONContent): string {
     return text;
 }
 
-const emptyContent: JSONContent = { type: "doc", content: [{ type: "paragraph" }] };
+// TipTap's own priority for the paragraph extension, which makes the paragraph the schema's first
+// block node and therefore ProseMirror's default block type.
+const paragraphPriority = 1000;
+
+const buildEmptyContent = (resolvedOptions: TipTapResolvedOptions): JSONContent => ({
+    type: "doc",
+    content: [
+        resolvedOptions.paragraph || resolvedOptions.heading === false
+            ? { type: "paragraph" }
+            : { type: "heading", attrs: { level: resolvedOptions.heading.defaultLevel } },
+    ],
+});
+
+/**
+ * Sets the default heading level and, for heading-only blocks, makes the heading the schema's
+ * default block type (the position paragraphs would otherwise take, by priority) and replaces the
+ * heading keyboard shortcuts, which would otherwise toggle back to a paragraph.
+ */
+const buildHeadingExtension = ({
+    base,
+    levels,
+    defaultLevel,
+    hasParagraph,
+}: {
+    base: typeof Heading;
+    levels: HeadingLevel[];
+    defaultLevel: HeadingLevel;
+    hasParagraph: boolean;
+}) =>
+    base
+        .extend({
+            ...(hasParagraph
+                ? {}
+                : {
+                      priority: paragraphPriority,
+                      addKeyboardShortcuts() {
+                          return Object.fromEntries(levels.map((level) => [`Mod-Alt-${level}`, () => this.editor.commands.setHeading({ level })]));
+                      },
+                  }),
+            addAttributes() {
+                return {
+                    ...this.parent?.(),
+                    // `rendered: false` keeps TipTap from adding a `level` HTML attribute, the level is the tag name.
+                    level: { default: defaultLevel, rendered: false },
+                };
+            },
+        })
+        .configure({ levels });
 
 const isCmsBlockNode = (content: JSONContent): boolean => content.type === "cmsBlock" || content.type === "cmsInlineBlock";
 
@@ -183,7 +387,7 @@ const createMaxTextBlocksExtension = (maxTextBlocks: number) =>
     });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapLinkMarksData(content: JSONContent, fn: (data: any) => any): JSONContent {
+export function mapLinkMarksData(content: JSONContent, fn: (data: any) => any): JSONContent {
     if (!content || typeof content !== "object") {
         return content;
     }
@@ -206,7 +410,7 @@ function mapLinkMarksData(content: JSONContent, fn: (data: any) => any): JSONCon
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function mapLinkMarksDataAsync(content: JSONContent, fn: (data: any) => Promise<any>): Promise<JSONContent> {
+export async function mapLinkMarksDataAsync(content: JSONContent, fn: (data: any) => Promise<any>): Promise<JSONContent> {
     if (!content || typeof content !== "object") {
         return content;
     }
@@ -231,7 +435,7 @@ async function mapLinkMarksDataAsync(content: JSONContent, fn: (data: any) => Pr
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapCmsBlockNodesData(content: JSONContent, fn: (blockType: string, data: any) => any): JSONContent {
+export function mapCmsBlockNodesData(content: JSONContent, fn: (blockType: string, data: any) => any): JSONContent {
     if (!content || typeof content !== "object") {
         return content;
     }
@@ -249,7 +453,7 @@ function mapCmsBlockNodesData(content: JSONContent, fn: (blockType: string, data
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function mapCmsBlockNodesDataAsync(content: JSONContent, fn: (blockType: string, data: any) => Promise<any>): Promise<JSONContent> {
+export async function mapCmsBlockNodesDataAsync(content: JSONContent, fn: (blockType: string, data: any) => Promise<any>): Promise<JSONContent> {
     if (!content || typeof content !== "object") {
         return content;
     }
@@ -302,21 +506,78 @@ function collectLinkMarksData(content: JSONContent): unknown[] {
     return results;
 }
 
-async function translateTextNodesAsync(content: JSONContent, translate: (text: string) => Promise<string>): Promise<JSONContent> {
-    if (!content || typeof content !== "object") {
-        return content;
-    }
-    const result = { ...content };
+function buildTipTapExtensions({
+    resolvedOptions,
+    textBlockStyles,
+    inlineStyles,
+    placeholders,
+    linkBlock,
+    childBlocks,
+    maxTextBlocks,
+    listLevelMax,
+}: {
+    resolvedOptions: TipTapResolvedOptions;
+    textBlockStyles: TipTapTextBlockStyle[];
+    inlineStyles: TipTapInlineStyle[];
+    placeholders: TipTapPlaceholder[];
+    linkBlock?: BlockInterface & LinkBlockInterface;
+    childBlocks: Record<string, TipTapChildBlock>;
+    maxTextBlocks?: number;
+    listLevelMax?: number;
+}): Extensions {
+    const hasTextBlockStyles = textBlockStyles.length > 0;
+    const hasInlineStyles = inlineStyles.length > 0;
+    const hasLink = resolvedOptions.link && !!linkBlock;
+    const hasPlaceholders = placeholders.length > 0;
+    const childBlockEntries = Object.values(childBlocks);
+    const hasBlockChildBlocks = childBlockEntries.some((childBlock) => childBlock.display === "block");
+    const hasInlineChildBlocks = childBlockEntries.some((childBlock) => childBlock.display === "inline");
 
-    if (typeof result.text === "string" && result.text.trim().length > 0) {
-        result.text = await translate(result.text);
-    }
-
-    if (Array.isArray(result.content)) {
-        result.content = await Promise.all(result.content.map((child) => translateTextNodesAsync(child, translate)));
-    }
-
-    return result;
+    return [
+        StarterKit.configure({
+            bold: resolvedOptions.bold ? {} : false,
+            italic: resolvedOptions.italic ? {} : false,
+            underline: resolvedOptions.underline ? {} : false,
+            strike: resolvedOptions.strike ? {} : false,
+            // The heading extension is added separately below to set the default heading level.
+            heading: false,
+            paragraph: resolvedOptions.paragraph && !hasTextBlockStyles ? undefined : false,
+            orderedList: resolvedOptions.orderedList ? {} : false,
+            bulletList: resolvedOptions.unorderedList ? {} : false,
+            // A list item's content starts with a paragraph, so lists cannot exist without one.
+            listItem: resolvedOptions.paragraph ? undefined : false,
+            listKeymap: resolvedOptions.paragraph ? undefined : false,
+            blockquote: false,
+            code: false,
+            codeBlock: false,
+            link: false,
+            // A heading is directly editable (Enter at its end already creates a paragraph below it), so it
+            // doesn't need TrailingNode's own empty paragraph the way a trailing atom node (e.g. a child block) does.
+            trailingNode: { notAfter: ["heading"] },
+        }),
+        ...(resolvedOptions.paragraph && hasTextBlockStyles ? [TextBlockStyleParagraph] : []),
+        ...(resolvedOptions.heading
+            ? [
+                  buildHeadingExtension({
+                      base: hasTextBlockStyles ? TextBlockStyleHeading : Heading,
+                      levels: resolvedOptions.heading.levels,
+                      defaultLevel: resolvedOptions.heading.defaultLevel,
+                      hasParagraph: resolvedOptions.paragraph,
+                  }),
+              ]
+            : []),
+        ...(hasInlineStyles ? [InlineStyleMark] : []),
+        ...(resolvedOptions.sup ? [Superscript] : []),
+        ...(resolvedOptions.sub ? [Subscript] : []),
+        ...(resolvedOptions.nonBreakingSpace ? [NonBreakingSpace] : []),
+        ...(resolvedOptions.softHyphen ? [SoftHyphen] : []),
+        ...(hasPlaceholders ? [Placeholder] : []),
+        ...(hasLink ? [CmsLink] : []),
+        ...(hasBlockChildBlocks ? [CmsBlock] : []),
+        ...(hasInlineChildBlocks ? [CmsInlineBlock] : []),
+        ...(maxTextBlocks !== undefined ? [createMaxTextBlocksExtension(maxTextBlocks)] : []),
+        ...(listLevelMax !== undefined ? [createListLevelMaxExtension(listLevelMax)] : []),
+    ];
 }
 
 const ReadOnlyContent = styled("div")({
@@ -329,22 +590,10 @@ const ReadOnlyContent = styled("div")({
     },
 });
 
-const TipTapEditor = ({
-    state,
-    updateState,
-    supports,
-    textBlockStyles,
-    inlineStyles,
-    placeholders,
-    linkBlock,
-    childBlocks,
-    maxTextBlocks,
-    listLevelMax,
-    readOnly,
-}: {
+export interface TipTapEditorProps {
     state: TipTapRichTextBlockState;
     updateState: React.Dispatch<React.SetStateAction<TipTapRichTextBlockState>>;
-    supports: TipTapSupports[];
+    resolvedOptions: TipTapResolvedOptions;
     textBlockStyles: TipTapTextBlockStyle[];
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
@@ -352,47 +601,39 @@ const TipTapEditor = ({
     childBlocks: Record<string, TipTapChildBlock>;
     maxTextBlocks?: number;
     listLevelMax?: number;
+    minHeight?: number;
     readOnly?: boolean;
-}) => {
-    const hasTextBlockStyles = textBlockStyles.length > 0;
-    const hasInlineStyles = inlineStyles.length > 0;
-    const hasLink = supports.includes("link") && !!linkBlock;
-    const hasPlaceholders = placeholders.length > 0;
-    const childBlockEntries = Object.values(childBlocks);
-    const hasBlockChildBlocks = childBlockEntries.some((childBlock) => childBlock.display === "block");
-    const hasInlineChildBlocks = childBlockEntries.some((childBlock) => childBlock.display === "inline");
+}
+
+export const TipTapEditor = ({
+    state,
+    updateState,
+    resolvedOptions,
+    textBlockStyles,
+    inlineStyles,
+    placeholders,
+    linkBlock,
+    childBlocks,
+    maxTextBlocks,
+    listLevelMax,
+    minHeight = 200,
+    readOnly,
+}: TipTapEditorProps) => {
     const childBlocksByKey: Record<string, BlockInterface> = Object.fromEntries(Object.entries(childBlocks).map(([key, { block }]) => [key, block]));
 
+    const extensions = buildTipTapExtensions({
+        resolvedOptions,
+        textBlockStyles,
+        inlineStyles,
+        placeholders,
+        linkBlock,
+        childBlocks,
+        maxTextBlocks,
+        listLevelMax,
+    });
+
     const editor = useEditor({
-        extensions: [
-            StarterKit.configure({
-                bold: supports.includes("bold") ? {} : false,
-                italic: supports.includes("italic") ? {} : false,
-                underline: supports.includes("underline") ? {} : false,
-                strike: supports.includes("strike") ? {} : false,
-                heading: supports.includes("heading") ? (hasTextBlockStyles ? false : {}) : false,
-                paragraph: hasTextBlockStyles ? false : undefined,
-                orderedList: supports.includes("ordered-list") ? {} : false,
-                bulletList: supports.includes("unordered-list") ? {} : false,
-                blockquote: false,
-                code: false,
-                codeBlock: false,
-                link: false,
-            }),
-            ...(hasTextBlockStyles ? [TextBlockStyleParagraph] : []),
-            ...(hasTextBlockStyles && supports.includes("heading") ? [TextBlockStyleHeading] : []),
-            ...(hasInlineStyles ? [InlineStyleMark] : []),
-            ...(supports.includes("sup") ? [Superscript] : []),
-            ...(supports.includes("sub") ? [Subscript] : []),
-            ...(supports.includes("non-breaking-space") ? [NonBreakingSpace] : []),
-            ...(supports.includes("soft-hyphen") ? [SoftHyphen] : []),
-            ...(hasPlaceholders ? [Placeholder] : []),
-            ...(hasLink ? [CmsLink] : []),
-            ...(hasBlockChildBlocks ? [CmsBlock] : []),
-            ...(hasInlineChildBlocks ? [CmsInlineBlock] : []),
-            ...(maxTextBlocks !== undefined ? [createMaxTextBlocksExtension(maxTextBlocks)] : []),
-            ...(listLevelMax !== undefined ? [createListLevelMaxExtension(listLevelMax)] : []),
-        ],
+        extensions,
         content: state.tipTapContent,
         editable: !readOnly,
         onUpdate: ({ editor }) => {
@@ -436,8 +677,40 @@ const TipTapEditor = ({
         }
     }, [readOnly, editor, state.tipTapContent]);
 
+    const translationContext = useContentTranslationService();
+    const canTranslate = translationContext.enabled && resolvedOptions.contentTranslation;
+    const [translationDialogState, setTranslationDialogState] = useState<{ original: JSONContent; translated: JSONContent } | null>(null);
+    const errorDialog = useErrorDialog();
+
     if (!editor) {
         return null;
+    }
+
+    async function handleTranslateClick() {
+        try {
+            const original = editor.getJSON();
+            const translated = await translateTipTapContent(original, translationContext.translate, {
+                extensions,
+                linkBlock,
+                childBlocksByKey,
+            });
+            if (translationContext.showApplyTranslationDialog) {
+                setTranslationDialogState({ original, translated });
+            } else {
+                editor.commands.setContent(translated);
+            }
+        } catch (error) {
+            errorDialog?.showError({
+                title: <FormattedMessage id="dextinity.translator.error.title" defaultMessage="Translation failed" />,
+                userMessage: (
+                    <FormattedMessage
+                        id="dextinity.translator.error.message"
+                        defaultMessage="An error occurred while translating the content. Please try again."
+                    />
+                ),
+                error: error instanceof Error ? error.message : "Translation failed",
+            });
+        }
     }
 
     const editorNode = <EditorContent editor={editor} />;
@@ -452,16 +725,41 @@ const TipTapEditor = ({
                         <Box sx={{ border: `1px solid ${greyPalette[100]}`, borderTopWidth: 0, backgroundColor: "white", borderRadius: "2px" }}>
                             <TipTapToolbar
                                 editor={editor}
-                                supports={supports}
+                                resolvedOptions={resolvedOptions}
                                 textBlockStyles={textBlockStyles}
                                 inlineStyles={inlineStyles}
                                 placeholders={placeholders}
                                 linkBlock={linkBlock}
                                 childBlocks={childBlocks}
                                 listLevelMax={listLevelMax}
+                                canTranslate={canTranslate}
+                                onTranslateClick={handleTranslateClick}
                             />
-                            <Box sx={{ "& .tiptap": { minHeight: 200, p: "20px", outline: "none" } }}>{editorNode}</Box>
+                            <Box sx={{ "& .tiptap": { minHeight, p: "20px", outline: "none" } }}>{editorNode}</Box>
                         </Box>
+                    )}
+                    {translationDialogState && (
+                        <TipTapContentTranslationDialog
+                            open
+                            onClose={() => setTranslationDialogState(null)}
+                            originalContent={translationDialogState.original}
+                            translatedContent={translationDialogState.translated}
+                            onApplyTranslation={(content) => {
+                                editor.commands.setContent(content);
+                                setTranslationDialogState(null);
+                            }}
+                            editorProps={{
+                                resolvedOptions,
+                                textBlockStyles,
+                                inlineStyles,
+                                placeholders,
+                                linkBlock,
+                                childBlocks,
+                                maxTextBlocks,
+                                listLevelMax,
+                                minHeight,
+                            }}
+                        />
                     )}
                 </ChildBlocksContext.Provider>
             </InlineStyleContext.Provider>
@@ -475,24 +773,42 @@ type TipTapRichTextBlockInterface = BlockInterface<TipTapRichTextBlockData, TipT
 /**
  * @experimental
  */
-export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOptions): TipTapRichTextBlockInterface => {
-    let supports = options?.supports ?? defaultSupports;
-    const textBlockStyles = options?.textBlockStyles ?? [];
-    const inlineStyles = options?.inlineStyles ?? [];
-    const placeholders = options?.placeholders ?? [];
-    const linkBlock = options?.link;
-    const childBlocks = options?.childBlocks ?? {};
+export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOptions = {}): TipTapRichTextBlockInterface => {
+    const resolvedOptions = resolveTipTapOptions(options);
+    const textBlockStyles = options.textBlockStyles ?? [];
+    const inlineStyles = options.inlineStyles ?? [];
+    const placeholders = options.placeholders ?? [];
+    const linkBlock = options.link;
+    const childBlocks = options.childBlocks ?? {};
     const childBlocksByKey: Record<string, BlockInterface> = Object.fromEntries(Object.entries(childBlocks).map(([key, { block }]) => [key, block]));
     const hasChildBlocks = Object.keys(childBlocks).length > 0;
-    const maxTextBlocks = options?.maxTextBlocks;
-    const listLevelMax = options?.listLevelMax;
+    const maxTextBlocks = options.maxTextBlocks;
+    const listLevelMax = options.listLevelMax;
+    const minHeight = options.minHeight;
+    const emptyContent = buildEmptyContent(resolvedOptions);
 
-    // Auto-enable link support when a link block is provided
-    if (linkBlock && !supports.includes("link")) {
-        supports = [...supports, "link"];
-    }
+    const sharedEditorProps = {
+        resolvedOptions,
+        textBlockStyles,
+        inlineStyles,
+        placeholders,
+        linkBlock,
+        childBlocks,
+        maxTextBlocks,
+        listLevelMax,
+        minHeight,
+    };
 
-    const sharedEditorProps = { supports, textBlockStyles, inlineStyles, placeholders, linkBlock, childBlocks, maxTextBlocks, listLevelMax };
+    const tipTapExtensions = buildTipTapExtensions({
+        resolvedOptions,
+        textBlockStyles,
+        inlineStyles,
+        placeholders,
+        linkBlock,
+        childBlocks,
+        maxTextBlocks,
+        listLevelMax,
+    });
 
     const TipTapRichTextBlock: TipTapRichTextBlockInterface = {
         ...createBlockSkeleton(),
@@ -590,17 +906,11 @@ export const createTipTapRichTextBlock = (options?: TipTapRichTextBlockFactoryOp
         },
 
         translateContent: async (state, translate) => {
-            let content = await translateTextNodesAsync(state.tipTapContent, translate);
-            if (linkBlock?.translateContent) {
-                const translateLinkContent = linkBlock.translateContent;
-                content = await mapLinkMarksDataAsync(content, (data) => translateLinkContent(data, translate));
-            }
-            if (hasChildBlocks) {
-                content = await mapCmsBlockNodesDataAsync(content, async (blockType, data) => {
-                    const childBlock = childBlocksByKey[blockType];
-                    return childBlock?.translateContent ? childBlock.translateContent(data, translate) : data;
-                });
-            }
+            const content = await translateTipTapContent(state.tipTapContent, translate, {
+                extensions: tipTapExtensions,
+                linkBlock,
+                childBlocksByKey,
+            });
             return { tipTapContent: content };
         },
     };

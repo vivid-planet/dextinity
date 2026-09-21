@@ -5,7 +5,7 @@
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity"
     },
-    "description": "Comet Monorepo",
+    "description": "Dextinity Monorepo",
     "license": "BSD-2-Clause",
     "scripts": {
         "create-site-configs-env": "dotenv -e .env.secrets -e .env.local -e .env -- pnpm exec dextinity inject-site-configs -f demo/site-configs/site-configs.ts -i demo/.env.site-configs.tpl -o demo/.env.site-configs --base64",
@@ -36,8 +36,8 @@
         "lint": "pnpm lint:root && pnpm --recursive run lint && pnpm lint:knip",
         "lint:ci": "pnpm lint:root && pnpm --recursive run lint:ci && pnpm lint:knip",
         "lint:fix": "pnpm --recursive run lint:fix && pnpm lint:fix:root",
-        "lint:fix:root": "pnpm exec prettier --write './!(demo|docs|packages|storybook)/**/*.{ts,js,json,md,yml,yaml}'",
-        "lint:root": "pnpm exec prettier --check './!(demo|docs|packages|storybook)/**/*.{ts,js,json,md,yml,yaml}'",
+        "lint:fix:root": "pnpm exec prettier --write '{,!(demo|docs|packages|storybook)/**/}*.{ts,mts,cts,js,mjs,cjs,json,md,yml,yaml}'",
+        "lint:root": "pnpm exec prettier --check '{,!(demo|docs|packages|storybook)/**/}*.{ts,mts,cts,js,mjs,cjs,json,md,yml,yaml}'",
         "lint:eslint": "pnpm --recursive run lint:eslint",
         "lint:tsc": "pnpm --recursive run lint:tsc",
         "lint:knip": "pnpm --recursive run api-generator && pnpm --recursive run gql:types && pnpm --recursive run build-server && knip --exports --files --dependencies --tags=-knipignore --no-gitignore --exclude enumMembers",
@@ -75,9 +75,9 @@
         "rimraf": "^6.1.2",
         "typescript": "^5.9.3"
     },
-    "packageManager": "pnpm@11.21.0",
+    "packageManager": "pnpm@12.4.2",
     "engines": {
         "node": "24",
-        "pnpm": "11.21.0"
+        "pnpm": "12.4.2"
     }
 }

@@ -1,5 +1,88 @@
 # @comet/admin-color-picker
 
+## 10.7.0
+
+### Patch Changes
+
+- @dextinity/admin@10.7.0
+- @dextinity/admin-icons@10.7.0
+
+## 10.6.0
+
+### Patch Changes
+
+- @dextinity/admin@10.6.0
+- @dextinity/admin-icons@10.6.0
+
+## 10.5.1
+
+### Patch Changes
+
+- @dextinity/admin@10.5.1
+- @dextinity/admin-icons@10.5.1
+
+## 10.5.0
+
+### Patch Changes
+
+- @dextinity/admin@10.5.0
+- @dextinity/admin-icons@10.5.0
+
+## 10.4.0
+
+### Patch Changes
+
+- @dextinity/admin@10.4.0
+- @dextinity/admin-icons@10.4.0
+
+## 10.3.0
+
+### Patch Changes
+
+- Updated dependencies [4d6408f]
+    - @dextinity/admin@10.3.0
+    - @dextinity/admin-icons@10.3.0
+
+## 10.2.0
+
+### Patch Changes
+
+- @dextinity/admin@10.2.0
+- @dextinity/admin-icons@10.2.0
+
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/admin@10.1.0
+- @dextinity/admin-icons@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- Updated dependencies [48748b0]
+    - @dextinity/admin@10.0.1
+    - @dextinity/admin-icons@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin-color-picker` to `@dextinity/admin-color-picker`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme` and the generated CSS class names
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+    - @dextinity/admin-icons@10.0.0
+    - @dextinity/admin@10.0.0
+
 ## 10.0.0-beta.0
 
 ### Major Changes

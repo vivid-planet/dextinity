@@ -25,7 +25,7 @@ npm install @dextinity/mail-react
 - **`react`** is a required peer dependency
 - **`storybook`** is an optional peer dependency — only needed for the Storybook addon
 
-MJML (`mjml` and `mjml-browser`) is bundled as a regular dependency — no separate install needed.
+MJML (`mjml` and `mjml-browser`) comes with the package. A framework that bundles server code, such as Next.js, must list `mjml` in its own `package.json` too, or rendering fails at runtime. Nothing imports it directly, so add it to `ignoreDependencies` in `knip.json` rather than removing it as unused.
 
 ## Storybook Setup
 

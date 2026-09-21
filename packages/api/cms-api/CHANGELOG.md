@@ -1,5 +1,262 @@
 # @comet/cms-api
 
+## 10.7.0
+
+### Minor Changes
+
+- ae93af6: Support heading-only TipTap rich text blocks
+
+    `paragraph` is now a feature of `createTipTapRichTextBlock` like the other text block types, enabled by default. Turning it off results in a heading-only block (e.g. a headline): the text block type select only offers headings, the editor starts with a heading instead of a paragraph, and content containing a paragraph is rejected during validation.
+
+    The `heading` options gain a `defaultLevel`, the level a newly created heading gets. It defaults to the lowest allowed level and must be one of them. `migrateFromDraftJs` uses it for Draft.js blocks that don't carry a heading level, so migrated content doesn't fall back to paragraphs the schema doesn't allow.
+
+    **Example**
+
+    A headline block that only offers H2-H4 and starts with an H3:
+
+    ```tsx
+    createTipTapRichTextBlock({
+        paragraph: false,
+        heading: { levels: [2, 3, 4], defaultLevel: 3 },
+        maxTextBlocks: 1,
+    });
+    ```
+
+    Lists are disabled in a heading-only block, because a list item's content starts with a paragraph. Enabling one explicitly throws, as does turning off `paragraph` and `heading` together, which would leave no text block type at all.
+
+## 10.6.0
+
+### Patch Changes
+
+- 073dcd7: Add the file name to the `Content-Disposition` header of DAM file downloads
+
+    The header was previously set to `attachment` without a file name, so browsers derived the name of the downloaded file from the URL, which contains the file name without its extension.
+
+- 012411c: Add a `Content-Disposition: inline` header with the file name to DAM file endpoints
+
+    The endpoints serving a file for display previously sent no `Content-Disposition` header at all, so browsers derived the name from the URL when saving the file. They now send `inline` together with the file name, which keeps the file being displayed instead of downloaded.
+
+- d6a910e: Include `attachedBlocks` in the input fields of the block meta of one-of blocks
+
+    The block meta of blocks created with `createOneOfBlock` (and `createLinkBlock`) was missing the `attachedBlocks` field in `inputFields`, causing the generated block input types to only contain `activeType`.
+
+## 10.5.1
+
+### Patch Changes
+
+- 9d150e6: Fix scope validation in `PageTreeModule.forRoot` and `DamModule.register` rejecting correctly decorated scope classes
+
+    `@InputType()` doesn't register its metadata immediately, it only queues the registration until a GraphQL schema is built. Since the scope is validated while the module is being defined, the queued registration hadn't run yet and a scope class decorated with `@InputType("PageTreeNodeScopeInput")` could be rejected with:
+
+    ```
+    Error: Invalid input type name for provided page tree scope class.
+    Make sure to decorate the class with @InputType("PageTreeNodeScopeInput")
+    ```
+
+    The queued registrations are now executed before the scope is validated.
+
+## 10.5.0
+
+### Minor Changes
+
+- f4d091f: Allow declaring content scope dimensions at runtime
+
+    Add an optional `availableContentScopeDimensions` option to the `UserPermissionsModule` to declare the content scope dimensions (with optional labels). When omitted, the dimensions are derived from the keys of `availableContentScopes`.
+
+    A content scope may hold any value (including the `"*"` wildcard) for a dimension that is not part of `availableContentScopes`. Content scopes are no longer validated against `availableContentScopes`; access is enforced per request by `isAllowed`, which compares the requested scope against the user's granted scopes.
+
+    **Example**
+
+    ```ts
+    UserPermissionsModule.forRootAsync({
+        useFactory: () => ({
+            availableContentScopes: [ ... ],
+            availableContentScopeDimensions: [{ name: "domain", label: "Domain (Website)" }, { name: "language" }, { name: "product" }],
+            // ...
+        }),
+        // ...
+    });
+    ```
+
+- 0be2f59: Replace the TipTap Rich Text Block's `supports` array with one option per feature
+
+    `createTipTapRichTextBlock` now takes a single root options object with one option per editor feature, similar to TipTap's `StarterKit` configuration. Feature-specific options move into a nested options object of the feature they belong to, so `headingLevels` becomes `heading: { levels: [...] }`.
+
+    Every feature is enabled by default (except `underline`) and is disabled by passing `false`, so a configuration only has to state what deviates from the defaults instead of repeating every supported feature. Links stay the exception: they are enabled by passing the link block as `link`.
+
+    **Example**
+
+    ```ts
+    // Before
+    createTipTapRichTextBlock({
+        supports: ["bold", "italic", "strike", "sub", "sup", "heading", "ordered-list", "unordered-list"],
+        headingLevels: [2, 3],
+    });
+
+    // After
+    createTipTapRichTextBlock({
+        nonBreakingSpace: false,
+        softHyphen: false,
+        heading: { levels: [2, 3] },
+    });
+    ```
+
+    The features are named after their option: `bold`, `italic`, `underline`, `strike`, `sub`, `sup`, `heading`, `orderedList`, `unorderedList`, `nonBreakingSpace`, `softHyphen` and `link`. Additionally, `undoRedoButtons` (Admin only) shows or hides the undo/redo buttons in the toolbar; the keyboard shortcuts work regardless. The document-level limits `maxTextBlocks` and `listLevelMax` are unchanged.
+
+### Patch Changes
+
+- 02bba49: Validate the GraphQL type names of a custom `PageTreeNode` scope passed to `PageTreeModule.forRoot()`
+
+    `PageTreeModule.forRoot()` now throws an error at startup if the provided `Scope` class isn't decorated with `@ObjectType("PageTreeNodeScope")` and `@InputType("PageTreeNodeScopeInput")`, mirroring the existing validation for `DamModule`'s `Scope` option. This prevents runtime GraphQL schema errors caused by an accidentally renamed scope type.
+
+## 10.4.0
+
+### Minor Changes
+
+- a00f0b2: Support wildcard values for content scope dimensions in `getContentScopesForUser`
+
+    `getContentScopesForUser` can now use the wildcard value `"*"` as the value of a content scope dimension to grant access to any value for that dimension. The wildcard is matched during the content scope check, so it does not need to be part of `availableContentScopes`.
+
+    **Example**
+
+    ```ts
+    getContentScopesForUser(user: User): ContentScopesForUser {
+        // Grant access to every language within the "main" domain
+        return [{ domain: "main", language: "*" }];
+    }
+    ```
+
+    For users with access to all content scopes, `currentUser.permissions[].contentScopes` now returns a single wildcard scope (e.g. `[{ domain: "*", language: "*" }]`) instead of the enumerated `availableContentScopes`. The default `isAllowed` and `currentUser.allowedContentScopes` handle the wildcard; a custom `isAllowed` must treat `"*"` as matching any value of a dimension.
+
+## 10.3.0
+
+### Minor Changes
+
+- 0c211e9: Stop deduplicating content scopes in the user permissions API
+
+    `UserPermissionsService.getAvailableContentScopes()`, `getContentScopes()` and `getPermissionsAndContentScopes()` no longer deduplicate their content scopes. Deduplication only mattered for how the scopes are displayed, so it now happens in the admin where the lists are rendered. This also removes the `lodash.uniqwith` dependency.
+
+    Projects that consume `UserPermissionsPublicService` or the `currentUser` / `availableContentScopes` GraphQL fields directly and rely on the scopes being unique should deduplicate them on their side.
+
+- ddea65d: Remove the "Permissions" and "Scopes" columns from the user permissions users list
+
+    The users list now shows the name, the email and the row actions. The `permissionsCount` and `contentScopesCount` fields of `UserPermissionsUser` are deprecated and now return `0`. They will be removed in the next major version.
+
+- 66cb98a: DAM: Allow replacing a file with a file of the same category instead of the same mimetype
+
+    Previously, "Replace File" only accepted a file with the exact same mimetype, so a JPEG couldn't be replaced by a WebP even though both are pixel images. Now a file can be replaced by any file of the same category:
+
+    | Category     | Examples             |
+    | ------------ | -------------------- |
+    | `pixelImage` | JPEG, PNG, WebP      |
+    | `svgImage`   | SVG                  |
+    | `audio`      | MP3, OGG, WAV        |
+    | `video`      | MP4, WebM, QuickTime |
+    | `document`   | PDF, DOCX, VTT, ZIP  |
+
+    SVG images and pixel images remain separate categories.
+
+    Files in the `document` category still require the exact same mimetype, since their purposes vary too much: a VTT file is a video's subtitles, whereas a PDF is a download, so replacing one with the other must not be possible.
+
+    The file's usages stay unchanged. Only the extension of the file's name is adjusted to match the new file (for instance, `photo.jpg` becomes `photo.webp`). If a file with that name already exists in the same folder, a counter is appended to keep the name unique (for instance, `photo-2.webp`), and the Admin shows a snackbar informing about the new name.
+
+    The new `getDamFileCategory` helper is exported from both packages:
+
+    ```ts
+    import { getDamFileCategory } from "@dextinity/cms-api"; // or "@dextinity/cms-admin"
+
+    getDamFileCategory("image/webp"); // "pixelImage"
+    getDamFileCategory("image/svg+xml"); // "svgImage"
+    ```
+
+### Patch Changes
+
+- 3ffe174: Throw a validation error for malformed UUID id args in `@AffectedEntity`
+
+    The permission check loads affected entities before input validation (e.g., `@IsUUID()`) runs, because guards execute before pipes. A malformed UUID therefore reached PostgreSQL, which failed with `invalid input syntax for type uuid` and surfaced as an internal server error.
+
+    Now id args for entities with a UUID primary key (and `pageTreeNodeIdArg` values) are validated upfront, and a `DextinityValidationException` is thrown for malformed UUIDs.
+
+## 10.2.0
+
+### Minor Changes
+
+- a4ec0fe: Make the DAM's scope-based access control optional
+
+    The DAM controllers required an `AccessControlService`, so `DamFilesModule` couldn't be registered without `UserPermissionsModule`. The service is optional now. A DAM that has neither the service nor the option below refuses to start, because its GraphQL resolvers would serve requests unguarded.
+
+    Pass `disableScopeAccessControl` to run the DAM behind your own authentication guard, without any scope checks:
+
+    ```ts
+    DamFilesModule.register({
+        damConfig,
+        Scope: DamScope,
+        File: DamFile,
+        Folder: DamFolder,
+        disableScopeAccessControl: true,
+    });
+    ```
+
+    The option is only available on `DamFilesModule`, not on `DamModule`, which always runs with `UserPermissionsModule`.
+
+    Applications using `DamModule` together with `UserPermissionsModule` are unaffected: the endpoints keep using the registered `AccessControlService`.
+
+- edf2027: Allow restricting selectable heading levels in the TipTap rich text block via a new `headingLevels` option
+
+    `createTipTapRichTextBlock` accepts a new `headingLevels?: number[]` option to limit which heading levels (1-6) are allowed, mirroring the same option added to `@dextinity/cms-admin`. Content with a heading level outside this set is rejected during validation. Defaults to `[1, 2, 3, 4, 5, 6]`, so existing usages are unaffected. Must be a non-empty array of unique integers between 1 and 6, otherwise an error is thrown.
+
+    ```tsx
+    createTipTapRichTextBlock({
+        supports: ["heading"],
+        headingLevels: [2, 3, 4],
+    });
+    ```
+
+## 10.1.0
+
+## 10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/cms-api` to `@dextinity/cms-api`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename `CometException` and its subclasses: `CometValidationException` -> `DextinityValidationException`, `CometEntityNotFoundException` -> `DextinityEntityNotFoundException`, `CometImageResolutionException` -> `DextinityImageResolutionException`. The error codes returned by the API change accordingly, so a matching `@dextinity/cms-admin` version is required
+    - Rename `CometAuthGuard` to `DextinityAuthGuard` and the `@DisableCometGuards()` decorator to `@DisableDextinityGuards()`
+    - Rename the database tables `CometFileUpload`, `CometUserPermission` and `CometUserContentScopes` to `DextinityFileUpload`, `DextinityUserPermission` and `DextinityUserContentScopes`. A migration is shipped with the package, so running the migrations is sufficient
+    - Rename the site preview cookie from `__comet_site_preview` to `__dextinity_site_preview` and the impersonation cookie from `comet-impersonate-user-id` to `dextinity-impersonate-user-id`
+
+### Minor Changes
+
+- 86f90cb: Support `dextinity.com/*` Kubernetes labels and annotations
+
+    The Builds, Cron Jobs and Kubernetes modules now read the labels and annotations of Kubernetes resources with the `dextinity.com` prefix:
+
+    | Previously                      | Now                             |
+    | ------------------------------- | ------------------------------- |
+    | `comet-dxp.com/instance`        | `dextinity.com/instance`        |
+    | `comet-dxp.com/parent-cron-job` | `dextinity.com/parent-cron-job` |
+    | `comet-dxp.com/label`           | `dextinity.com/label`           |
+    | `comet-dxp.com/builder`         | `dextinity.com/builder`         |
+    | `comet-dxp.com/trigger`         | `dextinity.com/trigger`         |
+    | `comet-dxp.com/content-scope`   | `dextinity.com/content-scope`   |
+
+    The `comet-dxp.com` prefix is still supported, so existing Helm charts keep working without changes.
+    Resources are expected to use one prefix or the other: if no resource matches the `dextinity.com` labels, the `comet-dxp.com` ones are used instead.
+
+    **Example**
+
+    ```yaml
+    metadata:
+        annotations:
+            dextinity.com/label: "Demo Cron Job"
+            dextinity.com/content-scope: '{ "domain": "main", "language": "en" }'
+    ```
+
 ## 10.0.0-beta.0
 
 ### Major Changes

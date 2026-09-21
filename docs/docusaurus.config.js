@@ -112,7 +112,7 @@ const config = {
             algolia: {
                 appId: "KRLBC262QV",
                 apiKey: "d7d66be907d32f32828bcb2344e7be6e",
-                indexName: "comet-dxp",
+                indexName: "dextinity",
                 contextualSearch: true,
             },
             mermaid: {

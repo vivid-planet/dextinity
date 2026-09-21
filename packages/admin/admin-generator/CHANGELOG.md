@@ -1,5 +1,130 @@
 # @comet/admin-generator
 
+## 10.7.0
+
+### Patch Changes
+
+- Updated dependencies [ae93af6]
+- Updated dependencies [33cfcdd]
+- Updated dependencies [320f47a]
+- Updated dependencies [0ba6e01]
+    - @dextinity/cms-admin@10.7.0
+    - @dextinity/admin@10.7.0
+    - @dextinity/admin-icons@10.7.0
+
+## 10.6.0
+
+### Patch Changes
+
+- Updated dependencies [65d5f1c]
+    - @dextinity/cms-admin@10.6.0
+    - @dextinity/admin@10.6.0
+    - @dextinity/admin-icons@10.6.0
+
+## 10.5.1
+
+### Patch Changes
+
+- Updated dependencies [d800488]
+- Updated dependencies [9cbbd61]
+- Updated dependencies [97fd75d]
+    - @dextinity/cms-admin@10.5.1
+    - @dextinity/admin@10.5.1
+    - @dextinity/admin-icons@10.5.1
+
+## 10.5.0
+
+### Patch Changes
+
+- Updated dependencies [0be2f59]
+- Updated dependencies [ceca60a]
+    - @dextinity/cms-admin@10.5.0
+    - @dextinity/admin@10.5.0
+    - @dextinity/admin-icons@10.5.0
+
+## 10.4.0
+
+### Patch Changes
+
+- Updated dependencies [4b9ead5]
+- Updated dependencies [4b9ead5]
+- Updated dependencies [b6cbbd9]
+- Updated dependencies [a00f0b2]
+    - @dextinity/cms-admin@10.4.0
+    - @dextinity/admin@10.4.0
+    - @dextinity/admin-icons@10.4.0
+
+## 10.3.0
+
+### Patch Changes
+
+- Updated dependencies [504c97f]
+- Updated dependencies [12be273]
+- Updated dependencies [4d6408f]
+- Updated dependencies [876887b]
+- Updated dependencies [0c211e9]
+- Updated dependencies [ddea65d]
+- Updated dependencies [66cb98a]
+    - @dextinity/cms-admin@10.3.0
+    - @dextinity/admin@10.3.0
+    - @dextinity/admin-icons@10.3.0
+
+## 10.2.0
+
+### Patch Changes
+
+- Updated dependencies [7f9e1f7]
+- Updated dependencies [edf2027]
+- Updated dependencies [30fad2a]
+    - @dextinity/cms-admin@10.2.0
+    - @dextinity/admin@10.2.0
+    - @dextinity/admin-icons@10.2.0
+
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/admin@10.1.0
+- @dextinity/admin-icons@10.1.0
+- @dextinity/cms-admin@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- Updated dependencies [48748b0]
+    - @dextinity/admin@10.0.1
+    - @dextinity/cms-admin@10.0.1
+    - @dextinity/admin-icons@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin-generator` to `@dextinity/admin-generator`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the `comet-admin-generator` binary to `dextinity-admin-generator`:
+
+        ```diff
+        - "generate-admin": "comet-admin-generator generate"
+        + "generate-admin": "dextinity-admin-generator generate"
+        ```
+
+    - Rename the config file suffix from `.cometGen.tsx` to `.dextinityGen.tsx`. The default file pattern is now `src/**/*.dextinityGen.{ts,tsx}`
+    - Change the header of generated files. Rerun the generator to update them
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+    - @dextinity/admin-icons@10.0.0
+    - @dextinity/admin@10.0.0
+    - @dextinity/cms-admin@10.0.0
+
 ## 10.0.0-beta.0
 
 ### Major Changes

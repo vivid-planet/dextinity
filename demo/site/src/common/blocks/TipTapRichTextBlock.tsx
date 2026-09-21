@@ -5,7 +5,6 @@ import {
     type PropsWithData,
     renderTipTapRichText,
     type TipTapMarkHandler,
-    type TipTapNode,
     type TipTapNodeHandler,
     withPreview,
 } from "@dextinity/site-nextjs";
@@ -14,6 +13,7 @@ import { PageLayout } from "@src/layout/PageLayout";
 import { ProductPriceBlock } from "@src/products/blocks/ProductPriceBlock";
 import { ProductTeaserBlock } from "@src/products/blocks/ProductTeaserBlock";
 import type { LoadedData as ProductTeaserLoadedData } from "@src/products/blocks/ProductTeaserBlock.loader";
+import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 
 import { Typography, type TypographyProps } from "../components/Typography";
 import { isValidLink } from "../helpers/HiddenIfInvalidLink";
@@ -88,7 +88,7 @@ interface TipTapRichTextBlockProps extends PropsWithData<TipTapRichTextBlockData
 
 export const TipTapRichTextBlock = withPreview(
     ({ data, disableLastBottomSpacing }: TipTapRichTextBlockProps) => {
-        const content = data.tipTapContent as TipTapNode;
+        const content = data.tipTapContent;
         const rendered = renderTipTapRichText({ content, nodeMapping, markMapping });
 
         return (
@@ -103,7 +103,9 @@ export const TipTapRichTextBlock = withPreview(
 export const PageContentTipTapRichTextBlock = (props: PropsWithData<TipTapRichTextBlockData>) => (
     <PageLayout grid>
         <div className={styles.pageLayoutContent}>
-            <TipTapRichTextBlock {...props} />
+            <AnimateBoxInOnScroll direction="bottom" offset={300}>
+                <TipTapRichTextBlock {...props} />
+            </AnimateBoxInOnScroll>
         </div>
     </PageLayout>
 );

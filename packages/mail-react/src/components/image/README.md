@@ -1,3 +1,0 @@
-# Image
-
-An image in an email needs to fit the viewport as it narrows below the body-width breakpoint, but the upstream MJML image inlines a fixed pixel height and the bare HTML `<img>` keeps its declared width — both produce overflowing or oversized images on mobile clients. Consumers worked around this by repeating a media-query override per image template, and the pixel-image blocks shipped with their own copy of the same override. `HtmlImage` (for raw HTML context) and `MjmlImage` (for MJML context, replacing the upstream re-export) wrap their respective base elements with a stable BEM class and the override — making responsive sizing the default for any image rendered through this package.

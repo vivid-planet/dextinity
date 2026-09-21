@@ -1,5 +1,105 @@
 # @comet/brevo-api
 
+## 10.7.0
+
+### Patch Changes
+
+- 2b42996: Add `@RootBlockEntity()` and `@EntityInfo()` to the email campaign entity
+
+    The entity created by `createEmailCampaignEntity` has a root block (`content`), but was missing `@RootBlockEntity()`, so it wasn't picked up by the root block discovery. Blocks used inside an email campaign therefore never appeared in the block index: dependencies of the campaign's content weren't tracked, DAM files used in a campaign showed no usages, and their IDs weren't remapped when copying between scopes.
+
+    `@EntityInfo()` was missing as well, so the campaign had no entry in the `EntityInfo` view. Anything referencing a campaign (dependencies and warnings) couldn't resolve a name for it and logged a warning about the missing decorator instead.
+
+    The entity now uses `title` as name and `subject` as secondary information.
+
+- Updated dependencies [ae93af6]
+    - @dextinity/cms-api@10.7.0
+
+## 10.6.0
+
+### Patch Changes
+
+- Updated dependencies [073dcd7]
+- Updated dependencies [012411c]
+- Updated dependencies [d6a910e]
+    - @dextinity/cms-api@10.6.0
+
+## 10.5.1
+
+### Patch Changes
+
+- Updated dependencies [9d150e6]
+    - @dextinity/cms-api@10.5.1
+
+## 10.5.0
+
+### Patch Changes
+
+- 72d0ba7: Replace `axios` with the native `fetch` API when requesting the email campaign content from the frontend
+
+    This removes the `@nestjs/axios` and `axios` dependencies from the package.
+
+- Updated dependencies [f4d091f]
+- Updated dependencies [0be2f59]
+- Updated dependencies [02bba49]
+    - @dextinity/cms-api@10.5.0
+
+## 10.4.0
+
+### Patch Changes
+
+- Updated dependencies [a00f0b2]
+    - @dextinity/cms-api@10.4.0
+
+## 10.3.0
+
+### Patch Changes
+
+- Updated dependencies [0c211e9]
+- Updated dependencies [ddea65d]
+- Updated dependencies [66cb98a]
+- Updated dependencies [3ffe174]
+    - @dextinity/cms-api@10.3.0
+
+## 10.2.0
+
+### Patch Changes
+
+- Updated dependencies [a4ec0fe]
+- Updated dependencies [edf2027]
+    - @dextinity/cms-api@10.2.0
+
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/cms-api@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- @dextinity/cms-api@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/brevo-api` to `@dextinity/brevo-api`
+
+    Update the dependency in `package.json` and all imports:
+
+    ```diff
+    - import { BrevoModule } from "@comet/brevo-api";
+    + import { BrevoModule } from "@dextinity/brevo-api";
+    ```
+
+### Patch Changes
+
+- Updated dependencies [86f90cb]
+- Updated dependencies [f843a5e]
+    - @dextinity/cms-api@10.0.0
+
 ## 10.0.0-beta.0
 
 ### Major Changes

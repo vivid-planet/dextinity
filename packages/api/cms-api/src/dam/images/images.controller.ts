@@ -28,12 +28,11 @@ import { Extension, Gravity, ResizingType } from "../../imgproxy/imgproxy.enum";
 import { ImgproxyService } from "../../imgproxy/imgproxy.service";
 import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
 import { CurrentUser } from "../../user-permissions/dto/current-user";
-import { ACCESS_CONTROL_SERVICE } from "../../user-permissions/user-permissions.constants";
-import { AccessControlServiceInterface } from "../../user-permissions/user-permissions.types";
 import { DamConfig } from "../dam.config";
 import { DAM_CONFIG } from "../dam.constants";
 import { FileInterface } from "../files/entities/file.entity";
 import { FilesService } from "../files/files.service";
+import { DamScopeAccessControlService } from "../scope-access-control.service";
 import { HashImageParams, ImageParams } from "./dto/image.params";
 import { ImagesService } from "./images.service";
 
@@ -51,7 +50,7 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
             private readonly imagesService: ImagesService,
             private readonly cacheService: ScaledImagesCacheService,
             @Inject(forwardRef(() => BlobStorageBackendService)) private readonly blobStorageBackendService: BlobStorageBackendService,
-            @Inject(ACCESS_CONTROL_SERVICE) private accessControlService: AccessControlServiceInterface,
+            private readonly scopeAccessControl: DamScopeAccessControlService,
         ) {}
 
         @Get(`/preview{/:contentHash}/${focusImageUrl}`)
@@ -74,7 +73,7 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
-            if (file.scope !== undefined && !this.accessControlService.isAllowed(user, "dam", file.scope)) {
+            if (file.scope !== undefined && !this.scopeAccessControl.isAllowed(user, file.scope)) {
                 throw new ForbiddenException();
             }
 
@@ -104,7 +103,7 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
-            if (file.scope !== undefined && !this.accessControlService.isAllowed(user, "dam", file.scope)) {
+            if (file.scope !== undefined && !this.scopeAccessControl.isAllowed(user, file.scope)) {
                 throw new ForbiddenException();
             }
 

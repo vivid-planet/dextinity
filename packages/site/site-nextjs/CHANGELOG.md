@@ -1,5 +1,96 @@
 # @comet/site-nextjs
 
+## 10.7.0
+
+### Patch Changes
+
+- Updated dependencies [ae93af6]
+    - @dextinity/site-react@10.7.0
+
+## 10.6.0
+
+### Patch Changes
+
+- Updated dependencies [1059762]
+- Updated dependencies [4028c49]
+    - @dextinity/site-react@10.6.0
+
+## 10.5.1
+
+### Patch Changes
+
+- 3a6c451: Make the generated `TipTapNode` type compatible with TipTap's `JSONContent`
+
+    `TipTapNode["type"]` is optional now, matching `JSONContent["type"]`. Both types can be used interchangeably, so no cast is needed when passing a rich text block's content to a TipTap utility or when rendering a `JSONContent` value with `renderTipTapRichText`. `renderTipTapRichText` renders a node without a `type` as a text node.
+
+    **Example**
+
+    ```ts
+    import { generateHTML } from "@tiptap/core";
+    import type { TipTapRichTextBlockData } from "@src/blocks.generated";
+
+    function renderToHtml(data: TipTapRichTextBlockData) {
+        return generateHTML(data.tipTapContent, extensions);
+    }
+    ```
+
+- Updated dependencies [3a6c451]
+    - @dextinity/site-react@10.5.1
+
+## 10.5.0
+
+### Patch Changes
+
+- @dextinity/site-react@10.5.0
+
+## 10.4.0
+
+### Patch Changes
+
+- Updated dependencies [0e88bab]
+    - @dextinity/site-react@10.4.0
+
+## 10.3.0
+
+### Patch Changes
+
+- @dextinity/site-react@10.3.0
+
+## 10.2.0
+
+### Patch Changes
+
+- @dextinity/site-react@10.2.0
+
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/site-react@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- @dextinity/site-react@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/site-nextjs` to `@dextinity/site-nextjs`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the `cometType` property of iframe messages to `dextinityType`. A matching `@dextinity/cms-admin` version is required
+    - Rename the site preview cookie from `__comet_site_preview` to `__dextinity_site_preview`. A matching `@dextinity/cms-api` version is required
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+    - @dextinity/site-react@10.0.0
+
 ## 10.0.0-beta.0
 
 ### Major Changes

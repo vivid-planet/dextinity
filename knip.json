@@ -5,7 +5,7 @@
             "entry": ["dev-pm.config.ts"],
             "project": ["*.{js,ts,tsx}"],
             "ignoreDependencies": ["open-cli"],
-            "ignoreBinaries": ["oauth2-proxy", "playwright"]
+            "ignoreBinaries": ["oauth2-proxy", "peers", "playwright"]
         },
         "packages/cli": {
             "project": ["./src/**/*.{ts,tsx}"]
@@ -107,7 +107,7 @@
         "demo/site": {
             "entry": ["./src/app/**", "./cache-handler.ts", "./server.ts", "./opentelemetry-metrics.ts", "tracing.dev.ts", "tracing.production.ts"],
             "project": ["./src/**/*.{ts,tsx}"],
-            "ignoreDependencies": ["@babel/core", "@types/grecaptcha"],
+            "ignoreDependencies": ["@babel/core", "@types/grecaptcha", "mjml"],
             "ignore": ["**/*.generated.ts"]
         },
         "storybook": {

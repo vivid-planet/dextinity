@@ -2,9 +2,8 @@ name: i18n
 
 on:
     push:
-        # Temporarily runs on next instead of main while the rebranding is in progress
         branches:
-            - next
+            - main
 
 jobs:
     i18n:

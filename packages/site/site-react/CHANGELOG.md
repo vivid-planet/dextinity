@@ -1,5 +1,87 @@
 # @comet/site-react
 
+## 10.7.0
+
+### Patch Changes
+
+- ae93af6: Treat a document with only empty headings as empty in `hasTipTapRichTextContent`
+
+    An empty heading renders nothing, just like an empty paragraph, so a heading-only TipTap rich text block now shows the preview skeleton while it has no text.
+
+## 10.6.0
+
+### Minor Changes
+
+- 4028c49: Pass the item index as second argument to `ListBlock`'s `block` function
+
+    This allows rendering list items based on their position, for instance, to stagger scroll-in animations.
+
+    **Example**
+
+    ```tsx
+    <ListBlock
+        data={data}
+        block={(block, index) => (
+            <AnimateBoxInOnScroll direction="bottom" delay={200 * index}>
+                <KeyFactItemBlock data={block} />
+            </AnimateBoxInOnScroll>
+        )}
+    />
+    ```
+
+### Patch Changes
+
+- 1059762: Add `rel="noopener"` to `DamFileDownloadLinkBlock` links that open in a new tab
+
+    Links with `target="_blank"` gave the opened page access to `window.opener`, allowing it to redirect the original tab (reverse tabnabbing). `rel="noopener"` is now set whenever the link opens in a new tab, whether via `openFileType: "NewTab"` or an explicitly passed `target="_blank"`.
+
+## 10.5.1
+
+### Patch Changes
+
+- 3a6c451: Make the generated `TipTapNode` type compatible with TipTap's `JSONContent`
+
+    `TipTapNode["type"]` is optional now, matching `JSONContent["type"]`. Both types can be used interchangeably, so no cast is needed when passing a rich text block's content to a TipTap utility or when rendering a `JSONContent` value with `renderTipTapRichText`. `renderTipTapRichText` renders a node without a `type` as a text node.
+
+    **Example**
+
+    ```ts
+    import { generateHTML } from "@tiptap/core";
+    import type { TipTapRichTextBlockData } from "@src/blocks.generated";
+
+    function renderToHtml(data: TipTapRichTextBlockData) {
+        return generateHTML(data.tipTapContent, extensions);
+    }
+    ```
+
+## 10.5.0
+
+## 10.4.0
+
+### Patch Changes
+
+- 0e88bab: Fix block preview outlines being cut off when `IFrameBridgeProvider` does not start at the left edge of the page, for instance because of padding or centering
+
+## 10.3.0
+
+## 10.2.0
+
+## 10.1.0
+
+## 10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/site-react` to `@dextinity/site-react`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the `cometType` property of iframe messages to `dextinityType`. A matching `@dextinity/cms-admin` version is required
+    - Rename the window property of `useLocalStorageCookieApi` from `window.cometLocalStorageCookieApi` to `window.dextinityLocalStorageCookieApi` and its localStorage key from `comet-dev-cookie-api-consented-cookies` to `dextinity-dev-cookie-api-consented-cookies`. Previously consented cookies are therefore reset in local development
+
 ## 10.0.0-beta.0
 
 ### Major Changes

@@ -127,7 +127,7 @@ export const AllFieldComponents = {
                                         label={
                                             <>
                                                 This label has a{" "}
-                                                <Link href="https://www.comet-dxp.com" target="_blank">
+                                                <Link href="https://www.dextinity.com" target="_blank">
                                                     link
                                                 </Link>{" "}
                                                 inside of it.

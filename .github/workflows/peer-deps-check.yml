@@ -24,4 +24,4 @@ jobs:
 
             - name: Check peer dependencies
               # This will fail if peer dependencies are not satisfied
-              run: pnpm install --resolution-only --no-frozen-lockfile
+              run: pnpm peers --lockfile-only

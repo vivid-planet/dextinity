@@ -1,0 +1,139 @@
+name: CMS API Memory
+
+# Guards the base memory of @dextinity/cms-api: importing the package eagerly loads its dependency
+# graph, which dominates the API's startup memory and time. This compares the PR against the base
+# branch and comments if the base memory grew notably (usually a newly added eager import that
+# should be lazy-loaded instead) or dropped notably. The comment is removed once the change is
+# back within the threshold band.
+
+on:
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        paths:
+            - "packages/api/cms-api/**"
+
+permissions:
+    contents: read
+    pull-requests: write
+
+env:
+    # Comment when the heap grows by more than INCREASE% or shrinks by more than DECREASE%;
+    # stay silent (and remove any existing comment) within that band. MEM_SAMPLES is the number
+    # of isolated samples per measurement.
+    MEM_INCREASE_THRESHOLD_PERCENT: "3"
+    MEM_DECREASE_THRESHOLD_PERCENT: "5"
+    MEM_SAMPLES: "7"
+
+jobs:
+    memory:
+        name: Check cms-api base memory
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  fetch-depth: 0
+                  ref: ${{ github.event.pull_request.head.sha }}
+
+            - uses: ./.github/actions/setup
+              with:
+                  setup-ci: "false"
+                  build-packages: "false"
+
+            - name: Build cms-api (PR)
+              run: pnpm --filter '@dextinity/cms-api' run build
+
+            - name: Measure cms-api base memory (PR)
+              run: node scripts/measure-cms-api-memory.cjs > pr-memory.json
+
+            # The measurement script lives on the PR branch and would be removed when checking out
+            # the base commit, so copy it somewhere outside the working tree first.
+            - name: Stash measurement script
+              run: cp scripts/measure-cms-api-memory.cjs "$RUNNER_TEMP/measure-cms-api-memory.cjs"
+
+            - name: Check out base branch
+              run: |
+                  git fetch origin ${{ github.event.pull_request.base.ref }}
+                  git checkout --force ${{ github.event.pull_request.base.sha }}
+
+            - name: Install base dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build cms-api (base)
+              run: pnpm --filter '@dextinity/cms-api' run build
+
+            - name: Measure cms-api base memory (base)
+              run: node "$RUNNER_TEMP/measure-cms-api-memory.cjs" > base-memory.json
+
+            - name: Compare and comment
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const fs = require("fs");
+                      const marker = "<!-- cms-api-memory-check -->";
+                      const increaseThreshold = Number(process.env.MEM_INCREASE_THRESHOLD_PERCENT);
+                      const decreaseThreshold = Number(process.env.MEM_DECREASE_THRESHOLD_PERCENT);
+
+                      const pr = JSON.parse(fs.readFileSync("pr-memory.json", "utf8"));
+                      const base = JSON.parse(fs.readFileSync("base-memory.json", "utf8"));
+
+                      // Gate on heap only: heap is the retained object graph and is deterministic across
+                      // runs, whereas RSS (allocator pages, native memory) swings by several percent from
+                      // noise alone — a delta wider than the threshold, so it would be misleading to report.
+                      const heapPct = ((pr.heapBytes - base.heapBytes) / base.heapBytes) * 100;
+                      const increased = heapPct > increaseThreshold;
+                      const decreased = heapPct < -decreaseThreshold;
+
+                      core.info(`base heap ${base.heapMB}MB`);
+                      core.info(`pr   heap ${pr.heapMB}MB`);
+                      core.info(`Δ heap ${heapPct.toFixed(1)}% (thresholds +${increaseThreshold}% / -${decreaseThreshold}%)`);
+
+                      const fmt = (n) => `${n > 0 ? "+" : ""}${n.toFixed(1)}%`;
+                      const measuredNote = `<sub>Measured as the minimum of ${pr.samples} isolated \`require\` samples with forced GC.</sub>`;
+                      const table =
+                          `| metric | base | this PR | Δ |\n` +
+                          `| --- | --- | --- | --- |\n` +
+                          `| heap | ${base.heapMB} MB | ${pr.heapMB} MB | ${fmt(heapPct)} |\n`;
+                      const baseRef = context.payload.pull_request.base.ref;
+
+                      const increasedBody =
+                          `${marker}\n` +
+                          `### ⚠️ \`@dextinity/cms-api\` base memory increased by ${fmt(heapPct)}\n\n` +
+                          `Loading \`@dextinity/cms-api\` (\`require("@dextinity/cms-api")\`) now uses **${fmt(heapPct)}** more heap than \`${baseRef}\` (threshold: +${increaseThreshold}%).\n\n` +
+                          table +
+                          `\nThis usually means a new dependency is **imported eagerly** at module load time. ` +
+                          `Since this memory is paid by every consumer on startup (and by the migration init container), please consider **lazy-loading** it:\n\n` +
+                          "- Use a lazy `require()` / dynamic `import()` inside the function that needs it, and keep type-only imports as `import type`.\n" +
+                          "- Avoid module-scope side effects (e.g. instantiating a client at import time).\n\n" +
+                          measuredNote;
+
+                      const decreasedBody =
+                          `${marker}\n` +
+                          `### 📉 \`@dextinity/cms-api\` base memory decreased by ${Math.abs(heapPct).toFixed(1)}%\n\n` +
+                          `Loading \`@dextinity/cms-api\` (\`require("@dextinity/cms-api")\`) now uses **${fmt(heapPct)}** heap versus \`${baseRef}\` (threshold: -${decreaseThreshold}%). Nice.\n\n` +
+                          table +
+                          measuredNote;
+
+                      const { owner, repo } = context.repo;
+                      const issue_number = context.issue.number;
+                      const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number });
+                      const existing = comments.find((c) => c.body && c.body.includes(marker));
+
+                      if (increased || decreased) {
+                          const body = increased ? increasedBody : decreasedBody;
+                          if (existing) {
+                              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+                          } else {
+                              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+                          }
+                          if (increased) {
+                              core.warning(`cms-api base memory increased by ${heapPct.toFixed(1)}% (threshold +${increaseThreshold}%)`);
+                          } else {
+                              core.info(`cms-api base memory decreased by ${Math.abs(heapPct).toFixed(1)}% (threshold -${decreaseThreshold}%)`);
+                          }
+                      } else if (existing) {
+                          // Back within the threshold band — remove the now-irrelevant comment.
+                          await github.rest.issues.deleteComment({ owner, repo, comment_id: existing.id });
+                      }

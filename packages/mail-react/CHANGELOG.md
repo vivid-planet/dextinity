@@ -1,5 +1,98 @@
 # @comet/mail-react
 
+## 10.7.0
+
+## 10.6.0
+
+## 10.5.1
+
+## 10.5.0
+
+### Patch Changes
+
+- 82dfa79: Fix rounded images rendering a pixel too large in classic Outlook
+
+    Two images side by side made their section wider than the body width. Affects `MjmlImage`, `HtmlImage`, `MjmlPixelImageBlock` and `HtmlPixelImageBlock`.
+
+## 10.4.0
+
+### Patch Changes
+
+- 98c1097: Fix head CSS lost after the first `@media` block in Outlook.com and the Outlook apps for iOS and Android
+
+    These clients stop reading a `<style>` tag at the first `}}`, which minified CSS writes at the end of every `@media` block.
+
+- bb5d22a: Apply the Storybook addon's **"Use public image URLs"** toggle to the Outlook VML image source
+- 583dd13: Fix `borderRadius` on images in classic Outlook, which rounded corners twice as much as the value asked for
+
+## 10.3.0
+
+### Patch Changes
+
+- f3f00f2: Fix crash when a rounded pixel-image block has no alt text or link
+- b873623: Minify the registered styles, so Gmail is less likely to drop a mail's CSS
+
+## 10.2.0
+
+### Minor Changes
+
+- bdd62e9: Add a `borderRadius` prop to `MjmlImage`, `HtmlImage`, `MjmlPixelImageBlock` and `HtmlPixelImageBlock`
+
+    **Example**
+
+    ```tsx
+    <MjmlImage src="https://example.com/image.jpg" alt="Example" width={520} borderRadius={16} />
+    ```
+
+    A `style` prop passed by the caller wins over `borderRadius`.
+
+### Patch Changes
+
+- f3e81aa: Round images in classic Outlook
+
+    `borderRadius` on `MjmlImage`, `HtmlImage`, `MjmlPixelImageBlock` and `HtmlPixelImageBlock` now also rounds the image in classic Outlook.
+
+    Classic Outlook rounds the image only when `width` and `height` are given in pixels, and the radius is given in pixels or as `"50%"`. In every other case the image stays square in that client.
+
+- c980b75: Fix the `MjmlButton` background image not reaching clients that drop `<style>` blocks
+
+## 10.1.0
+
+### Minor Changes
+
+- b0577d5: Add `list` to the RichText block's `blockTypes`, so a custom block type renders as a list
+
+    Use it for a list in more than one text variant. A draft block has only one block type, so each variant needs a block type of its own.
+
+    **Example**
+
+    ```tsx
+    export const { MjmlRichTextBlock, HtmlRichTextBlock } = createRichTextBlock({
+        blockTypes: {
+            "unordered-list-item": { variant: "copy" },
+            "unordered-list-item-large": { variant: "copyLarge", list: "unordered" },
+            "ordered-list-item-large": { variant: "copyLarge", list: "ordered" },
+        },
+    });
+    ```
+
+    For backward compatibility, `unordered-list-item` and `ordered-list-item` still render as lists without `list`.
+
+## 10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/mail-react` to `@dextinity/mail-react`
+
+    Update the dependency in `package.json` and all imports:
+
+    ```diff
+    - import { MjmlPixelImageBlock } from "@comet/mail-react";
+    + import { MjmlPixelImageBlock } from "@dextinity/mail-react";
+    ```
+
 ## 10.0.0-beta.0
 
 ### Major Changes

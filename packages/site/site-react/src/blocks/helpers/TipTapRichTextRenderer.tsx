@@ -1,17 +1,8 @@
 import { cloneElement, isValidElement, type ReactNode } from "react";
 
-export interface TipTapMark {
-    type: string;
-    attrs?: Record<string, unknown>;
-}
+import type { TipTapMark, TipTapNode } from "../../blocks.generated";
 
-export interface TipTapNode {
-    type: string;
-    attrs?: Record<string, unknown>;
-    content?: TipTapNode[];
-    marks?: TipTapMark[];
-    text?: string;
-}
+export type { TipTapMark, TipTapNode };
 
 export interface TipTapNodeHandlerProps {
     node: TipTapNode;
@@ -82,7 +73,7 @@ export function renderTipTapRichText({ content, nodeMapping, markMapping }: Rend
     };
 
     const renderNode = (node: TipTapNode, parent: TipTapNode | undefined): ReactNode => {
-        if (node.type === "text") {
+        if (!node.type || node.type === "text") {
             return applyMarks(node.text ?? "", node);
         }
 
@@ -103,9 +94,13 @@ export function renderTipTapRichText({ content, nodeMapping, markMapping }: Rend
     return renderNode(content, undefined);
 }
 
+// An empty text block renders nothing, no matter which type it has. A heading-only block starts
+// out with an empty heading, just like a regular rich text block starts out with an empty paragraph.
+const isEmptyableTextBlock = (node: TipTapNode): boolean => node.type === "paragraph" || node.type === "heading";
+
 export function hasTipTapRichTextContent(content: TipTapNode | null | undefined): boolean {
     if (!content?.content || !Array.isArray(content.content)) {
         return false;
     }
-    return content.content.some((node) => node.type !== "paragraph" || (Array.isArray(node.content) && node.content.length > 0));
+    return content.content.some((node) => !isEmptyableTextBlock(node) || (Array.isArray(node.content) && node.content.length > 0));
 }

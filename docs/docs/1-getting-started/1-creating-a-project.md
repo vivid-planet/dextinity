@@ -21,7 +21,7 @@ Now, you are ready to create a new Dextinity project.
 
 To create a new Dextinity application, execute the following command in your OS command line:
 
-`npx @comet/create-app <project-name>`
+`npx @dextinity/create-app <project-name>`
 
 ## Installation
 

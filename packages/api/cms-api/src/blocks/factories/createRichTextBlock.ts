@@ -81,7 +81,7 @@ export function createRichTextBlock<LinkBlock extends Block>(
 
     @BlockDataMigrationVersion(migrate.version)
     class RichTextBlockData extends BlockData {
-        @BlockField({ type: "json" })
+        @BlockField({ type: "richTextBlock", linkBlock: LinkBlock })
         draftContent: RawDraftContentState;
 
         searchText(): SearchText[] {
@@ -127,7 +127,7 @@ export function createRichTextBlock<LinkBlock extends Block>(
 
     class RichTextBlockInput implements RichTextBlockInputInterface<ExtractBlockInput<LinkBlock>> {
         @IsDraftContent(LinkBlock)
-        @BlockField({ type: "json" })
+        @BlockField({ type: "richTextBlock", linkBlock: LinkBlock })
         draftContent: DraftJsInput<ExtractBlockInput<LinkBlock>>;
 
         transformToBlockData(): RichTextBlockData {

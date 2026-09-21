@@ -503,7 +503,7 @@ export interface HeadlineBlockData {
 
 Having the block data in place, we can now render the blocks.
 The rendering logic for each block type is recommended to be implemented in a separate component.
-You can find example implementations [in the demo project in the comet repository](https://github.com/vivid-planet/dextinity/tree/main/demo/site/src/common/blocks), e.g. the [HeadlineBlock](https://github.com/vivid-planet/dextinity/blob/a737ccc2f0826b236b49d63129a6a49e7f790993/demo/site/src/blocks/HeadlineBlock.tsx#L36) component.
+You can find example implementations [in the demo project in the Dextinity repository](https://github.com/vivid-planet/dextinity/tree/main/demo/site/src/common/blocks), e.g. the [HeadlineBlock](https://github.com/vivid-planet/dextinity/blob/a737ccc2f0826b236b49d63129a6a49e7f790993/demo/site/src/blocks/HeadlineBlock.tsx#L36) component.
 
 The `@dextinity/site-react` package provides implementations for some important helper blocks:
 
@@ -715,6 +715,6 @@ More information on how to integrate and work with Dextinity's block preview can
 
 ## Further Reading / Information
 
-- [Dextinity Starter - Next Site - Blueprint for new Dextinity Projects](https://github.com/vivid-planet/comet-starter/tree/main/site)
-- [Dextinity Starter - Page Tree Node Query](https://github.com/vivid-planet/comet-starter/blob/main/site/src/documents/pages/Page.tsx)
-- [Dextinity Starter - Rendering blocks with Blocks Block](https://github.com/vivid-planet/comet-starter/blob/main/site/src/documents/pages/blocks/PageContentBlock.tsx)
+- [Dextinity Starter - Next Site - Blueprint for new Dextinity Projects](https://github.com/vivid-planet/dextinity-starter/tree/main/site)
+- [Dextinity Starter - Page Tree Node Query](https://github.com/vivid-planet/dextinity-starter/blob/main/site/src/documents/pages/Page.tsx)
+- [Dextinity Starter - Rendering blocks with Blocks Block](https://github.com/vivid-planet/dextinity-starter/blob/main/site/src/documents/pages/blocks/PageContentBlock.tsx)

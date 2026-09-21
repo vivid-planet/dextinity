@@ -7,4 +7,4 @@ Structured data is application-specific data that is managed by the customer. Th
 
 ## Table/Form
 
-For more information, please visit the [comet-admin documentation](https://cms-storybook.dextinity.com/?path=/docs/docs-intro--docs).
+For more information, please visit the [Dextinity CMS Storybook](https://cms-storybook.dextinity.com/?path=/docs/docs-intro--docs).

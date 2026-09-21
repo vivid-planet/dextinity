@@ -6,6 +6,7 @@ type Story = StoryObj<typeof DateTimeField>;
 const config: Meta<typeof DateTimeField> = {
     component: DateTimeField,
     title: "@dextinity/admin-date-time/dateTimePicker/DateTimeField",
+    tags: ["deprecated"],
 };
 export default config;
 

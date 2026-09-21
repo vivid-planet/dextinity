@@ -33,6 +33,7 @@ import { SoftHyphen } from "./extensions/SoftHyphen";
 import { createTextBlock } from "./extensions/TextBlock";
 import { TextBlockListItem } from "./extensions/TextBlockListItem";
 import { buildDraftJsToTipTapMigration } from "./migrations/buildDraftJsToTipTapMigration";
+import { buildTextBlockNodeMigration } from "./migrations/buildTextBlockNodeMigration";
 import { assertDraftJsHeadingsAreUnambiguous, type TextBlockMapping } from "./migrations/convertDraftJsToTipTap";
 import {
     defaultTextBlocks,
@@ -668,24 +669,31 @@ export function createTipTapRichTextBlock(
         assertDraftJsHeadingsAreUnambiguous({ resolvedOptions, textBlockMap: draftJsTextBlockMap });
     }
 
-    const migrateVendor: MigrateVendorOptions | undefined = migrateFromDraftJs
-        ? {
-              version: 1,
-              migrations: [
-                  buildDraftJsToTipTapMigration({
-                      schema,
-                      resolvedOptions,
-                      link: LinkBlock,
-                      maxTextBlocks,
-                      listLevelMax,
-                      textBlockMap: draftJsTextBlockMap,
-                      inlineStyleMap: draftJsInlineStyleMap,
-                  }),
-              ],
-              // The DraftJS migration was version 1 of the block before it moved into the vendor chain
-              legacyVersions: 1,
-          }
-        : undefined;
+    // The vendor chain has to be gapless, so the text block node migration takes the version the
+    // DraftJS migration leaves free. A block never gains or loses migrateFromDraftJs after it has
+    // stored content, so the version a given block counts with doesn't change either.
+    const textBlockNodeVersion = migrateFromDraftJs ? 2 : 1;
+    const migrateVendor: MigrateVendorOptions = {
+        version: textBlockNodeVersion,
+        migrations: [
+            ...(migrateFromDraftJs
+                ? [
+                      buildDraftJsToTipTapMigration({
+                          schema,
+                          resolvedOptions,
+                          link: LinkBlock,
+                          maxTextBlocks,
+                          listLevelMax,
+                          textBlockMap: draftJsTextBlockMap,
+                          inlineStyleMap: draftJsInlineStyleMap,
+                      }),
+                  ]
+                : []),
+            buildTextBlockNodeMigration({ toVersion: textBlockNodeVersion, resolvedOptions }),
+        ],
+        // The DraftJS migration was version 1 of the block before it moved into the vendor chain
+        ...(migrateFromDraftJs ? { legacyVersions: 1 } : {}),
+    };
 
     @BlockDataMigrationVersion(migrate?.version, migrateVendor?.version)
     class TipTapRichTextBlockData extends BlockData implements TipTapRichTextBlockDataInterface {

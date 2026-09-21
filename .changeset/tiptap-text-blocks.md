@@ -41,7 +41,9 @@ Every paragraph and heading is now one `textBlock` node that names its text bloc
 
 The tag lives in the configuration, so changing a text block's `tag` takes effect without a migration, while renaming or removing one invalidates the content that names it.
 
-Content stored by an earlier version still holds `paragraph` and `heading` nodes. The API rejects those during validation and `renderTipTapRichText` renders them without their tag, so a project has to convert its content before updating. A conversion is not part of this release.
+Content stored by an earlier version holds `paragraph` and `heading` nodes. A vendor migration converts it when the block is loaded, so a project needs no migration of its own. It resolves the text block from the node's tag, which is unambiguous for that content: two text blocks could not share a tag before `textBlocks` existed.
+
+A project migration sees the converted nodes, because the vendor migrations run before the block's own. A migration written against `{ type: "heading", attrs: { level } }` has to be changed to match `{ type: "textBlock", attrs: { textBlock } }`.
 
 On the site, `renderTipTapRichText` renders a `textBlock` by its name: `heading-1` to `heading-6` — the default text blocks — as `<h1>` to `<h6>`, anything else as `<p>`. A block that renames a text block or adds one needs its own handler, which reads the name:
 

@@ -410,6 +410,8 @@ const nodeMapping: Record<string, TipTapNodeHandler> = {
 
 Because the name is all the content carries, renaming or removing a text block leaves the content it belongs to without a tag to render as: the API rejects it, and it needs a [migration](./5-migrations.mdx). Changing a text block's `tag`, on the other hand, takes effect without one.
 
+Content stored before the `textBlock` node existed holds a `paragraph` or `heading` node instead. A [vendor migration](./5-migrations.mdx#vendor-migrations) converts it when the block is loaded, resolving the text block from the node's tag. Since the vendor migrations run before the block's own, a project migration always sees the `textBlock` node — one written against `{ type: "heading", attrs: { level } }` has to be changed to match `{ type: "textBlock", attrs: { textBlock } }`.
+
 `defaultTextBlock` names the text block new content starts with, so the select's order can be chosen independently of it. It defaults to the first entry.
 
 The `textBlocks` and `defaultTextBlock` options must match between the API and the Admin, otherwise the API rejects content the editor produces.

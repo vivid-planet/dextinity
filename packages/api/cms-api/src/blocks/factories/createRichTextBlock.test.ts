@@ -18,7 +18,7 @@ describe("createRichTextBlock", () => {
     });
 
     it("should include the link block name in the generated block meta", () => {
-        const blockMeta = getBlocksMeta().find((block) => block.name === "RichTextMetaTest");
+        const blockMeta = getBlocksMeta([RichTextBlock]).find((block) => block.name === "RichTextMetaTest");
 
         expect(blockMeta?.fields).toEqual([{ name: "draftContent", kind: "RichTextBlock", linkBlock: "RichTextMetaTestLink", nullable: false }]);
     });

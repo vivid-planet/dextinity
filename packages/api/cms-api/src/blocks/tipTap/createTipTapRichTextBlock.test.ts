@@ -1571,9 +1571,9 @@ describe("createTipTapRichTextBlock block meta", () => {
     });
 
     it("should include the link block name in the generated block meta", () => {
-        createTipTapRichTextBlock({ link: LinkBlock, childBlocks }, "TestMetaGenerated");
+        const block = createTipTapRichTextBlock({ link: LinkBlock, childBlocks }, "TestMetaGenerated");
 
-        const blockMeta = getBlocksMeta().find((block) => block.name === "TestMetaGenerated");
+        const blockMeta = getBlocksMeta([block]).find(({ name }) => name === "TestMetaGenerated");
 
         expect(blockMeta?.fields).toEqual([
             {

@@ -275,8 +275,6 @@ export type Block<BlockType extends BlockDataInterface = BlockDataInterface, Blo
     blockInputMeta: BlockMetaInterface;
 };
 
-const blocks: Block[] = [];
-
 export interface MigrateOptions {
     migrations: ClassConstructor<BlockMigrationInterface>[];
     version: number;
@@ -336,18 +334,7 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
         blockInputMeta: options.blockInputMeta ? options.blockInputMeta : new AnnotationBlockMeta(BlockInput),
     };
 
-    const finalBlock = overwrite(block);
-    registerBlock(finalBlock);
-
-    return finalBlock;
-}
-
-export function registerBlock(block: Block): void {
-    blocks.push(block);
-}
-
-export function getRegisteredBlocks(): Block[] {
-    return blocks;
+    return overwrite(block);
 }
 
 export interface BlockContext {

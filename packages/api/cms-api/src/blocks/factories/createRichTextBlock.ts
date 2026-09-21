@@ -11,7 +11,6 @@ import {
     BlockInputInterface,
     ChildBlockInfo,
     ExtractBlockInput,
-    registerBlock,
 } from "../block";
 import { AnnotationBlockMeta, BlockField } from "../decorators/field";
 import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFactoryDecorator";
@@ -206,8 +205,6 @@ export function createRichTextBlock<LinkBlock extends Block>(
         blockMeta: new AnnotationBlockMeta(RichTextBlockData),
         blockInputMeta: new AnnotationBlockMeta(RichTextBlockInput),
     };
-
-    registerBlock(RichTextBlock);
 
     return RichTextBlock;
 }

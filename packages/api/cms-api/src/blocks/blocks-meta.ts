@@ -1,10 +1,4 @@
-import {
-    type Block,
-    type BlockMetaField as BlockMetaFieldInterface,
-    BlockMetaFieldKind,
-    type BlockMetaInterface,
-    getRegisteredBlocks,
-} from "./block";
+import { type Block, type BlockMetaField as BlockMetaFieldInterface, BlockMetaFieldKind, type BlockMetaInterface } from "./block";
 
 type BlockMetaField =
     | {
@@ -132,7 +126,7 @@ function extractFromBlockMeta(blockMeta: BlockMetaInterface): BlockMetaField[] {
 /**
  * Returns the meta of the given blocks and, recursively, of their child blocks. Consumers can therefore resolve every block reference in the meta.
  */
-export function getBlocksMeta(rootBlocks: Block[] = getRegisteredBlocks()): BlockMeta[] {
+export function getBlocksMeta(rootBlocks: Block[]): BlockMeta[] {
     return getUsedBlocks(rootBlocks)
         .sort((blockA, blockB) => blockA.name.localeCompare(blockB.name))
         .map((block) => {

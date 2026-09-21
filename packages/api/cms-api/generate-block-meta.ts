@@ -1,6 +1,7 @@
 import { promises as fs } from "fs";
 
 import {
+    AnchorBlock,
     createLinkBlock,
     createRichTextBlock,
     createSeoBlock,
@@ -8,11 +9,18 @@ import {
     createTextImageBlock,
     createTextLinkBlock,
     createTipTapRichTextBlock,
+    DamFileDownloadLinkBlock,
+    DamImageBlock,
+    DamVideoBlock,
     EmailLinkBlock,
     ExternalLinkBlock,
     getBlocksMeta,
     InternalLinkBlock,
     PhoneLinkBlock,
+    PixelImageBlock,
+    SvgImageBlock,
+    VimeoVideoBlock,
+    YouTubeVideoBlock,
 } from "./src";
 
 async function generateBlockMeta(): Promise<void> {
@@ -24,22 +32,26 @@ async function generateBlockMeta(): Promise<void> {
 
     const RichTextBlock = createRichTextBlock({ link: LinkBlock });
 
-    // Create TextImageBlock for block types generation in client libraries
-    createTextImageBlock({ text: RichTextBlock });
+    // The blocks client libraries generate their block types for. Blocks these reference are included automatically.
+    const blocks = [
+        AnchorBlock,
+        DamFileDownloadLinkBlock,
+        DamImageBlock,
+        DamVideoBlock,
+        LinkBlock,
+        PixelImageBlock,
+        RichTextBlock,
+        SvgImageBlock,
+        VimeoVideoBlock,
+        YouTubeVideoBlock,
+        createTextImageBlock({ text: RichTextBlock }),
+        createTextLinkBlock({ link: LinkBlock }),
+        createSeoBlock(),
+        createTableBlock({ richText: RichTextBlock }),
+        createTipTapRichTextBlock({ link: LinkBlock }),
+    ];
 
-    // Create TextLinkBlock for block types generation in client libraries
-    createTextLinkBlock({ link: LinkBlock });
-
-    // Create SeoBlock for block types generation in client libraries
-    createSeoBlock();
-
-    // Create TableBlock for block types generation in client libraries
-    createTableBlock({ richText: RichTextBlock });
-
-    // Create TipTapRichTextBlock for block types generation in client libraries
-    createTipTapRichTextBlock({ link: LinkBlock });
-
-    const metaJson = getBlocksMeta();
+    const metaJson = getBlocksMeta(blocks);
     await fs.writeFile("block-meta.json", JSON.stringify(metaJson, null, 4));
 
     console.info("Done!");

@@ -11,7 +11,7 @@ Generated forms imported `isEqual` from `lodash.isequal`, which is deprecated on
 Add `fast-equals` to your admin application and regenerate:
 
 ```bash
-pnpm add fast-equals
+npm install fast-equals
 ```
 
 Afterwards, remove `lodash.isequal` and `@types/lodash.isequal` unless your own code still uses them.

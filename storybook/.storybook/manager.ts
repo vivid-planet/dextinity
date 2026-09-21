@@ -10,7 +10,9 @@ addons.setConfig({
 
 /**
  * Storybook sends the toolbar globals (theme, locale, layout) to its own preview only, so stories of the composed
- * Storybooks would always render with the globals' default values. Forward the globals to the composed Storybooks.
+ * Storybooks would always render with the globals' default values: https://github.com/storybookjs/storybook/issues/15805.
+ * Forward the globals to the composed Storybooks. Addressing one of them through `options.target` isn't part of Storybook's
+ * documented addon API, so an update can break this.
  */
 addons.register("dextinity/composed-storybook-globals", (api) => {
     const composedStorybooksWithLoadedPreview = new Set<string>();

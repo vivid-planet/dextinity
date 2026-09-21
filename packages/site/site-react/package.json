@@ -47,8 +47,8 @@
     },
     "dependencies": {
         "clsx": "^2.1.1",
+        "fast-equals": "^5.4.0",
         "jose": "^5.10.0",
-        "lodash.isequal": "^4.5.0",
         "scroll-into-view-if-needed": "^2.2.31",
         "usehooks-ts": "^3.1.1"
     },
@@ -56,7 +56,6 @@
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
         "@types/draft-js": "^0.11.20",
-        "@types/lodash.isequal": "^4.5.8",
         "@types/react": "^19.2.15",
         "@types/react-dom": "^19.2.3",
         "@vitejs/plugin-react": "^4.7.0",

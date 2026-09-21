@@ -11,7 +11,6 @@ import {
     ChildBlockInfo,
     ExtractBlockInputFactoryProps,
     MigrateOptions,
-    registerBlock,
     TransformBlockResponse,
 } from "../block";
 import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator";
@@ -153,8 +152,6 @@ export function composeBlocks<BlockMap extends BaseBlockMap>(
             }),
         },
     };
-
-    registerBlock(block);
 
     return block;
 }

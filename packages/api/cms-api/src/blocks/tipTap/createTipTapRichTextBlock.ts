@@ -7,16 +7,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { plainToInstance } from "class-transformer";
 import { registerDecorator, validate, type ValidationOptions } from "class-validator";
 
-import {
-    Block,
-    BlockData,
-    BlockDataFactory,
-    BlockDataInterface,
-    BlockInputFactory,
-    BlockInputInterface,
-    ChildBlockInfo,
-    registerBlock,
-} from "../block";
+import { Block, BlockData, BlockDataFactory, BlockDataInterface, BlockInputFactory, BlockInputInterface, ChildBlockInfo } from "../block";
 import { AnnotationBlockMeta, BlockField } from "../decorators/field";
 import { BlockFactoryNameOrOptions } from "../factories/types";
 import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFactoryDecorator";
@@ -876,8 +867,6 @@ export function createTipTapRichTextBlock(
         blockMeta: new AnnotationBlockMeta(TipTapRichTextBlockData),
         blockInputMeta: new AnnotationBlockMeta(TipTapRichTextBlockInput),
     };
-
-    registerBlock(TipTapRichTextBlock);
 
     return TipTapRichTextBlock;
 }

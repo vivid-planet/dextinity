@@ -9,7 +9,8 @@ import { OpenPickerAdornment } from "../../common/OpenPickerAdornment";
 import { ReadOnlyAdornment } from "../../common/ReadOnlyAdornment";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
-import { getDateValue, getIsoDateString } from "../utils";
+import { createPasteCaptureHandler } from "../createPasteCaptureHandler";
+import { getDateFromIsoDateString, getDateValue, getIsoDateString } from "../utils";
 
 /**
  * Represents a date range with start and end dates in ISO 8601 format (YYYY-MM-DD).
@@ -63,6 +64,9 @@ const getDateRangeValue = (value: DateRange | undefined): [Date | null, Date | n
  * text field with a calendar icon that opens a date range picker dialog. The component handles ISO 8601 date strings
  * and includes features like clearing, read-only state, and customizable icons.
  *
+ * Dates can be pasted into the field, either in the field's display format or as an ISO 8601 date. A pasted date
+ * replaces the date the cursor is in, leaving the other one untouched.
+ *
  * - [Storybook](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/admin_components-datetime-daterangepicker--docs)
  * - [MUI X DateRangePicker Documentation](https://mui.com/x/react-date-pickers/date-range-picker/)
  */
@@ -91,6 +95,20 @@ export const DateRangePicker = (inProps: DateRangePickerProps) => {
     const hasDateRangeValue = dateRangeValue.some((date) => date !== null);
 
     const { openPicker: openPickerIcon = <Calendar color="inherit" /> } = iconMapping;
+
+    const handlePasteCapture = createPasteCaptureHandler({
+        disabled,
+        readOnly,
+        parsePastedValue: getDateFromIsoDateString,
+        applyPastedValue: (date, rangePosition) => {
+            const pastedDate = getIsoDateString(date);
+
+            onChange?.({
+                start: rangePosition === "start" ? pastedDate : (stringDateRangeValue?.start ?? null),
+                end: rangePosition === "end" ? pastedDate : (stringDateRangeValue?.end ?? null),
+            });
+        },
+    });
 
     return (
         <Suspense>
@@ -127,6 +145,7 @@ export const DateRangePicker = (inProps: DateRangePickerProps) => {
                             required,
                             onBlur,
                             onFocus,
+                            onPasteCapture: handlePasteCapture,
                             ...textFieldProps,
                             InputProps: {
                                 startAdornment: (

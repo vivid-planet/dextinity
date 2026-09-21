@@ -9,7 +9,8 @@ import { OpenPickerAdornment } from "../../common/OpenPickerAdornment";
 import { ReadOnlyAdornment } from "../../common/ReadOnlyAdornment";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
-import { getDateFromTimeString, getTimeStringFromDate } from "../utils";
+import { createPasteCaptureHandler } from "../createPasteCaptureHandler";
+import { getDateFromIsoTimeString, getDateFromTimeString, getTimeStringFromDate } from "../utils";
 
 export type TimePickerClassKey = "root" | "clearInputAdornment" | "readOnlyAdornment" | "openPickerAdornment";
 
@@ -51,6 +52,8 @@ export type TimePickerProps = ThemedComponentBaseProps<{
  * with a time icon that opens a time picker dialog. The component handles time strings in 24-hour format (HH:mm)
  * and includes features like clearing, read-only state, and customizable icons.
  *
+ * Times can be pasted into the field, either in the field's display format or in 24-hour format.
+ *
  * - [Storybook](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/admin_components-datetime-timepicker--docs)
  * - [MUI X TimePicker Documentation](https://mui.com/x/react-date-pickers/time-picker/)
  */
@@ -76,6 +79,13 @@ export const TimePicker = (inProps: TimePickerProps) => {
     const dateValue = getDateFromTimeString(stringValue);
 
     const { openPicker: openPickerIcon = <Time color="inherit" /> } = iconMapping;
+
+    const handlePasteCapture = createPasteCaptureHandler({
+        disabled,
+        readOnly,
+        parsePastedValue: getDateFromIsoTimeString,
+        applyPastedValue: (time) => onChange?.(getTimeStringFromDate(time)),
+    });
 
     return (
         <Root
@@ -108,6 +118,7 @@ export const TimePicker = (inProps: TimePickerProps) => {
                         required,
                         onBlur,
                         onFocus,
+                        onPasteCapture: handlePasteCapture,
                         ...textFieldProps,
                         InputProps: {
                             startAdornment: (

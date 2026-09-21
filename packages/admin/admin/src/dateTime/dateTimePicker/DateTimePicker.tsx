@@ -13,7 +13,8 @@ import { OpenPickerAdornment } from "../../common/OpenPickerAdornment";
 import { ReadOnlyAdornment } from "../../common/ReadOnlyAdornment";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
-import { isValidDate } from "../utils";
+import { createPasteCaptureHandler } from "../createPasteCaptureHandler";
+import { getDateFromIsoDateTimeString, isValidDate } from "../utils";
 
 export type DateTimePickerClassKey = "root" | "clearInputAdornment" | "readOnlyAdornment" | "openPickerAdornment";
 
@@ -55,6 +56,8 @@ export type DateTimePickerProps = ThemedComponentBaseProps<{
  * It provides a text field with a calendar icon that opens a date-time picker dialog. The component handles
  * Date objects and includes features like clearing, read-only state, and customizable icons.
  *
+ * Dates can be pasted into the field, either in the field's display format or as an ISO 8601 date and time.
+ *
  * - [Storybook](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/admin_components-datetime-datetimepicker--docs)
  * - [MUI X DateTimePicker Documentation](https://mui.com/x/react-date-pickers/date-time-picker/)
  */
@@ -79,6 +82,13 @@ export const DateTimePicker = (inProps: DateTimePickerProps) => {
     const intl = useIntl();
 
     const { openPicker: openPickerIcon = <Calendar color="inherit" /> } = iconMapping;
+
+    const handlePasteCapture = createPasteCaptureHandler({
+        disabled,
+        readOnly,
+        parsePastedValue: getDateFromIsoDateTimeString,
+        applyPastedValue: (dateTime) => onChange?.(dateTime),
+    });
 
     return (
         <Root
@@ -111,6 +121,7 @@ export const DateTimePicker = (inProps: DateTimePickerProps) => {
                         required,
                         onBlur,
                         onFocus,
+                        onPasteCapture: handlePasteCapture,
                         ...textFieldProps,
                         InputProps: {
                             startAdornment: (

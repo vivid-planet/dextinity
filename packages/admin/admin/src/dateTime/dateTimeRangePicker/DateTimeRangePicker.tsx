@@ -9,7 +9,8 @@ import { OpenPickerAdornment } from "../../common/OpenPickerAdornment";
 import { ReadOnlyAdornment } from "../../common/ReadOnlyAdornment";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
-import { isValidDate } from "../utils";
+import { createPasteCaptureHandler } from "../createPasteCaptureHandler";
+import { getDateFromIsoDateTimeString, isValidDate } from "../utils";
 
 /**
  * Represents a date-time range with start and end dates as Date objects.
@@ -59,6 +60,9 @@ export type DateTimeRangePickerProps = ThemedComponentBaseProps<{
  * It provides two text fields with a calendar icon that opens a date-time range picker dialog. The component handles
  * Date objects and includes features like clearing, read-only state, and customizable icons.
  *
+ * Dates can be pasted into the fields, either in the field's display format or as an ISO 8601 date and time. A pasted
+ * date replaces the date the cursor is in, leaving the other one untouched.
+ *
  * - [Storybook](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/admin_components-datetime-datetimerangepicker--docs)
  * - [MUI X DateTimeRangePicker Documentation](https://mui.com/x/react-date-pickers/date-time-range-picker/)
  */
@@ -85,6 +89,18 @@ export const DateTimeRangePicker = (inProps: DateTimeRangePickerProps) => {
     const arrayValue: [Date | null, Date | null] = valueObject ? [valueObject.start, valueObject.end] : [null, null];
 
     const { openPicker: openPickerIcon = <Calendar color="inherit" /> } = iconMapping;
+
+    const handlePasteCapture = createPasteCaptureHandler({
+        disabled,
+        readOnly,
+        parsePastedValue: getDateFromIsoDateTimeString,
+        applyPastedValue: (dateTime, rangePosition) => {
+            onChange?.({
+                start: rangePosition === "start" ? dateTime : (valueObject?.start ?? null),
+                end: rangePosition === "end" ? dateTime : (valueObject?.end ?? null),
+            });
+        },
+    });
 
     return (
         <Suspense>
@@ -128,6 +144,7 @@ export const DateTimeRangePicker = (inProps: DateTimeRangePickerProps) => {
                             required,
                             onBlur,
                             onFocus,
+                            onPasteCapture: handlePasteCapture,
                             ...textFieldProps,
                             InputProps: {
                                 startAdornment: (

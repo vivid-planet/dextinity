@@ -1,7 +1,7 @@
 import { Calendar } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, css, inputLabelClasses, type Theme, useThemeProps } from "@mui/material";
 import { DatePicker as MuiDatePicker, type DatePickerProps as MuiDatePickerProps, pickersInputBaseClasses } from "@mui/x-date-pickers";
-import { type ClipboardEvent, type ReactNode, useState } from "react";
+import { type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
 
 import { ClearInputAdornment as BaseClearInputAdornment } from "../../common/ClearInputAdornment";
@@ -9,6 +9,7 @@ import { OpenPickerAdornment } from "../../common/OpenPickerAdornment";
 import { ReadOnlyAdornment } from "../../common/ReadOnlyAdornment";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import { createPasteCaptureHandler } from "../createPasteCaptureHandler";
 import { getDateFromIsoDateString, getDateValue, getIsoDateString, isValidDate } from "../utils";
 
 export type DatePickerClassKey = "root" | "clearInputAdornment" | "readOnlyAdornment" | "openPickerAdornment";
@@ -79,23 +80,12 @@ export const DatePicker = (inProps: DatePickerProps) => {
 
     const { openPicker: openPickerIcon = <Calendar color="inherit" /> } = iconMapping;
 
-    // The picker itself only accepts pasted values in its display format. Intercepting the paste in the capture phase
-    // adds support for ISO dates while leaving everything else to the picker.
-    const handlePasteCapture = (event: ClipboardEvent<HTMLDivElement>) => {
-        if (disabled || readOnly) {
-            return;
-        }
-
-        const pastedDate = getDateFromIsoDateString(event.clipboardData.getData("text"));
-
-        if (!pastedDate) {
-            return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-        onChange?.(getIsoDateString(pastedDate));
-    };
+    const handlePasteCapture = createPasteCaptureHandler({
+        disabled,
+        readOnly,
+        parsePastedValue: getDateFromIsoDateString,
+        applyPastedValue: (date) => onChange?.(getIsoDateString(date)),
+    });
 
     return (
         <Root

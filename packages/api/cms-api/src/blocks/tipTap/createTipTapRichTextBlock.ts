@@ -18,6 +18,7 @@ import {
 } from "../block";
 import { AnnotationBlockMeta, BlockField } from "../decorators/field";
 import { BlockFactoryNameOrOptions } from "../factories/types";
+import { withDefaultDescription } from "../factories/withDefaultDescription";
 import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFactoryDecorator";
 import { strictBlockInputFactoryDecorator } from "../helpers/strictBlockInputFactoryDecorator";
 import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator";
@@ -646,8 +647,10 @@ export function createTipTapRichTextBlock(
         listLevelMax,
         migrateFromDraftJs = false,
     } = options;
-    const blockName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
-    const blockDescription = typeof nameOrOptions === "string" ? undefined : nameOrOptions.description;
+    const { name: blockName, description: blockDescription } = withDefaultDescription(
+        nameOrOptions,
+        "Formatted text, edited in the TipTap based rich text editor.",
+    );
     const migrate = typeof nameOrOptions !== "string" ? nameOrOptions.migrate : undefined;
 
     const resolvedOptions = resolveTipTapOptions(options);

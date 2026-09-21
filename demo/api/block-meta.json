@@ -3449,23 +3449,6 @@
         "name": "Space",
         "fields": [
             {
-                "name": "height",
-                "kind": "Number",
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "height",
-                "kind": "Number",
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "Space",
-        "fields": [
-            {
                 "name": "spacing",
                 "kind": "Enum",
                 "enum": [

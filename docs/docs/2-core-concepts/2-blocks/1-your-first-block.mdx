@@ -86,8 +86,15 @@ Note the method called `transformToBlockData()`. This method transforms the bloc
 Now that our block data and block input are defined, we need to create the block and register it in a page document. Typically, the page document has a root block called `PageContentBlock`. In this `PageContentBlock`, we now register the newly created Headline block:
 
 ```ts title="headline.block.ts"
-export const HeadlineBlock = createBlock(HeadlineBlockData, HeadlineBlockInput, "Headline");
+export const HeadlineBlock = createBlock(HeadlineBlockData, HeadlineBlockInput, {
+    name: "Headline",
+    description:
+        "A headline with an optional eyebrow text above it. Use it to introduce a section.",
+});
 ```
+
+Besides the name, the block carries a description of what it is for.
+It is written to `block-meta.json` and appears as a comment above the generated TypeScript interfaces, so that tools working with block data can tell the blocks of an application apart.
 
 ```ts title="page-content.block.ts"
 export const PageContentBlock = createBlocksBlock(
@@ -159,7 +166,10 @@ export class HeadlineBlockInput extends BlockInput {
         return blockInputToData(HeadlineBlockData, this);
     }
 }\n
-export const HeadlineBlock = createBlock(HeadlineBlockData, HeadlineBlockInput, "Headline");
+export const HeadlineBlock = createBlock(HeadlineBlockData, HeadlineBlockInput, {
+    name: "Headline",
+    description: "A headline with an optional eyebrow text above it. Use it to introduce a section.",
+});
 `}
         </CodeBlock>
     </div>

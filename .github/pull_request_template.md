@@ -51,8 +51,13 @@ is nothing open.
 ## Further information
 
 <!--
-Optional: alternative solutions you considered, related pull requests, links to relevant
-tasks, documentation etc. Delete this section if there is nothing to add.
+Rarely needed — delete this section unless the reviewer can't decide without it: an
+alternative solution you considered and rejected, a related pull request, a link to a
+task or documentation.
+
+Not here: how you verified the change (that's what CI and the example are for), and
+problems you noticed but deliberately left out of scope. Open a follow-up task for
+those instead of writing them down here.
 -->
 
 <!--

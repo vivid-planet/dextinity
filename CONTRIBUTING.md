@@ -137,11 +137,13 @@ Anything that needs to be done before merging the pull request, for instance, ad
 
 ### Further information
 
-Further information that helps reviewing the pull request, for instance:
+Optional, and most pull requests don't need it. Add it only for information the reviewer needs to decide and can't get from the diff, for instance:
 
 - Alternative solutions you have considered
 - Related pull requests
 - Links to relevant tasks, documentation, blog posts etc.
+
+Don't use this section to report how you verified the change, or to list adjacent problems you noticed and deliberately left out of scope. Open a follow-up task for those.
 
 > [!WARNING]
 > Make sure that everything required to understand your change is in the pull request description.

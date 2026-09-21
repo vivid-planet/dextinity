@@ -35,9 +35,10 @@ belongs in the description above either way.
 ## Changeset
 
 <!--
-Only fill this in when you deliberately don't add a changeset, so reviewers know it isn't
-an oversight: "None needed — Demo only". Delete this section when the pull request
-contains a changeset.
+Only fill this in when the pull request has no changeset and it isn't obvious why: "None
+needed — internal refactoring only", so reviewers know it isn't an oversight. Delete this
+section when the pull request contains a changeset, and when the change obviously needs
+none, for instance a repository-only change such as updating this template.
 -->
 
 ## Open TODOs/questions
@@ -50,8 +51,13 @@ is nothing open.
 ## Further information
 
 <!--
-Optional: alternative solutions you considered, related pull requests, links to relevant
-tasks, documentation etc. Delete this section if there is nothing to add.
+Rarely needed — delete this section unless the reviewer can't decide without it: an
+alternative solution you considered and rejected, a related pull request, a link to a
+task or documentation.
+
+Not here: how you verified the change (that's what CI and the example are for), and
+problems you noticed but deliberately left out of scope. Open a follow-up task for
+those instead of writing them down here.
 -->
 
 <!--

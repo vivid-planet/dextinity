@@ -94,9 +94,11 @@ export function createEmailCampaignsResolver({
             scope: typeof Scope,
             @Args("input", { type: () => EmailCampaignInput }, new DynamicDtoValidationPipe(EmailCampaignInput)) input: EmailCampaignInputInterface,
         ): Promise<EmailCampaignInterface> {
+            const { brevoTargetGroups, ...restInput } = input;
             const campaign = this.repository.create({
-                ...input,
+                ...restInput,
                 scope,
+                targetGroups: brevoTargetGroups,
                 content: input.content.transformToBlockData(),
                 scheduledAt: input.scheduledAt ?? undefined,
                 sendingState: input.scheduledAt ? SendingState.SCHEDULED : SendingState.DRAFT,

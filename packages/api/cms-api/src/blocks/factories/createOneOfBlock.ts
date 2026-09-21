@@ -18,11 +18,11 @@ import {
     ExtractBlockInput,
     isBlockDataInterface,
     isBlockInputInterface,
-    MigrateOptions,
     SimpleBlockInputInterface,
     TraversableTransformBlockResponse,
 } from "../block";
 import { AnnotationBlockMeta, BlockField } from "../decorators/field";
+import type { MigrateOptions } from "../migrations/types";
 import { BlockFactoryNameOrOptions } from "./types";
 
 type BaseBlockMap = Record<string, Block<BlockDataInterface, BlockInputInterface>>;

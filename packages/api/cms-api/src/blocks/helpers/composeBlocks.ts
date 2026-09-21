@@ -10,12 +10,12 @@ import {
     BlockMetaFieldKind,
     ChildBlockInfo,
     ExtractBlockInputFactoryProps,
-    MigrateOptions,
     registerBlock,
     TransformBlockResponse,
 } from "../block";
 import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator";
 import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
+import type { MigrateOptions } from "../migrations/types";
 import { strictBlockDataFactoryDecorator } from "./strictBlockDataFactoryDecorator";
 import { strictBlockInputFactoryDecorator } from "./strictBlockInputFactoryDecorator";
 

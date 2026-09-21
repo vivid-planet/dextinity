@@ -64,7 +64,7 @@
         "@formatjs/cli": "^6.7.2",
         "@types/node": "^24.13.3",
         "dev-oidc-provider": "^2.0.0",
-        "dev-process-manager": "^4.0.0",
+        "dev-process-manager": "^4.1.0",
         "dotenv-cli": "^9.0.0",
         "husky": "^9.1.7",
         "knip": "^5.88.1",

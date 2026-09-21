@@ -212,10 +212,10 @@ The rules under `rules/coding-guidelines/` and the `agent-features.json` format 
 
 ### Get the `dev-pm` skill from `dev-process-manager`
 
-The `dev-pm` skill is no longer shipped by `@dextinity/agent-features`. It now comes with `dev-process-manager` itself, so it stays in sync with the tool it documents. Update `dev-process-manager` to the latest version and reinstall the agent features:
+The `dev-pm` skill is no longer shipped by `@dextinity/agent-features`. It now comes with `dev-process-manager` itself, so it stays in sync with the tool it documents. Update `dev-process-manager` to at least `4.1.0` and reinstall the agent features:
 
 ```sh
-npm install --save-dev dev-process-manager@latest
+npm install --save-dev dev-process-manager@^4.1.0
 npx @dextinity/cli install-agent-features
 ```
 

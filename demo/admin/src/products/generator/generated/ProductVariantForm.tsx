@@ -33,7 +33,7 @@ import { updateProductVariantMutation } from "./ProductVariantForm.gql";
 import { GQLUpdateProductVariantMutation } from "./ProductVariantForm.gql.generated";
 import { GQLUpdateProductVariantMutationVariables } from "./ProductVariantForm.gql.generated";
 import { GQLProductVariantMutationErrorCode } from "@src/graphql.generated";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 const rootBlocks = {
     image: DamImageBlock,
 };
@@ -145,7 +145,7 @@ export function ProductVariantForm({ onCreate, id, product }: FormProps) {
             onSubmit={handleSubmit}
             mode={mode}
             initialValues={initialValues}
-            initialValuesEqual={isEqual} //required to compare block data correctly
+            initialValuesEqual={deepEqual} //required to compare block data correctly
             subscription={{}}
         >
             {() => (
@@ -161,7 +161,7 @@ export function ProductVariantForm({ onCreate, id, product }: FormProps) {
                         />
                         <Field
                             name="image"
-                            isEqual={isEqual}
+                            isEqual={deepEqual}
                             label={<FormattedMessage id="productVariant.image" defaultMessage="Image" />}
                             variant="horizontal"
                             fullWidth

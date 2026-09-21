@@ -26,7 +26,7 @@ import { GQLCreateProductTagMutationVariables } from "./ProductTagForm.gql.gener
 import { updateProductTagMutation } from "./ProductTagForm.gql";
 import { GQLUpdateProductTagMutation } from "./ProductTagForm.gql.generated";
 import { GQLUpdateProductTagMutationVariables } from "./ProductTagForm.gql.generated";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 type FormValues = GQLProductTagFormFragment;
 interface FormProps {
     onCreate?: (id: string) => void;
@@ -98,7 +98,7 @@ export function ProductTagForm({ onCreate, id }: FormProps) {
             onSubmit={handleSubmit}
             mode={mode}
             initialValues={initialValues}
-            initialValuesEqual={isEqual} //required to compare block data correctly
+            initialValuesEqual={deepEqual} //required to compare block data correctly
             subscription={{}}
         >
             {() => (

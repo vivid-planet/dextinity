@@ -35,8 +35,8 @@ import type {
     GQLManufacturersQuery,
     GQLManufacturersQueryVariables,
 } from "@src/products/ProductForm.generated";
+import { deepEqual } from "fast-equals";
 import { FORM_ERROR, type FormApi } from "final-form";
-import isEqual from "lodash.isequal";
 import { type ReactNode, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 
@@ -213,7 +213,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
             onSubmit={handleSubmit}
             mode={mode}
             initialValues={initialValues}
-            initialValuesEqual={isEqual} //required to compare block data correctly
+            initialValuesEqual={deepEqual} //required to compare block data correctly
             subscription={{ values: true }} // values required because disable and loadOptions of manufacturer-select depends on values
         >
             {({ values, form }) => (
@@ -372,7 +372,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                         getOptionLabel={(option) => option.title}
                     />
                     <CheckboxField name="inStock" label={<FormattedMessage id="product.inStock" defaultMessage="In stock" />} fullWidth />
-                    <Field name="image" isEqual={isEqual}>
+                    <Field name="image" isEqual={deepEqual}>
                         {createFinalFormBlock(rootBlocks.image)}
                     </Field>
                     <FileUploadField

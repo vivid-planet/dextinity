@@ -22,7 +22,7 @@ import { GQLProductQueryVariables } from "./ProductPriceForm.gql.generated";
 import { updateProductMutation } from "./ProductPriceForm.gql";
 import { GQLUpdateProductMutation } from "./ProductPriceForm.gql.generated";
 import { GQLUpdateProductMutationVariables } from "./ProductPriceForm.gql.generated";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 type FormValues = GQLProductPriceFormDetailsFragment;
 interface FormProps {
     onCreate?: (id: string) => void;
@@ -71,7 +71,7 @@ export function ProductPriceForm({ onCreate, id }: FormProps) {
             onSubmit={handleSubmit}
             mode="edit"
             initialValues={initialValues}
-            initialValuesEqual={isEqual} //required to compare block data correctly
+            initialValuesEqual={deepEqual} //required to compare block data correctly
             subscription={{}}
         >
             {() => (

@@ -35,7 +35,7 @@ import { GQLCreateProductHighlightMutationVariables } from "./ProductHighlightFo
 import { updateProductHighlightMutation } from "./ProductHighlightForm.gql";
 import { GQLUpdateProductHighlightMutation } from "./ProductHighlightForm.gql.generated";
 import { GQLUpdateProductHighlightMutationVariables } from "./ProductHighlightForm.gql.generated";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 type FormValues = GQLProductHighlightFormDetailsFragment & {
     productCategoryType?: {
         id: string;
@@ -122,7 +122,7 @@ export function ProductHighlightForm({ onCreate, id }: FormProps) {
             onSubmit={handleSubmit}
             mode={mode}
             initialValues={initialValues}
-            initialValuesEqual={isEqual} //required to compare block data correctly
+            initialValuesEqual={deepEqual} //required to compare block data correctly
             subscription={{ values: true }}
         >
             {({ values, form }) => (

@@ -30,7 +30,7 @@ import { createProductMutation } from "./CreateCapProductForm.gql";
 import { GQLCreateProductMutation } from "./CreateCapProductForm.gql.generated";
 import { GQLCreateProductMutationVariables } from "./CreateCapProductForm.gql.generated";
 import { GQLProductMutationErrorCode } from "@src/graphql.generated";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 const rootBlocks = {
     image: DamImageBlock,
 };
@@ -101,7 +101,7 @@ export function CreateCapProductForm({ onCreate, type }: FormProps) {
             onSubmit={handleSubmit}
             mode="add"
             initialValues={initialValues}
-            initialValuesEqual={isEqual} //required to compare block data correctly
+            initialValuesEqual={deepEqual} //required to compare block data correctly
             subscription={{}}
         >
             {() => (
@@ -174,7 +174,7 @@ export function CreateCapProductForm({ onCreate, type }: FormProps) {
                     />
                     <Field
                         name="image"
-                        isEqual={isEqual}
+                        isEqual={deepEqual}
                         label={<FormattedMessage id="product.image" defaultMessage="Image" />}
                         variant="horizontal"
                         fullWidth

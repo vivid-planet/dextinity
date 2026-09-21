@@ -38,6 +38,4 @@ class StandaloneHeadingBlockInput extends BlockInput {
     }
 }
 
-export const StandaloneHeadingBlock = createBlock(StandaloneHeadingBlockData, StandaloneHeadingBlockInput, {
-    name: "StandaloneHeading",
-});
+export const StandaloneHeadingBlock = createBlock(StandaloneHeadingBlockData, StandaloneHeadingBlockInput, "StandaloneHeading");

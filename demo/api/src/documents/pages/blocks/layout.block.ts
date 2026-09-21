@@ -62,6 +62,4 @@ class LayoutBlockInput extends BlockInput {
     }
 }
 
-export const LayoutBlock = createBlock(LayoutBlockData, LayoutBlockInput, {
-    name: "Layout",
-});
+export const LayoutBlock = createBlock(LayoutBlockData, LayoutBlockInput, "Layout");

@@ -14,7 +14,10 @@ import { MediaGalleryItemBlock } from "@src/common/blocks/media-gallery-item.blo
 import { MediaAspectRatios } from "@src/util/mediaAspectRatios";
 import { IsEnum } from "class-validator";
 
-export const MediaGalleryListBlock = createListBlock({ block: MediaGalleryItemBlock }, "MediaGalleryList");
+export const MediaGalleryListBlock = createListBlock(
+    { block: MediaGalleryItemBlock },
+    { name: "MediaGalleryList", description: "The items of a media gallery." },
+);
 
 class MediaGalleryBlockData extends BlockData {
     @ChildBlock(MediaGalleryListBlock)
@@ -37,4 +40,7 @@ class MediaGalleryBlockInput extends BlockInput {
     }
 }
 
-export const MediaGalleryBlock = createBlock(MediaGalleryBlockData, MediaGalleryBlockInput, "MediaGallery");
+export const MediaGalleryBlock = createBlock(MediaGalleryBlockData, MediaGalleryBlockInput, {
+    name: "MediaGallery",
+    description: "A gallery of images and videos, all shown in the same aspect ratio.",
+});

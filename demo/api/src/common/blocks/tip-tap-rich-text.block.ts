@@ -47,6 +47,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
     },
     {
         name: "TipTapRichText",
+        description: "Formatted text that can also contain a product price or a product teaser.",
         migrate: {
             migrations: typeSafeBlockMigrationPipe([Heading1ToHeading2Migration]),
             version: 1,

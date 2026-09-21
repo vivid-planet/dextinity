@@ -22,7 +22,7 @@ export const ColumnsContentBlock = createBlocksBlock(
             textImage: TextImageBlock,
         },
     },
-    { name: "ColumnsContent" },
+    { name: "ColumnsContent", description: "The content of one column." },
 );
 
 export const ColumnsBlock = ColumnsBlockFactory.create(
@@ -30,5 +30,5 @@ export const ColumnsBlock = ColumnsBlockFactory.create(
         layouts: [{ name: "2-20-2" }, { name: "4-16-4" }, { name: "6-12-6" }, { name: "9-9" }, { name: "12-6" }, { name: "6-12" }],
         contentBlock: ColumnsContentBlock,
     },
-    "Columns",
+    { name: "Columns", description: "Content next to each other in columns, in one of the predefined column layouts." },
 );

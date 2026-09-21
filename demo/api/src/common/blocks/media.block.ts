@@ -9,5 +9,5 @@ export const MediaBlock = createOneOfBlock(
             vimeoVideo: VimeoVideoBlock,
         },
     },
-    "Media",
+    { name: "Media", description: "An image or a video, either from the Digital Asset Management or from YouTube or Vimeo." },
 );

@@ -38,4 +38,7 @@ class FullWidthImageBlockInput extends BlockInput {
     }
 }
 
-export const FullWidthImageBlock = createBlock(FullWidthImageBlockData, FullWidthImageBlockInput, "FullWidthImage");
+export const FullWidthImageBlock = createBlock(FullWidthImageBlockData, FullWidthImageBlockInput, {
+    name: "FullWidthImage",
+    description: "An image across the full width of the page, with optional text on top of it.",
+});

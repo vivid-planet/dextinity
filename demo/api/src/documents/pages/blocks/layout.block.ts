@@ -64,4 +64,5 @@ class LayoutBlockInput extends BlockInput {
 
 export const LayoutBlock = createBlock(LayoutBlockData, LayoutBlockInput, {
     name: "Layout",
+    description: "Two media and two texts, arranged in one of the predefined layouts.",
 });

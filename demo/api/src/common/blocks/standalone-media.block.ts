@@ -36,4 +36,5 @@ class StandaloneMediaBlockInput extends BlockInput {
 
 export const StandaloneMediaBlock = createBlock(StandaloneMediaBlockData, StandaloneMediaBlockInput, {
     name: "StandaloneMedia",
+    description: "A media placed directly in the page content, shown in the chosen aspect ratio.",
 });

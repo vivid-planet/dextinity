@@ -43,4 +43,5 @@ class StandaloneRichTextBlockInput extends BlockInput {
 
 export const StandaloneRichTextBlock = createBlock(StandaloneRichTextBlockData, StandaloneRichTextBlockInput, {
     name: "StandaloneRichText",
+    description: "Rich text placed directly in the page content, with the alignment of its text.",
 });

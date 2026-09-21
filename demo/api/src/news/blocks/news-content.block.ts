@@ -12,5 +12,5 @@ export const NewsContentBlock = createBlocksBlock(
             textImage: TextImageBlock,
         },
     },
-    { name: "NewsContent" },
+    { name: "NewsContent", description: "The content of a news entry." },
 );

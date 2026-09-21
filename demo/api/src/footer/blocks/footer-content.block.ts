@@ -56,4 +56,5 @@ class FooterContentBlockInput extends BlockInput {
 
 export const FooterContentBlock = createBlock(FooterContentBlockData, FooterContentBlockInput, {
     name: "FooterContent",
+    description: "The content of the site footer: text, an image with a caption, a link list and a copyright notice.",
 });

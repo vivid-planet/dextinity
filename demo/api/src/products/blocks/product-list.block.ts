@@ -17,4 +17,7 @@ class ProductListBlockInput extends BlockInput {
     }
 }
 
-export const ProductListBlock = createBlock(ProductListBlockData, ProductListBlockInput, "ProductList");
+export const ProductListBlock = createBlock(ProductListBlockData, ProductListBlockInput, {
+    name: "ProductList",
+    description: "A list of the products of the selected types.",
+});

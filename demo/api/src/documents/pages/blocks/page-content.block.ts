@@ -74,5 +74,5 @@ export const PageContentBlock = createBlocksBlock(
         BlocksBlockItemData,
         BlocksBlockItemInput,
     },
-    "PageContent",
+    { name: "PageContent", description: "The content of a page, as the list of blocks it is built from." },
 );

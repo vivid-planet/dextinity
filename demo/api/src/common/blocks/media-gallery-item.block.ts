@@ -35,4 +35,7 @@ class MediaGalleryItemBlockInput extends BlockInput {
     }
 }
 
-export const MediaGalleryItemBlock = createBlock(MediaGalleryItemBlockData, MediaGalleryItemBlockInput, "MediaGalleryItem");
+export const MediaGalleryItemBlock = createBlock(MediaGalleryItemBlockData, MediaGalleryItemBlockInput, {
+    name: "MediaGalleryItem",
+    description: "One item of a media gallery: an image or a video with an optional caption.",
+});

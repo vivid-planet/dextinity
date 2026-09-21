@@ -16,4 +16,7 @@ class NewsListBlockInput extends BlockInput {
     }
 }
 
-export const NewsListBlock = createBlock(NewsListBlockData, NewsListBlockInput, "NewsList");
+export const NewsListBlock = createBlock(NewsListBlockData, NewsListBlockInput, {
+    name: "NewsList",
+    description: "A list of the selected news entries.",
+});

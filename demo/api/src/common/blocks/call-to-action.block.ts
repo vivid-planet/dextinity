@@ -40,4 +40,7 @@ class CallToActionBlockInput extends BlockInput {
     }
 }
 
-export const CallToActionBlock = createBlock(CallToActionBlockData, CallToActionBlockInput, "CallToAction");
+export const CallToActionBlock = createBlock(CallToActionBlockData, CallToActionBlockInput, {
+    name: "CallToAction",
+    description: "A link that is shown as a button, in one of the button variants.",
+});

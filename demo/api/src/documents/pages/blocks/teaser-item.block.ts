@@ -63,4 +63,7 @@ class TeaserItemBlockInput extends BlockInput {
     }
 }
 
-export const TeaserItemBlock = createBlock(TeaserItemBlockData, TeaserItemBlockInput, "TeaserItem");
+export const TeaserItemBlock = createBlock(TeaserItemBlockData, TeaserItemBlockInput, {
+    name: "TeaserItem",
+    description: "One teaser: a media, a title, a description and a link.",
+});

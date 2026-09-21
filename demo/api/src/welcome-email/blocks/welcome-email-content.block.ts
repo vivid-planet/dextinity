@@ -19,5 +19,6 @@ export const WelcomeEmailContentBlock = createBlocksBlock(
     },
     {
         name: "WelcomeEmailContent",
+        description: "The content of the welcome email.",
     },
 );

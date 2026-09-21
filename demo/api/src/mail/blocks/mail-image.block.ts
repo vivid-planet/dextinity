@@ -33,4 +33,7 @@ class MailImageBlockInput extends BlockInput {
     }
 }
 
-export const MailImageBlock = createBlock(MailImageBlockData, MailImageBlockInput, "MailImage");
+export const MailImageBlock = createBlock(MailImageBlockData, MailImageBlockInput, {
+    name: "MailImage",
+    description: "An image in an email, optionally across the full width.",
+});

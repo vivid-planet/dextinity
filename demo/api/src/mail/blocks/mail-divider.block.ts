@@ -8,4 +8,7 @@ class MailDividerBlockInput extends BlockInput {
     }
 }
 
-export const MailDividerBlock = createBlock(MailDividerBlockData, MailDividerBlockInput, "MailDivider");
+export const MailDividerBlock = createBlock(MailDividerBlockData, MailDividerBlockInput, {
+    name: "MailDivider",
+    description: "A horizontal line between two blocks of an email.",
+});

@@ -58,4 +58,7 @@ class MailButtonBlockInput extends BlockInput {
     }
 }
 
-export const MailButtonBlock = createBlock(MailButtonBlockData, MailButtonBlockInput, "MailButton");
+export const MailButtonBlock = createBlock(MailButtonBlockData, MailButtonBlockInput, {
+    name: "MailButton",
+    description: "A link that is shown as a button in an email.",
+});

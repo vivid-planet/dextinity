@@ -15,4 +15,7 @@ class ListBlockItemInput extends BaseListBlockItemInput(TextLinkBlock, ListBlock
     userGroup: UserGroup;
 }
 
-export const LinkListBlock = createListBlock({ block: TextLinkBlock, ListBlockItemData, ListBlockItemInput }, "LinkList");
+export const LinkListBlock = createListBlock(
+    { block: TextLinkBlock, ListBlockItemData, ListBlockItemInput },
+    { name: "LinkList", description: "A list of text links, each of them shown to one user group." },
+);

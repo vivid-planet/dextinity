@@ -83,6 +83,7 @@ class ProductPriceBlockInput extends BlockInput {
 
 const ProductPriceBlock = createBlock(ProductPriceBlockData, ProductPriceBlockInput, {
     name: "ProductPrice",
+    description: "The current price of a product, loaded from the product itself.",
     blockMeta: new Meta(ProductPriceBlockData),
 });
 

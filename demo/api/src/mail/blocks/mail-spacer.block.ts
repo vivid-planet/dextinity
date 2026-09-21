@@ -22,4 +22,7 @@ class MailSpacerBlockInput extends BlockInput {
     }
 }
 
-export const MailSpacerBlock = createBlock(MailSpacerBlockData, MailSpacerBlockInput, "MailSpacer");
+export const MailSpacerBlock = createBlock(MailSpacerBlockData, MailSpacerBlockInput, {
+    name: "MailSpacer",
+    description: "Vertical space between two blocks of an email.",
+});

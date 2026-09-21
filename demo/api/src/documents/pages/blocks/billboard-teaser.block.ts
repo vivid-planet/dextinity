@@ -56,4 +56,7 @@ class BillboardTeaserBlockInput extends BlockInput {
     }
 }
 
-export const BillboardTeaserBlock = createBlock(BillboardTeaserBlockData, BillboardTeaserBlockInput, "BillboardTeaser");
+export const BillboardTeaserBlock = createBlock(BillboardTeaserBlockData, BillboardTeaserBlockInput, {
+    name: "BillboardTeaser",
+    description: "A teaser across the full width, with a media background, a heading, text and call to action buttons.",
+});

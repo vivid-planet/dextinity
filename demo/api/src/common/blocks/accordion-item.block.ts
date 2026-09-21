@@ -29,7 +29,7 @@ export const AccordionContentBlock = createBlocksBlock(
             textImage: TextImageBlock,
         },
     },
-    "AccordionContent",
+    { name: "AccordionContent", description: "The content of an accordion item." },
 );
 
 export enum AccordionItemTitleHtmlTag {
@@ -77,4 +77,7 @@ class AccordionItemBlockInput extends BlockInput {
     }
 }
 
-export const AccordionItemBlock = createBlock(AccordionItemBlockData, AccordionItemBlockInput, "AccordionItem");
+export const AccordionItemBlock = createBlock(AccordionItemBlockData, AccordionItemBlockInput, {
+    name: "AccordionItem",
+    description: "One entry of an accordion: a title that opens to show its content.",
+});

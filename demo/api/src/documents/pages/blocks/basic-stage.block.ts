@@ -68,4 +68,7 @@ class BasicStageBlockInput extends BlockInput {
     }
 }
 
-export const BasicStageBlock = createBlock(BasicStageBlockData, BasicStageBlockInput, "BasicStage");
+export const BasicStageBlock = createBlock(BasicStageBlockData, BasicStageBlockInput, {
+    name: "BasicStage",
+    description: "A stage with a media background, a heading, text and call to action buttons.",
+});

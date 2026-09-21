@@ -7,5 +7,5 @@ export const MailLinkBlock = createLinkBlock(
             phone: PhoneLinkBlock,
         },
     },
-    "MailLink",
+    { name: "MailLink", description: "A link in an email, either to an external URL or to a phone number." },
 );

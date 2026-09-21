@@ -49,4 +49,7 @@ class HeadingBlockInput extends BlockInput {
     }
 }
 
-export const HeadingBlock = createBlock(HeadingBlockData, HeadingBlockInput, "Heading");
+export const HeadingBlock = createBlock(HeadingBlockData, HeadingBlockInput, {
+    name: "Heading",
+    description: "A headline with an eyebrow text above it, rendered with the chosen HTML heading tag.",
+});

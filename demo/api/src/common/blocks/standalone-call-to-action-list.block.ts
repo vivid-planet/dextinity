@@ -41,4 +41,5 @@ class StandaloneCallToActionListBlockInput extends BlockInput {
 
 export const StandaloneCallToActionListBlock = createBlock(StandaloneCallToActionListBlockData, StandaloneCallToActionListBlockInput, {
     name: "StandaloneCallToActionList",
+    description: "A list of call to action buttons placed directly in the page content, with its alignment.",
 });

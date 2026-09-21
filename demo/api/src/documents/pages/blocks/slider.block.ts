@@ -34,9 +34,10 @@ class SliderItemBlockInput extends BlockInput {
 
 const SliderItemBlock = createBlock(SliderItemBlockData, SliderItemBlockInput, {
     name: "SliderItem",
+    description: "One slide of a slider: a media with text.",
 });
 
-const SliderListBlock = createListBlock({ block: SliderItemBlock }, "SliderList");
+const SliderListBlock = createListBlock({ block: SliderItemBlock }, { name: "SliderList", description: "The slides of a slider." });
 
 class SliderBlockData extends BlockData {
     @ChildBlock(SliderListBlock)
@@ -54,4 +55,5 @@ class SliderBlockInput extends BlockInput {
 
 export const SliderBlock = createBlock(SliderBlockData, SliderBlockInput, {
     name: "Slider",
+    description: "A slider that shows its slides one after another.",
 });

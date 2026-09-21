@@ -40,4 +40,5 @@ class StandaloneHeadingBlockInput extends BlockInput {
 
 export const StandaloneHeadingBlock = createBlock(StandaloneHeadingBlockData, StandaloneHeadingBlockInput, {
     name: "StandaloneHeading",
+    description: "A heading placed directly in the page content, with the alignment of its text.",
 });

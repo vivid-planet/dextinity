@@ -47,4 +47,7 @@ class KeyFactsItemBlockInput extends BlockInput {
     }
 }
 
-export const KeyFactsItemBlock = createBlock(KeyFactsItemBlockData, KeyFactsItemBlockInput, "KeyFactsItem");
+export const KeyFactsItemBlock = createBlock(KeyFactsItemBlockData, KeyFactsItemBlockInput, {
+    name: "KeyFactsItem",
+    description: "One key fact: an icon, the fact itself, its label and a description.",
+});

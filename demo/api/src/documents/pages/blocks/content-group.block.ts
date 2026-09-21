@@ -43,7 +43,7 @@ export const ContentBlock = createBlocksBlock(
             tipTapTable: TipTapTableBlock,
         },
     },
-    { name: "ContentGroupContent" },
+    { name: "ContentGroupContent", description: "The content of a content group." },
 );
 
 export enum BackgroundColor {
@@ -73,4 +73,7 @@ class ContentGroupBlockInput extends BlockInput {
     }
 }
 
-export const ContentGroupBlock = createBlock(ContentGroupBlockData, ContentGroupBlockInput, "ContentGroup");
+export const ContentGroupBlock = createBlock(ContentGroupBlockData, ContentGroupBlockInput, {
+    name: "ContentGroup",
+    description: "A group of blocks that share a background color.",
+});

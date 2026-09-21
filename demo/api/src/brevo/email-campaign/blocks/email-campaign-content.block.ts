@@ -22,5 +22,6 @@ export const EmailCampaignContentBlock = createBlocksBlock(
     },
     {
         name: "EmailCampaignContent",
+        description: "The content of an email campaign.",
     },
 );

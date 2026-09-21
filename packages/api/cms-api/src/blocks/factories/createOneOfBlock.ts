@@ -341,17 +341,20 @@ export function createOneOfBlock<
     }
 
     let name: string;
+    let description: string | undefined;
     let migrate: MigrateOptions | undefined;
 
     if (typeof nameOrOptions === "string") {
         name = nameOrOptions;
     } else {
         name = nameOrOptions.name;
+        description = nameOrOptions.description;
         migrate = nameOrOptions.migrate;
     }
 
     return createBlock(OneOfBlockData, OneOfBlockInput, {
         name,
+        description,
         blockMeta: new Meta(OneOfBlockData),
         blockInputMeta: new InputMeta(OneOfBlockInput),
         migrate,

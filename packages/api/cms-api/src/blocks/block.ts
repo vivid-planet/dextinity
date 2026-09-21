@@ -256,6 +256,7 @@ export interface BlockMetaInterface {
 
 export type Block<BlockType extends BlockDataInterface = BlockDataInterface, BlockInputType extends BlockInputInterface = BlockInputInterface> = {
     name: string;
+    description?: string;
     blockDataFactory: BlockDataFactory<BlockType>;
     blockInputFactory: BlockInputFactory<BlockInputType>;
     blockMeta: BlockMetaInterface;
@@ -266,6 +267,7 @@ const blocks: Block[] = [];
 
 interface CreateBlockOptions {
     name: string;
+    description?: string;
     blockMeta?: BlockMetaInterface;
     blockInputMeta?: BlockMetaInterface;
     migrate?: MigrateOptions;
@@ -332,6 +334,7 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
 
     const block: Block<BlockType, BlockInputType> = {
         name: typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name,
+        description: options.description,
         blockDataFactory: decorateBlockDataFactory,
         blockInputFactory: decorateBlockInputFactory,
         blockMeta: options.blockMeta ? options.blockMeta : new AnnotationBlockMeta(BlockData),

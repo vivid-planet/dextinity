@@ -77,6 +77,7 @@ export function createRichTextBlock<LinkBlock extends Block>(
     }
 
     const blockName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
+    const blockDescription = typeof nameOrOptions === "string" ? undefined : nameOrOptions.description;
     const migrate = typeof nameOrOptions !== "string" ? nameOrOptions.migrate : undefined;
 
     @BlockDataMigrationVersion(migrate?.version)
@@ -201,6 +202,7 @@ export function createRichTextBlock<LinkBlock extends Block>(
 
     const RichTextBlock: Block<RichTextBlockData, RichTextBlockInputInterface<ExtractBlockInput<LinkBlock>>> = {
         name: blockName,
+        description: blockDescription,
         blockDataFactory: decorateBlockDataFactory,
         blockInputFactory: decorateBlockInputFactory,
         blockMeta: new AnnotationBlockMeta(RichTextBlockData),

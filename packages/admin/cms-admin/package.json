@@ -48,7 +48,6 @@
     },
     "dependencies": {
         "@dextinity/admin": "workspace:*",
-        "@dextinity/admin-date-time": "workspace:*",
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/admin-rte": "workspace:*",
         "@tiptap/core": "^3.22.3",

@@ -1,7 +1,7 @@
 import { Calendar } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, css, inputLabelClasses, type Theme, useThemeProps } from "@mui/material";
 import { DatePicker as MuiDatePicker, type DatePickerProps as MuiDatePickerProps, pickersInputBaseClasses } from "@mui/x-date-pickers";
-import { type ReactNode, useState } from "react";
+import { type ClipboardEvent, type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
 
 import { ClearInputAdornment as BaseClearInputAdornment } from "../../common/ClearInputAdornment";
@@ -9,7 +9,7 @@ import { OpenPickerAdornment } from "../../common/OpenPickerAdornment";
 import { ReadOnlyAdornment } from "../../common/ReadOnlyAdornment";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
-import { getDateValue, getIsoDateString, isValidDate } from "../utils";
+import { getDateFromIsoDateString, getDateValue, getIsoDateString, isValidDate } from "../utils";
 
 export type DatePickerClassKey = "root" | "clearInputAdornment" | "readOnlyAdornment" | "openPickerAdornment";
 
@@ -51,6 +51,8 @@ export type DatePickerProps = ThemedComponentBaseProps<{
  * with a calendar icon that opens a date picker dialog. The component handles ISO 8601 date strings and includes
  * features like clearing, read-only state, and customizable icons.
  *
+ * Dates can be pasted into the field, either in the field's display format or as an ISO 8601 date.
+ *
  * - [Storybook](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/admin_components-datetime-datepicker--docs)
  * - [MUI X DatePicker Documentation](https://mui.com/x/react-date-pickers/date-picker/)
  */
@@ -76,6 +78,24 @@ export const DatePicker = (inProps: DatePickerProps) => {
     const dateValue = getDateValue(stringValue);
 
     const { openPicker: openPickerIcon = <Calendar color="inherit" /> } = iconMapping;
+
+    // The picker itself only accepts pasted values in its display format. Intercepting the paste in the capture phase
+    // adds support for ISO dates while leaving everything else to the picker.
+    const handlePasteCapture = (event: ClipboardEvent<HTMLDivElement>) => {
+        if (disabled || readOnly) {
+            return;
+        }
+
+        const pastedDate = getDateFromIsoDateString(event.clipboardData.getData("text"));
+
+        if (!pastedDate) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        onChange?.(getIsoDateString(pastedDate));
+    };
 
     return (
         <Root
@@ -109,6 +129,7 @@ export const DatePicker = (inProps: DatePickerProps) => {
                         required,
                         onBlur,
                         onFocus,
+                        onPasteCapture: handlePasteCapture,
                         ...textFieldProps,
                         InputProps: {
                             startAdornment: (

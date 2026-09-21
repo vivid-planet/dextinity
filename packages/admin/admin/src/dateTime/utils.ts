@@ -43,3 +43,25 @@ export const getDateFromTimeString = (value: string | null | undefined): Date | 
 
     return parsedDate;
 };
+
+const isoDatePattern = /^(\d{4}-\d{2}-\d{2})(?:[T ].*)?$/;
+
+/**
+ * Parses an ISO 8601 date string (`YYYY-MM-DD`, an optional time part is ignored) into a `Date`.
+ * Returns `null` for anything else so callers can fall back to other formats.
+ */
+export const getDateFromIsoDateString = (value: string): Date | null => {
+    const isoDate = value.trim().match(isoDatePattern)?.[1];
+
+    if (!isoDate) {
+        return null;
+    }
+
+    const parsedDate = parse(isoDate, "yyyy-MM-dd", new Date());
+
+    if (!isValidDate(parsedDate)) {
+        return null;
+    }
+
+    return parsedDate;
+};

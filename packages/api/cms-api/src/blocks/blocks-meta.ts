@@ -1,4 +1,10 @@
-import { BlockMetaFieldKind, type BlockMetaInterface, getRegisteredBlocks } from "./block";
+import {
+    type Block,
+    type BlockMetaField as BlockMetaFieldInterface,
+    BlockMetaFieldKind,
+    type BlockMetaInterface,
+    getRegisteredBlocks,
+} from "./block";
 
 type BlockMetaField =
     | {
@@ -123,8 +129,11 @@ function extractFromBlockMeta(blockMeta: BlockMetaInterface): BlockMetaField[] {
     });
 }
 
-export function getBlocksMeta(): BlockMeta[] {
-    return getRegisteredBlocks()
+/**
+ * Returns the meta of the given blocks and, recursively, of their child blocks. Consumers can therefore resolve every block reference in the meta.
+ */
+export function getBlocksMeta(rootBlocks: Block[] = getRegisteredBlocks()): BlockMeta[] {
+    return getUsedBlocks(rootBlocks)
         .sort((blockA, blockB) => blockA.name.localeCompare(blockB.name))
         .map((block) => {
             const meta: BlockMeta = {
@@ -134,4 +143,47 @@ export function getBlocksMeta(): BlockMeta[] {
             };
             return meta;
         });
+}
+
+function getBlocksOfMetaField(field: BlockMetaFieldInterface): Block[] {
+    switch (field.kind) {
+        case BlockMetaFieldKind.Block:
+            return [field.block];
+        case BlockMetaFieldKind.OneOfBlocks:
+            return Object.values(field.blocks);
+        case BlockMetaFieldKind.RichTextBlock:
+            return [field.linkBlock];
+        case BlockMetaFieldKind.TipTapRichTextBlock:
+            return [...Object.values(field.childBlocks), ...(field.linkBlock ? [field.linkBlock] : [])];
+        case BlockMetaFieldKind.NestedObject:
+        case BlockMetaFieldKind.NestedObjectList:
+            return getBlocksOfMeta(field.object);
+        default:
+            return [];
+    }
+}
+
+function getBlocksOfMeta(meta: BlockMetaInterface): Block[] {
+    return meta.fields.flatMap((field) => getBlocksOfMetaField(field));
+}
+
+/**
+ * Returns all blocks that are used by the given root blocks: the root blocks themselves and, recursively, all blocks they reference.
+ */
+export function getUsedBlocks(rootBlocks: Block[]): Block[] {
+    const usedBlocks = new Set<Block>();
+    const blocksToVisit = [...rootBlocks];
+
+    while (blocksToVisit.length > 0) {
+        const block = blocksToVisit.pop();
+
+        if (!block || usedBlocks.has(block)) {
+            continue;
+        }
+        usedBlocks.add(block);
+
+        blocksToVisit.push(...getBlocksOfMeta(block.blockMeta), ...getBlocksOfMeta(block.blockInputMeta));
+    }
+
+    return Array.from(usedBlocks);
 }

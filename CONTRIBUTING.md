@@ -46,6 +46,11 @@ This can be either:
 - The implementation in Demo
 - A development story in Storybook
 
+The description needs an "Example" section only when the example isn't reachable from the diff:
+link the Storybook story, or say how to get to the implementation in Demo, and add a sentence on what it shows.
+When a unit test is the example, reviewers find it in the diff, so delete the section.
+The example usage of your change belongs in the description itself either way.
+
 ### Screenshots/screencasts
 
 When making a visual change, please provide either screenshots or screencasts.

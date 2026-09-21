@@ -20,7 +20,7 @@ import {
     Typography,
 } from "@mui/material";
 import type { GridToolbarProps } from "@mui/x-data-grid";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { type ReactNode, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -142,7 +142,7 @@ export function generateGridColumnsFromContentScopeProperties(
             filterable: true,
             headerName: camelCaseToHumanReadable(propertyName),
             renderCell: ({ row }: { row: ContentScope }) => {
-                const contentScopeWithLabel = availableContentScopes.find((availableContentScope) => isEqual(availableContentScope.scope, row));
+                const contentScopeWithLabel = availableContentScopes.find((availableContentScope) => deepEqual(availableContentScope.scope, row));
                 if (contentScopeWithLabel) {
                     return <Typography variant={index === 0 ? "subtitle2" : "body2"}>{contentScopeWithLabel.label[propertyName]}</Typography>;
                 } else {

@@ -17,7 +17,7 @@ import {
 } from "@dextinity/admin";
 import { Box, MenuItem } from "@mui/material";
 import { isFQDN } from "class-validator";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { type JSX, useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -183,7 +183,7 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
             onAfterSubmit={(values, form) => {
                 form.reset(values);
             }}
-            initialValuesEqual={isEqual}
+            initialValuesEqual={deepEqual}
         >
             {({ values, pristine, hasValidationErrors, submitting, handleSubmit, validating }) => (
                 <>

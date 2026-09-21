@@ -1,6 +1,6 @@
 import { type ApolloError, type ApolloQueryResult, type OperationVariables, useQuery } from "@apollo/client";
+import { deepEqual } from "fast-equals";
 import type { DocumentNode } from "graphql";
-import isEqual from "lodash.isequal";
 import { type Dispatch, type SetStateAction, useCallback, useEffect, useState } from "react";
 
 interface EditStateOptions<TData, TVariables, TState, TOutput> {
@@ -66,7 +66,7 @@ export function useEditState<TData = any, TVariables extends OperationVariables 
     );
 
     return {
-        hasChanges: state ? !isEqual(referenceContent, options.state2Output(state)) : false,
+        hasChanges: state ? !deepEqual(referenceContent, options.state2Output(state)) : false,
         state,
         setState,
         updateReferenceContent,

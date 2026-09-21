@@ -1,4 +1,4 @@
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 
 import type { BlockDependency } from "../types";
 
@@ -6,7 +6,7 @@ export function deduplicateBlockDependencies(arr: BlockDependency[]) {
     const deduplicatedArr: BlockDependency[] = [];
 
     for (const dependency of arr) {
-        const existingIdenticalDependency = deduplicatedArr.find((existingDependency) => isEqual(dependency, existingDependency));
+        const existingIdenticalDependency = deduplicatedArr.find((existingDependency) => deepEqual(dependency, existingDependency));
         if (existingIdenticalDependency === undefined) {
             deduplicatedArr.push(dependency);
         }

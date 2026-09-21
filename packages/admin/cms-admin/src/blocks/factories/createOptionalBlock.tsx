@@ -1,5 +1,5 @@
 import { Box, Divider } from "@mui/material";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import type { MessageDescriptor } from "react-intl";
 import { Route, useRouteMatch } from "react-router";
@@ -137,7 +137,7 @@ export function createOptionalBlock<T extends BlockInterface>(
                                             } else {
                                                 // decorated block is turned off, clean up the state of decorated block
                                                 // we do not save the default state
-                                                if (isEqual(decoratedBlock.defaultValues(), prevState.block)) {
+                                                if (deepEqual(decoratedBlock.defaultValues(), prevState.block)) {
                                                     return {
                                                         ...prevState,
                                                         block: undefined,

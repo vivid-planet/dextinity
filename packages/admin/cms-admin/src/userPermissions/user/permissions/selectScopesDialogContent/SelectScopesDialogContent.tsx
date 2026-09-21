@@ -1,6 +1,6 @@
 import { gql, useApolloClient, useQuery } from "@apollo/client";
 import { DataGridToolbar, Field, FillSpace, FinalForm, type GridColDef, GridToolbarQuickFilter, Loading, useFormApiRef } from "@dextinity/admin";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import type { FunctionComponent, PropsWithChildren } from "react";
 
 import { DataGrid } from "../../../../dataGrid/DataGrid";
@@ -104,7 +104,7 @@ export const SelectScopesDialogContent: FunctionComponent<PropsWithChildren<Sele
                             getRowHeight={() => "auto"}
                             getRowId={(row) => JSON.stringify(row)}
                             isRowSelectable={(params) => {
-                                return !userContentScopesSkipManual.some((cs: ContentScope) => isEqual(cs, params.row));
+                                return !userContentScopesSkipManual.some((cs: ContentScope) => deepEqual(cs, params.row));
                             }}
                             checkboxSelection
                             rowSelectionModel={{ type: "include", ids: new Set(props.input.value) }}

@@ -1,7 +1,7 @@
 import { Field, RadioGroupField, SelectField } from "@dextinity/admin";
 import { Box, Divider, ToggleButton as MuiToggleButton, ToggleButtonGroup as MuiToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { type Dispatch, type ReactNode, type SetStateAction, useCallback, useMemo } from "react";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 
@@ -352,7 +352,7 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                         const newSelectedBlock = getActiveBlock(newState);
 
                         if (previousSelectedBlock.block && previousSelectedBlock.state && newSelectedBlock.type !== previousSelectedBlock.type) {
-                            if (isEqual(previousSelectedBlock.block.defaultValues(), previousSelectedBlock.state.props)) {
+                            if (deepEqual(previousSelectedBlock.block.defaultValues(), previousSelectedBlock.state.props)) {
                                 newState = {
                                     ...newState,
                                     attachedBlocks: newState.attachedBlocks.filter((c) => c.type !== previousSelectedBlock.state.type),

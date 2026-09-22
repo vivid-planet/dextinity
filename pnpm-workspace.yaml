@@ -12,6 +12,9 @@ peerDependencyRules:
     allowedVersions:
         react-final-form>react: "19"
         react-final-form-arrays>react: "19"
+        # @golevelup/nestjs-discovery has no NestJS 12 release yet.
+        "@golevelup/nestjs-discovery>@nestjs/common": "12"
+        "@golevelup/nestjs-discovery>@nestjs/core": "12"
 
 overrides:
     "@apollo/server-plugin-landing-page-graphql-playground>@apollo/server": "^5.1.0"

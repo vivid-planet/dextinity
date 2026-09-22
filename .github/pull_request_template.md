@@ -68,7 +68,7 @@ those instead of writing them down here.
 Where the change comes from: the task it implements, and the agent session that wrote it
 (Claude Code: the URL shown for the current session). Both stay visible text at the very
 end of the description — replace the placeholders, and delete the line that doesn't apply:
-the task line when there is no task, the session line when no agent was involved.
+the task line when there is no task, the session line when you don't have the session URL.
 
 The session line is the whole attribution: don't add a "Generated with Claude Code"
 footer, a second session URL or a Co-authored-by line to the description.

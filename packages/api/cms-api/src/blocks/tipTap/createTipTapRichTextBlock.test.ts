@@ -149,6 +149,32 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(errors).toHaveLength(0);
         });
 
+        it("should reject a text block inside a list item that takes a heading as the default", async () => {
+            // The first text block is the default, so a node naming none is a heading here.
+            const headingDefaultBlock = createTipTapRichTextBlock(
+                {
+                    textBlocks: [
+                        { name: "heading-1", tag: "h1" },
+                        { name: "paragraph", tag: "p" },
+                    ],
+                },
+                "TestHeadingDefaultListItem",
+            );
+            const input = headingDefaultBlock.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "bulletList",
+                            content: [{ type: "listItem", content: [{ type: "textBlock", content: [{ type: "text", text: "Heading" }] }] }],
+                        },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
+        });
+
         it("should reject a heading text block inside a list item", async () => {
             const input = block.blockInputFactory({
                 tipTapContent: {

@@ -67,7 +67,14 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
             }
 
             const converted = convertDraftJsToTipTap(from.draftContent, { resolvedOptions, link, textBlockMap, inlineStyleMap, listLevelMax });
-            if (isValidTipTapContentSync(converted, schema, { maxTextBlocks, listLevelMax, textBlocks })) {
+            if (
+                isValidTipTapContentSync(converted, schema, {
+                    maxTextBlocks,
+                    listLevelMax,
+                    textBlocks,
+                    defaultTextBlock: resolvedOptions.defaultTextBlock,
+                })
+            ) {
                 return { tipTapContent: converted };
             }
 
@@ -76,7 +83,7 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
             }
 
             const stripped = buildStrippedTipTapDoc(from.draftContent, resolvedOptions);
-            if (isValidTipTapContentSync(stripped, schema, { maxTextBlocks, textBlocks })) {
+            if (isValidTipTapContentSync(stripped, schema, { maxTextBlocks, textBlocks, defaultTextBlock: resolvedOptions.defaultTextBlock })) {
                 console.warn("DraftJS->TipTap migration failed, using stripped content");
                 return { tipTapContent: stripped };
             }

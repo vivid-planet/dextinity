@@ -38,18 +38,30 @@ function containsUnknownMarks(json: any, schema: Schema): boolean {
  * A list item's content expression matches node types, and every text block is the same node, so it
  * can't keep a heading out - only this check can.
  */
-export function containsInvalidTextBlock(content: TipTapContent, textBlocks: TipTapResolvedTextBlock[], insideListItem = false): boolean {
+export function containsInvalidTextBlock({
+    content,
+    textBlocks,
+    defaultTextBlock,
+    insideListItem = false,
+}: {
+    content: TipTapContent;
+    textBlocks: TipTapResolvedTextBlock[];
+    defaultTextBlock: TipTapResolvedTextBlock;
+    insideListItem?: boolean;
+}): boolean {
     if (typeof content !== "object" || content === null) {
         return false;
     }
 
     if (content.type === "textBlock") {
         const name = content.attrs?.textBlock;
-        const textBlock = textBlocks.find((candidate) => candidate.name === name);
-        if (name != null && !textBlock) {
+        // A node naming none is the default text block, which the schema fills in - and which may be
+        // a heading, since only lists need a `p` text block to exist at all.
+        const textBlock = name == null ? defaultTextBlock : textBlocks.find((candidate) => candidate.name === name);
+        if (!textBlock) {
             return true;
         }
-        if (insideListItem && textBlock && textBlock.tag !== "p") {
+        if (insideListItem && textBlock.tag !== "p") {
             return true;
         }
     }
@@ -59,7 +71,9 @@ export function containsInvalidTextBlock(content: TipTapContent, textBlocks: Tip
     }
 
     const childrenInsideListItem = content.type === "listItem" || insideListItem;
-    return content.content.some((child: TipTapContent) => containsInvalidTextBlock(child, textBlocks, childrenInsideListItem));
+    return content.content.some((child: TipTapContent) =>
+        containsInvalidTextBlock({ content: child, textBlocks, defaultTextBlock, insideListItem: childrenInsideListItem }),
+    );
 }
 
 export function getListNestingDepth(content: TipTapContent, currentDepth = 0): number {
@@ -87,7 +101,12 @@ export function getListNestingDepth(content: TipTapContent, currentDepth = 0): n
 export function isValidTipTapContentSync(
     value: unknown,
     schema: Schema,
-    { maxTextBlocks, listLevelMax, textBlocks }: { maxTextBlocks?: number; listLevelMax?: number; textBlocks: TipTapResolvedTextBlock[] },
+    {
+        maxTextBlocks,
+        listLevelMax,
+        textBlocks,
+        defaultTextBlock,
+    }: { maxTextBlocks?: number; listLevelMax?: number; textBlocks: TipTapResolvedTextBlock[]; defaultTextBlock: TipTapResolvedTextBlock },
 ): boolean {
     if (typeof value !== "object" || value === null) {
         return false;
@@ -110,7 +129,7 @@ export function isValidTipTapContentSync(
             return false;
         }
 
-        if (containsInvalidTextBlock(value as TipTapContent, textBlocks)) {
+        if (containsInvalidTextBlock({ content: value as TipTapContent, textBlocks, defaultTextBlock })) {
             return false;
         }
 

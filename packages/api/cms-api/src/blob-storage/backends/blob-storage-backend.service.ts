@@ -15,13 +15,13 @@ export class BlobStorageBackendService implements BlobStorageBackendInterface, O
 
     async onModuleInit(): Promise<void> {
         if (this.config.backend.driver === "file") {
-            const { BlobStorageFileStorage } = await import("./file/blob-storage-file.storage");
+            const { BlobStorageFileStorage } = await import("./file/blob-storage-file.storage.js");
             this.backend = new BlobStorageFileStorage(this.config.backend.file);
         } else if (this.config.backend.driver === "azure") {
-            const { BlobStorageAzureStorage } = await import("./azure/blob-storage-azure.storage");
+            const { BlobStorageAzureStorage } = await import("./azure/blob-storage-azure.storage.js");
             this.backend = new BlobStorageAzureStorage(this.config.backend.azure);
         } else if (this.config.backend.driver === "s3") {
-            const { BlobStorageS3Storage } = await import("./s3/blob-storage-s3.storage");
+            const { BlobStorageS3Storage } = await import("./s3/blob-storage-s3.storage.js");
             this.backend = new BlobStorageS3Storage(this.config.backend.s3);
         } else {
             throw new Error(

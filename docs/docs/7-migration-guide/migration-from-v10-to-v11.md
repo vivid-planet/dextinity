@@ -336,6 +336,42 @@ npm install
 
 Keep `@nestjs/schematics` on `^11.1.0` unless your project is already on TypeScript 6 — v12 of it requires `typescript >= 6.0.0`. It only backs `nest generate`; `nest build` and `nest start` don't need it, and the CLI brings its own copy.
 
+### Allow the `@golevelup/nestjs-discovery` peer range
+
+`@dextinity/cms-api` depends on `@golevelup/nestjs-discovery`, which has no NestJS v12 release yet — it still asks for `@nestjs/common` and `@nestjs/core` v11 as peers. It works against v12, but the install fails until the peer range is allowed:
+
+```
+npm error code ERESOLVE
+npm error Could not resolve dependency:
+npm error peer @nestjs/common@"^11.1.21" from @golevelup/nestjs-discovery@7.0.3
+```
+
+Override the range for that package in the root `package.json`:
+
+```json title="package.json"
+{
+    "overrides": {
+        "@golevelup/nestjs-discovery": {
+            "@nestjs/common": "^12.0.4",
+            "@nestjs/core": "^12.0.4"
+        }
+    }
+}
+```
+
+Don't reach for `--legacy-peer-deps` or `--force` instead — both disable peer checking for the whole project, not just this package.
+
+On pnpm, relax the check rather than rewriting the range:
+
+```yaml title="pnpm-workspace.yaml"
+peerDependencyRules:
+    allowedVersions:
+        "@golevelup/nestjs-discovery>@nestjs/common": "12"
+        "@golevelup/nestjs-discovery>@nestjs/core": "12"
+```
+
+Remove the entry once the package ships a release that accepts v12.
+
 ### Import `repl` from `@nestjs/core`
 
 The core packages are ESM-only from v12 on and expose their subpaths through an `exports` map that maps `@nestjs/core/<name>` to `<name>.js`. `@nestjs/core/repl` is a directory, not a file, so that specifier no longer resolves. `repl` is re-exported from the package root instead:

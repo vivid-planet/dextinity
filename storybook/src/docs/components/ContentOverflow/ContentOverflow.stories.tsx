@@ -100,7 +100,7 @@ export const InDataGrid = {
             },
         ];
 
-        return <DataGrid autoHeight rows={gridRows} columns={gridColumns} rowHeight={100} />;
+        return <DataGrid autoHeight rows={gridRows} columns={gridColumns} getRowHeight={() => 100} />;
     },
     name: "In DataGrid",
 };

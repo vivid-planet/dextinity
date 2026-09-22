@@ -299,6 +299,55 @@ The CLI no longer supports `ts-node`. Install one of the loaders it accepts (`ox
 
 `ts-node` can stay for anything else in your project that uses it.
 
+### Update the NestJS dependencies
+
+v11 upgrades NestJS from v11 to v12. The [NestJS migration guide](https://docs.nestjs.com/migration-guide) lists every upstream change.
+
+```diff title="api/package.json"
+{
+    "dependencies": {
+-       "@nestjs/apollo": "^13.4.0",
+-       "@nestjs/common": "^11.1.21",
+-       "@nestjs/core": "^11.1.21",
+-       "@nestjs/graphql": "^13.4.0",
+-       "@nestjs/jwt": "^11.0.2",
+-       "@nestjs/platform-express": "^11.1.21",
++       "@nestjs/apollo": "^14.0.1",
++       "@nestjs/common": "^12.0.4",
++       "@nestjs/core": "^12.0.4",
++       "@nestjs/graphql": "^14.0.1",
++       "@nestjs/jwt": "^12.0.2",
++       "@nestjs/platform-express": "^12.0.4",
+    },
+    "devDependencies": {
+-       "@nestjs/cli": "^11.0.21",
+-       "@nestjs/testing": "^11.1.21",
++       "@nestjs/cli": "^12.0.3",
++       "@nestjs/testing": "^12.0.4",
+    }
+}
+```
+
+If your project uses them, `@nestjs/mapped-types` and `@nestjs/cache-manager` are versioned along with the core packages from v12 on, so they jump to `^12.0.0` as well.
+
+```sh
+npm install
+```
+
+Keep `@nestjs/schematics` on `^11.1.0` unless your project is already on TypeScript 6 — v12 of it requires `typescript >= 6.0.0`. It only backs `nest generate`; `nest build` and `nest start` don't need it, and the CLI brings its own copy.
+
+### Import `repl` from `@nestjs/core`
+
+The core packages are ESM-only from v12 on and expose their subpaths through an `exports` map that maps `@nestjs/core/<name>` to `<name>.js`. `@nestjs/core/repl` is a directory, not a file, so that specifier no longer resolves. `repl` is re-exported from the package root instead:
+
+```diff title="api/src/repl.ts"
+- import { NestFactory } from "@nestjs/core";
+- import { repl } from "@nestjs/core/repl";
++ import { NestFactory, repl } from "@nestjs/core";
+```
+
+A CommonJS API keeps working: Node loads the ESM packages through `require(esm)`, which the Node version MikroORM v7 already requires supports. Switching your API to ESM is optional and not needed for v11.
+
 ### Regenerate the generated API files
 
 The API Generator reads MikroORM metadata, which changed shape in v7. Regenerate and check that the output is unchanged:

@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "baseUrl": "./",
         "emitDecoratorMetadata": true,
         "esModuleInterop": true,
         "experimentalDecorators": true,
@@ -11,10 +10,11 @@
         "moduleResolution": "nodenext",
         "outDir": "./dist",
         "paths": {
-            "@src/*": ["src/*"]
+            "@src/*": ["./src/*"]
         },
         "removeComments": true,
         "resolveJsonModule": true,
+        "rootDir": "./src",
         "skipLibCheck": true,
         "sourceMap": true,
         "strict": true,
@@ -22,5 +22,6 @@
         "strictPropertyInitialization": false,
         "target": "ES2023",
         "useDefineForClassFields": false
-    }
+    },
+    "include": ["src"]
 }

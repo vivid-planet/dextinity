@@ -12,6 +12,10 @@ peerDependencyRules:
     allowedVersions:
         react-final-form>react: "19"
         react-final-form-arrays>react: "19"
+        # TypeScript 6 is used in the API packages, these dependencies don't declare support for it yet.
+        "@formatjs/intl>typescript": "6"
+        react-intl>typescript: "6"
+        tsconfck>typescript: "6"
 
 overrides:
     "@apollo/server-plugin-landing-page-graphql-playground>@apollo/server": "^5.1.0"

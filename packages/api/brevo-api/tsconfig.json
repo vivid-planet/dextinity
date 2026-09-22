@@ -1,13 +1,16 @@
 {
     "compilerOptions": {
-        "baseUrl": "./",
         "declarationMap": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "incremental": true,
         "lib": ["ES2023"],
         "outDir": "./lib",
+        "paths": {
+            "src/*": ["./src/*"]
+        },
         "removeComments": true,
+        "rootDir": "./src",
         "sourceMap": true,
         "strict": true,
         "strictNullChecks": true,

@@ -10,6 +10,7 @@ import { createAppliedMigrationsBlockDataFactoryDecorator } from "./migrations/c
 import { BlockDataMigrationVersion } from "./migrations/decorators/BlockDataMigrationVersion";
 import type { MigrateOptions, MigrateVendorOptions } from "./migrations/types";
 import type { SearchText } from "./search/get-search-text";
+import type { TipTapRichTextBlockSchemaMeta } from "./tipTap/tipTapSchemaMeta";
 
 export interface BlockTransformerServiceInterface<
     Block extends BlockDataInterface = BlockDataInterface,
@@ -247,6 +248,11 @@ export type BlockMetaField =
            * Lets consumers like the block loader process blocks embedded in the content.
            */
           childBlocks: Record<string, Block>;
+          /**
+           * Describes the content the block accepts, for consumers that generate or validate content
+           * outside the editor.
+           */
+          schema: TipTapRichTextBlockSchemaMeta;
           nullable: boolean;
       };
 

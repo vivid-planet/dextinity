@@ -1,4 +1,5 @@
 import { BlockMetaFieldKind, type BlockMetaInterface, getRegisteredBlocks } from "./block";
+import type { TipTapRichTextBlockSchemaMeta } from "./tipTap/tipTapSchemaMeta";
 
 type BlockMetaField =
     | {
@@ -12,6 +13,7 @@ type BlockMetaField =
           kind: "TipTapRichTextBlock";
           nullable: boolean;
           childBlocks: Record<string, string>;
+          schema: TipTapRichTextBlockSchemaMeta;
       }
     | {
           name: string;
@@ -70,6 +72,7 @@ function extractFromBlockMeta(blockMeta: BlockMetaInterface): BlockMetaField[] {
                 kind: field.kind,
                 nullable: field.nullable,
                 childBlocks: Object.fromEntries(Object.entries(field.childBlocks).map(([blockType, block]) => [blockType, block.name])),
+                schema: field.schema,
             };
         } else if (field.kind === BlockMetaFieldKind.Enum) {
             return {

@@ -1546,3 +1546,84 @@ describe("createTipTapRichTextBlock block typing", () => {
         expect(blockData.tipTapContent.type).toBe("doc");
     });
 });
+
+describe("createTipTapRichTextBlock block meta schema", () => {
+    const block = createTipTapRichTextBlock(
+        onlyFeatures({
+            bold: true,
+            heading: { levels: [2, 3], defaultLevel: 3 },
+            textBlockStyles: [{ name: "paragraph200", appliesTo: ["paragraph"] }],
+            inlineStyles: [{ name: "highlight" }],
+            placeholders: [{ name: "firstName" }],
+            link: ExternalLinkBlock,
+            childBlocks: { externalLink: { block: ExternalLinkBlock, display: "inline" } },
+            maxTextBlocks: 3,
+            listLevelMax: 1,
+        }),
+        "TestBlockMetaSchema",
+    );
+
+    const getSchemaMeta = () => {
+        const field = block.blockInputMeta.fields.find((field) => field.name === "tipTapContent");
+        if (field?.kind !== "TipTapRichTextBlock") {
+            throw new Error("expected a TipTapRichTextBlock field");
+        }
+        return field.schema;
+    };
+
+    it("should describe the schema's nodes and marks", () => {
+        const schema = getSchemaMeta();
+
+        expect(schema.topNode).toBe("doc");
+        expect(schema.nodes.doc).toEqual({ content: "block+" });
+        expect(schema.nodes.paragraph).toEqual({ content: "inline*", group: "block", attrs: { textBlockStyle: { default: null } } });
+        expect(schema.nodes.heading).toEqual({
+            content: "inline*",
+            group: "block",
+            attrs: { level: { default: 3 }, textBlockStyle: { default: null } },
+        });
+        expect(schema.nodes.placeholder).toEqual({ group: "inline", inline: true, atom: true, attrs: { name: { default: null } } });
+        expect(schema.nodes.cmsInlineBlock).toEqual({
+            group: "inline",
+            inline: true,
+            atom: true,
+            attrs: { blockType: { default: null }, data: { default: null } },
+        });
+        expect(schema.nodes.cmsBlock).toBeUndefined();
+        expect(schema.nodes.bulletList).toBeUndefined();
+
+        expect(Object.keys(schema.marks).sort()).toEqual(["bold", "inlineStyle", "link"]);
+        expect(schema.marks.inlineStyle).toEqual({ attrs: { type: { default: null } } });
+        expect(schema.marks.link).toEqual({ attrs: { data: { default: null } } });
+    });
+
+    it("should describe the rules validated on top of the schema", () => {
+        const schema = getSchemaMeta();
+
+        expect(schema.headingLevels).toEqual([2, 3]);
+        expect(schema.textBlockStyles).toEqual([{ name: "paragraph200", appliesTo: ["paragraph"] }]);
+        expect(schema.inlineStyles).toEqual([{ name: "highlight", appliesTo: undefined }]);
+        expect(schema.placeholders).toEqual(["firstName"]);
+        expect(schema.childBlocks).toEqual({ externalLink: { display: "inline" } });
+        expect(schema.maxTextBlocks).toBe(3);
+        expect(schema.listLevelMax).toBe(1);
+    });
+
+    it("should expose the same schema in the block data meta and the block input meta", () => {
+        const dataField = block.blockMeta.fields.find((field) => field.name === "tipTapContent");
+        if (dataField?.kind !== "TipTapRichTextBlock") {
+            throw new Error("expected a TipTapRichTextBlock field");
+        }
+        expect(dataField.schema).toEqual(getSchemaMeta());
+    });
+
+    it("should leave headingLevels empty when headings are disabled", () => {
+        const headinglessBlock = createTipTapRichTextBlock(onlyFeatures(), "TestBlockMetaSchemaNoHeading");
+        const field = headinglessBlock.blockMeta.fields.find((field) => field.name === "tipTapContent");
+        if (field?.kind !== "TipTapRichTextBlock") {
+            throw new Error("expected a TipTapRichTextBlock field");
+        }
+        expect(field.schema.headingLevels).toEqual([]);
+        expect(field.schema.nodes.heading).toBeUndefined();
+    });
+});

@@ -4178,6 +4178,201 @@
                 "childBlocks": {
                     "productPrice": "ProductPrice",
                     "productTeaser": "ProductTeaser"
+                },
+                "schema": {
+                    "topNode": "doc",
+                    "nodes": {
+                        "paragraph": {
+                            "content": "inline*",
+                            "group": "block",
+                            "attrs": {
+                                "textBlockStyle": {
+                                    "default": null
+                                }
+                            }
+                        },
+                        "bulletList": {
+                            "content": "listItem+",
+                            "group": "block list"
+                        },
+                        "doc": {
+                            "content": "block+"
+                        },
+                        "hardBreak": {
+                            "group": "inline",
+                            "inline": true
+                        },
+                        "horizontalRule": {
+                            "group": "block"
+                        },
+                        "listItem": {
+                            "content": "paragraph block*"
+                        },
+                        "orderedList": {
+                            "content": "listItem+",
+                            "group": "block list",
+                            "attrs": {
+                                "start": {
+                                    "default": 1
+                                },
+                                "type": {
+                                    "default": null
+                                }
+                            }
+                        },
+                        "text": {
+                            "group": "inline"
+                        },
+                        "heading": {
+                            "content": "inline*",
+                            "group": "block",
+                            "attrs": {
+                                "level": {
+                                    "default": 1
+                                },
+                                "textBlockStyle": {
+                                    "default": null
+                                }
+                            }
+                        },
+                        "nonBreakingSpace": {
+                            "group": "inline",
+                            "inline": true,
+                            "atom": true
+                        },
+                        "softHyphen": {
+                            "group": "inline",
+                            "inline": true,
+                            "atom": true
+                        },
+                        "cmsBlock": {
+                            "group": "block",
+                            "inline": false,
+                            "atom": true,
+                            "attrs": {
+                                "blockType": {
+                                    "default": null
+                                },
+                                "data": {
+                                    "default": null
+                                }
+                            }
+                        },
+                        "cmsInlineBlock": {
+                            "group": "inline",
+                            "inline": true,
+                            "atom": true,
+                            "attrs": {
+                                "blockType": {
+                                    "default": null
+                                },
+                                "data": {
+                                    "default": null
+                                }
+                            }
+                        }
+                    },
+                    "marks": {
+                        "bold": {},
+                        "italic": {},
+                        "strike": {},
+                        "inlineStyle": {
+                            "attrs": {
+                                "type": {
+                                    "default": null
+                                }
+                            }
+                        },
+                        "superscript": {},
+                        "subscript": {},
+                        "link": {
+                            "attrs": {
+                                "data": {
+                                    "default": null
+                                }
+                            }
+                        }
+                    },
+                    "headingLevels": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "textBlockStyles": [
+                        {
+                            "name": "paragraph300",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        },
+                        {
+                            "name": "paragraph200",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        },
+                        {
+                            "name": "eyebrow600",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        },
+                        {
+                            "name": "eyebrow550",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        },
+                        {
+                            "name": "eyebrow500",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        },
+                        {
+                            "name": "eyebrow450",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        },
+                        {
+                            "name": "list300",
+                            "appliesTo": [
+                                "ordered-list",
+                                "unordered-list"
+                            ]
+                        },
+                        {
+                            "name": "list200",
+                            "appliesTo": [
+                                "ordered-list",
+                                "unordered-list"
+                            ]
+                        }
+                    ],
+                    "inlineStyles": [
+                        {
+                            "name": "highlight"
+                        },
+                        {
+                            "name": "tag",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        }
+                    ],
+                    "placeholders": [],
+                    "childBlocks": {
+                        "productPrice": {
+                            "display": "inline"
+                        },
+                        "productTeaser": {
+                            "display": "block"
+                        }
+                    }
                 }
             }
         ],
@@ -4189,6 +4384,201 @@
                 "childBlocks": {
                     "productPrice": "ProductPrice",
                     "productTeaser": "ProductTeaser"
+                },
+                "schema": {
+                    "topNode": "doc",
+                    "nodes": {
+                        "paragraph": {
+                            "content": "inline*",
+                            "group": "block",
+                            "attrs": {
+                                "textBlockStyle": {
+                                    "default": null
+                                }
+                            }
+                        },
+                        "bulletList": {
+                            "content": "listItem+",
+                            "group": "block list"
+                        },
+                        "doc": {
+                            "content": "block+"
+                        },
+                        "hardBreak": {
+                            "group": "inline",
+                            "inline": true
+                        },
+                        "horizontalRule": {
+                            "group": "block"
+                        },
+                        "listItem": {
+                            "content": "paragraph block*"
+                        },
+                        "orderedList": {
+                            "content": "listItem+",
+                            "group": "block list",
+                            "attrs": {
+                                "start": {
+                                    "default": 1
+                                },
+                                "type": {
+                                    "default": null
+                                }
+                            }
+                        },
+                        "text": {
+                            "group": "inline"
+                        },
+                        "heading": {
+                            "content": "inline*",
+                            "group": "block",
+                            "attrs": {
+                                "level": {
+                                    "default": 1
+                                },
+                                "textBlockStyle": {
+                                    "default": null
+                                }
+                            }
+                        },
+                        "nonBreakingSpace": {
+                            "group": "inline",
+                            "inline": true,
+                            "atom": true
+                        },
+                        "softHyphen": {
+                            "group": "inline",
+                            "inline": true,
+                            "atom": true
+                        },
+                        "cmsBlock": {
+                            "group": "block",
+                            "inline": false,
+                            "atom": true,
+                            "attrs": {
+                                "blockType": {
+                                    "default": null
+                                },
+                                "data": {
+                                    "default": null
+                                }
+                            }
+                        },
+                        "cmsInlineBlock": {
+                            "group": "inline",
+                            "inline": true,
+                            "atom": true,
+                            "attrs": {
+                                "blockType": {
+                                    "default": null
+                                },
+                                "data": {
+                                    "default": null
+                                }
+                            }
+                        }
+                    },
+                    "marks": {
+                        "bold": {},
+                        "italic": {},
+                        "strike": {},
+                        "inlineStyle": {
+                            "attrs": {
+                                "type": {
+                                    "default": null
+                                }
+                            }
+                        },
+                        "superscript": {},
+                        "subscript": {},
+                        "link": {
+                            "attrs": {
+                                "data": {
+                                    "default": null
+                                }
+                            }
+                        }
+                    },
+                    "headingLevels": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "textBlockStyles": [
+                        {
+                            "name": "paragraph300",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        },
+                        {
+                            "name": "paragraph200",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        },
+                        {
+                            "name": "eyebrow600",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        },
+                        {
+                            "name": "eyebrow550",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        },
+                        {
+                            "name": "eyebrow500",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        },
+                        {
+                            "name": "eyebrow450",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        },
+                        {
+                            "name": "list300",
+                            "appliesTo": [
+                                "ordered-list",
+                                "unordered-list"
+                            ]
+                        },
+                        {
+                            "name": "list200",
+                            "appliesTo": [
+                                "ordered-list",
+                                "unordered-list"
+                            ]
+                        }
+                    ],
+                    "inlineStyles": [
+                        {
+                            "name": "highlight"
+                        },
+                        {
+                            "name": "tag",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        }
+                    ],
+                    "placeholders": [],
+                    "childBlocks": {
+                        "productPrice": {
+                            "display": "inline"
+                        },
+                        "productTeaser": {
+                            "display": "block"
+                        }
+                    }
                 }
             }
         ]

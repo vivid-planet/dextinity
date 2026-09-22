@@ -1358,7 +1358,93 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "schema": {
+                    "topNode": "doc",
+                    "nodes": {
+                        "paragraph": {
+                            "content": "inline*",
+                            "group": "block"
+                        },
+                        "bulletList": {
+                            "content": "listItem+",
+                            "group": "block list"
+                        },
+                        "doc": {
+                            "content": "block+"
+                        },
+                        "hardBreak": {
+                            "group": "inline",
+                            "inline": true
+                        },
+                        "horizontalRule": {
+                            "group": "block"
+                        },
+                        "listItem": {
+                            "content": "paragraph block*"
+                        },
+                        "orderedList": {
+                            "content": "listItem+",
+                            "group": "block list",
+                            "attrs": {
+                                "start": {
+                                    "default": 1
+                                },
+                                "type": {
+                                    "default": null
+                                }
+                            }
+                        },
+                        "text": {
+                            "group": "inline"
+                        },
+                        "heading": {
+                            "content": "inline*",
+                            "group": "block",
+                            "attrs": {
+                                "level": {
+                                    "default": 1
+                                }
+                            }
+                        },
+                        "nonBreakingSpace": {
+                            "group": "inline",
+                            "inline": true,
+                            "atom": true
+                        },
+                        "softHyphen": {
+                            "group": "inline",
+                            "inline": true,
+                            "atom": true
+                        }
+                    },
+                    "marks": {
+                        "bold": {},
+                        "italic": {},
+                        "strike": {},
+                        "superscript": {},
+                        "subscript": {},
+                        "link": {
+                            "attrs": {
+                                "data": {
+                                    "default": null
+                                }
+                            }
+                        }
+                    },
+                    "headingLevels": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "textBlockStyles": [],
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "childBlocks": {}
+                }
             }
         ],
         "inputFields": [
@@ -1366,7 +1452,93 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "schema": {
+                    "topNode": "doc",
+                    "nodes": {
+                        "paragraph": {
+                            "content": "inline*",
+                            "group": "block"
+                        },
+                        "bulletList": {
+                            "content": "listItem+",
+                            "group": "block list"
+                        },
+                        "doc": {
+                            "content": "block+"
+                        },
+                        "hardBreak": {
+                            "group": "inline",
+                            "inline": true
+                        },
+                        "horizontalRule": {
+                            "group": "block"
+                        },
+                        "listItem": {
+                            "content": "paragraph block*"
+                        },
+                        "orderedList": {
+                            "content": "listItem+",
+                            "group": "block list",
+                            "attrs": {
+                                "start": {
+                                    "default": 1
+                                },
+                                "type": {
+                                    "default": null
+                                }
+                            }
+                        },
+                        "text": {
+                            "group": "inline"
+                        },
+                        "heading": {
+                            "content": "inline*",
+                            "group": "block",
+                            "attrs": {
+                                "level": {
+                                    "default": 1
+                                }
+                            }
+                        },
+                        "nonBreakingSpace": {
+                            "group": "inline",
+                            "inline": true,
+                            "atom": true
+                        },
+                        "softHyphen": {
+                            "group": "inline",
+                            "inline": true,
+                            "atom": true
+                        }
+                    },
+                    "marks": {
+                        "bold": {},
+                        "italic": {},
+                        "strike": {},
+                        "superscript": {},
+                        "subscript": {},
+                        "link": {
+                            "attrs": {
+                                "data": {
+                                    "default": null
+                                }
+                            }
+                        }
+                    },
+                    "headingLevels": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "textBlockStyles": [],
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "childBlocks": {}
+                }
             }
         ]
     },

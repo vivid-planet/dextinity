@@ -108,6 +108,7 @@ export {
     type CreateTipTapRichTextBlockOptions,
     type TipTapRichTextBlockContent,
 } from "./blocks/tipTap/createTipTapRichTextBlock";
+export type { TipTapRichTextBlockSchemaMeta } from "./blocks/tipTap/tipTapSchemaMeta";
 export { transformToBlockSaveIndex } from "./blocks/transformToBlockSaveIndex/transformToBlockSaveIndex";
 export { IsLinkTarget } from "./blocks/validator/is-link-target.validator";
 export { VimeoVideoBlock } from "./blocks/vimeo-video.block";

@@ -35,6 +35,7 @@ import { TextBlockStyleHeading } from "./extensions/TextBlockStyleHeading";
 import { TextBlockStyleParagraph } from "./extensions/TextBlockStyleParagraph";
 import { buildDraftJsToTipTapMigration } from "./migrations/buildDraftJsToTipTapMigration";
 import type { TextBlockStyleMapping } from "./migrations/convertDraftJsToTipTap";
+import { buildTipTapSchemaMeta } from "./tipTapSchemaMeta";
 import { containsInvalidHeadingLevel, getListNestingDepth } from "./tipTapValidation";
 
 export type { JSONContent as TipTapRichTextBlockContent } from "@tiptap/core";
@@ -80,7 +81,7 @@ export interface TipTapRichTextBlockInputInterface extends BlockInputInterface<T
     tipTapContent: JSONContent;
 }
 
-type TipTapTextBlockType =
+export type TipTapTextBlockType =
     | "paragraph"
     | "heading-1"
     | "heading-2"
@@ -726,6 +727,16 @@ export function createTipTapRichTextBlock(
         hasInlineChildBlocks,
     });
     const schema = getSchema(extensions);
+    const schemaMeta = buildTipTapSchemaMeta({
+        schema,
+        headingLevels,
+        textBlockStyles,
+        inlineStyles,
+        placeholders: placeholders.map(({ name }) => name),
+        childBlocks: childBlocksConfig,
+        maxTextBlocks,
+        listLevelMax,
+    });
 
     const draftJsTextBlockStyleMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.textBlockStyleMap : undefined;
     const draftJsInlineStyleMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.inlineStyleMap : undefined;
@@ -752,7 +763,7 @@ export function createTipTapRichTextBlock(
 
     @BlockDataMigrationVersion(migrate?.version, migrateVendor?.version)
     class TipTapRichTextBlockData extends BlockData implements TipTapRichTextBlockDataInterface {
-        @BlockField({ type: "tipTapRichTextBlock", childBlocks })
+        @BlockField({ type: "tipTapRichTextBlock", childBlocks, schema: schemaMeta })
         tipTapContent: JSONContent;
 
         searchText(): SearchText[] {
@@ -813,7 +824,7 @@ export function createTipTapRichTextBlock(
             listLevelMax,
             headingLevels,
         })
-        @BlockField({ type: "tipTapRichTextBlock", childBlocks })
+        @BlockField({ type: "tipTapRichTextBlock", childBlocks, schema: schemaMeta })
         tipTapContent: JSONContent;
 
         transformToBlockData(): TipTapRichTextBlockData {

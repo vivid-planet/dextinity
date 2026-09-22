@@ -1560,9 +1560,6 @@ importers:
       '@dextinity/admin':
         specifier: workspace:*
         version: link:../admin
-      '@dextinity/admin-date-time':
-        specifier: workspace:*
-        version: link:../admin-date-time
       '@dextinity/admin-icons':
         specifier: workspace:*
         version: link:../admin-icons

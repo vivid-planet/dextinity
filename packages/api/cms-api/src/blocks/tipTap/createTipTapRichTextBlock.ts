@@ -20,6 +20,7 @@ import { AnnotationBlockMeta, BlockField } from "../decorators/field";
 import { BlockFactoryNameOrOptions } from "../factories/types";
 import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFactoryDecorator";
 import { strictBlockInputFactoryDecorator } from "../helpers/strictBlockInputFactoryDecorator";
+import { buildNoopMigration } from "../migrations/buildNoopMigration";
 import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator";
 import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
 import type { MigrateVendorOptions } from "../migrations/types";
@@ -674,26 +675,26 @@ export function createTipTapRichTextBlock(
     // The vendor chain has to be gapless, so the text block node migration takes the version the
     // DraftJS migration leaves free. A block never gains or loses migrateFromDraftJs after it has
     // stored content, so the version a given block counts with doesn't change either.
-    const textBlockNodeVersion = migrateFromDraftJs ? 2 : 1;
     const migrateVendor: MigrateVendorOptions = {
-        version: textBlockNodeVersion,
+        version: 2,
         migrations: [
-            ...(migrateFromDraftJs
-                ? [
-                      buildDraftJsToTipTapMigration({
-                          schema,
-                          resolvedOptions,
-                          link: LinkBlock,
-                          maxTextBlocks,
-                          listLevelMax,
-                          textBlockMap: draftJsTextBlockMap,
-                          inlineStyleMap: draftJsInlineStyleMap,
-                      }),
-                  ]
-                : []),
-            buildTextBlockNodeMigration({ toVersion: textBlockNodeVersion, resolvedOptions }),
+            // Version 1 belongs to the DraftJS migration, so a block without it holds the version
+            // rather than shifting everything after it up by one.
+            migrateFromDraftJs
+                ? buildDraftJsToTipTapMigration({
+                      schema,
+                      resolvedOptions,
+                      link: LinkBlock,
+                      maxTextBlocks,
+                      listLevelMax,
+                      textBlockMap: draftJsTextBlockMap,
+                      inlineStyleMap: draftJsInlineStyleMap,
+                  })
+                : buildNoopMigration(1),
+            buildTextBlockNodeMigration({ resolvedOptions }),
         ],
-        // The DraftJS migration was version 1 of the block before it moved into the vendor chain
+        // The DraftJS migration was version 1 of the block before it moved into the vendor chain.
+        // A block without it counted no vendor version there, so its `$$version` stays untouched.
         ...(migrateFromDraftJs ? { legacyVersions: 1 } : {}),
     };
 

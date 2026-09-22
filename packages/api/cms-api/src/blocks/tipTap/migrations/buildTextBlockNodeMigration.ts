@@ -52,18 +52,14 @@ function convertNode(node: JSONContent, resolvedOptions: TipTapResolvedOptions):
  * `textBlock` node. Content that is already converted passes through unchanged, which it has to:
  * the DraftJS migration runs in the same chain and writes the current format, so a node this
  * migration sees may come from either format.
- *
- * `toVersion` depends on whether the DraftJS migration occupies the chain's first version.
  */
 export function buildTextBlockNodeMigration({
-    toVersion,
     resolvedOptions,
 }: {
-    toVersion: number;
     resolvedOptions: TipTapResolvedOptions;
 }): ClassConstructor<BlockMigrationInterface> {
     return class TextBlockNodeMigration extends BlockMigration<(from: From) => To> implements BlockMigrationInterface {
-        public readonly toVersion = toVersion;
+        public readonly toVersion = 2;
 
         protected migrate({ tipTapContent, ...rest }: From): To {
             return { ...rest, tipTapContent: convertNode(tipTapContent, resolvedOptions) };

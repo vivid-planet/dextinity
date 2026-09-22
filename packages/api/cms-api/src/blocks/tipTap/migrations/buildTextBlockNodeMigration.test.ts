@@ -6,9 +6,9 @@ import { buildTextBlockNodeMigration } from "./buildTextBlockNodeMigration";
 
 const resolvedOptions = resolveTipTapOptions({});
 
-function migrate(tipTapContent: JSONContent, toVersion = 1): JSONContent {
-    const Migration = buildTextBlockNodeMigration({ toVersion, resolvedOptions });
-    const migrated = new Migration().apply({ tipTapContent }, "$$vendorVersion") as { tipTapContent: JSONContent };
+function migrate(tipTapContent: JSONContent): JSONContent {
+    const Migration = buildTextBlockNodeMigration({ resolvedOptions });
+    const migrated = new Migration().apply({ tipTapContent, $$vendorVersion: 1 }, "$$vendorVersion") as { tipTapContent: JSONContent };
     return migrated.tipTapContent;
 }
 
@@ -68,6 +68,17 @@ describe("buildTextBlockNodeMigration", () => {
 });
 
 describe("createTipTapRichTextBlock converting content stored as paragraph and heading nodes", () => {
+    it("counts the same vendor version whether migrateFromDraftJs is configured or not", () => {
+        const withoutDraftJs = createTipTapRichTextBlock({}, "TextBlockNodeVendorVersion");
+        const withDraftJs = createTipTapRichTextBlock({ migrateFromDraftJs: true }, "TextBlockNodeVendorVersionFromDraftJs");
+        // Version 1 belongs to the DraftJS migration, so content that has run it still needs converting
+        const stored = { tipTapContent: doc({ type: "heading", attrs: { level: 2 }, content: text }), $$vendorVersion: 1 };
+        const converted = doc({ type: "textBlock", attrs: { textBlock: "heading-2" }, content: text });
+
+        expect(withoutDraftJs.blockDataFactory(stored).tipTapContent).toEqual(converted);
+        expect(withDraftJs.blockDataFactory(stored).tipTapContent).toEqual(converted);
+    });
+
     it("converts on load and counts in the vendor chain", () => {
         const block = createTipTapRichTextBlock({}, "TextBlockNodeRichText");
         const data = block.blockDataFactory({
@@ -80,7 +91,7 @@ describe("createTipTapRichTextBlock converting content stored as paragraph and h
     it("is a no-op once the vendor chain is up to date", () => {
         const block = createTipTapRichTextBlock({}, "TextBlockNodeRichTextUpToDate");
         const tipTapContent = doc({ type: "textBlock", attrs: { textBlock: "paragraph" }, content: text });
-        const data = block.blockDataFactory({ tipTapContent, $$vendorVersion: 1 });
+        const data = block.blockDataFactory({ tipTapContent, $$vendorVersion: 2 });
 
         expect(data.tipTapContent).toEqual(tipTapContent);
     });

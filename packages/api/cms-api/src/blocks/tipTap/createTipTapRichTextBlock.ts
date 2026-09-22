@@ -707,6 +707,7 @@ export function createTipTapRichTextBlock(
         migrateFromDraftJs = false,
     } = options;
     const blockName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
+    const blockDescription = typeof nameOrOptions === "string" ? undefined : nameOrOptions.description;
     const migrate = typeof nameOrOptions !== "string" ? nameOrOptions.migrate : undefined;
 
     const resolvedOptions = resolveTipTapOptions(options);
@@ -862,6 +863,7 @@ export function createTipTapRichTextBlock(
 
     const TipTapRichTextBlock: Block<TipTapRichTextBlockDataInterface, TipTapRichTextBlockInputInterface> = {
         name: blockName,
+        description: blockDescription,
         blockDataFactory: decorateBlockDataFactory,
         blockInputFactory: decorateBlockInputFactory,
         blockMeta: new AnnotationBlockMeta(TipTapRichTextBlockData),

@@ -21,7 +21,7 @@ export function GridToolbarQuickFilter({ placeholder }: GridToolbarQuickFilterPr
     return (
         <Root expanded>
             <QuickFilterControl
-                render={({ ref, ...other }) => (
+                render={({ ref, slotProps: quickFilterSlotProps, ...other }) => (
                     <InputBase
                         {...other}
                         inputRef={ref}
@@ -29,6 +29,8 @@ export function GridToolbarQuickFilter({ placeholder }: GridToolbarQuickFilterPr
                             placeholder ?? intl.formatMessage({ id: "dextinity.dataGrid.quickFilter.placeholder", defaultMessage: "Search..." })
                         }
                         size="small"
+                        // `QuickFilterControl` passes the input element's `role`, `id` and blur handling as `htmlInput` slot props, which `InputBase` doesn't know
+                        inputProps={quickFilterSlotProps?.htmlInput}
                         slotProps={{
                             input: {
                                 sx: {

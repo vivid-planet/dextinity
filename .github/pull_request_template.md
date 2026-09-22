@@ -21,11 +21,15 @@ description is long enough that they help.
 ## Example
 
 <!--
-A new API needs an example in the code as well: a unit test (preferred), the
-implementation in Demo, or a development story in Storybook. Point at it here.
+Fill this in only for an example the reviewer can't reach from the diff: a development
+story in Storybook (link it) or the implementation in Demo (say how to get there), plus a
+sentence on what it shows.
 
-Delete this section if the change adds no new API — the example usage of your change
-belongs in the description above either way.
+Delete this section when a unit test is the example — reviewers find it in the diff, and a
+bare file path says nothing in the commit message.
+
+A new API needs an example in the code either way, and the example usage of your change
+belongs in the description above.
 -->
 
 ## Screenshots/screencasts

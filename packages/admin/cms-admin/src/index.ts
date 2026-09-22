@@ -127,6 +127,8 @@ export type { MasterMenuData, MasterMenuProps } from "./common/MasterMenu";
 export { MasterMenu, useMenuFromMasterMenuData } from "./common/MasterMenu";
 export type { MasterMenuRoutesProps } from "./common/MasterMenuRoutes";
 export { MasterMenuRoutes, useRoutePropsFromMasterMenuData } from "./common/MasterMenuRoutes";
+export type { NotFoundProps } from "./common/notFound/NotFound";
+export { NotFound } from "./common/notFound/NotFound";
 export type { PageListItem } from "./common/PageList";
 export { PageList } from "./common/PageList";
 export { PageName } from "./common/PageName";

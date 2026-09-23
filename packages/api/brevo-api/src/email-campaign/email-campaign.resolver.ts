@@ -1,13 +1,6 @@
-import {
-    AffectedEntity,
-    extractGraphqlFields,
-    PaginatedResponseFactory,
-    RequiredPermission,
-    resolveEntityClass,
-    validateNotModified,
-} from "@dextinity/cms-api";
+import { AffectedEntity, extractGraphqlFields, PaginatedResponseFactory, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
 import { EntityManager, EntityRepository, FindOptions, wrap } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import { Inject, Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Info, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { GraphQLResolveInfo } from "graphql";
 import { TargetGroupInterface } from "src/target-group/entity/target-group-entity.factory";
@@ -15,6 +8,7 @@ import { TargetGroupInterface } from "src/target-group/entity/target-group-entit
 import { BrevoApiCampaignsService } from "../brevo-api/brevo-api-campaigns.service";
 import { BrevoApiCampaignStatistics } from "../brevo-api/dto/brevo-api-campaign-statistics";
 import { EcgRtrListService } from "../brevo-contact/ecg-rtr-list/ecg-rtr-list.service";
+import { BREVO_EMAIL_CAMPAIGN_REPOSITORY, BREVO_TARGET_GROUP_REPOSITORY } from "../config/brevo-module.constants";
 import { EmailCampaignScopeInterface } from "../types";
 import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe";
 import { EmailCampaignArgsFactory } from "./dto/email-campaign-args.factory";
@@ -47,19 +41,13 @@ export function createEmailCampaignsResolver({
     @RequiredPermission(["brevoNewsletter"])
     class EmailCampaignsResolver {
         constructor(
+            @Inject(BREVO_EMAIL_CAMPAIGN_REPOSITORY) private readonly repository: EntityRepository<EmailCampaignInterface>,
+            @Inject(BREVO_TARGET_GROUP_REPOSITORY) private readonly targetGroupRepository: EntityRepository<TargetGroupInterface>,
             private readonly campaignsService: EmailCampaignsService,
             private readonly brevoApiCampaignsService: BrevoApiCampaignsService,
             private readonly ecgRtrListService: EcgRtrListService,
             private readonly entityManager: EntityManager,
         ) {}
-
-        private get repository(): EntityRepository<EmailCampaignInterface> {
-            return this.entityManager.getRepository(resolveEntityClass<EmailCampaignInterface>("BrevoEmailCampaign"));
-        }
-
-        private get targetGroupRepository(): EntityRepository<TargetGroupInterface> {
-            return this.entityManager.getRepository(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"));
-        }
 
         @Query(() => BrevoEmailCampaign)
         @AffectedEntity(BrevoEmailCampaign)

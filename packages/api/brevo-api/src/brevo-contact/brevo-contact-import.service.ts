@@ -1,6 +1,5 @@
-import { resolveEntityClass } from "@dextinity/cms-api";
 import * as csv from "@fast-csv/parse";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 import { IsEmail, IsNotEmpty, validateSync } from "class-validator";
@@ -14,7 +13,7 @@ import { BrevoApiContactsService, CreateDoubleOptInContactData } from "../brevo-
 import { BrevoContactsService } from "../brevo-contact/brevo-contacts.service";
 import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { BREVO_CONFIG_REPOSITORY, BREVO_MODULE_CONFIG, BREVO_TARGET_GROUP_REPOSITORY } from "../config/brevo-module.constants";
 import { TargetGroupsService } from "../target-group/target-groups.service";
 import { EmailCampaignScopeInterface } from "../types";
 
@@ -64,20 +63,13 @@ interface ImportContactsFromCsvParams {
 @Injectable()
 export class BrevoContactImportService {
     constructor(
+        @Inject(BREVO_TARGET_GROUP_REPOSITORY) private readonly targetGroupRepository: EntityRepository<TargetGroupInterface>,
+        @Inject(BREVO_CONFIG_REPOSITORY) private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
         private readonly brevoApiContactsService: BrevoApiContactsService,
         private readonly brevoContactsService: BrevoContactsService,
         private readonly targetGroupsService: TargetGroupsService,
-        private readonly entityManager: EntityManager,
     ) {}
-
-    private get targetGroupRepository(): EntityRepository<TargetGroupInterface> {
-        return this.entityManager.getRepository(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"));
-    }
-
-    private get brevoConfigRepository(): EntityRepository<BrevoConfigInterface> {
-        return this.entityManager.getRepository(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"));
-    }
 
     async importContactsFromCsv({
         fileStream,

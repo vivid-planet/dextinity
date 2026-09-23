@@ -1,5 +1,4 @@
-import { resolveEntityClass } from "@dextinity/cms-api";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 
@@ -8,7 +7,7 @@ import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service"
 import { BrevoEmailImportLogService } from "../brevo-email-import-log/brevo-email-import-log.service";
 import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { BREVO_BLACKLISTED_CONTACTS_REPOSITORY, BREVO_CONFIG_REPOSITORY, BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { TargetGroupsService } from "../target-group/target-groups.service";
 import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "../types";
 import { hashEmail } from "../util/hash.util";
@@ -21,22 +20,17 @@ import { EcgRtrListService } from "./ecg-rtr-list/ecg-rtr-list.service";
 export class BrevoContactsService {
     private readonly secretKey?: string;
     constructor(
+        @Inject(BREVO_CONFIG_REPOSITORY) private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
+        @Optional()
+        @Inject(BREVO_BLACKLISTED_CONTACTS_REPOSITORY)
+        private readonly blacklistedContactsRepository: EntityRepository<BlacklistedContactsInterface>,
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
         private readonly brevoContactsApiService: BrevoApiContactsService,
         private readonly ecgRtrListService: EcgRtrListService,
         private readonly targetGroupService: TargetGroupsService,
         @Optional() private readonly brevoEmailImportLogService: BrevoEmailImportLogService,
-        private readonly entityManager: EntityManager,
     ) {
         this.secretKey = this.config.contactsWithoutDoi?.emailHashKey;
-    }
-
-    private get brevoConfigRepository(): EntityRepository<BrevoConfigInterface> {
-        return this.entityManager.getRepository(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"));
-    }
-
-    private get blacklistedContactsRepository(): EntityRepository<BlacklistedContactsInterface> {
-        return this.entityManager.getRepository(resolveEntityClass<BlacklistedContactsInterface>("BrevoBlacklistedContacts"));
     }
 
     public async createContact({

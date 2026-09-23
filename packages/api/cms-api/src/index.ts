@@ -179,7 +179,7 @@ export { DextinityImageResolutionException } from "./dam/common/errors/image-res
 export { damDefaultAcceptedMimetypes } from "./dam/common/mimeTypes/dam-default-accepted-mimetypes";
 export { type DamFileCategory, getDamFileCategory } from "./dam/common/mimeTypes/dam-file-category";
 export { DamConfig } from "./dam/dam.config";
-export { DAM_CONFIG } from "./dam/dam.constants";
+export { DAM_CONFIG, DAM_FILE_REPOSITORY, DAM_FOLDER_REPOSITORY } from "./dam/dam.constants";
 export { DamModule } from "./dam/dam.module";
 export { DamFilesModule } from "./dam/dam-files.module";
 export { CreateFileInput, ImageFileInput, UpdateFileInput } from "./dam/files/dto/file.input";
@@ -271,7 +271,7 @@ export { PageTreeNodeCategory, PageTreeNodeInterface, PageTreeNodeVisibility, Sc
 export { PageExists, PageExistsConstraint } from "./page-tree/validators/page-exists.validator";
 export { RedirectInterface } from "./redirects/entities/redirect-entity.factory";
 export { RedirectTargetUrlServiceInterface } from "./redirects/redirect-target-url.service";
-export { REDIRECTS_LINK_BLOCK } from "./redirects/redirects.constants";
+export { REDIRECTS_LINK_BLOCK, REDIRECTS_REPOSITORY } from "./redirects/redirects.constants";
 export { RedirectGenerationType, RedirectSourceType } from "./redirects/redirects.enum";
 export { RedirectsLinkBlock, RedirectsModule } from "./redirects/redirects.module";
 export { createRedirectsResolver } from "./redirects/redirects.resolver";

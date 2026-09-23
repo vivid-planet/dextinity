@@ -1,5 +1,5 @@
-import { AffectedEntity, CurrentUser, GetCurrentUser, PaginatedResponseFactory, RequiredPermission, resolveEntityClass } from "@dextinity/cms-api";
-import { EntityManager, EntityRepository, FilterQuery } from "@mikro-orm/postgresql";
+import { AffectedEntity, CurrentUser, GetCurrentUser, PaginatedResponseFactory, RequiredPermission } from "@dextinity/cms-api";
+import { EntityRepository, FilterQuery } from "@mikro-orm/postgresql";
 import { Inject, Type } from "@nestjs/common";
 import { Args, ArgsType, Int, Mutation, ObjectType, Query, Resolver } from "@nestjs/graphql";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
@@ -7,7 +7,7 @@ import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-ent
 import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
 import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { BREVO_CONFIG_REPOSITORY, BREVO_MODULE_CONFIG, BREVO_TARGET_GROUP_REPOSITORY } from "../config/brevo-module.constants";
 import { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory";
 import { TargetGroupsService } from "../target-group/target-groups.service";
 import { EmailCampaignScopeInterface } from "../types";
@@ -47,21 +47,14 @@ export function createBrevoContactResolver({
     @RequiredPermission(["brevoNewsletter"], { skipScopeCheck: true })
     class BrevoContactResolver {
         constructor(
+            @Inject(BREVO_CONFIG_REPOSITORY) private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
+            @Inject(BREVO_TARGET_GROUP_REPOSITORY) private readonly targetGroupRepository: EntityRepository<TargetGroupInterface>,
             @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
             private readonly brevoContactsApiService: BrevoApiContactsService,
             private readonly brevoContactsService: BrevoContactsService,
             private readonly ecgRtrListService: EcgRtrListService,
             private readonly targetGroupService: TargetGroupsService,
-            private readonly entityManager: EntityManager,
         ) {}
-
-        private get brevoConfigRepository(): EntityRepository<BrevoConfigInterface> {
-            return this.entityManager.getRepository(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"));
-        }
-
-        private get targetGroupRepository(): EntityRepository<TargetGroupInterface> {
-            return this.entityManager.getRepository(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"));
-        }
 
         @Query(() => BrevoContact)
         @AffectedEntity(BrevoContact)

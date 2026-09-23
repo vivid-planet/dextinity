@@ -6,8 +6,7 @@ import { PageTreeService } from "../page-tree/page-tree.service";
 import { PageTreeNodeInterface } from "../page-tree/types";
 import { RedirectFilter } from "./dto/redirects.filter";
 import { RedirectInterface } from "./entities/redirect-entity.factory";
-import { resolveRedirectEntity } from "./entities/resolve-redirect-entity";
-import { REDIRECTS_LINK_BLOCK } from "./redirects.constants";
+import { REDIRECTS_LINK_BLOCK, REDIRECTS_REPOSITORY } from "./redirects.constants";
 import { RedirectGenerationType, RedirectSourceType } from "./redirects.enum";
 import { RedirectsLinkBlock } from "./redirects.module";
 import { RedirectScopeInterface } from "./types";
@@ -15,14 +14,11 @@ import { RedirectScopeInterface } from "./types";
 @Injectable()
 export class RedirectsService {
     constructor(
+        @Inject(REDIRECTS_REPOSITORY) private readonly repository: EntityRepository<RedirectInterface>,
         @Inject(forwardRef(() => PageTreeService)) private readonly pageTreeService: PageTreeService,
         @Inject(REDIRECTS_LINK_BLOCK) private readonly linkBlock: RedirectsLinkBlock,
         private readonly entityManager: EntityManager,
     ) {}
-
-    private get repository(): EntityRepository<RedirectInterface> {
-        return this.entityManager.getRepository(resolveRedirectEntity());
-    }
 
     getFindCondition({
         query,

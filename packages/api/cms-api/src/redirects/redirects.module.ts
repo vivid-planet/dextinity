@@ -1,5 +1,6 @@
 import { MikroOrmModule } from "@mikro-orm/nestjs";
-import { ClassProvider, DynamicModule, Global, Module, ModuleMetadata, Type, ValueProvider } from "@nestjs/common";
+import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { ClassProvider, DynamicModule, FactoryProvider, Global, Module, ModuleMetadata, Type, ValueProvider } from "@nestjs/common";
 
 import { Block } from "../blocks/block";
 import { ExternalLinkBlock } from "../blocks/externalLink/external-link.block";
@@ -7,10 +8,10 @@ import { createOneOfBlock, OneOfBlock } from "../blocks/factories/createOneOfBlo
 import { DependenciesResolverFactory } from "../dependencies/dependencies.resolver.factory";
 import { InternalLinkBlock, InternalLinkBlockData, InternalLinkBlockInput } from "../page-tree/blocks/internal-link.block";
 import { RedirectInputFactory } from "./dto/redirect-input.factory";
-import { RedirectEntityFactory } from "./entities/redirect-entity.factory";
+import { RedirectEntityFactory, RedirectInterface } from "./entities/redirect-entity.factory";
 import { ImportRedirectsCommand } from "./import-redirects.command";
 import { DefaultRedirectTargetUrlService, RedirectTargetUrlServiceInterface } from "./redirect-target-url.service";
-import { REDIRECTS_LINK_BLOCK, REDIRECTS_TARGET_URL_SERVICE } from "./redirects.constants";
+import { REDIRECTS_LINK_BLOCK, REDIRECTS_REPOSITORY, REDIRECTS_TARGET_URL_SERVICE } from "./redirects.constants";
 import { createRedirectsResolver } from "./redirects.resolver";
 import { RedirectsService } from "./redirects.service";
 import { RedirectScopeInterface } from "./types";
@@ -53,6 +54,12 @@ export class RedirectsModule {
             useClass: TargetUrlService,
         };
 
+        const repositoryProvider: FactoryProvider<EntityRepository<RedirectInterface>> = {
+            provide: REDIRECTS_REPOSITORY,
+            useFactory: (entityManager: EntityManager) => entityManager.getRepository(Redirect),
+            inject: [EntityManager],
+        };
+
         const mikroOrmModule = MikroOrmModule.forFeature([Redirect]);
 
         return {
@@ -65,8 +72,9 @@ export class RedirectsModule {
                 linkBlockProvider,
                 ImportRedirectsCommand,
                 targetUrlServiceProvider,
+                repositoryProvider,
             ],
-            exports: [RedirectsService, REDIRECTS_LINK_BLOCK, mikroOrmModule],
+            exports: [RedirectsService, REDIRECTS_LINK_BLOCK, REDIRECTS_REPOSITORY, mikroOrmModule],
         };
     }
 }

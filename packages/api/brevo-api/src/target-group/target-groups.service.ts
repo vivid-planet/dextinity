@@ -1,11 +1,12 @@
-import { filtersToMikroOrmQuery, resolveEntityClass, searchToMikroOrmQuery } from "@dextinity/cms-api";
+import { filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@dextinity/cms-api";
 import { EntityManager, EntityRepository, FilterQuery, ObjectQuery, wrap } from "@mikro-orm/postgresql";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { stringify } from "querystring";
 
 import { handleBrevoError } from "../brevo-api/brevo-api.utils";
 import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
 import { BrevoContactInterface } from "../brevo-contact/dto/brevo-contact.factory";
+import { BREVO_TARGET_GROUP_REPOSITORY } from "../config/brevo-module.constants";
 import { BrevoContactAttributesInterface, BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "../types";
 import { TargetGroupFilter } from "./dto/target-group.filter";
 import { TargetGroupInterface } from "./entity/target-group-entity.factory";
@@ -13,13 +14,10 @@ import { TargetGroupInterface } from "./entity/target-group-entity.factory";
 @Injectable()
 export class TargetGroupsService {
     constructor(
+        @Inject(BREVO_TARGET_GROUP_REPOSITORY) private readonly repository: EntityRepository<TargetGroupInterface>,
         private readonly brevoApiContactsService: BrevoApiContactsService,
         private readonly entityManager: EntityManager,
     ) {}
-
-    private get repository(): EntityRepository<TargetGroupInterface> {
-        return this.entityManager.getRepository(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"));
-    }
 
     getFindCondition(options: { search?: string; filter?: TargetGroupFilter }): ObjectQuery<TargetGroupInterface> {
         const andFilters = [];

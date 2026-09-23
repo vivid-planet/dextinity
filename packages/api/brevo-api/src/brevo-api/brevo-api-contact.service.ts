@@ -1,6 +1,5 @@
-import { resolveEntityClass } from "@dextinity/cms-api";
 import { Brevo } from "@getbrevo/brevo";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "src/types";
@@ -10,7 +9,7 @@ import { BrevoContactInterface } from "../brevo-contact/dto/brevo-contact.factor
 import { BrevoEmailImportLogService } from "../brevo-email-import-log/brevo-email-import-log.service";
 import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { BREVO_CONFIG_REPOSITORY, BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { handleBrevoError, isErrorFromBrevo } from "./brevo-api.utils";
 import { BrevoApiClientFactory } from "./brevo-api-client.factory";
 import { BrevoApiContactList } from "./dto/brevo-api-contact-list";
@@ -24,16 +23,12 @@ export interface CreateDoubleOptInContactData {
 @Injectable()
 export class BrevoApiContactsService {
     constructor(
+        @Inject(BREVO_CONFIG_REPOSITORY) private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
         private readonly clientFactory: BrevoApiClientFactory,
         @Optional() private readonly blacklistedContactsService: BlacklistedContactsService,
         @Optional() private readonly brevoContactLogService: BrevoEmailImportLogService,
-        private readonly entityManager: EntityManager,
     ) {}
-
-    private get brevoConfigRepository(): EntityRepository<BrevoConfigInterface> {
-        return this.entityManager.getRepository(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"));
-    }
 
     public async createDoubleOptInBrevoContact(
         { email, redirectionUrl, attributes }: CreateDoubleOptInContactData,

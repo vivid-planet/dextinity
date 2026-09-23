@@ -1,7 +1,6 @@
-import { resolveEntityClass } from "@dextinity/cms-api";
 import { MikroORM } from "@mikro-orm/core";
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
-import { EntityManager, type EntityRepository } from "@mikro-orm/postgresql";
+import type { EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Logger, Type } from "@nestjs/common";
 import { isUUID, validateSync } from "class-validator";
 import { InvalidOptionArgumentError } from "commander";
@@ -11,7 +10,7 @@ import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-ent
 
 import { BrevoContactImportService } from "../brevo-contact/brevo-contact-import.service";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { BREVO_CONFIG_REPOSITORY, BREVO_MODULE_CONFIG, BREVO_TARGET_GROUP_REPOSITORY } from "../config/brevo-module.constants";
 import { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory";
 import { EmailCampaignScopeInterface } from "../types";
 
@@ -31,20 +30,13 @@ export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCa
         private readonly logger = new Logger(BrevoContactImportConsole.name);
 
         constructor(
+            @Inject(BREVO_TARGET_GROUP_REPOSITORY) private readonly targetGroupRepository: EntityRepository<TargetGroupInterface>,
+            @Inject(BREVO_CONFIG_REPOSITORY) private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
             private readonly orm: MikroORM, // necessary for @CreateRequestContext() to work
             @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
             private readonly brevoContactImportService: BrevoContactImportService,
-            private readonly entityManager: EntityManager,
         ) {
             super();
-        }
-
-        private get targetGroupRepository(): EntityRepository<TargetGroupInterface> {
-            return this.entityManager.getRepository(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"));
-        }
-
-        private get brevoConfigRepository(): EntityRepository<BrevoConfigInterface> {
-            return this.entityManager.getRepository(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"));
         }
 
         async run(passedParams: string[], options: CommandOptions): Promise<void> {

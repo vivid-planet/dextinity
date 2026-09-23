@@ -2,12 +2,13 @@ import {
     AttachedDocument,
     PageTreeNodeVisibility,
     RedirectGenerationType,
+    RedirectInterface,
     REDIRECTS_LINK_BLOCK,
+    REDIRECTS_REPOSITORY,
     RedirectsLinkBlock,
     RedirectSourceType,
-    resolveEntityClass,
 } from "@dextinity/cms-api";
-import { EntityManager } from "@mikro-orm/postgresql";
+import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { faker } from "@src/db/fixtures/faker";
 import { PageContentBlock } from "@src/documents/pages/blocks/page-content.block";
@@ -24,6 +25,7 @@ import { SeoBlockFixtureService } from "./seo-block-fixture.service";
 export class RedirectsFixtureService {
     constructor(
         @Inject(REDIRECTS_LINK_BLOCK) private readonly redirectsLinkBlock: RedirectsLinkBlock,
+        @Inject(REDIRECTS_REPOSITORY) private readonly redirectsRepository: EntityRepository<RedirectInterface>,
         private readonly seoBlockFixtureService: SeoBlockFixtureService,
         private readonly entityManager: EntityManager,
     ) {}
@@ -71,7 +73,7 @@ export class RedirectsFixtureService {
         }
 
         for (let i = 0; i < 7000; i++) {
-            this.entityManager.create(resolveEntityClass("Redirect"), {
+            this.redirectsRepository.create({
                 generationType: RedirectGenerationType.manual,
                 source: `/redirect-${i}`,
                 target: this.redirectsLinkBlock

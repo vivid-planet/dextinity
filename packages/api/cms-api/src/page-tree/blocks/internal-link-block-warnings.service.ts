@@ -1,18 +1,14 @@
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
-import { Injectable } from "@nestjs/common";
+import { EntityRepository } from "@mikro-orm/postgresql";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 
 import { BlockWarning, BlockWarningsServiceInterface } from "../../blocks/block";
 import { PageTreeNodeBase } from "../entities/page-tree-node-base.entity";
-import { resolvePageTreeNodeEntity } from "../entities/resolve-page-tree-node-entity";
+import { PAGE_TREE_REPOSITORY } from "../page-tree.constants";
 import type { InternalLinkBlockData } from "./internal-link.block";
 
 @Injectable()
 export class InternalLinkBlockWarningsService implements BlockWarningsServiceInterface<InternalLinkBlockData> {
-    constructor(private readonly entityManager: EntityManager) {}
-
-    private get pageTreeRepository(): EntityRepository<PageTreeNodeBase> {
-        return this.entityManager.getRepository(resolvePageTreeNodeEntity()) as EntityRepository<PageTreeNodeBase>;
-    }
+    constructor(@Inject(forwardRef(() => PAGE_TREE_REPOSITORY)) private readonly pageTreeRepository: EntityRepository<PageTreeNodeBase>) {}
 
     async warnings(block: InternalLinkBlockData): Promise<BlockWarning[]> {
         const warnings: BlockWarning[] = [];

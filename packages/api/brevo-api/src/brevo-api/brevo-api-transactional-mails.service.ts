@@ -1,10 +1,10 @@
-import { resolveEntityClass } from "@dextinity/cms-api";
 import { Brevo } from "@getbrevo/brevo";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
-import { Injectable } from "@nestjs/common";
+import { EntityRepository } from "@mikro-orm/postgresql";
+import { Inject, Injectable } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 import { EmailCampaignScopeInterface } from "src/types";
 
+import { BREVO_CONFIG_REPOSITORY } from "../config/brevo-module.constants";
 import { handleBrevoError } from "./brevo-api.utils";
 import { BrevoApiClientFactory } from "./brevo-api-client.factory";
 import { BrevoApiEmailTemplateList } from "./dto/brevo-api-email-templates-list";
@@ -12,13 +12,9 @@ import { BrevoApiEmailTemplateList } from "./dto/brevo-api-email-templates-list"
 @Injectable()
 export class BrevoTransactionalMailsService {
     constructor(
+        @Inject(BREVO_CONFIG_REPOSITORY) private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
         private readonly clientFactory: BrevoApiClientFactory,
-        private readonly entityManager: EntityManager,
     ) {}
-
-    private get brevoConfigRepository(): EntityRepository<BrevoConfigInterface> {
-        return this.entityManager.getRepository(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"));
-    }
 
     async send(options: Omit<Brevo.SendTransacEmailRequest, "sender">, scope: EmailCampaignScopeInterface): Promise<Brevo.SendTransacEmailResponse> {
         try {

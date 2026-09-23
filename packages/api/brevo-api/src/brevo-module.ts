@@ -7,6 +7,7 @@ import { BrevoConfigModule } from "./brevo-config/brevo-config.module";
 import { BrevoConfigEntityFactory } from "./brevo-config/entities/brevo-config-entity.factory";
 import { BrevoContactModule } from "./brevo-contact/brevo-contact.module";
 import { BrevoEmailImportLogModule } from "./brevo-email-import-log/brevo-email-import-log.module";
+import { BrevoRepositoriesModule } from "./brevo-repositories.module";
 import { BrevoModuleConfig } from "./config/brevo-module.config";
 import { ConfigModule } from "./config/config.module";
 import { EmailCampaignModule } from "./email-campaign/email-campaign.module";
@@ -29,6 +30,13 @@ export class BrevoModule implements OnModuleInit {
         });
 
         const imports = [
+            BrevoRepositoriesModule.register({
+                BrevoConfig,
+                BrevoTargetGroup: config.brevo.TargetGroup,
+                BrevoEmailCampaign: config.brevo.EmailCampaign,
+                BrevoBlacklistedContacts: config.brevo.BlacklistedContacts,
+                BrevoEmailImportLog: config.brevo.BrevoEmailImportLog,
+            }),
             BrevoApiModule,
             BrevoContactModule.register({
                 BrevoContactAttributes: config.brevo.BrevoContactAttributes,

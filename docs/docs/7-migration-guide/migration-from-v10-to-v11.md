@@ -173,24 +173,27 @@ Where importing the class isn't possible — because it would close an import cy
 
 Prefer importing the class. Reach for `resolveEntityClass()` only where you can't.
 
-### Resolve repositories through the `EntityManager`
+### Inject repositories of runtime-created entities by token
 
-`@InjectRepository()` resolves its injection token while the class is being defined. For an entity that is created at runtime — the DAM file and folder entities, the redirect entity — the class doesn't exist yet at that point, so the repository has to be derived from the `EntityManager` instead:
+`@InjectRepository()` resolves its injection token while the class is being defined. For an entity that is created at runtime — the DAM file and folder entities, the redirect entity — the class doesn't exist yet at that point. The modules creating these entities provide their repositories under dedicated tokens instead:
+
+| Entity         | Token                   |
+| -------------- | ----------------------- |
+| DAM file       | `DAM_FILE_REPOSITORY`   |
+| DAM folder     | `DAM_FOLDER_REPOSITORY` |
+| Redirect       | `REDIRECTS_REPOSITORY`  |
+| Page tree node | `PAGE_TREE_REPOSITORY`  |
 
 ```diff
 - import { InjectRepository } from "@mikro-orm/nestjs";
-- import { EntityRepository } from "@mikro-orm/postgresql";
-+ import { resolveEntityClass } from "@dextinity/cms-api";
-+ import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
++ import { DAM_FILE_REPOSITORY } from "@dextinity/cms-api";
+  import { EntityRepository } from "@mikro-orm/postgresql";
++ import { Inject } from "@nestjs/common";
 
   @Injectable()
   export class MyService {
 -     constructor(@InjectRepository("DamFile") private readonly filesRepository: EntityRepository<FileInterface>) {}
-+     constructor(private readonly entityManager: EntityManager) {}
-+
-+     private get filesRepository(): EntityRepository<FileInterface> {
-+         return this.entityManager.getRepository(resolveEntityClass<FileInterface>("DamFile"));
-+     }
++     constructor(@Inject(DAM_FILE_REPOSITORY) private readonly filesRepository: EntityRepository<FileInterface>) {}
   }
 ```
 

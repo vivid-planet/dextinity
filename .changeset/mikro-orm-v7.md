@@ -8,6 +8,8 @@ Upgrade MikroORM to v7
 
 See the [migration guide](https://cms-docs.dextinity.com/docs/migration-guide/migration-from-v10-to-v11) for the required steps, and the [MikroORM v6 to v7 upgrade guide](https://mikro-orm.io/docs/upgrading-v6-to-v7) for the complete list of upstream changes.
 
+Add the `DAM_FILE_REPOSITORY`, `DAM_FOLDER_REPOSITORY` and `REDIRECTS_REPOSITORY` injection tokens. They replace `@InjectRepository("DamFile")`, `@InjectRepository("DamFolder")` and `@InjectRepository("Redirect")` for the entities created at runtime by `DamModule` and `RedirectsModule`.
+
 Add `resolveEntityClass` to look an entity class up by its name, replacing the name-based references v7 removed. Use it where importing the class isn't possible, for instance when it would close an import cycle or when the entity is created at runtime by a factory such as `createFileEntity()`.
 
 **Example**

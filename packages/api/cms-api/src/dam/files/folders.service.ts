@@ -8,12 +8,11 @@ import { DextinityEntityNotFoundException } from "../../common/errors/entity-not
 import { SortDirection } from "../../common/sorting/sort-direction.enum";
 import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
 import { DamConfig } from "../dam.config";
-import { DAM_CONFIG } from "../dam.constants";
+import { DAM_CONFIG, DAM_FOLDER_REPOSITORY } from "../dam.constants";
 import { DamScopeInterface } from "../types";
 import { DamFolderListPositionArgs, FolderArgsInterface } from "./dto/folder.args";
 import { UpdateFolderInput } from "./dto/folder.input";
 import { FOLDER_TABLE_NAME, FolderInterface } from "./entities/folder.entity";
-import { resolveFolderEntity } from "./entities/resolve-dam-entity";
 import { FilesService } from "./files.service";
 
 // The populate hint stays `never` because the QueryBuilder uses it contravariantly, which makes `any` incompatible
@@ -88,16 +87,13 @@ export class FoldersService {
     protected readonly logger = new Logger(FoldersService.name);
 
     constructor(
+        @Inject(DAM_FOLDER_REPOSITORY) private readonly foldersRepository: EntityRepository<FolderInterface>,
         @Inject(forwardRef(() => FilesService)) private readonly filesService: FilesService,
         @Inject(forwardRef(() => BlobStorageBackendService)) private readonly blobStorageBackendService: BlobStorageBackendService,
         @Inject(DAM_CONFIG) private readonly config: DamConfig,
         private readonly orm: MikroORM,
         private readonly entityManager: EntityManager,
     ) {}
-
-    private get foldersRepository(): EntityRepository<FolderInterface> {
-        return this.entityManager.getRepository(resolveFolderEntity());
-    }
 
     async findAllByParentId(
         { parentId, includeArchived, filter, sortColumnName, sortDirection }: Omit<FolderArgsInterface, "offset" | "limit" | "scope">,

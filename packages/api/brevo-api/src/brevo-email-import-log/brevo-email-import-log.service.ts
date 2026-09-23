@@ -1,23 +1,19 @@
-import { resolveEntityClass } from "@dextinity/cms-api";
 import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { EmailCampaignScopeInterface } from "src/types";
 
 import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { BREVO_EMAIL_IMPORT_LOG_REPOSITORY, BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { hashEmail } from "../util/hash.util";
 import { BrevoEmailImportLogInterface, ContactSource } from "./entity/brevo-email-import-log.entity.factory";
 
 @Injectable()
 export class BrevoEmailImportLogService {
     constructor(
+        @Inject(BREVO_EMAIL_IMPORT_LOG_REPOSITORY) private readonly repository: EntityRepository<BrevoEmailImportLogInterface>,
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
         private readonly entityManager: EntityManager,
     ) {}
-
-    private get repository(): EntityRepository<BrevoEmailImportLogInterface> {
-        return this.entityManager.getRepository(resolveEntityClass<BrevoEmailImportLogInterface>("BrevoEmailImportLog"));
-    }
     public async addContactToLogs(
         email: string,
         responsibleUserId: string,

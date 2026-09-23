@@ -1,14 +1,15 @@
-import { EntityManager } from "@mikro-orm/postgresql";
-import { Inject, Injectable, Type } from "@nestjs/common";
+import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { forwardRef, Inject, Injectable, Type } from "@nestjs/common";
 
 import { DocumentInterface } from "../../document/dto/document-interface";
-import { resolvePageTreeNodeEntity } from "../entities/resolve-page-tree-node-entity";
-import { PAGE_TREE_DOCUMENTS } from "../page-tree.constants";
+import { PAGE_TREE_DOCUMENTS, PAGE_TREE_REPOSITORY } from "../page-tree.constants";
+import { PageTreeNodeInterface } from "../types";
 
 @Injectable()
 export class PageTreeFullTextService {
     constructor(
         @Inject(PAGE_TREE_DOCUMENTS) private readonly documents: Type<DocumentInterface>[],
+        @Inject(forwardRef(() => PAGE_TREE_REPOSITORY)) private readonly pageTreeRepository: EntityRepository<PageTreeNodeInterface>,
         private entityManager: EntityManager,
     ) {}
 
@@ -114,8 +115,7 @@ export class PageTreeFullTextService {
 
         // Migrate PageTreeNode fullText column
         {
-            const pageTreeNodeEntity = resolvePageTreeNodeEntity();
-            const pageTreeNodeMetadata = metadataStorage.get(pageTreeNodeEntity);
+            const pageTreeNodeMetadata = metadataStorage.getByClassName<PageTreeNodeInterface>(this.pageTreeRepository.getEntityName());
             const primary = pageTreeNodeMetadata.primaryKeys[0];
             const fullTextProp = pageTreeNodeMetadata.props.find((prop) => prop.name === "fullText");
 
@@ -125,8 +125,7 @@ export class PageTreeFullTextService {
 
                 while (true) {
                     const em = this.entityManager;
-                    const entities = await em.find(
-                        pageTreeNodeEntity,
+                    const entities = await this.pageTreeRepository.find(
                         { fullText: null },
                         { limit: pageSize, offset: 0, orderBy: { [primary]: "ASC" } },
                     );

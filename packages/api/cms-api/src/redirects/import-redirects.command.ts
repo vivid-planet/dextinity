@@ -9,8 +9,7 @@ import { Command, CommandRunner } from "nest-commander";
 import { PageTreeService } from "../page-tree/page-tree.service";
 import { PageTreeReadApiOptions } from "../page-tree/page-tree-read-api";
 import { RedirectInterface } from "./entities/redirect-entity.factory";
-import { resolveRedirectEntity } from "./entities/resolve-redirect-entity";
-import { REDIRECTS_LINK_BLOCK } from "./redirects.constants";
+import { REDIRECTS_LINK_BLOCK, REDIRECTS_REPOSITORY } from "./redirects.constants";
 import { RedirectGenerationType, RedirectSourceType } from "./redirects.enum";
 import { RedirectsLinkBlock } from "./redirects.module";
 import { RedirectScopeInterface } from "./types";
@@ -30,16 +29,13 @@ interface Row {
 })
 export class ImportRedirectsCommand extends CommandRunner {
     constructor(
+        @Inject(REDIRECTS_REPOSITORY) private readonly repository: EntityRepository<RedirectInterface>,
         private readonly orm: MikroORM,
         private readonly entityManager: EntityManager,
         @Inject(forwardRef(() => PageTreeService)) private readonly pageTreeService: PageTreeService,
         @Inject(REDIRECTS_LINK_BLOCK) private readonly linkBlock: RedirectsLinkBlock,
     ) {
         super();
-    }
-
-    private get repository(): EntityRepository<RedirectInterface> {
-        return this.entityManager.getRepository(resolveRedirectEntity());
     }
 
     @CreateRequestContext()

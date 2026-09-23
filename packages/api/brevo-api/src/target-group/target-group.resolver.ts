@@ -1,10 +1,11 @@
-import { AffectedEntity, PaginatedResponseFactory, RequiredPermission, resolveEntityClass, validateNotModified } from "@dextinity/cms-api";
+import { AffectedEntity, PaginatedResponseFactory, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
 import { EntityManager, EntityRepository, FindOptions, wrap } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import { Inject, Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Int, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { EmailCampaignScopeInterface } from "src/types";
 
 import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
+import { BREVO_TARGET_GROUP_REPOSITORY } from "../config/brevo-module.constants";
 import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe";
 import { AddBrevoContactsInput } from "./dto/add-brevo-contacts.input";
 import { RemoveBrevoContactInput } from "./dto/remove-brevo-contact.input";
@@ -34,14 +35,11 @@ export function createTargetGroupsResolver({
     @RequiredPermission(["brevoNewsletter"])
     class TargetGroupResolver {
         constructor(
+            @Inject(BREVO_TARGET_GROUP_REPOSITORY) private readonly repository: EntityRepository<TargetGroupInterface>,
             private readonly targetGroupsService: TargetGroupsService,
             private readonly brevoApiContactsService: BrevoApiContactsService,
             private readonly entityManager: EntityManager,
         ) {}
-
-        private get repository(): EntityRepository<TargetGroupInterface> {
-            return this.entityManager.getRepository(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"));
-        }
 
         @Query(() => BrevoTargetGroup)
         @AffectedEntity(BrevoTargetGroup)

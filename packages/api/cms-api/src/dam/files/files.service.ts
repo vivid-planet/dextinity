@@ -20,7 +20,7 @@ import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are
 import { DextinityImageResolutionException } from "../common/errors/image-resolution.exception";
 import { getDamFileCategory } from "../common/mimeTypes/dam-file-category";
 import { DamConfig } from "../dam.config";
-import { DAM_CONFIG, DAM_DOMINANT_COLOR_CALCULATOR } from "../dam.constants";
+import { DAM_CONFIG, DAM_DOMINANT_COLOR_CALCULATOR, DAM_FILE_REPOSITORY } from "../dam.constants";
 import { DominantColorCalculatorInterface } from "../dominant-color-calculator.interface";
 import { ImageCropAreaInput } from "../images/dto/image-crop-area.input";
 import { DamScopeInterface } from "../types";
@@ -32,7 +32,6 @@ import { FileParams } from "./dto/file.params";
 import { FILE_TABLE_NAME, FileInterface } from "./entities/file.entity";
 import { DamFileImage } from "./entities/file-image.entity";
 import { FolderInterface } from "./entities/folder.entity";
-import { resolveFileEntity } from "./entities/resolve-dam-entity";
 import { FoldersService } from "./folders.service";
 
 const exifrSupportedMimetypes = ["image/jpeg", "image/tiff", "image/x-iiq", "image/heif", "image/heic", "image/avif", "image/png"];
@@ -122,6 +121,7 @@ const withFilesSelect = <Qb extends FilesQueryBuilder>(
 @Injectable()
 export class FilesService {
     constructor(
+        @Inject(DAM_FILE_REPOSITORY) private readonly filesRepository: EntityRepository<FileInterface>,
         @InjectRepository(DamMediaAlternative) private readonly damMediaAlternativesRepository: EntityRepository<DamMediaAlternative>,
         @Inject(forwardRef(() => BlobStorageBackendService)) private readonly blobStorageBackendService: BlobStorageBackendService,
         private readonly foldersService: FoldersService,
@@ -130,10 +130,6 @@ export class FilesService {
         private readonly entityManager: EntityManager,
         @Optional() @Inject(DAM_DOMINANT_COLOR_CALCULATOR) private readonly dominantColorCalculator?: DominantColorCalculatorInterface,
     ) {}
-
-    private get filesRepository(): EntityRepository<FileInterface> {
-        return this.entityManager.getRepository(resolveFileEntity());
-    }
 
     private selectQueryBuilder(): QueryBuilder<FileInterface> {
         return this.filesRepository

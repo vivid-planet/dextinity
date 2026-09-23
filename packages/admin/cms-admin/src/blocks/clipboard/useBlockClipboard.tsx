@@ -4,11 +4,13 @@ import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { useProgressDialog } from "../../common/useProgressDialog";
+import { type ContentScope, useContentScope } from "../../contentScope/Provider";
 import { useDamScopeFromContentScope } from "../../dam/config/useDamScope";
 import { copyDamFilesToScope, type DamFileToCopy } from "../../dam/copyFilesToScope/copyDamFilesToScope";
-import { damFilesFromDependencies } from "../../dam/copyFilesToScope/damFileDependencies";
+import { damFilesFromDependencies, isDamFileDependency } from "../../dam/copyFilesToScope/damFileDependencies";
 import { useBlockContext } from "../context/useBlockContext";
-import type { BlockInterface, BlockOutputApi, BlockState, ReplaceDependencyObject } from "../types";
+import { createUndefinedReplacementsForDependencies } from "../helpers/createUndefinedReplacementsForDependencies";
+import type { BlockDependency, BlockInterface, BlockOutputApi, BlockState, ReplaceDependencyObject } from "../types";
 
 interface ClipboardBlock {
     name: string;
@@ -29,6 +31,15 @@ interface TransformedClipboardBlock {
      * pasting, therefore it has to be written to the clipboard when copying.
      */
     damFiles?: DamFileToCopy[];
+    /**
+     * The content scope the block was copied from. Used to detect pasting into another scope.
+     */
+    contentScope?: ContentScope;
+    /**
+     * The dependencies of the block that aren't handled by copying the DAM files. They are removed when pasting into
+     * another scope, e.g., links to pages of the source scope.
+     */
+    dependencies?: Array<Pick<BlockDependency, "targetGraphqlObjectType" | "id">>;
 }
 
 type TransformedClipboardContent = TransformedClipboardBlock[];
@@ -47,6 +58,7 @@ interface UseBlockClipboardOptions {
 
 function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboardApi {
     const context = useBlockContext();
+    const { scope: contentScope } = useContentScope();
     const damScope = useDamScopeFromContentScope();
     const progress = useProgressDialog({
         title: <FormattedMessage id="dextinity.blocks.insertingBlocks" defaultMessage="Inserting blocks" />,
@@ -73,11 +85,17 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
                 throw new Error(`Block clipboard doesn't support block "${block.name}"`);
             }
 
-            const damFiles = damFilesFromDependencies(blockInterface.dependencies?.(block.state) ?? []).map((damFile) => ({
+            const blockDependencies = blockInterface.dependencies?.(block.state) ?? [];
+
+            const damFiles = damFilesFromDependencies(blockDependencies).map((damFile) => ({
                 ...damFile,
                 // Files that were selected in the Admin don't know their scope, they live in the scope that is currently edited
                 scope: damFile.scope ?? damScope,
             }));
+
+            const dependencies = blockDependencies
+                .filter((dependency) => !isDamFileDependency(dependency))
+                .map(({ targetGraphqlObjectType, id }) => ({ targetGraphqlObjectType, id }));
 
             return {
                 name: block.name,
@@ -85,6 +103,8 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
                 output: blockInterface.state2Output(block.state),
                 additionalFields: block.additionalFields,
                 damFiles: damFiles.length > 0 ? damFiles : undefined,
+                contentScope,
+                dependencies: dependencies.length > 0 ? dependencies : undefined,
             };
         });
 
@@ -212,10 +232,22 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
             let state: BlockState<BlockInterface>;
 
             try {
+                const replacements = [...dependencyReplacements];
+
+                // Remove unhandled dependencies when pasting into another scope (same as when pasting pages)
+                if (clipboardBlock.contentScope && !isEqual(clipboardBlock.contentScope, contentScope)) {
+                    const unhandledDependencies = (clipboardBlock.dependencies ?? []).filter(
+                        (dependency) =>
+                            !replacements.some(
+                                (replacement) => replacement.originalId === dependency.id && replacement.type === dependency.targetGraphqlObjectType,
+                            ),
+                    );
+
+                    replacements.push(...createUndefinedReplacementsForDependencies(unhandledDependencies));
+                }
+
                 const output =
-                    dependencyReplacements.length > 0
-                        ? blockInterface.replaceDependenciesInOutput(clipboardBlock.output, dependencyReplacements)
-                        : clipboardBlock.output;
+                    replacements.length > 0 ? blockInterface.replaceDependenciesInOutput(clipboardBlock.output, replacements) : clipboardBlock.output;
 
                 state = await blockInterface.output2State(output, context);
             } catch {

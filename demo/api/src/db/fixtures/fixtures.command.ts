@@ -178,14 +178,16 @@ export class FixturesCommand extends CommandRunner {
 
                     const pageInput = getDefaultPageInput();
 
-                    await this.entityManager.persistAndFlush(
-                        this.entityManager.create(Page, {
-                            id: pageId,
-                            content: pageInput.content.transformToBlockData(),
-                            seo: pageInput.seo.transformToBlockData(),
-                            stage: pageInput.stage.transformToBlockData(),
-                        }),
-                    );
+                    await this.entityManager
+                        .persist(
+                            this.entityManager.create(Page, {
+                                id: pageId,
+                                content: pageInput.content.transformToBlockData(),
+                                seo: pageInput.seo.transformToBlockData(),
+                                stage: pageInput.stage.transformToBlockData(),
+                            }),
+                        )
+                        .flush();
 
                     await this.pageTreeService.updateNodeVisibility(
                         page.id,

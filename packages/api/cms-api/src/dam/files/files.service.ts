@@ -405,7 +405,7 @@ export class FilesService {
     }
 
     async save(entity: FileInterface): Promise<FileInterface> {
-        await this.entityManager.persistAndFlush(entity);
+        await this.entityManager.persist(entity).flush();
         return entity;
     }
 

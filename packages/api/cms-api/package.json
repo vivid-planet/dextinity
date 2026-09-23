@@ -14,7 +14,8 @@
     "sideEffects": false,
     "files": [
         "bin/**/*.js",
-        "lib/*"
+        "lib/*",
+        "!lib/*.tsbuildinfo"
     ],
     "scripts": {
         "build": "pnpm run clean && tsc -p tsconfig.build.json",

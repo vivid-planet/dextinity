@@ -11,7 +11,8 @@
     "types": "lib/index.d.ts",
     "sideEffects": false,
     "files": [
-        "lib/*"
+        "lib/*",
+        "!lib/*.tsbuildinfo"
     ],
     "scripts": {
         "build": "$npm_execpath run clean && tsc -p tsconfig.build.json",

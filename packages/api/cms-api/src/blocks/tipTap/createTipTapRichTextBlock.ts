@@ -20,7 +20,6 @@ import { AnnotationBlockMeta, BlockField } from "../decorators/field";
 import { BlockFactoryNameOrOptions } from "../factories/types";
 import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFactoryDecorator";
 import { strictBlockInputFactoryDecorator } from "../helpers/strictBlockInputFactoryDecorator";
-import { buildNoopMigration } from "../migrations/buildNoopMigration";
 import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator";
 import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
 import type { MigrateVendorOptions } from "../migrations/types";
@@ -34,6 +33,7 @@ import { SoftHyphen } from "./extensions/SoftHyphen";
 import { createTextBlock } from "./extensions/TextBlock";
 import { TextBlockListItem } from "./extensions/TextBlockListItem";
 import { buildDraftJsToTipTapMigration } from "./migrations/buildDraftJsToTipTapMigration";
+import { buildNoopMigration } from "./migrations/buildNoopMigration";
 import { buildTextBlockNodeMigration } from "./migrations/buildTextBlockNodeMigration";
 import { assertDraftJsHeadingsAreUnambiguous, type TextBlockMapping } from "./migrations/convertDraftJsToTipTap";
 import {

@@ -30,7 +30,7 @@ export class CalculateDominantImageColorCommand extends CommandRunner {
                 if (dominantColor) {
                     console.log(`${dominantColor}, ${file.image.id}, ${file.name}`);
 
-                    await this.em.persistAndFlush(file.image.assign({ dominantColor }));
+                    await this.em.persist(file.image.assign({ dominantColor })).flush();
                 } else {
                     console.log(`No color was determined, ${file.image.id}`);
                 }

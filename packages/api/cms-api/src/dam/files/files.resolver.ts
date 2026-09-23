@@ -135,7 +135,7 @@ export function createFilesResolver({
             const entity = await this.filesRepository.findOneOrFail(id);
             entity.archived = true;
 
-            await this.entityManager.persistAndFlush(entity);
+            await this.entityManager.persist(entity).flush();
             return entity;
         }
 
@@ -160,7 +160,7 @@ export function createFilesResolver({
             const entity = await this.filesRepository.findOneOrFail(id);
             entity.archived = false;
 
-            await this.entityManager.persistAndFlush(entity);
+            await this.entityManager.persist(entity).flush();
             return entity;
         }
 

@@ -73,27 +73,29 @@ export class RedirectsService {
     async createAutomaticRedirects(node: PageTreeNodeInterface): Promise<void> {
         const readApi = this.pageTreeService.createReadApi({ visibility: "all" });
         const path = await readApi.nodePath(node);
-        await this.entityManager.persistAndFlush(
-            this.repository.create({
-                scope: node.scope,
-                sourceType: RedirectSourceType.path,
-                source: path,
-                target: this.linkBlock
-                    .blockInputFactory({
-                        attachedBlocks: [
-                            {
-                                type: "internal",
-                                props: {
-                                    targetPageId: node.id,
+        await this.entityManager
+            .persist(
+                this.repository.create({
+                    scope: node.scope,
+                    sourceType: RedirectSourceType.path,
+                    source: path,
+                    target: this.linkBlock
+                        .blockInputFactory({
+                            attachedBlocks: [
+                                {
+                                    type: "internal",
+                                    props: {
+                                        targetPageId: node.id,
+                                    },
                                 },
-                            },
-                        ],
-                        activeType: "internal",
-                    })
-                    .transformToBlockData(),
-                generationType: RedirectGenerationType.automatic,
-            }),
-        );
+                            ],
+                            activeType: "internal",
+                        })
+                        .transformToBlockData(),
+                    generationType: RedirectGenerationType.automatic,
+                }),
+            )
+            .flush();
 
         const childNodes = await readApi.getChildNodes(node);
 

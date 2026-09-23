@@ -36,7 +36,7 @@ export class AttachedDocumentLoaderService {
             }
 
             for (const [type, attachedDocuments] of Object.entries(attachedDocumentsByType)) {
-                const repository = this.em.getRepository(type);
+                const repository = this.em.getRepository(this.em.getMetadata().getByClassName(type).class);
                 for (const document of await repository.find(attachedDocuments.map((i) => i.documentId))) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     documentsMap.set((document as any).id, document);

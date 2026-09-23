@@ -59,7 +59,8 @@ Each entity you want to make searchable needs:
 
 ```typescript title="news.entity.ts"
 import { EntityInfo, entityToMikroOrmFullText } from "@dextinity/cms-api";
-import { FullTextType, Index, Property } from "@mikro-orm/postgresql";
+import { Index, Property } from "@mikro-orm/decorators/legacy";
+import { FullTextType } from "@mikro-orm/postgresql";
 
 @EntityInfo<News>({
     name: "title", // field shown as the result title

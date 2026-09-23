@@ -5,6 +5,7 @@ import type { EntityMetadata } from "@mikro-orm/core";
 
 import { buildNameVariants } from "../utils/build-name-variants";
 import { integerTypes } from "../utils/constants";
+import { isEnumArrayProp } from "../utils/entity-property-type";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function buildFilterProps(metadata: EntityMetadata<any>) {
@@ -29,7 +30,7 @@ function buildFilterProps(metadata: EntityMetadata<any>) {
                 prop.kind === "m:1" ||
                 prop.kind === "1:m" ||
                 prop.kind === "m:n" ||
-                prop.type === "EnumArrayType" ||
+                isEnumArrayProp(prop) ||
                 prop.type === "uuid") &&
             !dedicatedResolverArgProps.some((dedicatedResolverArgProp) => dedicatedResolverArgProp.name == prop.name),
     );
@@ -57,7 +58,7 @@ export function buildSortProps(metadata: EntityMetadata<any>) {
                         prop.type === "DateType" ||
                         prop.type === "Date" ||
                         prop.kind === "m:1" ||
-                        prop.type === "EnumArrayType" ||
+                        isEnumArrayProp(prop) ||
                         prop.enum),
             )
             .map((prop) => {

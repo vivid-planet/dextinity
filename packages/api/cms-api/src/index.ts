@@ -244,6 +244,7 @@ export { MAILER_SERVICE_CONFIG } from "./mailer/mailer.constants";
 export { MailerModule, MailerModuleConfig } from "./mailer/mailer.module";
 export { MailerService, SendMailParams } from "./mailer/mailer.service";
 export { entityToMikroOrmFullText } from "./mikro-orm/helper/entity-to-mikro-orm-full-text";
+export { resolveEntityClass } from "./mikro-orm/helper/resolve-entity-class";
 export { createMigrationsList, createOrmConfig, MikroOrmModule, MikroOrmModuleOptions } from "./mikro-orm/mikro-orm.module";
 export { AttachedDocumentLoaderService } from "./page-tree/attached-document-loader.service";
 export { AnchorBlock } from "./page-tree/blocks/anchor.block";

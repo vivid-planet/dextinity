@@ -1,5 +1,4 @@
-import { AffectedEntity, PaginatedResponseFactory, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
-import { InjectRepository } from "@mikro-orm/nestjs";
+import { AffectedEntity, PaginatedResponseFactory, RequiredPermission, resolveEntityClass, validateNotModified } from "@dextinity/cms-api";
 import { EntityManager, EntityRepository, FindOptions, wrap } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Int, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
@@ -38,8 +37,11 @@ export function createTargetGroupsResolver({
             private readonly targetGroupsService: TargetGroupsService,
             private readonly brevoApiContactsService: BrevoApiContactsService,
             private readonly entityManager: EntityManager,
-            @InjectRepository("BrevoTargetGroup") private readonly repository: EntityRepository<TargetGroupInterface>,
         ) {}
+
+        private get repository(): EntityRepository<TargetGroupInterface> {
+            return this.entityManager.getRepository(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"));
+        }
 
         @Query(() => BrevoTargetGroup)
         @AffectedEntity(BrevoTargetGroup)

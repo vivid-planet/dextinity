@@ -135,7 +135,7 @@ export class BuildsService {
         }
 
         if ((await this.changesRepository.findOne({ scope })) === null) {
-            await this.entityManager.persistAndFlush(this.changesRepository.create({ scope }));
+            await this.entityManager.persist(this.changesRepository.create({ scope })).flush();
         }
     }
 

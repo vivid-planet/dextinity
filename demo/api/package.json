@@ -23,7 +23,7 @@
         "intl:compile:dextinity-demo": "formatjs compile-folder --format simple --ast lang/dextinity-demo-lang/api lang-compiled/dextinity-demo-api",
         "intl:extract": "formatjs extract \"src/**/*.ts*\" --ignore '**/*.{test,spec}.{ts,tsx}' --ignore ./**.d.ts --out-file lang-extracted/en.json --format simple --throws",
         "lint": "pnpm run api-generator && pnpm run intl:compile && pnpm run generate-block-types && run-p lint:prettier lint:eslint lint:tsc lint:api-can-start",
-        "lint:api-can-start": "MIKRO_ORM_NO_CONNECT=true dotenv -e ../../.env -e ../.env.site-configs -- ts-node --transpile-only -r tsconfig-paths/register src/console.ts --help",
+        "lint:api-can-start": "dotenv -e ../../.env -e ../.env.site-configs -- ts-node --transpile-only -r tsconfig-paths/register src/console.ts --help",
         "lint:ci": "pnpm run api-generator && pnpm run intl:compile && pnpm run generate-block-types && run-p lint:prettier lint:eslint lint:tsc lint:api-can-start && pnpm run lint:generated-files-not-modified",
         "lint:eslint": "eslint --max-warnings 0 src/ '**/*.json' --no-warn-ignored",
         "lint:fix": "run-p lint:fix:eslint lint:fix:prettier",
@@ -50,11 +50,12 @@
         "@dextinity/mail-react": "workspace:*",
         "@faker-js/faker": "^10.4.0",
         "@kubernetes/client-node": "^1.4.0",
-        "@mikro-orm/cli": "^6.6.14",
-        "@mikro-orm/core": "^6.6.14",
-        "@mikro-orm/migrations": "^6.6.14",
-        "@mikro-orm/nestjs": "^6.1.2",
-        "@mikro-orm/postgresql": "^6.6.14",
+        "@mikro-orm/cli": "^7.2.0",
+        "@mikro-orm/core": "^7.2.0",
+        "@mikro-orm/decorators": "^7.2.0",
+        "@mikro-orm/migrations": "^7.2.0",
+        "@mikro-orm/nestjs": "^7.1.0",
+        "@mikro-orm/postgresql": "^7.2.0",
         "@nestjs/apollo": "^13.4.0",
         "@nestjs/common": "^11.1.21",
         "@nestjs/core": "^11.1.21",
@@ -98,6 +99,7 @@
         "@nestjs/testing": "^11.1.21",
         "@storybook/addon-docs": "^10.3.5",
         "@storybook/react-vite": "^10.3.5",
+        "@swc-node/register": "^1.12.1",
         "@types/cli-progress": "^3.11.6",
         "@types/compression": "^1.8.1",
         "@types/cookie-parser": "^1.4.10",
@@ -127,6 +129,6 @@
             "./src/db/ormconfig.cli.ts",
             "./dist/db/ormconfig.cli.js"
         ],
-        "useTsNode": true
+        "preferTs": true
     }
 }

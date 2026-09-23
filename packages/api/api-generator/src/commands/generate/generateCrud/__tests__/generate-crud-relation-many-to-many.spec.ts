@@ -1,16 +1,5 @@
-import {
-    BaseEntity,
-    Collection,
-    defineConfig,
-    Entity,
-    ManyToOne,
-    MikroORM,
-    OneToMany,
-    PrimaryKey,
-    Property,
-    Ref,
-    types,
-} from "@mikro-orm/postgresql";
+import { Entity, ManyToOne, OneToMany, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, Collection, defineConfig, MikroORM, Ref, types } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { v4 as uuid } from "uuid";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -59,15 +48,15 @@ describe("GenerateCrud Relation n:m with additional column", () => {
         LazyMetadataStorage.load();
         orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [Product, ProductToCategory, Category],
             }),
         );
 
         const out = await generateCrud(
             { requiredPermission: testPermission, create: false, update: true, delete: false },
-            orm.em.getMetadata().get("Product"),
+            orm.em.getMetadata().getByClassName("Product"),
         );
         const formattedOut = await formatGeneratedFiles(out);
         const foundFile = formattedOut.find((file) => file.name === "product.resolver.ts");

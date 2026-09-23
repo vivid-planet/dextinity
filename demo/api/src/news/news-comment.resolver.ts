@@ -23,7 +23,7 @@ export class NewsCommentResolver {
             news,
         });
 
-        await this.entityManager.persistAndFlush(newsComment);
+        await this.entityManager.persist(newsComment).flush();
         return newsComment;
     }
 
@@ -46,7 +46,7 @@ export class NewsCommentResolver {
     @Mutation(() => Boolean)
     @AffectedEntity(NewsComment)
     async deleteNewsComment(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
-        await this.entityManager.removeAndFlush({ id });
+        await this.entityManager.remove({ id }).flush();
 
         return true;
     }

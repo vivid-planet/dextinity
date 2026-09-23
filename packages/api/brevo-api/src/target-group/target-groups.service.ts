@@ -1,5 +1,4 @@
-import { filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@dextinity/cms-api";
-import { InjectRepository } from "@mikro-orm/nestjs";
+import { filtersToMikroOrmQuery, resolveEntityClass, searchToMikroOrmQuery } from "@dextinity/cms-api";
 import { EntityManager, EntityRepository, FilterQuery, ObjectQuery, wrap } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { stringify } from "querystring";
@@ -14,10 +13,13 @@ import { TargetGroupInterface } from "./entity/target-group-entity.factory";
 @Injectable()
 export class TargetGroupsService {
     constructor(
-        @InjectRepository("BrevoTargetGroup") private readonly repository: EntityRepository<TargetGroupInterface>,
         private readonly brevoApiContactsService: BrevoApiContactsService,
         private readonly entityManager: EntityManager,
     ) {}
+
+    private get repository(): EntityRepository<TargetGroupInterface> {
+        return this.entityManager.getRepository(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"));
+    }
 
     getFindCondition(options: { search?: string; filter?: TargetGroupFilter }): ObjectQuery<TargetGroupInterface> {
         const andFilters = [];

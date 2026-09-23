@@ -1,6 +1,5 @@
-import { BlocksTransformerService, filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@dextinity/cms-api";
+import { BlocksTransformerService, filtersToMikroOrmQuery, resolveEntityClass, searchToMikroOrmQuery } from "@dextinity/cms-api";
 import { Brevo } from "@getbrevo/brevo";
-import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, ObjectQuery, wrap } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
@@ -21,14 +20,20 @@ const CAMPAIGN_CONTENT_REQUEST_TIMEOUT = 5000;
 export class EmailCampaignsService {
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
-        @InjectRepository("BrevoEmailCampaign") private readonly repository: EntityRepository<EmailCampaignInterface>,
-        @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
         private readonly brevoApiCampaignService: BrevoApiCampaignsService,
         private readonly brevoApiContactsService: BrevoApiContactsService,
         private readonly entityManager: EntityManager,
         private readonly ecgRtrListService: EcgRtrListService,
         private readonly blockTransformerService: BlocksTransformerService,
     ) {}
+
+    private get repository(): EntityRepository<EmailCampaignInterface> {
+        return this.entityManager.getRepository(resolveEntityClass<EmailCampaignInterface>("BrevoEmailCampaign"));
+    }
+
+    private get brevoConfigRepository(): EntityRepository<BrevoConfigInterface> {
+        return this.entityManager.getRepository(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"));
+    }
 
     getFindCondition(options: { search?: string; filter?: EmailCampaignFilter }): ObjectQuery<EmailCampaignInterface> {
         const andFilters = [];

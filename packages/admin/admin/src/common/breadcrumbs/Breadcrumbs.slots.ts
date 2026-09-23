@@ -64,6 +64,8 @@ export const Item = createComponentSlot(Typography)<BreadcrumbsClassKey>({
     ({ theme }) => css`
         color: ${theme.palette.grey[900]};
         white-space: nowrap;
+        font-size: 14px;
+        line-height: 16px;
 
         &:not(:last-child):hover {
             color: ${theme.palette.primary.main};
@@ -88,12 +90,6 @@ export const ActiveItem = createComponentSlot(Typography)<BreadcrumbsClassKey>({
         font-size: 14px;
         line-height: 16px;
         font-weight: 600;
-
-        ${theme.breakpoints.up("sm")} {
-            font-size: 16px;
-            line-height: 20px;
-            font-weight: bold;
-        }
     `,
 ) as typeof Typography;
 
@@ -120,11 +116,6 @@ export const Ellipsis = createComponentSlot(Typography)<BreadcrumbsClassKey>({
         color: inherit;
         font-size: 14px;
         line-height: 16px;
-
-        ${theme.breakpoints.up("sm")} {
-            font-size: 16px;
-            line-height: 20px;
-        }
     `,
 );
 

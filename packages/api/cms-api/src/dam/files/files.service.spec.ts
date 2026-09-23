@@ -1,4 +1,4 @@
-import type { EntityRepository, QueryBuilder } from "@mikro-orm/postgresql";
+import type { EntityManager, QueryBuilder } from "@mikro-orm/postgresql";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { FileFilterInput } from "./dto/file.args";
@@ -28,18 +28,17 @@ function createServiceWithMockQueryBuilder() {
         getCount: vi.fn().mockResolvedValue(0),
     };
 
-    const filesRepository = {
+    const entityManager = {
         createQueryBuilder: vi.fn().mockReturnValue(mockQb),
-    } as unknown as EntityRepository<FileInterface>;
+    } as unknown as EntityManager;
 
     const service = new FilesService(
-        filesRepository,
-        null as never, // damMediaAlternativesRepository
+        null as never, // DAM_FILE_ENTITY
         null as never, // blobStorageBackendService
         null as never, // foldersService
         null as never, // DAM_CONFIG
         null as never, // orm
-        null as never, // entityManager
+        entityManager,
         null as never, // dominantColorCalculator
     );
 

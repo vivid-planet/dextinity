@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, MikroORM, QueryBuilder, raw, Utils } from "@mikro-orm/postgresql";
+import { EntityClass, EntityManager, MikroORM, QueryBuilder, raw, Utils } from "@mikro-orm/postgresql";
 import { forwardRef, Inject, Injectable, Optional } from "@nestjs/common";
 import { createHmac } from "crypto";
 import exifr from "exifr";
@@ -20,7 +19,7 @@ import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are
 import { DextinityImageResolutionException } from "../common/errors/image-resolution.exception";
 import { getDamFileCategory } from "../common/mimeTypes/dam-file-category";
 import { DamConfig } from "../dam.config";
-import { DAM_CONFIG, DAM_DOMINANT_COLOR_CALCULATOR } from "../dam.constants";
+import { DAM_CONFIG, DAM_DOMINANT_COLOR_CALCULATOR, DAM_FILE_ENTITY } from "../dam.constants";
 import { DominantColorCalculatorInterface } from "../dominant-color-calculator.interface";
 import { ImageCropAreaInput } from "../images/dto/image-crop-area.input";
 import { DamScopeInterface } from "../types";
@@ -116,8 +115,7 @@ const withFilesSelect = (
 @Injectable()
 export class FilesService {
     constructor(
-        @InjectRepository("DamFile") private readonly filesRepository: EntityRepository<FileInterface>,
-        @InjectRepository(DamMediaAlternative) private readonly damMediaAlternativesRepository: EntityRepository<DamMediaAlternative>,
+        @Inject(DAM_FILE_ENTITY) private readonly File: EntityClass<FileInterface>,
         @Inject(forwardRef(() => BlobStorageBackendService)) private readonly blobStorageBackendService: BlobStorageBackendService,
         private readonly foldersService: FoldersService,
         @Inject(DAM_CONFIG) private readonly config: DamConfig,
@@ -127,8 +125,8 @@ export class FilesService {
     ) {}
 
     private selectQueryBuilder(): QueryBuilder<FileInterface> {
-        return this.filesRepository
-            .createQueryBuilder("file")
+        return this.entityManager
+            .createQueryBuilder(this.File, "file")
             .select("*")
             .leftJoinAndSelect("file.image", "image")
             .leftJoinAndSelect("file.folder", "folder");
@@ -242,7 +240,7 @@ export class FilesService {
     async create({ folderId, ...data }: CreateFileInput & { copyOf?: FileInterface }): Promise<FileInterface> {
         const folder = folderId ? await this.foldersService.findOneById(folderId) : undefined;
         return this.save(
-            this.filesRepository.create({
+            this.entityManager.create(this.File, {
                 ...data,
                 license: { ...data.license },
                 folder: folder?.id,
@@ -286,8 +284,11 @@ export class FilesService {
 
                 // Check if the current file is the only one using the contentHash before deleting from blob storage
                 if (
-                    (await withFilesSelect(this.filesRepository.createQueryBuilder("file"), { contentHash: fileToReplace.contentHash }).getResult())
-                        .length === 1
+                    (
+                        await withFilesSelect(this.entityManager.createQueryBuilder(this.File, "file"), {
+                            contentHash: fileToReplace.contentHash,
+                        }).getResult()
+                    ).length === 1
                 ) {
                     await this.blobStorageBackendService.removeFile(this.config.filesDirectory, createHashedPath(fileToReplace.contentHash));
                 }
@@ -391,12 +392,13 @@ export class FilesService {
             throw new DextinityEntityNotFoundException();
         }
 
-        const result = await this.filesRepository.nativeDelete(id);
+        const result = await this.entityManager.nativeDelete(this.File, id);
         const deleted = result === 1;
 
         if (
             deleted &&
-            (await withFilesSelect(this.filesRepository.createQueryBuilder("file"), { contentHash: file.contentHash }).getResult()).length === 0
+            (await withFilesSelect(this.entityManager.createQueryBuilder(this.File, "file"), { contentHash: file.contentHash }).getResult())
+                .length === 0
         ) {
             await this.blobStorageBackendService.removeFile(this.config.filesDirectory, createHashedPath(file.contentHash));
         }
@@ -468,8 +470,8 @@ export class FilesService {
         const isSearching = args.filter?.searchText !== undefined && args.filter.searchText.length > 0;
 
         const subQb = withFilesSelect(
-            this.filesRepository
-                .createQueryBuilder("file")
+            this.entityManager
+                .createQueryBuilder(this.File, "file")
                 .select(["file.id", raw(`ROW_NUMBER() OVER( ORDER BY file."${args.sortColumnName}" ${args.sortDirection} ) AS row_number`)])
                 .leftJoinAndSelect("file.folder", "folder"),
             {
@@ -483,7 +485,7 @@ export class FilesService {
             },
         );
 
-        const result: { rows: Array<{ row_number: string }> } = await this.filesRepository.getKnex().raw(
+        const result: { rows: Array<{ row_number: string }> } = await this.entityManager.getKnex().raw(
             `select "file_with_row_number".row_number
                 from "${FILE_TABLE_NAME}" as "file"
                 join (${subQb.getFormattedQuery()}) as "file_with_row_number" ON file_with_row_number.id = file.id
@@ -542,7 +544,7 @@ export class FilesService {
                 const copiedAlternativeFile = await this.createCopyOfFile(alternativeFile, { inboxFolder });
 
                 const { id: ignoreId, for: ignoreFor, alternative: ignoreAlternative, ...alternativeProps } = alternative;
-                const copiedDamMediaAlternative = this.damMediaAlternativesRepository.create({
+                const copiedDamMediaAlternative = this.entityManager.create(DamMediaAlternative, {
                     ...alternativeProps,
 
                     for: copiedFile,

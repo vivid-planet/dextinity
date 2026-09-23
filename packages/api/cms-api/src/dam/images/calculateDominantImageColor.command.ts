@@ -1,6 +1,8 @@
-import { CreateRequestContext, EntityManager } from "@mikro-orm/postgresql";
+import { CreateRequestContext, EntityClass, EntityManager } from "@mikro-orm/postgresql";
+import { Inject } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
+import { DAM_FILE_ENTITY } from "../dam.constants";
 import { FileInterface } from "../files/entities/file.entity";
 import { DamDominantColorService } from "./dam-dominant-color.service";
 
@@ -12,6 +14,7 @@ export class CalculateDominantImageColorCommand extends CommandRunner {
     constructor(
         private readonly dominantColorService: DamDominantColorService,
         private readonly em: EntityManager,
+        @Inject(DAM_FILE_ENTITY) private readonly File: EntityClass<FileInterface>,
     ) {
         super();
     }
@@ -20,7 +23,7 @@ export class CalculateDominantImageColorCommand extends CommandRunner {
     async run(): Promise<void> {
         console.log("Calculate dominant color of images...");
 
-        const files = await this.em.getRepository<FileInterface>("DamFile").find({ image: { $ne: null } });
+        const files = await this.em.find(this.File, { image: { $ne: null } });
 
         console.log(`...for ${files.length} images ...`);
 

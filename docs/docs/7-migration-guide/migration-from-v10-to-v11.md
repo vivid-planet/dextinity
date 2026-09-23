@@ -175,7 +175,9 @@ npm install react-intl@^12.1.2
 
 If your API or site packages use `react-intl` as well, update them to the same version so the whole project shares one `react-intl` version. If you use `@formatjs/cli` to extract messages, update it to the latest 6.x version as well.
 
-`react-intl` v12 requires React 18 or later and is ESM-only. Bundlers (Vite, Next.js) handle this on their own. A CommonJS API (e.g., NestJS) loads it via `require()`, which Node.js supports from 20.19 and 22.12 on.
+`react-intl` v12 requires React 18 or later, so the admin packages no longer support React 16 and 17. If your admin still uses one of them, update `react` and `react-dom` to v18 or v19 first.
+
+`react-intl` v12 is ESM-only. Bundlers (Vite, Next.js) handle this on their own. A CommonJS API (e.g., NestJS) loads it via `require()`, which Node.js supports from 20.19 and 22.12 on.
 
 #### Replace deep imports
 

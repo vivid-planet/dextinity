@@ -1,5 +1,4 @@
 import { MikroOrmModule } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { DynamicModule, Global, Module, Type, ValueProvider } from "@nestjs/common";
 
 import { validateScopeTypeNames } from "../common/helper/scope-type-names.helper";
@@ -19,19 +18,12 @@ import { PageTreeNodeBase } from "./entities/page-tree-node-base.entity";
 import { createFullTextResolver } from "./fullText/createFullTextResolver";
 import { PageTreeNodeFullText } from "./fullText/entities/page-tree-node-full-text.object";
 import { PageTreeFullTextService } from "./fullText/page-tree-full-text.service";
-import {
-    defaultReservedPaths,
-    PAGE_TREE_CONFIG,
-    PAGE_TREE_DOCUMENTS,
-    PAGE_TREE_ENTITY,
-    PAGE_TREE_REPOSITORY,
-    SITE_PREVIEW_CONFIG,
-} from "./page-tree.constants";
+import { defaultReservedPaths, PAGE_TREE_CONFIG, PAGE_TREE_DOCUMENTS, PAGE_TREE_ENTITY, SITE_PREVIEW_CONFIG } from "./page-tree.constants";
 import { PageTreeService } from "./page-tree.service";
 import { PageTreeNodeDocumentEntityScopeService } from "./page-tree-node-document-entity-scope.service";
 import { PageTreeReadApiService } from "./page-tree-read-api.service";
 import { SitePreviewResolver } from "./site-preview.resolver";
-import type { PageTreeNodeInterface, ScopeInterface } from "./types";
+import type { ScopeInterface } from "./types";
 import { PageExistsConstraint } from "./validators/page-exists.validator";
 
 export interface PageTreeConfig {
@@ -93,14 +85,6 @@ export class PageTreeModule {
             validateScopeTypeNames(Scope, { label: "page tree", objectTypeName: "PageTreeNodeScope", inputTypeName: "PageTreeNodeScopeInput" });
         }
 
-        const repositoryProvider = {
-            provide: PAGE_TREE_REPOSITORY,
-            useFactory: async (em: EntityManager): Promise<EntityRepository<PageTreeNodeInterface>> => {
-                return em.getRepository(PageTreeNode);
-            },
-            inject: [EntityManager],
-        };
-
         const pageTreeConfigProvider: ValueProvider<PageTreeConfig> = {
             provide: PAGE_TREE_CONFIG,
             useValue: {
@@ -122,7 +106,6 @@ export class PageTreeModule {
                 PageTreeDependentsResolver,
                 PageTreeDependenciesResolver,
                 ...(PageTreeFullTextResolver ? [PageTreeFullTextResolver, PageTreeFullTextService] : []),
-                repositoryProvider,
                 pageTreeConfigProvider,
                 {
                     provide: PageExistsConstraint,

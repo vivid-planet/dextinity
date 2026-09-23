@@ -1,11 +1,8 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { EntityManager } from "@mikro-orm/postgresql";
+import { Inject, Injectable } from "@nestjs/common";
 import { CONTEXT } from "@nestjs/graphql";
 
 import { getRequestContextHeadersFromRequest } from "../common/decorators/request-context.decorator";
-import { AttachedDocument } from "./entities/attached-document.entity";
-import { PAGE_TREE_REPOSITORY } from "./page-tree.constants";
 import { createReadApi, PageTreeReadApi, PageTreeReadApiOptions } from "./page-tree-read-api";
 import { PageTreeNodeInterface, PageTreeNodeVisibility as Visibility, ScopeInterface } from "./types";
 
@@ -13,8 +10,7 @@ import { PageTreeNodeInterface, PageTreeNodeVisibility as Visibility, ScopeInter
 export class PageTreeReadApiService {
     private api: PageTreeReadApi;
     constructor(
-        @Inject(forwardRef(() => PAGE_TREE_REPOSITORY)) public readonly pageTreeRepository: EntityRepository<PageTreeNodeInterface>,
-        @InjectRepository(AttachedDocument) public readonly attachedDocumentsRepository: EntityRepository<AttachedDocument>,
+        private readonly entityManager: EntityManager,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         @Inject(CONTEXT) private context: any,
     ) {
@@ -34,8 +30,7 @@ export class PageTreeReadApiService {
         }
         this.api = createReadApi(
             {
-                pageTreeNodeRepository: this.pageTreeRepository,
-                attachedDocumentsRepository: this.attachedDocumentsRepository,
+                entityManager: this.entityManager,
             },
             {
                 visibility: [Visibility.Published, ...includeInvisiblePages],

@@ -1,6 +1,5 @@
 import { V1CronJob, V1Job } from "@kubernetes/client-node";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import parser from "cron-parser";
 import { format } from "date-fns";
@@ -26,7 +25,6 @@ export class BuildsService {
     private readonly logger = new Logger(BuildsService.name);
 
     constructor(
-        @InjectRepository(ChangesSinceLastBuild) private readonly changesRepository: EntityRepository<ChangesSinceLastBuild>,
         private readonly buildTemplatesService: BuildTemplatesService,
         private readonly kubernetesService: KubernetesService,
         @Inject(ACCESS_CONTROL_SERVICE) private accessControlService: AccessControlServiceInterface,
@@ -134,25 +132,25 @@ export class BuildsService {
             scope = "all";
         }
 
-        if ((await this.changesRepository.findOne({ scope })) === null) {
-            await this.entityManager.persistAndFlush(this.changesRepository.create({ scope }));
+        if ((await this.entityManager.findOne(ChangesSinceLastBuild, { scope })) === null) {
+            await this.entityManager.persistAndFlush(this.entityManager.create(ChangesSinceLastBuild, { scope }));
         }
     }
 
     async hasChangesSinceLastBuild(): Promise<boolean> {
-        return (await this.changesRepository.count()) > 0;
+        return (await this.entityManager.count(ChangesSinceLastBuild)) > 0;
     }
 
     async deleteChangesSinceLastBuild(): Promise<void> {
-        await this.changesRepository.createQueryBuilder().truncate().execute();
+        await this.entityManager.createQueryBuilder(ChangesSinceLastBuild).truncate().execute();
     }
 
     async shouldRebuildAllScopes(): Promise<boolean> {
-        return (await this.changesRepository.findOne({ scope: "all" })) !== null;
+        return (await this.entityManager.findOne(ChangesSinceLastBuild, { scope: "all" })) !== null;
     }
 
     async getScopesWithChanges(): Promise<ContentScope[]> {
-        return (await this.changesRepository.find({ scope: { $ne: "all" } })).map((change) => change.scope) as ContentScope[];
+        return (await this.entityManager.find(ChangesSinceLastBuild, { scope: { $ne: "all" } })).map((change) => change.scope) as ContentScope[];
     }
 
     async getBuilderCronJobsToStart(scopesWithChanges: ContentScope[]): Promise<V1CronJob[]> {

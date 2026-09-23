@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
@@ -26,12 +25,12 @@ export const IsValidRedirectURL = (scope: EmailCampaignScopeInterface, validatio
 export class IsValidRedirectURLConstraint implements ValidatorConstraintInterface {
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
-        @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
+        private readonly entityManager: EntityManager,
     ) {}
 
     async validate(urlToValidate: string, args: ValidationArguments): Promise<boolean> {
         const [scope] = args.constraints;
-        const configForScope = await this.brevoConfigRepository.findOneOrFail({ scope });
+        const configForScope = await this.entityManager.findOneOrFail<BrevoConfigInterface>("BrevoConfig", { scope });
 
         if (!configForScope) {
             throw Error("Scope does not exist");

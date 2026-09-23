@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { EmailCampaignScopeInterface } from "src/types";
 
@@ -12,7 +11,6 @@ import { BrevoEmailImportLogInterface, ContactSource } from "./entity/brevo-emai
 export class BrevoEmailImportLogService {
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
-        @InjectRepository("BrevoEmailImportLog") private readonly repository: EntityRepository<BrevoEmailImportLogInterface>,
         private readonly entityManager: EntityManager,
     ) {}
     public async addContactToLogs(
@@ -25,7 +23,7 @@ export class BrevoEmailImportLogService {
         if (!this.config.contactsWithoutDoi?.emailHashKey) {
             throw new Error("There is no `emailHashKey` defined in the environment variables.");
         }
-        const log = this.repository.create({
+        const log = this.entityManager.create<BrevoEmailImportLogInterface>("BrevoEmailImportLog", {
             importedEmail: hashEmail(email, this.config.contactsWithoutDoi.emailHashKey),
             responsibleUserId,
             scope,

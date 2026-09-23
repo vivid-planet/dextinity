@@ -41,7 +41,8 @@ export class FileWarningService implements CreateWarningsServiceInterface<FileIn
         let offset = 0;
         const limit = 50;
         do {
-            files = await this.entityManager.getRepository<FileInterface>("DamFile").find(
+            files = await this.entityManager.find<FileInterface>(
+                "DamFile",
                 {
                     $or: filterQuery,
                 },

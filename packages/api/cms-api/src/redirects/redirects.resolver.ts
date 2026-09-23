@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, FilterQuery, FindOptions, wrap } from "@mikro-orm/postgresql";
+import { EntityManager, FilterQuery, FindOptions, wrap } from "@mikro-orm/postgresql";
 import { Inject, Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Mutation, ObjectType, Query, Resolver } from "@nestjs/graphql";
 
@@ -60,7 +59,6 @@ export function createRedirectsResolver({
     class RedirectsResolver {
         constructor(
             private readonly redirectService: RedirectsService,
-            @InjectRepository("Redirect") private readonly repository: EntityRepository<RedirectInterface>,
             private readonly pageTreeReadApi: PageTreeReadApiService,
             private readonly entityManager: EntityManager,
             @Inject(REDIRECTS_TARGET_URL_SERVICE) private readonly targetUrlService: RedirectTargetUrlServiceInterface,
@@ -81,7 +79,7 @@ export function createRedirectsResolver({
 
             await this.pageTreeReadApi.preloadNodes(scope);
 
-            return this.repository.find(where, options);
+            return this.entityManager.find<RedirectInterface>("Redirect", where, options);
         }
 
         @Query(() => PaginatedRedirects)
@@ -107,7 +105,7 @@ export function createRedirectsResolver({
 
                 await this.pageTreeReadApi.preloadNodes(scope);
 
-                const allRedirects = await this.repository.find(where, options);
+                const allRedirects = await this.entityManager.find<RedirectInterface>("Redirect", where, options);
                 const redirects = [];
 
                 const targetUrlCache = new Map<string, string | undefined>();
@@ -171,14 +169,14 @@ export function createRedirectsResolver({
 
             await this.pageTreeReadApi.preloadNodes(scope);
 
-            const [entities, totalCount] = await this.repository.findAndCount(where, options);
+            const [entities, totalCount] = await this.entityManager.findAndCount<RedirectInterface>("Redirect", where, options);
             return new PaginatedRedirects(entities, totalCount);
         }
 
         @Query(() => Redirect)
         @AffectedEntity(Redirect)
         async redirect(@Args("id", { type: () => ID }) id: string): Promise<RedirectInterface> {
-            const redirect = await this.repository.findOneOrFail(id);
+            const redirect = await this.entityManager.findOneOrFail<RedirectInterface>("Redirect", id);
             return redirect;
         }
 
@@ -192,7 +190,7 @@ export function createRedirectsResolver({
             if (hasNonEmptyScope) {
                 where.scope = nonEmptyScopeOrNothing(scope);
             }
-            const redirect = await this.repository.findOne(where);
+            const redirect = await this.entityManager.findOne<RedirectInterface>("Redirect", where);
             return redirect ?? null;
         }
 
@@ -214,14 +212,14 @@ export function createRedirectsResolver({
                 throw new DextinityValidationException("Validation failed");
             }
 
-            const entity = this.repository.create({
+            const entity = this.entityManager.create<RedirectInterface>("Redirect", {
                 scope: nonEmptyScopeOrNothing(scope),
                 activatedAt: new Date(),
                 ...input,
                 target: input.target.transformToBlockData(),
             });
             await this.entityManager.persistAndFlush(entity);
-            return this.repository.findOneOrFail(entity.id);
+            return this.entityManager.findOneOrFail<RedirectInterface>("Redirect", entity.id);
         }
 
         @Mutation(() => Redirect)
@@ -231,7 +229,7 @@ export function createRedirectsResolver({
             @Args("input", { type: () => RedirectInput }, new DynamicDtoValidationPipe(RedirectInput)) input: RedirectInputInterface,
             @Args("lastUpdatedAt", { type: () => Date, nullable: true }) lastUpdatedAt?: Date,
         ): Promise<RedirectInterface> {
-            const redirect = await this.repository.findOneOrFail(id);
+            const redirect = await this.entityManager.findOneOrFail<RedirectInterface>("Redirect", id);
             if (redirect != null && lastUpdatedAt) {
                 validateNotModified(redirect, lastUpdatedAt);
             }
@@ -242,7 +240,7 @@ export function createRedirectsResolver({
 
             wrap(redirect).assign({ ...input, target: input.target.transformToBlockData() });
             await this.entityManager.persistAndFlush(redirect);
-            return this.repository.findOneOrFail(id);
+            return this.entityManager.findOneOrFail<RedirectInterface>("Redirect", id);
         }
 
         @Mutation(() => Redirect)
@@ -251,18 +249,18 @@ export function createRedirectsResolver({
             @Args("id", { type: () => ID }) id: string,
             @Args("input", { type: () => RedirectUpdateActivenessInput }) input: RedirectUpdateActivenessInput,
         ): Promise<RedirectInterface> {
-            const redirect = await this.repository.findOneOrFail(id);
+            const redirect = await this.entityManager.findOneOrFail<RedirectInterface>("Redirect", id);
 
             wrap(redirect).assign({ active: input.active, activatedAt: input.active ? new Date() : null });
             await this.entityManager.persistAndFlush(redirect);
 
-            return this.repository.findOneOrFail(id);
+            return this.entityManager.findOneOrFail<RedirectInterface>("Redirect", id);
         }
 
         @Mutation(() => Boolean)
         @AffectedEntity(Redirect)
         async deleteRedirect(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
-            const entity = await this.repository.findOneOrFail(id);
+            const entity = await this.entityManager.findOneOrFail<RedirectInterface>("Redirect", id);
             await this.entityManager.removeAndFlush(entity);
             return true;
         }
@@ -270,7 +268,7 @@ export function createRedirectsResolver({
         @Mutation(() => Boolean)
         @AffectedEntity(Redirect, { idArg: "ids" })
         async deleteRedirects(@Args("ids", { type: () => [ID] }) ids: string[]): Promise<boolean> {
-            const entities = await this.repository.find({ id: { $in: ids } });
+            const entities = await this.entityManager.find<RedirectInterface>("Redirect", { id: { $in: ids } });
             if (entities.length !== ids.length) {
                 throw new Error("Couldn't find all redirects that were passed as input");
             }

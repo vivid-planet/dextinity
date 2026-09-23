@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { registerDecorator, ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
 import { basename, extname } from "path";
@@ -29,7 +28,7 @@ interface HasValidFilenameValidationArguments extends ValidationArguments {
 export class HasValidFilenameConstraint implements ValidatorConstraintInterface {
     errorMessage: string | undefined;
 
-    constructor(@InjectRepository(FILE_ENTITY) private readonly filesRepository: EntityRepository<FileInterface>) {}
+    constructor(private readonly entityManager: EntityManager) {}
 
     async validate(value: UpdateFileInput, validationArguments: HasValidFilenameValidationArguments): Promise<boolean> {
         if (value.name === undefined) {
@@ -51,7 +50,7 @@ export class HasValidFilenameConstraint implements ValidatorConstraintInterface 
         }
 
         const id = validationArguments.object.id;
-        const file = await this.filesRepository.findOneOrFail({ id });
+        const file = await this.entityManager.findOneOrFail<FileInterface>(FILE_ENTITY, { id });
 
         const oldExtension = extname(file.name);
 

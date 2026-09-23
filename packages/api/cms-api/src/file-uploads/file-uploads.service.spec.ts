@@ -1,4 +1,3 @@
-import { getRepositoryToken } from "@mikro-orm/nestjs";
 import { EntityManager, type EventArgs, MikroORM } from "@mikro-orm/postgresql";
 import { Test, type TestingModule } from "@nestjs/testing";
 import { addSeconds } from "date-fns";
@@ -6,7 +5,7 @@ import { Readable } from "stream";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { BlobStorageBackendService } from "../blob-storage/backends/blob-storage-backend.service";
-import { FileUpload } from "./entities/file-upload.entity";
+import type { FileUpload } from "./entities/file-upload.entity";
 import { FileUploadExpirationSubscriber } from "./file-upload-expiration.subscriber";
 import type { FileUploadsConfig } from "./file-uploads.config";
 import { FILE_UPLOADS_CONFIG } from "./file-uploads.constants";
@@ -20,6 +19,7 @@ const mockBlobStorageBackendService = {
 };
 
 const mockEntityManager = {
+    create: vi.fn(),
     persist: vi.fn(),
     getEventManager: vi.fn().mockReturnValue({
         registerSubscriber: vi.fn(),
@@ -29,10 +29,6 @@ const mockEntityManager = {
 };
 
 const mockOrm = {};
-
-const mockRepository = {
-    create: vi.fn(),
-};
 
 const mockConfig: FileUploadsConfig = {
     directory: "test-dir",
@@ -69,7 +65,6 @@ describe("FileUploadsService", () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 FileUploadsService,
-                { provide: getRepositoryToken(FileUpload), useValue: mockRepository },
                 { provide: BlobStorageBackendService, useValue: mockBlobStorageBackendService },
                 { provide: FILE_UPLOADS_CONFIG, useValue: mockConfig },
                 { provide: EntityManager, useValue: mockEntityManager },

@@ -1,6 +1,5 @@
 import { FilterQuery, FindOptions, Reference } from "@mikro-orm/core";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Args, ID, Info, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { GraphQLResolveInfo } from "graphql";
@@ -29,16 +28,12 @@ export function createDamMediaAlternativeResolver({
     @Resolver(() => DamMediaAlternative)
     @RequiredPermission(["dam"], { skipScopeCheck: !hasNonEmptyScope })
     class DamMediaAlternativeResolver {
-        constructor(
-            private readonly entityManager: EntityManager,
-            @InjectRepository(DamMediaAlternative) private readonly repository: EntityRepository<DamMediaAlternative>,
-            @InjectRepository(FILE_ENTITY) private readonly damFileRepository: EntityRepository<FileInterface>,
-        ) {}
+        constructor(private readonly entityManager: EntityManager) {}
 
         @Query(() => DamMediaAlternative)
         @AffectedEntity(DamMediaAlternative)
         async damMediaAlternative(@Args("id", { type: () => ID }) id: string): Promise<DamMediaAlternative> {
-            const damMediaAlternative = await this.repository.findOneOrFail(id);
+            const damMediaAlternative = await this.entityManager.findOneOrFail(DamMediaAlternative, id);
             return damMediaAlternative;
         }
 
@@ -94,7 +89,7 @@ export function createDamMediaAlternativeResolver({
                 });
             }
 
-            const [entities, totalCount] = await this.repository.findAndCount(where, options);
+            const [entities, totalCount] = await this.entityManager.findAndCount(DamMediaAlternative, where, options);
             return new PaginatedDamMediaAlternatives(entities, totalCount);
         }
 
@@ -106,11 +101,11 @@ export function createDamMediaAlternativeResolver({
             @Args("alternative", { type: () => ID }) alternativeId: string,
             @Args("input", { type: () => DamMediaAlternativeInput }) input: DamMediaAlternativeInput,
         ): Promise<DamMediaAlternative> {
-            const damMediaAlternative = this.repository.create({
+            const damMediaAlternative = this.entityManager.create(DamMediaAlternative, {
                 ...input,
 
-                for: Reference.create(await this.damFileRepository.findOneOrFail(forId)),
-                alternative: Reference.create(await this.damFileRepository.findOneOrFail(alternativeId)),
+                for: Reference.create(await this.entityManager.findOneOrFail<FileInterface>(FILE_ENTITY, forId)),
+                alternative: Reference.create(await this.entityManager.findOneOrFail<FileInterface>(FILE_ENTITY, alternativeId)),
             });
 
             await this.entityManager.flush();
@@ -124,7 +119,7 @@ export function createDamMediaAlternativeResolver({
             @Args("id", { type: () => ID }) id: string,
             @Args("input", { type: () => DamMediaAlternativeUpdateInput }) input: DamMediaAlternativeUpdateInput,
         ): Promise<DamMediaAlternative> {
-            const damMediaAlternative = await this.repository.findOneOrFail(id);
+            const damMediaAlternative = await this.entityManager.findOneOrFail(DamMediaAlternative, id);
 
             const { for: forInput, alternative: alternativeInput, ...assignInput } = input;
             damMediaAlternative.assign({
@@ -132,10 +127,12 @@ export function createDamMediaAlternativeResolver({
             });
 
             if (forInput !== undefined) {
-                damMediaAlternative.for = Reference.create(await this.damFileRepository.findOneOrFail(forInput));
+                damMediaAlternative.for = Reference.create(await this.entityManager.findOneOrFail<FileInterface>(FILE_ENTITY, forInput));
             }
             if (alternativeInput !== undefined) {
-                damMediaAlternative.alternative = Reference.create(await this.damFileRepository.findOneOrFail(alternativeInput));
+                damMediaAlternative.alternative = Reference.create(
+                    await this.entityManager.findOneOrFail<FileInterface>(FILE_ENTITY, alternativeInput),
+                );
             }
 
             await this.entityManager.flush();
@@ -146,7 +143,7 @@ export function createDamMediaAlternativeResolver({
         @Mutation(() => Boolean)
         @AffectedEntity(DamMediaAlternative)
         async deleteDamMediaAlternative(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
-            const damMediaAlternative = await this.repository.findOneOrFail(id);
+            const damMediaAlternative = await this.entityManager.findOneOrFail(DamMediaAlternative, id);
             this.entityManager.remove(damMediaAlternative);
             await this.entityManager.flush();
             return true;

@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, FilterQuery } from "@mikro-orm/postgresql";
+import { EntityManager, FilterQuery } from "@mikro-orm/postgresql";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 
 import { filtersToMikroOrmQuery, searchToMikroOrmQuery } from "../common/filter/mikro-orm";
@@ -15,7 +14,6 @@ import { RedirectScopeInterface } from "./types";
 @Injectable()
 export class RedirectsService {
     constructor(
-        @InjectRepository("Redirect") private readonly repository: EntityRepository<RedirectInterface>,
         @Inject(forwardRef(() => PageTreeService)) private readonly pageTreeService: PageTreeService,
         @Inject(REDIRECTS_LINK_BLOCK) private readonly linkBlock: RedirectsLinkBlock,
         private readonly entityManager: EntityManager,
@@ -74,7 +72,7 @@ export class RedirectsService {
         const readApi = this.pageTreeService.createReadApi({ visibility: "all" });
         const path = await readApi.nodePath(node);
         await this.entityManager.persistAndFlush(
-            this.repository.create({
+            this.entityManager.create<RedirectInterface>("Redirect", {
                 scope: node.scope,
                 sourceType: RedirectSourceType.path,
                 source: path,
@@ -107,7 +105,7 @@ export class RedirectsService {
         if (scope !== undefined) {
             where.scope = scope;
         }
-        const redirect = await this.repository.findOne(where);
+        const redirect = await this.entityManager.findOne<RedirectInterface>("Redirect", where);
         return redirect === null;
     }
 }

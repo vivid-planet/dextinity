@@ -1,6 +1,5 @@
 import { AffectedEntity, PaginatedResponseFactory, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, FindOptions, wrap } from "@mikro-orm/postgresql";
+import { EntityManager, FindOptions, wrap } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Int, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { EmailCampaignScopeInterface } from "src/types";
@@ -38,13 +37,12 @@ export function createTargetGroupsResolver({
             private readonly targetGroupsService: TargetGroupsService,
             private readonly brevoApiContactsService: BrevoApiContactsService,
             private readonly entityManager: EntityManager,
-            @InjectRepository("BrevoTargetGroup") private readonly repository: EntityRepository<TargetGroupInterface>,
         ) {}
 
         @Query(() => BrevoTargetGroup)
         @AffectedEntity(BrevoTargetGroup)
         async brevoTargetGroup(@Args("id", { type: () => ID }) id: string): Promise<TargetGroupInterface> {
-            const targetGroup = await this.repository.findOneOrFail(id);
+            const targetGroup = await this.entityManager.findOneOrFail<TargetGroupInterface>("BrevoTargetGroup", id);
             return targetGroup;
         }
 
@@ -64,7 +62,7 @@ export function createTargetGroupsResolver({
                 });
             }
 
-            const [entities, totalCount] = await this.repository.findAndCount(where, options);
+            const [entities, totalCount] = await this.entityManager.findAndCount<TargetGroupInterface>("BrevoTargetGroup", where, options);
 
             const brevoContactLists = await this.brevoApiContactsService.findBrevoContactListsByIds(
                 entities.map((list) => list.brevoId),
@@ -91,7 +89,13 @@ export function createTargetGroupsResolver({
             const brevoId = await this.brevoApiContactsService.createBrevoContactList(input.title, scope);
 
             if (brevoId) {
-                const targetGroup = this.repository.create({ ...input, brevoId, scope, isMainList: false, isTestList: false });
+                const targetGroup = this.entityManager.create<TargetGroupInterface>("BrevoTargetGroup", {
+                    ...input,
+                    brevoId,
+                    scope,
+                    isMainList: false,
+                    isTestList: false,
+                });
 
                 await this.entityManager.flush();
 
@@ -111,7 +115,7 @@ export function createTargetGroupsResolver({
             @Args("id", { type: () => ID }) id: string,
             @Args("input", { type: () => AddBrevoContactsInput }) input: AddBrevoContactsInput,
         ): Promise<boolean> {
-            const targetGroup = await this.repository.findOneOrFail(id);
+            const targetGroup = await this.entityManager.findOneOrFail<TargetGroupInterface>("BrevoTargetGroup", id);
             const assignedContactsTargetGroupBrevoId =
                 await this.targetGroupsService.createIfNotExistsManuallyAssignedContactsTargetGroup(targetGroup);
 
@@ -130,7 +134,7 @@ export function createTargetGroupsResolver({
             @Args("id", { type: () => ID }) id: string,
             @Args("input", { type: () => RemoveBrevoContactInput }) input: RemoveBrevoContactInput,
         ): Promise<boolean> {
-            const targetGroup = await this.repository.findOneOrFail(id);
+            const targetGroup = await this.entityManager.findOneOrFail<TargetGroupInterface>("BrevoTargetGroup", id);
             const assignedContactsTargetGroupBrevoId = targetGroup.assignedContactsTargetGroupBrevoId;
             const brevoContact = await this.brevoApiContactsService.findContact(input.brevoContactId, targetGroup.scope);
 
@@ -168,7 +172,7 @@ export function createTargetGroupsResolver({
             input: Partial<TargetGroupInputInterface>,
             @Args("lastUpdatedAt", { type: () => Date, nullable: true }) lastUpdatedAt?: Date,
         ): Promise<TargetGroupInterface> {
-            const targetGroup = await this.repository.findOneOrFail(id);
+            const targetGroup = await this.entityManager.findOneOrFail<TargetGroupInterface>("BrevoTargetGroup", id);
 
             if (targetGroup.isMainList) {
                 throw new Error("Cannot edit a main target group");
@@ -203,7 +207,7 @@ export function createTargetGroupsResolver({
         @Mutation(() => Boolean)
         @AffectedEntity(BrevoTargetGroup)
         async deleteBrevoTargetGroup(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
-            const targetGroup = await this.repository.findOneOrFail(id);
+            const targetGroup = await this.entityManager.findOneOrFail<TargetGroupInterface>("BrevoTargetGroup", id);
 
             if (targetGroup.isMainList) {
                 throw new Error("Cannot delete a main target group");

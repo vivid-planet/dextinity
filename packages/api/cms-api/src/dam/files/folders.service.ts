@@ -187,7 +187,7 @@ export class FoldersService {
             mpath = (await this.findAncestorsByParentId(parentId)).map((folder) => folder.id);
         }
         const folder = this.entityManager.create<FolderInterface>("DamFolder", { ...data, isInboxFromOtherScope, parent, mpath, scope });
-        await this.entityManager.persistAndFlush(folder);
+        await this.entityManager.persist(folder).flush();
         return folder;
     }
 
@@ -226,7 +226,7 @@ export class FoldersService {
                 .execute();
         }
 
-        await this.entityManager.persistAndFlush(folder);
+        await this.entityManager.persist(folder).flush();
         return folder;
     }
 

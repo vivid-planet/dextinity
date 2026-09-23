@@ -218,7 +218,7 @@ export function createRedirectsResolver({
                 ...input,
                 target: input.target.transformToBlockData(),
             });
-            await this.entityManager.persistAndFlush(entity);
+            await this.entityManager.persist(entity).flush();
             return this.entityManager.findOneOrFail<RedirectInterface>("Redirect", entity.id);
         }
 
@@ -239,7 +239,7 @@ export function createRedirectsResolver({
             }
 
             wrap(redirect).assign({ ...input, target: input.target.transformToBlockData() });
-            await this.entityManager.persistAndFlush(redirect);
+            await this.entityManager.persist(redirect).flush();
             return this.entityManager.findOneOrFail<RedirectInterface>("Redirect", id);
         }
 
@@ -252,7 +252,7 @@ export function createRedirectsResolver({
             const redirect = await this.entityManager.findOneOrFail<RedirectInterface>("Redirect", id);
 
             wrap(redirect).assign({ active: input.active, activatedAt: input.active ? new Date() : null });
-            await this.entityManager.persistAndFlush(redirect);
+            await this.entityManager.persist(redirect).flush();
 
             return this.entityManager.findOneOrFail<RedirectInterface>("Redirect", id);
         }
@@ -261,7 +261,7 @@ export function createRedirectsResolver({
         @AffectedEntity(Redirect)
         async deleteRedirect(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
             const entity = await this.entityManager.findOneOrFail<RedirectInterface>("Redirect", id);
-            await this.entityManager.removeAndFlush(entity);
+            await this.entityManager.remove(entity).flush();
             return true;
         }
 
@@ -272,7 +272,7 @@ export function createRedirectsResolver({
             if (entities.length !== ids.length) {
                 throw new Error("Couldn't find all redirects that were passed as input");
             }
-            await this.entityManager.removeAndFlush(entities);
+            await this.entityManager.remove(entities).flush();
             return true;
         }
     }

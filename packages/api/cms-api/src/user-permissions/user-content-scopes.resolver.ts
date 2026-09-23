@@ -30,7 +30,7 @@ export class UserContentScopesResolver {
         } else {
             entity = this.entityManager.create(UserContentScopes, { userId, contentScopes });
         }
-        await this.entityManager.persistAndFlush(entity);
+        await this.entityManager.persist(entity).flush();
         return true;
     }
 

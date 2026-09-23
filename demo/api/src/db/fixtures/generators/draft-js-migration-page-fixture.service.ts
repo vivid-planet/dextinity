@@ -162,14 +162,16 @@ export class DraftJsMigrationPageFixtureService {
         pageInput.seo = generateSeoBlock();
         pageInput.stage = StageBlock.blockInputFactory({ blocks: [] });
 
-        await this.entityManager.persistAndFlush(
-            this.entityManager.create(Page, {
-                id: documentId,
-                content: PageContentBlock.blockInputFactory({ blocks: [] }).transformToBlockData(),
-                seo: pageInput.seo.transformToBlockData(),
-                stage: pageInput.stage.transformToBlockData(),
-            }),
-        );
+        await this.entityManager
+            .persist(
+                this.entityManager.create(Page, {
+                    id: documentId,
+                    content: PageContentBlock.blockInputFactory({ blocks: [] }).transformToBlockData(),
+                    seo: pageInput.seo.transformToBlockData(),
+                    stage: pageInput.stage.transformToBlockData(),
+                }),
+            )
+            .flush();
 
         // Bypass the RootBlockType custom column so the legacy DraftJS-shaped JSON lands in the DB
         // unchanged. The on-read DraftJS→TipTap migration in TipTapRichTextBlock.blockDataFactory

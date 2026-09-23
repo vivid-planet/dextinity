@@ -133,7 +133,7 @@ export class BuildsService {
         }
 
         if ((await this.entityManager.findOne(ChangesSinceLastBuild, { scope })) === null) {
-            await this.entityManager.persistAndFlush(this.entityManager.create(ChangesSinceLastBuild, { scope }));
+            await this.entityManager.persist(this.entityManager.create(ChangesSinceLastBuild, { scope })).flush();
         }
     }
 

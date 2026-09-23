@@ -487,6 +487,8 @@ function IsTipTapContent(
         listLevelMax,
         textBlocks,
         defaultTextBlock,
+        orderedList,
+        unorderedList,
     }: {
         inlineStyles: TipTapInlineStyle[];
         linkBlock?: Block;
@@ -496,6 +498,8 @@ function IsTipTapContent(
         listLevelMax?: number;
         textBlocks: TipTapResolvedTextBlock[];
         defaultTextBlock: TipTapResolvedTextBlock;
+        orderedList: false | TipTapResolvedList;
+        unorderedList: false | TipTapResolvedList;
     },
     validationOptions?: ValidationOptions,
 ) {
@@ -541,7 +545,7 @@ function IsTipTapContent(
                         }
 
                         // Enforce the configured text blocks
-                        if (containsInvalidTextBlock({ content: value as JSONContent, textBlocks, defaultTextBlock })) {
+                        if (containsInvalidTextBlock({ content: value as JSONContent, textBlocks, defaultTextBlock, orderedList, unorderedList })) {
                             return false;
                         }
 
@@ -756,6 +760,8 @@ export function createTipTapRichTextBlock(
             listLevelMax,
             textBlocks: resolvedOptions.textBlocks,
             defaultTextBlock: resolvedOptions.defaultTextBlock,
+            orderedList: resolvedOptions.orderedList,
+            unorderedList: resolvedOptions.unorderedList,
         })
         @BlockField({ type: "tipTapRichTextBlock", childBlocks })
         tipTapContent: JSONContent;

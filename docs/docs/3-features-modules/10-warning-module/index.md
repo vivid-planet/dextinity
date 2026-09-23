@@ -154,16 +154,13 @@ class NewsBlockData extends BlockData {
 ```typescript
 @Injectable()
 export class NewsBlockWarningsService implements BlockWarningsServiceInterface<NewsBlockData> {
-    constructor(
-        @InjectRepository(NewsRepository)
-        private readonly newsRepository: EntityRepository<NewsRepository>,
-    ) {}
+    constructor(private readonly entityManager: EntityManager) {}
 
     async createWarnings(block: NewsBlockData): Promise<BlockWarning[]> {
         const warnings: BlockWarning[] = [];
 
         if (block.id) {
-            const news = await this.newsRepository.findOne({ id: block.id });
+            const news = await this.entityManager.findOne(News, { id: block.id });
             if (!news) {
                 warnings.push({ severity: "high", message: "invalidNewsTarget" });
             }
@@ -220,16 +217,13 @@ class NewsPageType {
 
 ```typescript
 class NewsWarningService implements CreateWarningsServiceInterface<NewsPageType> {
-    constructor(
-        @InjectRepository(News)
-        private readonly newsRepository: EntityRepository<News>,
-    ) {}
+    constructor(private readonly entityManager: EntityManager) {}
 
     async createWarnings(entity: MyEntity): Promise<EntityWarning[]> {
         const warnings: EntityWarning[] = [];
 
         if (entity.newsId) {
-            const news = await this.newsRepository.findOne(entity.newsId);
+            const news = await this.entityManager.findOne(News, entity.newsId);
             if (!news) {
                 warnings.push({ severity: "high", message: "invalidNewsTarget" });
             }
@@ -250,10 +244,7 @@ Here's how to implement this:
 
 ```typescript
 class NewsWarningService implements CreateWarningsServiceInterface {
-    constructor(
-        @InjectRepository(News)
-        private readonly newsRepository: EntityRepository<News>,
-    ) {}
+    constructor(private readonly entityManager: EntityManager) {}
 
     async *bulkCreateWarnings() {
         let offset = 0;
@@ -261,7 +252,8 @@ class NewsWarningService implements CreateWarningsServiceInterface {
 
         let news = [];
         do {
-            news = await this.newsRepository.find(
+            news = await this.entityManager.find(
+                News,
                 {
                     isArchived: false,
                 },

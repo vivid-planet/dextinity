@@ -100,17 +100,17 @@ import { RequestContext, RequestContextInterface } from "@dextinity/cms-api";
 
 @Resolver(() => News)
 export class NewsResolver {
-    constructor(private readonly newsRepository: EntityRepository<News>) {}
+    constructor(private readonly entityManager: EntityManager) {}
 
     @Query(() => [News])
     async newsList(
         @RequestContext() { includeInvisiblePages }: RequestContextInterface,
     ): Promise<News[]> {
         if (includeInvisiblePages) {
-            return this.newsRepository.findAll();
+            return this.entityManager.findAll(News);
         }
 
-        return this.newsRepository.find({ visible: true });
+        return this.entityManager.find(News, { visible: true });
     }
 }
 ```

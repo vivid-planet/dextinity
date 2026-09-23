@@ -176,8 +176,8 @@ importers:
         specifier: workspace:*
         version: link:packages/cli
       '@formatjs/cli':
-        specifier: ^6.7.2
-        version: 6.7.4(@vue/compiler-core@3.5.15)
+        specifier: ^6.16.31
+        version: 6.16.31(@vue/compiler-core@3.5.15)
       '@types/node':
         specifier: ^24.13.3
         version: 24.13.3
@@ -302,8 +302,8 @@ importers:
         specifier: ^6.5.9
         version: 6.5.9(final-form@4.20.10)(react@19.2.6)
       react-intl:
-        specifier: ^7.1.11
-        version: 7.1.11(react@19.2.6)(typescript@5.9.3)
+        specifier: ^12.1.2
+        version: 12.1.2(@types/react@19.2.15)(react@19.2.6)
       react-router:
         specifier: ^5.3.4
         version: 5.3.4(react@19.2.6)
@@ -330,8 +330,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/eslint-config
       '@formatjs/cli':
-        specifier: ^6.7.2
-        version: 6.7.4(@vue/compiler-core@3.5.15)
+        specifier: ^6.16.31
+        version: 6.16.31(@vue/compiler-core@3.5.15)
       '@graphql-codegen/add':
         specifier: ^5.0.3
         version: 5.0.3(graphql@16.14.2)
@@ -556,8 +556,8 @@ importers:
         specifier: ^19.2.6
         version: 19.2.6(react@19.2.6)
       react-intl:
-        specifier: ^7.1.11
-        version: 7.1.11(react@19.2.6)(typescript@5.9.3)
+        specifier: ^12.1.2
+        version: 12.1.2(@types/react@19.2.15)(react@19.2.6)
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -584,8 +584,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/eslint-config
       '@formatjs/cli':
-        specifier: ^6.7.4
-        version: 6.7.4(@vue/compiler-core@3.5.15)
+        specifier: ^6.16.31
+        version: 6.16.31(@vue/compiler-core@3.5.15)
       '@nestjs/cli':
         specifier: ^11.0.21
         version: 11.0.21(@swc/core@1.15.41)(@types/node@24.13.3)(esbuild@0.27.4)(prettier@3.6.2)(uglify-js@3.19.3)
@@ -683,8 +683,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/site/site-nextjs
       '@formatjs/cli':
-        specifier: ^6.7.2
-        version: 6.7.4(@vue/compiler-core@3.5.15)
+        specifier: ^6.16.31
+        version: 6.16.31(@vue/compiler-core@3.5.15)
       '@google-cloud/recaptcha-enterprise':
         specifier: ^5.13.0
         version: 5.13.0(supports-color@8.1.1)
@@ -746,8 +746,8 @@ importers:
         specifier: ^7.68.0
         version: 7.78.0(react@19.2.6)
       react-intl:
-        specifier: ^7.1.11
-        version: 7.1.11(react@19.2.6)(typescript@5.9.3)
+        specifier: ^12.1.2
+        version: 12.1.2(@types/react@19.2.15)(react@19.2.6)
       redraft:
         specifier: ^0.10.2
         version: 0.10.2
@@ -1106,8 +1106,8 @@ importers:
         specifier: ^6.5.9
         version: 6.5.9(final-form@4.20.10)(react@19.2.6)
       react-intl:
-        specifier: ^7.1.11
-        version: 7.1.11(react@19.2.6)(typescript@5.9.3)
+        specifier: ^12.1.2
+        version: 12.1.2(@types/react@19.2.15)(react@19.2.6)
       react-router:
         specifier: ^5.3.4
         version: 5.3.4(react@19.2.6)
@@ -1221,8 +1221,8 @@ importers:
         specifier: ^6.5.9
         version: 6.5.9(final-form@4.20.10)(react@19.2.6)
       react-intl:
-        specifier: ^7.1.11
-        version: 7.1.11(react@19.2.6)(typescript@5.9.3)
+        specifier: ^12.1.2
+        version: 12.1.2(@types/react@19.2.15)(react@19.2.6)
       rimraf:
         specifier: ^6.1.2
         version: 6.1.2
@@ -1294,8 +1294,8 @@ importers:
         specifier: ^6.5.9
         version: 6.5.9(final-form@4.20.10)(react@19.2.6)
       react-intl:
-        specifier: ^7.1.11
-        version: 7.1.11(react@19.2.6)(typescript@5.9.3)
+        specifier: ^12.1.2
+        version: 12.1.2(@types/react@19.2.15)(react@19.2.6)
       rimraf:
         specifier: ^6.1.2
         version: 6.1.2
@@ -1391,8 +1391,8 @@ importers:
         specifier: ^19.2.6
         version: 19.2.6(react@19.2.6)
       react-intl:
-        specifier: ^7.1.11
-        version: 7.1.11(react@19.2.6)(typescript@5.9.3)
+        specifier: ^12.1.2
+        version: 12.1.2(@types/react@19.2.15)(react@19.2.6)
       tsdown:
         specifier: 0.23.0
         version: 0.23.0(@volar/typescript@2.4.14(typescript@5.9.3))(oxc-resolver@11.19.1)(typescript@5.9.3)(unrun@0.2.25(synckit@0.11.13))
@@ -1546,8 +1546,8 @@ importers:
         specifier: ^6.5.9
         version: 6.5.9(final-form@4.20.10)(react@19.2.6)
       react-intl:
-        specifier: ^7.1.11
-        version: 7.1.11(react@19.2.6)(typescript@5.9.3)
+        specifier: ^12.1.2
+        version: 12.1.2(@types/react@19.2.15)(react@19.2.6)
       rimraf:
         specifier: ^6.1.2
         version: 6.1.2
@@ -1670,8 +1670,8 @@ importers:
         specifier: ^6.5.9
         version: 6.5.9(final-form@4.20.10)(react@19.2.6)
       react-intl:
-        specifier: ^7.1.11
-        version: 7.1.11(react@19.2.6)(typescript@5.9.3)
+        specifier: ^12.1.2
+        version: 12.1.2(@types/react@19.2.15)(react@19.2.6)
       react-router:
         specifier: ^5.3.4
         version: 5.3.4(react@19.2.6)
@@ -1965,8 +1965,8 @@ importers:
         specifier: ^6.5.9
         version: 6.5.9(final-form@4.20.10)(react@19.2.6)
       react-intl:
-        specifier: ^7.1.11
-        version: 7.1.11(react@19.2.6)(typescript@5.9.3)
+        specifier: ^12.1.2
+        version: 12.1.2(@types/react@19.2.15)(react@19.2.6)
       react-router:
         specifier: ^5.3.4
         version: 5.3.4(react@19.2.6)
@@ -2523,8 +2523,8 @@ importers:
         specifier: ^10.1.8
         version: 10.1.8(eslint@9.39.4(jiti@2.7.0)(supports-color@8.1.1))
       eslint-plugin-formatjs:
-        specifier: ^5.4.2
-        version: 5.4.2(eslint@9.39.4(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
+        specifier: ^8.0.5
+        version: 8.0.5(eslint@9.39.4(jiti@2.7.0)(supports-color@8.1.1))
       eslint-plugin-import:
         specifier: ^2.32.0
         version: 2.32.0(@typescript-eslint/parser@8.63.0(eslint@9.39.4(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint@9.39.4(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)
@@ -2959,8 +2959,8 @@ importers:
         specifier: ^6.5.9
         version: 6.5.9(final-form@4.20.10)(react@19.2.6)
       react-intl:
-        specifier: ^7.1.11
-        version: 7.1.11(react@19.2.6)(typescript@5.9.3)
+        specifier: ^12.1.2
+        version: 12.1.2(@types/react@19.2.15)(react@19.2.6)
       ts-dedent:
         specifier: ^2.2.0
         version: 2.2.0
@@ -5230,19 +5230,52 @@ packages:
   '@fontsource-variable/roboto-flex@5.2.8':
     resolution: {integrity: sha512-Q9zbz+P2VrDeIxBu9YAIG+eYpLmQF5FIJEEwAWn8En9Lao1TOISnoYcywGV+jSv7LGsHEndCR8hveXPnvCBEQQ==}
 
-  '@formatjs/cli@6.7.4':
-    resolution: {integrity: sha512-k6uqdeZDAjDd7iKKQ8yFYizFpbi5Y9H9NkV+hoIhmxaMSGvWRnRusQJaIQ+2rI14MH6knW6fx7tnO15C+ijDiw==}
-    engines: {node: '>= 16'}
+  '@formatjs/cli-native-darwin-arm64@1.1.25':
+    resolution: {integrity: sha512-yO0OPjQ1lnwdLxMAtvabSp3QbCjstAP5Vb94tFK25gBBEQFPJoCt+wiUii83RWb30y+n/yMG2G87Hn6JxarPLQ==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@formatjs/cli-native-linux-arm64-musl@1.0.23':
+    resolution: {integrity: sha512-RfJwhO7KRKpfuIC/7pCdveq6lImBK+97xcsEIAdGuJCtfYTT/XtetDeMHlpxXdrUQThS+w5bFHtx1oKM8sZO8w==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@formatjs/cli-native-linux-arm64@1.2.25':
+    resolution: {integrity: sha512-Kz1sNGzqTobN9GrZDPcsvAi61yVNtpviciinlERvhRzQQtnTSGyWHwy6lEPbQddFEevQT7MQkjCtmK31+0ZlTg==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@formatjs/cli-native-linux-x64-musl@1.0.23':
+    resolution: {integrity: sha512-R6kNCmN10CmeVlj5HLjneG3elmEe8y8p0ApQ2nrHul0knpcGuWHwA/QHvHXMveaJ9HXyoJy9HFqnWM6fUZPoTg==}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@formatjs/cli-native-linux-x64@1.1.25':
+    resolution: {integrity: sha512-d+O5gzxBK+7r4iBVD0y0aqpHvaHiBCyFmQax/gBhJosl4kTb7rUBf8JiVHez/CSWToQdW2bN5jroTZuDOkQRiQ==}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@formatjs/cli-native-win32-x64@1.1.26':
+    resolution: {integrity: sha512-b1Qjot3ZaWjS7cCNEEuH4IyylXnx57idJ9yqf9y/BsVAykpiSEsq+4ZRFpMTSRNuvYNSYUsBMhYBTMZSPFemig==}
+    cpu: [x64]
+    os: [win32]
+
+  '@formatjs/cli@6.16.31':
+    resolution: {integrity: sha512-ZUFC7yl8kAG7/R/VklrwM+wrNJgLMJ8ssAl29WYaigYwWRr/twa1FJkAda6PLtGybJ1RRYAkKgSmSjqk6dgyOw==}
+    engines: {node: '>= 20.12.0'}
     hasBin: true
     peerDependencies:
       '@glimmer/env': '*'
       '@glimmer/reference': '*'
-      '@glimmer/syntax': ^0.95.0
+      '@glimmer/syntax': ^0.84.3 || ^0.95.0
       '@glimmer/validator': '*'
-      '@vue/compiler-core': ^3.5.12
-      content-tag: ^3.0.0
-      ember-template-recast: ^6.1.5
-      vue: ^3.5.12
+      '@vue/compiler-core': '3'
+      content-tag: '4'
+      vue: '3'
     peerDependenciesMeta:
       '@glimmer/env':
         optional: true
@@ -5256,50 +5289,26 @@ packages:
         optional: true
       content-tag:
         optional: true
-      ember-template-recast:
-        optional: true
       vue:
         optional: true
 
-  '@formatjs/ecma402-abstract@2.3.4':
-    resolution: {integrity: sha512-qrycXDeaORzIqNhBOx0btnhpD1c+/qFIHAN9znofuMJX6QBwtbrmlpWfD4oiUUD2vJUOIYFA/gYtg2KAMGG7sA==}
+  '@formatjs/fast-memoize@3.1.7':
+    resolution: {integrity: sha512-zXfhLpvA6T7+efdt9JLbBwZ00tT7NsBMDVnDu8rpHeNNv8KfRZAMo2gkG0k9lK/Nzc//3kJ9pImsfuJxk3KhUA==}
 
-  '@formatjs/ecma402-abstract@2.3.6':
-    resolution: {integrity: sha512-HJnTFeRM2kVFVr5gr5kH1XP6K0JcJtE7Lzvtr3FS/so5f1kpsqqqxy5JF+FRaO6H2qmcMfAUIox7AJteieRtVw==}
+  '@formatjs/icu-messageformat-parser@3.5.20':
+    resolution: {integrity: sha512-DUzCb2iskGDKvLU7P+nz/rjpmN59luoTRbWHFFNYNnZTxWCKvwPI94rNll99TGZaI6XoTbDF0QGegk21GFrQZQ==}
 
-  '@formatjs/fast-memoize@2.2.7':
-    resolution: {integrity: sha512-Yabmi9nSvyOMrlSeGGWDiH7rf3a7sIwplbvo/dlz9WCIjzIQAfy1RMf4S0X3yG724n5Ghu2GmEl5NJIV6O9sZQ==}
+  '@formatjs/icu-skeleton-parser@2.1.12':
+    resolution: {integrity: sha512-ca7tZMLpfHX3sUD7hP6gE/qr6Iq89EDd3ZLeRhbsB7r0UD55DGJq+tmFLzrGrnx5StahUevQmQQVtbDRHsfDHA==}
 
-  '@formatjs/icu-messageformat-parser@2.11.2':
-    resolution: {integrity: sha512-AfiMi5NOSo2TQImsYAg8UYddsNJ/vUEv/HaNqiFjnI3ZFfWihUtD5QtuX6kHl8+H+d3qvnE/3HZrfzgdWpsLNA==}
+  '@formatjs/intl@6.1.2':
+    resolution: {integrity: sha512-YH3Ldfa2vmavWgBlCyrT9WiobphTXlNHnHxhhB6nLSUOxmitJ6Bzqzg61uBcnc6yhKTU+YRo8hLhEatOZrVJUg==}
 
-  '@formatjs/icu-messageformat-parser@2.11.4':
-    resolution: {integrity: sha512-7kR78cRrPNB4fjGFZg3Rmj5aah8rQj9KPzuLsmcSn4ipLXQvC04keycTI1F7kJYDwIXtT2+7IDEto842CfZBtw==}
-
-  '@formatjs/icu-skeleton-parser@1.8.14':
-    resolution: {integrity: sha512-i4q4V4qslThK4Ig8SxyD76cp3+QJ3sAqr7f6q9VVfeGtxG9OhiAk3y9XF6Q41OymsKzsGQ6OQQoJNY4/lI8TcQ==}
-
-  '@formatjs/icu-skeleton-parser@1.8.16':
-    resolution: {integrity: sha512-H13E9Xl+PxBd8D5/6TVUluSpxGNvFSlN/b3coUp0e0JpuWXXnQDiavIpY3NnvSp4xhEMoXyyBvVfdFX8jglOHQ==}
-
-  '@formatjs/intl-localematcher@0.6.1':
-    resolution: {integrity: sha512-ePEgLgVCqi2BBFnTMWPfIghu6FkbZnnBVhO2sSxvLfrdFw7wCHAHiDoM2h4NRgjbaY7+B7HgOLZGkK187pZTZg==}
-
-  '@formatjs/intl-localematcher@0.6.2':
-    resolution: {integrity: sha512-XOMO2Hupl0wdd172Y06h6kLpBz6Dv+J4okPLl4LPtzbr8f66WbIoy4ev98EBuZ6ZK4h5ydTN6XneT4QVpD7cdA==}
-
-  '@formatjs/intl@3.1.6':
-    resolution: {integrity: sha512-tDkXnA4qpIFcDWac8CyVJq6oW8DR7W44QDUBsfXWIIJD/FYYen0QoH46W7XsVMFfPOVKkvbufjboZrrWbEfmww==}
+  '@formatjs/ts-transformer@4.4.22':
+    resolution: {integrity: sha512-xbRC3Cq+7UmCmA1thwvCnaZuJKay47tZ9uDi6IMA5LLxjXE7pluPJZ/uMr+7UlthxEsMKjleY1p1ifBJNhlTYA==}
+    engines: {node: '>= 20.12.0'}
     peerDependencies:
-      typescript: ^5.6.0
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
-  '@formatjs/ts-transformer@3.14.2':
-    resolution: {integrity: sha512-c47ij+2Xi4jMDO3Hz01BDF3yB4575Gkoq24sFzVw1K1kpHvITsFfdlXQbhxScBwJi2gBhMpuZ++XsTUZ9O0Law==}
-    peerDependencies:
-      ts-jest: ^29
+      ts-jest: '29'
     peerDependenciesMeta:
       ts-jest:
         optional: true
@@ -6117,6 +6126,9 @@ packages:
 
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
+
+  '@jridgewell/sourcemap-codec@1.6.0':
+    resolution: {integrity: sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw==}
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
@@ -9034,9 +9046,6 @@ packages:
   '@types/node@17.0.45':
     resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
 
-  '@types/node@22.18.6':
-    resolution: {integrity: sha512-r8uszLPpeIWbNKtvWRt/DbVi5zbqZyj1PTmhRMqBMvDnaz1QpmSKujUtJLrqGZeoM8v72MfYggDceY4K1itzWQ==}
-
   '@types/node@24.13.3':
     resolution: {integrity: sha512-Dh8vAsV36ig5wa9OX4pXvMc9D3Veibfw2wix0CUwYODLD8nkj9UsLjASr49nPg+2eKzxhBV+v7L8pXvT4e639Q==}
 
@@ -9064,8 +9073,8 @@ packages:
   '@types/pg@8.6.1':
     resolution: {integrity: sha512-1Kc4oAGzAl7uqUStZCDvaLFqZrW9qWSjXOmBfdgyBP5La7Us6Mg4GBvRlSoaZMhQF/zSj1C8CtKMBkoiT8eL8w==}
 
-  '@types/picomatch@3.0.2':
-    resolution: {integrity: sha512-n0i8TD3UDB7paoMMxA3Y65vUncFJXjcUf7lQY7YyKGl6031FNjfsLs6pdLFCy2GNFxItPJG8GvvpbZc2skH7WA==}
+  '@types/picomatch@4.0.3':
+    resolution: {integrity: sha512-iG0T6+nYJ9FAPmx9SsUlnwcq1ZVRuCXcVEvWnntoPlrOpwtSTKNDC9uVAxTsC3PUvJ+99n4RpAcNgBbHX3JSnQ==}
 
   '@types/pluralize@0.0.33':
     resolution: {integrity: sha512-JOqsl+ZoCpP4e8TDke9W79FDcSgPAR0l6pixx2JHkhnRjvShyYiAYw2LVsnA7K08Y6DeOnaU6ujmENO4os/cYg==}
@@ -9266,6 +9275,9 @@ packages:
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
     deprecated: Potential CWE-502 - Update to 1.3.1 or higher
+
+  '@unicode/unicode-17.0.0@2.0.7':
+    resolution: {integrity: sha512-XdCUsw7exiSD8QICrzwb99xx9O/e7qMx/Oew1e8MBQGavCIIR0VO6vID7OSH/wQjUjogcfydqmsuRLkGM6LfLA==}
 
   '@vitejs/plugin-react-swc@4.2.2':
     resolution: {integrity: sha512-x+rE6tsxq/gxrEJN3Nv3dIV60lFflPj94c90b+NNo6n1QV1QQUTLoL0MpaOVasUZ0zqVBn7ead1B5ecx1JAGfA==}
@@ -11453,9 +11465,6 @@ packages:
     resolution: {integrity: sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==}
     engines: {node: '>=12'}
 
-  emoji-regex@10.3.0:
-    resolution: {integrity: sha512-QpLs9D9v9kArv4lfDEgg1X/gN5XLnf/A6l9cs8SPZLRZR3ZkY9+kwIQTxm+fsSej5UMYGE8fdoaZVIBlqG0XTw==}
-
   emoji-regex@10.5.0:
     resolution: {integrity: sha512-lb49vf1Xzfx080OKA0o6l8DQQpV+6Vg95zyCJX9VB/BqKYlhG7N4wgROUUHRA+ZPUefLnteQOad7z1kT2bV7bg==}
 
@@ -11666,10 +11675,10 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
 
-  eslint-plugin-formatjs@5.4.2:
-    resolution: {integrity: sha512-IdJt/il0FASmk/aJDzl96Zh0tovm+KVhCbA5d+YC14gOpeFe1n6766JMi/RP9YOY9dhe6BbWEJnk9dPJwMMngw==}
+  eslint-plugin-formatjs@8.0.5:
+    resolution: {integrity: sha512-XV4j17kNhOqf3Vy1dgJTEMI0Bb0QG3HuP0iisY7zHhnql8iu75Zefka+wakwGPXoDrDaucJ51Lr5luQ1L9XEXg==}
     peerDependencies:
-      eslint: ^9.23.0
+      eslint: 9 || 10
 
   eslint-plugin-import@2.32.0:
     resolution: {integrity: sha512-whOE1HFo/qJDyX4SnXzP4N6zOWn79WhnCUY/iDR0mPfQZO8wcYE4JClzI2oZrhBnnMUCBCHZhO6VQyoBU95mZA==}
@@ -12884,8 +12893,8 @@ packages:
     resolution: {integrity: sha512-Ju0Bz/cEia55xDwUWEa8+olFpCiQoypjnQySseKtmjNrnps3P+xfpUmGr90T7yjlVJmOtybRvPXhKMbHr+fWnw==}
     engines: {node: '>= 0.10'}
 
-  intl-messageformat@10.7.16:
-    resolution: {integrity: sha512-UmdmHUmp5CIKKjSoE10la5yfU+AYJAaiYLsodbjL4lji83JNvgOQUjGaGhGrpFCb0Uh7sl7qfP1IyILa8Z40ug==}
+  intl-messageformat@12.1.2:
+    resolution: {integrity: sha512-Y7ZnMtT/04nVJnjf1/x/AkfP5we/iN0AhckDdlFPtnetk6/VTuj2OPW5SE7steMd3UNaOtky4KJJY6jwyvWfJg==}
 
   invariant@2.2.4:
     resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
@@ -13794,6 +13803,9 @@ packages:
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
+
+  magic-string@1.4.1:
+    resolution: {integrity: sha512-8lyCu36ErXR0J9uaGKlKQoiLZKmtI63YGLE8G2o9jyRPdr4X47LusSOwgOJOzcVtp81fTAAjxR7BwKz682Jhow==}
 
   make-dir@2.1.0:
     resolution: {integrity: sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA==}
@@ -15810,14 +15822,11 @@ packages:
     peerDependencies:
       react: '>=16.13.1'
 
-  react-intl@7.1.11:
-    resolution: {integrity: sha512-tnVoRCWvW5Ie2ikYSdPF7z3+880yCe/9xPmitFeRPw3RYDcCfR4m8ZYa4MBq19W4adt9Z+PQA4FaMBCJ7E+HCQ==}
+  react-intl@12.1.2:
+    resolution: {integrity: sha512-+vRvVasUvksPtilKw00ayU5/HrXD+/XmlN7CG5782nkK8GhUc59uw4GsAzqBkf90Ei6a+4JSAgB1AFLS7kEDDg==}
     peerDependencies:
-      react: 16 || 17 || 18 || 19
-      typescript: ^5.6.0
-    peerDependenciesMeta:
-      typescript:
-        optional: true
+      '@types/react': '>=18.0.0'
+      react: '>=18.0.0'
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -17432,9 +17441,6 @@ packages:
   unconfig@7.5.0:
     resolution: {integrity: sha512-oi8Qy2JV4D3UQ0PsopR28CzdQ3S/5A1zwsUwp/rosSbfhJ5z7b90bIyTwi/F7hCLD4SGcZVjDzd4XoUQcEanvA==}
 
-  undici-types@6.21.0:
-    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
-
   undici-types@7.18.2:
     resolution: {integrity: sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==}
 
@@ -17449,9 +17455,6 @@ packages:
   unicode-emoji-modifier-base@1.0.0:
     resolution: {integrity: sha512-yLSH4py7oFH3oG/9K+XWrz1pSi3dfUrWEnInbxMfArOfc1+33BlGPQtLsOYwvdMy11AwUBetYuaRxSPqgkq+8g==}
     engines: {node: '>=4'}
-
-  unicode-emoji-utils@1.2.0:
-    resolution: {integrity: sha512-djUB91p/6oYpgps4W5K/MAvM+UspoAANHSUW495BrxeLRoned3iNPEDQgrKx9LbLq93VhNz0NWvI61vcfrwYoA==}
 
   unicode-match-property-ecmascript@2.0.0:
     resolution: {integrity: sha512-5kaZCrbp5mmbz5ulBkDkbY0SsPOjKqVS35VpL9ulMPfSl0J0Xsm+9Evphv9CoIZFwre7aJoa94AY6seMKGVN5Q==}
@@ -21432,75 +21435,54 @@ snapshots:
 
   '@fontsource-variable/roboto-flex@5.2.8': {}
 
-  '@formatjs/cli@6.7.4(@vue/compiler-core@3.5.15)':
+  '@formatjs/cli-native-darwin-arm64@1.1.25':
+    optional: true
+
+  '@formatjs/cli-native-linux-arm64-musl@1.0.23':
+    optional: true
+
+  '@formatjs/cli-native-linux-arm64@1.2.25':
+    optional: true
+
+  '@formatjs/cli-native-linux-x64-musl@1.0.23':
+    optional: true
+
+  '@formatjs/cli-native-linux-x64@1.1.25':
+    optional: true
+
+  '@formatjs/cli-native-win32-x64@1.1.26':
+    optional: true
+
+  '@formatjs/cli@6.16.31(@vue/compiler-core@3.5.15)':
     optionalDependencies:
+      '@formatjs/cli-native-darwin-arm64': 1.1.25
+      '@formatjs/cli-native-linux-arm64': 1.2.25
+      '@formatjs/cli-native-linux-arm64-musl': 1.0.23
+      '@formatjs/cli-native-linux-x64': 1.1.25
+      '@formatjs/cli-native-linux-x64-musl': 1.0.23
+      '@formatjs/cli-native-win32-x64': 1.1.26
       '@vue/compiler-core': 3.5.15
 
-  '@formatjs/ecma402-abstract@2.3.4':
-    dependencies:
-      '@formatjs/fast-memoize': 2.2.7
-      '@formatjs/intl-localematcher': 0.6.1
-      decimal.js: 10.6.0
-      tslib: 2.8.1
+  '@formatjs/fast-memoize@3.1.7': {}
 
-  '@formatjs/ecma402-abstract@2.3.6':
+  '@formatjs/icu-messageformat-parser@3.5.20':
     dependencies:
-      '@formatjs/fast-memoize': 2.2.7
-      '@formatjs/intl-localematcher': 0.6.2
-      decimal.js: 10.6.0
-      tslib: 2.8.1
+      '@formatjs/icu-skeleton-parser': 2.1.12
 
-  '@formatjs/fast-memoize@2.2.7':
-    dependencies:
-      tslib: 2.8.1
+  '@formatjs/icu-skeleton-parser@2.1.12': {}
 
-  '@formatjs/icu-messageformat-parser@2.11.2':
+  '@formatjs/intl@6.1.2':
     dependencies:
-      '@formatjs/ecma402-abstract': 2.3.4
-      '@formatjs/icu-skeleton-parser': 1.8.14
-      tslib: 2.8.1
+      '@formatjs/fast-memoize': 3.1.7
+      '@formatjs/icu-messageformat-parser': 3.5.20
+      intl-messageformat: 12.1.2
 
-  '@formatjs/icu-messageformat-parser@2.11.4':
+  '@formatjs/ts-transformer@4.4.22':
     dependencies:
-      '@formatjs/ecma402-abstract': 2.3.6
-      '@formatjs/icu-skeleton-parser': 1.8.16
-      tslib: 2.8.1
-
-  '@formatjs/icu-skeleton-parser@1.8.14':
-    dependencies:
-      '@formatjs/ecma402-abstract': 2.3.4
-      tslib: 2.8.1
-
-  '@formatjs/icu-skeleton-parser@1.8.16':
-    dependencies:
-      '@formatjs/ecma402-abstract': 2.3.6
-      tslib: 2.8.1
-
-  '@formatjs/intl-localematcher@0.6.1':
-    dependencies:
-      tslib: 2.8.1
-
-  '@formatjs/intl-localematcher@0.6.2':
-    dependencies:
-      tslib: 2.8.1
-
-  '@formatjs/intl@3.1.6(typescript@5.9.3)':
-    dependencies:
-      '@formatjs/ecma402-abstract': 2.3.4
-      '@formatjs/fast-memoize': 2.2.7
-      '@formatjs/icu-messageformat-parser': 2.11.2
-      intl-messageformat: 10.7.16
-      tslib: 2.8.1
-    optionalDependencies:
-      typescript: 5.9.3
-
-  '@formatjs/ts-transformer@3.14.2':
-    dependencies:
-      '@formatjs/icu-messageformat-parser': 2.11.4
-      '@types/node': 22.18.6
-      chalk: 4.1.2
+      '@formatjs/icu-messageformat-parser': 3.5.20
+      '@types/babel__core': 7.20.5
+      '@types/node': 24.13.3
       json-stable-stringify: 1.3.0
-      tslib: 2.8.1
       typescript: 5.9.3
 
   '@getbrevo/brevo@5.0.4': {}
@@ -22535,6 +22517,8 @@ snapshots:
       '@jridgewell/trace-mapping': 0.3.31
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
+
+  '@jridgewell/sourcemap-codec@1.6.0': {}
 
   '@jridgewell/trace-mapping@0.3.31':
     dependencies:
@@ -25659,6 +25643,7 @@ snapshots:
     dependencies:
       '@types/react': 19.2.15
       hoist-non-react-statics: 3.3.2
+    optional: true
 
   '@types/html-minifier-terser@6.1.0': {}
 
@@ -25803,10 +25788,6 @@ snapshots:
 
   '@types/node@17.0.45': {}
 
-  '@types/node@22.18.6':
-    dependencies:
-      undici-types: 6.21.0
-
   '@types/node@24.13.3':
     dependencies:
       undici-types: 7.18.2
@@ -25843,7 +25824,7 @@ snapshots:
       pg-protocol: 1.13.0
       pg-types: 2.2.0
 
-  '@types/picomatch@3.0.2': {}
+  '@types/picomatch@4.0.3': {}
 
   '@types/pluralize@0.0.33': {}
 
@@ -26097,6 +26078,8 @@ snapshots:
       - supports-color
 
   '@ungap/structured-clone@1.2.0': {}
+
+  '@unicode/unicode-17.0.0@2.0.7': {}
 
   '@vitejs/plugin-react-swc@4.2.2(vite@7.3.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.93.0)(terser@5.46.1)(yaml@2.8.3))':
     dependencies:
@@ -28508,8 +28491,6 @@ snapshots:
 
   emittery@0.13.1: {}
 
-  emoji-regex@10.3.0: {}
-
   emoji-regex@10.5.0: {}
 
   emoji-regex@7.0.3: {}
@@ -28786,22 +28767,18 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-formatjs@5.4.2(eslint@9.39.4(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3):
+  eslint-plugin-formatjs@8.0.5(eslint@9.39.4(jiti@2.7.0)(supports-color@8.1.1)):
     dependencies:
-      '@formatjs/icu-messageformat-parser': 2.11.4
-      '@formatjs/ts-transformer': 3.14.2
-      '@types/eslint': 9.6.1
-      '@types/picomatch': 3.0.2
-      '@typescript-eslint/utils': 8.63.0(eslint@9.39.4(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
+      '@formatjs/icu-messageformat-parser': 3.5.20
+      '@formatjs/ts-transformer': 4.4.22
+      '@types/estree-jsx': 1.0.5
+      '@types/picomatch': 4.0.3
+      '@unicode/unicode-17.0.0': 2.0.7
       eslint: 9.39.4(jiti@2.7.0)(supports-color@8.1.1)
-      magic-string: 0.30.21
-      picomatch: 4.0.4
-      tslib: 2.8.1
-      unicode-emoji-utils: 1.2.0
+      magic-string: 1.4.1
+      picomatch: 4.0.7
     transitivePeerDependencies:
-      - supports-color
       - ts-jest
-      - typescript
 
   eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.63.0(eslint@9.39.4(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint@9.39.4(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1):
     dependencies:
@@ -30391,12 +30368,10 @@ snapshots:
 
   interpret@2.2.0: {}
 
-  intl-messageformat@10.7.16:
+  intl-messageformat@12.1.2:
     dependencies:
-      '@formatjs/ecma402-abstract': 2.3.4
-      '@formatjs/fast-memoize': 2.2.7
-      '@formatjs/icu-messageformat-parser': 2.11.2
-      tslib: 2.8.1
+      '@formatjs/fast-memoize': 3.1.7
+      '@formatjs/icu-messageformat-parser': 3.5.20
 
   invariant@2.2.4:
     dependencies:
@@ -31315,6 +31290,10 @@ snapshots:
   magic-string@0.30.21:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  magic-string@1.4.1:
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.6.0
 
   make-dir@2.1.0:
     dependencies:
@@ -33921,19 +33900,13 @@ snapshots:
     dependencies:
       react: 19.2.6
 
-  react-intl@7.1.11(react@19.2.6)(typescript@5.9.3):
+  react-intl@12.1.2(@types/react@19.2.15)(react@19.2.6):
     dependencies:
-      '@formatjs/ecma402-abstract': 2.3.4
-      '@formatjs/icu-messageformat-parser': 2.11.2
-      '@formatjs/intl': 3.1.6(typescript@5.9.3)
-      '@types/hoist-non-react-statics': 3.3.1
+      '@formatjs/icu-messageformat-parser': 3.5.20
+      '@formatjs/intl': 6.1.2
       '@types/react': 19.2.15
-      hoist-non-react-statics: 3.3.2
-      intl-messageformat: 10.7.16
+      intl-messageformat: 12.1.2
       react: 19.2.6
-      tslib: 2.8.1
-    optionalDependencies:
-      typescript: 5.9.3
 
   react-is@16.13.1: {}
 
@@ -35881,8 +35854,6 @@ snapshots:
       quansync: 1.0.0
       unconfig-core: 7.5.0
 
-  undici-types@6.21.0: {}
-
   undici-types@7.18.2: {}
 
   undici@7.22.0: {}
@@ -35890,10 +35861,6 @@ snapshots:
   unicode-canonical-property-names-ecmascript@2.0.0: {}
 
   unicode-emoji-modifier-base@1.0.0: {}
-
-  unicode-emoji-utils@1.2.0:
-    dependencies:
-      emoji-regex: 10.3.0
 
   unicode-match-property-ecmascript@2.0.0:
     dependencies:

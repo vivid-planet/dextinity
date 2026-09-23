@@ -12,6 +12,8 @@ Require `react-intl` v12
 
 Older `react-intl` versions declare a peer dependency on TypeScript 5, which blocks the update to TypeScript 6.
 
+`react-intl` v12 requires React 18 or later, so the admin packages drop support for React 16 and 17.
+
 `react-intl` v12 types messages created with `defineMessage` or `defineMessages`: without a type parameter, a message accepts no values. Declare the values of messages that take any:
 
 ```ts

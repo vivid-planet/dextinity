@@ -6,12 +6,12 @@ interface From {
 
 type To = From;
 
-// TipTap heading nodes are shaped like `{ type: "heading", attrs: { level: 1 }, content: [...] }`.
-// Walk the document tree and bump every level-1 heading to level 2.
+// The block's own migrations run after Dextinity's, so the nodes have their current shape here
+// whatever they were stored as.
 function changeHeading1ToHeading2(node: TipTapRichTextBlockContent): TipTapRichTextBlockContent {
     let result = node;
-    if (node.type === "heading" && node.attrs?.level === 1) {
-        result = { ...node, attrs: { ...node.attrs, level: 2 } };
+    if (node.type === "textBlock" && node.attrs?.textBlock === "heading-1") {
+        result = { ...node, attrs: { ...node.attrs, textBlock: "heading-2" } };
     }
     if (Array.isArray(result.content)) {
         result = { ...result, content: result.content.map(changeHeading1ToHeading2) };
@@ -19,9 +19,8 @@ function changeHeading1ToHeading2(node: TipTapRichTextBlockContent): TipTapRichT
     return result;
 }
 
-// `toVersion` is 2 because `migrateFromDraftJs` prepends the DraftJS->TipTap migration as version 1.
 export class Heading1ToHeading2Migration extends BlockMigration<(from: From) => To> implements BlockMigrationInterface {
-    public readonly toVersion = 2;
+    public readonly toVersion = 1;
 
     protected migrate(from: From): To {
         return { tipTapContent: changeHeading1ToHeading2(from.tipTapContent) };

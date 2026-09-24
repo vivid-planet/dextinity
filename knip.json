@@ -64,7 +64,8 @@
         },
         "packages/api/api-generator": {
             "entry": ["./src/**/__tests__/**/*.ts"],
-            "project": ["./src/**/*.{ts,tsx}"]
+            "project": ["./src/**/*.{ts,tsx}"],
+            "ignoreDependencies": ["tsconfig-paths"]
         },
         "packages/api/brevo-api": {
             "project": ["./src/**/*.{ts,tsx}"]

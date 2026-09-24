@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "baseUrl": "./",
         "declaration": true,
         "declarationMap": true,
         "esModuleInterop": true,
@@ -8,12 +7,14 @@
         "lib": ["DOM", "ES2015", "ES2016", "ES2017", "ES2018", "ES2019", "ESNext.AsyncIterable"],
         "module": "preserve",
         "moduleResolution": "bundler",
+        "noUncheckedSideEffectImports": false,
         "outDir": "lib",
         "rootDirs": ["src", ".storybook"],
         "skipLibCheck": true,
         "sourceMap": true,
         "strict": true,
-        "target": "es5"
+        "target": "ESNext",
+        "types": ["*"]
     },
     "include": ["./src", ".storybook/**/*.ts", ".storybook/**/*.tsx"]
 }

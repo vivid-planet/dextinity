@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
         "incremental": false,
-        "noEmit": true
+        "noEmit": true,
+        "rootDir": "./"
     },
     "extends": "./tsconfig.json"
 }

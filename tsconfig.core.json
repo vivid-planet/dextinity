@@ -3,6 +3,9 @@
         "module": "CommonJS",
         "declaration": true,
         "skipLibCheck": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "noUncheckedSideEffectImports": false,
+        "strict": false,
+        "types": ["*"]
     }
 }

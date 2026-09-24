@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "baseUrl": "./",
         "emitDecoratorMetadata": true,
         "esModuleInterop": true,
         "experimentalDecorators": true,
@@ -9,18 +8,22 @@
         "lib": ["ES2023"],
         "module": "nodenext",
         "moduleResolution": "nodenext",
+        "noUncheckedSideEffectImports": false,
         "outDir": "./dist",
         "paths": {
-            "@src/*": ["src/*"]
+            "@src/*": ["./src/*"]
         },
         "removeComments": true,
         "resolveJsonModule": true,
+        "rootDir": "./src",
         "skipLibCheck": true,
         "sourceMap": true,
         "strict": true,
         "strictNullChecks": true,
         "strictPropertyInitialization": false,
         "target": "ES2023",
+        "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
+        "types": ["*"],
         "useDefineForClassFields": false
     }
 }

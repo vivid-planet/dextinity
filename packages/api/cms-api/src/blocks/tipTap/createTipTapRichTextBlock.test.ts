@@ -483,6 +483,15 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(errors).toHaveLength(0);
         });
 
+        it("should accept a heading with a style", async () => {
+            const errors = await validateContent({
+                type: "textBlock",
+                attrs: { textBlock: "heading-2", textStyle: "headline450" },
+                content: [{ type: "text", text: "Styled heading" }],
+            });
+            expect(errors).toHaveLength(0);
+        });
+
         it("should accept a text block without a style", async () => {
             const errors = await validateContent({
                 type: "textBlock",
@@ -543,6 +552,22 @@ describe("createTipTapRichTextBlock validation", () => {
 
         it("should accept a style the list is configured for", async () => {
             const errors = await validateContent({ type: "orderedList", attrs: { textStyle: "copy200" }, content: [listItem("One")] });
+            expect(errors).toHaveLength(0);
+        });
+
+        it("should accept a style on a bullet list configured for it", async () => {
+            const withBulletListStyles = createTipTapRichTextBlock(
+                onlyFeatures({ unorderedList: { styles: [{ name: "copy200" }] } }),
+                "TestBulletListStyles",
+            );
+            const errors = await validate(
+                withBulletListStyles.blockInputFactory({
+                    tipTapContent: {
+                        type: "doc",
+                        content: [{ type: "bulletList", attrs: { textStyle: "copy200" }, content: [listItem("One")] }],
+                    },
+                }),
+            );
             expect(errors).toHaveLength(0);
         });
 

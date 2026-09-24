@@ -107,12 +107,38 @@ describe("convertDraftJsToTipTap", () => {
             expect(result.content).toEqual([{ type: "textBlock", attrs: { textBlock: "paragraph" } }]);
         });
 
+        it("maps a block type from textBlockMap to a paragraph with a textStyle attr", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "paragraph-small", text: "tiny" })], entityMap: {} },
+                { resolvedOptions: allEnabled, textBlockMap: { "paragraph-small": { textBlock: "paragraph", textStyle: "small" } } },
+            );
+            expect(result.content).toEqual([
+                { type: "textBlock", attrs: { textBlock: "paragraph", textStyle: "small" }, content: [{ type: "text", text: "tiny" }] },
+            ]);
+        });
+
+        it("keeps the heading level when a header type is mapped to a textStyle", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "header-two", text: "Title" })], entityMap: {} },
+                { resolvedOptions: allEnabled, textBlockMap: { "header-two": { textBlock: "heading-2", textStyle: "headline450" } } },
+            );
+            expect(result.content).toEqual([
+                {
+                    type: "textBlock",
+                    attrs: { textBlock: "heading-2", textStyle: "headline450" },
+                    content: [{ type: "text", text: "Title" }],
+                },
+            ]);
+        });
+
         it("falls back to a paragraph for a mapped header type when heading is not supported", () => {
             const result = convertDraftJsToTipTap(
                 { blocks: [makeBlock({ type: "header-two", text: "Title" })], entityMap: {} },
-                { resolvedOptions: allDisabled, textBlockMap: { "header-two": { textBlock: "heading-2" } } },
+                { resolvedOptions: allDisabled, textBlockMap: { "header-two": { textBlock: "heading-2", textStyle: "headline450" } } },
             );
-            expect(result.content).toEqual([{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Title" }] }]);
+            expect(result.content).toEqual([
+                { type: "textBlock", attrs: { textBlock: "paragraph", textStyle: "headline450" }, content: [{ type: "text", text: "Title" }] },
+            ]);
         });
 
         it("prefers the default text block over the first one sharing its tag", () => {
@@ -127,7 +153,24 @@ describe("convertDraftJsToTipTap", () => {
             expect(result.content).toEqual([{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Hello" }] }]);
         });
 
-        it("maps a custom block type to a heading text block", () => {
+        it("maps a custom block type to a heading text block with a textStyle", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "headline450", text: "Title" })], entityMap: {} },
+                {
+                    resolvedOptions: allEnabled,
+                    textBlockMap: { headline450: { textBlock: "heading-2", textStyle: "headline450" } },
+                },
+            );
+            expect(result.content).toEqual([
+                {
+                    type: "textBlock",
+                    attrs: { textBlock: "heading-2", textStyle: "headline450" },
+                    content: [{ type: "text", text: "Title" }],
+                },
+            ]);
+        });
+
+        it("maps a custom block type to a heading without a textStyle", () => {
             const result = convertDraftJsToTipTap(
                 { blocks: [makeBlock({ type: "headline450", text: "Title" })], entityMap: {} },
                 { resolvedOptions: allEnabled, textBlockMap: { headline450: { textBlock: "heading-2" } } },
@@ -146,17 +189,22 @@ describe("convertDraftJsToTipTap", () => {
         it("converts a header type to a paragraph when mapped to the paragraph text block", () => {
             const result = convertDraftJsToTipTap(
                 { blocks: [makeBlock({ type: "header-one", text: "Title" })], entityMap: {} },
-                { resolvedOptions: allEnabled, textBlockMap: { "header-one": { textBlock: "paragraph" } } },
+                { resolvedOptions: allEnabled, textBlockMap: { "header-one": { textBlock: "paragraph", textStyle: "huge" } } },
             );
-            expect(result.content).toEqual([{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Title" }] }]);
+            expect(result.content).toEqual([
+                { type: "textBlock", attrs: { textBlock: "paragraph", textStyle: "huge" }, content: [{ type: "text", text: "Title" }] },
+            ]);
         });
 
         it("keeps an empty mapped heading without inline content", () => {
             const result = convertDraftJsToTipTap(
                 { blocks: [makeBlock({ type: "headline450", text: "" })], entityMap: {} },
-                { resolvedOptions: allEnabled, textBlockMap: { headline450: { textBlock: "heading-2" } } },
+                {
+                    resolvedOptions: allEnabled,
+                    textBlockMap: { headline450: { textBlock: "heading-2", textStyle: "headline450" } },
+                },
             );
-            expect(result.content).toEqual([{ type: "textBlock", attrs: { textBlock: "heading-2" } }]);
+            expect(result.content).toEqual([{ type: "textBlock", attrs: { textBlock: "heading-2", textStyle: "headline450" } }]);
         });
     });
 

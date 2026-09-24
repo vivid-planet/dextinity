@@ -183,11 +183,11 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             {
                 textBlocks: [
                     { name: "paragraph", tag: "p", styles: [{ name: "paragraph200" }] },
-                    { name: "heading-2", tag: "h2" },
+                    { name: "heading-2", tag: "h2", styles: [{ name: "headline450" }] },
                 ],
                 migrateFromDraftJs: {
                     textBlockMap: {
-                        "headline-450": { textBlock: "heading-2" },
+                        "headline-450": { textBlock: "heading-2", textStyle: "headline450" },
                         "paragraph-small": { textBlock: "paragraph", textStyle: "paragraph200" },
                     },
                 },
@@ -195,7 +195,7 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             "MigratedRichTextTextBlockMap",
         );
 
-        it("converts a custom block type to the text block it is mapped to", () => {
+        it("converts a custom block type to a heading keeping both level and textStyle", () => {
             const data = block.blockDataFactory({
                 draftContent: {
                     blocks: [draftBlock({ type: "headline-450", text: "Title" })],
@@ -207,14 +207,14 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
                 content: [
                     {
                         type: "textBlock",
-                        attrs: { textBlock: "heading-2" },
+                        attrs: { textBlock: "heading-2", textStyle: "headline450" },
                         content: [{ type: "text", text: "Title" }],
                     },
                 ],
             });
         });
 
-        it("converts a custom block type to the style it is mapped to", () => {
+        it("converts a custom block type to a styled paragraph", () => {
             const data = block.blockDataFactory({
                 draftContent: {
                     blocks: [draftBlock({ type: "paragraph-small", text: "small" })],

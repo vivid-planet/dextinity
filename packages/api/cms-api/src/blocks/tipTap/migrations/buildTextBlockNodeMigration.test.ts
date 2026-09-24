@@ -37,6 +37,12 @@ describe("buildTextBlockNodeMigration", () => {
         );
     });
 
+    it("keeps the textStyle of a converted node", () => {
+        expect(migrate(doc({ type: "paragraph", attrs: { textStyle: "lead" }, content: text }))).toEqual(
+            doc({ type: "textBlock", attrs: { textStyle: "lead", textBlock: "paragraph" }, content: text }),
+        );
+    });
+
     it("leaves content that is already converted unchanged", () => {
         const converted = doc({ type: "textBlock", attrs: { textBlock: "heading-1" }, content: text });
 

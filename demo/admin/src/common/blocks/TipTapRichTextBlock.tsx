@@ -7,9 +7,10 @@ import { FormattedMessage } from "react-intl";
 
 import { LinkBlock } from "./LinkBlock";
 
-// One style set per typography scale, shared by the text blocks it applies to: the style renders
-// the tag it is handed, so the same "Eyebrow" reads as an h2 on one text block and an h3 on another.
-const copyStyles: TipTapTextBlockStyle[] = [
+// The styles the site resolves to its typography, named after the variant they stand for. One set
+// serves several text blocks: the style renders the tag it is handed, so it reads as a `p` on the
+// paragraph and as the matching heading elsewhere.
+const paragraphStyles: TipTapTextBlockStyle[] = [
     {
         name: "paragraph300",
         label: <FormattedMessage id="tipTapRichTextBlock.style.paragraph300" defaultMessage="Paragraph" />,
@@ -20,18 +21,38 @@ const copyStyles: TipTapTextBlockStyle[] = [
         label: <FormattedMessage id="tipTapRichTextBlock.style.paragraph200" defaultMessage="Paragraph Small" />,
         element: (props, Tag) => <Tag style={{ fontSize: 15, lineHeight: "22px" }} {...props} />,
     },
-];
-
-const eyebrowStyles: TipTapTextBlockStyle[] = [
+    {
+        name: "eyebrow600",
+        label: <FormattedMessage id="tipTapRichTextBlock.style.eyebrow600" defaultMessage="Eyebrow 600" />,
+        element: (props, Tag) => <Tag style={{ fontSize: 30, lineHeight: "30px" }} {...props} />,
+    },
+    {
+        name: "eyebrow550",
+        label: <FormattedMessage id="tipTapRichTextBlock.style.eyebrow550" defaultMessage="Eyebrow 550" />,
+        element: (props, Tag) => <Tag style={{ fontSize: 26, lineHeight: "26px" }} {...props} />,
+    },
     {
         name: "eyebrow500",
-        label: <FormattedMessage id="tipTapRichTextBlock.style.eyebrow500" defaultMessage="Eyebrow" />,
-        element: (props, Tag) => <Tag style={{ fontSize: 22, lineHeight: "22px", textTransform: "uppercase" }} {...props} />,
+        label: <FormattedMessage id="tipTapRichTextBlock.style.eyebrow500" defaultMessage="Eyebrow 500" />,
+        element: (props, Tag) => <Tag style={{ fontSize: 22, lineHeight: "22px" }} {...props} />,
     },
     {
         name: "eyebrow450",
-        label: <FormattedMessage id="tipTapRichTextBlock.style.eyebrow450" defaultMessage="Eyebrow Small" />,
-        element: (props, Tag) => <Tag style={{ fontSize: 18, lineHeight: "18px", textTransform: "uppercase" }} {...props} />,
+        label: <FormattedMessage id="tipTapRichTextBlock.style.eyebrow450" defaultMessage="Eyebrow 450" />,
+        element: (props, Tag) => <Tag style={{ fontSize: 18, lineHeight: "18px" }} {...props} />,
+    },
+];
+
+const listStyles: TipTapTextBlockStyle[] = [
+    {
+        name: "list300",
+        label: <FormattedMessage id="tipTapRichTextBlock.style.list300" defaultMessage="List" />,
+        element: (props, Tag) => <Tag style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
+    },
+    {
+        name: "list200",
+        label: <FormattedMessage id="tipTapRichTextBlock.style.list200" defaultMessage="List Small" />,
+        element: (props, Tag) => <Tag style={{ fontSize: 15, lineHeight: "22px" }} {...props} />,
     },
 ];
 
@@ -48,7 +69,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
             name: "paragraph",
             tag: "p",
             label: <FormattedMessage id="tipTapRichTextBlock.textBlock.paragraph" defaultMessage="Paragraph" />,
-            styles: copyStyles,
+            styles: paragraphStyles,
         },
         {
             name: "display",
@@ -61,19 +82,17 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
             name: "heading-2",
             tag: "h2",
             label: <FormattedMessage id="tipTapRichTextBlock.textBlock.heading2" defaultMessage="Heading 2" />,
-            styles: eyebrowStyles,
         },
         {
             name: "heading-3",
             tag: "h3",
             label: <FormattedMessage id="tipTapRichTextBlock.textBlock.heading3" defaultMessage="Heading 3" />,
-            styles: eyebrowStyles,
         },
         { name: "heading-4", tag: "h4", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.heading4" defaultMessage="Heading 4" /> },
         { name: "heading-5", tag: "h5", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.heading5" defaultMessage="Heading 5" /> },
     ],
-    orderedList: { styles: copyStyles },
-    unorderedList: { styles: copyStyles },
+    orderedList: { styles: listStyles },
+    unorderedList: { styles: listStyles },
     inlineStyles: [
         {
             name: "highlight",

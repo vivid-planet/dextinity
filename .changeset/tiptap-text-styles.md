@@ -17,6 +17,11 @@ const copyStyles: TipTapTextBlockStyle[] = [
     { name: "copy200", label: "Copy Small", element: (props, Tag) => <Tag className={styles.copy200} {...props} /> },
 ];
 
+const headlineStyles: TipTapTextBlockStyle[] = [
+    { name: "headline450", label: "Headline 450", element: (props, Tag) => <Tag className={styles.headline450} {...props} /> },
+    { name: "headline300", label: "Headline 300", element: (props, Tag) => <Tag className={styles.headline300} {...props} /> },
+];
+
 createTipTapRichTextBlock({
     textBlocks: [
         { name: "paragraph", tag: "p", label: "Paragraph", styles: copyStyles },

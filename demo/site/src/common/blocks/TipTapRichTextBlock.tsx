@@ -32,15 +32,10 @@ const textBlockToVariant: Record<string, TypographyVariant> = {
     "heading-5": "headline350",
 };
 
-const textStyleToVariant: Record<string, TypographyVariant> = {
-    paragraph300: "paragraph300",
-    paragraph200: "paragraph200",
-    eyebrow500: "eyebrow500",
-    eyebrow450: "eyebrow450",
-};
-
+// The block names its styles after the typography variant they stand for, so the style is the
+// variant. A text block without one falls back to the typography its own name implies.
 const variantOf = (node?: TipTapNode): TypographyVariant =>
-    textStyleToVariant[node?.attrs?.textStyle as string] ?? textBlockToVariant[node?.attrs?.textBlock as string];
+    (node?.attrs?.textStyle as TypographyVariant | null) ?? textBlockToVariant[node?.attrs?.textBlock as string];
 
 const renderCmsBlock: TipTapNodeHandler = ({ node }) => {
     if (node.attrs?.blockType === "productPrice") {

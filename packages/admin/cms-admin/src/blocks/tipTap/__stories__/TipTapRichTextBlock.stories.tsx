@@ -11,10 +11,10 @@ import {
     type TipTapTextBlockStyle,
 } from "../createTipTapRichTextBlock";
 
-const defaultHeadingTextBlocks: TipTapTextBlock[] = [1, 2, 3, 4, 5, 6].map((level) => ({
+const defaultHeadingTextBlocks: TipTapTextBlock[] = ([1, 2, 3, 4, 5, 6] as const).map((level) => ({
     name: `heading-${level}`,
     label: `Heading ${level}`,
-    tag: `h${level}` as "h1",
+    tag: `h${level}` as const,
 }));
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {

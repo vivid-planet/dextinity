@@ -30,15 +30,11 @@ describe("createTipTapRichTextBlock", () => {
         ).toThrow();
     });
 
-    it("should throw when a text block offers the same style twice, because a style's name identifies it", () => {
+    it("should throw when a text block or a list offers the same style twice, because a style's name identifies it", () => {
         const style = { name: "copy100", label: "Copy 100", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
         expect(() =>
             createTipTapRichTextBlock({ textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [style, style] }] }),
         ).toThrow();
-    });
-
-    it("should throw when a list offers the same style twice", () => {
-        const style = { name: "list300", label: "List", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
         expect(() => createTipTapRichTextBlock({ orderedList: { styles: [style, style] } })).toThrow();
     });
 

@@ -1435,16 +1435,13 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(() => createTipTapRichTextBlock({ textBlocks: [] }, "TestEmptyTextBlocks")).toThrow();
         });
 
-        it("should throw when a text block offers the same style twice, because a style's name identifies it", () => {
+        it("should throw when a text block or a list offers the same style twice, because a style's name identifies it", () => {
             expect(() =>
                 createTipTapRichTextBlock(
                     { textBlocks: [{ name: "paragraph", tag: "p", styles: [{ name: "copy100" }, { name: "copy100" }] }] },
                     "TestDuplicateStyle",
                 ),
             ).toThrow();
-        });
-
-        it("should throw when a list offers the same style twice", () => {
             expect(() =>
                 createTipTapRichTextBlock({ orderedList: { styles: [{ name: "list300" }, { name: "list300" }] } }, "TestDuplicateListStyle"),
             ).toThrow();

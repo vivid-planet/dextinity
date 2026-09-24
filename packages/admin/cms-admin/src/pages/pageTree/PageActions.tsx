@@ -115,7 +115,7 @@ export default function PageActions({ page, editDialog, children, siteUrl }: Pro
                             key="copyUrl"
                             icon={<Domain />}
                             onClick={() => {
-                                writeClipboardText(`${siteUrl}${page.path}`);
+                                void writeClipboardText(`${siteUrl}${page.path}`);
                             }}
                         >
                             <FormattedMessage id="dextinity.pages.pages.page.copyUrl" defaultMessage="Copy URL" />

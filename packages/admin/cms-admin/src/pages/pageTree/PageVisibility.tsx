@@ -45,7 +45,7 @@ const PageVisibility = ({ page }: PageVisibilityProps) => {
     };
 
     const updatePageVisibilityRequest = (page: GQLPageTreePageFragment, visibility: GQLPageTreeNodeVisibility) => {
-        updatePageVisibility({
+        void updatePageVisibility({
             variables: {
                 id: page.id,
                 input: { visibility },

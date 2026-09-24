@@ -158,7 +158,7 @@ export function AddContactsGridSelect({ id, scope, assignedContactsTargetGroupBr
         if (!id) {
             return;
         }
-        removeContacts({ variables: { id, input: { brevoContactId: contactId } } });
+        void removeContacts({ variables: { id, input: { brevoContactId: contactId } } });
     };
 
     const {

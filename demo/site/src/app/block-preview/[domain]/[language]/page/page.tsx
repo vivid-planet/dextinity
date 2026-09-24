@@ -31,7 +31,7 @@ export default withBlockPreview(() => {
             });
             setBlockData(newData);
         }
-        load();
+        void load();
     }, [iFrameBridge.block, iFrameBridge.contentScope]);
 
     return <div>{blockData && <PageContentBlock data={blockData} />}</div>;

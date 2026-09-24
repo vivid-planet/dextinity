@@ -31,4 +31,4 @@ async function bootstrap() {
     replContext.orm = orm;
     replContext.em = orm.em.fork();
 }
-bootstrap();
+void bootstrap();

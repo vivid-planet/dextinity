@@ -160,6 +160,42 @@ If your project has to keep its own consumer, handle the new kind wherever you s
   }
 ```
 
+### Create the page tree node entity with `createPageTreeNodeEntity`
+
+`PageTreeNodeBase` no longer defines the `parent` relation, because the relation has to reference your concrete page tree node entity. Create the entity with `createPageTreeNodeEntity` instead of extending `PageTreeNodeBase`. The factory defines the `parent` relation, the `scope` and the `category`, and names the entity and its GraphQL type `PageTreeNode`.
+
+Move every other property of your entity into an abstract entity that extends `PageTreeNodeBase`, and pass it as `Base`. Omit `Base` if your entity only defines `scope`, `parent` and `category`:
+
+```diff title="api/src/page-tree/entities/page-tree-node.entity.ts"
+- @Entity({ tableName: PageTreeNodeBase.tableName })
+- @ObjectType("PageTreeNode")
+- export class PageTreeNode extends PageTreeNodeBase {
+-     @Embedded(() => PageTreeNodeScope)
+-     @Field(() => PageTreeNodeScope)
+-     scope: PageTreeNodeScope;
+-
+-     @ManyToOne(() => PageTreeNode, { nullable: true, joinColumn: "parentId" })
+-     @Index()
+-     parent?: PageTreeNode;
+-
+-     @Enum({ items: () => PageTreeNodeCategory })
+-     @Field(() => PageTreeNodeCategory)
+-     category: PageTreeNodeCategory;
+-
++ @Entity({ abstract: true })
++ @ObjectType({ isAbstract: true })
++ abstract class PageTreeNodeWithUserGroup extends PageTreeNodeBase {
+      @Enum({ items: () => UserGroup })
+      @Field(() => UserGroup, { defaultValue: UserGroup.all })
+      userGroup: UserGroup;
+  }
++
++ export const PageTreeNode = createPageTreeNodeEntity({ Base: PageTreeNodeWithUserGroup, Scope: PageTreeNodeScope, Category: PageTreeNodeCategory });
++ export type PageTreeNode = InstanceType<typeof PageTreeNode>;
+```
+
+`Category` must be an enum registered with `registerEnumType`. The database schema doesn't change, so no migration is needed.
+
 ## Agent features
 
 ### Get the `dev-pm` skill from `dev-process-manager`

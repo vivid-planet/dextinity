@@ -15,16 +15,6 @@ export interface TipTapTextBlockStyle {
     name: string;
 }
 
-/**
- * How a text block (or a list) is rendered: either through the `styles` it lets the editor choose
- * from, or - for one that needs no style choice - through a single `element` of its own. The two
- * exclude each other, and leaving both out renders the plain tag.
- */
-export type TipTapStyling<Style extends TipTapTextBlockStyle, Element> =
-    | { styles: Style[]; element?: never }
-    | { element: Element; styles?: never }
-    | { styles?: never; element?: never };
-
 export interface TipTapTextBlockBase {
     /**
      * Identifies the text block. Stored in the content's `textBlock` attribute, so content can tell
@@ -37,9 +27,9 @@ export interface TipTapTextBlockBase {
     tag: TipTapTextBlockTag;
 }
 
-// The API doesn't render, so its `element` carries no information - it only records that the text
-// block has one instead of a style choice, to keep both configurations the same shape.
-export type TipTapTextBlock = TipTapTextBlockBase & TipTapStyling<TipTapTextBlockStyle, true>;
+// The API doesn't render, so a text block that needs no style choice - which carries its own
+// `element` in the Admin - is configured here by leaving `styles` out.
+export type TipTapTextBlock = TipTapTextBlockBase & { styles?: TipTapTextBlockStyle[] };
 
 export interface TipTapResolvedTextBlock extends TipTapTextBlockBase {
     /**

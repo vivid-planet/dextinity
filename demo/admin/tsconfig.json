@@ -3,6 +3,7 @@
         "allowSyntheticDefaultImports": true,
         "baseUrl": "./",
         "esModuleInterop": true,
+        "ignoreDeprecations": "6.0",
         "inlineSources": true,
         "jsx": "react-jsx",
         "jsxImportSource": "@emotion/react",
@@ -10,14 +11,17 @@
         "moduleResolution": "bundler",
         "noEmit": true,
         "noImplicitAny": true,
+        "noUncheckedSideEffectImports": false,
         "paths": {
             "@src/*": ["src/*"]
         },
         "resolveJsonModule": true,
         "skipLibCheck": true,
         "sourceMap": true,
+        "strict": false,
         "strictNullChecks": true,
-        "target": "ESNext"
+        "target": "ESNext",
+        "types": ["*"]
     },
     "include": ["src/**/*"],
     "ts-node": {

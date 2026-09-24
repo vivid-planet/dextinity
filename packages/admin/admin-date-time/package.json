@@ -64,7 +64,7 @@
         "react-final-form": "^6.5.9",
         "react-intl": "^12.1.2",
         "rimraf": "^6.1.2",
-        "typescript": "^5.9.3"
+        "typescript": "^6.0.3"
     },
     "peerDependencies": {
         "@mui/material": "^7.0.0",

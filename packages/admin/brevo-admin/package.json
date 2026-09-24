@@ -81,7 +81,7 @@
         "react-intl": "^12.1.2",
         "react-router": "^5.3.4",
         "react-router-dom": "^5.3.4",
-        "typescript": "^5.9.3"
+        "typescript": "^6.0.3"
     },
     "peerDependencies": {
         "@apollo/client": "^3.7.0",

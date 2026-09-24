@@ -8,11 +8,13 @@
         "lib": ["ES2023"],
         "outDir": "./lib",
         "removeComments": true,
+        "rootDir": "./src",
         "sourceMap": true,
         "strict": true,
         "strictNullChecks": true,
         "strictPropertyInitialization": false,
-        "target": "ES2023"
+        "target": "ES2023",
+        "tsBuildInfoFile": "./lib/tsconfig.tsbuildinfo"
     },
     "exclude": ["node_modules", "lib"],
     "extends": "../tsconfig.base.json",

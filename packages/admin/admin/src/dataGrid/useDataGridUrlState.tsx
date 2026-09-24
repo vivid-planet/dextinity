@@ -1,6 +1,6 @@
 import type { DataGridProps, GridFilterModel, GridPaginationModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
 import type { GridCallbackDetails } from "@mui/x-data-grid/models/api";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import queryString from "query-string";
 import { useCallback, useRef, useState } from "react";
 import { useHistory, useLocation } from "react-router";
@@ -119,7 +119,7 @@ export function useDataGridUrlState({
 
 function useDeepEqualMemo<T>(value: T): T {
     const ref = useRef(value);
-    if (!isEqual(ref.current, value)) {
+    if (!deepEqual(ref.current, value)) {
         ref.current = value;
     }
     return ref.current;

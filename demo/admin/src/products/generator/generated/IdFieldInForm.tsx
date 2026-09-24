@@ -36,7 +36,7 @@ import { updateProductMutation } from "./IdFieldInForm.gql";
 import { GQLUpdateProductMutation } from "./IdFieldInForm.gql.generated";
 import { GQLUpdateProductMutationVariables } from "./IdFieldInForm.gql.generated";
 import { GQLProductMutationErrorCode } from "@src/graphql.generated";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 const rootBlocks = {
     image: DamImageBlock,
 };
@@ -139,7 +139,7 @@ export function IdFieldInForm({ onCreate, id, type, slug }: FormProps) {
             onSubmit={handleSubmit}
             mode={mode}
             initialValues={initialValues}
-            initialValuesEqual={isEqual} //required to compare block data correctly
+            initialValuesEqual={deepEqual} //required to compare block data correctly
             subscription={{}}
         >
             {() => (
@@ -169,7 +169,7 @@ export function IdFieldInForm({ onCreate, id, type, slug }: FormProps) {
                         />
                         <Field
                             name="image"
-                            isEqual={isEqual}
+                            isEqual={deepEqual}
                             label={<FormattedMessage id="product.image" defaultMessage="Image" />}
                             variant="horizontal"
                             fullWidth

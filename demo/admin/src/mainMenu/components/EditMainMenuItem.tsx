@@ -29,7 +29,7 @@ import {
 } from "@dextinity/cms-admin";
 import { Box } from "@mui/material";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useRouteMatch } from "react-router-dom";
@@ -93,7 +93,7 @@ const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
     }, [item]);
 
     useEffect(() => {
-        const equal = isEqual(referenceContent, content ? RichTextBlock.state2Output(content) : null);
+        const equal = deepEqual(referenceContent, content ? RichTextBlock.state2Output(content) : null);
         setHasChanges(!equal);
     }, [content, referenceContent]);
     let previewState = undefined;

@@ -260,7 +260,7 @@ export function generateFormField({
             formValueConfig.defaultInitializationCode = `new Date("${config.initialValue.toISOString()}")`;
         }
     } else if (config.type == "block") {
-        code = `<Field name="${nameWithPrefix}" isEqual={isEqual} label={${fieldLabel}} variant="horizontal" fullWidth>
+        code = `<Field name="${nameWithPrefix}" isEqual={deepEqual} label={${fieldLabel}} variant="horizontal" fullWidth>
             {createFinalFormBlock(rootBlocks.${String(config.name)})}
         </Field>`;
         formValueConfig.formValueToGqlInputCode = `rootBlocks.${name}.state2Output($fieldName)`;

@@ -34,7 +34,7 @@ import { GQLCreateNewsMutationVariables } from "./NewsForm.gql.generated";
 import { updateNewsMutation } from "./NewsForm.gql";
 import { GQLUpdateNewsMutation } from "./NewsForm.gql.generated";
 import { GQLUpdateNewsMutationVariables } from "./NewsForm.gql.generated";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 const rootBlocks = {
     image: DamImageBlock,
     content: NewsContentBlock,
@@ -121,7 +121,7 @@ export function NewsForm({ onCreate, id }: FormProps) {
             onSubmit={handleSubmit}
             mode={mode}
             initialValues={initialValues}
-            initialValuesEqual={isEqual} //required to compare block data correctly
+            initialValuesEqual={deepEqual} //required to compare block data correctly
             subscription={{}}
         >
             {() => (
@@ -174,7 +174,7 @@ export function NewsForm({ onCreate, id }: FormProps) {
                         />
                         <Field
                             name="image"
-                            isEqual={isEqual}
+                            isEqual={deepEqual}
                             label={<FormattedMessage id="news.image" defaultMessage="Image" />}
                             variant="horizontal"
                             fullWidth
@@ -183,7 +183,7 @@ export function NewsForm({ onCreate, id }: FormProps) {
                         </Field>
                         <Field
                             name="content"
-                            isEqual={isEqual}
+                            isEqual={deepEqual}
                             label={<FormattedMessage id="news.content" defaultMessage="Content" />}
                             variant="horizontal"
                             fullWidth

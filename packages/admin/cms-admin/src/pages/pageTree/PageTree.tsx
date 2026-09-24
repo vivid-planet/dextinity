@@ -1,7 +1,7 @@
 import { gql, type ObservableQuery, useApolloClient } from "@apollo/client";
 import { type IEditDialogApi, UndoSnackbar, useSnackbarApi } from "@dextinity/admin";
 import { styled } from "@mui/material/styles";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import {
     type Dispatch,
     forwardRef,
@@ -138,7 +138,7 @@ const PageTree: ForwardRefRenderFunction<PageTreeRefApi, PageTreeProps> = (
     const debouncedSetHoverState = useDebouncedCallback(
         (setHoverState: Dispatch<SetStateAction<DropInfo | undefined>>, newHoverState: DropInfo | undefined) => {
             setHoverState((prevState) => {
-                if (isEqual(newHoverState, prevState)) {
+                if (deepEqual(newHoverState, prevState)) {
                     return prevState;
                 } else {
                     return newHoverState;

@@ -9,7 +9,7 @@ import {
     Modifier,
     type RawDraftContentState,
 } from "draft-js";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 
 import type { RichTextBlockData, RichTextBlockInput } from "../blocks.generated";
@@ -42,7 +42,7 @@ export const isRichTextEqual = (a?: RichTextBlockState, b?: RichTextBlockState):
     } else if (!a?.editorState || !b?.editorState) {
         return false;
     } else {
-        return isEqual(convertStateToRawContent(a.editorState), convertStateToRawContent(b.editorState));
+        return deepEqual(convertStateToRawContent(a.editorState), convertStateToRawContent(b.editorState));
     }
 };
 

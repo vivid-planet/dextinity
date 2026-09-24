@@ -1,4 +1,4 @@
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { Field, useForm, useFormState } from "react-final-form";
 import ReactCrop, { type ReactCropProps } from "react-image-crop";
 
@@ -31,7 +31,7 @@ export const ImageCrop = (props: ImageCropProps) => {
     };
 
     return (
-        <Field name="crop" isEqual={isEqual}>
+        <Field name="crop" isEqual={deepEqual}>
             {({ input: { value, onChange } }) => (
                 <sc.ImageContainer>
                     <ReactCrop

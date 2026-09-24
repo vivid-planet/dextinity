@@ -7,7 +7,7 @@ import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import { EditorContent, type JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import {
     type ComponentType,
     type ForwardRefExoticComponent,
@@ -693,7 +693,7 @@ export const TipTapEditor = ({
 
         contentEmittedByEditor.current.length = 0;
 
-        if (isEqual(state.tipTapContent, editor.getJSON())) {
+        if (deepEqual(state.tipTapContent, editor.getJSON())) {
             return;
         }
 

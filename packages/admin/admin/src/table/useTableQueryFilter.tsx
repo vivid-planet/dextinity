@@ -1,6 +1,6 @@
+import { deepEqual } from "fast-equals";
 import { createForm, type FormApi } from "final-form";
 import debounce from "lodash.debounce";
-import isEqual from "lodash.isequal";
 import { useEffect, useRef } from "react";
 
 import { usePersistedState } from "./usePersistedState";
@@ -44,7 +44,7 @@ export function useTableQueryFilter<FilterValues>(
             debounce(
                 (formState) => {
                     const newValues = formState.values;
-                    if (!isEqual(filters, newValues)) {
+                    if (!deepEqual(filters, newValues)) {
                         setFilters(newValues);
                         if (options.pagingApi) {
                             options.pagingApi.changePage(options.pagingApi.init, 1, { noScrollToTop: true });

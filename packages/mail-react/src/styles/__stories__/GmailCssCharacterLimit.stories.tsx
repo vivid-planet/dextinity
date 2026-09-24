@@ -183,14 +183,14 @@ const aboveLimitHeadCssLength = measureHeadCssLength(<CssCharacterLimitMail them
 
 export const BelowCssCharacterLimit: Story = {
     render: () => <CssCharacterLimitMail theme={trimmedTheme} headCssLength={trimmedHeadCssLength} />,
-    play: () => {
-        expect(trimmedHeadCssLength).toBeLessThanOrEqual(gmailCssCharacterLimit);
+    play: async () => {
+        await expect(trimmedHeadCssLength).toBeLessThanOrEqual(gmailCssCharacterLimit);
     },
 };
 
 export const AboveCssCharacterLimit: Story = {
     render: () => <CssCharacterLimitMail theme={aboveLimitTheme} headCssLength={aboveLimitHeadCssLength} />,
-    play: () => {
-        expect(aboveLimitHeadCssLength).toBeGreaterThan(gmailCssCharacterLimit);
+    play: async () => {
+        await expect(aboveLimitHeadCssLength).toBeGreaterThan(gmailCssCharacterLimit);
     },
 };

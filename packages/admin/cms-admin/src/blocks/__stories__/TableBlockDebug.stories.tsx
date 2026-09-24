@@ -45,6 +45,8 @@ export const ToolbarStaysAtTopOfCellEditor: Story = {
 
         within(cellEditor).getByRole("textbox").scrollIntoView({ block: "end" });
 
-        expect(cellEditor.querySelector(".DextinityAdminRteToolbar-root")?.getBoundingClientRect().top).toBe(cellEditor.getBoundingClientRect().top);
+        await expect(cellEditor.querySelector(".DextinityAdminRteToolbar-root")?.getBoundingClientRect().top).toBe(
+            cellEditor.getBoundingClientRect().top,
+        );
     },
 };

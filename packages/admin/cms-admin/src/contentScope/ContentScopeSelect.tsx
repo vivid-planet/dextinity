@@ -53,7 +53,9 @@ export function ContentScopeSelect({
     const [searchValue, setSearchValue] = useState<string>("");
     const theme = useTheme();
 
-    const hasMultipleDimensions = options.some((option) => Object.keys(option.scope).length > 1);
+    // Grouping indexes into each option's scope by the groupBy dimension, so it's only safe when every
+    // option actually has more than one dimension - a mix of shapes would leave some options ungroupable.
+    const hasMultipleDimensions = options.length > 0 && options.every((option) => Object.keys(option.scope).length > 1);
 
     let filteredOptions = options;
 

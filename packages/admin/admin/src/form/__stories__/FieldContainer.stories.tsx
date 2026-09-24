@@ -35,6 +35,14 @@ export const FieldContainer = () => {
                         <TextField name="textFieldWithLabelTwo" label="TextField label" variant="vertical" />
                         <TextField name="testWithoutLabel" variant="vertical" placeholder="TextField without label" />
                     </FieldSet>
+                    <FieldSet title="INFO TOOLTIP">
+                        <TextField name="textFieldWithTooltip" label="TextField label" infoTooltip="Additional info about this field" />
+                        <TextField
+                            name="textFieldWithTooltipTitleAndDescription"
+                            label="TextField label"
+                            infoTooltip={{ title: "Title", description: "Additional info about this field" }}
+                        />
+                    </FieldSet>
                 </form>
             )}
         />

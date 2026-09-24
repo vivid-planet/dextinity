@@ -1,5 +1,5 @@
 import type { FieldValidator } from "final-form";
-import { type ComponentType, createElement, type ReactNode, useRef } from "react";
+import { type ComponentProps, type ComponentType, createElement, type ReactNode, useRef } from "react";
 import { Field as FinalFormField, type FieldMetaState, type FieldRenderProps, FormSpy, useForm } from "react-final-form";
 import { FormattedMessage } from "react-intl";
 
@@ -26,6 +26,7 @@ export interface FieldProps<FieldValue = any, T extends HTMLElement = HTMLElemen
     name: string;
     label?: ReactNode;
     helperText?: ReactNode;
+    infoTooltip?: ComponentProps<typeof FieldContainer>["infoTooltip"];
     component?: ComponentType<any> | string;
     children?: (props: FieldRenderProps<FieldValue, T>) => ReactNode;
     required?: boolean;
@@ -45,6 +46,7 @@ export function Field<FieldValue = any, FieldElement extends HTMLElement = HTMLE
     name,
     label,
     helperText,
+    infoTooltip,
     required,
     validate,
     validateWarning,
@@ -91,6 +93,7 @@ export function Field<FieldValue = any, FieldElement extends HTMLElement = HTMLE
                 error={shouldShowError(meta) && (meta.error || meta.submitError)}
                 warning={shouldShowWarning(meta) && meta.data?.warning}
                 helperText={helperText}
+                infoTooltip={infoTooltip}
                 variant={variant}
                 fullWidth={fullWidth}
                 scrollTo={shouldScrollToField(meta)}

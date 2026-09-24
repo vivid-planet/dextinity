@@ -44,4 +44,6 @@ export class Dependency implements BaseDependencyInterface {
 
     @Field({ nullable: true })
     secondaryInformation?: string;
+
+    context: "dependencies" | "dependents";
 }

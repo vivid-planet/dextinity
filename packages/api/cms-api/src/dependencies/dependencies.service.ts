@@ -441,6 +441,7 @@ export class DependenciesService {
     private mapToResult(entity: BlockIndexDependencyObject, context: "dependencies" | "dependents"): Dependency {
         const result = new Dependency();
         Object.assign(result, entity);
+        result.context = context;
         result.name = context === "dependents" ? entity.rootName : entity.targetName;
         result.secondaryInformation = context === "dependents" ? entity.rootSecondaryInformation : entity.targetSecondaryInformation;
         return result;

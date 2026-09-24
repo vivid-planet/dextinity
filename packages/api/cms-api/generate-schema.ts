@@ -27,6 +27,7 @@ import { GenerateImageTitleResolver } from "./src/content-generation/generate-im
 import { GenerateSeoTagsResolver } from "./src/content-generation/generate-seo-tags.resolver";
 import { CronJobsResolver } from "./src/cron-jobs/cron-jobs.resolver";
 import { JobsResolver } from "./src/cron-jobs/jobs.resolver";
+import { DependencyResolver } from "./src/dependencies/dependency.resolver";
 import { createDamItemsResolver } from "./src/dam/files/dam-items.resolver";
 import { createDamMediaAlternativeResolver } from "./src/dam/files/dam-media-alternatives/dam-media-alternative.resolver";
 import { createFileEntity } from "./src/dam/files/entities/file.entity";
@@ -118,6 +119,7 @@ async function generateSchema(): Promise<void> {
         RedirectsDependenciesResolver,
         PageTreeDependentsResolver,
         FileDependentsResolver,
+        DependencyResolver,
         UserResolver,
         UserPermissionResolver,
         UserContentScopesResolver,

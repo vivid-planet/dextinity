@@ -7,39 +7,6 @@ import { FormattedMessage } from "react-intl";
 
 import { LinkBlock } from "./LinkBlock";
 
-const paragraphStyles: TipTapTextBlockStyle[] = [
-    {
-        name: "paragraph300",
-        label: <FormattedMessage id="tipTapRichTextBlock.paragraph300" defaultMessage="Paragraph" />,
-        element: (props) => <p style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
-    },
-    {
-        name: "paragraph200",
-        label: <FormattedMessage id="tipTapRichTextBlock.paragraph200" defaultMessage="Paragraph Small" />,
-        element: (props) => <p style={{ fontSize: 15, lineHeight: "22px" }} {...props} />,
-    },
-    {
-        name: "eyebrow600",
-        label: <FormattedMessage id="tipTapRichTextBlock.eyebrow600" defaultMessage="Eyebrow 600" />,
-        element: (props) => <p style={{ fontSize: 30, lineHeight: "30px" }} {...props} />,
-    },
-    {
-        name: "eyebrow550",
-        label: <FormattedMessage id="tipTapRichTextBlock.eyebrow550" defaultMessage="Eyebrow 550" />,
-        element: (props) => <p style={{ fontSize: 26, lineHeight: "26px" }} {...props} />,
-    },
-    {
-        name: "eyebrow500",
-        label: <FormattedMessage id="tipTapRichTextBlock.eyebrow500" defaultMessage="Eyebrow 500" />,
-        element: (props) => <p style={{ fontSize: 22, lineHeight: "22px" }} {...props} />,
-    },
-    {
-        name: "eyebrow450",
-        label: <FormattedMessage id="tipTapRichTextBlock.eyebrow450" defaultMessage="Eyebrow 450" />,
-        element: (props) => <p style={{ fontSize: 18, lineHeight: "18px" }} {...props} />,
-    },
-];
-
 // Shared by both list types, so a list item's content offers the same styles either way.
 const listStyles: TipTapTextBlockStyle[] = [
     {
@@ -67,7 +34,38 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
             name: "paragraph",
             tag: "p",
             label: <FormattedMessage id="tipTapRichTextBlock.textBlock.paragraph" defaultMessage="Paragraph" />,
-            styles: paragraphStyles,
+            styles: [
+                {
+                    name: "paragraph300",
+                    label: <FormattedMessage id="tipTapRichTextBlock.paragraph300" defaultMessage="Paragraph" />,
+                    element: (props) => <p style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
+                },
+                {
+                    name: "paragraph200",
+                    label: <FormattedMessage id="tipTapRichTextBlock.paragraph200" defaultMessage="Paragraph Small" />,
+                    element: (props) => <p style={{ fontSize: 15, lineHeight: "22px" }} {...props} />,
+                },
+                {
+                    name: "eyebrow600",
+                    label: <FormattedMessage id="tipTapRichTextBlock.eyebrow600" defaultMessage="Eyebrow 600" />,
+                    element: (props) => <p style={{ fontSize: 30, lineHeight: "30px" }} {...props} />,
+                },
+                {
+                    name: "eyebrow550",
+                    label: <FormattedMessage id="tipTapRichTextBlock.eyebrow550" defaultMessage="Eyebrow 550" />,
+                    element: (props) => <p style={{ fontSize: 26, lineHeight: "26px" }} {...props} />,
+                },
+                {
+                    name: "eyebrow500",
+                    label: <FormattedMessage id="tipTapRichTextBlock.eyebrow500" defaultMessage="Eyebrow 500" />,
+                    element: (props) => <p style={{ fontSize: 22, lineHeight: "22px" }} {...props} />,
+                },
+                {
+                    name: "eyebrow450",
+                    label: <FormattedMessage id="tipTapRichTextBlock.eyebrow450" defaultMessage="Eyebrow 450" />,
+                    element: (props) => <p style={{ fontSize: 18, lineHeight: "18px" }} {...props} />,
+                },
+            ],
         },
         { name: "display", tag: "h1", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.display" defaultMessage="Display" /> },
         { name: "heading-1", tag: "h1", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.heading1" defaultMessage="Heading 1" /> },

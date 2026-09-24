@@ -2,7 +2,6 @@ import "@fontsource-variable/roboto-flex/full.css";
 
 import { ApolloProvider } from "@apollo/client";
 import { ErrorDialogHandler, MasterLayout, MuiThemeProvider, RouterBrowserRouter, SnackbarProvider } from "@dextinity/admin";
-import { DateFnsLocaleProvider } from "@dextinity/admin-date-time";
 import { BrevoConfigProvider } from "@dextinity/brevo-admin";
 import {
     AzureAiTranslatorProvider,
@@ -165,47 +164,42 @@ export function App() {
                     <IntlProvider locale={language} messages={messages}>
                         <MuiThemeProvider theme={theme}>
                             <LocalizationProvider adapterLocale={dateFnsLocale} dateAdapter={AdapterDateFns}>
-                                <DateFnsLocaleProvider value={dateFnsLocale}>
-                                    <DndProvider options={HTML5toTouch}>
-                                        <SnackbarProvider>
-                                            <ErrorDialogHandler />
-                                            <CurrentUserProvider>
-                                                <RouterBrowserRouter>
-                                                    <GlobalStyle />
-                                                    <ContentScopeProvider>
-                                                        {({ match }) => (
-                                                            <AzureAiTranslatorProvider enabled showApplyTranslationDialog>
-                                                                <Switch>
-                                                                    <Route
-                                                                        path={`${match.path}/preview`}
-                                                                        render={(props) => (
-                                                                            <SitePreview
-                                                                                resolvePath={(path: string, scope) => {
-                                                                                    return `/${scope.language}${path}`;
-                                                                                }}
-                                                                                {...props}
-                                                                            />
-                                                                        )}
-                                                                    />
-                                                                    <Route
-                                                                        render={() => (
-                                                                            <MasterLayout
-                                                                                headerComponent={MasterHeader}
-                                                                                menuComponent={AppMasterMenu}
-                                                                            >
-                                                                                <AppMasterMenuRoutes />
-                                                                            </MasterLayout>
-                                                                        )}
-                                                                    />
-                                                                </Switch>
-                                                            </AzureAiTranslatorProvider>
-                                                        )}
-                                                    </ContentScopeProvider>
-                                                </RouterBrowserRouter>
-                                            </CurrentUserProvider>
-                                        </SnackbarProvider>
-                                    </DndProvider>
-                                </DateFnsLocaleProvider>
+                                <DndProvider options={HTML5toTouch}>
+                                    <SnackbarProvider>
+                                        <ErrorDialogHandler />
+                                        <CurrentUserProvider>
+                                            <RouterBrowserRouter>
+                                                <GlobalStyle />
+                                                <ContentScopeProvider>
+                                                    {({ match }) => (
+                                                        <AzureAiTranslatorProvider enabled showApplyTranslationDialog>
+                                                            <Switch>
+                                                                <Route
+                                                                    path={`${match.path}/preview`}
+                                                                    render={(props) => (
+                                                                        <SitePreview
+                                                                            resolvePath={(path: string, scope) => {
+                                                                                return `/${scope.language}${path}`;
+                                                                            }}
+                                                                            {...props}
+                                                                        />
+                                                                    )}
+                                                                />
+                                                                <Route
+                                                                    render={() => (
+                                                                        <MasterLayout headerComponent={MasterHeader} menuComponent={AppMasterMenu}>
+                                                                            <AppMasterMenuRoutes />
+                                                                        </MasterLayout>
+                                                                    )}
+                                                                />
+                                                            </Switch>
+                                                        </AzureAiTranslatorProvider>
+                                                    )}
+                                                </ContentScopeProvider>
+                                            </RouterBrowserRouter>
+                                        </CurrentUserProvider>
+                                    </SnackbarProvider>
+                                </DndProvider>
                             </LocalizationProvider>
                         </MuiThemeProvider>
                     </IntlProvider>

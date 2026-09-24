@@ -46,6 +46,11 @@ This can be either:
 - The implementation in Demo
 - A development story in Storybook
 
+The description needs an "Example" section only when the example isn't reachable from the diff:
+link the Storybook story, or say how to get to the implementation in Demo, and add a sentence on what it shows.
+When a unit test is the example, reviewers find it in the diff, so delete the section.
+The example usage of your change belongs in the description itself either way.
+
 ### Screenshots/screencasts
 
 When making a visual change, please provide either screenshots or screencasts.
@@ -68,6 +73,9 @@ A changeset should not be added when:
 - changing the dev setup or workflows
 
 In general, you should add a changeset when you want your change to result in a new package version.
+
+If you don't add a changeset, explain why in the pull request description's "Changeset" section, but only when the reason isn't obvious from the diff.
+Changes that clearly need no changeset, for instance repository-only changes such as updating the pull request template, don't need that section at all.
 
 #### Changeset writing guidelines
 
@@ -134,11 +142,13 @@ Anything that needs to be done before merging the pull request, for instance, ad
 
 ### Further information
 
-Further information that helps reviewing the pull request, for instance:
+Optional, and most pull requests don't need it. Add it only for information the reviewer needs to decide and can't get from the diff, for instance:
 
 - Alternative solutions you have considered
 - Related pull requests
 - Links to relevant tasks, documentation, blog posts etc.
+
+Don't use this section to report how you verified the change, or to list adjacent problems you noticed and deliberately left out of scope. Open a follow-up task for those.
 
 > [!WARNING]
 > Make sure that everything required to understand your change is in the pull request description.

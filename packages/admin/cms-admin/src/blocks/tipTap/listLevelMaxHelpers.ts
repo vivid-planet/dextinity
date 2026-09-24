@@ -47,7 +47,7 @@ export function trimListNesting(content: JSONContent, maxLevel: number, currentD
 
     if (isListNode && depth > maxLevel) {
         // Remove this list node entirely - extract text content from listItems as flat content
-        return { type: "paragraph" };
+        return { type: "textBlock" };
     }
 
     if (!Array.isArray(content.content)) {
@@ -57,8 +57,8 @@ export function trimListNesting(content: JSONContent, maxLevel: number, currentD
     const newContent = content.content
         .map((child) => trimListNesting(child, maxLevel, depth))
         .filter((child) => {
-            // When a list is removed (replaced with empty paragraph), keep it only if it has content
-            if (isListNode && child.type === "paragraph" && child.content === undefined) {
+            // When a list is removed (replaced with an empty text block), keep it only if it has content
+            if (isListNode && child.type === "textBlock" && child.content === undefined) {
                 return false;
             }
             return true;

@@ -70,14 +70,14 @@
         "prettier": "^3.6.2",
         "react": "^19.2.6",
         "react-dom": "^19.2.6",
-        "react-intl": "^7.1.11",
+        "react-intl": "^12.1.2",
         "tsdown": "0.23.0",
         "vitest": "^4.1.8"
     },
     "peerDependencies": {
         "@apollo/client": "^3.7.0",
         "final-form": "^4.0.0",
-        "react-intl": "^5.0.0 || ^6.0.0 || ^7.0.0"
+        "react-intl": "^12.0.0"
     },
     "engines": {
         "node": ">=22.0.0"

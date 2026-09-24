@@ -61,7 +61,7 @@
     "devDependencies": {
         "@changesets/cli": "^2.31.1",
         "@dextinity/cli": "workspace:*",
-        "@formatjs/cli": "^6.7.2",
+        "@formatjs/cli": "^6.16.31",
         "@types/node": "^24.13.3",
         "dev-oidc-provider": "^2.0.0",
         "dev-process-manager": "^4.1.0",

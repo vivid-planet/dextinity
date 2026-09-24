@@ -19,20 +19,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         const domain = siteConfig.scope.domain;
         const scope = { domain, language };
 
+        const limit = 50;
+        let offset = 0;
         let totalCount = 0;
-        let currentCount = 0;
 
         do {
             const { paginatedPageTreeNodes } = await graphqlFetch<GQLPrebuildPageDataListSitemapQuery, GQLPrebuildPageDataListSitemapQueryVariables>(
                 pageDataListQuery,
                 {
                     scope,
-                    offset: currentCount,
-                    limit: 50,
+                    offset,
+                    limit,
                 },
             );
             totalCount = paginatedPageTreeNodes.totalCount;
-            currentCount += paginatedPageTreeNodes.nodes.length;
+            offset += limit;
 
             for (const pageTreeNode of paginatedPageTreeNodes.nodes) {
                 if (pageTreeNode) {
@@ -56,7 +57,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
                     }
                 }
             }
-        } while (totalCount > currentCount);
+        } while (offset < totalCount);
     }
 
     return sitemap;

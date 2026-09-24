@@ -1,4 +1,4 @@
-import { createOneOfBlock, createRichTextBlock, ExternalLinkBlock, registerAdditionalPermissions } from "@dextinity/cms-api";
+import { createOneOfBlock, createRichTextBlock, DependencyResolver, ExternalLinkBlock, registerAdditionalPermissions } from "@dextinity/cms-api";
 import { CombinedPermission } from "@dextinity/cms-api/lib/user-permissions/user-permissions.types";
 import { Embeddable } from "@mikro-orm/postgresql";
 import { NestFactory } from "@nestjs/core";
@@ -117,6 +117,7 @@ async function generateSchema(): Promise<void> {
         EmailCampaignResolver,
         BrevoContactImportResolver,
         BrevoConfigResolver,
+        DependencyResolver,
     ]);
     await writeFile("schema.gql", printSchema(schema));
 

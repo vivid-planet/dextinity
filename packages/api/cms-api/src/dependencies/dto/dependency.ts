@@ -1,7 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { GraphQLJSONObject } from "graphql-scalars";
 
-import { ContentScope } from "../../user-permissions/interfaces/content-scope.interface";
 import { BaseDependencyInterface } from "./base-dependency.interface";
 
 @ObjectType()
@@ -48,9 +46,10 @@ export class Dependency implements BaseDependencyInterface {
     secondaryInformation?: string;
 
     /**
-     * Content scope of the dependent (root) resp. depended-on (target) entity. Undefined for entities without a scope
-     * and for entities whose scope cannot be resolved. Entities with multiple scopes report their first scope.
+     * Entity the `scope` field resolver loads the scope from: the root entity in the dependents context, the target
+     * entity in the dependencies context.
      */
-    @Field(() => GraphQLJSONObject, { nullable: true })
-    scope?: ContentScope;
+    scopeEntityName: string;
+
+    scopeId: string;
 }

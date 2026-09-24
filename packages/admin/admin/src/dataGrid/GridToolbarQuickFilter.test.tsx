@@ -11,21 +11,16 @@ const rows = [
     { id: 2, name: "Vanilla" },
 ];
 
-function Grid() {
+function Toolbar() {
     return (
-        <DataGrid
-            rows={rows}
-            columns={[{ field: "name", headerName: "Name" }]}
-            showToolbar
-            slots={{
-                toolbar: () => (
-                    <DataGridToolbar>
-                        <GridToolbarQuickFilter />
-                    </DataGridToolbar>
-                ),
-            }}
-        />
+        <DataGridToolbar>
+            <GridToolbarQuickFilter />
+        </DataGridToolbar>
     );
+}
+
+function Grid() {
+    return <DataGrid rows={rows} columns={[{ field: "name", headerName: "Name" }]} showToolbar slots={{ toolbar: Toolbar }} />;
 }
 
 describe("GridToolbarQuickFilter", () => {
@@ -46,5 +41,17 @@ describe("GridToolbarQuickFilter", () => {
             expect(screen.queryByText("Chocolate")).not.toBeInTheDocument();
         });
         expect(screen.getByText("Vanilla")).toBeInTheDocument();
+    });
+
+    it("clears the term and shows all rows again", async () => {
+        render(<Grid />);
+
+        await userEvent.type(screen.getByRole("searchbox"), "Vanilla");
+        await userEvent.click(await screen.findByRole("button", { name: "Clear" }));
+
+        await waitFor(() => {
+            expect(screen.getByText("Chocolate")).toBeInTheDocument();
+        });
+        expect(screen.getByRole("searchbox")).toHaveValue("");
     });
 });

@@ -21,7 +21,7 @@ export function GridToolbarQuickFilter({ placeholder }: GridToolbarQuickFilterPr
     return (
         <Root expanded>
             <QuickFilterControl
-                render={({ ref, slotProps: quickFilterSlotProps, ...other }) => (
+                render={({ ref, slotProps: quickFilterSlotProps, ...other }, state) => (
                     <InputBase
                         {...other}
                         inputRef={ref}
@@ -29,10 +29,10 @@ export function GridToolbarQuickFilter({ placeholder }: GridToolbarQuickFilterPr
                             placeholder ?? intl.formatMessage({ id: "dextinity.dataGrid.quickFilter.placeholder", defaultMessage: "Search..." })
                         }
                         size="small"
-                        // `QuickFilterControl` passes the input element's `role`, `id` and blur handling as `htmlInput` slot props, which `InputBase` doesn't know
-                        inputProps={quickFilterSlotProps?.htmlInput}
+                        onBlur={quickFilterSlotProps?.htmlInput?.onBlur} // `InputBase` calls `onBlur` only when it's passed as a prop, not through the input slot
                         slotProps={{
                             input: {
+                                ...quickFilterSlotProps?.htmlInput, // Carries the input element's `role` and `id`
                                 sx: {
                                     paddingRight: 0, // Removes unnecessary spacing to the clear button that already has enough spacing
                                     textOverflow: "ellipsis",
@@ -46,7 +46,7 @@ export function GridToolbarQuickFilter({ placeholder }: GridToolbarQuickFilterPr
                         }
                         endAdornment={
                             <InputAdornment position="end">
-                                {other.value ? (
+                                {state.value ? (
                                     <ClearButton edge="end" aria-label={intl.formatMessage(messages.clear)}>
                                         <Clear fontSize="inherit" />
                                     </ClearButton>

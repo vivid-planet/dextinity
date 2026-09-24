@@ -46,7 +46,7 @@ function WelcomeEmailPreviewComponent({ language, messages, config }: WelcomeEma
             });
             setBlockData(newData);
         }
-        load();
+        void load();
     }, [iFrameBridge.block, scope]);
 
     if (blockData === undefined) {

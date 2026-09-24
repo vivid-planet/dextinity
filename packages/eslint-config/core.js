@@ -122,6 +122,12 @@ const config = [
             ],
         },
     },
+    {
+        files: ["**/*.ts", "**/*.tsx"],
+        rules: {
+            "@typescript-eslint/no-floating-promises": "error",
+        },
+    },
 ];
 
 export default config;

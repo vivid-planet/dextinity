@@ -55,6 +55,57 @@ Do the same in `api/package.json`, `admin/package.json` and your site packages, 
 npm install
 ```
 
+### Handle floating promises
+
+`@dextinity/eslint-config` now enables [`@typescript-eslint/no-floating-promises`](https://typescript-eslint.io/rules/no-floating-promises/) for `.ts` and `.tsx` files. It reports promises that are neither awaited, returned, nor handled with `.catch()`. Such a promise lets the caller carry on before the operation has finished, and its errors become unhandled rejections that a surrounding `try/catch` never sees.
+
+The rule has no auto-fix. Run ESLint in `api`, `admin` and your site packages to find the violations:
+
+```sh
+npm run lint:eslint
+```
+
+Handle each reported promise, one by one. Don't add `void` to all of them in bulk, since the point of the rule is to find the ones that are bugs.
+
+**Await the promise** when the code after it relies on the operation having finished, when it's inside a `try/catch`, or when it's inside a test. This is usually the case in services, resolvers and console jobs:
+
+```diff title="api/src/products/products.service.ts"
+  async deleteProduct(id: string): Promise<boolean> {
+      this.entityManager.remove(await this.entityManager.findOneOrFail(Product, id));
+-     this.entityManager.flush();
++     await this.entityManager.flush();
+      return true;
+  }
+```
+
+`expect` from `storybook/test` returns a promise as well. Await it in play functions, and make the `waitFor` callbacks around it `async`:
+
+```diff
+- await waitFor(() => {
+-     expect(canvas.getByText("Saved")).toBeInTheDocument();
++ await waitFor(async () => {
++     await expect(canvas.getByText("Saved")).toBeInTheDocument();
+  });
+```
+
+The same applies to Jest and Vitest assertions using `.resolves` or `.rejects`, and to `userEvent` calls in tests.
+
+**Mark the promise with `void`** when not waiting for it is intended, for instance a mutation, `refetch()` or clipboard write in an event handler, or the `bootstrap()` call in `main.ts`:
+
+```diff title="api/src/main.ts"
+- bootstrap();
++ void bootstrap();
+```
+
+```diff
+  onClick={() => {
+-     writeClipboardText(url);
++     void writeClipboardText(url);
+  }}
+```
+
+`void` keeps the current behavior, including an unhandled rejection if the promise fails. Add a `.catch()` to promises that run in the background of an API request, since an unhandled rejection terminates the Node.js process by default.
+
 ## API
 
 ### Regenerate `block-meta.json`

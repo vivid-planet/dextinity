@@ -363,7 +363,7 @@ export function createColumnsBlock<T extends BlockInterface>(
                                                                             stackApi.activatePage("edit", key);
                                                                         }}
                                                                         onCopyClick={() => {
-                                                                            updateClipboardContent([
+                                                                            void updateClipboardContent([
                                                                                 {
                                                                                     name: contentBlock.name,
                                                                                     visible: column.visible,
@@ -372,7 +372,7 @@ export function createColumnsBlock<T extends BlockInterface>(
                                                                             ]);
                                                                         }}
                                                                         onPasteClick={() => {
-                                                                            pasteBlock(columnIndex + 1);
+                                                                            void pasteBlock(columnIndex + 1);
                                                                         }}
                                                                         selected={column.selected}
                                                                         onSelectedClick={(selected) => {

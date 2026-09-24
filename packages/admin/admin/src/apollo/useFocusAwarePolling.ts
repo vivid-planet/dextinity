@@ -12,7 +12,7 @@ function useFocusAwarePolling({ pollInterval, skip, refetch, startPolling, stopP
         }
 
         const handleFocus = () => {
-            refetch();
+            void refetch();
 
             startPolling(pollInterval);
         };

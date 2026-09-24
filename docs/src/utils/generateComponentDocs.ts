@@ -77,4 +77,4 @@ import { StorybookAdminComponentDocsIframe } from "../../../src/components/Story
 `;
 };
 
-main();
+void main();

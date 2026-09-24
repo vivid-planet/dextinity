@@ -303,7 +303,7 @@ const PageTree: ForwardRefRenderFunction<PageTreeRefApi, PageTreeProps> = (
                                 disallowedReferences = disallowedReferences.filter((page) => page.id !== pageToUndo.id);
                             }
 
-                            client.refetchQueries({ include: ["Pages"] });
+                            void client.refetchQueries({ include: ["Pages"] });
                         }
                     }}
                 />,

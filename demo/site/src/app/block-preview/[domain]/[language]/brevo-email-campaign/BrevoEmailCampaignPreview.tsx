@@ -44,7 +44,7 @@ function BrevoEmailCampaignPreviewComponent({ language, messages, config }: Brev
 
             setBlockData(newData.content);
         }
-        load();
+        void load();
     }, [iFrameBridge.block, iFrameBridge.contentScope]);
 
     if (blockData === undefined) {

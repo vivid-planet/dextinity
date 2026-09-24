@@ -24,7 +24,7 @@ export const FinalFormSaveButton = ({ message = <FormattedMessage {...messages.s
             loading={submitting}
             onClick={() => {
                 if (!isDisabled) {
-                    form.submit();
+                    void form.submit();
                 }
             }}
         >

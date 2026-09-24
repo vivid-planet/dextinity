@@ -209,7 +209,7 @@ export function FinalForm<FormValues = AnyObject, InitialFormValues = Partial<Fo
                     });
                 };
 
-                validate();
+                void validate();
             }
         }, [formRenderProps.values, setFieldData, registeredFields]);
 
@@ -279,7 +279,7 @@ export function FinalForm<FormValues = AnyObject, InitialFormValues = Partial<Fo
                     if (props.mode === "add") {
                         if (tableQuery) {
                             // refetch TableQuery after adding
-                            client?.query({
+                            void client?.query({
                                 query: tableQuery.api.getQuery(),
                                 variables: tableQuery.api.getVariables(),
                                 fetchPolicy: "network-only",

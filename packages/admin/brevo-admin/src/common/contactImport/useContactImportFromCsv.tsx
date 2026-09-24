@@ -248,7 +248,7 @@ const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDouble
             try {
                 const file = acceptedFiles[0];
                 const data = await upload(file, scope, targetGroupId ? [targetGroupId] : []);
-                apolloClient.refetchQueries({ include: refetchQueries });
+                void apolloClient.refetchQueries({ include: refetchQueries });
 
                 if (data) {
                     setImportingCsv(false);

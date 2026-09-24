@@ -34,7 +34,7 @@ export const EditCell = ({ id, field, value }: GridRenderEditCellParams) => {
                             const newContent = resolveNewState({ prevState: valueState, setStateAction });
 
                             setValueState(newContent);
-                            apiRef.current.setEditCellValue({ id, field, value: newContent, debounceMs: 200 });
+                            void apiRef.current.setEditCellValue({ id, field, value: newContent, debounceMs: 200 });
                         }}
                     />
                 </EditorWrapper>

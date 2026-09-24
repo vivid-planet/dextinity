@@ -15,7 +15,7 @@ export const generateCommand = new Command("generate")
             console.log("Watching for modified entities...");
             await watchMode();
         } else {
-            generateFiles(options.file);
+            await generateFiles(options.file);
         }
     })
     .option("-f, --file <file>", "path to entity file")

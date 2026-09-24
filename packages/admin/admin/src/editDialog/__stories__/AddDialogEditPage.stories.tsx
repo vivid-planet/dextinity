@@ -85,10 +85,10 @@ export const AddDialogEditPage: StoryObj<typeof Page> = {
             await waitFor(
                 async () => {
                     const addText = within(document.body).queryByText(/form: adding a new item/i);
-                    expect(addText).toBeInTheDocument();
+                    await expect(addText).toBeInTheDocument();
 
                     const editText = within(document.body).queryByText(/form: editing existing item/i);
-                    expect(editText).not.toBeInTheDocument();
+                    await expect(editText).not.toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -101,11 +101,11 @@ export const AddDialogEditPage: StoryObj<typeof Page> = {
             await waitFor(
                 async () => {
                     const editText = within(document.body).queryByText(/form: editing existing item/i);
-                    expect(editText).toBeInTheDocument();
-                    expect(editText).toHaveTextContent("example-id");
+                    await expect(editText).toBeInTheDocument();
+                    await expect(editText).toHaveTextContent("example-id");
 
                     const addText = within(document.body).queryByText(/form: adding a new item/i);
-                    expect(addText).not.toBeInTheDocument();
+                    await expect(addText).not.toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );

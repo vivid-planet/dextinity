@@ -63,7 +63,7 @@ export function useTableQuery<TInnerData, TInnerVariables extends OperationVaria
 
         const { refetch } = ret;
         useEffect(() => {
-            refetch();
+            void refetch();
         }, [refetch]);
 
         function getVariables() {

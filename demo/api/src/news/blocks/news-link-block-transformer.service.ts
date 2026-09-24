@@ -1,8 +1,9 @@
 import { BlockTransformerServiceInterface } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { NEWS_ENTITY } from "@src/news/news.constants";
 
-import { News } from "../entities/news.entity";
+import type { News } from "../entities/news.entity";
 import { NewsLinkBlockData } from "./news-link.block";
 
 type TransformResponse = {
@@ -18,14 +19,17 @@ type TransformResponse = {
 
 @Injectable()
 export class NewsLinkBlockTransformerService implements BlockTransformerServiceInterface<NewsLinkBlockData, TransformResponse> {
-    constructor(private readonly entityManager: EntityManager) {}
+    constructor(
+        private readonly entityManager: EntityManager,
+        @Inject(NEWS_ENTITY) private readonly newsEntity: typeof News,
+    ) {}
 
     async transformToPlain(block: NewsLinkBlockData) {
         if (!block.id) {
             return {};
         }
 
-        const news = await this.entityManager.findOneOrFail<News>("News", block.id);
+        const news = await this.entityManager.findOneOrFail(this.newsEntity, block.id);
 
         return {
             news: {

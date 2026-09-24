@@ -7,6 +7,7 @@ import { NewsLinkBlockTransformerService } from "./blocks/news-link-block-transf
 import { NewsComment } from "./entities/news-comment.entity";
 import { ExtendedNewsResolver } from "./extended-news.resolver";
 import { NewsResolver } from "./generated/news.resolver";
+import { NEWS_ENTITY } from "./news.constants";
 import { NewsCommentResolver } from "./news-comment.resolver";
 import { NewsFieldResolver } from "./news-field.resolver";
 
@@ -19,6 +20,7 @@ import { NewsFieldResolver } from "./news-field.resolver";
         DependenciesResolverFactory.create(News),
         DependentsResolverFactory.create(News),
         NewsLinkBlockTransformerService,
+        { provide: NEWS_ENTITY, useValue: News },
         ExtendedNewsResolver,
     ],
     exports: [],

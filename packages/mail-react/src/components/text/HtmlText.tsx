@@ -43,7 +43,6 @@ interface HtmlTextImplementationProps extends HtmlTextOwnProps {
     className?: string;
     style?: CSSProperties;
     children?: ReactNode;
-    [key: string]: unknown;
 }
 
 export type HtmlTextProps<E extends keyof JSX.IntrinsicElements = "td"> = HtmlTextOwnProps & {

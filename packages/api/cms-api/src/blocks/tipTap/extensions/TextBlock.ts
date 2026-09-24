@@ -1,6 +1,7 @@
 import { mergeAttributes, Node } from "@tiptap/core";
 
 import type { TipTapResolvedTextBlock } from "../textBlocks";
+import { textBlockAttribute, textStyleAttribute } from "./textBlockAttributes";
 
 /**
  * The single node every paragraph and heading is stored as, mirroring the Admin's. Which of the
@@ -10,9 +11,11 @@ import type { TipTapResolvedTextBlock } from "../textBlocks";
 export function createTextBlock({
     textBlocks,
     defaultTextBlock,
+    hasStyles,
 }: {
     textBlocks: TipTapResolvedTextBlock[];
     defaultTextBlock: TipTapResolvedTextBlock;
+    hasStyles: boolean;
 }) {
     return Node.create({
         name: "textBlock",
@@ -22,7 +25,8 @@ export function createTextBlock({
 
         addAttributes() {
             return {
-                textBlock: { default: defaultTextBlock.name },
+                ...textBlockAttribute(defaultTextBlock.name),
+                ...(hasStyles ? textStyleAttribute : {}),
             };
         },
 

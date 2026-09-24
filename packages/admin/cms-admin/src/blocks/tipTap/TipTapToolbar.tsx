@@ -42,7 +42,9 @@ import { FormattedMessage, useIntl } from "react-intl";
 import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
 import type { TipTapChildBlock, TipTapInlineStyle, TipTapPlaceholder, TipTapResolvedOptions, TipTapTextBlockType } from "./createTipTapRichTextBlock";
 import { liftOutOfList } from "./liftOutOfList";
+import { buildListStylesByType, findInnermostListOfSelection } from "./listTextStyles";
 import { findTextBlock, isTextBlockAllowedInListItem } from "./textBlocks";
+import { findStyle } from "./textStyles";
 import { TipTapBlockDialog } from "./TipTapBlockDialog";
 import { TipTapLinkDialog } from "./TipTapLinkDialog";
 
@@ -182,10 +184,11 @@ export const TipTapToolbar = ({
     const [linkDialogOpen, setLinkDialogOpen] = useState(false);
     const hasInlineFormatButtons = resolvedOptions.bold || resolvedOptions.italic || resolvedOptions.underline || resolvedOptions.strike;
     const moreOptions = resolvedOptions.sub || resolvedOptions.sup;
-    const lists = resolvedOptions.orderedList || resolvedOptions.unorderedList;
+    const lists = resolvedOptions.orderedList.enabled || resolvedOptions.unorderedList.enabled;
     const specialChars = resolvedOptions.nonBreakingSpace || resolvedOptions.softHyphen;
     const hasLink = resolvedOptions.link && !!linkBlock;
     const textBlocks = resolvedOptions.textBlocks;
+    const listStylesByType = buildListStylesByType(resolvedOptions);
     const hasPlaceholders = placeholders.length > 0;
     const hasChildBlocks = Object.keys(childBlocks).length > 0;
 
@@ -219,9 +222,18 @@ export const TipTapToolbar = ({
                 }
             }
 
+            // A list owns the style of its items, so the select offers the innermost list's styles
+            // while the cursor is in one, and the active text block's styles otherwise.
+            const activeList = findInnermostListOfSelection(e.state);
+            const activeStyles = activeList ? listStylesByType[activeList.type] : activeTextBlock.styles;
+            const textStyle = activeList ? activeList.textStyle : (e.getAttributes("textBlock").textStyle as string | null);
+
             return {
                 activeTextBlock: activeTextBlock.name,
                 activeTipTapTextBlockType,
+                activeStyles,
+                // Content can name a style that is no longer configured, which the select has no entry for.
+                activeTextStyle: findStyle(activeStyles, textStyle)?.name ?? "",
                 canUndo: e.can().undo(),
                 canRedo: e.can().redo(),
                 canIndent,
@@ -334,6 +346,34 @@ export const TipTapToolbar = ({
 
         // Switching the type only renames the node's text block - the tag follows from the configuration.
         editor.chain().focus().updateAttributes("textBlock", { textBlock: textBlock.name }).run();
+
+        // The style belongs to the text block it was picked for, so a type the style isn't
+        // configured for drops it rather than keeping a style the API would reject.
+        const textStyle = editor.getAttributes("textBlock").textStyle as string | null;
+        if (textStyle && !findStyle(textBlock.styles, textStyle)) {
+            editor.chain().updateAttributes("textBlock", { textStyle: null }).run();
+        }
+    };
+
+    const handleTextStyleChange = (e: SelectChangeEvent) => {
+        const textStyle = e.target.value || null;
+        const activeList = findInnermostListOfSelection(editor.state);
+
+        if (!activeList) {
+            editor.chain().focus().updateAttributes("textBlock", { textStyle }).run();
+            return;
+        }
+
+        // updateAttributes would write to every list the selection is inside, so a nested list would
+        // take its parent's style along. Only the list the style was picked for gets it.
+        editor
+            .chain()
+            .focus()
+            .command(({ tr }) => {
+                tr.setNodeAttribute(activeList.pos, "textStyle", textStyle);
+                return true;
+            })
+            .run();
     };
 
     return (
@@ -382,6 +422,29 @@ export const TipTapToolbar = ({
                             {textBlocks.map((textBlock) => (
                                 <MenuItem key={textBlock.name} value={textBlock.name} dense>
                                     {textBlock.label}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </ToolbarGroup>
+            )}
+            {editorState.activeStyles.length > 0 && (
+                <ToolbarGroup>
+                    <FormControl sx={selectFormControlSx}>
+                        <Select
+                            value={editorState.activeTextStyle}
+                            onChange={handleTextStyleChange}
+                            displayEmpty
+                            variant="filled"
+                            MenuProps={{ elevation: 1 }}
+                            sx={selectSx}
+                        >
+                            <MenuItem value="" dense>
+                                <FormattedMessage id="dextinity.blocks.tipTapRichText.textStyle.default" defaultMessage="Default" />
+                            </MenuItem>
+                            {editorState.activeStyles.map((style) => (
+                                <MenuItem key={style.name} value={style.name} dense>
+                                    {style.label}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -505,7 +568,7 @@ export const TipTapToolbar = ({
             )}
             {lists && (
                 <ToolbarGroup>
-                    {resolvedOptions.orderedList && (
+                    {resolvedOptions.orderedList.enabled && (
                         <ToolbarButton
                             editor={editor}
                             icon={RteOl}
@@ -514,7 +577,7 @@ export const TipTapToolbar = ({
                             onToggle={() => editor.chain().focus().toggleOrderedList().run()}
                         />
                     )}
-                    {resolvedOptions.unorderedList && (
+                    {resolvedOptions.unorderedList.enabled && (
                         <ToolbarButton
                             editor={editor}
                             icon={RteUl}

@@ -1,6 +1,7 @@
 import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
 
 import type { TipTapResolvedTextBlock } from "./textBlocks";
+import { findStyle, type TipTapResolvedList } from "./textStyles";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TipTapContent = Record<string, any>;
@@ -76,6 +77,70 @@ export function containsInvalidTextBlock({
     );
 }
 
+/**
+ * Whether the content applies a style that isn't configured for the node it sits on.
+ *
+ * A list owns the style of its items, so a text block inside a list item must not carry one of its
+ * own - otherwise the editor and the site would have two styles to choose between. A nested list is
+ * a node of its own and therefore carries its own style.
+ */
+export function containsInvalidTextStyle({
+    content,
+    textBlocks,
+    defaultTextBlock,
+    orderedList,
+    unorderedList,
+    insideListItem = false,
+}: {
+    content: TipTapContent;
+    textBlocks: TipTapResolvedTextBlock[];
+    defaultTextBlock: TipTapResolvedTextBlock;
+    orderedList: TipTapResolvedList;
+    unorderedList: TipTapResolvedList;
+    insideListItem?: boolean;
+}): boolean {
+    if (typeof content !== "object" || content === null) {
+        return false;
+    }
+
+    const textStyle = content.attrs?.textStyle;
+
+    if (content.type === "textBlock" && textStyle != null) {
+        if (insideListItem) {
+            return true;
+        }
+        const name = content.attrs?.textBlock;
+        const textBlock = name == null ? defaultTextBlock : textBlocks.find((candidate) => candidate.name === name);
+        if (!textBlock || !findStyle(textBlock.styles, textStyle)) {
+            return true;
+        }
+    }
+
+    if (content.type === "orderedList" && textStyle != null && !findStyle(orderedList.styles, textStyle)) {
+        return true;
+    }
+
+    if (content.type === "bulletList" && textStyle != null && !findStyle(unorderedList.styles, textStyle)) {
+        return true;
+    }
+
+    if (!Array.isArray(content.content)) {
+        return false;
+    }
+
+    const childrenInsideListItem = content.type === "listItem" || insideListItem;
+    return content.content.some((child: TipTapContent) =>
+        containsInvalidTextStyle({
+            content: child,
+            textBlocks,
+            defaultTextBlock,
+            orderedList,
+            unorderedList,
+            insideListItem: childrenInsideListItem,
+        }),
+    );
+}
+
 export function getListNestingDepth(content: TipTapContent, currentDepth = 0): number {
     if (typeof content !== "object" || content === null) {
         return 0;
@@ -106,7 +171,16 @@ export function isValidTipTapContentSync(
         listLevelMax,
         textBlocks,
         defaultTextBlock,
-    }: { maxTextBlocks?: number; listLevelMax?: number; textBlocks: TipTapResolvedTextBlock[]; defaultTextBlock: TipTapResolvedTextBlock },
+        orderedList,
+        unorderedList,
+    }: {
+        maxTextBlocks?: number;
+        listLevelMax?: number;
+        textBlocks: TipTapResolvedTextBlock[];
+        defaultTextBlock: TipTapResolvedTextBlock;
+        orderedList: TipTapResolvedList;
+        unorderedList: TipTapResolvedList;
+    },
 ): boolean {
     if (typeof value !== "object" || value === null) {
         return false;
@@ -130,6 +204,10 @@ export function isValidTipTapContentSync(
         }
 
         if (containsInvalidTextBlock({ content: value as TipTapContent, textBlocks, defaultTextBlock })) {
+            return false;
+        }
+
+        if (containsInvalidTextStyle({ content: value as TipTapContent, textBlocks, defaultTextBlock, orderedList, unorderedList })) {
             return false;
         }
 

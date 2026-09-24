@@ -4,7 +4,12 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ReactNode, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
-import { createTipTapRichTextBlock, type TipTapRichTextBlockState, type TipTapTextBlock } from "../createTipTapRichTextBlock";
+import {
+    createTipTapRichTextBlock,
+    type TipTapRichTextBlockState,
+    type TipTapTextBlock,
+    type TipTapTextBlockStyle,
+} from "../createTipTapRichTextBlock";
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
@@ -917,6 +922,184 @@ export const ListTextBlock: StoryObj<typeof ListTextBlockStory> = {
                 { timeout: 3000 },
             );
             expect(editor).toHaveTextContent("Heading in a list");
+        });
+    },
+};
+
+const copyStyles: TipTapTextBlockStyle[] = [
+    { name: "copy300", label: "Copy", element: (props, Tag) => <Tag style={{ fontSize: 18, lineHeight: "26px" }} {...props} /> },
+    { name: "copy200", label: "Copy Small", element: (props, Tag) => <Tag style={{ fontSize: 14, lineHeight: "20px" }} {...props} /> },
+];
+
+const headlineStyles: TipTapTextBlockStyle[] = [
+    { name: "headline450", label: "Headline 450", element: (props, Tag) => <Tag style={{ fontSize: 40 }} {...props} /> },
+    { name: "headline300", label: "Headline 300", element: (props, Tag) => <Tag style={{ fontSize: 24 }} {...props} /> },
+];
+
+const TextStylesBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "paragraph", tag: "p", label: "Paragraph", styles: copyStyles },
+        { name: "heading-1", tag: "h1", label: "Heading 1", styles: headlineStyles },
+        { name: "heading-2", tag: "h2", label: "Heading 2" },
+        { name: "display", tag: "h1", label: "Display", element: (props, Tag) => <Tag style={{ fontSize: 64 }} {...props} /> },
+    ],
+    orderedList: { styles: copyStyles },
+    unorderedList: false,
+});
+
+function TextStylesStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(TextStylesBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <TextStylesBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+type PlayContext = Parameters<NonNullable<StoryObj<typeof TextStylesStory>["play"]>>[0];
+
+const selectStyle = async ({ canvas, userEvent }: Pick<PlayContext, "canvas" | "userEvent">, name: string) => {
+    await userEvent.click(canvas.getAllByRole("combobox")[1]);
+    await waitFor(
+        () => {
+            expect(within(document.body).getByRole("option", { name })).toBeInTheDocument();
+        },
+        { timeout: 3000 },
+    );
+    await userEvent.click(within(document.body).getByRole("option", { name }));
+};
+
+export const TextStyles: StoryObj<typeof TextStylesStory> = {
+    render: () => <TextStylesStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("The style select offers the styles of the active text block", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")).toHaveLength(2);
+                },
+                { timeout: 5000 },
+            );
+
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("Copy");
+
+            await selectStyle({ canvas, userEvent }, "Copy Small");
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector('p[data-text-style="copy200"]')).toBeTruthy();
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Switching to a text block the style isn't configured for drops it", async () => {
+            const editor = canvas.getByRole("textbox");
+
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("h2")).toBeTruthy();
+                    expect(editor.querySelector("[data-text-style]")).toBeFalsy();
+                },
+                { timeout: 3000 },
+            );
+            // Heading 2 has no styles, so the select is gone
+            expect(canvas.getAllByRole("combobox")).toHaveLength(1);
+        });
+
+        await step("A text block's own element renders without a style", async () => {
+            const editor = canvas.getByRole("textbox");
+
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Display" }));
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("h1")).toHaveStyle({ fontSize: "64px" });
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};
+
+function NestedListTextStylesStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(TextStylesBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <TextStylesBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const NestedListTextStyles: StoryObj<typeof NestedListTextStylesStory> = {
+    render: () => <NestedListTextStylesStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("A list takes the styles it is configured with", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("One");
+
+            // TipTap binds the ordered list to Mod-Shift-7: Meta on Mac, Control elsewhere
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Shift>}7{/Shift}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("ol li")).toBeTruthy();
+                },
+                { timeout: 3000 },
+            );
+
+            await selectStyle({ canvas, userEvent }, "Copy");
+
+            // The style sits on the list and reaches the item's text block as a preview
+            await waitFor(
+                () => {
+                    expect(editor.querySelector('ol[data-text-style="copy300"]')).toBeTruthy();
+                    expect(editor.querySelector('ol li p[data-text-style="copy300"]')).toBeTruthy();
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("A nested list carries its own style, leaving the list around it untouched", async () => {
+            const editor = canvas.getByRole("textbox");
+
+            await userEvent.keyboard("{Enter}");
+            await userEvent.keyboard("One.a");
+            await userEvent.keyboard("{Tab}");
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelectorAll("ol")).toHaveLength(2);
+                },
+                { timeout: 3000 },
+            );
+
+            await selectStyle({ canvas, userEvent }, "Copy Small");
+
+            await waitFor(
+                () => {
+                    const lists = editor.querySelectorAll("ol");
+                    expect(lists[0].getAttribute("data-text-style")).toBe("copy300");
+                    expect(lists[1].getAttribute("data-text-style")).toBe("copy200");
+                },
+                { timeout: 3000 },
+            );
         });
     },
 };

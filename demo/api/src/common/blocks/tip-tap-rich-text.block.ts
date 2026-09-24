@@ -1,9 +1,13 @@
-import { createTipTapRichTextBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
+import { createTipTapRichTextBlock, type TipTapTextBlockStyle, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
 import { ProductPriceBlock } from "@src/products/blocks/product-price.block";
 import { ProductTeaserBlock } from "@src/products/blocks/product-teaser.block";
 
 import { LinkBlock } from "./link.block";
 import { Heading1ToHeading2Migration } from "./tip-tap-rich-text/migrations/1-heading-1-to-heading-2.migration";
+
+// The styles the Admin offers, without its labels and rendering.
+const copyStyles: TipTapTextBlockStyle[] = [{ name: "paragraph300" }, { name: "paragraph200" }];
+const eyebrowStyles: TipTapTextBlockStyle[] = [{ name: "eyebrow500" }, { name: "eyebrow450" }];
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock(
     {
@@ -15,14 +19,16 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
         // "Display" and "Heading 1" are both stored as an h1 and told apart by the node's textBlock
         // attribute, which the site reads to pick the typography.
         textBlocks: [
-            { name: "paragraph", tag: "p" },
+            { name: "paragraph", tag: "p", styles: copyStyles },
             { name: "display", tag: "h1" },
             { name: "heading-1", tag: "h1" },
-            { name: "heading-2", tag: "h2" },
-            { name: "heading-3", tag: "h3" },
+            { name: "heading-2", tag: "h2", styles: eyebrowStyles },
+            { name: "heading-3", tag: "h3", styles: eyebrowStyles },
             { name: "heading-4", tag: "h4" },
             { name: "heading-5", tag: "h5" },
         ],
+        orderedList: { styles: copyStyles },
+        unorderedList: { styles: copyStyles },
         inlineStyles: [{ name: "highlight" }, { name: "tag", appliesTo: ["paragraph"] }],
         migrateFromDraftJs: {
             textBlockMap: {

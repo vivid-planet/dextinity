@@ -1,15 +1,19 @@
 import { InputRule, mergeAttributes, Node } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
+import { ReactNodeViewRenderer } from "@tiptap/react";
 
 import { liftOutOfList } from "../liftOutOfList";
 import {
     findTextBlockPerTag,
+    isInsideListItem,
     isTextBlockAllowedInListItem,
     parseTextBlock,
     type TipTapResolvedTextBlock,
     type TipTapTextBlockTag,
 } from "../textBlocks";
-import { textBlockAttribute } from "./textBlockAttributes";
+import { findListTextStyleInDecorations } from "./ListTextStyle";
+import { textBlockAttribute, textStyleAttribute } from "./textBlockAttributes";
+import { createTextBlockNodeView } from "./TextBlockNodeView";
 
 /**
  * The single node every paragraph and heading is stored as. Which of the configured text blocks it
@@ -21,9 +25,21 @@ import { textBlockAttribute } from "./textBlockAttributes";
 export function createTextBlock({
     textBlocks,
     defaultTextBlock,
+    hasStyles,
+    hasCustomElements,
 }: {
     textBlocks: TipTapResolvedTextBlock[];
     defaultTextBlock: TipTapResolvedTextBlock;
+    /**
+     * Whether a text block offers styles, which decides whether the node carries the `textStyle`
+     * attribute. Must match the API's schema, otherwise the API rejects content the editor produces.
+     */
+    hasStyles: boolean;
+    /**
+     * Whether a text block or one of the styles that can apply to it renders its own element, which
+     * the node view is there for.
+     */
+    hasCustomElements: boolean;
 }) {
     const tagOf = (name: unknown): TipTapTextBlockTag => (textBlocks.find((textBlock) => textBlock.name === name) ?? defaultTextBlock).tag;
 
@@ -34,7 +50,10 @@ export function createTextBlock({
         defining: true,
 
         addAttributes() {
-            return textBlockAttribute(defaultTextBlock.name);
+            return {
+                ...textBlockAttribute(defaultTextBlock.name),
+                ...(hasStyles ? textStyleAttribute : {}),
+            };
         },
 
         parseHTML() {
@@ -90,9 +109,9 @@ export function createTextBlock({
                 return [];
             }
 
-            // Turning a heading into a list wraps it in a list item and carries its text block along,
-            // and so does pasting one. Repairing it here covers every way into a list item, which
-            // guarding the toolbar and the shortcuts would not.
+            // Turning a heading into a list wraps it in a list item and carries its text block and
+            // style along, and so does pasting one. Repairing it here covers every way into a list
+            // item, which guarding the toolbar and the shortcuts would not.
             return [
                 new Plugin({
                     key: new PluginKey("textBlockInListItem"),
@@ -105,18 +124,20 @@ export function createTextBlock({
                                 return;
                             }
 
-                            const textBlock = textBlocks.find((candidate) => candidate.name === node.attrs.textBlock);
-                            if (!textBlock || isTextBlockAllowedInListItem(textBlock)) {
+                            if (!isInsideListItem(newState.doc.resolve(pos))) {
                                 return;
                             }
 
-                            const resolved = newState.doc.resolve(pos);
-                            for (let depth = resolved.depth; depth > 0; depth--) {
-                                if (resolved.node(depth).type.name === "listItem") {
-                                    tr.setNodeAttribute(pos, "textBlock", paragraph.name);
-                                    repaired = true;
-                                    break;
-                                }
+                            const textBlock = textBlocks.find((candidate) => candidate.name === node.attrs.textBlock);
+                            if (textBlock && !isTextBlockAllowedInListItem(textBlock)) {
+                                tr.setNodeAttribute(pos, "textBlock", paragraph.name);
+                                repaired = true;
+                            }
+
+                            // The list owns the style of its items, so an item's own one would compete with it.
+                            if (hasStyles && node.attrs.textStyle != null) {
+                                tr.setNodeAttribute(pos, "textStyle", null);
+                                repaired = true;
                             }
                         });
 
@@ -125,5 +146,25 @@ export function createTextBlock({
                 }),
             ];
         },
+
+        ...(hasCustomElements
+            ? {
+                  addNodeView() {
+                      return ReactNodeViewRenderer(createTextBlockNodeView({ textBlocks, defaultTextBlock }), {
+                          // The node view renders the style its list hands it as a decoration, so
+                          // only a change to that decoration is worth a re-render beyond the node's own.
+                          update: ({ oldNode, newNode, oldDecorations, newDecorations, updateProps }) => {
+                              if (
+                                  oldNode !== newNode ||
+                                  findListTextStyleInDecorations(oldDecorations) !== findListTextStyleInDecorations(newDecorations)
+                              ) {
+                                  updateProps();
+                              }
+                              return true;
+                          },
+                      });
+                  },
+              }
+            : {}),
     });
 }

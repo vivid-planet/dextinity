@@ -57,7 +57,7 @@ Most features of the Draft.js `RichTextBlock` have a direct equivalent in the Ti
 | `history`                                       | `undoRedoButtons` (Admin only)                                           |
 | `link`, `links-remove`                          | `link` (pass the link block)                                             |
 | `non-breaking-space`, `soft-hyphen`             | `nonBreakingSpace`, `softHyphen`                                         |
-| `rte.blocktypeMap` (custom block types)         | [`textBlocks`](#text-blocks) + the text block type select                |
+| `rte.blocktypeMap` (custom block types)         | [`textBlocks`](#text-blocks) + [`styles`](#text-styles)                  |
 | `rte.customInlineStyles`                        | [`inlineStyles`](#inline-styles) + the inline style menu                 |
 | `rte.listLevelMax`                              | `listLevelMax`                                                           |
 | `rte.maxBlocks`                                 | `maxTextBlocks`                                                          |
@@ -226,16 +226,13 @@ If the old block used custom block types (via `blocktypeMap`) or custom inline s
 ```ts title="tip-tap-rich-text.block.ts"
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
     link: LinkBlock,
-    textBlocks: [
-        { name: "paragraph", tag: "p" },
-        { name: "paragraph-small", tag: "p" },
-    ],
+    textBlocks: [{ name: "paragraph", tag: "p", styles: [{ name: "copy200" }] }],
     inlineStyles: [{ name: "highlight" }],
     // highlight-start
     migrateFromDraftJs: {
-        // Map the Draft.js `blocktypeMap` entry to a text block.
+        // Map the Draft.js `blocktypeMap` entry to a text block and its style.
         textBlockMap: {
-            "paragraph-small": { textBlock: "paragraph-small" },
+            "paragraph-small": { textBlock: "paragraph", textStyle: "copy200" },
         },
         // Map a Draft.js `customInlineStyles` name to a TipTap `inlineStyle`.
         inlineStyleMap: { HIGHLIGHT: "highlight" },
@@ -257,7 +254,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
 });
 ```
 
-`textBlock` accepts the `name` of any configured [text block](#text-blocks), and an unknown name throws. A Draft.js block type that isn't mapped becomes the text block its own type implies: `header-one`–`header-six` keep their heading level, everything else becomes a paragraph.
+`textBlock` accepts the `name` of any configured [text block](#text-blocks), and an unknown name throws. `textStyle` is optional and names one of that text block's [styles](#text-styles). A Draft.js block type that isn't mapped becomes the text block its own type implies: `header-one`–`header-six` keep their heading level, everything else becomes a paragraph.
 
 ## New features
 
@@ -300,6 +297,110 @@ On the site, the chosen style is available as the `inlineStyle` mark type, which
 const markMapping: Record<string, TipTapMarkHandler> = {
     inlineStyle: ({ mark, children }) =>
         mark.attrs?.type === "highlight" ? <Highlight>{children}</Highlight> : <>{children}</>,
+};
+```
+
+### Text styles
+
+A text block can offer `styles` the editor applies to it, shown in a second toolbar select next to the text block type select. A style decouples the typography ("small copy") from the semantics ("this is a paragraph"), so an editor can pick a look without changing the tag the content is stored as.
+
+Styles are configured on the API (`name` only) and in the Admin (additionally `label` for the select and an optional `element` that previews the style in the editor). One style set can serve several text blocks: the `element` is handed the tag its text block is stored as, so the same headline style renders an `<h1>` for one text block and an `<h2>` for the next.
+
+```ts title="tip-tap-rich-text.block.ts (API)"
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "paragraph", tag: "p", styles: [{ name: "copy300" }, { name: "copy200" }] },
+        { name: "heading-1", tag: "h1", styles: [{ name: "headline450" }] },
+        { name: "heading-2", tag: "h2", styles: [{ name: "headline450" }] },
+    ],
+    orderedList: { styles: [{ name: "copy300" }, { name: "copy200" }] },
+});
+```
+
+```tsx title="TipTapRichTextBlock.tsx (Admin)"
+import { type TipTapTextBlockStyle } from "@dextinity/cms-admin";
+
+const copyStyles: TipTapTextBlockStyle[] = [
+    {
+        name: "copy300",
+        label: <FormattedMessage id="tipTapRichText.copy300" defaultMessage="Copy" />,
+        element: (props, Tag) => <Tag className={styles.copy300} {...props} />,
+    },
+    {
+        name: "copy200",
+        label: <FormattedMessage id="tipTapRichText.copy200" defaultMessage="Copy Small" />,
+        element: (props, Tag) => <Tag className={styles.copy200} {...props} />,
+    },
+];
+
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        {
+            name: "paragraph",
+            tag: "p",
+            label: <FormattedMessage id="tipTapRichText.paragraph" defaultMessage="Paragraph" />,
+            styles: copyStyles,
+        },
+        // A text block can render its own element without offering styles.
+        {
+            name: "display",
+            tag: "h1",
+            label: <FormattedMessage id="tipTapRichText.display" defaultMessage="Display" />,
+            element: (props, Tag) => <Tag className={styles.display} {...props} />,
+        },
+    ],
+    orderedList: { styles: copyStyles },
+});
+```
+
+The chosen style is stored in the node's `textStyle` attribute, which the site resolves to its own typography:
+
+```json
+{
+    "type": "textBlock",
+    "attrs": { "textBlock": "paragraph", "textStyle": "copy200" },
+    "content": [{ "type": "text", "text": "Small copy" }]
+}
+```
+
+```tsx title="TipTapRichTextBlock.tsx (Site)"
+const nodeMapping: Record<string, TipTapNodeHandler> = {
+    textBlock: ({ node, children }) => (
+        <Typography variant={node.attrs?.textStyle ?? node.attrs?.textBlock}>{children}</Typography>
+    ),
+};
+```
+
+A style the text block it sits on isn't configured for is rejected during validation, so the `styles` have to match between the API and the Admin. Switching to a text block that doesn't offer the applied style drops it.
+
+#### List styles
+
+Lists take their styles through `orderedList`/`unorderedList`, passing `{ styles }` in place of `true`. The style is stored on the **list** node, not on its items, so all items of one list share it:
+
+```json
+{
+    "type": "orderedList",
+    "attrs": { "textStyle": "copy200" },
+    "content": [
+        {
+            "type": "listItem",
+            "content": [{ "type": "textBlock", "attrs": { "textBlock": "paragraph" } }]
+        }
+    ]
+}
+```
+
+A nested list is a node of its own and therefore carries its own style, independent of the list around it. The style select always addresses the innermost list the cursor is in, and a list item's own text block never carries a `textStyle` — the list owns it, and content that sets one anyway is rejected.
+
+On the site, a list item reads the style from the list it is rendered in, which `renderTipTapRichText` hands to every handler as `parent`:
+
+```tsx title="TipTapRichTextBlock.tsx (Site)"
+const nodeMapping: Record<string, TipTapNodeHandler> = {
+    listItem: ({ parent, children }) => (
+        <Typography as="li" variant={parent?.attrs?.textStyle}>
+            {children}
+        </Typography>
+    ),
 };
 ```
 

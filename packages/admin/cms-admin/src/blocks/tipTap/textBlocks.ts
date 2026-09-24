@@ -1,4 +1,7 @@
+import type { ResolvedPos } from "@tiptap/pm/model";
 import type { ReactNode } from "react";
+
+import { resolveStyles, type TipTapTextBlockStyle, type TipTapTextElement } from "./textStyles";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -23,6 +26,17 @@ export interface TipTapTextBlock {
      * for instance a lead paragraph next to a regular one.
      */
     tag: TipTapTextBlockTag;
+    /**
+     * Styles offered for the text block in the toolbar's style select, stored in the node's
+     * `textStyle` attribute.
+     *
+     * Must match the API's, otherwise the API rejects content the editor produces.
+     */
+    styles?: TipTapTextBlockStyle[];
+    /**
+     * Renders the text block in the editor while no style is applied. Defaults to its plain tag.
+     */
+    element?: TipTapTextElement;
 }
 
 export interface TipTapResolvedTextBlock extends TipTapTextBlock {
@@ -30,6 +44,7 @@ export interface TipTapResolvedTextBlock extends TipTapTextBlock {
      * Heading level of the text block's tag, `undefined` for a paragraph.
      */
     level?: HeadingLevel;
+    styles: TipTapTextBlockStyle[];
 }
 
 const headingLevelByTag: Record<string, HeadingLevel> = { h1: 1, h2: 2, h3: 3, h4: 4, h5: 5, h6: 6 };
@@ -58,7 +73,11 @@ export function resolveTextBlocks(textBlocks: TipTapTextBlock[]): TipTapResolved
         }
     }
 
-    return textBlocks.map((textBlock) => ({ ...textBlock, level: headingLevelByTag[textBlock.tag] }));
+    return textBlocks.map((textBlock) => ({
+        ...textBlock,
+        level: headingLevelByTag[textBlock.tag],
+        styles: resolveStyles(textBlock.styles, `text block "${textBlock.name}"`),
+    }));
 }
 
 /**
@@ -125,5 +144,18 @@ export function findTextBlockPerTag(textBlocks: TipTapResolvedTextBlock[]): TipT
  * the same node type as one, so the schema can't refuse it - the editor has to.
  */
 export const isTextBlockAllowedInListItem = (textBlock: TipTapResolvedTextBlock): boolean => textBlock.tag === "p";
+
+/**
+ * Whether a position sits inside a list item, which decides both the text blocks allowed there and
+ * where the style comes from.
+ */
+export function isInsideListItem($pos: ResolvedPos): boolean {
+    for (let depth = $pos.depth; depth > 0; depth--) {
+        if ($pos.node(depth).type.name === "listItem") {
+            return true;
+        }
+    }
+    return false;
+}
 
 export const hasParagraphTextBlock = (textBlocks: TipTapResolvedTextBlock[]): boolean => textBlocks.some((textBlock) => textBlock.tag === "p");

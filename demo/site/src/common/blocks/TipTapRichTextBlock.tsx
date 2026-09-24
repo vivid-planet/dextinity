@@ -5,6 +5,7 @@ import {
     type PropsWithData,
     renderTipTapRichText,
     type TipTapMarkHandler,
+    type TipTapNode,
     type TipTapNodeHandler,
     withPreview,
 } from "@dextinity/site-nextjs";
@@ -31,6 +32,16 @@ const textBlockToVariant: Record<string, TypographyVariant> = {
     "heading-5": "headline350",
 };
 
+const textStyleToVariant: Record<string, TypographyVariant> = {
+    paragraph300: "paragraph300",
+    paragraph200: "paragraph200",
+    eyebrow500: "eyebrow500",
+    eyebrow450: "eyebrow450",
+};
+
+const variantOf = (node?: TipTapNode): TypographyVariant =>
+    textStyleToVariant[node?.attrs?.textStyle as string] ?? textBlockToVariant[node?.attrs?.textBlock as string];
+
 const renderCmsBlock: TipTapNodeHandler = ({ node }) => {
     if (node.attrs?.blockType === "productPrice") {
         return <ProductPriceBlock data={node.attrs?.data as ProductPriceBlockData} />;
@@ -42,13 +53,19 @@ const renderCmsBlock: TipTapNodeHandler = ({ node }) => {
 };
 
 const nodeMapping: Record<string, TipTapNodeHandler> = {
-    textBlock: ({ node, children }) => (
-        <Typography variant={textBlockToVariant[node.attrs?.textBlock as string]} bottomSpacing className={styles.text}>
-            {children}
-        </Typography>
-    ),
-    listItem: ({ children }) => (
-        <Typography as="li" className={styles.text}>
+    // A style picked for the text block wins over the text block's own typography. Inside a list the
+    // item carries the typography, so the text block only contributes its content.
+    textBlock: ({ node, parent, children }) =>
+        parent?.type === "listItem" ? (
+            children
+        ) : (
+            <Typography variant={variantOf(node)} bottomSpacing className={styles.text}>
+                {children}
+            </Typography>
+        ),
+    // The list owns the style of its items, and a nested list carries its own.
+    listItem: ({ parent, children }) => (
+        <Typography as="li" variant={variantOf(parent)} className={styles.text}>
             {children}
         </Typography>
     ),

@@ -460,6 +460,140 @@ describe("createTipTapRichTextBlock validation", () => {
         });
     });
 
+    describe("text block styles", () => {
+        const block = createTipTapRichTextBlock(
+            onlyFeatures({
+                textBlocks: [
+                    { name: "paragraph", tag: "p", styles: [{ name: "copy300" }, { name: "copy200" }] },
+                    { name: "heading-2", tag: "h2", styles: [{ name: "headline450" }] },
+                ],
+            }),
+            "TestTextBlockStyles",
+        );
+
+        const validateContent = (textBlockNode: TipTapRichTextBlockContent) =>
+            validate(block.blockInputFactory({ tipTapContent: { type: "doc", content: [textBlockNode] } }));
+
+        it("should accept a style the text block is configured for", async () => {
+            const errors = await validateContent({
+                type: "textBlock",
+                attrs: { textBlock: "paragraph", textStyle: "copy200" },
+                content: [{ type: "text", text: "Small copy" }],
+            });
+            expect(errors).toHaveLength(0);
+        });
+
+        it("should accept a text block without a style", async () => {
+            const errors = await validateContent({
+                type: "textBlock",
+                attrs: { textBlock: "paragraph", textStyle: null },
+                content: [{ type: "text", text: "Copy" }],
+            });
+            expect(errors).toHaveLength(0);
+        });
+
+        it("should reject a style that isn't configured at all", async () => {
+            const errors = await validateContent({
+                type: "textBlock",
+                attrs: { textBlock: "paragraph", textStyle: "unknown" },
+                content: [{ type: "text", text: "Copy" }],
+            });
+            expect(errors).toHaveLength(1);
+        });
+
+        it("should reject a style configured for another text block", async () => {
+            const errors = await validateContent({
+                type: "textBlock",
+                attrs: { textBlock: "paragraph", textStyle: "headline450" },
+                content: [{ type: "text", text: "Copy" }],
+            });
+            expect(errors).toHaveLength(1);
+        });
+
+        it("should reject a style on a block without any", async () => {
+            const withoutStyles = createTipTapRichTextBlock(onlyFeatures(), "TestWithoutStyles");
+            const errors = await validate(
+                withoutStyles.blockInputFactory({
+                    tipTapContent: {
+                        type: "doc",
+                        content: [{ type: "textBlock", attrs: { textBlock: "paragraph", textStyle: "copy200" }, content: [] }],
+                    },
+                }),
+            );
+            expect(errors).toHaveLength(1);
+        });
+    });
+
+    describe("list styles", () => {
+        const block = createTipTapRichTextBlock(
+            onlyFeatures({
+                orderedList: { styles: [{ name: "copy300" }, { name: "copy200" }] },
+                unorderedList: true,
+            }),
+            "TestListStyles",
+        );
+
+        const listItem = (text: string): TipTapRichTextBlockContent => ({
+            type: "listItem",
+            content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text }] }],
+        });
+
+        const validateContent = (node: TipTapRichTextBlockContent) =>
+            validate(block.blockInputFactory({ tipTapContent: { type: "doc", content: [node] } }));
+
+        it("should accept a style the list is configured for", async () => {
+            const errors = await validateContent({ type: "orderedList", attrs: { textStyle: "copy200" }, content: [listItem("One")] });
+            expect(errors).toHaveLength(0);
+        });
+
+        it("should reject a style the list isn't configured for", async () => {
+            const errors = await validateContent({ type: "orderedList", attrs: { textStyle: "headline450" }, content: [listItem("One")] });
+            expect(errors).toHaveLength(1);
+        });
+
+        it("should reject a style on a list without any", async () => {
+            const errors = await validateContent({ type: "bulletList", attrs: { textStyle: "copy200" }, content: [listItem("One")] });
+            expect(errors).toHaveLength(1);
+        });
+
+        it("should accept a nested list carrying its own style", async () => {
+            const errors = await validateContent({
+                type: "orderedList",
+                attrs: { textStyle: "copy300" },
+                content: [
+                    {
+                        type: "listItem",
+                        content: [
+                            { type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "One" }] },
+                            { type: "orderedList", attrs: { textStyle: "copy200" }, content: [listItem("One.a")] },
+                        ],
+                    },
+                ],
+            });
+            expect(errors).toHaveLength(0);
+        });
+
+        it("should reject a style on the text block of a list item, which the list owns", async () => {
+            const errors = await validateContent({
+                type: "orderedList",
+                attrs: { textStyle: "copy200" },
+                content: [
+                    {
+                        type: "listItem",
+                        content: [
+                            {
+                                type: "textBlock",
+                                attrs: { textBlock: "paragraph", textStyle: "copy300" },
+                                content: [{ type: "text", text: "One" }],
+                            },
+                        ],
+                    },
+                ],
+            });
+            expect(errors).toHaveLength(1);
+        });
+    });
+
     describe("inlineStyles", () => {
         const block = createTipTapRichTextBlock(
             onlyFeatures({
@@ -1377,9 +1511,9 @@ describe("createTipTapRichTextBlock validation", () => {
 
         it("should disable lists by default when there is no paragraph text block", () => {
             const resolvedOptions = resolveTipTapOptions({ textBlocks: headingOnly234 });
-            expect(resolvedOptions.orderedList).toBe(false);
-            expect(resolvedOptions.unorderedList).toBe(false);
-            expect(resolvedOptions.defaultTextBlock).toEqual({ name: "heading-2", tag: "h2", level: 2 });
+            expect(resolvedOptions.orderedList.enabled).toBe(false);
+            expect(resolvedOptions.unorderedList.enabled).toBe(false);
+            expect(resolvedOptions.defaultTextBlock).toEqual({ name: "heading-2", tag: "h2", level: 2, styles: [] });
         });
     });
 

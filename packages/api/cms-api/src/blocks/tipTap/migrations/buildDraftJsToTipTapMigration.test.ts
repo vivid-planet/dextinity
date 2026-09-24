@@ -181,9 +181,14 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
     describe("textBlockMap", () => {
         const block = createTipTapRichTextBlock(
             {
+                textBlocks: [
+                    { name: "paragraph", tag: "p", styles: [{ name: "paragraph200" }] },
+                    { name: "heading-2", tag: "h2" },
+                ],
                 migrateFromDraftJs: {
                     textBlockMap: {
                         "headline-450": { textBlock: "heading-2" },
+                        "paragraph-small": { textBlock: "paragraph", textStyle: "paragraph200" },
                     },
                 },
             },
@@ -204,6 +209,25 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
                         type: "textBlock",
                         attrs: { textBlock: "heading-2" },
                         content: [{ type: "text", text: "Title" }],
+                    },
+                ],
+            });
+        });
+
+        it("converts a custom block type to the style it is mapped to", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [draftBlock({ type: "paragraph-small", text: "small" })],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [
+                    {
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph", textStyle: "paragraph200" },
+                        content: [{ type: "text", text: "small" }],
                     },
                 ],
             });

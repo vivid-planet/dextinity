@@ -26,6 +26,7 @@ import { translateTipTapContent } from "./contentTranslation";
 import { CmsBlock, CmsInlineBlock } from "./extensions/CmsBlock";
 import { CmsLink } from "./extensions/CmsLink";
 import { InlineStyleMark } from "./extensions/InlineStyleMark";
+import { createListTextStyle } from "./extensions/ListTextStyle";
 import { NonBreakingSpace } from "./extensions/NonBreakingSpace";
 import { Placeholder } from "./extensions/Placeholder";
 import { SoftHyphen } from "./extensions/SoftHyphen";
@@ -33,6 +34,7 @@ import { createTextBlock } from "./extensions/TextBlock";
 import { TextBlockListItem } from "./extensions/TextBlockListItem";
 import { InlineStyleContext } from "./InlineStyleContext";
 import { createListLevelMaxExtension, getListNestingDepthFromJson, trimListNesting } from "./listLevelMaxHelpers";
+import { buildListStylesByType } from "./listTextStyles";
 import {
     allHeadingLevels,
     findDefaultTextBlock,
@@ -41,10 +43,12 @@ import {
     type TipTapResolvedTextBlock,
     type TipTapTextBlock,
 } from "./textBlocks";
+import { resolveList, type TipTapListOptions, type TipTapResolvedList } from "./textStyles";
 import { TipTapContentTranslationDialog } from "./TipTapContentTranslationDialog";
 import { TipTapToolbar } from "./TipTapToolbar";
 
 export type { TipTapTextBlock, TipTapTextBlockTag } from "./textBlocks";
+export type { TipTapListOptions, TipTapTextBlockStyle, TipTapTextElement, TipTapTextElementProps } from "./textStyles";
 export type { JSONContent as TipTapRichTextBlockContent } from "@tiptap/core";
 
 /**
@@ -64,8 +68,8 @@ export interface TipTapResolvedOptions {
      * the schema's default block type.
      */
     defaultTextBlock: TipTapResolvedTextBlock;
-    orderedList: boolean;
-    unorderedList: boolean;
+    orderedList: TipTapResolvedList;
+    unorderedList: TipTapResolvedList;
     nonBreakingSpace: boolean;
     softHyphen: boolean;
     link: boolean;
@@ -104,8 +108,11 @@ function resolveTipTapOptions({
 }: TipTapRichTextBlockFactoryOptions = {}): TipTapResolvedOptions {
     const resolvedTextBlocks = resolveTextBlocks(textBlocks);
     const hasParagraph = hasParagraphTextBlock(resolvedTextBlocks);
+    // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
+    const resolvedOrderedList = resolveList(orderedList, { enabledByDefault: hasParagraph, context: "orderedList" });
+    const resolvedUnorderedList = resolveList(unorderedList, { enabledByDefault: hasParagraph, context: "unorderedList" });
 
-    if (!hasParagraph && (orderedList || unorderedList)) {
+    if (!hasParagraph && (resolvedOrderedList.enabled || resolvedUnorderedList.enabled)) {
         throw new Error("Lists require a text block with the tag p, because a list item's content starts with a paragraph");
     }
 
@@ -119,9 +126,8 @@ function resolveTipTapOptions({
         sup,
         textBlocks: resolvedTextBlocks,
         defaultTextBlock: findDefaultTextBlock({ textBlocks: resolvedTextBlocks, defaultTextBlock }),
-        // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
-        orderedList: orderedList ?? hasParagraph,
-        unorderedList: unorderedList ?? hasParagraph,
+        orderedList: resolvedOrderedList,
+        unorderedList: resolvedUnorderedList,
         nonBreakingSpace,
         softHyphen,
         link: !!link,
@@ -228,13 +234,13 @@ interface TipTapRichTextBlockFactoryOptions {
      */
     defaultTextBlock?: string;
     /**
-     * Enables ordered lists. Defaults to `true`.
+     * Enables ordered lists. Defaults to `true`. Pass `{ styles }` to give the list styles.
      */
-    orderedList?: boolean;
+    orderedList?: boolean | TipTapListOptions;
     /**
-     * Enables unordered lists. Defaults to `true`.
+     * Enables unordered lists. Defaults to `true`. Pass `{ styles }` to give the list styles.
      */
-    unorderedList?: boolean;
+    unorderedList?: boolean | TipTapListOptions;
     /**
      * Enables non-breaking spaces. Defaults to `true`.
      */
@@ -460,6 +466,12 @@ function buildTipTapExtensions({
     listLevelMax?: number;
 }): Extensions {
     const hasInlineStyles = inlineStyles.length > 0;
+    const hasTextBlockStyles = resolvedOptions.textBlocks.some((textBlock) => textBlock.styles.length > 0);
+    const listStylesByType = buildListStylesByType(resolvedOptions);
+    const listStyles = [...listStylesByType.orderedList, ...listStylesByType.bulletList];
+    const hasCustomElements =
+        resolvedOptions.textBlocks.some((textBlock) => textBlock.element || textBlock.styles.some((style) => style.element)) ||
+        listStyles.some((style) => style.element);
     const hasLink = resolvedOptions.link && !!linkBlock;
     const hasPlaceholders = placeholders.length > 0;
     const childBlockEntries = Object.values(childBlocks);
@@ -476,8 +488,8 @@ function buildTipTapExtensions({
             // Every paragraph and heading is one textBlock node, added below.
             heading: false,
             paragraph: false,
-            orderedList: resolvedOptions.orderedList ? {} : false,
-            bulletList: resolvedOptions.unorderedList ? {} : false,
+            orderedList: resolvedOptions.orderedList.enabled ? {} : false,
+            bulletList: resolvedOptions.unorderedList.enabled ? {} : false,
             // A list item's content starts with a paragraph, so lists cannot exist without one.
             // TextBlockListItem replaces it, holding text blocks instead of paragraphs.
             listItem: false,
@@ -490,8 +502,9 @@ function buildTipTapExtensions({
             // doesn't need TrailingNode's own empty paragraph the way a trailing atom node (e.g. a child block) does.
             trailingNode: { notAfter: ["textBlock"] },
         }),
-        createTextBlock(resolvedOptions),
+        createTextBlock({ ...resolvedOptions, hasStyles: hasTextBlockStyles, hasCustomElements }),
         ...(hasParagraph ? [TextBlockListItem] : []),
+        ...(listStyles.length > 0 ? [createListTextStyle(listStylesByType)] : []),
         ...(hasInlineStyles ? [InlineStyleMark] : []),
         ...(resolvedOptions.sup ? [Superscript] : []),
         ...(resolvedOptions.sub ? [Subscript] : []),

@@ -1,3 +1,5 @@
+import { resolveStyles, type TipTapTextBlockStyle } from "./textStyles";
+
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 /**
@@ -16,6 +18,11 @@ export interface TipTapTextBlock {
      * HTML element the text block is stored and rendered as. Several text blocks may share a tag.
      */
     tag: TipTapTextBlockTag;
+    /**
+     * Styles offered for the text block, stored in the node's `textStyle` attribute. A style the
+     * text block isn't configured for is rejected during validation.
+     */
+    styles?: TipTapTextBlockStyle[];
 }
 
 export interface TipTapResolvedTextBlock extends TipTapTextBlock {
@@ -23,6 +30,7 @@ export interface TipTapResolvedTextBlock extends TipTapTextBlock {
      * Heading level of the text block's tag, `undefined` for a paragraph.
      */
     level?: HeadingLevel;
+    styles: TipTapTextBlockStyle[];
 }
 
 const headingLevelByTag: Record<string, HeadingLevel> = { h1: 1, h2: 2, h3: 3, h4: 4, h5: 5, h6: 6 };
@@ -42,7 +50,7 @@ export const defaultTextBlocks: TipTapTextBlock[] = [
 /**
  * Applies the defaults to the configured text blocks and validates them against each other.
  */
-export function resolveTextBlocks<T extends TipTapTextBlock>(textBlocks: T[]): Array<T & { level?: HeadingLevel }> {
+export function resolveTextBlocks<T extends TipTapTextBlock>(textBlocks: T[]): Array<T & { level?: HeadingLevel; styles: TipTapTextBlockStyle[] }> {
     if (textBlocks.length === 0) {
         throw new Error("textBlocks must not be empty, otherwise no text block type is left");
     }
@@ -59,7 +67,11 @@ export function resolveTextBlocks<T extends TipTapTextBlock>(textBlocks: T[]): A
         }
     }
 
-    return textBlocks.map((textBlock) => ({ ...textBlock, level: headingLevelByTag[textBlock.tag] }));
+    return textBlocks.map((textBlock) => ({
+        ...textBlock,
+        level: headingLevelByTag[textBlock.tag],
+        styles: resolveStyles(textBlock.styles, `text block "${textBlock.name}"`),
+    }));
 }
 
 /**

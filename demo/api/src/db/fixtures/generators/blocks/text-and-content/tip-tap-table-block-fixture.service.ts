@@ -5,6 +5,9 @@ import { LinkBlockFixtureService } from "@src/db/fixtures/generators/blocks/navi
 
 import { DescriptionCellContent, TableBlockFixtureBase } from "./table-block-fixture-base";
 
+const standardParagraphStyle = "paragraph300";
+const smallParagraphStyle = "paragraph200";
+
 type TipTapRichTextInput = ExtractBlockInputFactoryProps<typeof TipTapRichTextBlock>;
 
 @Injectable()
@@ -20,7 +23,7 @@ export class TipTapTableBlockFixtureService extends TableBlockFixtureBase<TipTap
                 content: [
                     {
                         type: "textBlock",
-                        attrs: { textBlock: "paragraph" },
+                        attrs: { textBlock: "paragraph", textStyle: standardParagraphStyle },
                         content: [{ type: "text", text }],
                     },
                 ],
@@ -41,12 +44,12 @@ export class TipTapTableBlockFixtureService extends TableBlockFixtureBase<TipTap
                 content: [
                     {
                         type: "textBlock",
-                        attrs: { textBlock: "paragraph" },
+                        attrs: { textBlock: "paragraph", textStyle: standardParagraphStyle },
                         content: [{ type: "text", text: jobTitle }],
                     },
                     {
                         type: "textBlock",
-                        attrs: { textBlock: "paragraph" },
+                        attrs: { textBlock: "paragraph", textStyle: smallParagraphStyle },
                         content: [
                             { type: "text", text: textBeforeLink },
                             { type: "text", marks: [{ type: "link", attrs: { data: link } }], text: linkText },

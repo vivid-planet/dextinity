@@ -46,6 +46,12 @@ interface TextBlockMapping {
      * `headline450` block type rendered as `<h2>`).
      */
     textBlock: string;
+    /**
+     * Style applied to the converted text block. Leave it out for a text block that offers no
+     * styles; a style the text block isn't configured for fails validation, which falls the
+     * migration back to plain text.
+     */
+    textStyle?: string;
 }
 
 interface ConvertOptions {
@@ -53,9 +59,9 @@ interface ConvertOptions {
     link?: Block;
     /**
      * Maps DraftJS block types (e.g. custom `paragraph-small`) to the TipTap text block they are
-     * converted to. A DraftJS block type that isn't mapped becomes the text block its own type
-     * implies: `header-one`…`header-six` keep their heading level, everything else becomes a
-     * paragraph.
+     * converted to, and to the style applied to it. A DraftJS block type that isn't mapped becomes
+     * the text block its own type implies: `header-one`…`header-six` keep their heading level,
+     * everything else becomes a paragraph.
      */
     textBlockMap?: Record<string, TextBlockMapping>;
     /**
@@ -305,9 +311,15 @@ function resolveTargetTextBlock({
     return findTextBlockForTag({ tag, textBlocks }) ?? defaultTextBlock;
 }
 
-function makeTextBlockNode(inlineContent: JSONContent[], { textBlock }: { textBlock: TipTapResolvedTextBlock }): JSONContent {
+function makeTextBlockNode(
+    inlineContent: JSONContent[],
+    { textBlock, textStyle }: { textBlock: TipTapResolvedTextBlock; textStyle?: string },
+): JSONContent {
     const node: JSONContent = { type: "textBlock", attrs: { textBlock: textBlock.name } };
 
+    if (textStyle !== undefined) {
+        node.attrs = { ...node.attrs, textStyle };
+    }
     if (inlineContent.length > 0) {
         node.content = inlineContent;
     }
@@ -400,7 +412,7 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
         const inlineContent = buildInlineContent({ block, entityMap, resolvedOptions, hasLink, inlineStyleMap });
 
         const listMapping = LIST_BLOCK_TYPE_TO_LIST[block.type];
-        if (listMapping && resolvedOptions[listMapping.option]) {
+        if (listMapping && resolvedOptions[listMapping.option].enabled) {
             addListItem(listMapping.listType, block.depth ?? 0, inlineContent);
             continue;
         }
@@ -416,6 +428,7 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
                     headingLevel: HEADER_TYPE_TO_LEVEL[block.type],
                     resolvedOptions,
                 }),
+                textStyle: mapping?.textStyle,
             }),
         );
     }

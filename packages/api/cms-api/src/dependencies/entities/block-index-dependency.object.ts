@@ -1,5 +1,7 @@
 import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
 
+import { ContentScope } from "../../user-permissions/interfaces/content-scope.interface";
+
 // Note: This file is intentionally not named *.entity.ts to exclude it from MikroORM's CLI migration glob pattern.
 // The "block_index_dependencies" materialized view is created dynamically at startup by DependenciesService, not via migrations.
 
@@ -59,9 +61,15 @@ export class BlockIndexDependencyObject {
     @Property({ type: "text", nullable: true })
     rootSecondaryInformation?: string;
 
+    @Property({ type: "jsonb", nullable: true })
+    rootScope?: ContentScope;
+
     @Property({ type: "text", nullable: true })
     targetName?: string;
 
     @Property({ type: "text", nullable: true })
     targetSecondaryInformation?: string;
+
+    @Property({ type: "jsonb", nullable: true })
+    targetScope?: ContentScope;
 }

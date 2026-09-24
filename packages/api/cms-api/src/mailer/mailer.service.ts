@@ -103,7 +103,11 @@ export class MailerService {
         }
 
         // Delete outdated logs, purposely not using await because it is not important for the mail sending process
-        this.mailerLogRepository.nativeDelete({ createdAt: { $lt: subDays(new Date(), this.mailerConfig.daysToKeepMailLog ?? 90) } });
+        this.mailerLogRepository
+            .nativeDelete({ createdAt: { $lt: subDays(new Date(), this.mailerConfig.daysToKeepMailLog ?? 90) } })
+            .catch((error) => {
+                this.logger.error("Failed to delete outdated mail logs", error);
+            });
 
         return result;
     }

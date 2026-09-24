@@ -1,6 +1,6 @@
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, MikroORM, QueryBuilder, raw, Utils } from "@mikro-orm/postgresql";
-import { forwardRef, Inject, Injectable, Optional } from "@nestjs/common";
+import { forwardRef, Inject, Injectable, Logger, Optional } from "@nestjs/common";
 import { createHmac } from "crypto";
 import exifr from "exifr";
 import { createReadStream } from "fs";
@@ -115,6 +115,8 @@ const withFilesSelect = (
 
 @Injectable()
 export class FilesService {
+    private readonly logger = new Logger(FilesService.name);
+
     constructor(
         @InjectRepository("DamFile") private readonly filesRepository: EntityRepository<FileInterface>,
         @InjectRepository(DamMediaAlternative) private readonly damMediaAlternativesRepository: EntityRepository<DamMediaAlternative>,
@@ -450,10 +452,15 @@ export class FilesService {
                 const entityManager = this.orm.em.fork();
                 const image = await entityManager.findOneOrFail(DamFileImage, result.image.id);
 
-                dominantColorCalculator.calculateDominantColor(contentHash).then((dominantColor) => {
-                    image.dominantColor = dominantColor;
-                    return entityManager.flush();
-                });
+                dominantColorCalculator
+                    .calculateDominantColor(contentHash)
+                    .then((dominantColor) => {
+                        image.dominantColor = dominantColor;
+                        return entityManager.flush();
+                    })
+                    .catch((error) => {
+                        this.logger.error(`Failed to calculate dominant color for image ${image.id}`, error);
+                    });
             }
             rimraf.sync(file.path);
         } catch (e) {

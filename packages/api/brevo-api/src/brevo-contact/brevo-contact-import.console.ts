@@ -1,5 +1,5 @@
 import { CreateRequestContext, MikroORM } from "@mikro-orm/core";
-import { EntityManager } from "@mikro-orm/postgresql";
+import { EntityClass, EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Logger, Type } from "@nestjs/common";
 import { isUUID, validateSync } from "class-validator";
 import { InvalidOptionArgumentError } from "commander";
@@ -9,7 +9,7 @@ import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-ent
 
 import { BrevoContactImportService } from "../brevo-contact/brevo-contact-import.service";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { BREVO_CONFIG_ENTITY, BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { EmailCampaignScopeInterface } from "../types";
 
 interface CommandOptions {
@@ -32,6 +32,7 @@ export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCa
             @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
             private readonly brevoContactImportService: BrevoContactImportService,
             private readonly entityManager: EntityManager,
+            @Inject(BREVO_CONFIG_ENTITY) private readonly BrevoConfig: EntityClass<BrevoConfigInterface>,
         ) {
             super();
         }
@@ -110,7 +111,7 @@ export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCa
         }
 
         async validateRedirectUrl(urlToValidate: string, scope: Type<EmailCampaignScopeInterface>): Promise<boolean> {
-            const configForScope = await this.entityManager.findOneOrFail<BrevoConfigInterface>("BrevoConfig", { scope });
+            const configForScope = await this.entityManager.findOneOrFail(this.BrevoConfig, { scope });
 
             if (!configForScope) {
                 throw Error("Scope does not exist");

@@ -1,9 +1,9 @@
-import { EntityManager } from "@mikro-orm/postgresql";
+import { EntityClass, EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { EmailCampaignScopeInterface } from "src/types";
 
 import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { BREVO_BLACKLISTED_CONTACTS_ENTITY, BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { hashEmail } from "../util/hash.util";
 import { BlacklistedContactsInterface } from "./entity/blacklisted-contacts.entity.factory";
 
@@ -14,6 +14,7 @@ export class BlacklistedContactsService {
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
         private readonly entityManager: EntityManager,
+        @Inject(BREVO_BLACKLISTED_CONTACTS_ENTITY) private readonly BrevoBlacklistedContacts: EntityClass<BlacklistedContactsInterface>,
     ) {
         this.secretKey = this.config.contactsWithoutDoi?.emailHashKey;
     }
@@ -28,7 +29,7 @@ export class BlacklistedContactsService {
         for (const email of emails) {
             const hashedEmail = hashEmail(email, this.secretKey);
 
-            const blacklistedContact = this.entityManager.create<BlacklistedContactsInterface>("BrevoBlacklistedContacts", {
+            const blacklistedContact = this.entityManager.create(this.BrevoBlacklistedContacts, {
                 hashedEmail,
                 scope,
                 createdAt: new Date(),

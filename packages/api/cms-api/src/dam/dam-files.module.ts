@@ -1,4 +1,5 @@
 import { MikroOrmModule } from "@mikro-orm/nestjs";
+import { EntityClass } from "@mikro-orm/postgresql";
 import { DynamicModule, Global, Module, Type, ValueProvider } from "@nestjs/common";
 
 import { validateScopeTypeNames } from "../common/helper/scope-type-names.helper";
@@ -6,7 +7,7 @@ import { FileValidationService } from "../file-utils/file-validation.service";
 import { HasValidFilenameConstraint } from "./common/decorators/has-valid-filename.decorator";
 import { damDefaultAcceptedMimetypes } from "./common/mimeTypes/dam-default-accepted-mimetypes";
 import { DamConfig, damDefaultBasePath } from "./dam.config";
-import { DAM_CONFIG, DAM_DISABLE_SCOPE_ACCESS_CONTROL, DAM_FILE_VALIDATION_SERVICE } from "./dam.constants";
+import { DAM_CONFIG, DAM_DISABLE_SCOPE_ACCESS_CONTROL, DAM_FILE_ENTITY, DAM_FILE_VALIDATION_SERVICE, DAM_FOLDER_ENTITY } from "./dam.constants";
 import { createDamItemsResolver } from "./files/dam-items.resolver";
 import { DamItemsService } from "./files/dam-items.service";
 import { createDamMediaAlternativeResolver } from "./files/dam-media-alternatives/dam-media-alternative.resolver";
@@ -75,6 +76,16 @@ export class DamFilesModule {
             useValue: disableScopeAccessControl,
         };
 
+        const fileEntityProvider: ValueProvider<EntityClass<FileInterface>> = {
+            provide: DAM_FILE_ENTITY,
+            useValue: File,
+        };
+
+        const folderEntityProvider: ValueProvider<EntityClass<FolderInterface>> = {
+            provide: DAM_FOLDER_ENTITY,
+            useValue: Folder,
+        };
+
         const fileValidationServiceProvider = {
             provide: DAM_FILE_VALIDATION_SERVICE,
             useValue: new FileValidationService({
@@ -98,6 +109,8 @@ export class DamFilesModule {
             providers: [
                 damConfigProvider,
                 disableScopeAccessControlProvider,
+                fileEntityProvider,
+                folderEntityProvider,
                 fileValidationServiceProvider,
                 DamItemsResolver,
                 DamItemsService,
@@ -115,7 +128,15 @@ export class DamFilesModule {
                 createFilesController({ Scope, damBasePath: damConfig.basePath }),
                 createFoldersController({ damBasePath: damConfig.basePath }),
             ],
-            exports: [FilesService, FoldersService, DamItemsService, damConfigProvider, DamScopeAccessControlService],
+            exports: [
+                FilesService,
+                FoldersService,
+                DamItemsService,
+                damConfigProvider,
+                fileEntityProvider,
+                folderEntityProvider,
+                DamScopeAccessControlService,
+            ],
         };
     }
 }

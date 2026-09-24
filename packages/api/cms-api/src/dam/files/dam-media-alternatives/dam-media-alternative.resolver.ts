@@ -10,7 +10,7 @@ import { extractGraphqlFields } from "../../../common/graphql/extract-graphql-fi
 import { AffectedEntity } from "../../../user-permissions/decorators/affected-entity.decorator";
 import { RequiredPermission } from "../../../user-permissions/decorators/required-permission.decorator";
 import { DamScopeInterface } from "../../types";
-import { FILE_ENTITY, FileInterface } from "../entities/file.entity";
+import { FileInterface } from "../entities/file.entity";
 import { DamMediaAlternativeInput, DamMediaAlternativeUpdateInput } from "./dto/dam-media-alternative.input";
 import { DamMediaAlternativesArgs } from "./dto/dam-media-alternatives.args";
 import { PaginatedDamMediaAlternatives } from "./dto/paginated-dam-media-alternatives";
@@ -104,8 +104,8 @@ export function createDamMediaAlternativeResolver({
             const damMediaAlternative = this.entityManager.create(DamMediaAlternative, {
                 ...input,
 
-                for: Reference.create(await this.entityManager.findOneOrFail<FileInterface>(FILE_ENTITY, forId)),
-                alternative: Reference.create(await this.entityManager.findOneOrFail<FileInterface>(FILE_ENTITY, alternativeId)),
+                for: Reference.create(await this.entityManager.findOneOrFail<FileInterface>(File, forId)),
+                alternative: Reference.create(await this.entityManager.findOneOrFail<FileInterface>(File, alternativeId)),
             });
 
             await this.entityManager.flush();
@@ -127,12 +127,10 @@ export function createDamMediaAlternativeResolver({
             });
 
             if (forInput !== undefined) {
-                damMediaAlternative.for = Reference.create(await this.entityManager.findOneOrFail<FileInterface>(FILE_ENTITY, forInput));
+                damMediaAlternative.for = Reference.create(await this.entityManager.findOneOrFail<FileInterface>(File, forInput));
             }
             if (alternativeInput !== undefined) {
-                damMediaAlternative.alternative = Reference.create(
-                    await this.entityManager.findOneOrFail<FileInterface>(FILE_ENTITY, alternativeInput),
-                );
+                damMediaAlternative.alternative = Reference.create(await this.entityManager.findOneOrFail<FileInterface>(File, alternativeInput));
             }
 
             await this.entityManager.flush();

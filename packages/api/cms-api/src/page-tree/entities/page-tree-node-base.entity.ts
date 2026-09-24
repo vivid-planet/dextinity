@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, Enum, FullTextType, Index, ManyToOne, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { BaseEntity, Entity, Enum, FullTextType, Index, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
@@ -23,8 +23,7 @@ export abstract class PageTreeNodeBase extends BaseEntity {
     @Field(() => String, { nullable: true })
     parentId: string | null;
 
-    @ManyToOne(() => PAGE_TREE_ENTITY, { nullable: true, joinColumn: "parentId" })
-    @Index()
+    // Relation is defined in createPageTreeNodeEntity since it references the concrete page tree node entity
     parent?: PageTreeNodeInterface;
 
     @Property()

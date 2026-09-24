@@ -1,12 +1,13 @@
-import { EntityManager } from "@mikro-orm/postgresql";
-import { Injectable } from "@nestjs/common";
+import { EntityClass, EntityManager } from "@mikro-orm/postgresql";
+import { Inject, Injectable } from "@nestjs/common";
 import { registerDecorator, ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
 import { basename, extname } from "path";
 
 import { slugifyFilename } from "../../../file-utils/files.utils";
+import { DAM_FILE_ENTITY } from "../../dam.constants";
 import { UpdateFileInput } from "../../files/dto/file.input";
 import { UpdateDamFileArgs } from "../../files/dto/update-dam-file.args";
-import { FILE_ENTITY, FileInterface } from "../../files/entities/file.entity";
+import { FileInterface } from "../../files/entities/file.entity";
 
 export const HasValidFilename = () => {
     // eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
@@ -28,7 +29,10 @@ interface HasValidFilenameValidationArguments extends ValidationArguments {
 export class HasValidFilenameConstraint implements ValidatorConstraintInterface {
     errorMessage: string | undefined;
 
-    constructor(private readonly entityManager: EntityManager) {}
+    constructor(
+        private readonly entityManager: EntityManager,
+        @Inject(DAM_FILE_ENTITY) private readonly File: EntityClass<FileInterface>,
+    ) {}
 
     async validate(value: UpdateFileInput, validationArguments: HasValidFilenameValidationArguments): Promise<boolean> {
         if (value.name === undefined) {
@@ -50,7 +54,7 @@ export class HasValidFilenameConstraint implements ValidatorConstraintInterface 
         }
 
         const id = validationArguments.object.id;
-        const file = await this.entityManager.findOneOrFail<FileInterface>(FILE_ENTITY, { id });
+        const file = await this.entityManager.findOneOrFail(this.File, { id });
 
         const oldExtension = extname(file.name);
 

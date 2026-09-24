@@ -1,4 +1,4 @@
-import { EntityManager } from "@mikro-orm/postgresql";
+import { EntityClass, EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 
@@ -7,7 +7,7 @@ import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service"
 import { BrevoEmailImportLogService } from "../brevo-email-import-log/brevo-email-import-log.service";
 import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { BREVO_BLACKLISTED_CONTACTS_ENTITY, BREVO_CONFIG_ENTITY, BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { TargetGroupsService } from "../target-group/target-groups.service";
 import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "../types";
 import { hashEmail } from "../util/hash.util";
@@ -22,10 +22,14 @@ export class BrevoContactsService {
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
         private readonly entityManager: EntityManager,
+        @Inject(BREVO_CONFIG_ENTITY) private readonly BrevoConfig: EntityClass<BrevoConfigInterface>,
         private readonly brevoContactsApiService: BrevoApiContactsService,
         private readonly ecgRtrListService: EcgRtrListService,
         private readonly targetGroupService: TargetGroupsService,
         @Optional() private readonly brevoEmailImportLogService: BrevoEmailImportLogService,
+        @Optional()
+        @Inject(BREVO_BLACKLISTED_CONTACTS_ENTITY)
+        private readonly BrevoBlacklistedContacts?: EntityClass<BlacklistedContactsInterface>,
     ) {
         this.secretKey = this.config.contactsWithoutDoi?.emailHashKey;
     }
@@ -69,8 +73,12 @@ export class BrevoContactsService {
                 throw new Error("There is no `emailHashKey` defined in the environment variables.");
             }
 
+            if (!this.BrevoBlacklistedContacts) {
+                throw new Error("There is no `BlacklistedContacts` entity defined in the BrevoModule config.");
+            }
+
             const hashedEmail = hashEmail(email, this.secretKey);
-            const blacklistedContactAvailable = await this.entityManager.findOne<BlacklistedContactsInterface>("BrevoBlacklistedContacts", {
+            const blacklistedContactAvailable = await this.entityManager.findOne(this.BrevoBlacklistedContacts, {
                 hashedEmail: hashedEmail,
             });
 
@@ -157,7 +165,7 @@ export class BrevoContactsService {
             return SubscribeResponse.ERROR_CONTAINED_IN_ECG_RTR_LIST;
         }
 
-        const brevoConfig = await this.entityManager.findOneOrFail<BrevoConfigInterface>("BrevoConfig", { scope });
+        const brevoConfig = await this.entityManager.findOneOrFail(this.BrevoConfig, { scope });
 
         const created = await this.createContact({
             ...data,

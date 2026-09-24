@@ -1,6 +1,6 @@
 import { BlocksTransformerService, filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@dextinity/cms-api";
 import { Brevo } from "@getbrevo/brevo";
-import { EntityManager, ObjectQuery, wrap } from "@mikro-orm/postgresql";
+import { EntityClass, EntityManager, ObjectQuery, wrap } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 import { EmailCampaignScopeInterface } from "src/types";
@@ -9,7 +9,7 @@ import { BrevoApiCampaignsService } from "../brevo-api/brevo-api-campaigns.servi
 import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
 import { EcgRtrListService } from "../brevo-contact/ecg-rtr-list/ecg-rtr-list.service";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { BREVO_CONFIG_ENTITY, BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { EmailCampaignFilter } from "./dto/email-campaign.filter";
 import { EmailCampaignInterface } from "./entities/email-campaign-entity.factory";
 import { SendingState } from "./sending-state.enum";
@@ -23,6 +23,7 @@ export class EmailCampaignsService {
         private readonly brevoApiCampaignService: BrevoApiCampaignsService,
         private readonly brevoApiContactsService: BrevoApiContactsService,
         private readonly entityManager: EntityManager,
+        @Inject(BREVO_CONFIG_ENTITY) private readonly BrevoConfig: EntityClass<BrevoConfigInterface>,
         private readonly ecgRtrListService: EcgRtrListService,
         private readonly blockTransformerService: BlocksTransformerService,
     ) {}
@@ -44,7 +45,7 @@ export class EmailCampaignsService {
     async saveEmailCampaignInBrevo(campaign: EmailCampaignInterface, scheduledAt?: Date): Promise<EmailCampaignInterface> {
         const content = await this.blockTransformerService.transformToPlain(campaign.content, { previewDamUrls: false });
 
-        const brevoConfig = await this.entityManager.findOneOrFail<BrevoConfigInterface>("BrevoConfig", { scope: campaign.scope });
+        const brevoConfig = await this.entityManager.findOneOrFail(this.BrevoConfig, { scope: campaign.scope });
         let campaignConfig;
         if (typeof this.config.emailCampaigns.frontend === "function") {
             campaignConfig = this.config.emailCampaigns.frontend(campaign.scope);

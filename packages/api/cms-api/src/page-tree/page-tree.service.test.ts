@@ -35,7 +35,7 @@ function createServiceWithNodes(nodes: PageTreeNodeInterface[]): { service: Page
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const service = new PageTreeService(entityManager as any, {} as any, {} as any);
+    const service = new PageTreeService(entityManager as any, {} as any, {} as any, {} as any);
 
     return { service, queriedFilters };
 }

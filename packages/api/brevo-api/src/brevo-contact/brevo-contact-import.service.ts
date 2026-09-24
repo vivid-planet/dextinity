@@ -1,5 +1,5 @@
 import * as csv from "@fast-csv/parse";
-import { EntityManager } from "@mikro-orm/postgresql";
+import { EntityClass, EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 import { IsEmail, IsNotEmpty, validateSync } from "class-validator";
@@ -13,7 +13,7 @@ import { BrevoApiContactsService, CreateDoubleOptInContactData } from "../brevo-
 import { BrevoContactsService } from "../brevo-contact/brevo-contacts.service";
 import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { BREVO_CONFIG_ENTITY, BREVO_MODULE_CONFIG, BREVO_TARGET_GROUP_ENTITY } from "../config/brevo-module.constants";
 import { TargetGroupsService } from "../target-group/target-groups.service";
 import { EmailCampaignScopeInterface } from "../types";
 
@@ -68,6 +68,8 @@ export class BrevoContactImportService {
         private readonly brevoContactsService: BrevoContactsService,
         private readonly targetGroupsService: TargetGroupsService,
         private readonly entityManager: EntityManager,
+        @Inject(BREVO_TARGET_GROUP_ENTITY) private readonly BrevoTargetGroup: EntityClass<TargetGroupInterface>,
+        @Inject(BREVO_CONFIG_ENTITY) private readonly BrevoConfig: EntityClass<BrevoConfigInterface>,
     ) {}
 
     async importContactsFromCsv({
@@ -83,7 +85,7 @@ export class BrevoContactImportService {
         const failedColumns: Record<string, string>[] = [];
         const blacklistedColumns: Record<string, string>[] = [];
 
-        const targetGroups = await this.entityManager.find<TargetGroupInterface>("BrevoTargetGroup", { id: { $in: targetGroupIds } });
+        const targetGroups = await this.entityManager.find(this.BrevoTargetGroup, { id: { $in: targetGroupIds } });
         const contactSource = ContactSource.csvImport;
 
         for (const targetGroup of targetGroups) {
@@ -192,7 +194,7 @@ export class BrevoContactImportService {
                     return "updated";
                 }
             } else if (!brevoContact) {
-                const brevoConfig = await this.entityManager.findOneOrFail<BrevoConfigInterface>("BrevoConfig", { scope });
+                const brevoConfig = await this.entityManager.findOneOrFail(this.BrevoConfig, { scope });
 
                 const success = await this.brevoContactsService.createContact({
                     ...contact,

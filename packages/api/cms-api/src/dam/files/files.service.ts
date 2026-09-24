@@ -1,4 +1,4 @@
-import { EntityManager, MikroORM, QueryBuilder, raw, Utils } from "@mikro-orm/postgresql";
+import { EntityClass, EntityManager, MikroORM, QueryBuilder, raw, Utils } from "@mikro-orm/postgresql";
 import { forwardRef, Inject, Injectable, Optional } from "@nestjs/common";
 import { createHmac } from "crypto";
 import exifr from "exifr";
@@ -19,7 +19,7 @@ import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are
 import { DextinityImageResolutionException } from "../common/errors/image-resolution.exception";
 import { getDamFileCategory } from "../common/mimeTypes/dam-file-category";
 import { DamConfig } from "../dam.config";
-import { DAM_CONFIG, DAM_DOMINANT_COLOR_CALCULATOR } from "../dam.constants";
+import { DAM_CONFIG, DAM_DOMINANT_COLOR_CALCULATOR, DAM_FILE_ENTITY } from "../dam.constants";
 import { DominantColorCalculatorInterface } from "../dominant-color-calculator.interface";
 import { ImageCropAreaInput } from "../images/dto/image-crop-area.input";
 import { DamScopeInterface } from "../types";
@@ -120,12 +120,13 @@ export class FilesService {
         @Inject(DAM_CONFIG) private readonly config: DamConfig,
         private readonly orm: MikroORM,
         private readonly entityManager: EntityManager,
+        @Inject(DAM_FILE_ENTITY) private readonly File: EntityClass<FileInterface>,
         @Optional() @Inject(DAM_DOMINANT_COLOR_CALCULATOR) private readonly dominantColorCalculator?: DominantColorCalculatorInterface,
     ) {}
 
     private selectQueryBuilder(): QueryBuilder<FileInterface> {
         return this.entityManager
-            .createQueryBuilder<FileInterface, "file">("DamFile", "file")
+            .createQueryBuilder(this.File, "file")
             .select("*")
             .leftJoinAndSelect("file.image", "image")
             .leftJoinAndSelect("file.folder", "folder");
@@ -239,7 +240,7 @@ export class FilesService {
     async create({ folderId, ...data }: CreateFileInput & { copyOf?: FileInterface }): Promise<FileInterface> {
         const folder = folderId ? await this.foldersService.findOneById(folderId) : undefined;
         return this.save(
-            this.entityManager.create<FileInterface>("DamFile", {
+            this.entityManager.create(this.File, {
                 ...data,
                 license: { ...data.license },
                 folder: folder?.id,
@@ -284,7 +285,7 @@ export class FilesService {
                 // Check if the current file is the only one using the contentHash before deleting from blob storage
                 if (
                     (
-                        await withFilesSelect(this.entityManager.createQueryBuilder<FileInterface, "file">("DamFile", "file"), {
+                        await withFilesSelect(this.entityManager.createQueryBuilder(this.File, "file"), {
                             contentHash: fileToReplace.contentHash,
                         }).getResult()
                     ).length === 1
@@ -391,13 +392,13 @@ export class FilesService {
             throw new DextinityEntityNotFoundException();
         }
 
-        const result = await this.entityManager.nativeDelete<FileInterface>("DamFile", id);
+        const result = await this.entityManager.nativeDelete(this.File, id);
         const deleted = result === 1;
 
         if (
             deleted &&
             (
-                await withFilesSelect(this.entityManager.createQueryBuilder<FileInterface, "file">("DamFile", "file"), {
+                await withFilesSelect(this.entityManager.createQueryBuilder(this.File, "file"), {
                     contentHash: file.contentHash,
                 }).getResult()
             ).length === 0
@@ -473,7 +474,7 @@ export class FilesService {
 
         const subQb = withFilesSelect(
             this.entityManager
-                .createQueryBuilder<FileInterface, "file">("DamFile", "file")
+                .createQueryBuilder(this.File, "file")
                 .select(["file.id", raw(`ROW_NUMBER() OVER( ORDER BY file."${args.sortColumnName}" ${args.sortDirection} ) AS row_number`)])
                 .leftJoinAndSelect("file.folder", "folder"),
             {

@@ -1,4 +1,4 @@
-import { EntityManager, FilterQuery } from "@mikro-orm/postgresql";
+import { EntityClass, EntityManager, FilterQuery } from "@mikro-orm/postgresql";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 
 import { filtersToMikroOrmQuery, searchToMikroOrmQuery } from "../common/filter/mikro-orm";
@@ -6,7 +6,7 @@ import { PageTreeService } from "../page-tree/page-tree.service";
 import { PageTreeNodeInterface } from "../page-tree/types";
 import { RedirectFilter } from "./dto/redirects.filter";
 import { RedirectInterface } from "./entities/redirect-entity.factory";
-import { REDIRECTS_LINK_BLOCK } from "./redirects.constants";
+import { REDIRECT_ENTITY, REDIRECTS_LINK_BLOCK } from "./redirects.constants";
 import { RedirectGenerationType, RedirectSourceType } from "./redirects.enum";
 import { RedirectsLinkBlock } from "./redirects.module";
 import { RedirectScopeInterface } from "./types";
@@ -17,6 +17,7 @@ export class RedirectsService {
         @Inject(forwardRef(() => PageTreeService)) private readonly pageTreeService: PageTreeService,
         @Inject(REDIRECTS_LINK_BLOCK) private readonly linkBlock: RedirectsLinkBlock,
         private readonly entityManager: EntityManager,
+        @Inject(REDIRECT_ENTITY) private readonly Redirect: EntityClass<RedirectInterface>,
     ) {}
 
     getFindCondition({
@@ -73,7 +74,7 @@ export class RedirectsService {
         const path = await readApi.nodePath(node);
         await this.entityManager
             .persist(
-                this.entityManager.create<RedirectInterface>("Redirect", {
+                this.entityManager.create(this.Redirect, {
                     scope: node.scope,
                     sourceType: RedirectSourceType.path,
                     source: path,
@@ -107,7 +108,7 @@ export class RedirectsService {
         if (scope !== undefined) {
             where.scope = scope;
         }
-        const redirect = await this.entityManager.findOne<RedirectInterface>("Redirect", where);
+        const redirect = await this.entityManager.findOne(this.Redirect, where);
         return redirect === null;
     }
 }

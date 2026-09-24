@@ -38,6 +38,7 @@ function createServiceWithMockQueryBuilder() {
         null as never, // DAM_CONFIG
         null as never, // orm
         entityManager,
+        null as never, // File
         null as never, // dominantColorCalculator
     );
 

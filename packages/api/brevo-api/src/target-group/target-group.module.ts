@@ -28,7 +28,7 @@ export class TargetGroupModule {
 
         return {
             module: TargetGroupModule,
-            imports: [ConfigModule, BrevoApiModule, MikroOrmModule.forFeature(["BrevoTargetGroup"])],
+            imports: [ConfigModule, BrevoApiModule, MikroOrmModule.forFeature([BrevoTargetGroup])],
             providers: [TargetGroupResolver, TargetGroupsService],
             exports: [TargetGroupsService],
         };

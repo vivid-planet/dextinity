@@ -1,11 +1,12 @@
 import { filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@dextinity/cms-api";
-import { EntityManager, FilterQuery, ObjectQuery, wrap } from "@mikro-orm/postgresql";
-import { Injectable } from "@nestjs/common";
+import { EntityClass, EntityManager, FilterQuery, ObjectQuery, wrap } from "@mikro-orm/postgresql";
+import { Inject, Injectable } from "@nestjs/common";
 import { stringify } from "querystring";
 
 import { handleBrevoError } from "../brevo-api/brevo-api.utils";
 import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
 import { BrevoContactInterface } from "../brevo-contact/dto/brevo-contact.factory";
+import { BREVO_TARGET_GROUP_ENTITY } from "../config/brevo-module.constants";
 import { BrevoContactAttributesInterface, BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "../types";
 import { TargetGroupFilter } from "./dto/target-group.filter";
 import { TargetGroupInterface } from "./entity/target-group-entity.factory";
@@ -15,6 +16,7 @@ export class TargetGroupsService {
     constructor(
         private readonly brevoApiContactsService: BrevoApiContactsService,
         private readonly entityManager: EntityManager,
+        @Inject(BREVO_TARGET_GROUP_ENTITY) private readonly BrevoTargetGroup: EntityClass<TargetGroupInterface>,
     ) {}
 
     getFindCondition(options: { search?: string; filter?: TargetGroupFilter }): ObjectQuery<TargetGroupInterface> {
@@ -69,7 +71,7 @@ export class TargetGroupsService {
         filters?: BrevoContactFilterAttributesInterface,
     ): Promise<true> {
         try {
-            const mainScopeTargetGroupList = await this.entityManager.findOneOrFail<TargetGroupInterface>("BrevoTargetGroup", {
+            const mainScopeTargetGroupList = await this.entityManager.findOneOrFail(this.BrevoTargetGroup, {
                 scope,
                 isMainList: true,
             });
@@ -136,7 +138,7 @@ export class TargetGroupsService {
         limit: number;
         where: FilterQuery<TargetGroupInterface>;
     }): Promise<[TargetGroupInterface[], number]> {
-        const [targetGroups, totalContactLists] = await this.entityManager.findAndCount<TargetGroupInterface>("BrevoTargetGroup", where, {
+        const [targetGroups, totalContactLists] = await this.entityManager.findAndCount(this.BrevoTargetGroup, where, {
             offset,
             limit,
         });
@@ -146,7 +148,7 @@ export class TargetGroupsService {
 
     public async createIfNotExistMainTargetGroupForScope(scope: EmailCampaignScopeInterface): Promise<TargetGroupInterface> {
         try {
-            const mainList = await this.entityManager.findOne<TargetGroupInterface>("BrevoTargetGroup", { scope, isMainList: true });
+            const mainList = await this.entityManager.findOne(this.BrevoTargetGroup, { scope, isMainList: true });
 
             if (mainList) {
                 return mainList;
@@ -156,7 +158,7 @@ export class TargetGroupsService {
             const brevoId = await this.brevoApiContactsService.createBrevoContactList(title, scope);
 
             if (brevoId) {
-                const mainTargetGroupForScope = this.entityManager.create<TargetGroupInterface>("BrevoTargetGroup", {
+                const mainTargetGroupForScope = this.entityManager.create(this.BrevoTargetGroup, {
                     title,
                     brevoId,
                     scope,
@@ -177,7 +179,7 @@ export class TargetGroupsService {
     }
 
     public async createIfNotExistTestTargetGroupForScope(scope: EmailCampaignScopeInterface): Promise<TargetGroupInterface> {
-        const testList = await this.entityManager.findOne<TargetGroupInterface>("BrevoTargetGroup", { scope, isMainList: false, isTestList: true });
+        const testList = await this.entityManager.findOne(this.BrevoTargetGroup, { scope, isMainList: false, isTestList: true });
 
         if (testList) {
             return testList;
@@ -188,7 +190,7 @@ export class TargetGroupsService {
         const brevoId = await this.brevoApiContactsService.createBrevoContactList(title, scope);
 
         if (brevoId) {
-            const testTargetGroupForScope = this.entityManager.create<TargetGroupInterface>("BrevoTargetGroup", {
+            const testTargetGroupForScope = this.entityManager.create(this.BrevoTargetGroup, {
                 title,
                 brevoId,
                 scope,

@@ -101,5 +101,11 @@ export function createEmailCampaignEntity({
         scope: typeof Scope;
     }
 
+    // The target group entity is created before this entity, so this entity defines the target group's relation to it
+    ManyToMany(
+        () => BrevoEmailCampaign,
+        (emailCampaign: EmailCampaignInterface) => emailCampaign.targetGroups,
+    )(BrevoTargetGroup.prototype, "campaigns");
+
     return BrevoEmailCampaign;
 }

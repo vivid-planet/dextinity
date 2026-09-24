@@ -1,4 +1,4 @@
-import { EntityManager, MikroORM, QueryBuilder, raw } from "@mikro-orm/postgresql";
+import { EntityClass, EntityManager, MikroORM, QueryBuilder, raw } from "@mikro-orm/postgresql";
 import { forwardRef, Inject, Injectable, Logger } from "@nestjs/common";
 import JSZip from "jszip";
 
@@ -8,7 +8,7 @@ import { DextinityEntityNotFoundException } from "../../common/errors/entity-not
 import { SortDirection } from "../../common/sorting/sort-direction.enum";
 import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
 import { DamConfig } from "../dam.config";
-import { DAM_CONFIG } from "../dam.constants";
+import { DAM_CONFIG, DAM_FOLDER_ENTITY } from "../dam.constants";
 import { DamScopeInterface } from "../types";
 import { DamFolderListPositionArgs, FolderArgsInterface } from "./dto/folder.args";
 import { UpdateFolderInput } from "./dto/folder.input";
@@ -87,6 +87,7 @@ export class FoldersService {
         @Inject(DAM_CONFIG) private readonly config: DamConfig,
         private readonly orm: MikroORM,
         private readonly entityManager: EntityManager,
+        @Inject(DAM_FOLDER_ENTITY) private readonly Folder: EntityClass<FolderInterface>,
     ) {}
 
     async findAllByParentId(
@@ -186,7 +187,7 @@ export class FoldersService {
             parent = await this.findOneById(parentId);
             mpath = (await this.findAncestorsByParentId(parentId)).map((folder) => folder.id);
         }
-        const folder = this.entityManager.create<FolderInterface>("DamFolder", { ...data, isInboxFromOtherScope, parent, mpath, scope });
+        const folder = this.entityManager.create(this.Folder, { ...data, isInboxFromOtherScope, parent, mpath, scope });
         await this.entityManager.persist(folder).flush();
         return folder;
     }
@@ -217,7 +218,7 @@ export class FoldersService {
         if (parentIsDirty) {
             folder.mpath = folder.parent ? (await this.findAncestorsByParentId(folder.parent.id)).map((f) => f.id) : [];
 
-            const qb = this.entityManager.createQueryBuilder<FolderInterface>("DamFolder");
+            const qb = this.entityManager.createQueryBuilder(this.Folder);
             await qb
                 .update({
                     mpath: raw("array_cat(ARRAY[?]::uuid[], mpath[(array_position(mpath, ?)):array_length(mpath,1)])", [folder.mpath, folder.id]),
@@ -294,7 +295,7 @@ export class FoldersService {
             await this.delete(subFolder.id);
         }
 
-        const result = await this.entityManager.nativeDelete<FolderInterface>("DamFolder", id);
+        const result = await this.entityManager.nativeDelete(this.Folder, id);
         return result === 1;
     }
 
@@ -305,7 +306,7 @@ export class FoldersService {
             ? raw(`ROW_NUMBER() OVER( ORDER BY (COUNT(DISTINCT children.id) + COUNT(DISTINCT files.id)) ${args.sortDirection} ) AS row_number`)
             : raw(`ROW_NUMBER() OVER( ORDER BY folder."${effectiveSortColumn}" ${args.sortDirection} ) AS row_number`);
 
-        let baseQb = this.entityManager.createQueryBuilder<FolderInterface, "folder">("DamFolder", "folder").select(["folder.id", rowNumberExpr]);
+        let baseQb = this.entityManager.createQueryBuilder(this.Folder, "folder").select(["folder.id", rowNumberExpr]);
 
         if (isSizeSort) {
             baseQb = baseQb.leftJoin("folder.children", "children").leftJoin("folder.files", "files").groupBy(["folder.id"]);
@@ -410,7 +411,7 @@ export class FoldersService {
 
     private selectQueryBuilder(): QueryBuilder<FolderInterface> {
         return this.entityManager
-            .createQueryBuilder<FolderInterface, "folder">("DamFolder", "folder")
+            .createQueryBuilder(this.Folder, "folder")
             .select("*")
             .leftJoinAndSelect("folder.parent", "parent")
             .addSelect(raw('COUNT(DISTINCT children.id) as "numberOfChildFolders"'))
@@ -421,6 +422,6 @@ export class FoldersService {
     }
 
     private countQueryBuilder(): QueryBuilder<FolderInterface> {
-        return this.entityManager.createQueryBuilder<FolderInterface, "folder">("DamFolder", "folder").select("*");
+        return this.entityManager.createQueryBuilder(this.Folder, "folder").select("*");
     }
 }

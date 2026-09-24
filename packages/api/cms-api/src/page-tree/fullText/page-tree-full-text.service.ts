@@ -1,14 +1,16 @@
-import { EntityManager } from "@mikro-orm/postgresql";
+import { EntityClass, EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Type } from "@nestjs/common";
 
 import { DocumentInterface } from "../../document/dto/document-interface";
-import { PAGE_TREE_DOCUMENTS, PAGE_TREE_ENTITY } from "../page-tree.constants";
+import { PageTreeNodeBase } from "../entities/page-tree-node-base.entity";
+import { PAGE_TREE_DOCUMENTS, PAGE_TREE_NODE_ENTITY } from "../page-tree.constants";
 
 @Injectable()
 export class PageTreeFullTextService {
     constructor(
         @Inject(PAGE_TREE_DOCUMENTS) private readonly documents: Type<DocumentInterface>[],
         private entityManager: EntityManager,
+        @Inject(PAGE_TREE_NODE_ENTITY) private readonly PageTreeNode: EntityClass<PageTreeNodeBase>,
     ) {}
 
     async createPageTreeFullTextView(): Promise<void> {
@@ -113,7 +115,7 @@ export class PageTreeFullTextService {
 
         // Migrate PageTreeNode fullText column
         {
-            const pageTreeNodeMetadata = metadataStorage.get(PAGE_TREE_ENTITY);
+            const pageTreeNodeMetadata = metadataStorage.get(this.PageTreeNode.name);
             const primary = pageTreeNodeMetadata.primaryKeys[0];
             const fullTextProp = pageTreeNodeMetadata.props.find((prop) => prop.name === "fullText");
 
@@ -124,7 +126,7 @@ export class PageTreeFullTextService {
                 while (true) {
                     const em = this.entityManager;
                     const entities = await em.find(
-                        PAGE_TREE_ENTITY,
+                        this.PageTreeNode,
                         { fullText: null },
                         { limit: pageSize, offset: 0, orderBy: { [primary]: "ASC" } },
                     );
@@ -132,7 +134,7 @@ export class PageTreeFullTextService {
                         break;
                     }
                     for (const entity of entities) {
-                        (entity as Record<string, unknown>).fullText = " "; // trigger onUpdate
+                        entity.fullText = " "; // trigger onUpdate
                     }
 
                     await em.flush();

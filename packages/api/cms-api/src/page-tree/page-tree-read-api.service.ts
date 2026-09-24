@@ -1,8 +1,9 @@
-import { EntityManager } from "@mikro-orm/postgresql";
+import { EntityClass, EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { CONTEXT } from "@nestjs/graphql";
 
 import { getRequestContextHeadersFromRequest } from "../common/decorators/request-context.decorator";
+import { PAGE_TREE_NODE_ENTITY } from "./page-tree.constants";
 import { createReadApi, PageTreeReadApi, PageTreeReadApiOptions } from "./page-tree-read-api";
 import { PageTreeNodeInterface, PageTreeNodeVisibility as Visibility, ScopeInterface } from "./types";
 
@@ -11,6 +12,7 @@ export class PageTreeReadApiService {
     private api: PageTreeReadApi;
     constructor(
         private readonly entityManager: EntityManager,
+        @Inject(PAGE_TREE_NODE_ENTITY) private readonly PageTreeNode: EntityClass<PageTreeNodeInterface>,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         @Inject(CONTEXT) private context: any,
     ) {
@@ -31,6 +33,7 @@ export class PageTreeReadApiService {
         this.api = createReadApi(
             {
                 entityManager: this.entityManager,
+                PageTreeNode: this.PageTreeNode,
             },
             {
                 visibility: [Visibility.Published, ...includeInvisiblePages],

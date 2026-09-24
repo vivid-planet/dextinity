@@ -1,4 +1,5 @@
 import { MikroOrmModule } from "@mikro-orm/nestjs";
+import { EntityClass } from "@mikro-orm/postgresql";
 import { DynamicModule, Global, Module, Type, ValueProvider } from "@nestjs/common";
 
 import { validateScopeTypeNames } from "../common/helper/scope-type-names.helper";
@@ -16,9 +17,16 @@ import { PaginatedPageTreeNodesFactory } from "./dto/paginated-page-tree-nodes.f
 import { AttachedDocument } from "./entities/attached-document.entity";
 import { PageTreeNodeBase } from "./entities/page-tree-node-base.entity";
 import { createFullTextResolver } from "./fullText/createFullTextResolver";
-import { PageTreeNodeFullText } from "./fullText/entities/page-tree-node-full-text.object";
+import { createPageTreeNodeFullTextEntity } from "./fullText/entities/page-tree-node-full-text.object";
 import { PageTreeFullTextService } from "./fullText/page-tree-full-text.service";
-import { defaultReservedPaths, PAGE_TREE_CONFIG, PAGE_TREE_DOCUMENTS, PAGE_TREE_ENTITY, SITE_PREVIEW_CONFIG } from "./page-tree.constants";
+import {
+    defaultReservedPaths,
+    PAGE_TREE_CONFIG,
+    PAGE_TREE_DOCUMENTS,
+    PAGE_TREE_ENTITY,
+    PAGE_TREE_NODE_ENTITY,
+    SITE_PREVIEW_CONFIG,
+} from "./page-tree.constants";
 import { PageTreeService } from "./page-tree.service";
 import { PageTreeNodeDocumentEntityScopeService } from "./page-tree-node-document-entity-scope.service";
 import { PageTreeReadApiService } from "./page-tree-read-api.service";
@@ -73,9 +81,12 @@ export class PageTreeModule {
         const PageTreeDependentsResolver = DependentsResolverFactory.create(PageTreeNode);
         const PageTreeDependenciesResolver = DependenciesResolverFactory.create(PageTreeNode);
 
+        const PageTreeNodeFullText = createPageTreeNodeFullTextEntity({ PageTreeNode });
+
         const PageTreeFullTextResolver = options.fullText
             ? createFullTextResolver({
                   PageTreeNode,
+                  PageTreeNodeFullText,
                   Scope,
                   PaginatedPageTreeNodes,
               })
@@ -93,6 +104,11 @@ export class PageTreeModule {
             },
         };
 
+        const pageTreeNodeEntityProvider: ValueProvider<EntityClass<PageTreeNodeBase>> = {
+            provide: PAGE_TREE_NODE_ENTITY,
+            useValue: PageTreeNode,
+        };
+
         const documentSubscriber = DocumentSubscriberFactory.create({ Documents });
 
         return {
@@ -107,6 +123,7 @@ export class PageTreeModule {
                 PageTreeDependenciesResolver,
                 ...(PageTreeFullTextResolver ? [PageTreeFullTextResolver, PageTreeFullTextService] : []),
                 pageTreeConfigProvider,
+                pageTreeNodeEntityProvider,
                 {
                     provide: PageExistsConstraint,
                     useFactory: (pageTreeService: PageTreeService) => {
@@ -136,6 +153,7 @@ export class PageTreeModule {
                 AttachedDocumentLoaderService,
                 PageTreeNodeDocumentEntityScopeService,
                 InternalLinkBlockTransformerService,
+                pageTreeNodeEntityProvider,
                 ...(PageTreeFullTextResolver ? [PageTreeFullTextService] : []),
             ],
         };

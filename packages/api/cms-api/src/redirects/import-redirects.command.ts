@@ -1,5 +1,5 @@
 import * as csv from "@fast-csv/parse";
-import { CreateRequestContext, EntityManager, FilterQuery, MikroORM } from "@mikro-orm/postgresql";
+import { CreateRequestContext, EntityClass, EntityManager, FilterQuery, MikroORM } from "@mikro-orm/postgresql";
 import { forwardRef, Inject } from "@nestjs/common";
 import * as console from "console";
 import * as fs from "fs";
@@ -8,7 +8,7 @@ import { Command, CommandRunner } from "nest-commander";
 import { PageTreeService } from "../page-tree/page-tree.service";
 import { PageTreeReadApiOptions } from "../page-tree/page-tree-read-api";
 import { RedirectInterface } from "./entities/redirect-entity.factory";
-import { REDIRECTS_LINK_BLOCK } from "./redirects.constants";
+import { REDIRECT_ENTITY, REDIRECTS_LINK_BLOCK } from "./redirects.constants";
 import { RedirectGenerationType, RedirectSourceType } from "./redirects.enum";
 import { RedirectsLinkBlock } from "./redirects.module";
 import { RedirectScopeInterface } from "./types";
@@ -32,6 +32,7 @@ export class ImportRedirectsCommand extends CommandRunner {
         private readonly entityManager: EntityManager,
         @Inject(forwardRef(() => PageTreeService)) private readonly pageTreeService: PageTreeService,
         @Inject(REDIRECTS_LINK_BLOCK) private readonly linkBlock: RedirectsLinkBlock,
+        @Inject(REDIRECT_ENTITY) private readonly Redirect: EntityClass<RedirectInterface>,
     ) {
         super();
     }
@@ -53,7 +54,7 @@ export class ImportRedirectsCommand extends CommandRunner {
             if (row["scope"]) {
                 where["scope"] = row["scope"];
             }
-            const existingRedirect = await this.entityManager.findOne<RedirectInterface>("Redirect", where);
+            const existingRedirect = await this.entityManager.findOne(this.Redirect, where);
 
             if (row["target_type"] === "internal" && node) {
                 if (existingRedirect) {
@@ -76,7 +77,7 @@ export class ImportRedirectsCommand extends CommandRunner {
 
                     successes++;
                 } else {
-                    const redirect = this.entityManager.create<RedirectInterface>("Redirect", {
+                    const redirect = this.entityManager.create(this.Redirect, {
                         sourceType: RedirectSourceType.path,
                         source: row["source"],
                         target: this.linkBlock
@@ -124,7 +125,7 @@ export class ImportRedirectsCommand extends CommandRunner {
 
                     successes++;
                 } else {
-                    const redirect = this.entityManager.create<RedirectInterface>("Redirect", {
+                    const redirect = this.entityManager.create(this.Redirect, {
                         sourceType: RedirectSourceType.path,
                         source: row["source"],
                         target: this.linkBlock

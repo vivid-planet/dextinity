@@ -1,5 +1,5 @@
 import { Brevo } from "@getbrevo/brevo";
-import { EntityManager } from "@mikro-orm/postgresql";
+import { EntityClass, EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "src/types";
@@ -9,7 +9,7 @@ import { BrevoContactInterface } from "../brevo-contact/dto/brevo-contact.factor
 import { BrevoEmailImportLogService } from "../brevo-email-import-log/brevo-email-import-log.service";
 import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { BREVO_CONFIG_ENTITY, BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { handleBrevoError, isErrorFromBrevo } from "./brevo-api.utils";
 import { BrevoApiClientFactory } from "./brevo-api-client.factory";
 import { BrevoApiContactList } from "./dto/brevo-api-contact-list";
@@ -25,6 +25,7 @@ export class BrevoApiContactsService {
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
         private readonly entityManager: EntityManager,
+        @Inject(BREVO_CONFIG_ENTITY) private readonly BrevoConfig: EntityClass<BrevoConfigInterface>,
         private readonly clientFactory: BrevoApiClientFactory,
         @Optional() private readonly blacklistedContactsService: BlacklistedContactsService,
         @Optional() private readonly brevoContactLogService: BrevoEmailImportLogService,
@@ -233,7 +234,7 @@ export class BrevoApiContactsService {
     }
 
     public async createBrevoContactList(title: string, scope: EmailCampaignScopeInterface): Promise<number | undefined> {
-        const brevoConfig = await this.entityManager.findOne<BrevoConfigInterface>("BrevoConfig", { scope });
+        const brevoConfig = await this.entityManager.findOne(this.BrevoConfig, { scope });
 
         try {
             const data = await this.clientFactory.getClient(scope).contacts.createList({

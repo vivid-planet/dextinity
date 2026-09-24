@@ -1,11 +1,10 @@
-import { type EntityManager, NotFoundError, type QueryBuilder } from "@mikro-orm/postgresql";
+import { type EntityClass, type EntityManager, NotFoundError, type QueryBuilder } from "@mikro-orm/postgresql";
 import opentelemetry from "@opentelemetry/api";
 import { compareAsc, compareDesc, isEqual } from "date-fns";
 
 import { SortDirection } from "../common/sorting/sort-direction.enum";
 import { type PageTreeNodeSort, PageTreeNodeSortField } from "./dto/page-tree-node.sort";
 import { AttachedDocument } from "./entities/attached-document.entity";
-import { PAGE_TREE_ENTITY } from "./page-tree.constants";
 import { type PageTreeNodeCategory, type PageTreeNodeInterface, PageTreeNodeVisibility as Visibility, type ScopeInterface } from "./types";
 import pathBuilder from "./utils/path-builder";
 
@@ -56,8 +55,10 @@ function scopeHash(scope: ScopeInterface | undefined): string {
 export function createReadApi(
     {
         entityManager,
+        PageTreeNode,
     }: {
         entityManager: EntityManager;
+        PageTreeNode: EntityClass<PageTreeNodeInterface>;
     },
     options: {
         visibility?: Visibility | Visibility[] | "all";
@@ -102,7 +103,7 @@ export function createReadApi(
             return tracer.startActiveSpan("live query PageTree queryNodes", async (span) => {
                 span.setAttribute("scope", JSON.stringify(scope));
                 span.setAttribute("where", JSON.stringify(where));
-                let qb = entityManager.createQueryBuilder<PageTreeNodeInterface>(PAGE_TREE_ENTITY).where({
+                let qb = entityManager.createQueryBuilder(PageTreeNode).where({
                     visibility: visibilityFilter,
                 });
 
@@ -192,7 +193,7 @@ export function createReadApi(
             return tracer.startActiveSpan("live query PageTree countNodes", async (span) => {
                 span.setAttribute("scope", JSON.stringify(scope));
                 span.setAttribute("where", JSON.stringify(where));
-                let qb = entityManager.createQueryBuilder<PageTreeNodeInterface>(PAGE_TREE_ENTITY).where({
+                let qb = entityManager.createQueryBuilder(PageTreeNode).where({
                     visibility: visibilityFilter,
                 });
 
@@ -268,7 +269,7 @@ export function createReadApi(
                 return tracer.startActiveSpan("live query PageTree getNode", async (span) => {
                     span.setAttribute("where id", id);
                     const queryFilter = { id, visibility: { $in: visibilityFilter } };
-                    const node = await entityManager.findOne<PageTreeNodeInterface>(PAGE_TREE_ENTITY, queryFilter);
+                    const node = await entityManager.findOne(PageTreeNode, queryFilter);
                     if (node) {
                         nodesById.set(id, node);
                     }
@@ -301,7 +302,7 @@ export function createReadApi(
             if (missingIds.length > 0) {
                 await tracer.startActiveSpan("live query PageTree getNodesByIds", async (span) => {
                     span.setAttribute("ids count", missingIds.length);
-                    const nodes = await entityManager.find<PageTreeNodeInterface>(PAGE_TREE_ENTITY, {
+                    const nodes = await entityManager.find(PageTreeNode, {
                         id: { $in: missingIds },
                         visibility: { $in: visibilityFilter },
                     });
@@ -424,7 +425,7 @@ export function createReadApi(
                 span.setAttribute("scope", JSON.stringify(scope));
                 preloadRunning = true;
                 const qb = entityManager
-                    .createQueryBuilder<PageTreeNodeInterface>(PAGE_TREE_ENTITY)
+                    .createQueryBuilder(PageTreeNode)
                     .where({
                         visibility: visibilityFilter,
                     })

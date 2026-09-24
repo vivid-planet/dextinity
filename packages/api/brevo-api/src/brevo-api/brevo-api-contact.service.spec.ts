@@ -3,7 +3,7 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { Test, type TestingModule } from "@nestjs/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { BREVO_CONFIG_ENTITY, BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { BrevoApiClientFactory } from "./brevo-api-client.factory";
 import { BrevoApiContactsService } from "./brevo-api-contact.service";
 
@@ -22,6 +22,7 @@ describe("BrevoApiContactsService", () => {
                 BrevoApiContactsService,
                 { provide: BREVO_MODULE_CONFIG, useValue: { brevo: {} } },
                 { provide: EntityManager, useValue: {} },
+                { provide: BREVO_CONFIG_ENTITY, useValue: {} },
                 { provide: BrevoApiClientFactory, useValue: { getClient: () => ({ contacts: contactsApi }) } },
             ],
         }).compile();

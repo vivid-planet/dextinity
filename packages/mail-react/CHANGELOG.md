@@ -1,5 +1,13 @@
 # @comet/mail-react
 
+## 10.8.0
+
+### Minor Changes
+
+- a3a66a7: Add `id="body"` to the `<body>` tag of every rendered mail
+
+    Some email clients replace the `<body>` tag with a `<div>`, so a `body` selector no longer reaches it. The id does.
+
 ## 10.7.0
 
 ## 10.6.0

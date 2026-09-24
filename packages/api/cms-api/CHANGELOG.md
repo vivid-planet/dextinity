@@ -1,5 +1,146 @@
 # @comet/cms-api
 
+## 10.8.0
+
+### Minor Changes
+
+- 383e9ed: Add a `description` option to `createBlock`
+
+    A block's name alone often doesn't say what the block is meant for. The description holds that information, so that consumers of the block meta, such as editor tooling and AI agents, can tell blocks apart.
+
+    **Example**
+
+    ```ts
+    export const HeadlineBlock = createBlock(HeadlineBlockData, HeadlineBlockInput, {
+        name: "Headline",
+        description: "A headline with an optional eyebrow text above it. Use it to introduce a section.",
+    });
+    ```
+
+    The block factories that take a name, for instance `createBlocksBlock` and `createOneOfBlock`, accept the description in their options as well.
+
+- 0076f28: Add vendor migrations to blocks
+
+    A block's `version` is a single counter, so only one party can advance it. That doesn't work for a block that receives migrations from the library providing it as well as from the application using it: `createTipTapRichTextBlock` with `migrateFromDraftJs` took version 1, so the application had to know that and start its own migrations at 2 — and the numbers collided as soon as the library added a migration of its own.
+
+    The migrations that ship with a block are therefore declared in `migrateVendor`, next to the `migrate` option the application fills. They form a chain of their own, counting from 1 independently of the block's `version`, stored per block instance in `$$vendorVersion`, and they run before the block's own migrations. Both options stay separate, so neither side can overwrite the other's migrations.
+
+    **Example**
+
+    ```ts
+    createBlock(VideoBlockData, VideoBlockInput, {
+        name: "Video",
+        migrate: {
+            version: 1,
+            migrations: typeSafeBlockMigrationPipe([ChangeTitleMigration]),
+        },
+        migrateVendor: {
+            version: 1,
+            migrations: typeSafeBlockMigrationPipe([ChangeAspectRatioMigration]),
+        },
+    });
+    ```
+
+    The migrations of the blocks Dextinity ships — `ExternalLinkBlock`, `YouTubeVideoBlock`, `DamVideoBlock` and the Draft.js migration of `createTipTapRichTextBlock` — moved into their vendor chain. Existing content doesn't need to be touched: the version it was saved with is split into the two counters when it is loaded.
+
+    A block that extends the data of a block with vendor migrations inherits them, so it runs them before its own migrations without declaring them, and its own migrations start at 1.
+
+    Deploy this before content is saved with it: once a block instance has been saved with `$$vendorVersion`, an older Dextinity version reads its vendor chain as unmigrated and migrates it a second time.
+
+    **Migrating existing `migrateFromDraftJs` blocks**
+
+    The Draft.js → TipTap migration is now a vendor migration, so it no longer occupies version 1 of the block. Renumber the migrations of a block that uses `migrateFromDraftJs`, so they start at 1 again:
+
+    ```diff
+     export const TipTapRichTextBlock = createTipTapRichTextBlock(
+         { link: LinkBlock, migrateFromDraftJs: true },
+         {
+             name: "TipTapRichText",
+             migrate: {
+    -            version: 2,
+    +            version: 1,
+                 migrations: typeSafeBlockMigrationPipe([Heading1ToHeading2Migration]),
+             },
+         },
+     );
+    ```
+
+    Lower the `toVersion` of each of those migrations by one as well.
+
+- 9109aa3: TipTap Rich Text Block: replace the `paragraph` and `heading` options with `textBlocks`
+
+    The text block type select could only ever offer a fixed paragraph entry plus every enabled heading level, in a fixed order. `textBlocks` configures the text block types explicitly, which decouples a text block from the tag it is stored as and lets several text blocks share a tag, for instance a display headline next to a regular heading 1.
+
+    **Example**
+
+    ```tsx
+    createTipTapRichTextBlock({
+        textBlocks: [
+            { name: "paragraph", label: "Paragraph", tag: "p" },
+            { name: "display", label: "Display", tag: "h1" },
+            { name: "heading-1", label: "Heading 1", tag: "h1" },
+            { name: "heading-2", label: "Heading 2", tag: "h2" },
+        ],
+        defaultTextBlock: "paragraph",
+    });
+    ```
+
+    The API takes the same option without the labels.
+
+    **Migrating an existing configuration**
+    - `paragraph`/`heading` → one `textBlocks` entry per text block type (`tag: "p"` for the paragraph, `h1`-`h6` for the headings). It defaults to a paragraph plus a heading for every level, so only a restricted set needs to be configured. Leaving the paragraph out replaces `paragraph: false`.
+    - `heading: { levels }` → the `textBlocks` entries for those levels.
+    - `heading: { defaultLevel }` → `defaultTextBlock`, which names the text block new content starts with and defaults to the first one.
+    - `migrateFromDraftJs`' `textBlockStyleMap` → `textBlockMap`, which now takes a `{ textBlock, textBlockStyle }` object for every DraftJS block type: `textBlock` names the text block the block becomes (instead of the tag the previous `textBlockType` named), `textBlockStyle` stays optional. Where two text blocks share a heading tag, `textBlockMap` has to name the one a DraftJS `header-one`…`header-six` becomes, unless it is the `defaultTextBlock` — the block throws otherwise, because the conversion runs once and the DraftJS content is gone afterwards.
+
+    **The stored format changes**
+
+    Every paragraph and heading is now one `textBlock` node that names its text block, instead of a `paragraph`/`heading` node with a `level`:
+
+    ```json
+    { "type": "textBlock", "attrs": { "textBlock": "heading-2" }, "content": [{ "type": "text", "text": "Headline" }] }
+    ```
+
+    The tag lives in the configuration, so changing a text block's `tag` takes effect without a migration, while renaming or removing one invalidates the content that names it.
+
+    Content stored by an earlier version holds `paragraph` and `heading` nodes. A vendor migration converts it when the block is loaded, so a project needs no migration of its own. It resolves the text block from the node's tag, which is unambiguous for that content: two text blocks could not share a tag before `textBlocks` existed.
+
+    A project migration sees the converted nodes, because the vendor migrations run before the block's own. A migration written against `{ type: "heading", attrs: { level } }` has to be changed to match `{ type: "textBlock", attrs: { textBlock } }`.
+
+    On the site, `renderTipTapRichText` renders a `textBlock` by its name: `heading-1` to `heading-6` — the default text blocks — as `<h1>` to `<h6>`, anything else as `<p>`. A block that renames a text block or adds one needs its own handler, which reads the name:
+
+    ```tsx
+    const nodeMapping: Record<string, TipTapNodeHandler> = {
+        textBlock: ({ node, children }) => <Headline variant={node.attrs?.textBlock}>{children}</Headline>,
+    };
+    ```
+
+### Patch Changes
+
+- 44125b9: Wait for the permission to be deleted in the `userPermissionsDeletePermission` mutation
+
+    Previously, the mutation returned `true` before the deletion was flushed, so errors during deletion weren't reported to the client.
+
+- 8538d98: Fix DAM file URLs (both inline "open in new tab" and download links) missing the file extension, which caused browsers to save downloaded files without their extension (e.g. `.pdf`).
+
+    Requests for a DAM file URL whose filename segment no longer matches the file (for instance, a URL generated before this fix) now get a permanent redirect to the current canonical URL instead of being served under the stale filename.
+
+- 4a1da4e: Exclude the TypeScript build cache from the published packages
+
+    The published tarballs contained the `.tsbuildinfo` files that TypeScript writes next to the build output for incremental builds — 1.3 MB of build cache in `@dextinity/cms-api` alone, which has no use outside the repository.
+
+- dddb222: Prevent the API from crashing when the dominant color calculation or the cleanup of outdated mail logs fails
+
+    Both run in the background without being awaited. A failure previously caused an unhandled promise rejection, which terminates the process by default. The error is now logged instead.
+
+- 8fbfbce: Replace the `hasha` dependency with Node's built-in `crypto`
+
+    `hasha` isn't needed — Node's `crypto` covers everything we use it for. Hashing now uses `crypto` directly, producing identical hex-encoded MD5 hashes, so existing `contentHash` values and scaled-image cache paths remain valid.
+
+- 36f7f17: Replace the deprecated `lodash.isequal` dependency with Node's built-in `util`
+
+    `lodash.isequal` is deprecated and isn't needed — Node's `isDeepStrictEqual` from `util` covers the deep comparisons we use it for, with the same results for the compared values (plain JSON block data and content scopes). Both packages drop the `lodash.isequal` dependency.
+
 ## 10.7.0
 
 ### Minor Changes

@@ -91,11 +91,15 @@ export const VimeoVideoBlock = withPreview(
 
         const identifier = parseVimeoIdentifier(vimeoIdentifier);
 
+        const hasPreviewImageBeenHidden = hasPreviewImage && !showPreviewImage;
+
         const searchParams = new URLSearchParams();
-        if (autoplay || (hasPreviewImage && !showPreviewImage)) {
+        if (autoplay || hasPreviewImageBeenHidden) {
             searchParams.append("autoplay", "1");
         }
-        if (autoplay) {
+
+        // browsers only allow unmuted autoplay after a user interaction, which the click on the preview image provides
+        if (autoplay && !hasPreviewImageBeenHidden) {
             searchParams.append("muted", "1");
         }
 

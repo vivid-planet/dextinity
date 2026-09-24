@@ -1,6 +1,5 @@
 import { InputRule, mergeAttributes, Node } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
-import { ReactNodeViewRenderer } from "@tiptap/react";
 
 import { liftOutOfList } from "../liftOutOfList";
 import {
@@ -10,8 +9,7 @@ import {
     type TipTapResolvedTextBlock,
     type TipTapTextBlockTag,
 } from "../textBlocks";
-import { textBlockAttribute, textBlockStyleAttribute } from "./textBlockAttributes";
-import { createTextBlockNodeView } from "./TextBlockNodeView";
+import { textBlockAttribute } from "./textBlockAttributes";
 
 /**
  * The single node every paragraph and heading is stored as. Which of the configured text blocks it
@@ -23,11 +21,9 @@ import { createTextBlockNodeView } from "./TextBlockNodeView";
 export function createTextBlock({
     textBlocks,
     defaultTextBlock,
-    styled,
 }: {
     textBlocks: TipTapResolvedTextBlock[];
     defaultTextBlock: TipTapResolvedTextBlock;
-    styled: boolean;
 }) {
     const tagOf = (name: unknown): TipTapTextBlockTag => (textBlocks.find((textBlock) => textBlock.name === name) ?? defaultTextBlock).tag;
 
@@ -38,10 +34,7 @@ export function createTextBlock({
         defining: true,
 
         addAttributes() {
-            return {
-                ...textBlockAttribute(defaultTextBlock.name),
-                ...(styled ? textBlockStyleAttribute : {}),
-            };
+            return textBlockAttribute(defaultTextBlock.name);
         },
 
         parseHTML() {
@@ -132,13 +125,5 @@ export function createTextBlock({
                 }),
             ];
         },
-
-        ...(styled
-            ? {
-                  addNodeView() {
-                      return ReactNodeViewRenderer(createTextBlockNodeView(textBlocks));
-                  },
-              }
-            : {}),
     });
 }

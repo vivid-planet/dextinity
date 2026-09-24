@@ -42,24 +42,16 @@ const renderCmsBlock: TipTapNodeHandler = ({ node }) => {
 };
 
 const nodeMapping: Record<string, TipTapNodeHandler> = {
-    textBlock: ({ node, children }) => {
-        // A paragraph picks its typography from the style the editor applied, a heading from the text block itself.
-        const variant = textBlockToVariant[node.attrs?.textBlock as string] ?? (node.attrs?.textBlockStyle as TypographyVariant | null) ?? undefined;
-        return (
-            <Typography variant={variant} bottomSpacing className={styles.text}>
-                {children}
-            </Typography>
-        );
-    },
-    listItem: ({ node, children }) => {
-        const firstTextBlock = node.content?.find((child) => child.type === "textBlock");
-        const textBlockStyle = (firstTextBlock?.attrs?.textBlockStyle as TypographyVariant | null) ?? undefined;
-        return (
-            <Typography as="li" variant={textBlockStyle} className={styles.text}>
-                {children}
-            </Typography>
-        );
-    },
+    textBlock: ({ node, children }) => (
+        <Typography variant={textBlockToVariant[node.attrs?.textBlock as string]} bottomSpacing className={styles.text}>
+            {children}
+        </Typography>
+    ),
+    listItem: ({ children }) => (
+        <Typography as="li" className={styles.text}>
+            {children}
+        </Typography>
+    ),
     cmsBlock: renderCmsBlock,
     cmsInlineBlock: renderCmsBlock,
 };

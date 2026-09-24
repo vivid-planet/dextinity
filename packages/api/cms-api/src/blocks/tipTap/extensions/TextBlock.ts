@@ -10,11 +10,9 @@ import type { TipTapResolvedTextBlock } from "../textBlocks";
 export function createTextBlock({
     textBlocks,
     defaultTextBlock,
-    hasTextBlockStyles,
 }: {
     textBlocks: TipTapResolvedTextBlock[];
     defaultTextBlock: TipTapResolvedTextBlock;
-    hasTextBlockStyles: boolean;
 }) {
     return Node.create({
         name: "textBlock",
@@ -25,7 +23,6 @@ export function createTextBlock({
         addAttributes() {
             return {
                 textBlock: { default: defaultTextBlock.name },
-                ...(hasTextBlockStyles ? { textBlockStyle: { default: null } } : {}),
             };
         },
 

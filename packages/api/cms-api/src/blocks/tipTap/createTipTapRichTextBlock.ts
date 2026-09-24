@@ -91,15 +91,6 @@ type TipTapTextBlockType =
     | "ordered-list"
     | "unordered-list";
 
-interface TipTapTextBlockStyle {
-    name: string;
-    /**
-     * Limits the text block style to the provided text block types.
-     * If none is specified, the text block style is allowed for all text block types.
-     */
-    appliesTo?: TipTapTextBlockType[];
-}
-
 interface TipTapInlineStyle {
     name: string;
     /**
@@ -175,7 +166,6 @@ export interface CreateTipTapRichTextBlockOptions {
      * Enables links by passing the link block that is used for them. Disabled by default.
      */
     link?: Block;
-    textBlockStyles?: TipTapTextBlockStyle[];
     inlineStyles?: TipTapInlineStyle[];
     placeholders?: TipTapPlaceholder[];
     indexSearchText?: boolean;
@@ -205,13 +195,13 @@ export interface CreateTipTapRichTextBlockOptions {
      * Enables best-effort migration of DraftJS-based RichTextBlock data
      * (`{ draftContent: { blocks, entityMap } }`) into TipTap data.
      *
-     * The migration uses the enabled features and the `textBlockStyles`, `maxTextBlocks` and
-     * `listLevelMax` options to build the target schema, validates the converted document, and
-     * falls back to a stripped-down plain-text-paragraph document if validation fails.
+     * The migration uses the enabled features and the `maxTextBlocks` and `listLevelMax` options to
+     * build the target schema, validates the converted document, and falls back to a stripped-down
+     * plain-text-paragraph document if validation fails.
      *
      * Pass an object with `textBlockMap` to map DraftJS block types (e.g. `paragraph-small` from a
-     * DraftJS `blocktypeMap`) to the text block they become and the `textBlockStyle` applied to it,
-     * for instance to convert a DraftJS block type that was rendered as `<h2>` into a heading 2.
+     * DraftJS `blocktypeMap`) to the text block they become, for instance to convert a DraftJS block
+     * type that was rendered as `<h2>` into a heading 2.
      *
      * Pass an object with `inlineStyleMap` to map DraftJS custom inline style names (e.g.
      * `highlight` from a DraftJS `customInlineStyles`) to TipTap `inlineStyle` mark type values.
@@ -261,20 +251,17 @@ export function resolveTipTapOptions({
 
 function buildExtensions({
     resolvedOptions,
-    textBlockStyles,
     inlineStyles,
     placeholders,
     hasBlockChildBlocks,
     hasInlineChildBlocks,
 }: {
     resolvedOptions: TipTapResolvedOptions;
-    textBlockStyles: TipTapTextBlockStyle[];
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
     hasBlockChildBlocks: boolean;
     hasInlineChildBlocks: boolean;
 }): Extensions {
-    const hasTextBlockStyles = textBlockStyles.length > 0;
     const hasInlineStyles = inlineStyles.length > 0;
     const hasPlaceholders = placeholders.length > 0;
     const hasParagraph = hasParagraphTextBlock(resolvedOptions.textBlocks);
@@ -298,7 +285,7 @@ function buildExtensions({
             codeBlock: false,
             link: false,
         }),
-        createTextBlock({ ...resolvedOptions, hasTextBlockStyles }),
+        createTextBlock(resolvedOptions),
         ...(hasParagraph ? [TextBlockListItem] : []),
         ...(hasInlineStyles ? [InlineStyleMark] : []),
         ...(resolvedOptions.sup ? [Superscript] : []),
@@ -636,7 +623,6 @@ export function createTipTapRichTextBlock(
     nameOrOptions: BlockFactoryNameOrOptions = "TipTapRichText",
 ): Block<TipTapRichTextBlockDataInterface, TipTapRichTextBlockInputInterface> {
     const {
-        textBlockStyles = [],
         inlineStyles = [],
         placeholders = [],
         indexSearchText = true,
@@ -658,7 +644,6 @@ export function createTipTapRichTextBlock(
     const hasInlineChildBlocks = childBlockConfigs.some(({ display }) => display === "inline");
     const extensions = buildExtensions({
         resolvedOptions,
-        textBlockStyles,
         inlineStyles,
         placeholders,
         hasBlockChildBlocks,

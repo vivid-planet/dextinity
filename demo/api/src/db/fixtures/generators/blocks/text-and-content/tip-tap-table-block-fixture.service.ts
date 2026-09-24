@@ -7,9 +7,6 @@ import { DescriptionCellContent, TableBlockFixtureBase } from "./table-block-fix
 
 type TipTapRichTextInput = ExtractBlockInputFactoryProps<typeof TipTapRichTextBlock>;
 
-const standardParagraphStyle = "paragraph300";
-const smallParagraphStyle = "paragraph200";
-
 @Injectable()
 export class TipTapTableBlockFixtureService extends TableBlockFixtureBase<TipTapRichTextInput> {
     constructor(linkBlockFixtureService: LinkBlockFixtureService) {
@@ -23,7 +20,7 @@ export class TipTapTableBlockFixtureService extends TableBlockFixtureBase<TipTap
                 content: [
                     {
                         type: "textBlock",
-                        attrs: { textBlock: "paragraph", textBlockStyle: standardParagraphStyle },
+                        attrs: { textBlock: "paragraph" },
                         content: [{ type: "text", text }],
                     },
                 ],
@@ -44,12 +41,12 @@ export class TipTapTableBlockFixtureService extends TableBlockFixtureBase<TipTap
                 content: [
                     {
                         type: "textBlock",
-                        attrs: { textBlock: "paragraph", textBlockStyle: standardParagraphStyle },
+                        attrs: { textBlock: "paragraph" },
                         content: [{ type: "text", text: jobTitle }],
                     },
                     {
                         type: "textBlock",
-                        attrs: { textBlock: "paragraph", textBlockStyle: smallParagraphStyle },
+                        attrs: { textBlock: "paragraph" },
                         content: [
                             { type: "text", text: textBeforeLink },
                             { type: "text", marks: [{ type: "link", attrs: { data: link } }], text: linkText },

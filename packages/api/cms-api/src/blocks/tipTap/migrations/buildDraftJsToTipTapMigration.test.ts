@@ -181,21 +181,16 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
     describe("textBlockMap", () => {
         const block = createTipTapRichTextBlock(
             {
-                textBlockStyles: [
-                    { name: "headline450", appliesTo: ["heading-2"] },
-                    { name: "paragraph200", appliesTo: ["paragraph"] },
-                ],
                 migrateFromDraftJs: {
                     textBlockMap: {
-                        "paragraph-small": { textBlock: "paragraph", textBlockStyle: "paragraph200" },
-                        "headline-450": { textBlock: "heading-2", textBlockStyle: "headline450" },
+                        "headline-450": { textBlock: "heading-2" },
                     },
                 },
             },
-            "MigratedRichTextTextBlockStyles",
+            "MigratedRichTextTextBlockMap",
         );
 
-        it("converts a custom block type to a heading keeping both level and textBlockStyle", () => {
+        it("converts a custom block type to the text block it is mapped to", () => {
             const data = block.blockDataFactory({
                 draftContent: {
                     blocks: [draftBlock({ type: "headline-450", text: "Title" })],
@@ -207,27 +202,8 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
                 content: [
                     {
                         type: "textBlock",
-                        attrs: { textBlock: "heading-2", textBlockStyle: "headline450" },
+                        attrs: { textBlock: "heading-2" },
                         content: [{ type: "text", text: "Title" }],
-                    },
-                ],
-            });
-        });
-
-        it("converts a custom block type to a styled paragraph", () => {
-            const data = block.blockDataFactory({
-                draftContent: {
-                    blocks: [draftBlock({ type: "paragraph-small", text: "small" })],
-                    entityMap: {},
-                },
-            });
-            expect(data.tipTapContent).toEqual({
-                type: "doc",
-                content: [
-                    {
-                        type: "textBlock",
-                        attrs: { textBlock: "paragraph", textBlockStyle: "paragraph200" },
-                        content: [{ type: "text", text: "small" }],
                     },
                 ],
             });

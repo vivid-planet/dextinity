@@ -46,11 +46,6 @@ interface TextBlockMapping {
      * `headline450` block type rendered as `<h2>`).
      */
     textBlock: string;
-    /**
-     * TipTap `textBlockStyle` attribute value applied to the converted text block. Leave it out for
-     * a text block that offers no styles.
-     */
-    textBlockStyle?: string;
 }
 
 interface ConvertOptions {
@@ -58,9 +53,9 @@ interface ConvertOptions {
     link?: Block;
     /**
      * Maps DraftJS block types (e.g. custom `paragraph-small`) to the TipTap text block they are
-     * converted to, and to the `textBlockStyle` applied to it. A DraftJS block type that isn't
-     * mapped becomes the text block its own type implies: `header-one`…`header-six` keep their
-     * heading level, everything else becomes a paragraph.
+     * converted to. A DraftJS block type that isn't mapped becomes the text block its own type
+     * implies: `header-one`…`header-six` keep their heading level, everything else becomes a
+     * paragraph.
      */
     textBlockMap?: Record<string, TextBlockMapping>;
     /**
@@ -310,15 +305,9 @@ function resolveTargetTextBlock({
     return findTextBlockForTag({ tag, textBlocks }) ?? defaultTextBlock;
 }
 
-function makeTextBlockNode(
-    inlineContent: JSONContent[],
-    { textBlock, textBlockStyle }: { textBlock: TipTapResolvedTextBlock; textBlockStyle?: string },
-): JSONContent {
+function makeTextBlockNode(inlineContent: JSONContent[], { textBlock }: { textBlock: TipTapResolvedTextBlock }): JSONContent {
     const node: JSONContent = { type: "textBlock", attrs: { textBlock: textBlock.name } };
 
-    if (textBlockStyle !== undefined) {
-        node.attrs = { ...node.attrs, textBlockStyle };
-    }
     if (inlineContent.length > 0) {
         node.content = inlineContent;
     }
@@ -427,7 +416,6 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
                     headingLevel: HEADER_TYPE_TO_LEVEL[block.type],
                     resolvedOptions,
                 }),
-                textBlockStyle: mapping?.textBlockStyle,
             }),
         );
     }

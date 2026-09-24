@@ -46,22 +46,22 @@ The TipTap Rich Text Block only replaces the Draft.js-based `RichTextBlock`. It 
 
 Most features of the Draft.js `RichTextBlock` have a direct equivalent in the TipTap Rich Text Block.
 
-| Draft.js `RichTextBlock`                        | TipTap Rich Text Block                                                           |
-| ----------------------------------------------- | -------------------------------------------------------------------------------- |
-| `createRichTextBlock`                           | `createTipTapRichTextBlock`                                                      |
-| `rte.supports` (`SupportedThings[]`)            | one option per feature ([Features](#features))                                   |
-| `bold`, `italic`, `strikethrough`, `sub`, `sup` | `bold`, `italic`, `strike`, `sub`, `sup`                                         |
-| `header-one` … `header-six`                     | [`textBlocks`](#text-blocks) + the text block type select (Heading 1–6)          |
-| `rte.standardBlockType`                         | [`defaultTextBlock`](#text-blocks)                                               |
-| `ordered-list`, `unordered-list`                | `orderedList`, `unorderedList`                                                   |
-| `history`                                       | `undoRedoButtons` (Admin only)                                                   |
-| `link`, `links-remove`                          | `link` (pass the link block)                                                     |
-| `non-breaking-space`, `soft-hyphen`             | `nonBreakingSpace`, `softHyphen`                                                 |
-| `rte.blocktypeMap` (custom block types)         | [`textBlockStyles`](#text-block-type-and-styling-selects) + the styling select   |
-| `rte.customInlineStyles`                        | [`inlineStyles`](#text-block-type-and-styling-selects) + the inline style select |
-| `rte.listLevelMax`                              | `listLevelMax`                                                                   |
-| `rte.maxBlocks`                                 | `maxTextBlocks`                                                                  |
-| Site rendering with `redraft` + `Renderers`     | Site rendering with `renderTipTapRichText` + `nodeMapping`/`markMapping`         |
+| Draft.js `RichTextBlock`                        | TipTap Rich Text Block                                                   |
+| ----------------------------------------------- | ------------------------------------------------------------------------ |
+| `createRichTextBlock`                           | `createTipTapRichTextBlock`                                              |
+| `rte.supports` (`SupportedThings[]`)            | one option per feature ([Features](#features))                           |
+| `bold`, `italic`, `strikethrough`, `sub`, `sup` | `bold`, `italic`, `strike`, `sub`, `sup`                                 |
+| `header-one` … `header-six`                     | [`textBlocks`](#text-blocks) + the text block type select (Heading 1–6)  |
+| `rte.standardBlockType`                         | [`defaultTextBlock`](#text-blocks)                                       |
+| `ordered-list`, `unordered-list`                | `orderedList`, `unorderedList`                                           |
+| `history`                                       | `undoRedoButtons` (Admin only)                                           |
+| `link`, `links-remove`                          | `link` (pass the link block)                                             |
+| `non-breaking-space`, `soft-hyphen`             | `nonBreakingSpace`, `softHyphen`                                         |
+| `rte.blocktypeMap` (custom block types)         | [`textBlocks`](#text-blocks) + the text block type select                |
+| `rte.customInlineStyles`                        | [`inlineStyles`](#inline-styles) + the inline style menu                 |
+| `rte.listLevelMax`                              | `listLevelMax`                                                           |
+| `rte.maxBlocks`                                 | `maxTextBlocks`                                                          |
+| Site rendering with `redraft` + `Renderers`     | Site rendering with `renderTipTapRichText` + `nodeMapping`/`markMapping` |
 
 ### Setup
 
@@ -77,7 +77,7 @@ import { LinkBlock } from "./LinkBlock";
 export const TipTapRichTextBlock = createTipTapRichTextBlock({ link: LinkBlock });
 ```
 
-In the Admin, the style and placeholder options additionally carry rendering information (`label` and `element`) that is used to preview them in the editor — see [Text block type and styling selects](#text-block-type-and-styling-selects).
+In the Admin, the style and placeholder options additionally carry rendering information (`label` and `element`) that is used to preview them in the editor — see [Inline styles](#inline-styles).
 
 #### API
 
@@ -211,7 +211,7 @@ The migration converts:
 - `LINK` entities → TipTap `link` marks,
 - ` ` / `­` → non-breaking-space / soft-hyphen nodes.
 
-It uses the block's enabled features and its `textBlockStyles` and `maxTextBlocks` options to build the target schema and validates the result. The conversion is **best effort**: if validation fails, it falls back to a stripped-down plain-text document in production (logging a warning) and throws in development so you can catch problems early.
+It uses the block's enabled features and its `maxTextBlocks` option to build the target schema and validates the result. The conversion is **best effort**: if validation fails, it falls back to a stripped-down plain-text document in production (logging a warning) and throws in development so you can catch problems early.
 
 :::caution Test with production content
 
@@ -226,13 +226,16 @@ If the old block used custom block types (via `blocktypeMap`) or custom inline s
 ```ts title="tip-tap-rich-text.block.ts"
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
     link: LinkBlock,
-    textBlockStyles: [{ name: "paragraph200", appliesTo: ["paragraph"] }],
+    textBlocks: [
+        { name: "paragraph", tag: "p" },
+        { name: "paragraph-small", tag: "p" },
+    ],
     inlineStyles: [{ name: "highlight" }],
     // highlight-start
     migrateFromDraftJs: {
-        // Map the Draft.js `blocktypeMap` entry to a text block and its `textBlockStyle`.
+        // Map the Draft.js `blocktypeMap` entry to a text block.
         textBlockMap: {
-            "paragraph-small": { textBlock: "paragraph", textBlockStyle: "paragraph200" },
+            "paragraph-small": { textBlock: "paragraph-small" },
         },
         // Map a Draft.js `customInlineStyles` name to a TipTap `inlineStyle`.
         inlineStyleMap: { HIGHLIGHT: "highlight" },
@@ -245,41 +248,28 @@ Every mapping names the text block the Draft.js block becomes, which matters whe
 
 ```ts title="tip-tap-rich-text.block.ts"
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
-    textBlockStyles: [{ name: "headline450", appliesTo: ["heading-2"] }],
     migrateFromDraftJs: {
         // highlight-next-line
         textBlockMap: {
-            headline450: { textBlock: "heading-2", textBlockStyle: "headline450" },
+            headline450: { textBlock: "heading-2" },
         },
     },
 });
 ```
 
-`textBlock` accepts the `name` of any configured [text block](#text-blocks), and an unknown name throws. `textBlockStyle` is optional — leave it out for a text block that offers no styles. A Draft.js block type that isn't mapped becomes the text block its own type implies: `header-one`–`header-six` keep their heading level, everything else becomes a paragraph.
+`textBlock` accepts the `name` of any configured [text block](#text-blocks), and an unknown name throws. A Draft.js block type that isn't mapped becomes the text block its own type implies: `header-one`–`header-six` keep their heading level, everything else becomes a paragraph.
 
 ## New features
 
 Beyond replacing the old block, the TipTap Rich Text Block adds capabilities the Draft.js block did not have.
 
-### Text block type and styling selects
+### Inline styles
 
-The editor toolbar offers two dropdowns to structure and style text blocks:
-
-1. **Text block type** — which of the configured [text blocks](#text-blocks) the current block is. Shown when more than one is configured.
-2. **Styling** — a named style applied to the current text block (`textBlockStyles`). This decouples semantics ("this is a paragraph") from appearance ("small paragraph"), so editors pick a type _and_ a style independently.
-
-There is a matching **inline style** dropdown for `inlineStyles`, which applies named styles to a text selection.
-
-Styles are configured on the API (`name` + optional `appliesTo`) and in the Admin (additionally `label` for the dropdown and `element` for the editor preview). The `appliesTo` option limits a style to certain text block types.
+`inlineStyles` adds named styles that the editor applies to a text selection, offered in the toolbar's "More options" menu. They are configured on the API (`name` + optional `appliesTo`) and in the Admin (additionally `label` for the menu entry, `element` for the editor preview and an optional `icon`). The `appliesTo` option limits a style to certain text block types.
 
 ```ts title="tip-tap-rich-text.block.ts (API)"
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
     link: LinkBlock,
-    textBlockStyles: [
-        { name: "paragraph300", appliesTo: ["paragraph"] },
-        { name: "paragraph200", appliesTo: ["paragraph"] },
-        { name: "list200", appliesTo: ["ordered-list", "unordered-list"] },
-    ],
     inlineStyles: [{ name: "highlight" }, { name: "tag", appliesTo: ["paragraph"] }],
 });
 ```
@@ -290,34 +280,6 @@ import { FormattedMessage } from "react-intl";
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
     link: LinkBlock,
-    textBlockStyles: [
-        {
-            name: "paragraph300",
-            label: (
-                <FormattedMessage
-                    id="tipTapRichTextBlock.paragraph300"
-                    defaultMessage="Paragraph"
-                />
-            ),
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => (
-                <p style={{ fontSize: 18, lineHeight: "26px" }} {...props} />
-            ),
-        },
-        {
-            name: "paragraph200",
-            label: (
-                <FormattedMessage
-                    id="tipTapRichTextBlock.paragraph200"
-                    defaultMessage="Paragraph Small"
-                />
-            ),
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => (
-                <p style={{ fontSize: 15, lineHeight: "22px" }} {...props} />
-            ),
-        },
-    ],
     inlineStyles: [
         {
             name: "highlight",
@@ -332,15 +294,12 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
 });
 ```
 
-On the site, the chosen style is available as the `textBlockStyle` attribute (block styles) or the `inlineStyle` mark type (inline styles), which you resolve to your own components in `nodeMapping`/`markMapping`:
+On the site, the chosen style is available as the `inlineStyle` mark type, which you resolve to your own components in `markMapping`:
 
 ```tsx title="TipTapRichTextBlock.tsx (Site)"
-const nodeMapping: Record<string, TipTapNodeHandler> = {
-    paragraph: ({ node, children }) => (
-        <Typography variant={(node.attrs?.textBlockStyle as string | null) ?? undefined}>
-            {children}
-        </Typography>
-    ),
+const markMapping: Record<string, TipTapMarkHandler> = {
+    inlineStyle: ({ mark, children }) =>
+        mark.attrs?.type === "highlight" ? <Highlight>{children}</Highlight> : <>{children}</>,
 };
 ```
 

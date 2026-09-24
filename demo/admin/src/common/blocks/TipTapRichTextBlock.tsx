@@ -24,56 +24,6 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
         { name: "heading-4", tag: "h4", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.heading4" defaultMessage="Heading 4" /> },
         { name: "heading-5", tag: "h5", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.heading5" defaultMessage="Heading 5" /> },
     ],
-    textBlockStyles: [
-        {
-            name: "paragraph300",
-            label: <FormattedMessage id="tipTapRichTextBlock.paragraph300" defaultMessage="Paragraph" />,
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
-        },
-        {
-            name: "paragraph200",
-            label: <FormattedMessage id="tipTapRichTextBlock.paragraph200" defaultMessage="Paragraph Small" />,
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 15, lineHeight: "22px" }} {...props} />,
-        },
-        {
-            name: "eyebrow600",
-            label: <FormattedMessage id="tipTapRichTextBlock.eyebrow600" defaultMessage="Eyebrow 600" />,
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 30, lineHeight: "30px" }} {...props} />,
-        },
-        {
-            name: "eyebrow550",
-            label: <FormattedMessage id="tipTapRichTextBlock.eyebrow550" defaultMessage="Eyebrow 550" />,
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 26, lineHeight: "26px" }} {...props} />,
-        },
-        {
-            name: "eyebrow500",
-            label: <FormattedMessage id="tipTapRichTextBlock.eyebrow500" defaultMessage="Eyebrow 500" />,
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 22, lineHeight: "22px" }} {...props} />,
-        },
-        {
-            name: "eyebrow450",
-            label: <FormattedMessage id="tipTapRichTextBlock.eyebrow450" defaultMessage="Eyebrow 450" />,
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 18, lineHeight: "18px" }} {...props} />,
-        },
-        {
-            name: "list300",
-            label: <FormattedMessage id="tipTapRichTextBlock.list300" defaultMessage="List" />,
-            appliesTo: ["ordered-list", "unordered-list"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
-        },
-        {
-            name: "list200",
-            label: <FormattedMessage id="tipTapRichTextBlock.list200" defaultMessage="List Small" />,
-            appliesTo: ["ordered-list", "unordered-list"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 15, lineHeight: "22px" }} {...props} />,
-        },
-    ],
     inlineStyles: [
         {
             name: "highlight",

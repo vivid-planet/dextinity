@@ -40,14 +40,7 @@ import { type ForwardRefExoticComponent, type MouseEvent, type ReactNode, type R
 import { FormattedMessage, useIntl } from "react-intl";
 
 import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
-import type {
-    TipTapChildBlock,
-    TipTapInlineStyle,
-    TipTapPlaceholder,
-    TipTapResolvedOptions,
-    TipTapTextBlockStyle,
-    TipTapTextBlockType,
-} from "./createTipTapRichTextBlock";
+import type { TipTapChildBlock, TipTapInlineStyle, TipTapPlaceholder, TipTapResolvedOptions, TipTapTextBlockType } from "./createTipTapRichTextBlock";
 import { liftOutOfList } from "./liftOutOfList";
 import { findTextBlock, isTextBlockAllowedInListItem } from "./textBlocks";
 import { TipTapBlockDialog } from "./TipTapBlockDialog";
@@ -163,7 +156,6 @@ const selectSx = {
 export const TipTapToolbar = ({
     editor,
     resolvedOptions,
-    textBlockStyles,
     inlineStyles,
     placeholders,
     linkBlock,
@@ -174,7 +166,6 @@ export const TipTapToolbar = ({
 }: {
     editor: Editor;
     resolvedOptions: TipTapResolvedOptions;
-    textBlockStyles: TipTapTextBlockStyle[];
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
     linkBlock?: BlockInterface & LinkBlockInterface;
@@ -231,7 +222,6 @@ export const TipTapToolbar = ({
             return {
                 activeTextBlock: activeTextBlock.name,
                 activeTipTapTextBlockType,
-                activeTextBlockStyle: (e.getAttributes("textBlock").textBlockStyle as string) ?? "",
                 canUndo: e.can().undo(),
                 canRedo: e.can().redo(),
                 canIndent,
@@ -279,9 +269,6 @@ export const TipTapToolbar = ({
         setTimeout(() => editor.commands.focus(), 0);
     };
 
-    const applicableTextBlockStyles = textBlockStyles.filter(
-        (style) => !style.appliesTo || style.appliesTo.includes(editorState.activeTipTapTextBlockType),
-    );
     const applicableInlineStyles = inlineStyles.filter(
         (style) => !style.appliesTo || style.appliesTo.includes(editorState.activeTipTapTextBlockType),
     );
@@ -347,26 +334,6 @@ export const TipTapToolbar = ({
 
         // Switching the type only renames the node's text block - the tag follows from the configuration.
         editor.chain().focus().updateAttributes("textBlock", { textBlock: textBlock.name }).run();
-
-        // Clear textBlockStyle if it's not applicable to the new text block type
-        if (textBlockStyles.length > 0) {
-            const { activeTextBlockStyle } = editorState;
-            if (activeTextBlockStyle) {
-                const newType: TipTapTextBlockType = textBlock.level !== undefined ? `heading-${textBlock.level}` : "paragraph";
-                const styleConfig = textBlockStyles.find((style) => style.name === activeTextBlockStyle);
-                if (styleConfig?.appliesTo && !styleConfig.appliesTo.includes(newType)) {
-                    editor.chain().updateAttributes("textBlock", { textBlockStyle: null }).run();
-                }
-            }
-        }
-    };
-
-    const handleTextBlockStyleChange = (e: SelectChangeEvent) => {
-        editor
-            .chain()
-            .focus()
-            .updateAttributes("textBlock", { textBlockStyle: e.target.value || null })
-            .run();
     };
 
     return (
@@ -415,29 +382,6 @@ export const TipTapToolbar = ({
                             {textBlocks.map((textBlock) => (
                                 <MenuItem key={textBlock.name} value={textBlock.name} dense>
                                     {textBlock.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </ToolbarGroup>
-            )}
-            {applicableTextBlockStyles.length > 0 && (
-                <ToolbarGroup>
-                    <FormControl sx={selectFormControlSx}>
-                        <Select
-                            value={editorState.activeTextBlockStyle}
-                            onChange={handleTextBlockStyleChange}
-                            displayEmpty
-                            variant="filled"
-                            MenuProps={{ elevation: 1 }}
-                            sx={selectSx}
-                        >
-                            <MenuItem value="" dense>
-                                <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockStyle.default" defaultMessage="Default" />
-                            </MenuItem>
-                            {applicableTextBlockStyles.map((style) => (
-                                <MenuItem key={style.name} value={style.name} dense>
-                                    {style.label}
                                 </MenuItem>
                             ))}
                         </Select>

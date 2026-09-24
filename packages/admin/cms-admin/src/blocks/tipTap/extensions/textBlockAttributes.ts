@@ -1,6 +1,6 @@
 /**
- * The attributes that identify a node's text block and the style applied to it. They are rendered to
- * (and parsed from) HTML, so they survive the content translation's HTML round trip.
+ * The attribute that identifies a node's text block. It is rendered to (and parsed from) HTML, so it
+ * survives the content translation's HTML round trip.
  */
 export const textBlockAttribute = (defaultTextBlock: string) => ({
     textBlock: {
@@ -9,12 +9,3 @@ export const textBlockAttribute = (defaultTextBlock: string) => ({
         renderHTML: (attributes: { textBlock: string }) => ({ "data-text-block": attributes.textBlock }),
     },
 });
-
-export const textBlockStyleAttribute = {
-    textBlockStyle: {
-        default: null,
-        parseHTML: (element: HTMLElement) => element.getAttribute("data-text-block-style"),
-        renderHTML: (attributes: { textBlockStyle: string | null }) =>
-            attributes.textBlockStyle ? { "data-text-block-style": attributes.textBlockStyle } : {},
-    },
-};

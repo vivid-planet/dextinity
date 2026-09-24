@@ -1,4 +1,4 @@
-import { AnyEntity, EntityClass, EntityMetadata, EntityRepository, MikroORM } from "@mikro-orm/postgresql";
+import { AnyEntity, EntityClass, EntityMetadata, MikroORM } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { TypeMetadataStorage } from "@nestjs/graphql";
 import { ObjectTypeMetadata } from "@nestjs/graphql/dist/schema-builder/metadata/object-type.metadata.js";
@@ -8,8 +8,6 @@ import { ROOT_BLOCK_KEYS_METADATA_KEY, ROOT_BLOCK_METADATA_KEY } from "../blocks
 import { ROOT_BLOCK_ENTITY_METADATA_KEY, RootBlockEntityOptions } from "../blocks/decorators/root-block-entity";
 
 interface DiscoverRootBlocksResult {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    repository: EntityRepository<any>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     metadata: EntityMetadata<any>;
     graphqlObjectType?: string;
@@ -21,8 +19,6 @@ interface DiscoverRootBlocksResult {
 interface DiscoverTargetEntitiesResult {
     entity: AnyEntity;
     entityName: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    repository: EntityRepository<any>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     metadata: EntityMetadata<any>;
     graphqlObjectType?: string;
@@ -53,7 +49,6 @@ export class DiscoverService {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const block = Reflect.getMetadata(ROOT_BLOCK_METADATA_KEY, (entity as any).prototype, key);
                     ret.push({
-                        repository: this.orm.em.getRepository(entity),
                         metadata: metadataStorage.get(entity.name),
                         graphqlObjectType: this.objectTypesMetadata.find((item) => item.target.name === entity.name)?.name,
                         options: rootBlockEntityOptions,
@@ -77,7 +72,6 @@ export class DiscoverService {
             ret.push({
                 entity,
                 entityName: entity.name,
-                repository: this.orm.em.getRepository(entity.name),
                 metadata: metadataStorage.get(entity.name),
                 graphqlObjectType: this.objectTypesMetadata.find((item) => item.target.name === entity.name)?.name,
             });

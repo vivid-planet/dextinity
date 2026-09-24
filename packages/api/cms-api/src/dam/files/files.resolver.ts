@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, wrap } from "@mikro-orm/postgresql";
+import { EntityManager, wrap } from "@mikro-orm/postgresql";
 import { NotFoundException, Type } from "@nestjs/common";
 import { Args, Context, ID, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { IncomingMessage } from "http";
@@ -57,8 +56,6 @@ export function createFilesResolver({
     class FilesResolver {
         constructor(
             private readonly filesService: FilesService,
-            @InjectRepository("DamFile") private readonly filesRepository: EntityRepository<FileInterface>,
-            @InjectRepository("DamFolder") private readonly foldersRepository: EntityRepository<FolderInterface>,
             private readonly entityManager: EntityManager,
         ) {}
 
@@ -102,10 +99,10 @@ export function createFilesResolver({
         ): Promise<FileInterface[]> {
             let targetFolder = null;
             if (targetFolderId !== null) {
-                targetFolder = await this.foldersRepository.findOneOrFail(targetFolderId);
+                targetFolder = await this.entityManager.findOneOrFail<FolderInterface>("DamFolder", targetFolderId);
             }
 
-            const files = await this.filesRepository.find({ id: { $in: fileIds } });
+            const files = await this.entityManager.find<FileInterface>("DamFile", { id: { $in: fileIds } });
 
             return this.filesService.moveBatch(files, targetFolder);
         }
@@ -132,7 +129,7 @@ export function createFilesResolver({
         @AffectedEntity(File)
         @SkipBuild()
         async archiveDamFile(@Args("id", { type: () => ID }) id: string): Promise<FileInterface> {
-            const entity = await this.filesRepository.findOneOrFail(id);
+            const entity = await this.entityManager.findOneOrFail<FileInterface>("DamFile", id);
             entity.archived = true;
 
             await this.entityManager.persist(entity).flush();
@@ -143,7 +140,7 @@ export function createFilesResolver({
         @AffectedEntity(File, { idArg: "ids" })
         @SkipBuild()
         async archiveDamFiles(@Args("ids", { type: () => [ID] }) ids: string[]): Promise<FileInterface[]> {
-            const entities = await this.filesRepository.find({ id: { $in: ids } });
+            const entities = await this.entityManager.find<FileInterface>("DamFile", { id: { $in: ids } });
 
             for (const entity of entities) {
                 entity.archived = true;
@@ -157,7 +154,7 @@ export function createFilesResolver({
         @AffectedEntity(File)
         @SkipBuild()
         async restoreDamFile(@Args("id", { type: () => ID }) id: string): Promise<FileInterface> {
-            const entity = await this.filesRepository.findOneOrFail(id);
+            const entity = await this.entityManager.findOneOrFail<FileInterface>("DamFile", id);
             entity.archived = false;
 
             await this.entityManager.persist(entity).flush();
@@ -168,7 +165,7 @@ export function createFilesResolver({
         @AffectedEntity(File, { idArg: "ids" })
         @SkipBuild()
         async restoreDamFiles(@Args("ids", { type: () => [ID] }) ids: string[]): Promise<FileInterface[]> {
-            const entities = await this.filesRepository.find({ id: { $in: ids } });
+            const entities = await this.entityManager.find<FileInterface>("DamFile", { id: { $in: ids } });
 
             for (const entity of entities) {
                 entity.archived = false;

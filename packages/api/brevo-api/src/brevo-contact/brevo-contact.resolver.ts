@@ -1,6 +1,5 @@
 import { AffectedEntity, CurrentUser, GetCurrentUser, PaginatedResponseFactory, RequiredPermission } from "@dextinity/cms-api";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository, FilterQuery } from "@mikro-orm/postgresql";
+import { EntityManager, FilterQuery } from "@mikro-orm/postgresql";
 import { Inject, Type } from "@nestjs/common";
 import { Args, ArgsType, Int, Mutation, ObjectType, Query, Resolver } from "@nestjs/graphql";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
@@ -49,12 +48,11 @@ export function createBrevoContactResolver({
     class BrevoContactResolver {
         constructor(
             @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
-            @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
+            private readonly entityManager: EntityManager,
             private readonly brevoContactsApiService: BrevoApiContactsService,
             private readonly brevoContactsService: BrevoContactsService,
             private readonly ecgRtrListService: EcgRtrListService,
             private readonly targetGroupService: TargetGroupsService,
-            @InjectRepository("BrevoTargetGroup") private readonly targetGroupRepository: EntityRepository<TargetGroupInterface>,
         ) {}
 
         @Query(() => BrevoContact)
@@ -81,7 +79,7 @@ export function createBrevoContactResolver({
                 where.isMainList = false;
             }
 
-            let targetGroup = await this.targetGroupRepository.findOne(where);
+            let targetGroup = await this.entityManager.findOne<TargetGroupInterface>("BrevoTargetGroup", where);
 
             if (!targetGroup) {
                 if (targetGroupId) {
@@ -108,7 +106,7 @@ export function createBrevoContactResolver({
         async brevoTestContacts(@Args() { offset, limit, email, scope }: BrevoContactsArgs): Promise<PaginatedBrevoContacts> {
             const where: FilterQuery<TargetGroupInterface> = { scope, isMainList: false, isTestList: true };
 
-            let targetGroup = await this.targetGroupRepository.findOne(where);
+            let targetGroup = await this.entityManager.findOne<TargetGroupInterface>("BrevoTargetGroup", where);
 
             if (!targetGroup) {
                 // when there is no test target group for the scope, create one
@@ -131,7 +129,7 @@ export function createBrevoContactResolver({
         async manuallyAssignedBrevoContacts(
             @Args() { offset, limit, email, targetGroupId }: ManuallyAssignedBrevoContactsArgs,
         ): Promise<PaginatedBrevoContacts> {
-            const targetGroup = await this.targetGroupRepository.findOneOrFail({ id: targetGroupId });
+            const targetGroup = await this.entityManager.findOneOrFail<TargetGroupInterface>("BrevoTargetGroup", { id: targetGroupId });
 
             if (email) {
                 const contact = await this.brevoContactsApiService.getContactInfoByEmail(email, targetGroup.scope);
@@ -172,14 +170,18 @@ export function createBrevoContactResolver({
             );
 
             const assignedListIds = contact.listIds;
-            const mainListIds = (await this.targetGroupRepository.find({ brevoId: { $in: assignedListIds }, isMainList: true })).map(
-                (targetGroup) => targetGroup.brevoId,
-            );
+            const mainListIds = (
+                await this.entityManager.find<TargetGroupInterface>("BrevoTargetGroup", { brevoId: { $in: assignedListIds }, isMainList: true })
+            ).map((targetGroup) => targetGroup.brevoId);
             const updatedNonMainListIds = await this.brevoContactsService.getTargetGroupIdsForExistingContact({
                 contact,
             });
 
-            const testTargetGroup = await this.targetGroupRepository.findOne({ scope, isMainList: false, isTestList: true });
+            const testTargetGroup = await this.entityManager.findOne<TargetGroupInterface>("BrevoTargetGroup", {
+                scope,
+                isMainList: false,
+                isTestList: true,
+            });
             const contactIncludesTestList = testTargetGroup?.brevoId ? contact.listIds.includes(testTargetGroup.brevoId) : false;
 
             if (testTargetGroup && contactIncludesTestList) {
@@ -215,7 +217,7 @@ export function createBrevoContactResolver({
                 return SubscribeResponse.ERROR_CONTAINED_IN_ECG_RTR_LIST;
             }
 
-            const brevoConfig = await this.brevoConfigRepository.findOneOrFail({ scope });
+            const brevoConfig = await this.entityManager.findOneOrFail<BrevoConfigInterface>("BrevoConfig", { scope });
 
             return this.brevoContactsService.createContact({
                 email: input.email,
@@ -237,7 +239,7 @@ export function createBrevoContactResolver({
             input: BrevoContactInputInterface,
         ): Promise<SubscribeResponse> {
             const where: FilterQuery<TargetGroupInterface> = { scope, isMainList: false, isTestList: true };
-            const targetGroup = await this.targetGroupRepository.findOne(where);
+            const targetGroup = await this.entityManager.findOne<TargetGroupInterface>("BrevoTargetGroup", where);
             const contact = await this.brevoContactsApiService.getContactInfoByEmail(input.email, scope);
 
             if (targetGroup) {
@@ -286,7 +288,7 @@ export function createBrevoContactResolver({
             }
 
             const where: FilterQuery<TargetGroupInterface> = { scope, isMainList: false, isTestList: true };
-            const testTargetGroup = await this.targetGroupRepository.findOne(where);
+            const testTargetGroup = await this.entityManager.findOne<TargetGroupInterface>("BrevoTargetGroup", where);
             const contactIncludesTestList = testTargetGroup?.brevoId ? contact.listIds.includes(testTargetGroup.brevoId) : false;
 
             if (testTargetGroup && contactIncludesTestList) {
@@ -320,8 +322,8 @@ export function createBrevoContactResolver({
             }
 
             const where: FilterQuery<TargetGroupInterface> = { scope, isMainList: false, isTestList: true };
-            const testTargetGroup = await this.targetGroupRepository.findOne(where);
-            const mainTargetGroup = await this.targetGroupRepository.findOne({ scope, isMainList: true });
+            const testTargetGroup = await this.entityManager.findOne<TargetGroupInterface>("BrevoTargetGroup", where);
+            const mainTargetGroup = await this.entityManager.findOne<TargetGroupInterface>("BrevoTargetGroup", { scope, isMainList: true });
             const mainListIncludesContact = mainTargetGroup?.brevoId ? contact.listIds.includes(mainTargetGroup.brevoId) : false;
 
             if (testTargetGroup && mainListIncludesContact) {

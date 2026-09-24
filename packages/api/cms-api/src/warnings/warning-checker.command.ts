@@ -1,5 +1,5 @@
 import { CreateRequestContext, EntityClass, MikroORM } from "@mikro-orm/core";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { ModuleRef, Reflector } from "@nestjs/core";
 import { Command, CommandRunner } from "nest-commander";
@@ -145,8 +145,6 @@ export class WarningCheckerCommand extends CommandRunner {
             const entityMetadata = metadataStorage.get(entity.name);
             const createWarnings = this.reflector.getAllAndOverride<CreateWarningsMeta>(CREATE_WARNINGS_METADATA_KEY, [entity]);
             if (createWarnings) {
-                const repository = this.entityManager.getRepository(entity);
-
                 if (isInjectableService(createWarnings)) {
                     const service = this.moduleRef.get(createWarnings, { strict: false });
 
@@ -165,7 +163,7 @@ export class WarningCheckerCommand extends CommandRunner {
                         }
                     } else {
                         await this.processEntityWarningsIndividually({
-                            repository,
+                            entity,
                             createWarnings: (entity) => service.createWarnings(entity),
                             rootEntityName: entity.name,
                             rootPrimaryKey: entityMetadata.primaryKeys[0],
@@ -173,7 +171,7 @@ export class WarningCheckerCommand extends CommandRunner {
                     }
                 } else {
                     await this.processEntityWarningsIndividually({
-                        repository,
+                        entity,
                         createWarnings,
                         rootEntityName: entity.name,
                         rootPrimaryKey: entityMetadata.primaryKeys[0],
@@ -187,13 +185,13 @@ export class WarningCheckerCommand extends CommandRunner {
     }
 
     private async processEntityWarningsIndividually({
-        repository,
+        entity,
         createWarnings,
         rootEntityName,
         rootPrimaryKey,
     }: {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        repository: EntityRepository<any>;
+        entity: EntityClass<any>;
         createWarnings: CreateWarningsFunction;
         rootEntityName: string;
         rootPrimaryKey: string;
@@ -202,7 +200,7 @@ export class WarningCheckerCommand extends CommandRunner {
         const limit = 50;
         let offset = 0;
         do {
-            rows = await repository.find({}, { limit, offset });
+            rows = await this.entityManager.find(entity, {}, { limit, offset });
             offset += limit;
 
             for (const row of rows) {

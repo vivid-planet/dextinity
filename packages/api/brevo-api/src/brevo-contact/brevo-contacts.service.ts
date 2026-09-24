@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 
@@ -22,11 +21,7 @@ export class BrevoContactsService {
     private readonly secretKey?: string;
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
-        @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
-        @Optional()
-        @InjectRepository("BrevoBlacklistedContacts")
-        @Optional()
-        private readonly blacklistedContactsRepository: EntityRepository<BlacklistedContactsInterface>,
+        private readonly entityManager: EntityManager,
         private readonly brevoContactsApiService: BrevoApiContactsService,
         private readonly ecgRtrListService: EcgRtrListService,
         private readonly targetGroupService: TargetGroupsService,
@@ -75,7 +70,9 @@ export class BrevoContactsService {
             }
 
             const hashedEmail = hashEmail(email, this.secretKey);
-            const blacklistedContactAvailable = await this.blacklistedContactsRepository.findOne({ hashedEmail: hashedEmail });
+            const blacklistedContactAvailable = await this.entityManager.findOne<BlacklistedContactsInterface>("BrevoBlacklistedContacts", {
+                hashedEmail: hashedEmail,
+            });
 
             if (blacklistedContactAvailable) {
                 return SubscribeResponse.ERROR_CONTACT_IS_BLACKLISTED;
@@ -160,7 +157,7 @@ export class BrevoContactsService {
             return SubscribeResponse.ERROR_CONTAINED_IN_ECG_RTR_LIST;
         }
 
-        const brevoConfig = await this.brevoConfigRepository.findOneOrFail({ scope });
+        const brevoConfig = await this.entityManager.findOneOrFail<BrevoConfigInterface>("BrevoConfig", { scope });
 
         const created = await this.createContact({
             ...data,

@@ -1,6 +1,5 @@
 import { AffectedEntity, extractGraphqlFields, PaginatedResponseFactory, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, FindOptions, wrap } from "@mikro-orm/postgresql";
+import { EntityManager, FindOptions, wrap } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Info, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { GraphQLResolveInfo } from "graphql";
@@ -45,14 +44,12 @@ export function createEmailCampaignsResolver({
             private readonly brevoApiCampaignsService: BrevoApiCampaignsService,
             private readonly ecgRtrListService: EcgRtrListService,
             private readonly entityManager: EntityManager,
-            @InjectRepository("BrevoEmailCampaign") private readonly repository: EntityRepository<EmailCampaignInterface>,
-            @InjectRepository("BrevoTargetGroup") private readonly targetGroupRepository: EntityRepository<TargetGroupInterface>,
         ) {}
 
         @Query(() => BrevoEmailCampaign)
         @AffectedEntity(BrevoEmailCampaign)
         async brevoEmailCampaign(@Args("id", { type: () => ID }) id: string): Promise<EmailCampaignInterface> {
-            const campaign = await this.repository.findOneOrFail(id);
+            const campaign = await this.entityManager.findOneOrFail<EmailCampaignInterface>("BrevoEmailCampaign", id);
             return campaign;
         }
 
@@ -81,7 +78,7 @@ export function createEmailCampaignsResolver({
                 });
             }
 
-            const [entities, totalCount] = await this.repository.findAndCount(where, options);
+            const [entities, totalCount] = await this.entityManager.findAndCount("BrevoEmailCampaign", where, options);
 
             const emailCampaigns = this.campaignsService.loadEmailCampaignSendingStatesForEmailCampaigns(entities, scope);
 
@@ -95,7 +92,7 @@ export function createEmailCampaignsResolver({
             @Args("input", { type: () => EmailCampaignInput }, new DynamicDtoValidationPipe(EmailCampaignInput)) input: EmailCampaignInputInterface,
         ): Promise<EmailCampaignInterface> {
             const { brevoTargetGroups, ...restInput } = input;
-            const campaign = this.repository.create({
+            const campaign = this.entityManager.create<EmailCampaignInterface>("BrevoEmailCampaign", {
                 ...restInput,
                 scope,
                 targetGroups: brevoTargetGroups,
@@ -121,7 +118,7 @@ export function createEmailCampaignsResolver({
             input: Partial<EmailCampaignInputInterface>,
             @Args("lastUpdatedAt", { type: () => Date, nullable: true }) lastUpdatedAt?: Date,
         ): Promise<EmailCampaignInterface> {
-            const campaign = await this.repository.findOneOrFail(id);
+            const campaign = await this.entityManager.findOneOrFail<EmailCampaignInterface>("BrevoEmailCampaign", id);
 
             if (lastUpdatedAt) {
                 validateNotModified(campaign, lastUpdatedAt);
@@ -180,7 +177,7 @@ export function createEmailCampaignsResolver({
         @Mutation(() => Boolean)
         @AffectedEntity(BrevoEmailCampaign)
         async deleteBrevoEmailCampaign(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
-            const campaign = await this.repository.findOneOrFail(id);
+            const campaign = await this.entityManager.findOneOrFail<EmailCampaignInterface>("BrevoEmailCampaign", id);
 
             if (campaign.brevoId) {
                 throw new Error("Cannot delete campaign that has already been scheduled once before.");
@@ -194,12 +191,12 @@ export function createEmailCampaignsResolver({
         @Mutation(() => Boolean)
         @AffectedEntity(BrevoEmailCampaign)
         async sendBrevoEmailCampaignNow(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
-            const campaign = await this.repository.findOneOrFail(id);
+            const campaign = await this.entityManager.findOneOrFail<EmailCampaignInterface>("BrevoEmailCampaign", id);
 
             const campaignSent = await this.campaignsService.sendEmailCampaignNow(campaign);
 
             if (campaignSent) {
-                const campaign = await this.repository.findOneOrFail(id);
+                const campaign = await this.entityManager.findOneOrFail<EmailCampaignInterface>("BrevoEmailCampaign", id);
 
                 wrap(campaign).assign({
                     scheduledAt: new Date(),
@@ -220,7 +217,7 @@ export function createEmailCampaignsResolver({
             @Args("id", { type: () => ID }) id: string,
             @Args("data", { type: () => SendTestEmailCampaignArgs }) data: SendTestEmailCampaignArgs,
         ): Promise<boolean> {
-            const campaign = await this.repository.findOneOrFail(id);
+            const campaign = await this.entityManager.findOneOrFail<EmailCampaignInterface>("BrevoEmailCampaign", id);
             const brevoCampaign = await this.campaignsService.saveEmailCampaignInBrevo(campaign);
 
             const containedEcgRtrListEmails = await this.ecgRtrListService.getContainedEcgRtrListEmails(data.emails);
@@ -236,7 +233,7 @@ export function createEmailCampaignsResolver({
         @Query(() => BrevoApiCampaignStatistics, { nullable: true })
         @AffectedEntity(BrevoEmailCampaign)
         async brevoEmailCampaignStatistics(@Args("id", { type: () => ID }) id: string): Promise<BrevoApiCampaignStatistics | null> {
-            const campaign = await this.repository.findOneOrFail(id);
+            const campaign = await this.entityManager.findOneOrFail<EmailCampaignInterface>("BrevoEmailCampaign", id);
 
             return campaign.brevoId ? this.brevoApiCampaignsService.loadBrevoCampaignStatisticsById(campaign) : null;
         }

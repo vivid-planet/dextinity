@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { CreateRequestContext, EntityManager, EntityRepository, MikroORM } from "@mikro-orm/postgresql";
+import { CreateRequestContext, EntityManager, MikroORM } from "@mikro-orm/postgresql";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { createHmac } from "crypto";
 import { addHours, addSeconds } from "date-fns";
@@ -22,7 +21,6 @@ export class FileUploadsService {
 
     constructor(
         private readonly orm: MikroORM,
-        @InjectRepository(FileUpload) private readonly repository: EntityRepository<FileUpload>,
         @Inject(forwardRef(() => BlobStorageBackendService)) private readonly blobStorageBackendService: BlobStorageBackendService,
         @Inject(FILE_UPLOADS_CONFIG) private readonly config: FileUploadsConfig,
         private readonly entityManager: EntityManager,
@@ -52,7 +50,7 @@ export class FileUploadsService {
         const name = slugifyFilename(filename, extension);
 
         const expires = expiresIn || this.config.expiresIn;
-        const fileUpload = this.repository.create({
+        const fileUpload = this.entityManager.create(FileUpload, {
             name,
             size: file.size,
             mimetype: file.mimetype,
@@ -159,7 +157,8 @@ export class FileUploadsService {
         let hasMore = false;
         const limit = 100;
         do {
-            const files = await this.repository.find(
+            const files = await this.entityManager.find(
+                FileUpload,
                 {
                     expiresAt: { $lt: new Date() },
                 },

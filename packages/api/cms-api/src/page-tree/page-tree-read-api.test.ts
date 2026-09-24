@@ -11,7 +11,7 @@ describe("PageTreeReadApi", () => {
     describe("getNodeByPath", () => {
         it("should return null for path /home", async () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const api = createReadApi({ pageTreeNodeRepository: {} as any, attachedDocumentsRepository: {} as any });
+            const api = createReadApi({ entityManager: {} as any });
             await expect(api.getNodeByPath("/home")).resolves.toBeNull();
         });
     });

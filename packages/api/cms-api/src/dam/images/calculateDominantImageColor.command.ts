@@ -20,7 +20,7 @@ export class CalculateDominantImageColorCommand extends CommandRunner {
     async run(): Promise<void> {
         console.log("Calculate dominant color of images...");
 
-        const files = await this.em.getRepository<FileInterface>("DamFile").find({ image: { $ne: null } });
+        const files = await this.em.find<FileInterface>("DamFile", { image: { $ne: null } });
 
         console.log(`...for ${files.length} images ...`);
 

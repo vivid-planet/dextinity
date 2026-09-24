@@ -1,6 +1,5 @@
 import { filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@dextinity/cms-api";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, FilterQuery, ObjectQuery, wrap } from "@mikro-orm/postgresql";
+import { EntityManager, FilterQuery, ObjectQuery, wrap } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { stringify } from "querystring";
 
@@ -14,7 +13,6 @@ import { TargetGroupInterface } from "./entity/target-group-entity.factory";
 @Injectable()
 export class TargetGroupsService {
     constructor(
-        @InjectRepository("BrevoTargetGroup") private readonly repository: EntityRepository<TargetGroupInterface>,
         private readonly brevoApiContactsService: BrevoApiContactsService,
         private readonly entityManager: EntityManager,
     ) {}
@@ -71,7 +69,10 @@ export class TargetGroupsService {
         filters?: BrevoContactFilterAttributesInterface,
     ): Promise<true> {
         try {
-            const mainScopeTargetGroupList = await this.repository.findOneOrFail({ scope, isMainList: true });
+            const mainScopeTargetGroupList = await this.entityManager.findOneOrFail<TargetGroupInterface>("BrevoTargetGroup", {
+                scope,
+                isMainList: true,
+            });
 
             let offset = 0;
             let totalCount = 0;
@@ -135,14 +136,17 @@ export class TargetGroupsService {
         limit: number;
         where: FilterQuery<TargetGroupInterface>;
     }): Promise<[TargetGroupInterface[], number]> {
-        const [targetGroups, totalContactLists] = await this.repository.findAndCount(where, { offset, limit });
+        const [targetGroups, totalContactLists] = await this.entityManager.findAndCount<TargetGroupInterface>("BrevoTargetGroup", where, {
+            offset,
+            limit,
+        });
 
         return [targetGroups, totalContactLists];
     }
 
     public async createIfNotExistMainTargetGroupForScope(scope: EmailCampaignScopeInterface): Promise<TargetGroupInterface> {
         try {
-            const mainList = await this.repository.findOne({ scope, isMainList: true });
+            const mainList = await this.entityManager.findOne<TargetGroupInterface>("BrevoTargetGroup", { scope, isMainList: true });
 
             if (mainList) {
                 return mainList;
@@ -152,7 +156,13 @@ export class TargetGroupsService {
             const brevoId = await this.brevoApiContactsService.createBrevoContactList(title, scope);
 
             if (brevoId) {
-                const mainTargetGroupForScope = this.repository.create({ title, brevoId, scope, isMainList: true, isTestList: false });
+                const mainTargetGroupForScope = this.entityManager.create<TargetGroupInterface>("BrevoTargetGroup", {
+                    title,
+                    brevoId,
+                    scope,
+                    isMainList: true,
+                    isTestList: false,
+                });
 
                 await this.entityManager.flush();
 
@@ -167,7 +177,7 @@ export class TargetGroupsService {
     }
 
     public async createIfNotExistTestTargetGroupForScope(scope: EmailCampaignScopeInterface): Promise<TargetGroupInterface> {
-        const testList = await this.repository.findOne({ scope, isMainList: false, isTestList: true });
+        const testList = await this.entityManager.findOne<TargetGroupInterface>("BrevoTargetGroup", { scope, isMainList: false, isTestList: true });
 
         if (testList) {
             return testList;
@@ -178,7 +188,13 @@ export class TargetGroupsService {
         const brevoId = await this.brevoApiContactsService.createBrevoContactList(title, scope);
 
         if (brevoId) {
-            const testTargetGroupForScope = this.repository.create({ title, brevoId, scope, isMainList: false, isTestList: true });
+            const testTargetGroupForScope = this.entityManager.create<TargetGroupInterface>("BrevoTargetGroup", {
+                title,
+                brevoId,
+                scope,
+                isMainList: false,
+                isTestList: true,
+            });
 
             await this.entityManager.flush();
 

@@ -85,7 +85,6 @@ export class ContentScopeService {
             }
 
             if (args[affectedEntity.options.idArg]) {
-                const repo = this.orm.em.getRepository<{ scope?: ContentScope }>(affectedEntity.entity);
                 const id = args[affectedEntity.options.idArg];
                 const ids = Array.isArray(id) ? id : [id];
 
@@ -100,7 +99,7 @@ export class ContentScopeService {
                     if (hasUuidPrimaryKey && !isUUID(id)) {
                         throw new DextinityValidationException(`Invalid UUID '${id}' for argument '${affectedEntity.options.idArg}' of ${location}`);
                     }
-                    const row = await repo.findOneOrFail(id, { filters: false }); // disable all default filters, e.g., excludeDeleted
+                    const row = await this.orm.em.findOneOrFail<{ scope?: ContentScope }>(affectedEntity.entity, id, { filters: false }); // disable all default filters, e.g., excludeDeleted
                     if (row.scope) {
                         contentScopes.push([row.scope as ContentScope]);
                     } else {

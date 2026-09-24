@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
 
@@ -15,7 +14,6 @@ import { UserPermissionsService } from "./user-permissions.service";
 @RequiredPermission(["userPermissions"], { skipScopeCheck: true })
 export class UserContentScopesResolver {
     constructor(
-        @InjectRepository(UserContentScopes) private readonly repository: EntityRepository<UserContentScopes>,
         private readonly userService: UserPermissionsService,
         private readonly entityManager: EntityManager,
     ) {}
@@ -26,11 +24,11 @@ export class UserContentScopesResolver {
         @Args("userId", { type: () => String }) userId: string,
         @Args("input", { type: () => UserContentScopesInput }) { contentScopes }: UserContentScopesInput,
     ): Promise<boolean> {
-        let entity = await this.repository.findOne({ userId });
+        let entity = await this.entityManager.findOne(UserContentScopes, { userId });
         if (entity) {
-            entity = this.repository.assign(entity, { userId, contentScopes });
+            entity = this.entityManager.assign(entity, { userId, contentScopes });
         } else {
-            entity = this.repository.create({ userId, contentScopes });
+            entity = this.entityManager.create(UserContentScopes, { userId, contentScopes });
         }
         await this.entityManager.persist(entity).flush();
         return true;

@@ -6,7 +6,7 @@ import { type PageTreeNodeInterface, PageTreeNodeVisibility } from "./types";
 function createServiceWithNodes(nodes: PageTreeNodeInterface[]): { service: PageTreeService; queriedFilters: Array<Record<string, unknown>> } {
     const queriedFilters: Array<Record<string, unknown>> = [];
 
-    const pageTreeRepository = {
+    const entityManager = {
         createQueryBuilder: () => {
             const filters: Record<string, unknown> = {};
             const queryBuilder = {
@@ -35,7 +35,7 @@ function createServiceWithNodes(nodes: PageTreeNodeInterface[]): { service: Page
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const service = new PageTreeService(pageTreeRepository as any, {} as any, {} as any, {} as any, {} as any);
+    const service = new PageTreeService(entityManager as any, {} as any, {} as any);
 
     return { service, queriedFilters };
 }

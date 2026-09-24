@@ -1,6 +1,5 @@
 import * as csv from "@fast-csv/parse";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 import { IsEmail, IsNotEmpty, validateSync } from "class-validator";
@@ -68,8 +67,7 @@ export class BrevoContactImportService {
         private readonly brevoApiContactsService: BrevoApiContactsService,
         private readonly brevoContactsService: BrevoContactsService,
         private readonly targetGroupsService: TargetGroupsService,
-        @InjectRepository("BrevoTargetGroup") private readonly targetGroupRepository: EntityRepository<TargetGroupInterface>,
-        @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
+        private readonly entityManager: EntityManager,
     ) {}
 
     async importContactsFromCsv({
@@ -85,7 +83,7 @@ export class BrevoContactImportService {
         const failedColumns: Record<string, string>[] = [];
         const blacklistedColumns: Record<string, string>[] = [];
 
-        const targetGroups = await this.targetGroupRepository.find({ id: { $in: targetGroupIds } });
+        const targetGroups = await this.entityManager.find<TargetGroupInterface>("BrevoTargetGroup", { id: { $in: targetGroupIds } });
         const contactSource = ContactSource.csvImport;
 
         for (const targetGroup of targetGroups) {
@@ -194,7 +192,7 @@ export class BrevoContactImportService {
                     return "updated";
                 }
             } else if (!brevoContact) {
-                const brevoConfig = await this.brevoConfigRepository.findOneOrFail({ scope });
+                const brevoConfig = await this.entityManager.findOneOrFail<BrevoConfigInterface>("BrevoConfig", { scope });
 
                 const success = await this.brevoContactsService.createContact({
                     ...contact,

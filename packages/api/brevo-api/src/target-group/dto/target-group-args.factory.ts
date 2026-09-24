@@ -3,8 +3,8 @@ import { Type } from "@nestjs/common";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { Type as TransformerType } from "class-transformer";
 import { IsOptional, IsString, ValidateNested } from "class-validator";
-import { EmailCampaignScopeInterface } from "src/types";
 
+import { EmailCampaignScopeInterface } from "../../types";
 import { TargetGroupFilter } from "./target-group.filter";
 import { TargetGroupSort } from "./target-group.sort";
 

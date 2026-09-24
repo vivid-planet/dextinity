@@ -3,9 +3,9 @@ import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, FindOptions, wrap } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Int, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
-import { EmailCampaignScopeInterface } from "src/types";
 
 import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
+import { EmailCampaignScopeInterface } from "../types";
 import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe";
 import { AddBrevoContactsInput } from "./dto/add-brevo-contacts.input";
 import { RemoveBrevoContactInput } from "./dto/remove-brevo-contact.input";

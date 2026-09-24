@@ -3,14 +3,14 @@ import { Brevo } from "@getbrevo/brevo";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, ObjectQuery, wrap } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
-import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
-import { EmailCampaignScopeInterface } from "src/types";
 
 import { BrevoApiCampaignsService } from "../brevo-api/brevo-api-campaigns.service";
 import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
+import { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory";
 import { EcgRtrListService } from "../brevo-contact/ecg-rtr-list/ecg-rtr-list.service";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { EmailCampaignScopeInterface } from "../types";
 import { EmailCampaignFilter } from "./dto/email-campaign.filter";
 import { EmailCampaignInterface } from "./entities/email-campaign-entity.factory";
 import { SendingState } from "./sending-state.enum";

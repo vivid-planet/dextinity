@@ -5,8 +5,8 @@ import { isUUID, validateSync } from "class-validator";
 import { InvalidOptionArgumentError } from "commander";
 import * as fs from "fs";
 import { Command, CommandRunner, Option } from "nest-commander";
-import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 
+import { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory";
 import { BrevoContactImportService } from "../brevo-contact/brevo-contact-import.service";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";

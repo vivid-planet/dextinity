@@ -5,7 +5,7 @@ import { GraphQLJSONObject } from "graphql-scalars";
 
 import { SkipBuild } from "../builds/skip-build.decorator";
 import { RequiredPermission } from "./decorators/required-permission.decorator";
-import { ContentScopeWithLabel } from "./dto/content-scope";
+import { ContentScopeDimension, ContentScopeWithLabel } from "./dto/content-scope";
 import { UserContentScopesInput } from "./dto/user-content-scopes.input";
 import { UserContentScopes } from "./entities/user-content-scopes.entity";
 import { ContentScope } from "./interfaces/content-scope.interface";
@@ -50,5 +50,10 @@ export class UserContentScopesResolver {
     @Query(() => [ContentScopeWithLabel])
     async userPermissionsAvailableContentScopes(): Promise<ContentScopeWithLabel[]> {
         return this.userService.getAvailableContentScopes();
+    }
+
+    @Query(() => [ContentScopeDimension])
+    async userPermissionsAvailableContentScopeDimensions(): Promise<ContentScopeDimension[]> {
+        return this.userService.getAvailableContentScopeDimensions();
     }
 }

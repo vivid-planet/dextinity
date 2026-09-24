@@ -5,15 +5,16 @@ on:
         branches:
             - main
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+# Releases publish to npm, so an in-flight run must never be aborted:
+# queue the next run instead of cancelling the running one.
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: false
 
 jobs:
     release:
         name: Release
         runs-on: ubuntu-latest
-        concurrency:
-            group: release
-            cancel-in-progress: true
         steps:
             - name: Checkout Repo
               uses: actions/checkout@v6

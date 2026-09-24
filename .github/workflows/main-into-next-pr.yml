@@ -4,6 +4,11 @@ on:
         branches:
             - main
     workflow_dispatch:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
     main-into-next:
         name: Create "Merge main into next" PR

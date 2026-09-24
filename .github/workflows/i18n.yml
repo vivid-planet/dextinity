@@ -5,6 +5,13 @@ on:
         branches:
             - main
 
+# The extracted strings are committed to four translation repositories in sequence, so
+# aborting a run leaves them out of sync until the next push to main:
+# queue the next run instead of cancelling the running one.
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: false
+
 jobs:
     i18n:
         runs-on: ubuntu-latest

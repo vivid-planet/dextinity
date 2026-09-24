@@ -1,6 +1,6 @@
 import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
 
-import type { TipTapResolvedTextBlock } from "./textBlocks";
+import type { TipTapListOptions, TipTapResolvedTextBlock, TipTapTextBlockStyle } from "./textBlocks";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TipTapContent = Record<string, any>;
@@ -30,25 +30,34 @@ function containsUnknownMarks(json: any, schema: Schema): boolean {
     return false;
 }
 
+interface TextBlockOptions {
+    textBlocks: TipTapResolvedTextBlock[];
+    defaultTextBlock: TipTapResolvedTextBlock;
+    orderedList: TipTapListOptions | false;
+    unorderedList: TipTapListOptions | false;
+}
+
 /**
- * Whether the content names a text block that isn't configured, or holds one inside a list item that
- * isn't stored as a `p`. The name is all a node carries, so an unknown one would leave the API
- * without a tag to render it as, and a node that names none takes the schema's default text block.
+ * Whether the content names a text block that isn't configured, holds one inside a list item that
+ * isn't stored as a `p`, or applies a `textBlockStyle` that neither the text block nor its list
+ * offers. The name is all a node carries, so an unknown one would leave the API without a tag to
+ * render it as, and a node that names none takes the schema's default text block.
  *
  * A list item's content expression matches node types, and every text block is the same node, so it
  * can't keep a heading out - only this check can.
  */
 export function containsInvalidTextBlock({
     content,
-    textBlocks,
-    defaultTextBlock,
-    insideListItem = false,
-}: {
+    listStyles,
+    ...options
+}: TextBlockOptions & {
     content: TipTapContent;
-    textBlocks: TipTapResolvedTextBlock[];
-    defaultTextBlock: TipTapResolvedTextBlock;
-    insideListItem?: boolean;
+    /**
+     * The styles of the list the content sits in, `undefined` outside of a list.
+     */
+    listStyles?: TipTapTextBlockStyle[];
 }): boolean {
+    const { textBlocks, defaultTextBlock, orderedList, unorderedList } = options;
     if (typeof content !== "object" || content === null) {
         return false;
     }
@@ -61,7 +70,11 @@ export function containsInvalidTextBlock({
         if (!textBlock) {
             return true;
         }
-        if (insideListItem && textBlock.tag !== "p") {
+        if (listStyles && textBlock.tag !== "p") {
+            return true;
+        }
+        const styleName = content.attrs?.textBlockStyle;
+        if (styleName != null && ![...(textBlock.styles ?? []), ...(listStyles ?? [])].some((style) => style.name === styleName)) {
             return true;
         }
     }
@@ -70,10 +83,12 @@ export function containsInvalidTextBlock({
         return false;
     }
 
-    const childrenInsideListItem = content.type === "listItem" || insideListItem;
-    return content.content.some((child: TipTapContent) =>
-        containsInvalidTextBlock({ content: child, textBlocks, defaultTextBlock, insideListItem: childrenInsideListItem }),
-    );
+    if (content.type === "orderedList") {
+        listStyles = orderedList ? orderedList.styles : [];
+    } else if (content.type === "bulletList") {
+        listStyles = unorderedList ? unorderedList.styles : [];
+    }
+    return content.content.some((child: TipTapContent) => containsInvalidTextBlock({ ...options, content: child, listStyles }));
 }
 
 export function getListNestingDepth(content: TipTapContent, currentDepth = 0): number {
@@ -101,12 +116,7 @@ export function getListNestingDepth(content: TipTapContent, currentDepth = 0): n
 export function isValidTipTapContentSync(
     value: unknown,
     schema: Schema,
-    {
-        maxTextBlocks,
-        listLevelMax,
-        textBlocks,
-        defaultTextBlock,
-    }: { maxTextBlocks?: number; listLevelMax?: number; textBlocks: TipTapResolvedTextBlock[]; defaultTextBlock: TipTapResolvedTextBlock },
+    { maxTextBlocks, listLevelMax, ...textBlockOptions }: TextBlockOptions & { maxTextBlocks?: number; listLevelMax?: number },
 ): boolean {
     if (typeof value !== "object" || value === null) {
         return false;
@@ -129,7 +139,7 @@ export function isValidTipTapContentSync(
             return false;
         }
 
-        if (containsInvalidTextBlock({ content: value as TipTapContent, textBlocks, defaultTextBlock })) {
+        if (containsInvalidTextBlock({ ...textBlockOptions, content: value as TipTapContent })) {
             return false;
         }
 

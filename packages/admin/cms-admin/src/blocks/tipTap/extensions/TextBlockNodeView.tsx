@@ -1,32 +1,35 @@
 import { NodeViewContent, NodeViewWrapper, type ReactNodeViewProps } from "@tiptap/react";
-import { useContext } from "react";
 
-import { findTextBlock, type TipTapResolvedTextBlock } from "../textBlocks";
-import { TextBlockStyleContext } from "../TextBlockStyleContext";
+import { findTextBlock, type TipTapResolvedTextBlock, type TipTapTextBlockStyle } from "../textBlocks";
 
 /**
- * Renders a text block as the tag it is configured with, and with its text block style applied so
- * the editor previews the style.
+ * Renders a text block through its selected text block style or its own `element`, so the editor
+ * previews it, and as the tag it is configured with otherwise.
  */
-export function createTextBlockNodeView(textBlocks: TipTapResolvedTextBlock[]) {
+export function createTextBlockNodeView({
+    textBlocks,
+    defaultTextBlock,
+    textBlockStyles,
+}: {
+    textBlocks: TipTapResolvedTextBlock[];
+    defaultTextBlock: TipTapResolvedTextBlock;
+    textBlockStyles: TipTapTextBlockStyle[];
+}) {
     return function TextBlockNodeView({ node }: ReactNodeViewProps) {
-        const textBlockStyles = useContext(TextBlockStyleContext);
-        const styleName = node.attrs.textBlockStyle as string | null;
-        const style = styleName ? textBlockStyles.find((textBlockStyle) => textBlockStyle.name === styleName) : undefined;
+        const textBlock = findTextBlock({ name: node.attrs.textBlock, textBlocks }) ?? defaultTextBlock;
+        const styleName: string | undefined = node.attrs.textBlockStyle ?? undefined;
+        const element = textBlockStyles.find((style) => style.name === styleName)?.element ?? textBlock.element;
 
-        if (style) {
-            const Element = style.element;
+        if (element) {
             return (
                 <NodeViewWrapper>
-                    <Element data-text-block-style={styleName}>
-                        <NodeViewContent<"span"> as="span" />
-                    </Element>
+                    {element({ "data-text-block-style": styleName, children: <NodeViewContent<"span"> as="span" /> }, textBlock.tag)}
                 </NodeViewWrapper>
             );
         }
 
         return (
-            <NodeViewWrapper as={findTextBlock({ name: node.attrs.textBlock, textBlocks })?.tag}>
+            <NodeViewWrapper as={textBlock.tag}>
                 <NodeViewContent<"span"> as="span" />
             </NodeViewWrapper>
         );

@@ -6,7 +6,14 @@ type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
  */
 export type TipTapTextBlockTag = "p" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
-export interface TipTapTextBlock {
+export interface TipTapTextBlockStyle {
+    /**
+     * Identifies the style. Stored in the content's `textBlockStyle` attribute.
+     */
+    name: string;
+}
+
+interface TipTapTextBlockBase {
     /**
      * Identifies the text block. Stored in the content's `textBlock` attribute, so content can tell
      * two text blocks sharing a tag apart (e.g. a lead paragraph next to a regular one).
@@ -18,11 +25,24 @@ export interface TipTapTextBlock {
     tag: TipTapTextBlockTag;
 }
 
-export interface TipTapResolvedTextBlock extends TipTapTextBlock {
+/**
+ * A text block either offers `styles` to choose from, or - needing no choice - renders through an
+ * `element` of its own. The API doesn't render, so `element` only mirrors the Admin configuration.
+ */
+export type TipTapTextBlock = TipTapTextBlockBase & ({ styles?: TipTapTextBlockStyle[]; element?: never } | { element: true; styles?: never });
+
+export type TipTapResolvedTextBlock = TipTapTextBlock & {
     /**
      * Heading level of the text block's tag, `undefined` for a paragraph.
      */
     level?: HeadingLevel;
+};
+
+export interface TipTapListOptions {
+    /**
+     * Styles offered for a list item's content.
+     */
+    styles: TipTapTextBlockStyle[];
 }
 
 const headingLevelByTag: Record<string, HeadingLevel> = { h1: 1, h2: 2, h3: 3, h4: 4, h5: 5, h6: 6 };
@@ -38,6 +58,13 @@ export const defaultTextBlocks: TipTapTextBlock[] = [
     { name: "heading-5", tag: "h5" },
     { name: "heading-6", tag: "h6" },
 ];
+
+function assertUniqueStyleNames(owner: string, styles: TipTapTextBlockStyle[] = []) {
+    const duplicate = styles.find((style, index) => styles.findIndex((candidate) => candidate.name === style.name) !== index);
+    if (duplicate) {
+        throw new Error(`"${owner}" offers the text block style "${duplicate.name}" twice`);
+    }
+}
 
 /**
  * Applies the defaults to the configured text blocks and validates them against each other.
@@ -57,9 +84,25 @@ export function resolveTextBlocks<T extends TipTapTextBlock>(textBlocks: T[]): A
         if (!textBlockTags.includes(textBlock.tag)) {
             throw new Error(`Text block "${textBlock.name}" has an unsupported tag "${textBlock.tag}", must be one of ${textBlockTags.join(", ")}`);
         }
+
+        assertUniqueStyleNames(textBlock.name, textBlock.styles);
     }
 
     return textBlocks.map((textBlock) => ({ ...textBlock, level: headingLevelByTag[textBlock.tag] }));
+}
+
+/**
+ * Applies the defaults to a list's options: `false` for a disabled list, no styles for a list enabled
+ * with `true`.
+ */
+export function resolveList(name: string, list: boolean | TipTapListOptions): TipTapListOptions | false {
+    if (list === true) {
+        return { styles: [] };
+    }
+    if (list) {
+        assertUniqueStyleNames(name, list.styles);
+    }
+    return list;
 }
 
 /**

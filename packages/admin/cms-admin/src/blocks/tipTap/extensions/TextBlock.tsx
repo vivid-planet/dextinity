@@ -8,6 +8,7 @@ import {
     isTextBlockAllowedInListItem,
     parseTextBlock,
     type TipTapResolvedTextBlock,
+    type TipTapTextBlockStyle,
     type TipTapTextBlockTag,
 } from "../textBlocks";
 import { textBlockAttribute, textBlockStyleAttribute } from "./textBlockAttributes";
@@ -23,12 +24,15 @@ import { createTextBlockNodeView } from "./TextBlockNodeView";
 export function createTextBlock({
     textBlocks,
     defaultTextBlock,
-    styled,
+    textBlockStyles,
 }: {
     textBlocks: TipTapResolvedTextBlock[];
     defaultTextBlock: TipTapResolvedTextBlock;
-    styled: boolean;
+    textBlockStyles: TipTapTextBlockStyle[];
 }) {
+    const hasTextBlockStyles = textBlockStyles.length > 0;
+    // Without a style or an element to preview, the plain tag from renderHTML is all the editor needs.
+    const hasNodeView = hasTextBlockStyles || textBlocks.some((textBlock) => textBlock.element);
     const tagOf = (name: unknown): TipTapTextBlockTag => (textBlocks.find((textBlock) => textBlock.name === name) ?? defaultTextBlock).tag;
 
     return Node.create({
@@ -40,7 +44,7 @@ export function createTextBlock({
         addAttributes() {
             return {
                 ...textBlockAttribute(defaultTextBlock.name),
-                ...(styled ? textBlockStyleAttribute : {}),
+                ...(hasTextBlockStyles ? textBlockStyleAttribute : {}),
             };
         },
 
@@ -133,10 +137,10 @@ export function createTextBlock({
             ];
         },
 
-        ...(styled
+        ...(hasNodeView
             ? {
                   addNodeView() {
-                      return ReactNodeViewRenderer(createTextBlockNodeView(textBlocks));
+                      return ReactNodeViewRenderer(createTextBlockNodeView({ textBlocks, defaultTextBlock, textBlockStyles }));
                   },
               }
             : {}),

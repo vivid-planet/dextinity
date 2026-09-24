@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -8,7 +8,32 @@ type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
  */
 export type TipTapTextBlockTag = "p" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
-export interface TipTapTextBlock {
+/**
+ * Props an `element` must spread onto the element it renders.
+ */
+export interface TipTapTextBlockElementProps extends HTMLAttributes<HTMLElement> {
+    "data-text-block-style"?: string;
+}
+
+/**
+ * Renders a text block in the editor. Receives the `tag` of the text block it is applied to, so one
+ * function can be shared by several text blocks: `(props, Tag) => <Tag {...props} />`.
+ */
+export type TipTapTextBlockElement = (props: TipTapTextBlockElementProps, tag: TipTapTextBlockTag) => ReactNode;
+
+export interface TipTapTextBlockStyle {
+    /**
+     * Identifies the style. Stored in the content's `textBlockStyle` attribute.
+     */
+    name: string;
+    /**
+     * Label shown in the toolbar's styling select.
+     */
+    label: ReactNode;
+    element: TipTapTextBlockElement;
+}
+
+interface TipTapTextBlockBase {
     /**
      * Identifies the text block. Stored in the content's `textBlock` attribute, so content can tell
      * two text blocks sharing a tag apart (e.g. a lead paragraph next to a regular one).
@@ -25,11 +50,25 @@ export interface TipTapTextBlock {
     tag: TipTapTextBlockTag;
 }
 
-export interface TipTapResolvedTextBlock extends TipTapTextBlock {
+/**
+ * A text block either offers `styles` to choose from, or - needing no choice - renders through an
+ * `element` of its own. Leaving out both renders the plain tag.
+ */
+export type TipTapTextBlock = TipTapTextBlockBase &
+    ({ styles?: TipTapTextBlockStyle[]; element?: never } | { element: TipTapTextBlockElement; styles?: never });
+
+export type TipTapResolvedTextBlock = TipTapTextBlock & {
     /**
      * Heading level of the text block's tag, `undefined` for a paragraph.
      */
     level?: HeadingLevel;
+};
+
+export interface TipTapListOptions {
+    /**
+     * Styles offered for a list item's content.
+     */
+    styles: TipTapTextBlockStyle[];
 }
 
 const headingLevelByTag: Record<string, HeadingLevel> = { h1: 1, h2: 2, h3: 3, h4: 4, h5: 5, h6: 6 };
@@ -37,6 +76,13 @@ const headingLevelByTag: Record<string, HeadingLevel> = { h1: 1, h2: 2, h3: 3, h
 const textBlockTags: TipTapTextBlockTag[] = ["p", "h1", "h2", "h3", "h4", "h5", "h6"];
 
 export const allHeadingLevels: HeadingLevel[] = [1, 2, 3, 4, 5, 6];
+
+function assertUniqueStyleNames(owner: string, styles: TipTapTextBlockStyle[] = []) {
+    const duplicate = styles.find((style, index) => styles.findIndex((candidate) => candidate.name === style.name) !== index);
+    if (duplicate) {
+        throw new Error(`"${owner}" offers the text block style "${duplicate.name}" twice`);
+    }
+}
 
 /**
  * Applies the defaults to the configured text blocks and validates them against each other.
@@ -56,9 +102,50 @@ export function resolveTextBlocks(textBlocks: TipTapTextBlock[]): TipTapResolved
         if (!textBlockTags.includes(textBlock.tag)) {
             throw new Error(`Text block "${textBlock.name}" has an unsupported tag "${textBlock.tag}", must be one of ${textBlockTags.join(", ")}`);
         }
+
+        assertUniqueStyleNames(textBlock.name, textBlock.styles);
     }
 
     return textBlocks.map((textBlock) => ({ ...textBlock, level: headingLevelByTag[textBlock.tag] }));
+}
+
+/**
+ * Applies the defaults to a list's options: `false` for a disabled list, no styles for a list enabled
+ * with `true`.
+ */
+export function resolveList(name: string, list: boolean | TipTapListOptions): TipTapListOptions | false {
+    if (list === true) {
+        return { styles: [] };
+    }
+    if (list) {
+        assertUniqueStyleNames(name, list.styles);
+    }
+    return list;
+}
+
+/**
+ * The styles of all text blocks and lists, each once. A style's name identifies it throughout the
+ * editor, so text blocks offering the same style must share one definition.
+ */
+export function collectTextBlockStyles({
+    textBlocks,
+    orderedList,
+    unorderedList,
+}: {
+    textBlocks: TipTapResolvedTextBlock[];
+    orderedList: TipTapListOptions | false;
+    unorderedList: TipTapListOptions | false;
+}): TipTapTextBlockStyle[] {
+    const stylesByName = new Map<string, TipTapTextBlockStyle>();
+    for (const styled of [...textBlocks, orderedList, unorderedList]) {
+        for (const style of (styled && styled.styles) || []) {
+            if ((stylesByName.get(style.name) ?? style) !== style) {
+                throw new Error(`The text block style "${style.name}" is defined more than once, share one definition instead`);
+            }
+            stylesByName.set(style.name, style);
+        }
+    }
+    return [...stylesByName.values()];
 }
 
 /**

@@ -40,14 +40,7 @@ import { type ForwardRefExoticComponent, type MouseEvent, type ReactNode, type R
 import { FormattedMessage, useIntl } from "react-intl";
 
 import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
-import type {
-    TipTapChildBlock,
-    TipTapInlineStyle,
-    TipTapPlaceholder,
-    TipTapResolvedOptions,
-    TipTapTextBlockStyle,
-    TipTapTextBlockType,
-} from "./createTipTapRichTextBlock";
+import type { TipTapChildBlock, TipTapInlineStyle, TipTapPlaceholder, TipTapResolvedOptions } from "./createTipTapRichTextBlock";
 import { liftOutOfList } from "./liftOutOfList";
 import { findTextBlock, isTextBlockAllowedInListItem } from "./textBlocks";
 import { TipTapBlockDialog } from "./TipTapBlockDialog";
@@ -160,10 +153,13 @@ const selectSx = {
     },
 } as const;
 
+type ListOption = "orderedList" | "unorderedList";
+
+const inlineStyleAppliesToByList: Record<ListOption, string> = { orderedList: "ordered-list", unorderedList: "unordered-list" };
+
 export const TipTapToolbar = ({
     editor,
     resolvedOptions,
-    textBlockStyles,
     inlineStyles,
     placeholders,
     linkBlock,
@@ -174,7 +170,6 @@ export const TipTapToolbar = ({
 }: {
     editor: Editor;
     resolvedOptions: TipTapResolvedOptions;
-    textBlockStyles: TipTapTextBlockStyle[];
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
     linkBlock?: BlockInterface & LinkBlockInterface;
@@ -202,15 +197,11 @@ export const TipTapToolbar = ({
         editor,
         selector: ({ editor: e }: { editor: Editor }) => {
             const activeTextBlock = findTextBlock({ name: e.getAttributes("textBlock").textBlock, textBlocks }) ?? resolvedOptions.defaultTextBlock;
-            const activeTipTapTextBlockType: TipTapTextBlockType = (() => {
-                if (e.isActive("orderedList")) {
-                    return "ordered-list";
-                }
-                if (e.isActive("bulletList")) {
-                    return "unordered-list";
-                }
-                return activeTextBlock.level !== undefined ? (`heading-${activeTextBlock.level}` as TipTapTextBlockType) : "paragraph";
-            })();
+            const activeList: ListOption | undefined = e.isActive("orderedList")
+                ? "orderedList"
+                : e.isActive("bulletList")
+                  ? "unorderedList"
+                  : undefined;
             // Calculate current list nesting depth for listLevelMax enforcement.
             // The list item node only exists in the schema when lists are enabled.
             let canIndent = lists && e.can().sinkListItem("listItem");
@@ -230,7 +221,7 @@ export const TipTapToolbar = ({
 
             return {
                 activeTextBlock: activeTextBlock.name,
-                activeTipTapTextBlockType,
+                activeList,
                 activeTextBlockStyle: (e.getAttributes("textBlock").textBlockStyle as string) ?? "",
                 canUndo: e.can().undo(),
                 canRedo: e.can().redo(),
@@ -279,12 +270,12 @@ export const TipTapToolbar = ({
         setTimeout(() => editor.commands.focus(), 0);
     };
 
-    const applicableTextBlockStyles = textBlockStyles.filter(
-        (style) => !style.appliesTo || style.appliesTo.includes(editorState.activeTipTapTextBlockType),
-    );
-    const applicableInlineStyles = inlineStyles.filter(
-        (style) => !style.appliesTo || style.appliesTo.includes(editorState.activeTipTapTextBlockType),
-    );
+    // A list wins over the text block inside its items, which is always the same paragraph.
+    const activeTextBlock = findTextBlock({ name: editorState.activeTextBlock, textBlocks }) ?? resolvedOptions.defaultTextBlock;
+    const activeList = editorState.activeList && resolvedOptions[editorState.activeList];
+    const applicableTextBlockStyles = (activeList ? activeList.styles : activeTextBlock.styles) ?? [];
+    const appliesToTarget = editorState.activeList ? inlineStyleAppliesToByList[editorState.activeList] : activeTextBlock.name;
+    const applicableInlineStyles = inlineStyles.filter((style) => !style.appliesTo || style.appliesTo.includes(appliesToTarget));
     // Without bold/italic/underline/strike buttons to fold behind it, a "..." menu just for superscript/subscript/inline
     // styles adds an extra click for no space savings, so show them as individual buttons instead
     const showMoreOptionsAsButtons = !hasInlineFormatButtons && inlineStyles.every((style) => style.icon);
@@ -348,16 +339,9 @@ export const TipTapToolbar = ({
         // Switching the type only renames the node's text block - the tag follows from the configuration.
         editor.chain().focus().updateAttributes("textBlock", { textBlock: textBlock.name }).run();
 
-        // Clear textBlockStyle if it's not applicable to the new text block type
-        if (textBlockStyles.length > 0) {
-            const { activeTextBlockStyle } = editorState;
-            if (activeTextBlockStyle) {
-                const newType: TipTapTextBlockType = textBlock.level !== undefined ? `heading-${textBlock.level}` : "paragraph";
-                const styleConfig = textBlockStyles.find((style) => style.name === activeTextBlockStyle);
-                if (styleConfig?.appliesTo && !styleConfig.appliesTo.includes(newType)) {
-                    editor.chain().updateAttributes("textBlock", { textBlockStyle: null }).run();
-                }
-            }
+        const { activeTextBlockStyle } = editorState;
+        if (activeTextBlockStyle && !textBlock.styles?.some((style) => style.name === activeTextBlockStyle)) {
+            editor.chain().updateAttributes("textBlock", { textBlockStyle: null }).run();
         }
     };
 

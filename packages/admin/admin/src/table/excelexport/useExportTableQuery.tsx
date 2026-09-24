@@ -38,7 +38,7 @@ export function useExportTableQuery<IVariables extends OperationVariables>(
                 const data = api.resolveTableData(response.data);
 
                 if (data && data.data) {
-                    createExcelExportDownload<any>(tableRef.props.columns, data.data, options);
+                    await createExcelExportDownload<any>(tableRef.props.columns, data.data, options);
                 }
             } catch {
                 throw new Error("Error happend while exporting data");

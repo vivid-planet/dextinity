@@ -1,10 +1,10 @@
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
-import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 
 import { BlacklistedContactsInterface } from "../blacklisted-contacts/entity/blacklisted-contacts.entity.factory";
 import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
+import { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory";
 import { BrevoEmailImportLogService } from "../brevo-email-import-log/brevo-email-import-log.service";
 import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
 import { BrevoModuleConfig } from "../config/brevo-module.config";

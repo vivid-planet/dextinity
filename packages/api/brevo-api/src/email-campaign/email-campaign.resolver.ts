@@ -4,11 +4,11 @@ import { EntityManager, EntityRepository, FindOptions, wrap } from "@mikro-orm/p
 import { Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Info, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { GraphQLResolveInfo } from "graphql";
-import { TargetGroupInterface } from "src/target-group/entity/target-group-entity.factory";
 
 import { BrevoApiCampaignsService } from "../brevo-api/brevo-api-campaigns.service";
 import { BrevoApiCampaignStatistics } from "../brevo-api/dto/brevo-api-campaign-statistics";
 import { EcgRtrListService } from "../brevo-contact/ecg-rtr-list/ecg-rtr-list.service";
+import { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory";
 import { EmailCampaignScopeInterface } from "../types";
 import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe";
 import { EmailCampaignArgsFactory } from "./dto/email-campaign-args.factory";

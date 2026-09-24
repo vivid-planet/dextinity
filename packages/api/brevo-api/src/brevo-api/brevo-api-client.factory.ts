@@ -1,9 +1,9 @@
 import { BrevoClient } from "@getbrevo/brevo";
 import { Inject, Injectable } from "@nestjs/common";
-import { EmailCampaignScopeInterface } from "src/types";
 
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { EmailCampaignScopeInterface } from "../types";
 import { handleBrevoError } from "./brevo-api.utils";
 
 @Injectable()

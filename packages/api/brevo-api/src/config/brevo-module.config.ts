@@ -1,12 +1,11 @@
 import type { Block } from "@dextinity/cms-api";
 import type { Type } from "@nestjs/common";
-import type { EmailCampaignInterface } from "src/email-campaign/entities/email-campaign-entity.factory";
-import type { TargetGroupInterface } from "src/target-group/entity/target-group-entity.factory";
-import type { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "src/types";
 
 import type { BlacklistedContactsInterface } from "../blacklisted-contacts/entity/blacklisted-contacts.entity.factory";
 import type { BrevoEmailImportLogInterface } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
-import type { BrevoContactFilterAttributesInterface } from "../types";
+import type { EmailCampaignInterface } from "../email-campaign/entities/email-campaign-entity.factory";
+import type { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory";
+import type { BrevoContactAttributesInterface, BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "../types";
 
 interface FrontendConfig {
     url: string;
@@ -16,9 +15,9 @@ interface FrontendConfig {
     };
 }
 
-export interface BrevoModuleConfig {
+export interface BrevoModuleConfig<Scope extends EmailCampaignScopeInterface = EmailCampaignScopeInterface> {
     brevo: {
-        resolveConfig: (scope: EmailCampaignScopeInterface) => {
+        resolveConfig: (scope: Scope) => {
             apiKey: string;
             redirectUrlForImport: string;
         };
@@ -33,9 +32,9 @@ export interface BrevoModuleConfig {
         apiKey: string;
     };
     emailCampaigns: {
-        Scope: Type<EmailCampaignScopeInterface>;
+        Scope: Type<Scope>;
         EmailCampaignContentBlock: Block;
-        frontend: FrontendConfig | ((scope: EmailCampaignScopeInterface) => FrontendConfig);
+        frontend: FrontendConfig | ((scope: Scope) => FrontendConfig);
     };
     contactsWithoutDoi?: {
         allowAddingContactsWithoutDoi?: boolean;

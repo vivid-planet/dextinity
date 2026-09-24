@@ -3,9 +3,9 @@ import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityRepository, FilterQuery } from "@mikro-orm/postgresql";
 import { Inject, Type } from "@nestjs/common";
 import { Args, ArgsType, Int, Mutation, ObjectType, Query, Resolver } from "@nestjs/graphql";
-import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 
 import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
+import { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory";
 import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";

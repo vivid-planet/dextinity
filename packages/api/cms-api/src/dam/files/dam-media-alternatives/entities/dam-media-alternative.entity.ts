@@ -1,9 +1,9 @@
-import { BaseEntity, Entity, Enum, ManyToOne, PrimaryKey, Property, Ref } from "@mikro-orm/core";
+import { BaseEntity, Entity, Enum, PrimaryKey, Property, Ref } from "@mikro-orm/core";
 import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
 import { ScopedEntity } from "../../../../user-permissions/decorators/scoped-entity.decorator";
-import { FILE_ENTITY, FileInterface } from "../../entities/file.entity";
+import type { FileInterface } from "../../entities/file.entity";
 
 export enum DamMediaAlternativeType {
     captions = "captions",
@@ -29,19 +29,8 @@ export class DamMediaAlternative extends BaseEntity {
     @Field(() => DamMediaAlternativeType)
     type: DamMediaAlternativeType;
 
-    @ManyToOne({
-        entity: () => FILE_ENTITY,
-        inversedBy: (file: FileInterface) => file.alternativesForThisFile,
-        deleteRule: "cascade",
-        ref: true,
-    })
+    // Relations are defined in createFileEntity since the file entity is created by the application
     for: Ref<FileInterface>;
 
-    @ManyToOne({
-        entity: () => FILE_ENTITY,
-        inversedBy: (file: FileInterface) => file.thisFileIsAlternativeFor,
-        deleteRule: "cascade",
-        ref: true,
-    })
     alternative: Ref<FileInterface>;
 }

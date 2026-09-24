@@ -1,10 +1,10 @@
-import { BaseEntity, Embedded, Entity, OneToOne, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { BaseEntity, Embedded, Entity, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
 import { v4 as uuid } from "uuid";
 
 import { ImageCropArea } from "../../images/entities/image-crop-area.entity";
-import { FileInterface } from "./file.entity";
+import type { FileInterface } from "./file.entity";
 
 @Entity({ tableName: "DamFileImage" })
 @ObjectType("DamFileImage")
@@ -33,6 +33,6 @@ export class DamFileImage extends BaseEntity {
     @Field(() => ImageCropArea)
     cropArea: ImageCropArea;
 
-    @OneToOne({ entity: "DamFile", mappedBy: (file: FileInterface) => file.image, deleteRule: "CASCADE" })
+    // Relation is defined in createFileEntity since the file entity is created by the application
     file: FileInterface;
 }

@@ -91,14 +91,14 @@ export function createFileEntity({ Scope, Folder }: { Scope?: Type<DamScopeInter
         contentHash: string;
 
         @ManyToOne({
-            entity: FILE_ENTITY,
+            entity: () => DamFile,
             inversedBy: (file: FileInterface) => file.copies,
             joinColumn: "copyOfId",
             nullable: true,
         })
         copyOf?: FileInterface;
 
-        @OneToMany(FILE_ENTITY, (file: FileInterface) => file.copyOf)
+        @OneToMany(() => DamFile, (file: FileInterface) => file.copyOf)
         copies: FileInterface[];
 
         @Field({ nullable: true })
@@ -170,29 +170,54 @@ export function createFileEntity({ Scope, Folder }: { Scope?: Type<DamScopeInter
         // fileUrl: Field is resolved in resolver
     }
 
-    if (Scope) {
-        @EntityInfo<DamFile>({
-            sql: `SELECT "name", "secondaryInformation", "visible", "id", 'DamFile' AS "entityName" FROM "DamFileEntityInfo"`,
-        })
-        @RequiredPermission("dam")
-        @Entity({ tableName: FILE_TABLE_NAME })
-        @ObjectType("DamFile")
-        class DamFile extends FileBase {
-            @Embedded(() => Scope)
-            @Field(() => Scope)
-            scope: typeof Scope;
+    function createConcreteFileEntity(): Type<FileInterface> {
+        if (Scope) {
+            @EntityInfo<DamFile>({
+                sql: `SELECT "name", "secondaryInformation", "visible", "id", 'DamFile' AS "entityName" FROM "DamFileEntityInfo"`,
+            })
+            @RequiredPermission("dam")
+            @Entity({ tableName: FILE_TABLE_NAME })
+            @ObjectType("DamFile")
+            class DamFile extends FileBase {
+                @Embedded(() => Scope)
+                @Field(() => Scope)
+                scope: typeof Scope;
+            }
+            return DamFile;
+        } else {
+            @EntityInfo<DamFile>({
+                sql: `SELECT "name", "secondaryInformation", "visible", "id", 'DamFile' AS "entityName" FROM "DamFileEntityInfo"`,
+            })
+            @RequiredPermission("dam", { skipScopeCheck: true })
+            @Entity({ tableName: FILE_TABLE_NAME })
+            @ObjectType("DamFile")
+            class DamFile extends FileBase {}
+            return DamFile;
         }
-        return DamFile;
-    } else {
-        @EntityInfo<DamFile>({
-            sql: `SELECT "name", "secondaryInformation", "visible", "id", 'DamFile' AS "entityName" FROM "DamFileEntityInfo"`,
-        })
-        @RequiredPermission("dam", { skipScopeCheck: true })
-        @Entity({ tableName: FILE_TABLE_NAME })
-        @ObjectType("DamFile")
-        class DamFile extends FileBase {}
-        return DamFile;
     }
+
+    const DamFile = createConcreteFileEntity();
+
+    // The file entity is created after these entities, so it defines their relations to it
+    OneToMany(
+        () => DamFile,
+        (file: FileInterface) => file.folder,
+    )(Folder.prototype, "files");
+    OneToOne({ entity: () => DamFile, mappedBy: (file: FileInterface) => file.image, deleteRule: "CASCADE" })(DamFileImage.prototype, "file");
+    ManyToOne({
+        entity: () => DamFile,
+        inversedBy: (file: FileInterface) => file.alternativesForThisFile,
+        deleteRule: "cascade",
+        ref: true,
+    })(DamMediaAlternative.prototype, "for");
+    ManyToOne({
+        entity: () => DamFile,
+        inversedBy: (file: FileInterface) => file.thisFileIsAlternativeFor,
+        deleteRule: "cascade",
+        ref: true,
+    })(DamMediaAlternative.prototype, "alternative");
+
+    return DamFile;
 }
 
 export const FILE_ENTITY = "DamFile";

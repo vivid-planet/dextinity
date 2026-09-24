@@ -66,7 +66,7 @@ export function createFolderEntity({ Scope }: { Scope?: Type<DamScopeInterface> 
         name: string;
 
         @ManyToOne({
-            entity: "DamFolder",
+            entity: () => DamFolder,
             inversedBy: (folder: FolderInterface) => folder.children,
             joinColumn: "parentId",
             nullable: true,
@@ -74,7 +74,7 @@ export function createFolderEntity({ Scope }: { Scope?: Type<DamScopeInterface> 
         })
         parent: FolderInterface | null;
 
-        @OneToMany("DamFolder", (folder: FolderInterface) => folder.parent)
+        @OneToMany(() => DamFolder, (folder: FolderInterface) => folder.parent)
         children: FolderInterface[];
 
         @Property({ persist: false })
@@ -98,7 +98,7 @@ export function createFolderEntity({ Scope }: { Scope?: Type<DamScopeInterface> 
         @Field()
         isInboxFromOtherScope: boolean = false;
 
-        @OneToMany("DamFile", (file: FileInterface) => file.folder)
+        // Relation is defined in createFileEntity since the file entity is created after the folder entity
         files: FileInterface[];
 
         @Property({ columnType: "timestamp with time zone" })
@@ -113,27 +113,33 @@ export function createFolderEntity({ Scope }: { Scope?: Type<DamScopeInterface> 
         updatedAt: Date = new Date();
     }
 
-    if (Scope) {
-        @Entity({ tableName: FOLDER_TABLE_NAME })
-        @ObjectType("DamFolder")
-        class DamFolder extends FolderBase {
-            @Embedded(() => Scope)
-            @Field(() => Scope)
-            scope: typeof Scope;
+    function createConcreteFolderEntity(): Type<FolderInterface> {
+        if (Scope) {
+            @Entity({ tableName: FOLDER_TABLE_NAME })
+            @ObjectType("DamFolder")
+            class DamFolder extends FolderBase {
+                @Embedded(() => Scope)
+                @Field(() => Scope)
+                scope: typeof Scope;
 
-            @Field(() => DamFolder, { nullable: true })
-            parent: DamFolder | null;
+                @Field(() => DamFolder, { nullable: true })
+                parent: DamFolder | null;
+            }
+            return DamFolder;
+        } else {
+            @Entity({ tableName: FOLDER_TABLE_NAME })
+            @ObjectType("DamFolder")
+            class DamFolder extends FolderBase {
+                @Field(() => DamFolder, { nullable: true })
+                parent: DamFolder | null;
+            }
+            return DamFolder;
         }
-        return DamFolder;
-    } else {
-        @Entity({ tableName: FOLDER_TABLE_NAME })
-        @ObjectType("DamFolder")
-        class DamFolder extends FolderBase {
-            @Field(() => DamFolder, { nullable: true })
-            parent: DamFolder | null;
-        }
-        return DamFolder;
     }
+
+    const DamFolder = createConcreteFolderEntity();
+
+    return DamFolder;
 }
 
 export const FOLDER_TABLE_NAME = "DamFolder";

@@ -17,7 +17,7 @@ import { PaginatedPageTreeNodesFactory } from "./dto/paginated-page-tree-nodes.f
 import { AttachedDocument } from "./entities/attached-document.entity";
 import { PageTreeNodeBase } from "./entities/page-tree-node-base.entity";
 import { createFullTextResolver } from "./fullText/createFullTextResolver";
-import { PageTreeNodeFullText } from "./fullText/entities/page-tree-node-full-text.object";
+import { createPageTreeNodeFullTextEntity } from "./fullText/entities/page-tree-node-full-text.object";
 import { PageTreeFullTextService } from "./fullText/page-tree-full-text.service";
 import {
     defaultReservedPaths,
@@ -81,9 +81,12 @@ export class PageTreeModule {
         const PageTreeDependentsResolver = DependentsResolverFactory.create(PageTreeNode);
         const PageTreeDependenciesResolver = DependenciesResolverFactory.create(PageTreeNode);
 
+        const PageTreeNodeFullText = createPageTreeNodeFullTextEntity({ PageTreeNode });
+
         const PageTreeFullTextResolver = options.fullText
             ? createFullTextResolver({
                   PageTreeNode,
+                  PageTreeNodeFullText,
                   Scope,
                   PaginatedPageTreeNodes,
               })

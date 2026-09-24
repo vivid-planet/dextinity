@@ -7,14 +7,16 @@ import { EmptyPageTreeNodeScope } from "../dto/empty-page-tree-node-scope";
 import { PageTreeService } from "../page-tree.service";
 import { PageTreeReadApiService } from "../page-tree-read-api.service";
 import { PageTreeNodeInterface, ScopeInterface } from "../types";
-import { PageTreeNodeFullText } from "./entities/page-tree-node-full-text.object";
+import { PageTreeNodeFullTextInterface } from "./entities/page-tree-node-full-text.object";
 
 export function createFullTextResolver({
     PageTreeNode,
     Scope: PassedScope,
+    PageTreeNodeFullText,
     PaginatedPageTreeNodes,
 }: {
     PageTreeNode: Type<PageTreeNodeInterface>;
+    PageTreeNodeFullText: Type<PageTreeNodeFullTextInterface>;
     Scope?: Type<ScopeInterface>;
     PaginatedPageTreeNodes: Type;
 }): Type {
@@ -46,7 +48,7 @@ export function createFullTextResolver({
             @Args("offset", { type: () => Int, defaultValue: 0 }) offset: number,
             @Args("limit", { type: () => Int, defaultValue: 25 }) limit: number,
         ): Promise<typeof PaginatedPageTreeNodes> {
-            const where: FilterQuery<PageTreeNodeFullText> = {
+            const where: FilterQuery<PageTreeNodeFullTextInterface> = {
                 fullText: { $fulltext: search },
             };
 

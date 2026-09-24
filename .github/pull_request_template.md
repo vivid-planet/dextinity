@@ -3,8 +3,8 @@ This description becomes the commit message of the squashed commit, so keep it u
 as the pull request changes, and delete every section and instruction comment you don't
 fill in — leftovers end up in the commit message.
 
-The task and session lines at the very bottom are not instructions: fill them in or
-delete them line by line, as described there.
+The task line at the very bottom is not an instruction: fill it in or delete it, as
+described there.
 
 See CONTRIBUTING.md#pull-requests for the full guidelines.
 -->
@@ -21,11 +21,15 @@ description is long enough that they help.
 ## Example
 
 <!--
-A new API needs an example in the code as well: a unit test (preferred), the
-implementation in Demo, or a development story in Storybook. Point at it here.
+Fill this in only for an example the reviewer can't reach from the diff: a development
+story in Storybook (link it) or the implementation in Demo (say how to get there), plus a
+sentence on what it shows.
 
-Delete this section if the change adds no new API — the example usage of your change
-belongs in the description above either way.
+Delete this section when a unit test is the example — reviewers find it in the diff, and a
+bare file path says nothing in the commit message.
+
+A new API needs an example in the code either way, and the example usage of your change
+belongs in the description above.
 -->
 
 ## Screenshots/screencasts
@@ -61,14 +65,8 @@ those instead of writing them down here.
 -->
 
 <!--
-Where the change comes from: the task it implements, and the agent session that wrote it
-(Claude Code: the URL shown for the current session). Both stay visible text at the very
-end of the description — replace the placeholders, and delete the line that doesn't apply:
-the task line when there is no task, the session line when no agent was involved.
-
-The session line is the whole attribution: don't add a "Generated with Claude Code"
-footer, a second session URL or a Co-authored-by line to the description.
+The task this change implements. Keep it as visible text at the very end of the
+description — replace the placeholder, or delete the line when there is no task.
 -->
 
 Task: https://vivid-planet.atlassian.net/browse/DEX-0000
-Session: https://claude.ai/code/session_000000000000000000000000

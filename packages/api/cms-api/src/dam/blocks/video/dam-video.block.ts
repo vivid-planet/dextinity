@@ -143,9 +143,11 @@ class Meta extends AnnotationBlockMeta {
 export const DamVideoBlock = createBlock(DamVideoBlockData, DamVideoBlockInput, {
     name: "DamVideo",
     blockMeta: new Meta(DamVideoBlockData),
-    migrate: {
+    migrateVendor: {
         version: 1,
         migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration]),
+        // The migration counted in the block's version before it moved into the vendor chain
+        legacyVersions: 1,
     },
 });
 

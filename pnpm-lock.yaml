@@ -185,8 +185,13 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0(supports-color@8.1.1)
       dev-process-manager:
+<<<<<<< HEAD
         specifier: ^4.1.0
         version: 4.1.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
+=======
+        specifier: ^4.0.0
+        version: 4.0.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
+>>>>>>> main
       dotenv-cli:
         specifier: ^9.0.0
         version: 9.0.0
@@ -223,9 +228,6 @@ importers:
       '@dextinity/admin':
         specifier: workspace:*
         version: link:../../packages/admin/admin
-      '@dextinity/admin-date-time':
-        specifier: workspace:*
-        version: link:../../packages/admin/admin-date-time
       '@dextinity/admin-icons':
         specifier: workspace:*
         version: link:../../packages/admin/admin-icons
@@ -1557,9 +1559,6 @@ importers:
       '@dextinity/admin':
         specifier: workspace:*
         version: link:../admin
-      '@dextinity/admin-date-time':
-        specifier: workspace:*
-        version: link:../admin-date-time
       '@dextinity/admin-icons':
         specifier: workspace:*
         version: link:../admin-icons
@@ -1681,9 +1680,6 @@ importers:
       '@dextinity/admin':
         specifier: workspace:*
         version: link:../admin
-      '@dextinity/admin-date-time':
-        specifier: workspace:*
-        version: link:../admin-date-time
       '@dextinity/admin-icons':
         specifier: workspace:*
         version: link:../admin-icons
@@ -1693,12 +1689,6 @@ importers:
       '@tiptap/core':
         specifier: ^3.22.3
         version: 3.22.3(@tiptap/pm@3.22.3)
-      '@tiptap/extension-heading':
-        specifier: ^3.22.3
-        version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))
-      '@tiptap/extension-paragraph':
-        specifier: ^3.22.3
-        version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))
       '@tiptap/extension-subscript':
         specifier: ^3.22.3
         version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)
@@ -2005,6 +1995,9 @@ importers:
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@swc/core@1.15.41)(@types/node@24.13.3)(typescript@5.9.3)
+      tsconfig-paths:
+        specifier: ^3.15.0
+        version: 3.15.0
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2090,9 +2083,6 @@ importers:
       graphql-scalars:
         specifier: 1.25.0
         version: 1.25.0(graphql@16.14.2)
-      lodash.isequal:
-        specifier: ^4.5.0
-        version: 4.5.0
       nest-commander:
         specifier: ^3.20.1
         version: 3.20.1(@nestjs/common@11.1.21(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@11.1.21)(@types/inquirer@8.2.12)(@types/node@24.13.3)(typescript@5.9.3)
@@ -2142,9 +2132,6 @@ importers:
       '@types/inquirer':
         specifier: ^8.2.12
         version: 8.2.12
-      '@types/lodash.isequal':
-        specifier: ^4.5.8
-        version: 4.5.8
       chokidar-cli:
         specifier: ^2.1.0
         version: 2.1.0
@@ -2214,12 +2201,6 @@ importers:
       '@tiptap/core':
         specifier: ^3.22.3
         version: 3.22.3(@tiptap/pm@3.22.3)
-      '@tiptap/extension-heading':
-        specifier: ^3.22.3
-        version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))
-      '@tiptap/extension-paragraph':
-        specifier: ^3.22.3
-        version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))
       '@tiptap/extension-subscript':
         specifier: ^3.22.3
         version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)
@@ -2277,9 +2258,6 @@ importers:
       jwks-rsa:
         specifier: ^3.2.2
         version: 3.2.2(supports-color@8.1.1)
-      lodash.isequal:
-        specifier: ^4.5.0
-        version: 4.5.0
       mime:
         specifier: ^3.0.0
         version: 3.0.0
@@ -2377,9 +2355,6 @@ importers:
       '@types/inquirer':
         specifier: ^8.2.12
         version: 8.2.12
-      '@types/lodash.isequal':
-        specifier: ^4.5.8
-        version: 4.5.8
       '@types/mime':
         specifier: ^2.0.3
         version: 2.0.3
@@ -3070,6 +3045,9 @@ importers:
       storybook:
         specifier: ^10.3.5
         version: 10.3.5(@testing-library/dom@10.4.1)(prettier@3.6.2)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      storybook-addon-tag-badges:
+        specifier: ^3.1.0
+        version: 3.1.0(storybook@10.3.5(@testing-library/dom@10.4.1)(prettier@3.6.2)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -28253,7 +28231,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+<<<<<<< HEAD
   dev-process-manager@4.1.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1):
+=======
+  dev-process-manager@4.0.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1):
+>>>>>>> main
     dependencies:
       cli-table3: 0.6.5
       colors: 1.4.0

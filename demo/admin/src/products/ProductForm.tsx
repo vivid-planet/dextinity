@@ -2,6 +2,8 @@ import { gql, useApolloClient, useQuery } from "@apollo/client";
 import {
     AsyncSelectField,
     CheckboxField,
+    DatePickerField,
+    DateTimePickerField,
     Field,
     filterByFragment,
     FinalForm,
@@ -14,7 +16,6 @@ import {
     TextField,
     useFormApiRef,
 } from "@dextinity/admin";
-import { DateField, DateTimeField } from "@dextinity/admin-date-time";
 import {
     type BlockState,
     createFinalFormBlock,
@@ -233,7 +234,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                         disableSlider
                     />
                     <TextAreaField fullWidth name="description" label={<FormattedMessage id="product.description" defaultMessage="Description" />} />
-                    <DateField
+                    <DatePickerField
                         required
                         fullWidth
                         name="availableSince"
@@ -397,7 +398,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                         label={<FormattedMessage id="product.relatedImages" defaultMessage="Related images" />}
                         buttonText={<FormattedMessage id="product.relatedImages.choose" defaultMessage="Choose related images" />}
                     />
-                    <DateTimeField
+                    <DateTimePickerField
                         label={<FormattedMessage id="product.lastCheckedAt" defaultMessage="Last checked at" />}
                         name="lastCheckedAt"
                         fullWidth

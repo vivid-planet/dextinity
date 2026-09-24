@@ -26,6 +26,7 @@ import { GenerateAltTextResolver } from "./src/content-generation/generate-alt-t
 import { GenerateImageTitleResolver } from "./src/content-generation/generate-image-title.resolver";
 import { GenerateSeoTagsResolver } from "./src/content-generation/generate-seo-tags.resolver";
 import { CronJobsResolver } from "./src/cron-jobs/cron-jobs.resolver";
+import { DependencyResolver } from "./src/dependencies/dependency.resolver";
 import { JobsResolver } from "./src/cron-jobs/jobs.resolver";
 import { createDamItemsResolver } from "./src/dam/files/dam-items.resolver";
 import { createDamMediaAlternativeResolver } from "./src/dam/files/dam-media-alternatives/dam-media-alternative.resolver";
@@ -118,6 +119,7 @@ async function generateSchema(): Promise<void> {
         RedirectsDependenciesResolver,
         PageTreeDependentsResolver,
         FileDependentsResolver,
+        DependencyResolver,
         UserResolver,
         UserPermissionResolver,
         UserContentScopesResolver,

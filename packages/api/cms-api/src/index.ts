@@ -206,6 +206,7 @@ export { IsValidImageAspectRatio, IsValidImageAspectRatioConstraint } from "./da
 export { DependenciesModule } from "./dependencies/dependencies.module";
 export { DependenciesResolverFactory } from "./dependencies/dependencies.resolver.factory";
 export { DependenciesService } from "./dependencies/dependencies.service";
+export { DependencyResolver } from "./dependencies/dependency.resolver";
 export { DependentsResolverFactory } from "./dependencies/dependents.resolver.factory";
 export { BaseDependencyInterface } from "./dependencies/dto/base-dependency.interface";
 export { Dependency } from "./dependencies/dto/dependency";

@@ -459,7 +459,7 @@ export class FilesService {
                         return entityManager.flush();
                     })
                     .catch((error) => {
-                        this.logger.error(`Failed to calculate dominant color for image ${image.id}`, error);
+                        this.logger.error(`Failed to save dominant color for image ${image.id}`, error);
                     });
             }
             rimraf.sync(file.path);

@@ -61,7 +61,7 @@ export function DeleteMutation(props: IProps) {
                 variables: tableQuery.api.getVariables(),
             });
         }
-        client
+        void client
             .mutate({
                 mutation: props.mutation,
                 variables: pendingVariables,

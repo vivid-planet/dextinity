@@ -539,7 +539,7 @@ const FolderDataGrid = ({
             setRedirectedToId(id);
         }
 
-        navigateToNewlyUploadedItems();
+        void navigateToNewlyUploadedItems();
 
         // useEffect dependencies must only include `newlyUploadedItems`, because the function should only be called once after new items are added.
         // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -70,7 +70,7 @@ export const DamVideoBlock = withPreview(
                 // freshly-mounted <video> element, so the browser blocks autoplay for unmuted videos.
                 // Call play() explicitly during the ref-callback to keep playback in the user gesture window.
                 if (element && hasPreviewImage && !showPreviewImage && element.paused) {
-                    element.play();
+                    void element.play();
                 }
             },
             [hasPreviewImage, showPreviewImage],
@@ -86,7 +86,7 @@ export const DamVideoBlock = withPreview(
             (inView: boolean) => {
                 if (!isHandledManually && videoElement) {
                     if (inView && autoplay) {
-                        videoElement.play();
+                        void videoElement.play();
                         setIsPlaying(true);
                     } else {
                         videoElement.pause();
@@ -106,7 +106,7 @@ export const DamVideoBlock = withPreview(
                 videoElement?.pause();
             } else {
                 setIsPlaying(true);
-                videoElement?.play();
+                void videoElement?.play();
             }
         };
 

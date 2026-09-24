@@ -52,7 +52,7 @@ export function useSaveState<TData>(options: SaveStateOptions<TData>): SaveState
                 options.updateReferenceContent(data);
                 setTimeout(() => {
                     if (canNavigate) {
-                        options.navigateToEditPage(data);
+                        void options.navigateToEditPage(data);
                     }
                 }, 0);
             } catch (error) {

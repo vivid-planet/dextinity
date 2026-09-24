@@ -71,7 +71,7 @@ export function useSaveConflict(options: SaveConflictOptions): SaveConflictHookR
     useEffect(() => {
         const handleFocus = () => {
             if (!hasConflict) {
-                checkChanges();
+                void checkChanges();
             }
             startPolling();
         };
@@ -117,7 +117,7 @@ export function useSaveConflict(options: SaveConflictOptions): SaveConflictHookR
                 onDiscardChangesPressed={() => {
                     setHasConflict(false);
                     setShowDialog(false);
-                    onDiscardButtonPressed();
+                    void onDiscardButtonPressed();
                 }}
             />
         ),

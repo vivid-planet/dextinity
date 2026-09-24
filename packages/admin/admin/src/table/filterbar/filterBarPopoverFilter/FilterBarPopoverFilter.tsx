@@ -143,7 +143,7 @@ export function FilterBarPopoverFilter(inProps: PropsWithChildren<FilterBarPopov
                                 {...slotProps?.popover}
                                 onClose={() => {
                                     setAnchorEl(null);
-                                    handleSubmit();
+                                    void handleSubmit();
                                 }}
                                 anchorOrigin={{
                                     vertical: "bottom",
@@ -187,7 +187,7 @@ export function FilterBarPopoverFilter(inProps: PropsWithChildren<FilterBarPopov
                                             color="primary"
                                             variant="contained"
                                             onClick={() => {
-                                                handleSubmit();
+                                                void handleSubmit();
                                                 setAnchorEl(null);
                                             }}
                                             startIcon={<Check />}

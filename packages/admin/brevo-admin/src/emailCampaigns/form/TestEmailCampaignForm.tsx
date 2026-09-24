@@ -121,7 +121,7 @@ export const TestEmailCampaignForm = ({ id, isSendable = false, isCampaignCreate
                                         startIcon={<Newsletter />}
                                         loading={submitting}
                                         onClick={() => {
-                                            handleSubmit();
+                                            void handleSubmit();
                                         }}
                                     >
                                         <FormattedMessage

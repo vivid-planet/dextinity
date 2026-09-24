@@ -158,13 +158,13 @@ const FileInnerMenu = ({ file, openMoveDialog }: FileInnerMenuProps) => {
                         icon={file.archived ? <Restore /> : <Archive />}
                         onClick={() => {
                             if (file.archived) {
-                                client.mutate<GQLRestoreFileMutation, GQLRestoreFileMutationVariables>({
+                                void client.mutate<GQLRestoreFileMutation, GQLRestoreFileMutationVariables>({
                                     mutation: restoreDamFileMutation,
                                     variables: { id: file.id },
                                     refetchQueries: ["DamItemsList"],
                                 });
                             } else {
-                                client.mutate<GQLArchiveFileMutation, GQLArchiveFileMutationVariables>({
+                                void client.mutate<GQLArchiveFileMutation, GQLArchiveFileMutationVariables>({
                                     mutation: archiveDamFileMutation,
                                     variables: { id: file.id },
                                     refetchQueries: ["DamItemsList"],

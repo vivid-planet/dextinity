@@ -221,7 +221,7 @@ function CopyToClipboardButton({ copyData }: CopyToClipboardButtonProps): JSX.El
     }, []);
 
     const handleCopyClick = () => {
-        writeClipboardText(copyData);
+        void writeClipboardText(copyData);
 
         setShowSuccess(true);
 

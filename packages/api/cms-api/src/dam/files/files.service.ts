@@ -445,7 +445,7 @@ export class FilesService {
 
             if (result.image && this.dominantColorCalculator) {
                 // We do not want for our users to await the dominant color calculation.
-                void this.saveDominantColor(result.image.id, contentHash, this.dominantColorCalculator);
+                void this.saveDominantColor({ imageId: result.image.id, contentHash, dominantColorCalculator: this.dominantColorCalculator });
             }
             rimraf.sync(file.path);
         } catch (e) {
@@ -593,7 +593,15 @@ export class FilesService {
         return name;
     }
 
-    private async saveDominantColor(imageId: string, contentHash: string, dominantColorCalculator: DominantColorCalculatorInterface): Promise<void> {
+    private async saveDominantColor({
+        imageId,
+        contentHash,
+        dominantColorCalculator,
+    }: {
+        imageId: string;
+        contentHash: string;
+        dominantColorCalculator: DominantColorCalculatorInterface;
+    }): Promise<void> {
         try {
             // To prevent concurrency issues we must use a separate Unit of Work. This can be achieved by forking the EntityManager instance.
             // See https://mikro-orm.io/docs/faq#you-cannot-call-emflush-from-inside-lifecycle-hook-handlers and

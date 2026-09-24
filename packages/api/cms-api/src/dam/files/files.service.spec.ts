@@ -148,7 +148,7 @@ describe("FilesService.saveDominantColor", () => {
         const { service, image, entityManager } = createServiceWithMockEntityManager({ flush: () => Promise.resolve() });
         const dominantColorCalculator = { calculateDominantColor: vi.fn().mockResolvedValue("#ff0000") };
 
-        await service["saveDominantColor"](IMAGE_ID, "content-hash", dominantColorCalculator);
+        await service["saveDominantColor"]({ imageId: IMAGE_ID, contentHash: "content-hash", dominantColorCalculator });
 
         expect(image.dominantColor).toBe("#ff0000");
         expect(entityManager.flush).toHaveBeenCalled();
@@ -159,7 +159,9 @@ describe("FilesService.saveDominantColor", () => {
         const { service, entityManager } = createServiceWithMockEntityManager({ flush: () => Promise.resolve() });
         const dominantColorCalculator = { calculateDominantColor: vi.fn().mockRejectedValue(new Error("imgproxy failed")) };
 
-        await expect(service["saveDominantColor"](IMAGE_ID, "content-hash", dominantColorCalculator)).resolves.toBeUndefined();
+        await expect(
+            service["saveDominantColor"]({ imageId: IMAGE_ID, contentHash: "content-hash", dominantColorCalculator }),
+        ).resolves.toBeUndefined();
 
         expect(entityManager.flush).not.toHaveBeenCalled();
         expect(loggerErrorSpy).toHaveBeenCalledWith(`Failed to save dominant color for image ${IMAGE_ID}`, expect.any(Error));
@@ -170,7 +172,9 @@ describe("FilesService.saveDominantColor", () => {
         const { service } = createServiceWithMockEntityManager({ flush: () => Promise.reject(new Error("flush failed")) });
         const dominantColorCalculator = { calculateDominantColor: vi.fn().mockResolvedValue("#ff0000") };
 
-        await expect(service["saveDominantColor"](IMAGE_ID, "content-hash", dominantColorCalculator)).resolves.toBeUndefined();
+        await expect(
+            service["saveDominantColor"]({ imageId: IMAGE_ID, contentHash: "content-hash", dominantColorCalculator }),
+        ).resolves.toBeUndefined();
 
         expect(loggerErrorSpy).toHaveBeenCalledWith(`Failed to save dominant color for image ${IMAGE_ID}`, expect.any(Error));
     });

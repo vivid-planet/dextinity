@@ -208,7 +208,13 @@ export function createSeoBlock<ImageBlock extends Block = typeof PixelImageBlock
         }
     }
 
-    return createBlock(SeoBlockData, SeoBlockInput, { name: "Seo", blockMeta: new Meta(SeoBlockData), blockInputMeta: new InputMeta(SeoBlockData) });
+    return createBlock(SeoBlockData, SeoBlockInput, {
+        name: "Seo",
+        description:
+            "The metadata of a page for search engines and social networks: title, description, preview image, sitemap settings and canonical URL.",
+        blockMeta: new Meta(SeoBlockData),
+        blockInputMeta: new InputMeta(SeoBlockData),
+    });
 }
 
 class AlternativeLink {

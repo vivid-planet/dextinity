@@ -34,6 +34,4 @@ class StandaloneMediaBlockInput extends BlockInput {
     }
 }
 
-export const StandaloneMediaBlock = createBlock(StandaloneMediaBlockData, StandaloneMediaBlockInput, {
-    name: "StandaloneMedia",
-});
+export const StandaloneMediaBlock = createBlock(StandaloneMediaBlockData, StandaloneMediaBlockInput, "StandaloneMedia");

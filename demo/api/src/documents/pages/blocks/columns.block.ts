@@ -22,7 +22,7 @@ export const ColumnsContentBlock = createBlocksBlock(
             textImage: TextImageBlock,
         },
     },
-    { name: "ColumnsContent" },
+    "ColumnsContent",
 );
 
 export const ColumnsBlock = ColumnsBlockFactory.create(

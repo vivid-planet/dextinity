@@ -61,8 +61,8 @@ export const InlineChildBlocks: StoryObj<typeof ChildBlocksStory> = {
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -80,8 +80,8 @@ export const InlineChildBlocks: StoryObj<typeof ChildBlocksStory> = {
 
             // The menu is rendered in a portal, so it lives in document.body rather than within the canvas
             await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("menuitem", { name: "Example Child" })).toBeInTheDocument();
+                async () => {
+                    await expect(within(document.body).getByRole("menuitem", { name: "Example Child" })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -89,8 +89,8 @@ export const InlineChildBlocks: StoryObj<typeof ChildBlocksStory> = {
             await userEvent.click(within(document.body).getByRole("menuitem", { name: "Example Child" }));
 
             await waitFor(
-                () => {
-                    expect(within(document.body).getByLabelText("Label")).toBeInTheDocument();
+                async () => {
+                    await expect(within(document.body).getByLabelText("Label")).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -101,9 +101,9 @@ export const InlineChildBlocks: StoryObj<typeof ChildBlocksStory> = {
             await userEvent.click(within(document.body).getByRole("button", { name: "OK" }));
 
             await waitFor(
-                () => {
+                async () => {
                     // The inline preview shares a paragraph (text flow) with the text before and after it
-                    expect(canvas.getByText("Inline preview").closest("p")).toBeInTheDocument();
+                    await expect(canvas.getByText("Inline preview").closest("p")).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -116,8 +116,8 @@ export const BlockChildBlocks: StoryObj<typeof ChildBlocksStory> = {
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -139,8 +139,8 @@ export const BlockChildBlocks: StoryObj<typeof ChildBlocksStory> = {
 
             // The menu is rendered in a portal, so it lives in document.body rather than within the canvas
             await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("menuitem", { name: "Example Child" })).toBeInTheDocument();
+                async () => {
+                    await expect(within(document.body).getByRole("menuitem", { name: "Example Child" })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -148,8 +148,8 @@ export const BlockChildBlocks: StoryObj<typeof ChildBlocksStory> = {
             await userEvent.click(within(document.body).getByRole("menuitem", { name: "Example Child" }));
 
             await waitFor(
-                () => {
-                    expect(within(document.body).getByLabelText("Label")).toBeInTheDocument();
+                async () => {
+                    await expect(within(document.body).getByLabelText("Label")).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -160,11 +160,11 @@ export const BlockChildBlocks: StoryObj<typeof ChildBlocksStory> = {
             await userEvent.click(within(document.body).getByRole("button", { name: "OK" }));
 
             await waitFor(
-                () => {
+                async () => {
                     // The block-level preview is a boxed row showing the block's display name as a title,
                     // unlike the inline chip which only renders the preview text in the text flow
-                    expect(canvas.getByText("Example Child")).toBeInTheDocument();
-                    expect(canvas.getByText("Block preview")).toBeInTheDocument();
+                    await expect(canvas.getByText("Example Child")).toBeInTheDocument();
+                    await expect(canvas.getByText("Block preview")).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );

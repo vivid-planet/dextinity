@@ -22,13 +22,13 @@ describe("renderFinalFormChildren", () => {
 
     it("should call the render prop with formRenderProps when render is provided", () => {
         const render = vi.fn(() => <div>rendered</div>);
-        renderFinalFormChildren({ render }, minimalFormRenderProps);
+        void renderFinalFormChildren({ render }, minimalFormRenderProps);
         expect(render).toHaveBeenCalledWith(minimalFormRenderProps);
     });
 
     it("should call children as a function with formRenderProps when children is a function", () => {
         const children = vi.fn(() => <div>child output</div>);
-        renderFinalFormChildren({ children }, minimalFormRenderProps);
+        void renderFinalFormChildren({ children }, minimalFormRenderProps);
         expect(children).toHaveBeenCalledWith(minimalFormRenderProps);
     });
 
@@ -41,7 +41,7 @@ describe("renderFinalFormChildren", () => {
     it("should inject children into formRenderProps when both render and children are provided", () => {
         const children = <span>injected</span>;
         const render = vi.fn(() => null);
-        renderFinalFormChildren({ render, children }, minimalFormRenderProps);
+        void renderFinalFormChildren({ render, children }, minimalFormRenderProps);
         expect(render).toHaveBeenCalledWith({ ...minimalFormRenderProps, children });
     });
 

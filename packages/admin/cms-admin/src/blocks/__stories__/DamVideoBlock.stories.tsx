@@ -50,19 +50,19 @@ type Story = StoryObj<typeof config>;
 export const Default: Story = {
     play: async ({ canvas, userEvent, step }) => {
         await step("All video options are offered", async () => {
-            await waitFor(() => {
-                expect(canvas.getByRole("switch", { name: "Autoplay" })).toBeInTheDocument();
+            await waitFor(async () => {
+                await expect(canvas.getByRole("switch", { name: "Autoplay" })).toBeInTheDocument();
             });
 
-            expect(canvas.getByRole("switch", { name: "Loop" })).toBeInTheDocument();
-            expect(canvas.getByRole("switch", { name: "Show controls" })).toBeInTheDocument();
+            await expect(canvas.getByRole("switch", { name: "Loop" })).toBeInTheDocument();
+            await expect(canvas.getByRole("switch", { name: "Show controls" })).toBeInTheDocument();
         });
 
         await step("Switching off show controls enables autoplay, as a video needs at least one of them", async () => {
             await userEvent.click(canvas.getByRole("switch", { name: "Show controls" }));
 
-            await waitFor(() => {
-                expect(readState(canvas)).toMatchObject({ autoplay: true, showControls: false });
+            await waitFor(async () => {
+                await expect(readState(canvas)).toMatchObject({ autoplay: true, showControls: false });
             });
         });
     },
@@ -84,15 +84,15 @@ export const WithoutControls: StoryObj<typeof WithoutControlsStory> = {
     render: () => <WithoutControlsStory />,
     play: async ({ canvas, step }) => {
         await step("No playback option is offered", async () => {
-            await waitFor(() => {
-                expect(canvas.getByRole("button", { name: "Choose image" })).toBeInTheDocument();
+            await waitFor(async () => {
+                await expect(canvas.getByRole("button", { name: "Choose image" })).toBeInTheDocument();
             });
 
-            expect(canvas.queryAllByRole("switch")).toHaveLength(0);
+            await expect(canvas.queryAllByRole("switch")).toHaveLength(0);
         });
 
         await step("The preview image is still offered, it isn't a playback option", async () => {
-            expect(canvas.getByRole("button", { name: "Choose image" })).toBeInTheDocument();
+            await expect(canvas.getByRole("button", { name: "Choose image" })).toBeInTheDocument();
         });
     },
 };
@@ -113,16 +113,16 @@ export const FileOnly: StoryObj<typeof FileOnlyStory> = {
     render: () => <FileOnlyStory />,
     play: async ({ canvas, step }) => {
         await step("Only the video file can be chosen", async () => {
-            await waitFor(() => {
-                expect(canvas.getByRole("button", { name: "Choose file" })).toBeInTheDocument();
+            await waitFor(async () => {
+                await expect(canvas.getByRole("button", { name: "Choose file" })).toBeInTheDocument();
             });
 
-            expect(canvas.queryAllByRole("switch")).toHaveLength(0);
-            expect(canvas.queryByRole("button", { name: "Choose image" })).not.toBeInTheDocument();
+            await expect(canvas.queryAllByRole("switch")).toHaveLength(0);
+            await expect(canvas.queryByRole("button", { name: "Choose image" })).not.toBeInTheDocument();
         });
 
         await step("The preview image stays part of the data, it is only hidden from the editor", async () => {
-            expect(readState(canvas).previewImage).toEqual(FileOnlyBlock.defaultValues().previewImage);
+            await expect(readState(canvas).previewImage).toEqual(FileOnlyBlock.defaultValues().previewImage);
         });
     },
 };

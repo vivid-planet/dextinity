@@ -1,5 +1,24 @@
 # @comet/api-generator
 
+## 10.8.0
+
+### Patch Changes
+
+- 07bf882: Add `tsconfig-paths` as a dependency
+
+    `dextinity-api-generator` registers `tsconfig-paths/register` at runtime, but the package only worked because `tsconfig-paths` happened to be hoisted from another package's dependencies. Declaring it directly ensures the CLI works when installed standalone.
+
+- Updated dependencies [44125b9]
+- Updated dependencies [383e9ed]
+- Updated dependencies [0076f28]
+- Updated dependencies [8538d98]
+- Updated dependencies [4a1da4e]
+- Updated dependencies [dddb222]
+- Updated dependencies [8fbfbce]
+- Updated dependencies [36f7f17]
+- Updated dependencies [9109aa3]
+    - @dextinity/cms-api@10.8.0
+
 ## 10.7.0
 
 ### Patch Changes

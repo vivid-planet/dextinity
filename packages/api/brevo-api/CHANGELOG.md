@@ -1,5 +1,32 @@
 # @comet/brevo-api
 
+## 10.8.0
+
+### Patch Changes
+
+- b855b96: Assign the target groups passed to `createBrevoEmailCampaign` to the campaign
+
+    The `brevoTargetGroups` input field was spread into the entity as-is, but the entity property is named `targetGroups`, so newly created campaigns ended up without any target groups.
+
+- 4a1da4e: Exclude the TypeScript build cache from the published packages
+
+    The published tarballs contained the `.tsbuildinfo` files that TypeScript writes next to the build output for incremental builds — 1.3 MB of build cache in `@dextinity/cms-api` alone, which has no use outside the repository.
+
+- 36f7f17: Replace the deprecated `lodash.isequal` dependency with Node's built-in `util`
+
+    `lodash.isequal` is deprecated and isn't needed — Node's `isDeepStrictEqual` from `util` covers the deep comparisons we use it for, with the same results for the compared values (plain JSON block data and content scopes). Both packages drop the `lodash.isequal` dependency.
+
+- Updated dependencies [44125b9]
+- Updated dependencies [383e9ed]
+- Updated dependencies [0076f28]
+- Updated dependencies [8538d98]
+- Updated dependencies [4a1da4e]
+- Updated dependencies [dddb222]
+- Updated dependencies [8fbfbce]
+- Updated dependencies [36f7f17]
+- Updated dependencies [9109aa3]
+    - @dextinity/cms-api@10.8.0
+
 ## 10.7.0
 
 ### Patch Changes

@@ -56,13 +56,15 @@ export class BrevoContactsService {
         responsibleUserId?: string;
         contactSource?: ContactSource;
     }): Promise<SubscribeResponse> {
+        const mainTargetGroupForScope = await this.targetGroupService.createIfNotExistMainTargetGroupForScope(scope);
+
         const existingContact = await this.brevoContactsApiService.getContactInfoByEmail(email, scope);
-        if (existingContact) {
+        if (existingContact?.listIds.includes(mainTargetGroupForScope.brevoId)) {
             return SubscribeResponse.ERROR_CONTACT_ALREADY_EXISTS;
         }
 
-        const mainTargetGroupForScope = await this.targetGroupService.createIfNotExistMainTargetGroupForScope(scope);
-        const targetGroupIds = await this.getTargetGroupIdsForNewContact({ scope, contactAttributes: attributes });
+        const contactAttributes = existingContact ? { ...existingContact.attributes, ...attributes } : attributes;
+        const targetGroupIds = await this.getTargetGroupIdsForNewContact({ scope, contactAttributes });
         const brevoIds = [mainTargetGroupForScope.brevoId, ...targetGroupIds];
 
         if (listIds) {
@@ -82,7 +84,9 @@ export class BrevoContactsService {
             }
 
             if (contactSource) {
-                const created = await this.brevoContactsApiService.createBrevoContactWithoutDoubleOptIn({ email, attributes }, brevoIds, scope);
+                const created = existingContact
+                    ? Boolean(await this.brevoContactsApiService.updateContact(existingContact.id, { attributes, listIds: brevoIds }, scope))
+                    : await this.brevoContactsApiService.createBrevoContactWithoutDoubleOptIn({ email, attributes }, brevoIds, scope);
                 if (created) {
                     await this.brevoEmailImportLogService.addContactToLogs(email, responsibleUserId, scope, contactSource);
                     return SubscribeResponse.SUCCESSFUL;
@@ -176,12 +180,18 @@ export class BrevoContactsService {
         return SubscribeResponse.ERROR_UNKNOWN;
     }
 
-    public async getTargetGroupIdsForExistingContact({ contact }: { contact?: BrevoContactInterface }): Promise<number[]> {
+    public async getTargetGroupIdsForExistingContact({
+        contact,
+        scope,
+    }: {
+        contact?: BrevoContactInterface;
+        scope?: EmailCampaignScopeInterface;
+    }): Promise<number[]> {
         let offset = 0;
         let totalCount = 0;
         const targetGroupIds: number[] = [];
         const limit = 50;
-        const where = { isMainList: false };
+        const where = scope ? { isMainList: false, scope } : { isMainList: false };
 
         do {
             const [targetGroups, totalContactLists] = await this.targetGroupService.findTargetGroups({ offset, limit, where });

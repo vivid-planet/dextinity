@@ -2,11 +2,10 @@ import type { BlockDependency } from "../../blocks/types";
 import type { GQLDamFile, GQLImageCropArea, GQLImageCropAreaInput } from "../../graphql.generated";
 import type { DamFileToCopy } from "./copyDamFilesToScope";
 
-type DamFileDependency = BlockDependency & { data: { damFile: GQLDamFile & { scope?: Record<string, unknown> } } };
+type DamFileDependency = BlockDependency & { data?: { damFile?: GQLDamFile & { scope?: Record<string, unknown> } } };
 
 export function isDamFileDependency(dependency: BlockDependency): dependency is DamFileDependency {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return dependency.targetGraphqlObjectType === "DamFile" && !!dependency.data && !!(dependency.data as any).damFile;
+    return dependency.targetGraphqlObjectType === "DamFile";
 }
 
 function toImageCropAreaInput(cropArea: GQLImageCropArea): GQLImageCropAreaInput {
@@ -14,9 +13,14 @@ function toImageCropAreaInput(cropArea: GQLImageCropArea): GQLImageCropAreaInput
 }
 
 export function damFilesFromDependencies(dependencies: BlockDependency[]): DamFileToCopy[] {
-    return dependencies.filter(isDamFileDependency).map(({ data: { damFile } }) => ({
-        id: damFile.id,
-        scope: damFile.scope,
-        imageCropArea: damFile.image?.cropArea ? toImageCropAreaInput(damFile.image.cropArea) : undefined,
-    }));
+    return dependencies.filter(isDamFileDependency).map((dependency) => {
+        const damFile = dependency.data?.damFile;
+        const cropArea = damFile?.image?.cropArea;
+
+        return {
+            id: dependency.id,
+            scope: damFile?.scope,
+            imageCropArea: cropArea ? toImageCropAreaInput(cropArea) : undefined,
+        };
+    });
 }

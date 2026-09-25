@@ -10,6 +10,12 @@ describe("damFilesFromDependencies", () => {
         expect(damFilesFromDependencies([{ targetGraphqlObjectType: "PageTreeNode", id: "page-1" }])).toEqual([]);
     });
 
+    it("extracts a file that is referenced by its id only", () => {
+        expect(damFilesFromDependencies([{ targetGraphqlObjectType: "DamFile", id: "file-1" }])).toEqual([
+            { id: "file-1", scope: undefined, imageCropArea: undefined },
+        ]);
+    });
+
     it("extracts the id and the scope", () => {
         expect(damFilesFromDependencies([damFileDependency({ id: "file-1", scope: { domain: "main" } })])).toEqual([
             { id: "file-1", scope: { domain: "main" }, imageCropArea: undefined },

@@ -166,6 +166,25 @@ describe("useBlockClipboard", () => {
         expect(response.canPaste && response.content[0].state.targetPage?.id).toBe("page-1");
     });
 
+    it("writes a file that a block references by its id only as a DAM file, not as a dependency", async () => {
+        const idOnlyDamFileBlock = {
+            ...PixelImageBlock,
+            dependencies: () => [{ targetGraphqlObjectType: "DamFile", id: "file-1" }],
+        };
+        (useDextinityConfig as Mock).mockReturnValue({ apiUrl: "https://example.com", dam: { scopeParts: ["domain"] } });
+        (useContentScope as Mock).mockReturnValue({ scope: { domain: "main", language: "en" } });
+        (useBlockContext as Mock).mockReturnValue({ apolloClient: { query, mutate }, apiUrl: "https://example.com", damBasePath: "dam" });
+        const { result } = renderHook(() => useBlockClipboard({ supports: idOnlyDamFileBlock }));
+
+        await act(async () => {
+            await result.current.updateClipboardContent([{ name: "Image", visible: true, state: { damFile: damFile("file-1") } }]);
+        });
+
+        const [block] = JSON.parse((writeClipboardText as Mock).mock.calls[0][0]);
+        expect(block.damFiles).toEqual([{ id: "file-1", scope: { domain: "main" } }]);
+        expect(block.dependencies).toBeUndefined();
+    });
+
     it("determines the DAM scope without a DamScopeProvider", async () => {
         const result = renderUseBlockClipboard({ domain: "main", scopeParts: ["domain", "unusedScopePart"] });
 

@@ -253,7 +253,7 @@ function unhandledDependenciesFromDocument(
                 return false;
             }
 
-            if (isEqual(dependency.data.damFile.scope, targetDamScope)) {
+            if (isEqual(dependency.data?.damFile?.scope, targetDamScope)) {
                 // Source and target DAM scope are the same, so no need to handle this dependency
                 return false;
             }

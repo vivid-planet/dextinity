@@ -173,14 +173,8 @@ export function createBrevoContactResolver({
 
             const assignedListIds = contact.listIds;
 
-            const mainTargetGroupsOfContact = await this.targetGroupRepository.find({ brevoId: { $in: assignedListIds }, isMainList: true });
-            const mainTargetGroup = await this.targetGroupRepository.findOne({ scope, isMainList: true });
-            const scopesOfContact = [
-                scope,
-                ...mainTargetGroupsOfContact
-                    .filter((targetGroup) => targetGroup.brevoId !== mainTargetGroup?.brevoId)
-                    .map((targetGroup) => targetGroup.scope),
-            ];
+            const mainTargetGroupsOfOtherScopes = await this.findMainTargetGroupsOfOtherScopesInSameBrevoAccount({ contact, scope });
+            const scopesOfContact = [scope, ...mainTargetGroupsOfOtherScopes.map((targetGroup) => targetGroup.scope)];
 
             const updatedNonMainListIds: number[] = [];
             const evaluatedListIds: number[] = [];
@@ -287,14 +281,9 @@ export function createBrevoContactResolver({
                 return false;
             }
 
-            const mainTargetGroup = await this.targetGroupRepository.findOne({ scope, isMainList: true });
-            const isContactInMainListOfOtherScope =
-                (await this.targetGroupRepository.count({
-                    brevoId: { $in: contact.listIds.filter((listId) => listId !== mainTargetGroup?.brevoId) },
-                    isMainList: true,
-                })) > 0;
+            const mainTargetGroupsOfOtherScopes = await this.findMainTargetGroupsOfOtherScopesInSameBrevoAccount({ contact, scope });
 
-            if (isContactInMainListOfOtherScope) {
+            if (mainTargetGroupsOfOtherScopes.length > 0) {
                 const targetGroupsOfScope = await this.targetGroupRepository.find({ scope, isTestList: false });
                 const listIdsOfScope = targetGroupsOfScope.flatMap((targetGroup) =>
                     targetGroup.assignedContactsTargetGroupBrevoId
@@ -302,11 +291,11 @@ export function createBrevoContactResolver({
                         : [targetGroup.brevoId],
                 );
 
-                return this.brevoContactsApiService.removeContactFromLists(
+                return this.brevoContactsApiService.removeContactFromLists({
                     contact,
-                    contact.listIds.filter((listId) => listIdsOfScope.includes(listId)),
+                    unlinkListIds: contact.listIds.filter((listId) => listIdsOfScope.includes(listId)),
                     scope,
-                );
+                });
             }
 
             const where: FilterQuery<TargetGroupInterface> = { scope, isMainList: false, isTestList: true };
@@ -374,6 +363,23 @@ export function createBrevoContactResolver({
             scope: typeof Scope,
         ): Promise<SubscribeResponse> {
             return this.brevoContactsService.subscribeBrevoContact(data, scope);
+        }
+
+        private async findMainTargetGroupsOfOtherScopesInSameBrevoAccount({
+            contact,
+            scope,
+        }: {
+            contact: BrevoContactInterface;
+            scope: EmailCampaignScopeInterface;
+        }): Promise<TargetGroupInterface[]> {
+            const mainTargetGroup = await this.targetGroupRepository.findOne({ scope, isMainList: true });
+            const mainTargetGroupsOfContact = await this.targetGroupRepository.find({
+                brevoId: { $in: contact.listIds.filter((listId) => listId !== mainTargetGroup?.brevoId) },
+                isMainList: true,
+            });
+
+            const { apiKey } = this.config.brevo.resolveConfig(scope);
+            return mainTargetGroupsOfContact.filter((targetGroup) => this.config.brevo.resolveConfig(targetGroup.scope).apiKey === apiKey);
         }
     }
 

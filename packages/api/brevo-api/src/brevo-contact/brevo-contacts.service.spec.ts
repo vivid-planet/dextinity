@@ -91,6 +91,22 @@ describe("BrevoContactsService", () => {
             expect(brevoEmailImportLogService.addContactToLogs).toHaveBeenCalledWith("jane@example.com", "user", scope, ContactSource.manualCreation);
         });
 
+        it("assigns target groups based on the attributes the contact of another scope already has", async () => {
+            const existingAttributes = { BRANCH: ["products"] };
+            brevoContactsApiService.getContactInfoByEmail.mockResolvedValue({
+                id: 5,
+                listIds: [mainListIdOfOtherScope],
+                attributes: existingAttributes,
+            });
+            brevoContactsApiService.updateContact.mockResolvedValue({ id: 5 });
+            targetGroupService.findTargetGroups.mockResolvedValue([[{ brevoId: 11, filters: { BRANCH: ["products"] } }], 1]);
+            targetGroupService.checkIfContactIsInTargetGroupByAttributes.mockReturnValue(true);
+
+            await expect(service.createContact(withoutDoubleOptIn)).resolves.toBe(SubscribeResponse.SUCCESSFUL);
+            expect(targetGroupService.checkIfContactIsInTargetGroupByAttributes).toHaveBeenCalledWith(existingAttributes, { BRANCH: ["products"] });
+            expect(brevoContactsApiService.updateContact).toHaveBeenCalledWith(5, { attributes: undefined, listIds: [mainListIdOfScope, 11] }, scope);
+        });
+
         it("does not add a blacklisted contact of another scope without double opt-in", async () => {
             brevoContactsApiService.getContactInfoByEmail.mockResolvedValue({ id: 5, listIds: [mainListIdOfOtherScope] });
             blacklistedContactsRepository.findOne.mockResolvedValue({ hashedEmail: "hash" });

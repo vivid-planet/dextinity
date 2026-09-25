@@ -63,7 +63,8 @@ export class BrevoContactsService {
             return SubscribeResponse.ERROR_CONTACT_ALREADY_EXISTS;
         }
 
-        const targetGroupIds = await this.getTargetGroupIdsForNewContact({ scope, contactAttributes: attributes });
+        const contactAttributes = existingContact ? { ...existingContact.attributes, ...attributes } : attributes;
+        const targetGroupIds = await this.getTargetGroupIdsForNewContact({ scope, contactAttributes });
         const brevoIds = [mainTargetGroupForScope.brevoId, ...targetGroupIds];
 
         if (listIds) {

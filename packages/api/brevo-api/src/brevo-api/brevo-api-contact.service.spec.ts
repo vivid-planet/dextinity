@@ -74,7 +74,7 @@ describe("BrevoApiContactsService", () => {
         it("unlinks only the given lists and blacklists the email for the scope", async () => {
             const contact = { id: 5, email: "jane@example.com", listIds: [10, 11, 20] };
 
-            await expect(service.removeContactFromLists(contact as never, [10, 11], scope)).resolves.toBe(true);
+            await expect(service.removeContactFromLists({ contact: contact as never, unlinkListIds: [10, 11], scope })).resolves.toBe(true);
             expect(contactsApi.updateContact).toHaveBeenCalledWith({ identifier: 5, unlinkListIds: [10, 11] });
             expect(blacklistedContactsService.addBlacklistedContacts).toHaveBeenCalledWith(["jane@example.com"], scope);
         });

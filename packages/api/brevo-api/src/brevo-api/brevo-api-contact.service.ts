@@ -147,11 +147,15 @@ export class BrevoApiContactsService {
         }
     }
 
-    public async removeContactFromLists(
-        contact: BrevoContactInterface,
-        unlinkListIds: number[],
-        scope: EmailCampaignScopeInterface,
-    ): Promise<boolean> {
+    public async removeContactFromLists({
+        contact,
+        unlinkListIds,
+        scope,
+    }: {
+        contact: BrevoContactInterface;
+        unlinkListIds: number[];
+        scope: EmailCampaignScopeInterface;
+    }): Promise<boolean> {
         try {
             if (contact.email && this.config.contactsWithoutDoi?.allowAddingContactsWithoutDoi) {
                 await this.blacklistedContactsService.addBlacklistedContacts([contact.email], scope);

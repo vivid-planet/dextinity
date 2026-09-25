@@ -5,7 +5,8 @@ import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 import { v4 as uuid } from "uuid";
 
-import type { BlockDependency, ReplaceDependencyObject } from "../../../blocks/types";
+import { createUndefinedReplacementsForDependencies } from "../../../blocks/helpers/createUndefinedReplacementsForDependencies";
+import type { ReplaceDependencyObject } from "../../../blocks/types";
 import type { ContentScope } from "../../../contentScope/Provider";
 import { copyDamFilesToScope, type DamFileToCopy } from "../../../dam/copyFilesToScope/copyDamFilesToScope";
 import { damFilesFromDependencies, isDamFileDependency } from "../../../dam/copyFilesToScope/damFileDependencies";
@@ -264,20 +265,4 @@ function unhandledDependenciesFromDocument(
     });
 
     return unhandledDependencies;
-}
-
-function createUndefinedReplacementsForDependencies(dependencies: BlockDependency[]) {
-    const existingReplacements = new Set();
-    const replacements: ReplaceDependencyObject[] = [];
-
-    for (const dependency of dependencies) {
-        const key = `${dependency.targetGraphqlObjectType}#${dependency.id}`;
-
-        if (!existingReplacements.has(key)) {
-            replacements.push({ type: dependency.targetGraphqlObjectType, originalId: dependency.id, replaceWithId: undefined });
-            existingReplacements.add(key);
-        }
-    }
-
-    return replacements;
 }

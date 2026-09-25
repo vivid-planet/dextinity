@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { useDextinityConfig } from "../../config/DextinityConfigContext";
 import { useContentScope } from "../../contentScope/Provider";
 import { useBlockContext } from "../context/useBlockContext";
+import { InternalLinkBlock } from "../InternalLinkBlock";
 import { PixelImageBlock } from "../PixelImageBlock";
 import { useBlockClipboard } from "./useBlockClipboard";
 
@@ -30,6 +31,8 @@ const query = vi.fn(async ({ query: document, variables }: { query: DocumentNode
             return { data: { findCopiesOfFileInScope: [] } };
         case "ImageBlockDamFile":
             return { data: { damFile: damFile(variables.id) } };
+        case "LinkBlockTargetPage":
+            return { data: { pageTreeNode: { id: variables.id, name: "Page", path: "/page", documentType: "Page" } } };
         default:
             throw new Error(`Unexpected query "${operationName(document)}"`);
     }
@@ -52,6 +55,17 @@ const mutate = vi.fn(async ({ mutation, variables }: { mutation: DocumentNode; v
     }
 });
 
+const internalLinkClipboardContentForScope = (contentScope: Record<string, unknown>) =>
+    JSON.stringify([
+        {
+            name: "InternalLink",
+            visible: true,
+            output: { targetPageId: "page-1" },
+            contentScope,
+            dependencies: [{ targetGraphqlObjectType: "PageTreeNode", id: "page-1" }],
+        },
+    ]);
+
 const clipboardContentForScope = (scope: Record<string, unknown>) =>
     JSON.stringify([{ name: "Image", visible: true, output: { damFileId: "file-1" }, damFiles: [{ id: "file-1", scope }] }]);
 
@@ -65,7 +79,7 @@ function renderUseBlockClipboard({ domain, scopeParts = ["domain"] }: { domain: 
         pageTreeScope: {},
     });
 
-    return renderHook(() => useBlockClipboard({ supports: PixelImageBlock })).result;
+    return renderHook(() => useBlockClipboard({ supports: [PixelImageBlock, InternalLinkBlock] })).result;
 }
 
 async function getClipboardContent(result: ReturnType<typeof renderUseBlockClipboard>) {
@@ -97,8 +111,60 @@ describe("useBlockClipboard", () => {
                 output: { damFileId: "file-1" },
                 // The file was selected in the Admin and doesn't know its scope, so the edited scope is used
                 damFiles: [{ id: "file-1", scope: { domain: "main" }, imageCropArea: { focalPoint: "SMART" } }],
+                contentScope: { domain: "main", language: "en" },
             },
         ]);
+    });
+
+    it("writes the dependencies that aren't DAM files to the clipboard", async () => {
+        const result = renderUseBlockClipboard({ domain: "main" });
+
+        await act(async () => {
+            await result.current.updateClipboardContent([
+                { name: "InternalLink", visible: true, state: { targetPage: { id: "page-1", name: "Page", path: "/page", documentType: "Page" } } },
+            ]);
+        });
+
+        expect(JSON.parse((writeClipboardText as Mock).mock.calls[0][0])).toEqual([
+            {
+                name: "InternalLink",
+                visible: true,
+                output: { targetPageId: "page-1" },
+                contentScope: { domain: "main", language: "en" },
+                dependencies: [{ targetGraphqlObjectType: "PageTreeNode", id: "page-1" }],
+            },
+        ]);
+    });
+
+    it("removes unhandled dependencies when pasting into another scope", async () => {
+        (readClipboardText as Mock).mockResolvedValue(internalLinkClipboardContentForScope({ domain: "main", language: "en" }));
+        const result = renderUseBlockClipboard({ domain: "secondary" });
+
+        const response = await getClipboardContent(result);
+
+        expect(response.canPaste).toBe(true);
+        expect(response.canPaste && response.content[0].state).toEqual({});
+        expect(query).not.toHaveBeenCalled();
+    });
+
+    it("keeps the dependencies when pasting into the same scope", async () => {
+        (readClipboardText as Mock).mockResolvedValue(internalLinkClipboardContentForScope({ domain: "main", language: "en" }));
+        const result = renderUseBlockClipboard({ domain: "main" });
+
+        const response = await getClipboardContent(result);
+
+        expect(response.canPaste).toBe(true);
+        expect(response.canPaste && response.content[0].state.targetPage?.id).toBe("page-1");
+    });
+
+    it("keeps the dependencies of content copied by an earlier version", async () => {
+        (readClipboardText as Mock).mockResolvedValue(JSON.stringify([{ name: "InternalLink", visible: true, output: { targetPageId: "page-1" } }]));
+        const result = renderUseBlockClipboard({ domain: "secondary" });
+
+        const response = await getClipboardContent(result);
+
+        expect(response.canPaste).toBe(true);
+        expect(response.canPaste && response.content[0].state.targetPage?.id).toBe("page-1");
     });
 
     it("determines the DAM scope without a DamScopeProvider", async () => {

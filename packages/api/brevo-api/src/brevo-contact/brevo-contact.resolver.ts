@@ -172,30 +172,32 @@ export function createBrevoContactResolver({
             );
 
             const assignedListIds = contact.listIds;
-            const mainListIds = (await this.targetGroupRepository.find({ brevoId: { $in: assignedListIds }, isMainList: true })).map(
-                (targetGroup) => targetGroup.brevoId,
-            );
-            const updatedNonMainListIds = await this.brevoContactsService.getTargetGroupIdsForExistingContact({
-                contact,
-            });
 
-            const testTargetGroup = await this.targetGroupRepository.findOne({ scope, isMainList: false, isTestList: true });
-            const contactIncludesTestList = testTargetGroup?.brevoId ? contact.listIds.includes(testTargetGroup.brevoId) : false;
+            const mainTargetGroupsOfContact = await this.targetGroupRepository.find({ brevoId: { $in: assignedListIds }, isMainList: true });
+            const mainTargetGroup = await this.targetGroupRepository.findOne({ scope, isMainList: true });
+            const scopesOfContact = [
+                scope,
+                ...mainTargetGroupsOfContact
+                    .filter((targetGroup) => targetGroup.brevoId !== mainTargetGroup?.brevoId)
+                    .map((targetGroup) => targetGroup.scope),
+            ];
 
-            if (testTargetGroup && contactIncludesTestList) {
-                const testListId = testTargetGroup.brevoId;
-                if (!updatedNonMainListIds.includes(testListId)) {
-                    updatedNonMainListIds.push(testListId);
-                }
+            const updatedNonMainListIds: number[] = [];
+            const evaluatedListIds: number[] = [];
+            for (const scopeOfContact of scopesOfContact) {
+                const targetGroupsOfScope = await this.targetGroupRepository.find({ scope: scopeOfContact, isMainList: false, isTestList: false });
+                evaluatedListIds.push(...targetGroupsOfScope.map((targetGroup) => targetGroup.brevoId));
+                updatedNonMainListIds.push(
+                    ...(await this.brevoContactsService.getTargetGroupIdsForExistingContact({ contact, scope: scopeOfContact })),
+                );
             }
 
             // update contact again with updated list ids depending on new attributes
-
             const contactWithUpdatedLists = await this.brevoContactsApiService.updateContact(
                 id,
                 {
-                    listIds: updatedNonMainListIds.filter((listId) => !assignedListIds.includes(listId)),
-                    unlinkListIds: assignedListIds.filter((listId) => !updatedNonMainListIds.includes(listId) && !mainListIds.includes(listId)),
+                    listIds: [...new Set(updatedNonMainListIds.filter((listId) => !assignedListIds.includes(listId)))],
+                    unlinkListIds: assignedListIds.filter((listId) => evaluatedListIds.includes(listId) && !updatedNonMainListIds.includes(listId)),
                 },
                 scope,
             );
@@ -283,6 +285,28 @@ export function createBrevoContactResolver({
             const contact = await this.brevoContactsApiService.findContact(id, scope);
             if (!contact) {
                 return false;
+            }
+
+            const mainTargetGroup = await this.targetGroupRepository.findOne({ scope, isMainList: true });
+            const isContactInMainListOfOtherScope =
+                (await this.targetGroupRepository.count({
+                    brevoId: { $in: contact.listIds.filter((listId) => listId !== mainTargetGroup?.brevoId) },
+                    isMainList: true,
+                })) > 0;
+
+            if (isContactInMainListOfOtherScope) {
+                const targetGroupsOfScope = await this.targetGroupRepository.find({ scope, isTestList: false });
+                const listIdsOfScope = targetGroupsOfScope.flatMap((targetGroup) =>
+                    targetGroup.assignedContactsTargetGroupBrevoId
+                        ? [targetGroup.brevoId, targetGroup.assignedContactsTargetGroupBrevoId]
+                        : [targetGroup.brevoId],
+                );
+
+                return this.brevoContactsApiService.removeContactFromLists(
+                    contact,
+                    contact.listIds.filter((listId) => listIdsOfScope.includes(listId)),
+                    scope,
+                );
             }
 
             const where: FilterQuery<TargetGroupInterface> = { scope, isMainList: false, isTestList: true };

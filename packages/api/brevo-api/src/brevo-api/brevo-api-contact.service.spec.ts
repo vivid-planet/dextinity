@@ -3,6 +3,7 @@ import { getRepositoryToken } from "@mikro-orm/nestjs";
 import { Test, type TestingModule } from "@nestjs/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { BlacklistedContactsService } from "../blacklisted-contacts/blacklisted-contacts.service";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { BrevoApiClientFactory } from "./brevo-api-client.factory";
 import { BrevoApiContactsService } from "./brevo-api-contact.service";
@@ -13,16 +14,19 @@ describe("BrevoApiContactsService", () => {
     let service: BrevoApiContactsService;
     const contactsApi = {
         getContactInfo: vi.fn(),
+        updateContact: vi.fn(),
     };
+    const blacklistedContactsService = { addBlacklistedContacts: vi.fn() };
 
     beforeEach(async () => {
         vi.clearAllMocks();
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 BrevoApiContactsService,
-                { provide: BREVO_MODULE_CONFIG, useValue: { brevo: {} } },
+                { provide: BREVO_MODULE_CONFIG, useValue: { brevo: {}, contactsWithoutDoi: { allowAddingContactsWithoutDoi: true } } },
                 { provide: getRepositoryToken("BrevoConfig"), useValue: {} },
                 { provide: BrevoApiClientFactory, useValue: { getClient: () => ({ contacts: contactsApi }) } },
+                { provide: BlacklistedContactsService, useValue: blacklistedContactsService },
             ],
         }).compile();
 
@@ -63,6 +67,16 @@ describe("BrevoApiContactsService", () => {
 
             await expect(service.getContactInfoByEmail("ghost@example.com", scope)).resolves.toBeNull();
             expect(contactsApi.getContactInfo).toHaveBeenCalledWith({ identifier: "ghost@example.com" });
+        });
+    });
+
+    describe("removeContactFromLists", () => {
+        it("unlinks only the given lists and blacklists the email for the scope", async () => {
+            const contact = { id: 5, email: "jane@example.com", listIds: [10, 11, 20] };
+
+            await expect(service.removeContactFromLists(contact as never, [10, 11], scope)).resolves.toBe(true);
+            expect(contactsApi.updateContact).toHaveBeenCalledWith({ identifier: 5, unlinkListIds: [10, 11] });
+            expect(blacklistedContactsService.addBlacklistedContacts).toHaveBeenCalledWith(["jane@example.com"], scope);
         });
     });
 });

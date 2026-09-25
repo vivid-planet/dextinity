@@ -147,6 +147,24 @@ export class BrevoApiContactsService {
         }
     }
 
+    public async removeContactFromLists(
+        contact: BrevoContactInterface,
+        unlinkListIds: number[],
+        scope: EmailCampaignScopeInterface,
+    ): Promise<boolean> {
+        try {
+            if (contact.email && this.config.contactsWithoutDoi?.allowAddingContactsWithoutDoi) {
+                await this.blacklistedContactsService.addBlacklistedContacts([contact.email], scope);
+            }
+
+            await this.clientFactory.getClient(scope).contacts.updateContact({ identifier: contact.id, unlinkListIds });
+
+            return true;
+        } catch (error) {
+            handleBrevoError(error);
+        }
+    }
+
     public async findContact(idOrEmail: string | number, scope: EmailCampaignScopeInterface): Promise<BrevoContactInterface | null> {
         try {
             const contact = await this.clientFactory.getClient(scope).contacts.getContactInfo({ identifier: idOrEmail });

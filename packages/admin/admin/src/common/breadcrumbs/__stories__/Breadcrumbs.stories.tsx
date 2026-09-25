@@ -1,3 +1,5 @@
+import { LevelUp } from "@dextinity/admin-icons";
+import { IconButton } from "@mui/material";
 import type { Meta } from "@storybook/react-vite";
 
 import { type Breadcrumb, Breadcrumbs } from "../Breadcrumbs";
@@ -49,5 +51,18 @@ export const ResponsiveDesktop = () => {
                 </div>
             ))}
         </div>
+    );
+};
+
+export const WithStartAdornment = () => {
+    return (
+        <Breadcrumbs
+            items={fiveItems}
+            startAdornment={
+                <IconButton>
+                    <LevelUp />
+                </IconButton>
+            }
+        />
     );
 };

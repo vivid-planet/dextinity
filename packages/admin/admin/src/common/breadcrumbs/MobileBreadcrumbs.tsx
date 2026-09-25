@@ -40,10 +40,11 @@ const ExpandedMenuEntry = ({
 }) => {
     const indentationLine = indentation > 0 && <PageTreeVerticalLine {...slotProps?.pageTreeVerticalLine} />;
 
-    // The current item is the page the menu was opened from, so it closes the menu instead of navigating to its own URL.
+    // The current item is the page the menu was opened from. It carries no action at all, so that it does not offer one
+    // that only a pointer can reach.
     if (isCurrentItem) {
         return (
-            <ExpandedMenuActiveItemWrapper ownerState={{ indentation }} onClick={onClick} {...slotProps?.expandedMenuActiveItemWrapper}>
+            <ExpandedMenuActiveItemWrapper ownerState={{ indentation }} {...slotProps?.expandedMenuActiveItemWrapper}>
                 {indentationLine}
                 <ExpandedMenuActiveItem variant="subtitle2" {...slotProps?.expandedMenuActiveItem}>
                     {item.title}

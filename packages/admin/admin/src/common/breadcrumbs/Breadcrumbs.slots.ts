@@ -289,6 +289,9 @@ export const ExpandedMenuActiveItemWrapper = createComponentSlot("div")<Breadcru
         padding-left: ${wrapperPaddingLeft(theme, ownerState.indentation)};
         padding-right: ${theme.spacing(3)};
         background-color: ${alpha(theme.palette.primary.main, 0.1)};
+
+        // The row has nothing to activate, so it does not take the pointer cursor the surrounding mobile bar sets.
+        cursor: default;
     `,
 );
 

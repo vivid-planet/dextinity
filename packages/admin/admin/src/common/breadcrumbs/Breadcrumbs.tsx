@@ -30,7 +30,7 @@ export interface BreadcrumbsProps
         expandedMenu: "div";
         expandedMenuItem: typeof Typography;
         expandedMenuActiveItem: typeof Typography;
-        expandedMenuActiveItemWrapper: typeof BreadcrumbLink;
+        expandedMenuActiveItemWrapper: "div";
         pageTreeVerticalLine: "div";
         expandedMenuSubitemWrapper: typeof BreadcrumbLink;
         mobileMenuIcon: "div";
@@ -46,6 +46,11 @@ export interface BreadcrumbsProps
 
 export type BreadcrumbsSlotProps = BreadcrumbsProps["slotProps"];
 
+/**
+ * Shows a trail of links that collapses into an overflow menu when it runs out of space.
+ *
+ * The items navigate through the router, so the component has to be rendered inside a `Router`.
+ */
 export const Breadcrumbs = (inProps: BreadcrumbsProps) => {
     const { iconMapping = {}, items, startAdornment, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminBreadcrumbs" });
     const theme = useTheme();

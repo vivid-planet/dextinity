@@ -38,22 +38,27 @@ const ExpandedMenuEntry = ({
     onClick: () => void;
     slotProps?: BreadcrumbsSlotProps;
 }) => {
-    const Wrapper = isCurrentItem ? ExpandedMenuActiveItemWrapper : ExpandedMenuSubitemWrapper;
-    const wrapperSlotProps = isCurrentItem ? slotProps?.expandedMenuActiveItemWrapper : slotProps?.expandedMenuSubitemWrapper;
+    const indentationLine = indentation > 0 && <PageTreeVerticalLine {...slotProps?.pageTreeVerticalLine} />;
 
-    return (
-        <Wrapper ownerState={{ indentation }} to={item.url} onClick={onClick} {...wrapperSlotProps}>
-            {indentation > 0 && <PageTreeVerticalLine {...slotProps?.pageTreeVerticalLine} />}
-            {isCurrentItem ? (
+    // The current item is the page the menu was opened from, so it closes the menu instead of navigating to its own URL.
+    if (isCurrentItem) {
+        return (
+            <ExpandedMenuActiveItemWrapper ownerState={{ indentation }} onClick={onClick} {...slotProps?.expandedMenuActiveItemWrapper}>
+                {indentationLine}
                 <ExpandedMenuActiveItem variant="subtitle2" {...slotProps?.expandedMenuActiveItem}>
                     {item.title}
                 </ExpandedMenuActiveItem>
-            ) : (
-                <ExpandedMenuItem variant="body2" {...slotProps?.expandedMenuItem}>
-                    {item.title}
-                </ExpandedMenuItem>
-            )}
-        </Wrapper>
+            </ExpandedMenuActiveItemWrapper>
+        );
+    }
+
+    return (
+        <ExpandedMenuSubitemWrapper ownerState={{ indentation }} to={item.url} onClick={onClick} {...slotProps?.expandedMenuSubitemWrapper}>
+            {indentationLine}
+            <ExpandedMenuItem variant="body2" {...slotProps?.expandedMenuItem}>
+                {item.title}
+            </ExpandedMenuItem>
+        </ExpandedMenuSubitemWrapper>
     );
 };
 

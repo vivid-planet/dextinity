@@ -16,6 +16,8 @@ They are now thin wrappers around the `Breadcrumbs` component, which is exported
 <Breadcrumbs items={[{ url: "/products", title: "Products" }]} startAdornment={<ContentScopeIndicator />} />
 ```
 
+`Breadcrumbs` navigates through the router, so it has to be rendered inside a `Router`.
+
 **Breaking changes**
 
 `StackBreadcrumbs` and `ToolbarBreadcrumbs` no longer render their own markup, so their slots and class keys are gone.

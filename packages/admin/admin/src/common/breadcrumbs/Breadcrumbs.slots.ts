@@ -277,7 +277,7 @@ type WrapperOwnerState = { indentation: number };
 const wrapperPaddingLeft = (theme: Theme, indentation: number) =>
     indentation === 0 ? theme.spacing(3) : `calc(${theme.spacing(1)} + 17px * ${indentation})`;
 
-export const ExpandedMenuActiveItemWrapper = createComponentSlot(BreadcrumbLink)<BreadcrumbsClassKey, WrapperOwnerState>({
+export const ExpandedMenuActiveItemWrapper = createComponentSlot("div")<BreadcrumbsClassKey, WrapperOwnerState>({
     componentName: "Breadcrumbs",
     slotName: "expandedMenuActiveItemWrapper",
 })(
@@ -289,7 +289,6 @@ export const ExpandedMenuActiveItemWrapper = createComponentSlot(BreadcrumbLink)
         padding-left: ${wrapperPaddingLeft(theme, ownerState.indentation)};
         padding-right: ${theme.spacing(3)};
         background-color: ${alpha(theme.palette.primary.main, 0.1)};
-        text-decoration: none;
     `,
 );
 

@@ -9,7 +9,12 @@ export const MailImageBlock = ({ data }: PropsWithData<MailImageBlockData>) => {
     return (
         <MjmlSection indent={!data.fullWidth}>
             <MjmlColumn>
-                <MjmlPixelImageBlock data={data.image} width={renderWidth} largestPossibleRenderWidth={theme.sizes.bodyWidth} />
+                <MjmlPixelImageBlock
+                    data={data.image}
+                    width={renderWidth}
+                    largestPossibleRenderWidth={theme.sizes.bodyWidth}
+                    aspectRatio={data.aspectRatio}
+                />
             </MjmlColumn>
         </MjmlSection>
     );

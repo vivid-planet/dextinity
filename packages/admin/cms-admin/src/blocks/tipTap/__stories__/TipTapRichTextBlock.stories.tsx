@@ -4,11 +4,15 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type HTMLAttributes, type ReactNode, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
-import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "../createTipTapRichTextBlock";
+import { createTipTapRichTextBlock, type TipTapRichTextBlockState, type TipTapTextBlock } from "../createTipTapRichTextBlock";
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
-        <Box component="pre" sx={{ mt: 2, p: 2, backgroundColor: "#f5f5f5", fontSize: 12, overflow: "auto", borderRadius: 1 }}>
+        <Box
+            component="pre"
+            data-testid="state-preview"
+            sx={{ mt: 2, p: 2, backgroundColor: "#f5f5f5", fontSize: 12, overflow: "auto", borderRadius: 1 }}
+        >
             {JSON.stringify(state, null, 2)}
         </Box>
     );
@@ -88,12 +92,12 @@ const readOnlyState: TipTapRichTextBlockState = {
         type: "doc",
         content: [
             {
-                type: "heading",
-                attrs: { level: 1 },
+                type: "textBlock",
+                attrs: { textBlock: "heading-1" },
                 content: [{ type: "text", text: "Read-only content" }],
             },
             {
-                type: "paragraph",
+                type: "textBlock",
                 attrs: { textBlockStyle: "intro" },
                 content: [
                     { type: "text", text: "This content is rendered " },
@@ -156,7 +160,7 @@ const BoldOnlyBlock = createTipTapRichTextBlock({
     strike: false,
     sub: false,
     sup: false,
-    heading: false,
+    textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }],
     orderedList: false,
     unorderedList: false,
     nonBreakingSpace: false,
@@ -359,7 +363,7 @@ const PlaceholdersWithContentBlock = createTipTapRichTextBlock({
     strike: false,
     sub: false,
     sup: false,
-    heading: false,
+    textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }],
     orderedList: false,
     unorderedList: false,
     nonBreakingSpace: false,
@@ -377,7 +381,7 @@ function PlaceholdersWithContentStory() {
             type: "doc",
             content: [
                 {
-                    type: "paragraph",
+                    type: "textBlock",
                     content: [
                         { type: "text", text: "Hello " },
                         { type: "placeholder", attrs: { name: "firstName" } },
@@ -387,7 +391,7 @@ function PlaceholdersWithContentStory() {
                     ],
                 },
                 {
-                    type: "paragraph",
+                    type: "textBlock",
                     content: [
                         { type: "text", text: "Your registered email is: " },
                         { type: "placeholder", attrs: { name: "email" } },
@@ -914,7 +918,14 @@ export const ListLevelMax: StoryObj<typeof ListLevelMaxStory> = {
     },
 };
 
-const HeadingLevelsBlock = createTipTapRichTextBlock({ heading: { levels: [2, 3, 4] } });
+const HeadingLevelsBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p" },
+        { name: "heading-2", label: "Heading 2", tag: "h2" },
+        { name: "heading-3", label: "Heading 3", tag: "h3" },
+        { name: "heading-4", label: "Heading 4", tag: "h4" },
+    ],
+});
 
 function HeadingLevelsStory() {
     const [state, setState] = useState<TipTapRichTextBlockState>(HeadingLevelsBlock.defaultValues());
@@ -967,6 +978,22 @@ export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
             );
         });
 
+        await step("A keyboard shortcut updates the stored text block along with the level", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Alt>}3{/Alt}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 3 })).toBeInTheDocument();
+                    // A name that doesn't belong to the node's tag is content the API rejects.
+                    expect(canvas.getByText(/"textBlock": "heading-3"/)).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+
         await step("Keyboard shortcut for a disallowed level (Mod-Alt-1) does not apply Heading 1", async () => {
             const editor = canvas.getByRole("textbox");
             await userEvent.click(editor);
@@ -993,7 +1020,7 @@ const longTextContent: TipTapRichTextBlockState = {
     tipTapContent: {
         type: "doc",
         content: Array.from({ length: 30 }, (_, index) => ({
-            type: "paragraph",
+            type: "textBlock",
             content: [{ type: "text", text: `Paragraph ${index + 1}: enough text to make the container scroll past the toolbar.` }],
         })),
     },
@@ -1068,6 +1095,355 @@ export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
                 },
                 { timeout: 5000 },
             );
+        });
+    },
+};
+
+const headingOnlyTextBlocks: TipTapTextBlock[] = [
+    { name: "heading-2", label: "Heading 2", tag: "h2" },
+    { name: "heading-3", label: "Heading 3", tag: "h3" },
+    { name: "heading-4", label: "Heading 4", tag: "h4" },
+];
+
+const HeadingOnlyBlock = createTipTapRichTextBlock({
+    textBlocks: headingOnlyTextBlocks,
+    defaultTextBlock: "heading-3",
+    nonBreakingSpace: false,
+    softHyphen: false,
+});
+
+function HeadingOnlyStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(HeadingOnlyBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <HeadingOnlyBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const HeadingOnly: StoryObj<typeof HeadingOnlyStory> = {
+    render: () => <HeadingOnlyStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Editor starts with a heading of the default level", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 3 })).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("Text block type dropdown only offers headings, no paragraph", async () => {
+            await userEvent.click(canvas.getByRole("combobox"));
+
+            await waitFor(
+                () => {
+                    const body = within(document.body);
+                    expect(body.getAllByRole("option").map((option) => option.textContent)).toEqual(["Heading 2", "Heading 3", "Heading 4"]);
+                },
+                { timeout: 3000 },
+            );
+
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
+        });
+
+        await step("Selected heading level is applied", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 2 })).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Keyboard shortcut switches the heading level instead of toggling to a paragraph", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Alt>}4{/Alt}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 4 })).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Typing into the heading works", async () => {
+            await userEvent.keyboard("Headline");
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 4 })).toHaveTextContent("Headline");
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};
+
+const HeadingOnlyWithTextBlockStylesBlock = createTipTapRichTextBlock({
+    textBlocks: headingOnlyTextBlocks,
+    defaultTextBlock: "heading-3",
+    textBlockStyles: [
+        {
+            name: "headline550",
+            label: "Size 550",
+            appliesTo: ["heading-2", "heading-3", "heading-4"],
+            element: (props: HTMLAttributes<HTMLElement>) => <h2 style={{ fontSize: 40, lineHeight: 1.2 }} {...props} />,
+        },
+    ],
+});
+
+function HeadingOnlyWithTextBlockStylesStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(HeadingOnlyWithTextBlockStylesBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <HeadingOnlyWithTextBlockStylesBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const HeadingOnlyWithTextBlockStyles: StoryObj<typeof HeadingOnlyWithTextBlockStylesStory> = {
+    render: () => <HeadingOnlyWithTextBlockStylesStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Editor starts with a heading of the default level", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 3 })).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("Applying a text block style keeps the heading", async () => {
+            const comboboxes = canvas.getAllByRole("combobox");
+            expect(comboboxes[0]).toHaveTextContent("Heading 3");
+            await userEvent.click(comboboxes[1]);
+
+            await waitFor(
+                () => {
+                    expect(within(document.body).getByRole("option", { name: "Size 550" })).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+
+            await userEvent.click(within(document.body).getByRole("option", { name: "Size 550" }));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByText("Size 550")).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Typing into the styled heading works", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("Headline");
+
+            await waitFor(
+                () => {
+                    expect(editor).toHaveTextContent("Headline");
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};
+
+const contentFromOutside: TipTapRichTextBlockState = {
+    tipTapContent: {
+        type: "doc",
+        content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Text written by the agent" }] }],
+    },
+};
+
+function ExternalContentUpdateStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(TipTapRichTextBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <button type="button" onClick={() => setState(contentFromOutside)}>
+                Update from outside
+            </button>
+            <TipTapRichTextBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const ExternalContentUpdate: StoryObj<typeof ExternalContentUpdateStory> = {
+    render: () => <ExternalContentUpdateStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("Typing keeps the caret in place", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("Text written by the user");
+
+            await waitFor(
+                () => {
+                    expect(editor).toHaveTextContent("Text written by the user");
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Content set from outside replaces what the editor shows", async () => {
+            await userEvent.click(canvas.getByRole("button", { name: "Update from outside" }));
+
+            await waitFor(
+                () => {
+                    const editor = canvas.getByRole("textbox");
+                    expect(editor).toHaveTextContent("Text written by the agent");
+                    expect(editor).not.toHaveTextContent("Text written by the user");
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("The editor stays editable after the update from outside", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard(", extended by the user");
+
+            await waitFor(
+                () => {
+                    expect(editor).toHaveTextContent("Text written by the agent, extended by the user");
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};
+
+// Mirrors a parent that applies the editor's updates late, which makes React render a keystroke's
+// state after later keystrokes already reached the editor.
+function LaggingStateStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(TipTapRichTextBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <TipTapRichTextBlock.AdminComponent
+                state={state}
+                updateState={(setStateAction) => {
+                    setTimeout(() => setState(setStateAction), 50);
+                }}
+            />
+        </StoryWrapper>
+    );
+}
+
+export const LaggingState: StoryObj<typeof LaggingStateStory> = {
+    render: () => <LaggingStateStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("State arriving late does not undo what was typed since", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("Text written by the user");
+
+            // The editor shows the text as it is typed, so only the state catching up tells us that
+            // the delayed updates have landed — and that none of them reset the editor on arrival.
+            await waitFor(
+                () => {
+                    expect(canvas.getByTestId("state-preview")).toHaveTextContent("Text written by the user");
+                },
+                { timeout: 3000 },
+            );
+            expect(editor).toHaveTextContent("Text written by the user");
+        });
+    },
+};
+
+const ListTextBlockBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p" },
+        { name: "heading-2", label: "Heading 2", tag: "h2" },
+    ],
+});
+
+function ListTextBlockStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(ListTextBlockBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <ListTextBlockBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const ListTextBlock: StoryObj<typeof ListTextBlockStory> = {
+    render: () => <ListTextBlockStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("A heading turned into a list becomes a paragraph", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("Heading in a list");
+
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("h2")).toBeTruthy();
+                },
+                { timeout: 3000 },
+            );
+
+            // TipTap binds list shortcuts to Mod-Shift-{7,8}: Meta on Mac, Control elsewhere
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Shift>}8{/Shift}{/${mod}}`);
+
+            // The heading is wrapped into a list item, where only a paragraph text block belongs.
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("li")).toBeTruthy();
+                    expect(editor.querySelector("li h2")).toBeFalsy();
+                    expect(editor.querySelector("li p")).toBeTruthy();
+                },
+                { timeout: 3000 },
+            );
+            expect(editor).toHaveTextContent("Heading in a list");
+        });
+
+        await step("Choosing a heading inside a list takes the content out of the list", async () => {
+            const editor = canvas.getByRole("textbox");
+
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("h2")).toBeTruthy();
+                    expect(editor.querySelector("li")).toBeFalsy();
+                },
+                { timeout: 3000 },
+            );
+            expect(editor).toHaveTextContent("Heading in a list");
         });
     },
 };

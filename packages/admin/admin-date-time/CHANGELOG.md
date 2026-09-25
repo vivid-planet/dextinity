@@ -1,5 +1,12 @@
 # @comet/admin-date-time
 
+## 10.7.0
+
+### Patch Changes
+
+- @dextinity/admin@10.7.0
+- @dextinity/admin-icons@10.7.0
+
 ## 10.6.0
 
 ### Patch Changes

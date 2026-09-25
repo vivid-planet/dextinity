@@ -25,6 +25,13 @@ When running in the cloud/web environment and repo is cloned from scratch, if re
 
 When making changes to demo api, either start the api and verify it's running or at least run `pnpm run console --help` to verify AppModule is configured correctly and schema.gql/block-meta.json regenerates.
 
+## Comments
+
+- Default to writing no comments. Only add a comment when the _why_ is non-obvious (hidden constraint, workaround, surprising invariant).
+- Never write comments that restate _what_ the code does — the names should do that.
+- Prefer descriptive identifiers over explanatory comments — comments drift out of sync with the code.
+- Never reference the current task, ticket, or PR in comments — that context belongs in the PR description and rots in code.
+
 ## Linting
 
 Run the appropriate checks after every change and fix all reported errors.
@@ -123,11 +130,11 @@ Common commands:
 
 ### API (`packages/api/`)
 
-| Package                    | Description                                                                                |
-| -------------------------- | ------------------------------------------------------------------------------------------ |
-| `@dextinity/cms-api`       | NestJS/GraphQL API for CMS features (file uploads, translations, blocks, S3/Azure storage) |
-| `@dextinity/brevo-api`     | NestJS integration for the Brevo email/marketing service                                   |
-| `@dextinity/api-generator` | CLI tool that generates TypeScript types from GraphQL schemas (`dextinity-api-generator` bin)  |
+| Package                    | Description                                                                                   |
+| -------------------------- | --------------------------------------------------------------------------------------------- |
+| `@dextinity/cms-api`       | NestJS/GraphQL API for CMS features (file uploads, translations, blocks, S3/Azure storage)    |
+| `@dextinity/brevo-api`     | NestJS integration for the Brevo email/marketing service                                      |
+| `@dextinity/api-generator` | CLI tool that generates TypeScript types from GraphQL schemas (`dextinity-api-generator` bin) |
 
 ### Site (`packages/site/`)
 
@@ -180,6 +187,17 @@ Fix description here
 
 - Do not use Conventional Commits.
 - If a change is scoped to one package, prefix the commit message with the affected package name. Don't include `@dextinity/` in the package name.
+
+## Pull request descriptions
+
+- Fill in `.github/pull_request_template.md`. Don't add sections beyond it, and delete the sections and instruction comments that don't apply.
+- End the description with the template's task line as plain visible text, not as an HTML comment: `Task: …` (only when there is a task).
+- Describe why the change is needed, not what changed. Never restate the diff: no file-by-file list of changes, no summary of the code the reviewer is about to read.
+- Don't document how you arrived at the change: which files you read, which documentation you checked, which checks you ran to verify it. Only the outcome belongs in the description.
+- Delete the "Example" section when a unit test is the example — the reviewer finds it in the diff, and a bare file path is worthless in the commit message. Fill it in only for an example the diff doesn't lead to: a linked Storybook story or the implementation in Demo, with a sentence on what it shows.
+- Default to deleting "Further information". Add it only for something the reviewer needs in order to decide and can't get from the diff: an alternative you rejected, a related pull request, a link to a task or documentation. Adjacent problems you noticed and left out of scope belong in a follow-up task, not in the description.
+- Keep the length proportional to the change. A one-line fix gets a paragraph, not a report.
+- The description becomes the message of the squashed commit. See CONTRIBUTING.md#pull-requests.
 
 ## Generated demo files
 

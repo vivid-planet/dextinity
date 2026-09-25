@@ -28,11 +28,21 @@ export interface RenderTipTapRichTextOptions {
 const nonBreakingSpace = String.fromCodePoint(0xa0);
 const softHyphen = String.fromCodePoint(0xad);
 
+// The text blocks the API and the Admin configure by default. Which tag a text block renders as
+// follows from the block's configuration, which the site doesn't have, so only these names can be
+// mapped here - a block that renames them or adds one of its own needs a `textBlock` handler.
+const defaultTextBlockTags: Record<string, "h1" | "h2" | "h3" | "h4" | "h5" | "h6"> = {
+    "heading-1": "h1",
+    "heading-2": "h2",
+    "heading-3": "h3",
+    "heading-4": "h4",
+    "heading-5": "h5",
+    "heading-6": "h6",
+};
+
 const defaultTipTapNodeMapping: Record<string, TipTapNodeHandler> = {
-    paragraph: ({ children }) => <p>{children}</p>,
-    heading: ({ node, children }) => {
-        const level = (node.attrs?.level as 1 | 2 | 3 | 4 | 5 | 6) ?? 1;
-        const Tag = `h${level}` as const;
+    textBlock: ({ node, children }) => {
+        const Tag = defaultTextBlockTags[node.attrs?.textBlock as string] ?? "p";
         return <Tag>{children}</Tag>;
     },
     bulletList: ({ children }) => <ul>{children}</ul>,
@@ -94,9 +104,13 @@ export function renderTipTapRichText({ content, nodeMapping, markMapping }: Rend
     return renderNode(content, undefined);
 }
 
+// A block starts out with one empty text block, so a document holding nothing else counts as empty -
+// whichever text block that is.
+const isEmptyableTextBlock = (node: TipTapNode): boolean => node.type === "textBlock";
+
 export function hasTipTapRichTextContent(content: TipTapNode | null | undefined): boolean {
     if (!content?.content || !Array.isArray(content.content)) {
         return false;
     }
-    return content.content.some((node) => node.type !== "paragraph" || (Array.isArray(node.content) && node.content.length > 0));
+    return content.content.some((node) => !isEmptyableTextBlock(node) || (Array.isArray(node.content) && node.content.length > 0));
 }

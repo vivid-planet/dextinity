@@ -1,8 +1,7 @@
 import { gql, useApolloClient, useMutation } from "@apollo/client";
-import { Field, FieldContainer, FinalFormInput, FinalFormSelect, FormSection, Loading, SelectField } from "@dextinity/admin";
-import { FinalFormDatePicker } from "@dextinity/admin-date-time";
-import { ArtificialIntelligence, Calendar } from "@dextinity/admin-icons";
-import { IconButton, InputAdornment } from "@mui/material";
+import { DatePickerField, Field, FieldContainer, FinalFormInput, FinalFormSelect, FormSection, Loading, SelectField } from "@dextinity/admin";
+import { ArtificialIntelligence } from "@dextinity/admin-icons";
+import { IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useCallback } from "react";
 import { useForm } from "react-final-form";
@@ -268,34 +267,20 @@ export const FileSettingsFields = ({ file }: SettingsFormProps) => {
                                         disabled={licenseType === "NO_LICENSE"}
                                     >
                                         <DurationFieldWrapper>
-                                            <Field
+                                            <DatePickerField
                                                 name="license.durationFrom"
-                                                placeholder="from"
-                                                component={FinalFormDatePicker}
-                                                clearable
-                                                startAdornment={null}
-                                                endAdornment={
-                                                    <InputAdornment position="start">
-                                                        <Calendar />
-                                                    </InputAdornment>
-                                                }
+                                                label={<FormattedMessage id="dextinity.dam.file.licenseDurationFrom" defaultMessage="From" />}
+                                                fullWidth
                                                 validateFields={["license.durationTo"]}
                                                 disabled={licenseType === "NO_LICENSE"}
                                                 validate={requiredValidator}
                                                 shouldShowError={() => true}
                                             />
-                                            <Field
+                                            <DatePickerField
                                                 name="license.durationTo"
-                                                placeholder="to"
-                                                component={FinalFormDatePicker}
-                                                clearable
-                                                startAdornment={null}
-                                                endAdornment={
-                                                    <InputAdornment position="start">
-                                                        <Calendar />
-                                                    </InputAdornment>
-                                                }
-                                                validate={(value: Date | undefined, allValues) => {
+                                                label={<FormattedMessage id="dextinity.dam.file.licenseDurationTo" defaultMessage="To" />}
+                                                fullWidth
+                                                validate={(value: string | undefined, allValues) => {
                                                     const requiredError = requiredValidator(value, allValues);
                                                     if (requiredError) {
                                                         return requiredError;
@@ -328,4 +313,5 @@ export const FileSettingsFields = ({ file }: SettingsFormProps) => {
 
 const DurationFieldWrapper = styled("div")`
     display: flex;
+    gap: ${({ theme }) => theme.spacing(2)};
 `;

@@ -52,6 +52,13 @@ Provides a customizable rich-text-editor component to allow advanced formatting 
 
 #### @dextinity/admin-date-time
 
+:::warning Deprecated
+
+This package is deprecated. Its components have been replaced by date and time pickers in `@dextinity/admin`.
+See [Replacement of `@comet/admin-date-time`](../7-migration-guide/migration-from-v8-to-v9.md#replacement-of-cometadmin-date-time) for the replacement for each component.
+
+:::
+
 Provides components for selecting date and time or a range or combination of date and time.
 
 #### @dextinity/admin-color-picker

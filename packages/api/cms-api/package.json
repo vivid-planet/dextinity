@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/cms-api",
-    "version": "10.6.0",
+    "version": "10.7.0",
     "description": "Dextinity CMS API package",
     "repository": {
         "directory": "packages/api/cms-api",
@@ -14,7 +14,8 @@
     "sideEffects": false,
     "files": [
         "bin/**/*.js",
-        "lib/*"
+        "lib/*",
+        "!lib/*.tsbuildinfo"
     ],
     "scripts": {
         "build": "pnpm run clean && tsc -p tsconfig.build.json",
@@ -47,8 +48,6 @@
         "@nestjs/mapped-types": "^2.1.1",
         "@opentelemetry/api": "^1.9.1",
         "@tiptap/core": "^3.22.3",
-        "@tiptap/extension-heading": "^3.22.3",
-        "@tiptap/extension-paragraph": "^3.22.3",
         "@tiptap/extension-subscript": "^3.22.3",
         "@tiptap/extension-superscript": "^3.22.3",
         "@tiptap/pm": "^3.22.3",
@@ -63,13 +62,11 @@
         "file-type": "^21.3.4",
         "graphql-parse-resolve-info": "^4.14.1",
         "graphql-scalars": "^1.25.0",
-        "hasha": "^5.2.2",
         "html-to-text": "^9.0.5",
         "jose": "^5.10.0",
         "jsdom": "^28.1.0",
         "jszip": "^3.10.1",
         "jwks-rsa": "^3.2.2",
-        "lodash.isequal": "^4.5.0",
         "mime": "^3.0.0",
         "mime-db": "^1.54.0",
         "multer": "^2.1.1",
@@ -104,7 +101,6 @@
         "@types/express": "^5.0.6",
         "@types/html-to-text": "^9.0.4",
         "@types/inquirer": "^8.2.12",
-        "@types/lodash.isequal": "^4.5.8",
         "@types/mime": "^2.0.3",
         "@types/mime-db": "^1.43.6",
         "@types/multer": "^2.1.0",

@@ -97,8 +97,6 @@ export function generateForm(
         { name: "useStackSwitchApi", importPath: "@dextinity/admin" },
         { name: "ArrowLeft", importPath: "@dextinity/admin-icons" },
         { name: "Lock", importPath: "@dextinity/admin-icons" },
-        { name: "DateTimeField", importPath: "@dextinity/admin-date-time" },
-        { name: "FinalFormDatePicker", importPath: "@dextinity/admin-date-time" },
         { name: "BlockState", importPath: "@dextinity/cms-admin" },
         { name: "createFinalFormBlock", importPath: "@dextinity/cms-admin" },
         { name: "queryUpdatedAt", importPath: "@dextinity/cms-admin" },

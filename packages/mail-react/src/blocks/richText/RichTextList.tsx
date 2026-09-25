@@ -28,7 +28,7 @@ const markerCellNoLineBreak: CSSProperties = {
     wordBreak: "normal",
 };
 
-interface RichTextListItem {
+export interface RichTextListItem {
     key: string;
     content: ReactNode;
 }
@@ -38,13 +38,25 @@ interface RichTextListProps {
     variant?: VariantName;
     /** When true, the variant's spacing below the block applies below the last item. */
     bottomSpacing?: boolean;
+    /** When true, a later part of the same list follows, so the item spacing applies below the last item. */
+    continuesBelow?: boolean;
+    /** The marker index of the first item, for a part that continues an earlier part of the same list. */
+    firstMarkerIndex?: number;
     /** How many lists enclose this one; zero for a list that is not nested. */
     depth: number;
     items: RichTextListItem[];
 }
 
 /** Renders one rich-text list as a table, because cell padding is the only list indent Outlook applies reliably. */
-export function RichTextList({ ordered, variant, bottomSpacing, depth, items }: RichTextListProps): ReactNode {
+export function RichTextList({
+    ordered,
+    variant,
+    bottomSpacing,
+    continuesBelow = false,
+    firstMarkerIndex = 0,
+    depth,
+    items,
+}: RichTextListProps): ReactNode {
     const theme = useOptionalTheme();
     const outlookTextStyle = useOutlookTextStyle();
 
@@ -95,7 +107,8 @@ export function RichTextList({ ordered, variant, bottomSpacing, depth, items }: 
                     const isFirstItem = index === 0;
                     const isLastItem = index === items.length - 1;
                     const spacingAbove = isFirstItem && isNestedLevel ? itemSpacing : undefined;
-                    const spacingBelow = isLastItem ? blockSpacing : itemSpacing;
+                    const hasItemSpacingBelow = !isLastItem || continuesBelow;
+                    const spacingBelow = hasItemSpacingBelow ? itemSpacing : blockSpacing;
                     const cellStyle: CSSProperties = {
                         ...fontStyle,
                         ...(spacingAbove !== undefined && { paddingTop: spacingAbove }),
@@ -108,8 +121,8 @@ export function RichTextList({ ordered, variant, bottomSpacing, depth, items }: 
                             className={clsx(
                                 "richTextBlock__listItem",
                                 spacingAbove !== undefined && "richTextBlock__listItem--itemSpacingAbove",
-                                !isLastItem && "richTextBlock__listItem--itemSpacing",
-                                isLastItem && blockSpacing !== undefined && "richTextBlock__listItem--blockSpacing",
+                                hasItemSpacingBelow && "richTextBlock__listItem--itemSpacing",
+                                !hasItemSpacingBelow && blockSpacing !== undefined && "richTextBlock__listItem--blockSpacing",
                             )}
                         >
                             <td
@@ -122,7 +135,7 @@ export function RichTextList({ ordered, variant, bottomSpacing, depth, items }: 
                                     ...markerCellNoLineBreak,
                                 }}
                             >
-                                {resolveMarker(ordered ? list.orderedMarker : list.unorderedMarker, { index, depth })}
+                                {resolveMarker(ordered ? list.orderedMarker : list.unorderedMarker, { index: firstMarkerIndex + index, depth })}
                             </td>
                             <td className="richTextBlock__listItemText" width="100%" valign="top" style={cellStyle}>
                                 {item.content}

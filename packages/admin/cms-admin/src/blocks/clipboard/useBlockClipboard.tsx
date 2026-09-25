@@ -26,19 +26,8 @@ interface TransformedClipboardBlock {
     visible: boolean;
     output: BlockOutputApi<BlockInterface>;
     additionalFields?: Record<string, unknown>;
-    /**
-     * The DAM files referenced by the block, including the scope they live in. The scope can't be determined when
-     * pasting, therefore it has to be written to the clipboard when copying.
-     */
     damFiles?: DamFileToCopy[];
-    /**
-     * The content scope the block was copied from. Used to detect pasting into another scope.
-     */
     contentScope?: ContentScope;
-    /**
-     * The dependencies of the block that aren't handled by copying the DAM files. They are removed when pasting into
-     * another scope, e.g., links to pages of the source scope.
-     */
     dependencies?: Array<Pick<BlockDependency, "targetGraphqlObjectType" | "id">>;
 }
 
@@ -89,7 +78,6 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
 
             const damFiles = damFilesFromDependencies(blockDependencies).map((damFile) => ({
                 ...damFile,
-                // Files that were selected in the Admin don't know their scope, they live in the scope that is currently edited
                 scope: damFile.scope ?? damScope,
             }));
 
@@ -111,17 +99,11 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
         return writeClipboardText(JSON.stringify(blocks satisfies TransformedClipboardContent));
     };
 
-    /**
-     * Copies the DAM files referenced by the blocks from the clipboard into the current DAM scope and returns the
-     * replacements required to point the blocks to the copies.
-     */
     const copyReferencedDamFilesToScope = async (blocks: TransformedClipboardContent) => {
-        // Without DAM scoping every file can be used in every scope
         if (Object.keys(damScope).length === 0) {
             return [];
         }
 
-        // Files that already live in the target scope can be used as they are
         const files = blocks.flatMap((block) => block.damFiles ?? []).filter((file) => !isEqual(file.scope, damScope));
 
         if (files.length === 0) {
@@ -234,7 +216,6 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
             try {
                 const replacements = [...dependencyReplacements];
 
-                // Remove unhandled dependencies when pasting into another scope (same as when pasting pages)
                 if (clipboardBlock.contentScope && !isEqual(clipboardBlock.contentScope, contentScope)) {
                     const unhandledDependencies = (clipboardBlock.dependencies ?? []).filter(
                         (dependency) =>

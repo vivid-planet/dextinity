@@ -8,11 +8,6 @@ function useDamScope(): Record<string, unknown> {
     return useContext(DamScopeContext);
 }
 
-/**
- * The DAM scope of the content scope that is currently edited.
- *
- * In contrast to `useDamScope` it doesn't require a `DamScopeProvider` above, which is only mounted by the DAM, the pages page and the file field.
- */
 function useDamScopeFromContentScope(): Record<string, unknown> {
     const { dam } = useDextinityConfig();
     const { scope: contentScope } = useContentScope();

@@ -1,8 +1,5 @@
 import type { BlockDependency, ReplaceDependencyObject } from "../types";
 
-/**
- * Creates replacements that remove the passed dependencies, e.g., links to pages that don't exist in the scope a block is pasted into.
- */
 export function createUndefinedReplacementsForDependencies(dependencies: Array<Pick<BlockDependency, "targetGraphqlObjectType" | "id">>) {
     const existingReplacements = new Set();
     const replacements: ReplaceDependencyObject[] = [];

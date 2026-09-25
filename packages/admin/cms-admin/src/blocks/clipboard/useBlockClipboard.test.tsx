@@ -109,7 +109,6 @@ describe("useBlockClipboard", () => {
                 name: "Image",
                 visible: true,
                 output: { damFileId: "file-1" },
-                // The file was selected in the Admin and doesn't know its scope, so the edited scope is used
                 damFiles: [{ id: "file-1", scope: { domain: "main" }, imageCropArea: { focalPoint: "SMART" } }],
                 contentScope: { domain: "main", language: "en" },
             },

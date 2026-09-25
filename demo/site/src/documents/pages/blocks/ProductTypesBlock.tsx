@@ -1,9 +1,9 @@
 import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
-import type { ProductListBlockData } from "@src/blocks.generated";
+import type { ProductTypesBlockData } from "@src/blocks.generated";
 import { PageLayout } from "@src/layout/PageLayout";
 
-export const ProductListBlock = withPreview(
-    ({ data: { types } }: PropsWithData<ProductListBlockData>) => {
+export const ProductTypesBlock = withPreview(
+    ({ data: { types } }: PropsWithData<ProductTypesBlockData>) => {
         return (
             <PageLayout grid>
                 <ul>
@@ -15,6 +15,6 @@ export const ProductListBlock = withPreview(
         );
     },
     {
-        label: "ProductList",
+        label: "ProductTypes",
     },
 );

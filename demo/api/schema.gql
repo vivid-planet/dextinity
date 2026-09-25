@@ -2030,6 +2030,7 @@ type Query {
   productVariant(id: ID!): ProductVariant!
   productVariants(filter: ProductVariantFilter, limit: Int! = 25, offset: Int! = 0, product: ID!, search: String, sort: [ProductVariantSort!]! = [{direction: ASC, field: position}]): PaginatedProductVariants!
   products(filter: ProductFilter, limit: Int! = 25, offset: Int! = 0, search: String, sort: [ProductSort!]! = [{direction: ASC, field: createdAt}]): PaginatedProducts!
+  productsByIds(ids: [ID!]!): [Product!]!
   redirect(id: ID!): Redirect!
   redirectBySource(scope: RedirectScopeInput!, source: String!, sourceType: RedirectSourceType!): Redirect
   redirectSourceAvailable(scope: RedirectScopeInput!, source: String!): Boolean!

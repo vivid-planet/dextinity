@@ -11,6 +11,7 @@ import {
 } from "@dextinity/site-nextjs";
 import type { LinkBlockData } from "@src/blocks.generated";
 import { NewsLinkBlock } from "@src/news/blocks/NewsLinkBlock";
+import { ProductLinkBlock } from "@src/products/blocks/ProductLinkBlock";
 import type { AnchorHTMLAttributes, PropsWithChildren } from "react";
 
 import { InternalLinkBlock } from "./InternalLinkBlock";
@@ -34,6 +35,11 @@ export const LinkBlock = withPreview(
                 <NewsLinkBlock data={props} {...anchorProps}>
                     {children}
                 </NewsLinkBlock>
+            ),
+            product: ({ children, ...props }) => (
+                <ProductLinkBlock data={props} {...anchorProps}>
+                    {children}
+                </ProductLinkBlock>
             ),
             damFileDownload: ({ children, ...props }) => (
                 <DamFileDownloadLinkBlock data={props} {...anchorProps}>

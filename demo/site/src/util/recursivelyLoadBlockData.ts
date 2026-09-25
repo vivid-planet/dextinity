@@ -3,6 +3,8 @@ import type { AllBlockNames } from "@src/blocks.generated";
 import { loader as pageTreeIndexLoader } from "@src/common/blocks/PageTreeIndexBlock.loader";
 import { loader as newsDetailLoader } from "@src/news/blocks/NewsDetailBlock.loader";
 import { loader as newsListLoader } from "@src/news/blocks/NewsListBlock.loader";
+import { loader as productDetailLoader } from "@src/products/blocks/ProductDetailBlock.loader";
+import { loader as productListLoader } from "@src/products/blocks/ProductListBlock.loader";
 import { loader as productTeaserLoader } from "@src/products/blocks/ProductTeaserBlock.loader";
 import type { ContentScope } from "@src/site-configs";
 
@@ -18,6 +20,8 @@ const blockLoaders: Partial<Record<AllBlockNames, BlockLoader>> = {
     NewsList: newsListLoader,
     PageTreeIndex: pageTreeIndexLoader,
     ProductTeaser: productTeaserLoader,
+    ProductList: productListLoader,
+    ProductDetail: productDetailLoader,
 };
 
 //small wrapper for @dextinity/site-nextjs recursivelyLoadBlockData that injects blockMeta from block-meta.json

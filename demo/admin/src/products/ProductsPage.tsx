@@ -17,6 +17,7 @@ import {
     useStackSwitch,
 } from "@comet/admin";
 import { ActionLogButton, ContentScopeIndicator } from "@comet/cms-admin";
+import type { GQLQuery } from "@src/graphql.generated";
 import { useIntl } from "react-intl";
 
 import { ProductForm } from "./ProductForm";
@@ -31,7 +32,7 @@ const FormToolbar = ({ id }: { id?: string }) => (
         <ToolbarAutomaticTitleItem />
         <FillSpace />
         <ToolbarActions>
-            {id && <ActionLogButton id={id} rootField="product" />}
+            {id && <ActionLogButton<GQLQuery> entityId={id} queryName="productActionLogs" />}
             <SaveBoundarySaveButton />
         </ToolbarActions>
     </StackToolbar>

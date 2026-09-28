@@ -3,8 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ActionLogButton } from "../ActionLogButton";
 
 type ActionLogButtonStoryArgs = {
-    id: string;
-    rootField: string;
+    entityId: string;
+    queryName: string;
     name?: string;
 };
 
@@ -15,8 +15,8 @@ const meta: Meta<ActionLogButtonStoryArgs> = {
     tags: ["!autodocs"],
     title: "actionLog/actionLog/actionLogButton/ActionLogButton",
     args: {
-        id: "550e8400-e29b-41d4-a716-446655440000",
-        rootField: "manufacturer",
+        entityId: "550e8400-e29b-41d4-a716-446655440000",
+        queryName: "manufacturerActionLogs",
         name: "My Page",
     },
 };

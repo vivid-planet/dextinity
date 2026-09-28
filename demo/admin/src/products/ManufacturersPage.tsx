@@ -12,6 +12,7 @@ import {
     ToolbarBackButton,
 } from "@comet/admin";
 import { ActionLogButton, ContentScopeIndicator } from "@comet/cms-admin";
+import type { GQLQuery } from "@src/graphql.generated";
 import { ManufacturerForm } from "@src/products/ManufacturerForm";
 import { ManufacturersGrid } from "@src/products/ManufacturersGrid";
 import { useIntl } from "react-intl";
@@ -22,7 +23,7 @@ const FormToolbar = ({ id }: { id?: string }) => (
         <ToolbarAutomaticTitleItem />
         <FillSpace />
         <ToolbarActions>
-            {id && <ActionLogButton id={id} rootField="manufacturer" />}
+            {id && <ActionLogButton<GQLQuery> entityId={id} queryName="manufacturerActionLogs" />}
             <SaveBoundarySaveButton />
         </ToolbarActions>
     </StackToolbar>

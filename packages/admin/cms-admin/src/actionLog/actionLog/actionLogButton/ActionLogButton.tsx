@@ -3,18 +3,17 @@ import { Time } from "@comet/admin-icons";
 import { type PropsWithChildren, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
-import { ActionLogDialog } from "../actionLogDialog/ActionLogDialog";
+import { ActionLogDialog, type ActionLogQueryName } from "../actionLogDialog/ActionLogDialog";
 
 type ActionLogButtonProps<TQuery> = PropsWithChildren<
     Omit<ButtonProps, "onClick" | "children"> & {
-        id: string;
+        entityId: string;
         /**
-         * GraphQL root field exposing the entity (e.g. "manufacturer", "product").
-         * The entity must expose `actionLog(id)` and `actionLogs(offset, limit, sort)` via `@ActionLogs()`.
+         * Name of the top-level entity-scoped action log query field (e.g. `"newsActionLogs"`).
          *
-         * Pass your app's `GQLQuery` as the generic to constrain this to entities decorated with `@ActionLogs()`.
+         * Pass your app's `GQLQuery` as the generic to constrain this to a real action log query name.
          */
-        rootField: Parameters<typeof ActionLogDialog<TQuery>>[0]["rootField"];
+        queryName: ActionLogQueryName<TQuery>;
         /**
          * Latest name of the entity, displayed in titles.
          */
@@ -23,8 +22,8 @@ type ActionLogButtonProps<TQuery> = PropsWithChildren<
 >;
 
 export function ActionLogButton<TQuery = Record<string, unknown>>({
-    id,
-    rootField,
+    entityId,
+    queryName,
     name,
     children,
     startIcon = <Time />,
@@ -38,7 +37,7 @@ export function ActionLogButton<TQuery = Record<string, unknown>>({
             <Button {...restProps} variant={variant} startIcon={startIcon} onClick={() => setOpen(true)}>
                 {children ?? <FormattedMessage id="comet.actionLogButton.title" defaultMessage="Action Log" />}
             </Button>
-            <ActionLogDialog<TQuery> id={id} rootField={rootField} name={name} open={open} onClose={() => setOpen(false)} />
+            <ActionLogDialog<TQuery> entityId={entityId} queryName={queryName} name={name} open={open} onClose={() => setOpen(false)} />
         </>
     );
 }

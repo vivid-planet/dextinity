@@ -1,6 +1,6 @@
-import { ExtractBlockInputFactoryProps } from "@comet/cms-api";
-import { faker } from "@faker-js/faker";
+import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
+import { faker } from "@src/db/fixtures/faker";
 import { StandaloneRichTextBlockFixtureService } from "@src/db/fixtures/generators/blocks/text-and-content/standalone-rich-text-block-fixture.service";
 import { ColumnsBlock, ColumnsContentBlock } from "@src/documents/pages/blocks/columns.block";
 

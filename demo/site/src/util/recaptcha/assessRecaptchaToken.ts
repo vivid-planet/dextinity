@@ -2,7 +2,7 @@ import { recaptchaClient, recaptchaResourceName } from "./recaptchaClient";
 
 interface Options {
     token: string;
-    action: "form_submit";
+    action: "form_submit" | "file_upload";
     siteKey: string;
     minimalRiskAnalysisScore?: number;
 }

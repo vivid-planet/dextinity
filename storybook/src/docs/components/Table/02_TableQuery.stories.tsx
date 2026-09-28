@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { type SortDirection, Table, TableQuery, useTableQuery } from "@comet/admin";
+import { type SortDirection, Table, TableQuery, useTableQuery } from "@dextinity/admin";
 
 import { apolloRestStoryDecorator } from "../../../apollo-rest-story.decorator";
 

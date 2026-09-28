@@ -4,7 +4,7 @@ import opentelemetry from "@opentelemetry/api";
 import { type Block, type BlockDataInterface, isBlockInputInterface, transformToBlockSave, type TraversableTransformBlockResponse } from "./block";
 import { transformToBlockSaveIndex } from "./transformToBlockSaveIndex/transformToBlockSaveIndex";
 
-const tracer = opentelemetry.trace.getTracer("@comet/cms-api");
+const tracer = opentelemetry.trace.getTracer("@dextinity/cms-api");
 
 export class RootBlockType extends Type<BlockDataInterface | null, TraversableTransformBlockResponse | null> {
     public block: Block;

@@ -9,6 +9,28 @@ export interface ExcelGenerationOptions {
     styling?: (worksheet: Excel.Worksheet) => void;
 }
 
+function resolveSingleSelectValueOptionLabel<Row extends GridValidRowModel>(column: GridColDef<Row>, row: Row, value: unknown) {
+    if (column.type !== "singleSelect" || column.valueOptions == null) {
+        return value;
+    }
+
+    const valueOptions =
+        typeof column.valueOptions === "function" ? column.valueOptions({ field: column.field, id: row.id, row }) : column.valueOptions;
+    const matchingValueOption = valueOptions.find((valueOption) => {
+        if (typeof valueOption === "object") {
+            return valueOption.value === value;
+        }
+
+        return valueOption === value;
+    });
+
+    if (matchingValueOption == null || typeof matchingValueOption !== "object") {
+        return matchingValueOption ?? value;
+    }
+
+    return matchingValueOption.label;
+}
+
 export function generateExcelFile<Row extends GridValidRowModel>(
     columns: Array<GridColDef<Row>>,
     data: Row[],
@@ -51,6 +73,8 @@ export function generateExcelFile<Row extends GridValidRowModel>(
                     if (column.valueFormatter) {
                         // @ts-expect-error `valueFormatter` requires more data but we don't have all that data available so we only pass in what we have and hope nothing breaks
                         value = column.valueFormatter(value, row) ?? "";
+                    } else {
+                        value = resolveSingleSelectValueOptionLabel(column, row, value);
                     }
 
                     if (

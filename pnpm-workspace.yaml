@@ -7,3 +7,24 @@ packages:
 autoInstallPeers: false
 dedupePeerDependents: true
 strictPeerDependencies: true
+
+peerDependencyRules:
+    allowedVersions:
+        react-final-form>react: "19"
+        react-final-form-arrays>react: "19"
+
+overrides:
+    "@apollo/server-plugin-landing-page-graphql-playground>@apollo/server": "^5.1.0"
+
+# None of these dependencies needs its build scripts to run in this repository.
+allowBuilds:
+    "@apollo/protobufjs": false
+    "@mui/x-telemetry": false
+    "@nestjs/core": false
+    "@parcel/watcher": false
+    "@swc/core": false
+    core-js: false
+    esbuild: false
+    msw: false
+    protobufjs: false
+    sharp: false

@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { Dialog, InlineAlert, useDataGridRemote, usePersistentColumnState } from "@comet/admin";
+import { Dialog, InlineAlert, useDataGridRemote, usePersistentColumnState } from "@dextinity/admin";
 import { useEffect, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 

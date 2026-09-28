@@ -10,8 +10,8 @@ import {
     ToolbarActions,
     ToolbarAutomaticTitleItem,
     ToolbarBackButton,
-} from "@comet/admin";
-import { ActionLogButton, ContentScopeIndicator } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { ActionLogButton, ContentScopeIndicator } from "@dextinity/cms-admin";
 import type { GQLQuery } from "@src/graphql.generated";
 import { ManufacturerForm } from "@src/products/ManufacturerForm";
 import { ManufacturersGrid } from "@src/products/ManufacturersGrid";

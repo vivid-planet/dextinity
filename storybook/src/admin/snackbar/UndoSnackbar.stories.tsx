@@ -1,4 +1,4 @@
-import { SnackbarProvider, UndoSnackbar, useSnackbarApi } from "@comet/admin";
+import { SnackbarProvider, UndoSnackbar, useSnackbarApi } from "@dextinity/admin";
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { type MouseEvent, useState } from "react";
 
@@ -6,8 +6,10 @@ const UndoSnackbarExample = () => {
     const [chosenOption, setChosenOption] = useState("one");
     const snackbarApi = useSnackbarApi();
 
-    const handleUndo = (prevOption: string) => {
-        setChosenOption(prevOption);
+    const handleUndo = (prevOption?: string) => {
+        if (prevOption !== undefined) {
+            setChosenOption(prevOption);
+        }
     };
 
     const handleChange = (event: MouseEvent<HTMLElement>, newOption: string) => {
@@ -34,7 +36,7 @@ const UndoSnackbarExample = () => {
 };
 
 export default {
-    title: "@comet/admin/snackbar",
+    title: "@dextinity/admin/snackbar",
 };
 
 export const _UndoSnackbar = () => {

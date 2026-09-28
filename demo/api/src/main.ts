@@ -6,7 +6,7 @@ if (process.env.TRACING == "production") {
     require("./tracing.dev");
 }
 
-import { CdnGuard, ExceptionFilter, ValidationExceptionFactory } from "@comet/cms-api";
+import { CdnGuard, ExceptionFilter, ValidationExceptionFactory } from "@dextinity/cms-api";
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import type { NestExpressApplication } from "@nestjs/platform-express";

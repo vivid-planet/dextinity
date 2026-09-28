@@ -59,12 +59,12 @@ export const CollapsibleItemMainNavigationItem = createComponentSlot(MainNavigat
 
         ${ownerState.childSelected &&
         css`
-            .CometAdminMainNavigationItem-text,
-            .CometAdminMainNavigationItem-icon {
+            .DextinityAdminMainNavigationItem-text,
+            .DextinityAdminMainNavigationItem-icon {
                 color: ${theme.palette.primary.main};
             }
 
-            .CometAdminMainNavigationItem-primary {
+            .DextinityAdminMainNavigationItem-primary {
                 ${(ownerState.level === 2 || ownerState.level === 3) &&
                 css`
                     font-weight: 600;

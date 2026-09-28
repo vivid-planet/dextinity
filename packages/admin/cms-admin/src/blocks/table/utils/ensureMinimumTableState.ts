@@ -1,9 +1,9 @@
 import { v4 as uuid } from "uuid";
 
-import type { RichTextBlock } from "../../createRichTextBlock";
 import type { TableBlockState } from "../../createTableBlock";
+import type { BlockInterface } from "../../types";
 
-export const ensureMinimumTableState = (state: TableBlockState, RichTextBlock: RichTextBlock): TableBlockState => {
+export const ensureMinimumTableState = (state: TableBlockState, RichTextBlock: BlockInterface): TableBlockState => {
     let result = state;
 
     if (result.columns.length === 0) {

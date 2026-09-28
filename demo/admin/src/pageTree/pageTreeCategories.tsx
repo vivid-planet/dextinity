@@ -1,4 +1,4 @@
-import type { AllCategories } from "@comet/cms-admin";
+import type { AllCategories } from "@dextinity/cms-admin";
 import type { GQLPageTreeNodeCategory } from "@src/graphql.generated";
 import { camelCase, kebabCase } from "change-case";
 import { FormattedMessage } from "react-intl";

@@ -1,7 +1,7 @@
-import createDOMPurify from "dompurify";
+import { createHash } from "crypto";
+import type createDOMPurify from "dompurify";
 import fs from "fs";
 import { unlink } from "fs/promises";
-import { JSDOM } from "jsdom";
 import * as mimedb from "mime-db";
 import os from "os";
 import { basename, extname } from "path";
@@ -14,6 +14,12 @@ import type { FileUploadInput } from "./file-upload.input";
 import { FILE_UPLOAD_FIELD } from "./files.constants";
 
 const pipeline = promisify(stream.pipeline);
+
+export async function calculateFileHash(filePath: string): Promise<string> {
+    const hash = createHash("md5");
+    await pipeline(fs.createReadStream(filePath), hash);
+    return hash.digest("hex");
+}
 
 export function slugifyFilename(filename: string, extension: string): string {
     const extensionWithDot = extension.startsWith(".") ? extension : `.${extension}`;
@@ -42,25 +48,37 @@ export const calculatePartialRanges = (size: number, range: string): { start: nu
     };
 };
 
-const { window } = new JSDOM("");
-const DOMPurify = createDOMPurify(window);
+let domPurify: ReturnType<typeof createDOMPurify> | undefined;
 
-// `<use>` is forbidden by DOMPurify's svg profile because it can pull in external or
-// attacker-controlled content (XSS/SSRF). Allow it only for same-document fragment references
-// (e.g. href="#id"); any other reference is dropped, which makes the SVG fail validation below.
-DOMPurify.addHook("uponSanitizeAttribute", (node, data) => {
-    if ((node as unknown as { nodeName: string }).nodeName.toLowerCase() !== "use") {
-        return;
-    }
-    if ((data.attrName === "href" || data.attrName === "xlink:href") && !data.attrValue.startsWith("#")) {
-        data.keepAttr = false;
-    }
-});
+// jsdom is heavy (~90 MB resident). It and dompurify are only used for SVG validation, so they're
+// loaded lazily — importing @dextinity/cms-api doesn't pull them into memory unless an SVG is validated.
+async function getDomPurify(): Promise<ReturnType<typeof createDOMPurify>> {
+    if (!domPurify) {
+        const [{ JSDOM }, { default: createDOMPurify }] = await Promise.all([import("jsdom"), import("dompurify")]);
+        const { window } = new JSDOM("");
+        domPurify = createDOMPurify(window);
 
-export const isValidSvg = (svg: string): boolean => {
+        // `<use>` is forbidden by DOMPurify's svg profile because it can pull in external or
+        // attacker-controlled content (XSS/SSRF). Allow it only for same-document fragment references
+        // (e.g. href="#id"); any other reference is dropped, which makes the SVG fail validation below.
+        domPurify.addHook("uponSanitizeAttribute", (node, data) => {
+            if ((node as unknown as { nodeName: string }).nodeName.toLowerCase() !== "use") {
+                return;
+            }
+            if ((data.attrName === "href" || data.attrName === "xlink:href") && !data.attrValue.startsWith("#")) {
+                data.keepAttr = false;
+            }
+        });
+    }
+    return domPurify;
+}
+
+export const isValidSvg = async (svg: string): Promise<boolean> => {
+    const domPurify = await getDomPurify();
+
     // `role` and `<use>` aren't part of DOMPurify's svg profile, so they're allowed explicitly.
     // `<use>` is additionally constrained to same-document references by the hook above.
-    DOMPurify.sanitize(svg, {
+    domPurify.sanitize(svg, {
         USE_PROFILES: { svg: true, svgFilters: true },
         WHOLE_DOCUMENT: true,
         ADD_TAGS: ["use"],
@@ -69,7 +87,7 @@ export const isValidSvg = (svg: string): boolean => {
 
     // DOMPurify strips forbidden tags (e.g. <script>) and attributes (e.g. event handlers, javascript: URLs).
     // If it had to remove anything, the SVG contained content we don't consider safe.
-    return DOMPurify.removed.length === 0;
+    return domPurify.removed.length === 0;
 };
 
 export const removeMulterTempFile = async (file: FileUploadInput) => {

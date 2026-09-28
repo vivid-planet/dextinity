@@ -1,4 +1,4 @@
-import { createCompositeBlock, createCompositeBlockSelectField } from "@comet/cms-admin";
+import { createCompositeBlock, createCompositeBlockSelectField } from "@dextinity/cms-admin";
 import type { BasicStageBlockData } from "@src/blocks.generated";
 import { CallToActionListBlock } from "@src/common/blocks/CallToActionListBlock";
 import { HeadingBlock } from "@src/common/blocks/HeadingBlock";

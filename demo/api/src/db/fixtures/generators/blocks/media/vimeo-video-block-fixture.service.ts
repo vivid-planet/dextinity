@@ -1,6 +1,6 @@
-import { ExtractBlockInputFactoryProps, VimeoVideoBlock } from "@comet/cms-api";
-import { faker } from "@faker-js/faker";
+import { ExtractBlockInputFactoryProps, VimeoVideoBlock } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
+import { faker } from "@src/db/fixtures/faker";
 
 import { PixelImageBlockFixtureService } from "./pixel-image-block-fixture.service";
 

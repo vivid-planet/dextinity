@@ -5,7 +5,7 @@ sidebar_position: 8
 
 # Authentication
 
-This page explains how users authenticate to a typical Comet Application (Admin App) using **standard OpenID Connect (OIDC)**.  
+This page explains how users authenticate to a typical Dextinity Application (Admin App) using **standard OpenID Connect (OIDC)**.  
 We rely on an [**OAuth2-Proxy**](https://oauth2-proxy.github.io/oauth2-proxy/) in front of the app. The proxy checks whether the user already has a valid session; if not, it redirects to the configured Identity Provider (IDP). After a successful login at the IDP, the proxy creates a session and forwards the request to the upstream application (e.g., the Admin App).
 
 **Key points:**

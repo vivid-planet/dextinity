@@ -1,4 +1,4 @@
-import { AffectedEntity, extractGraphqlFields, PaginatedResponseFactory, RequiredPermission, validateNotModified } from "@comet/cms-api";
+import { AffectedEntity, extractGraphqlFields, PaginatedResponseFactory, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, FindOptions, wrap } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
@@ -94,9 +94,11 @@ export function createEmailCampaignsResolver({
             scope: typeof Scope,
             @Args("input", { type: () => EmailCampaignInput }, new DynamicDtoValidationPipe(EmailCampaignInput)) input: EmailCampaignInputInterface,
         ): Promise<EmailCampaignInterface> {
+            const { brevoTargetGroups, ...restInput } = input;
             const campaign = this.repository.create({
-                ...input,
+                ...restInput,
                 scope,
+                targetGroups: brevoTargetGroups,
                 content: input.content.transformToBlockData(),
                 scheduledAt: input.scheduledAt ?? undefined,
                 sendingState: input.scheduledAt ? SendingState.SCHEDULED : SendingState.DRAFT,

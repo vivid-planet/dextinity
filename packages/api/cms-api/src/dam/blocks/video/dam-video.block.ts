@@ -4,6 +4,7 @@ import { BaseVideoBlockData, BaseVideoBlockInput } from "../../../blocks/base-vi
 import { BlockDataInterface, BlockIndexData, blockInputToData, BlockMetaField, BlockMetaFieldKind, createBlock } from "../../../blocks/block";
 import { AnnotationBlockMeta, BlockField } from "../../../blocks/decorators/field";
 import { typeSafeBlockMigrationPipe } from "../../../blocks/migrations/typeSafeBlockMigrationPipe";
+import { DamFileAiContentType } from "../../files/entities/ai-content-type.enum";
 import { FILE_ENTITY } from "../../files/entities/file.entity";
 import { DamVideoBlockTransformerService } from "./dam-video-block-transformer.service";
 import { AddPreviewImageMigration } from "./migrations/1-add-preview-image.migration";
@@ -85,6 +86,12 @@ class Meta extends AnnotationBlockMeta {
                         {
                             name: "altText",
                             kind: BlockMetaFieldKind.String,
+                            nullable: true,
+                        },
+                        {
+                            name: "aiContentType",
+                            kind: BlockMetaFieldKind.Enum,
+                            enum: Object.values(DamFileAiContentType),
                             nullable: true,
                         },
                         {

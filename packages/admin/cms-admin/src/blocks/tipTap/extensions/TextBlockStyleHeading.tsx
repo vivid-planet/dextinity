@@ -15,7 +15,7 @@ function TextBlockStyleHeadingView({ node }: ReactNodeViewProps) {
         return (
             <NodeViewWrapper>
                 <Element data-text-block-style={styleName}>
-                    <NodeViewContent />
+                    <NodeViewContent<"span"> as="span" />
                 </Element>
             </NodeViewWrapper>
         );
@@ -23,7 +23,7 @@ function TextBlockStyleHeadingView({ node }: ReactNodeViewProps) {
 
     return (
         <NodeViewWrapper as={tag}>
-            <NodeViewContent />
+            <NodeViewContent<"span"> as="span" />
         </NodeViewWrapper>
     );
 }

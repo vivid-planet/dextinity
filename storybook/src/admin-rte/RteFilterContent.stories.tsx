@@ -5,7 +5,7 @@ import {
     type IRteRef,
     makeRteApi,
     Rte,
-} from "@comet/admin-rte";
+} from "@dextinity/admin-rte";
 import { Box, Card, CardContent, Typography } from "@mui/material";
 import type { EditorState, EntityInstance } from "draft-js";
 import { useRef } from "react";
@@ -33,7 +33,7 @@ const filterEditorStateBeforeUpdate: FilterEditorStateBeforeUpdateFn = (nextStat
 };
 
 export default {
-    title: "@comet/admin-rte",
+    title: "@dextinity/admin-rte",
 };
 
 export const RteFilterContent = {

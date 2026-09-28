@@ -1,8 +1,7 @@
-import { BlocksTransformerService, filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@comet/cms-api";
-import { UpdateCampaignStatus } from "@getbrevo/brevo";
+import { BlocksTransformerService, filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@dextinity/cms-api";
+import { Brevo } from "@getbrevo/brevo";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, ObjectQuery, wrap } from "@mikro-orm/postgresql";
-import { HttpService } from "@nestjs/axios";
 import { Inject, Injectable } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 import { EmailCampaignScopeInterface } from "src/types";
@@ -16,13 +15,14 @@ import { EmailCampaignFilter } from "./dto/email-campaign.filter";
 import { EmailCampaignInterface } from "./entities/email-campaign-entity.factory";
 import { SendingState } from "./sending-state.enum";
 
+const CAMPAIGN_CONTENT_REQUEST_TIMEOUT = 5000;
+
 @Injectable()
 export class EmailCampaignsService {
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
         @InjectRepository("BrevoEmailCampaign") private readonly repository: EntityRepository<EmailCampaignInterface>,
         @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
-        private readonly httpService: HttpService,
         private readonly brevoApiCampaignService: BrevoApiCampaignsService,
         private readonly brevoApiContactsService: BrevoApiContactsService,
         private readonly entityManager: EntityManager,
@@ -55,19 +55,25 @@ export class EmailCampaignsService {
             campaignConfig = this.config.emailCampaigns.frontend;
         }
 
-        const { data: htmlContent, status } = await this.httpService.axiosRef.post(
-            campaignConfig.url,
-            { id: campaign.id, title: campaign.title, content, scope: campaign.scope },
-            {
-                headers: { "Content-Type": "application/json" },
-                auth: {
-                    username: campaignConfig.basicAuth.username,
-                    password: campaignConfig.basicAuth.password,
-                },
-            },
-        );
+        const basicAuth = Buffer.from(`${campaignConfig.basicAuth.username}:${campaignConfig.basicAuth.password}`).toString("base64");
 
-        if (!htmlContent || status !== 200) {
+        const response = await fetch(campaignConfig.url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Basic ${basicAuth}`,
+            },
+            body: JSON.stringify({ id: campaign.id, title: campaign.title, content, scope: campaign.scope }),
+            signal: AbortSignal.timeout(CAMPAIGN_CONTENT_REQUEST_TIMEOUT),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Could not generate campaign content: request failed with status code ${response.status}`);
+        }
+
+        const htmlContent = await response.text();
+
+        if (!htmlContent) {
             throw new Error("Could not generate campaign content");
         }
 
@@ -98,7 +104,7 @@ export class EmailCampaignsService {
     }
 
     async suspendEmailCampaign(campaign: EmailCampaignInterface): Promise<boolean> {
-        return this.brevoApiCampaignService.updateBrevoCampaignStatus(campaign, UpdateCampaignStatus.StatusEnum.Suspended);
+        return this.brevoApiCampaignService.updateBrevoCampaignStatus(campaign, Brevo.UpdateCampaignStatus.Status.Suspended);
     }
 
     public async loadEmailCampaignSendingStatesForEmailCampaigns(

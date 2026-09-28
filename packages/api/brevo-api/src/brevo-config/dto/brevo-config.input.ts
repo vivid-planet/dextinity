@@ -1,4 +1,4 @@
-import { PartialType } from "@comet/cms-api";
+import { PartialType } from "@dextinity/cms-api";
 import { Field, InputType, Int } from "@nestjs/graphql";
 import { IsAlphanumeric, IsEmail, IsInt, IsNotEmpty, IsString, IsUrl, Length } from "class-validator";
 

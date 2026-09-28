@@ -1,4 +1,4 @@
-import { AffectedEntity } from "@comet/cms-api";
+import { AffectedEntity } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, ID, Mutation, Resolver } from "@nestjs/graphql";
 

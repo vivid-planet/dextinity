@@ -1,9 +1,8 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { CreateRequestContext, EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { CreateRequestContext, EntityManager } from "@mikro-orm/postgresql";
 import { Command, CommandRunner } from "nest-commander";
 
 import { FileInterface } from "../files/entities/file.entity";
-import { FilesService } from "../files/files.service";
+import { DamDominantColorService } from "./dam-dominant-color.service";
 
 @Command({
     name: "cms.dam.calculateDominantImageColor",
@@ -11,8 +10,7 @@ import { FilesService } from "../files/files.service";
 })
 export class CalculateDominantImageColorCommand extends CommandRunner {
     constructor(
-        @InjectRepository("DamFile") private readonly filesRepository: EntityRepository<FileInterface>,
-        private readonly fileService: FilesService,
+        private readonly dominantColorService: DamDominantColorService,
         private readonly em: EntityManager,
     ) {
         super();
@@ -22,12 +20,12 @@ export class CalculateDominantImageColorCommand extends CommandRunner {
     async run(): Promise<void> {
         console.log("Calculate dominant color of images...");
 
-        const files = await this.filesRepository.find({ image: { $ne: null } });
+        const files = await this.em.getRepository<FileInterface>("DamFile").find({ image: { $ne: null } });
 
         console.log(`...for ${files.length} images ...`);
 
         for await (const file of files) {
-            const dominantColor = await this.fileService.calculateDominantColor(file.contentHash);
+            const dominantColor = await this.dominantColorService.calculateDominantColor(file.contentHash);
             if (file.image) {
                 if (dominantColor) {
                     console.log(`${dominantColor}, ${file.image.id}, ${file.name}`);

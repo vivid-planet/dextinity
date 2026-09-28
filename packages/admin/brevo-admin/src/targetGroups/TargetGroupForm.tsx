@@ -15,9 +15,9 @@ import {
     ToolbarTitleItem,
     useFormApiRef,
     useStackApi,
-} from "@comet/admin";
-import { ArrowLeft } from "@comet/admin-icons";
-import { type ContentScope, ContentScopeIndicator, queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { ArrowLeft } from "@dextinity/admin-icons";
+import { type ContentScope, ContentScopeIndicator, queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import type { FormApi } from "final-form";
 import { FormattedMessage } from "react-intl";
@@ -129,7 +129,7 @@ export function TargetGroupForm({ id, scope, additionalFormFields, input2State, 
                             </IconButton>
                         </ToolbarItem>
                         <ToolbarTitleItem>
-                            <FormattedMessage id="cometBrevoModule.targetGroups.TargetGroup" defaultMessage="Target group" />
+                            <FormattedMessage id="dextinity.targetGroups.TargetGroup" defaultMessage="Target group" />
                         </ToolbarTitleItem>
                         <ToolbarFillSpace />
                         <ToolbarActions>
@@ -142,14 +142,14 @@ export function TargetGroupForm({ id, scope, additionalFormFields, input2State, 
                             fullWidth
                             name="title"
                             component={FinalFormInput}
-                            label={<FormattedMessage id="cometBrevoModule.targetGroup.title" defaultMessage="Title" />}
+                            label={<FormattedMessage id="dextinity.targetGroup.title" defaultMessage="Title" />}
                         />
                         {additionalFormFields && (
                             <FieldSet
-                                title={<FormattedMessage id="cometBrevoModule.targetGroup.filters" defaultMessage="Filters" />}
+                                title={<FormattedMessage id="dextinity.targetGroup.filters" defaultMessage="Filters" />}
                                 supportText={
                                     <FormattedMessage
-                                        id="cometBrevoModule.targetGroup.filters.explainText"
+                                        id="dextinity.targetGroup.filters.explainText"
                                         defaultMessage="Contacts will get assigned automatically to this target group depending on their attributes"
                                     />
                                 }
@@ -161,9 +161,7 @@ export function TargetGroupForm({ id, scope, additionalFormFields, input2State, 
 
                         <>
                             <FieldSet
-                                title={
-                                    <FormattedMessage id="cometBrevoModule.targetGroup.manuallyAddContacts" defaultMessage="Manually add contacts" />
-                                }
+                                title={<FormattedMessage id="dextinity.targetGroup.manuallyAddContacts" defaultMessage="Manually add contacts" />}
                                 initiallyExpanded
                                 disablePadding
                             >
@@ -174,9 +172,7 @@ export function TargetGroupForm({ id, scope, additionalFormFields, input2State, 
                                 />
                             </FieldSet>
                             <FieldSet
-                                title={
-                                    <FormattedMessage id="cometBrevoModule.targetGroup.allAssignedContacts" defaultMessage="All assigned contacts" />
-                                }
+                                title={<FormattedMessage id="dextinity.targetGroup.allAssignedContacts" defaultMessage="All assigned contacts" />}
                                 disablePadding
                                 initiallyExpanded={false}
                             >

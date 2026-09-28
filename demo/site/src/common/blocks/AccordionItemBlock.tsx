@@ -1,4 +1,4 @@
-import { BlocksBlock, type PropsWithData, type SupportedBlocks, usePreview, withPreview } from "@comet/site-nextjs";
+import { BlocksBlock, type PropsWithData, type SupportedBlocks, usePreview, withPreview } from "@dextinity/site-nextjs";
 import type { AccordionContentBlockData, AccordionItemBlockData } from "@src/blocks.generated";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";

@@ -21,4 +21,4 @@ alwaysApply: false
 - Pick the TTL deliberately for the content:
     - Static assets with cache-busting hashes → long TTL with `immutable`.
     - API responses → short TTL, or `no-store` when the response is per-user / sensitive.
-- In Comet, all built-in routes already set `Cache-Control` — if you add a custom route/handler, you are responsible for setting it too.
+- In Dextinity, all built-in routes already set `Cache-Control` — if you add a custom route/handler, you are responsible for setting it too.

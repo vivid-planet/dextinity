@@ -9,8 +9,8 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Add as AddIcon, Edit as EditIcon } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Add as AddIcon, Edit as EditIcon } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { DataGridPro, type GridRowOrderChangeParams, type GridSlotsComponent } from "@mui/x-data-grid-pro";
 import { useMemo } from "react";

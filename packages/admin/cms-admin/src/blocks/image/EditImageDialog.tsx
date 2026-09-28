@@ -1,8 +1,8 @@
 import "react-image-crop/dist/ReactCrop.css";
 
 import { useApolloClient } from "@apollo/client";
-import { CancelButton, Field, FormSection, messages, SaveButton } from "@comet/admin";
-import { OpenNewTab } from "@comet/admin-icons";
+import { CancelButton, Field, FormSection, messages, SaveButton } from "@dextinity/admin";
+import { OpenNewTab } from "@dextinity/admin-icons";
 import {
     Box,
     // eslint-disable-next-line no-restricted-imports
@@ -127,7 +127,7 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                                 <Grid>
                                     <Typography>
                                         <FormattedMessage
-                                            id="comet.blocks.image.edit"
+                                            id="dextinity.blocks.image.edit"
                                             defaultMessage="Edit image „{filename}”"
                                             values={{
                                                 filename: image.name,
@@ -138,7 +138,7 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                                 <Grid>
                                     <Typography>
                                         <FormattedMessage
-                                            id="comet.blocks.image.dimensions"
+                                            id="dextinity.blocks.image.dimensions"
                                             defaultMessage="{width}x{height}px"
                                             values={{
                                                 width: image.width,
@@ -147,7 +147,7 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                                         />
                                         {image.size && (
                                             <FormattedMessage
-                                                id="comet.blocks.image.size"
+                                                id="dextinity.blocks.image.size"
                                                 defaultMessage=" | {size, number, :: .00 measure-unit/digital-megabyte}"
                                                 values={{
                                                     size: image.size / 1024 / 1024,
@@ -165,14 +165,14 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                                     <>
                                         <Box padding={8} paddingTop={0}>
                                             <FormSection
-                                                title={<FormattedMessage id="comet.blocks.image.dam" defaultMessage="DAM" />}
+                                                title={<FormattedMessage id="dextinity.blocks.image.dam" defaultMessage="DAM" />}
                                                 disableMarginBottom
                                             >
                                                 <Field
                                                     name="useInheritedDamSettings"
                                                     label={
                                                         <FormattedMessage
-                                                            id="comet.blocks.image.useInheritedDamSettings"
+                                                            id="dextinity.blocks.image.useInheritedDamSettings"
                                                             defaultMessage="Use inherited DAM settings?"
                                                         />
                                                     }
@@ -187,7 +187,7 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                                             <Box padding={7} paddingTop={0}>
                                                 <>
                                                     <Typography variant="subtitle1">
-                                                        <FormattedMessage id="comet.blocks.image.damPath" defaultMessage="DAM Path: " />
+                                                        <FormattedMessage id="dextinity.blocks.image.damPath" defaultMessage="DAM Path: " />
                                                     </Typography>
                                                     <Typography mb={2}>
                                                         <DamPathLazy fileId={damFileId} />
@@ -206,7 +206,7 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                                                     }}
                                                     startIcon={<OpenNewTab />}
                                                 >
-                                                    <FormattedMessage id="comet.blocks.image.openInDam" defaultMessage="Open in DAM" />
+                                                    <FormattedMessage id="dextinity.blocks.image.openInDam" defaultMessage="Open in DAM" />
                                                 </Button>
                                             </Box>
                                         )}

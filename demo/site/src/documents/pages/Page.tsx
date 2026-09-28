@@ -1,4 +1,4 @@
-import { generateImageUrl, gql, JsonLd } from "@comet/site-nextjs";
+import { generateImageUrl, gql, JsonLd } from "@dextinity/site-nextjs";
 import { Breadcrumbs } from "@src/common/components/breadcrumbs/Breadcrumbs";
 import { breadcrumbsFragment } from "@src/common/components/breadcrumbs/Breadcrumbs.fragment";
 import type { GQLPageTreeNodeScopeInput } from "@src/graphql.generated";

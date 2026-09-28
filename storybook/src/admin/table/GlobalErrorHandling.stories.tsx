@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { Table, TableQuery, useTableQuery } from "@comet/admin";
+import { Table, TableQuery, useTableQuery } from "@dextinity/admin";
 
 import { apolloSwapiStoryDecorator } from "../../apollo-story.decorator";
 import { errorDialogStoryProviderDecorator } from "../../docs/components/ErrorHandling/ErrorDialog/error-dialog-provider.decorator";
@@ -20,7 +20,7 @@ interface QueryData {
 }
 
 export default {
-    title: "@comet/admin/table/globalErrorHandling",
+    title: "@dextinity/admin/table/globalErrorHandling",
     decorators: [apolloSwapiStoryDecorator(), errorDialogStoryProviderDecorator()],
     args: {
         query: "query StarWarsPeople {allPeople { people { id name birthYear gender homeworld{ name } } }}",

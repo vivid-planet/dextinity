@@ -1,4 +1,7 @@
-import { createTipTapRichTextBlock } from "@comet/cms-admin";
+import { RteHighlight, Tag } from "@dextinity/admin-icons";
+import { createTipTapRichTextBlock } from "@dextinity/cms-admin";
+import { ProductPriceBlock } from "@src/products/blocks/ProductPriceBlock";
+import { ProductTeaserBlock } from "@src/products/blocks/ProductTeaserBlock";
 import type { HTMLAttributes } from "react";
 import { FormattedMessage } from "react-intl";
 
@@ -6,6 +9,10 @@ import { LinkBlock } from "./LinkBlock";
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
     link: LinkBlock,
+    childBlocks: {
+        productPrice: { block: ProductPriceBlock, display: "inline" },
+        productTeaser: { block: ProductTeaserBlock, display: "block" },
+    },
     textBlockStyles: [
         {
             name: "paragraph300",
@@ -60,12 +67,14 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
         {
             name: "highlight",
             label: <FormattedMessage id="tipTapRichTextBlock.inlineStyle.highlight" defaultMessage="Highlight" />,
+            icon: RteHighlight,
             element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
         },
         {
             name: "tag",
             label: <FormattedMessage id="tipTapRichTextBlock.inlineStyle.tag" defaultMessage="Tag" />,
             appliesTo: ["paragraph"],
+            icon: Tag,
             element: (props: HTMLAttributes<HTMLElement>) => (
                 <span style={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: 4 }} {...props} />
             ),

@@ -1,4 +1,4 @@
-import { InfoFilled } from "@comet/admin-icons";
+import { InfoFilled } from "@dextinity/admin-icons";
 import { Grid } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 

@@ -1,4 +1,4 @@
-import { FieldContainer, TimePicker, TimePickerField } from "@comet/admin";
+import { FieldContainer, TimePicker, TimePickerField } from "@dextinity/admin";
 import { Grid } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
@@ -8,7 +8,7 @@ type Story = StoryObj<typeof TimePicker>;
 
 const config: Meta<typeof TimePicker> = {
     component: TimePicker,
-    title: "@comet/admin/dateTime/TimePicker",
+    title: "@dextinity/admin/dateTime/TimePicker",
 };
 export default config;
 

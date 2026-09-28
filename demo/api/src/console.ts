@@ -1,6 +1,6 @@
-import { UserPermissionsStorageService } from "@comet/cms-api";
+import { UserPermissionsStorageService } from "@dextinity/cms-api";
 import { AppModule } from "@src/app.module";
-import { SYSTEM_USER_NAME } from "@src/auth/auth.module";
+import { SYSTEM_USER_NAME } from "@src/auth/constants";
 import { useContainer } from "class-validator";
 import { CommandFactory } from "nest-commander";
 

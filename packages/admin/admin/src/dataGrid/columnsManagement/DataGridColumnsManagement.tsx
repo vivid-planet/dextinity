@@ -27,7 +27,7 @@ export type DataGridColumnsManagementProps = ThemedComponentBaseProps<{
 export type DataGridColumnsManagementClassKey = "root" | "body" | "list" | "listHeader" | "divider";
 
 export const DataGridColumnsManagement = (inProps: DataGridColumnsManagementProps) => {
-    const { sx, className, slotProps = {} } = useThemeProps({ props: inProps, name: "CometAdminDataGridColumnsManagement" });
+    const { sx, className, slotProps = {} } = useThemeProps({ props: inProps, name: "DextinityAdminDataGridColumnsManagement" });
 
     const apiRef = useGridApiContext<GridApiPro>();
     const columnVisibilityModel = useGridSelector(apiRef, gridColumnVisibilityModelSelector);
@@ -92,7 +92,7 @@ export const DataGridColumnsManagement = (inProps: DataGridColumnsManagementProp
                         <List
                             subheader={
                                 <ListHeader {...slotProps.listHeader}>
-                                    <FormattedMessage id="dataGridColumnsManagement.header.pinnedLeft" defaultMessage="Pinned left" />
+                                    <FormattedMessage id="dextinity.dataGridColumnsManagement.header.pinnedLeft" defaultMessage="Pinned left" />
                                 </ListHeader>
                             }
                             {...slotProps.list}
@@ -118,7 +118,7 @@ export const DataGridColumnsManagement = (inProps: DataGridColumnsManagementProp
                         <List
                             subheader={
                                 <ListHeader {...slotProps.listHeader}>
-                                    <FormattedMessage id="dataGridColumnsManagement.header.scrolling" defaultMessage="Scrolling" />
+                                    <FormattedMessage id="dextinity.dataGridColumnsManagement.header.scrolling" defaultMessage="Scrolling" />
                                 </ListHeader>
                             }
                             {...slotProps.list}
@@ -142,7 +142,7 @@ export const DataGridColumnsManagement = (inProps: DataGridColumnsManagementProp
                     <List
                         subheader={
                             <ListHeader {...slotProps.listHeader}>
-                                <FormattedMessage id="dataGridColumnsManagement.header.pinnedright" defaultMessage="Pinned right" />
+                                <FormattedMessage id="dextinity.dataGridColumnsManagement.header.pinnedright" defaultMessage="Pinned right" />
                             </ListHeader>
                         }
                         {...slotProps.list}
@@ -167,17 +167,17 @@ export const DataGridColumnsManagement = (inProps: DataGridColumnsManagementProp
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminDataGridColumnsManagement: DataGridColumnsManagementProps;
+        DextinityAdminDataGridColumnsManagement: DataGridColumnsManagementProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminDataGridColumnsManagement: DataGridColumnsManagementClassKey;
+        DextinityAdminDataGridColumnsManagement: DataGridColumnsManagementClassKey;
     }
 
     interface Components {
-        CometAdminDataGridColumnsManagement?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminDataGridColumnsManagement"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminDataGridColumnsManagement"];
+        DextinityAdminDataGridColumnsManagement?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminDataGridColumnsManagement"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminDataGridColumnsManagement"];
         };
     }
 }

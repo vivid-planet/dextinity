@@ -14,7 +14,7 @@ function TextBlockStyleParagraphView({ node }: ReactNodeViewProps) {
         return (
             <NodeViewWrapper>
                 <Element data-text-block-style={styleName}>
-                    <NodeViewContent />
+                    <NodeViewContent<"span"> as="span" />
                 </Element>
             </NodeViewWrapper>
         );
@@ -22,7 +22,7 @@ function TextBlockStyleParagraphView({ node }: ReactNodeViewProps) {
 
     return (
         <NodeViewWrapper as="p">
-            <NodeViewContent />
+            <NodeViewContent<"span"> as="span" />
         </NodeViewWrapper>
     );
 }

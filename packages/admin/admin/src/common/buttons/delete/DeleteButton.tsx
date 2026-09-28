@@ -1,4 +1,4 @@
-import { Delete } from "@comet/admin-icons";
+import { Delete } from "@dextinity/admin-icons";
 import type { ComponentsOverrides } from "@mui/material";
 import { type Theme, useThemeProps } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
@@ -15,7 +15,7 @@ export function DeleteButton(inProps: DeleteButtonProps) {
         children = <FormattedMessage {...messages.delete} />,
         startIcon = <Delete />,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminDeleteButton" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminDeleteButton" });
 
     return (
         <Root startIcon={startIcon} variant="destructive" {...restProps}>
@@ -31,17 +31,17 @@ const Root = createComponentSlot(Button)<DeleteButtonClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminDeleteButton: DeleteButtonClassKey;
+        DextinityAdminDeleteButton: DeleteButtonClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminDeleteButton: DeleteButtonProps;
+        DextinityAdminDeleteButton: DeleteButtonProps;
     }
 
     interface Components {
-        CometAdminDeleteButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminDeleteButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminDeleteButton"];
+        DextinityAdminDeleteButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminDeleteButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminDeleteButton"];
         };
     }
 }

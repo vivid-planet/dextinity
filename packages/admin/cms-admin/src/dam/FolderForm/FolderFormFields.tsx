@@ -1,4 +1,4 @@
-import { Field, FinalFormInput } from "@comet/admin";
+import { Field, FinalFormInput } from "@dextinity/admin";
 import { useIntl } from "react-intl";
 
 export interface FolderFormValues {
@@ -10,7 +10,7 @@ export const FolderFormFields = () => {
 
     return (
         <Field
-            label={intl.formatMessage({ id: "comet.pages.dam.name", defaultMessage: "Name" })}
+            label={intl.formatMessage({ id: "dextinity.pages.dam.name", defaultMessage: "Name" })}
             name="name"
             component={FinalFormInput}
             fullWidth

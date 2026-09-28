@@ -1,4 +1,4 @@
-import { generateResponsiveVariantCss, type ResponsiveVariantProperties } from "../../styles/generateResponsiveVariantCss.js";
+import { generateResponsiveVariantCss, type ResponsiveVariantProperties } from "../../styles/responsiveCss.js";
 import type { ButtonVariantStyles, Theme } from "../../theme/themeTypes.js";
 
 const buttonProperties: ResponsiveVariantProperties<ButtonVariantStyles> = [

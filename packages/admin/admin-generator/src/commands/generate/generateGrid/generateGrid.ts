@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { GridColDef } from "@comet/admin";
+import type { GridColDef } from "@dextinity/admin";
 import type {
     IntrospectionEnumType,
     IntrospectionField,
@@ -242,31 +242,31 @@ export function generateGrid<T extends { __typename?: string }>(
         { name: "gql", importPath: "@apollo/client" },
         { name: "useApolloClient", importPath: "@apollo/client" },
         { name: "useQuery", importPath: "@apollo/client" },
-        { name: "Button", importPath: "@comet/admin" },
-        { name: "CrudContextMenu", importPath: "@comet/admin" },
-        { name: "CrudMoreActionsMenu", importPath: "@comet/admin" },
-        { name: "DataGridToolbar", importPath: "@comet/admin" },
-        { name: "ExportApi", importPath: "@comet/admin" },
-        { name: "filterByFragment", importPath: "@comet/admin" },
-        { name: "GridFilterButton", importPath: "@comet/admin" },
-        { name: "GridCellContent", importPath: "@comet/admin" },
-        { name: "GridColDef", importPath: "@comet/admin" },
-        { name: "dataGridDateTimeColumn", importPath: "@comet/admin" },
-        { name: "dataGridDateColumn", importPath: "@comet/admin" },
-        { name: "dataGridIdColumn", importPath: "@comet/admin" },
-        { name: "dataGridManyToManyColumn", importPath: "@comet/admin" },
-        { name: "dataGridOneToManyColumn", importPath: "@comet/admin" },
-        { name: "renderStaticSelectCell", importPath: "@comet/admin" },
-        { name: "messages", importPath: "@comet/admin" },
-        { name: "muiGridFilterToGql", importPath: "@comet/admin" },
-        { name: "StackLink", importPath: "@comet/admin" },
-        { name: "useStackSwitchApi", importPath: "@comet/admin" },
-        { name: "FillSpace", importPath: "@comet/admin" },
-        { name: "Tooltip", importPath: "@comet/admin" },
-        { name: "useBufferedRowCount", importPath: "@comet/admin" },
-        { name: "useDataGridExcelExport", importPath: "@comet/admin" },
-        { name: "usePersistentColumnState", importPath: "@comet/admin" },
-        { name: "BlockPreviewContent", importPath: "@comet/cms-admin" },
+        { name: "Button", importPath: "@dextinity/admin" },
+        { name: "CrudContextMenu", importPath: "@dextinity/admin" },
+        { name: "CrudMoreActionsMenu", importPath: "@dextinity/admin" },
+        { name: "DataGridToolbar", importPath: "@dextinity/admin" },
+        { name: "ExportApi", importPath: "@dextinity/admin" },
+        { name: "filterByFragment", importPath: "@dextinity/admin" },
+        { name: "GridFilterButton", importPath: "@dextinity/admin" },
+        { name: "GridCellContent", importPath: "@dextinity/admin" },
+        { name: "GridColDef", importPath: "@dextinity/admin" },
+        { name: "dataGridDateTimeColumn", importPath: "@dextinity/admin" },
+        { name: "dataGridDateColumn", importPath: "@dextinity/admin" },
+        { name: "dataGridIdColumn", importPath: "@dextinity/admin" },
+        { name: "dataGridManyToManyColumn", importPath: "@dextinity/admin" },
+        { name: "dataGridOneToManyColumn", importPath: "@dextinity/admin" },
+        { name: "renderStaticSelectCell", importPath: "@dextinity/admin" },
+        { name: "messages", importPath: "@dextinity/admin" },
+        { name: "muiGridFilterToGql", importPath: "@dextinity/admin" },
+        { name: "StackLink", importPath: "@dextinity/admin" },
+        { name: "useStackSwitchApi", importPath: "@dextinity/admin" },
+        { name: "FillSpace", importPath: "@dextinity/admin" },
+        { name: "Tooltip", importPath: "@dextinity/admin" },
+        { name: "useBufferedRowCount", importPath: "@dextinity/admin" },
+        { name: "useDataGridExcelExport", importPath: "@dextinity/admin" },
+        { name: "usePersistentColumnState", importPath: "@dextinity/admin" },
+        { name: "BlockPreviewContent", importPath: "@dextinity/cms-admin" },
         { name: "Alert", importPath: "@mui/material" },
         { name: "Box", importPath: "@mui/material" },
         { name: "IconButton", importPath: "@mui/material" },
@@ -284,7 +284,7 @@ export function generateGrid<T extends { __typename?: string }>(
         { name: "GridSlotsComponent", importPath: muiXGridVariant.package },
         { name: "GridToolbarProps", importPath: muiXGridVariant.package },
         { name: "GridColumnHeaderTitle", importPath: muiXGridVariant.package },
-        { name: "GridToolbarQuickFilter", importPath: "@comet/admin" },
+        { name: "GridToolbarQuickFilter", importPath: "@dextinity/admin" },
         { name: "GridRowOrderChangeParams", importPath: muiXGridVariant.package },
         { name: "useMemo", importPath: "react" },
     ];
@@ -320,9 +320,9 @@ export function generateGrid<T extends { __typename?: string }>(
     const hasPaging = queryHasPaging(gridQueryType, gqlIntrospection);
 
     if (hasPaging) {
-        imports.push({ name: "useDataGridRemote", importPath: "@comet/admin" });
+        imports.push({ name: "useDataGridRemote", importPath: "@dextinity/admin" });
     } else {
-        imports.push({ name: "useDataGridUrlState", importPath: "@comet/admin" });
+        imports.push({ name: "useDataGridUrlState", importPath: "@dextinity/admin" });
     }
 
     const updateMutationType = findMutationType(`update${gqlType}`, gqlIntrospection);
@@ -379,7 +379,7 @@ export function generateGrid<T extends { __typename?: string }>(
         }
     }
     if (useScopeFromContext) {
-        imports.push({ name: "useContentScope", importPath: "@comet/cms-admin" });
+        imports.push({ name: "useContentScope", importPath: "@dextinity/cms-admin" });
     }
 
     const renderToolbar = config.toolbar ?? true;
@@ -414,7 +414,7 @@ export function generateGrid<T extends { __typename?: string }>(
     const hasSort = !!sortArg;
     let sortFields: string[] = [];
     if (sortArg) {
-        imports.push({ name: "muiGridSortToGql", importPath: "@comet/admin" });
+        imports.push({ name: "muiGridSortToGql", importPath: "@dextinity/admin" });
         let sortArgType = sortArg.type;
         if (sortArgType.kind === "NON_NULL") {
             sortArgType = sortArgType.ofType;
@@ -681,7 +681,7 @@ export function generateGrid<T extends { __typename?: string }>(
     iconsToImport.forEach((icon) => {
         imports.push({
             name: `${icon} as ${icon}Icon`,
-            importPath: "@comet/admin-icons",
+            importPath: "@dextinity/admin-icons",
         });
     });
 

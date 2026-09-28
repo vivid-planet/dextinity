@@ -108,14 +108,14 @@ export class UserResolver {
         return false;
     }
 
-    @ResolveField(() => Int)
-    async permissionsCount(@Parent() user: UserPermissionsUser): Promise<number> {
-        return (await this.userService.getPermissions(user)).length;
+    @ResolveField(() => Int, { deprecationReason: "The Permissions column was removed from the users list. Will be removed in the next version." })
+    permissionsCount(): number {
+        return 0;
     }
 
-    @ResolveField(() => Int)
-    async contentScopesCount(@Parent() user: UserPermissionsUser): Promise<number> {
-        return (await this.userService.getContentScopes(user)).length;
+    @ResolveField(() => Int, { deprecationReason: "The Scopes column was removed from the users list. Will be removed in the next version." })
+    contentScopesCount(): number {
+        return 0;
     }
 
     @ResolveField(() => Boolean)

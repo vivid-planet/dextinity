@@ -1,11 +1,12 @@
 "use client";
-import { type PropsWithData, withPreview } from "@comet/site-nextjs";
+import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { BasicStageBlockData } from "@src/blocks.generated";
 import { CallToActionListBlock } from "@src/common/blocks/CallToActionListBlock";
 import { HeadingBlock } from "@src/common/blocks/HeadingBlock";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { PageLayout } from "@src/layout/PageLayout";
+import { AnimateBoxInOnLoad } from "@src/util/animations/AnimateBoxInOnLoad";
 
 import styles from "./BasicStageBlock.module.scss";
 
@@ -27,9 +28,15 @@ export const BasicStageBlock = withPreview(
             <div className={styles.imageOverlay} style={{ opacity: `${overlay}%` }} />
             <PageLayout className={styles.absoluteGridRoot} grid>
                 <div className={styles.content} style={{ alignItems: alignment }}>
-                    <HeadingBlock data={heading} />
-                    <RichTextBlock data={text} />
-                    <CallToActionListBlock data={callToActionList} />
+                    <AnimateBoxInOnLoad direction="bottom">
+                        <HeadingBlock data={heading} />
+                    </AnimateBoxInOnLoad>
+                    <AnimateBoxInOnLoad direction="bottom" delay={150}>
+                        <RichTextBlock data={text} />
+                    </AnimateBoxInOnLoad>
+                    <AnimateBoxInOnLoad direction="bottom" delay={300}>
+                        <CallToActionListBlock data={callToActionList} />
+                    </AnimateBoxInOnLoad>
                 </div>
             </PageLayout>
         </div>

@@ -29,7 +29,7 @@ export const TableLocalChangesToolbar = ({ tableLocalChangesApi, localChangesCou
                     <SaveButton onClick={handleSaveClick} />
                     <FormattedMessage
                         values={{ count: localChangesCount }}
-                        id="comet.table.localChangesToolbar.unsavedItems"
+                        id="dextinity.table.localChangesToolbar.unsavedItems"
                         defaultMessage="{count, plural, =0 {No unsaved changes} one {# unsaved change} other {# unsaved changes}}"
                     />
                 </>

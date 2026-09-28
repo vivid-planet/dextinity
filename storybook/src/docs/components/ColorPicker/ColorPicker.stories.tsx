@@ -1,6 +1,6 @@
-import { Field, FieldContainer } from "@comet/admin";
-import { ColorPicker, type ColorPickerColorPreviewProps, FinalFormColorPicker } from "@comet/admin-color-picker";
-import { StateFilled, StateRing, Warning } from "@comet/admin-icons";
+import { Field, FieldContainer } from "@dextinity/admin";
+import { ColorPicker, type ColorPickerColorPreviewProps, FinalFormColorPicker } from "@dextinity/admin-color-picker";
+import { StateFilled, StateRing, Warning } from "@dextinity/admin-icons";
 import { Grid } from "@mui/material";
 import { useState } from "react";
 import { Form } from "react-final-form";

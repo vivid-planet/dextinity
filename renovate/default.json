@@ -3,6 +3,7 @@
     "extends": ["config:recommended", ":semanticCommitsDisabled"],
     "minimumReleaseAge": "3 days",
     "internalChecksFilter": "strict",
+    "recreateWhen": "never",
     "packageRules": [
         {
             "groupName": "babel",
@@ -49,10 +50,6 @@
             "groupName": "Final Form",
             "matchPackageNames": ["/final-form/", "/react-final-form/"],
             "enabled": false
-        },
-        {
-            "groupName": "React Router",
-            "matchPackageNames": ["/^react-router/"]
         },
         {
             "matchPackageNames": ["@graphql-codegen/*"],

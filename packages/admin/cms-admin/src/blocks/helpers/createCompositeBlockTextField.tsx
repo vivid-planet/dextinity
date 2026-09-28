@@ -1,4 +1,4 @@
-import { TextField, type TextFieldProps } from "@comet/admin";
+import { TextField, type TextFieldProps } from "@dextinity/admin";
 
 import { BlocksFinalForm } from "../form/BlocksFinalForm";
 import type { BlockMethods } from "../types";

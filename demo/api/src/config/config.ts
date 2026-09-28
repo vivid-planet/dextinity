@@ -1,4 +1,4 @@
-import cometConfig from "@src/comet-config.json";
+import dextinityConfig from "@src/dextinity-config.json";
 import { plainToClass } from "class-transformer";
 import { validateSync } from "class-validator";
 
@@ -25,7 +25,7 @@ export function createConfig(processEnv: NodeJS.ProcessEnv) {
     }
 
     return {
-        ...cometConfig,
+        ...dextinityConfig,
         debug: envVars.NODE_ENV !== "production",
         serverHost: envVars.SERVER_HOST ?? "localhost",
         helmRelease: envVars.HELM_RELEASE,
@@ -42,16 +42,16 @@ export function createConfig(processEnv: NodeJS.ProcessEnv) {
             postLogoutRedirectUri: envVars.POST_LOGOUT_REDIRECT_URI,
         },
         imgproxy: {
-            ...cometConfig.imgproxy,
+            ...dextinityConfig.imgproxy,
             salt: envVars.IMGPROXY_SALT,
             url: envVars.IMGPROXY_URL,
             key: envVars.IMGPROXY_KEY,
         },
         contentGeneration,
         dam: {
-            ...cometConfig.dam,
+            ...dextinityConfig.dam,
             secret: envVars.DAM_SECRET,
-            allowedImageSizes: [...cometConfig.images.imageSizes, ...cometConfig.images.deviceSizes],
+            allowedImageSizes: [...dextinityConfig.images.imageSizes, ...dextinityConfig.images.deviceSizes],
         },
         azureAiTranslator:
             envVars.AZURE_AI_TRANSLATOR_ENDPOINT && envVars.AZURE_AI_TRANSLATOR_KEY && envVars.AZURE_AI_TRANSLATOR_REGION
@@ -84,7 +84,7 @@ export function createConfig(processEnv: NodeJS.ProcessEnv) {
             storageDirectoryPrefix: envVars.BLOB_STORAGE_DIRECTORY_PREFIX,
         },
         mailer: {
-            defaultFrom: '"Comet Demo" <comet-demo@comet-dxp.com>',
+            defaultFrom: '"Dextinity Demo" <dextinity-demo@dextinity.com>',
             sendAllMailsTo: envVars.MAILER_SEND_ALL_MAILS_TO,
             sendAllMailsBcc: envVars.MAILER_SEND_ALL_MAILS_BCC,
 
@@ -106,7 +106,7 @@ export function createConfig(processEnv: NodeJS.ProcessEnv) {
                   }
                 : undefined,
         fileUploads: {
-            ...cometConfig.fileUploads,
+            ...dextinityConfig.fileUploads,
             download: {
                 secret: envVars.FILE_UPLOADS_DOWNLOAD_SECRET,
             },

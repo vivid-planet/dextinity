@@ -25,14 +25,14 @@ decorator. The usage of both decorators is the same.
 
 ### `@CrudGenerator()` options
 
-| Parameter            | Type                          | Default     | Description                                                                           |
-| -------------------- | ----------------------------- | ----------- | ------------------------------------------------------------------------------------- |
-| `requiredPermission` | `string[] \| string`          | Required    | Permission(s) required to access the CRUD operations.                                 |
-| `create`             | `boolean`                     | `true`      | If `true`, includes the "create" operation.                                           |
-| `update`             | `boolean`                     | `true`      | If `true`, includes the "update" operation.                                           |
-| `delete`             | `boolean`                     | `true`      | If `true`, includes the "delete" operation.                                           |
-| `list`               | `boolean`                     | `true`      | If `true`, includes the "list" operation.                                             |
-| `position`           | `object`                      | `undefined` | Configures the optional [magic `position` field](#position).                          |
+| Parameter            | Type                                           | Default     | Description                                                                                                          |
+| -------------------- | ---------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------- |
+| `requiredPermission` | `string[] \| string`                           | Required    | Permission(s) required to access the CRUD operations.                                                                |
+| `create`             | `boolean`                                      | `true`      | If `true`, includes the "create" operation.                                                                          |
+| `update`             | `boolean`                                      | `true`      | If `true`, includes the "update" operation.                                                                          |
+| `delete`             | `boolean`                                      | `true`      | If `true`, includes the "delete" operation.                                                                          |
+| `list`               | `boolean`                                      | `true`      | If `true`, includes the "list" operation.                                                                            |
+| `position`           | `object`                                       | `undefined` | Configures the optional [magic `position` field](#position).                                                         |
 | `hooksService`       | `class implementing CrudGeneratorHooksService` | `undefined` | An optional service class for injecting custom validation logic into mutations. See [Hooks Service](#hooks-service). |
 
 ## Annotate field
@@ -71,7 +71,7 @@ If it's still missing, you can add it to `api/package.json`:
 {
   ...
   "scripts": {
-    "api-generator": "rimraf --glob 'src/**/generated' && comet-api-generator generate",
+    "api-generator": "rimraf --glob 'src/**/generated' && dextinity-api-generator generate",
     ...
   }
 }
@@ -91,7 +91,7 @@ The api-generator script also supports the `-w` or `--watch` flag. This will wat
 {
   ...
   "scripts": {
-    "api-generator:watch": "rimraf 'src/*/generated' && comet-api-generator --watch",
+    "api-generator:watch": "rimraf 'src/*/generated' && dextinity-api-generator --watch",
     ...
   }
 }
@@ -102,7 +102,7 @@ The api-generator script also supports the `-w` or `--watch` flag. This will wat
 If you want to generate only for specific entities, you can pass a file path to an .entity.ts file with the `-f` or `--file` flag
 
 ```sh
-npm exec comet-api-generator -f src/products/entities/product.entity.ts
+npm exec dextinity-api-generator -f src/products/entities/product.entity.ts
 ```
 
 ## Register generated resolvers and services
@@ -172,7 +172,7 @@ A `status` field lets you filter items by status in the list query.
 
 ### scope
 
-The API generator treats a `scope` as a [COMET content scope](/docs/core-concepts/content-scope/). A `scope` arg is added to the list
+The API generator treats a `scope` as a [Dextinity content scope](/docs/core-concepts/content-scope/). A `scope` arg is added to the list
 and create operations, ensuring the [scope check](/docs/core-concepts/user-permissions/access-control/#scope-check) can be made.
 
 If no `scope` field is present, the scope check is skipped for all operations.
@@ -278,7 +278,7 @@ Create a class that implements `CrudGeneratorHooksService` and define the hooks 
 
 ```ts
 // products/product.service.ts
-import { CrudGeneratorHooksService, CurrentUser, MutationError } from "@comet/cms-api";
+import { CrudGeneratorHooksService, CurrentUser, MutationError } from "@dextinity/cms-api";
 import { Field, ObjectType, registerEnumType } from "@nestjs/graphql";
 import { ProductInput } from "./generated/dto/product.input";
 
@@ -297,7 +297,10 @@ export class ProductMutationError implements MutationError {
 }
 
 export class ProductService implements CrudGeneratorHooksService {
-    async validateCreateInput(input: ProductInput, options: { currentUser: CurrentUser }): Promise<ProductMutationError[]> {
+    async validateCreateInput(
+        input: ProductInput,
+        options: { currentUser: CurrentUser },
+    ): Promise<ProductMutationError[]> {
         if (input.title.length < 3) {
             return [{ code: ProductMutationErrorCode.titleTooShort, field: "title" }];
         }
@@ -310,10 +313,10 @@ The API Generator inspects the hooks service using ts-morph at generation time t
 
 #### Available hooks and their options
 
-| Hook                  | Available options                                   | Description                                |
-| --------------------- | --------------------------------------------------- | ------------------------------------------ |
-| `validateCreateInput` | `currentUser`, `scope` (if entity has scope), `args` (for each dedicated resolver arg) | Called before a new entity is persisted.  |
-| `validateUpdateInput` | `currentUser`, `entity` (the existing entity)       | Called before an existing entity is updated. |
+| Hook                  | Available options                                                                      | Description                                  |
+| --------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `validateCreateInput` | `currentUser`, `scope` (if entity has scope), `args` (for each dedicated resolver arg) | Called before a new entity is persisted.     |
+| `validateUpdateInput` | `currentUser`, `entity` (the existing entity)                                          | Called before an existing entity is updated. |
 
 Each hook returns `Promise<MutationError[]>`. Return an empty array when validation passes.
 
@@ -386,7 +389,7 @@ renamed:    demo/api/src/products/generated/dto/product.sort.ts         -> demo/
 3. Remove the comments at the start of each generated file
 
 ```diff
-- // This file has been generated by comet api-generator.
+- // This file has been generated by Dextinity API Generator.
 - // You may choose to use this file as scaffold by moving this file out of generated folder and removing this comment.
 
 // ...

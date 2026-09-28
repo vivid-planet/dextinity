@@ -1,7 +1,7 @@
 "use client";
 
+import { deepEqual } from "fast-equals";
 import { decodeJwt } from "jose";
-import isEqual from "lodash.isequal";
 import { createContext, type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 
@@ -98,19 +98,25 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
     const [previewElementsData, setPreviewElementsData] = useState<OverlayElementData[]>([]);
 
     const childrenWrapperRef = useRef<HTMLDivElement>(null);
-    const childrenWrapperWidth = childrenWrapperRef.current?.offsetWidth;
 
     const recalculatePreviewElementsData = useCallback(() => {
-        if (!childrenWrapperWidth) {
+        const childrenWrapper = childrenWrapperRef.current;
+
+        if (!childrenWrapper?.offsetWidth) {
             return;
         }
+
+        // The comparisons below are in document coordinates, so they need the wrapper's right edge in those coordinates, not its width,
+        // which is that edge only while the wrapper starts at `x = 0`. Measured here and not during render because the observers recompute
+        // without a render in between.
+        const childrenWrapperRight = childrenWrapper.getBoundingClientRect().right + window.scrollX;
 
         const newPreviewElementsData = previewElements
             .map((previewElement) => {
                 const childNodes = getRecursiveChildrenOfPreviewElement(previewElement.element);
                 const positioning = getCombinedPositioningOfElements(childNodes);
 
-                const isRenderedOutsideOfViewportWidth = positioning.left > childrenWrapperWidth;
+                const isRenderedOutsideOfViewportWidth = positioning.left > childrenWrapperRight;
 
                 if (isRenderedOutsideOfViewportWidth) {
                     // TODO: Simply return `null` here after updating to typescript 5+
@@ -126,7 +132,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
                     };
                 }
 
-                const spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport = positioning.left + positioning.width - childrenWrapperWidth;
+                const spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport = positioning.left + positioning.width - childrenWrapperRight;
                 const tooWideForPreviewViewportByPixels =
                     spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport > 0 ? spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport : 0;
 
@@ -158,7 +164,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
             });
 
         setPreviewElementsData((previousElementsData) => {
-            const dataDidNotChange = isEqual(previousElementsData, newPreviewElementsData);
+            const dataDidNotChange = deepEqual(previousElementsData, newPreviewElementsData);
 
             if (dataDidNotChange) {
                 // Returning the previous object (same reference) prevents the state-update from triggering a re-render
@@ -167,7 +173,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
 
             return newPreviewElementsData;
         });
-    }, [previewElements, childrenWrapperWidth]);
+    }, [previewElements]);
 
     useEffect(() => {
         if (childrenWrapperRef.current) {
@@ -211,7 +217,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
 
     const onReceiveMessage = useCallback(
         (message: AdminMessage) => {
-            switch (message.cometType) {
+            switch (message.dextinityType) {
                 case AdminMessageType.Block:
                     setBlock(message.data.block);
                     break;
@@ -252,7 +258,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
                 const message = JSON.parse(e.data);
                 // Check if message is an iframe message from us -> there are more messaging from e.g webpack,etc.
                 // eslint-disable-next-line no-prototype-builtins
-                if (message.hasOwnProperty("cometType")) {
+                if (message.hasOwnProperty("dextinityType")) {
                     onReceiveMessage(message as AdminMessage);
                 }
             } catch {
@@ -262,7 +268,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
 
         window.addEventListener("message", handleMessage, false);
 
-        sendMessage({ cometType: IFrameMessageType.Ready });
+        sendMessage({ dextinityType: IFrameMessageType.Ready });
 
         return () => {
             window.removeEventListener("message", handleMessage, false);
@@ -293,10 +299,10 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
             hoveredAdminRoute,
             sendSelectComponent: (adminRoute: string) => {
                 setSelectedAdminRoute(adminRoute);
-                sendMessage({ cometType: IFrameMessageType.SelectComponent, data: { adminRoute } });
+                sendMessage({ dextinityType: IFrameMessageType.SelectComponent, data: { adminRoute } });
             },
             sendHoverComponent: (route: string | null) => {
-                sendMessage({ cometType: IFrameMessageType.HoverComponent, data: { route } });
+                sendMessage({ dextinityType: IFrameMessageType.HoverComponent, data: { route } });
             },
             sendMessage,
             contentScope,

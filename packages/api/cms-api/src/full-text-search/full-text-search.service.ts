@@ -31,10 +31,9 @@ export class FullTextSearchService {
 
             if (typeof entityInfo === "string" || isEntityInfoSql(entityInfo)) {
                 if (pageTreeFullText && targetEntity.metadata.tableName === "PageTreeNode") {
-                    const permissionMetadata = Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, targetEntity.entity) as
-                        | RequiredPermissionMetadata
-                        | undefined;
-                    const requiredPermissionSql = requiredPermissionToSql(permissionMetadata?.requiredPermission);
+                    // Page tree nodes don't carry a @RequiredPermission decorator; access is governed by the "pageTree"
+                    // permission, matching the hardcoded value used for page tree documents in the EntityInfo view.
+                    const requiredPermissionSql = requiredPermissionToSql("pageTree");
                     const scopesSql = resolveScopesToSql({ metadata: targetEntity.metadata, scopedEntity: undefined });
 
                     indexSelects.push(`SELECT "PageTreeNodeEntityInfo"."id", 'PageTreeNode' AS "entityName", "PageTreeNodeFullText"."fullText",

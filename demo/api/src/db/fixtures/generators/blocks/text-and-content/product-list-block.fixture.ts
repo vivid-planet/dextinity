@@ -1,6 +1,6 @@
-import { ExtractBlockInputFactoryProps } from "@comet/cms-api";
-import { faker } from "@faker-js/faker";
+import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
+import { faker } from "@src/db/fixtures/faker";
 import { ProductListBlock } from "@src/products/blocks/product-list.block";
 import { ProductType } from "@src/products/entities/product-type.enum";
 

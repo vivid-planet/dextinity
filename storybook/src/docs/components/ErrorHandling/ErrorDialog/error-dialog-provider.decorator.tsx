@@ -1,4 +1,4 @@
-import { ErrorDialogHandler } from "@comet/admin";
+import { ErrorDialogHandler } from "@dextinity/admin";
 import type { Decorator } from "@storybook/react-vite";
 
 export function errorDialogStoryProviderDecorator(): Decorator {

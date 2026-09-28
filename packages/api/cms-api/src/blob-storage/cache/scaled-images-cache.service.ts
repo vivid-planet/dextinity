@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import hasha from "hasha";
+import { createHash } from "crypto";
 import { sep } from "path";
 
 import { BlobStorageBackendService } from "../backends/blob-storage-backend.service";
@@ -16,7 +16,7 @@ export class ScaledImagesCacheService {
     ) {}
 
     async get(fileIdentifier: string, scaleSettingsCacheKey: string): Promise<FileCache | undefined> {
-        const path = [createHashedPath(fileIdentifier), hasha(scaleSettingsCacheKey, { algorithm: "md5" })].join(sep);
+        const path = [createHashedPath(fileIdentifier), createHash("md5").update(scaleSettingsCacheKey).digest("hex")].join(sep);
 
         if (await this.blobStorageBackendService.fileExists(this.config.cacheDirectory, path)) {
             const [file, metaData] = await Promise.all([
@@ -38,7 +38,7 @@ export class ScaledImagesCacheService {
             await this.blobStorageBackendService.createFolder(this.config.cacheDirectory);
         }
 
-        const path = [createHashedPath(fileIdentifier), hasha(scaleSettingsCacheKey, { algorithm: "md5" })].join(sep);
+        const path = [createHashedPath(fileIdentifier), createHash("md5").update(scaleSettingsCacheKey).digest("hex")].join(sep);
         await this.blobStorageBackendService.createFile(this.config.cacheDirectory, path, file, {
             size: metaData.size,
             contentType: metaData.contentType,
@@ -49,7 +49,7 @@ export class ScaledImagesCacheService {
         const fileDirectory = createHashedPath(fileIdentifier);
 
         if (scaleSettingsCacheKey) {
-            const path = [fileDirectory, hasha(scaleSettingsCacheKey, { algorithm: "md5" })].join(sep);
+            const path = [fileDirectory, createHash("md5").update(scaleSettingsCacheKey).digest("hex")].join(sep);
             try {
                 await this.blobStorageBackendService.removeFile(this.config.cacheDirectory, path);
             } catch {

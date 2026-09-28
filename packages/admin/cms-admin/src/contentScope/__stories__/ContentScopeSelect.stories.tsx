@@ -1,5 +1,5 @@
-import { AppHeader, AppHeaderMenuButton, CometLogo, FillSpace } from "@comet/admin";
-import { Domain, Language } from "@comet/admin-icons";
+import { AppHeader, AppHeaderMenuButton, FillSpace } from "@dextinity/admin";
+import { DextinityLogo, Domain, Language } from "@dextinity/admin-icons";
 import { ListItemIcon, ListItemText } from "@mui/material";
 import type { Meta } from "@storybook/react-vite";
 import { useState } from "react";
@@ -15,7 +15,7 @@ const config: Meta<typeof ContentScopeSelect> = {
         (Story) => (
             <AppHeader position="relative" headerHeight={60}>
                 <AppHeaderMenuButton />
-                <CometLogo />
+                <DextinityLogo variant="light" sx={{ fontSize: 34 }} />
                 <FillSpace />
                 <Story />
             </AppHeader>

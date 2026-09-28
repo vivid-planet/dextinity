@@ -1,4 +1,4 @@
-import { createComponentSlot } from "@comet/admin";
+import { createComponentSlot } from "@dextinity/admin";
 import { css } from "@mui/material/styles";
 
 import getRteTheme from "../../utils/getRteTheme";
@@ -15,8 +15,8 @@ export const Root = createComponentSlot("div")<RteToolbarClassKey>({
         z-index: 2;
         display: flex;
         flex-wrap: wrap;
-        border-top: 1px solid var(--comet-admin-rte-outer-border-color);
-        background-color: ${getRteTheme(theme.components?.CometAdminRte?.defaultProps).colors?.toolbarBackground};
+        border-top: 1px solid var(--dextinity-admin-rte-outer-border-color);
+        background-color: ${getRteTheme(theme.components?.DextinityAdminRte?.defaultProps).colors?.toolbarBackground};
         padding-left: 6px;
         padding-right: 6px;
         overflow: hidden;
@@ -42,7 +42,7 @@ export const Slot = createComponentSlot("div")<RteToolbarClassKey>({
         &::after {
             content: "";
             position: absolute;
-            background-color: ${getRteTheme(theme.components?.CometAdminRte?.defaultProps).colors?.border};
+            background-color: ${getRteTheme(theme.components?.DextinityAdminRte?.defaultProps).colors?.border};
         }
 
         &::before {

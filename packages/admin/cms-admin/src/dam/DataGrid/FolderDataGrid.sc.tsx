@@ -41,12 +41,12 @@ export const FolderOuterHoverHighlight = styled("div", { shouldForwardProp: (pro
     & .MuiDataGrid-row {
         transition: background-color 1s ease-in-out;
 
-        &.CometDataGridRow--highlighted {
+        &.DextinityDataGridRow--highlighted {
             background-color: ${({ theme }) => alpha(theme.palette.primary.dark, 0.4)};
         }
     }
 
-    & .MuiDataGrid-row.CometDataGridRow--inboxFolder {
+    & .MuiDataGrid-row.DextinityDataGridRow--inboxFolder {
         background-color: ${({ isHovered }) => (isHovered ? alpha(inboxFolderColor, 0.1) : alpha(inboxFolderColor, 0.05))};
 
         &:hover {

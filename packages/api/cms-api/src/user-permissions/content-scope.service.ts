@@ -1,12 +1,14 @@
-import { MikroORM } from "@mikro-orm/postgresql";
+import { EntityName, MikroORM } from "@mikro-orm/postgresql";
 import { ExecutionContext, Injectable, Optional } from "@nestjs/common";
 import { ModuleRef, Reflector } from "@nestjs/core";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import isEqual from "lodash.isequal";
+import { isUUID } from "class-validator";
 
+import { DextinityValidationException } from "../common/errors/validation.exception";
 import { PageTreeService } from "../page-tree/page-tree.service";
 import { SCOPED_ENTITY_METADATA_KEY, ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator";
 import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
+import { contentScopesAreEqual } from "./content-scopes-are-equal";
 import { AFFECTED_ENTITY_METADATA_KEY, AffectedEntityMeta } from "./decorators/affected-entity.decorator";
 import { AFFECTED_SCOPE_METADATA_KEY, AffectedScopeMeta } from "./decorators/affected-scope.decorator";
 import { getScopesForScopedEntity } from "./get-scopes-for-scoped-entity";
@@ -22,11 +24,7 @@ export class ContentScopeService {
     ) {}
 
     scopesAreEqual(scope1: ContentScope | undefined, scope2: ContentScope | undefined): boolean {
-        // The scopes are cloned because they could be
-        //   - an instance of a class (e.g. DamScope)
-        //   - or a plain object (from a GraphQL input)
-        // Then they are not deeply equal, although they represent the same scope
-        return isEqual({ ...scope1 }, { ...scope2 });
+        return contentScopesAreEqual(scope1, scope2);
     }
 
     async getScopesForPermissionCheck(context: ExecutionContext): Promise<ContentScope[][]> {
@@ -43,7 +41,12 @@ export class ContentScopeService {
         // AffectedScope
         const affectedScope = this.reflector.getAllAndOverride<AffectedScopeMeta>(AFFECTED_SCOPE_METADATA_KEY, [context.getHandler()]) || undefined;
         if (affectedScope) {
-            contentScopes.push([affectedScope.argsToScope(args) as ContentScope]);
+            const scope = affectedScope.argsToScope(args);
+            if (Array.isArray(scope)) {
+                contentScopes.push(...scope.map((s) => [s]));
+            } else {
+                contentScopes.push([scope]);
+            }
         }
 
         // Scope arg
@@ -92,7 +95,11 @@ export class ContentScopeService {
                     );
                 }
 
+                const hasUuidPrimaryKey = this.hasUuidPrimaryKey(affectedEntity.entity);
                 for (const id of ids) {
+                    if (hasUuidPrimaryKey && !isUUID(id)) {
+                        throw new DextinityValidationException(`Invalid UUID '${id}' for argument '${affectedEntity.options.idArg}' of ${location}`);
+                    }
                     const row = await repo.findOneOrFail(id, { filters: false }); // disable all default filters, e.g., excludeDeleted
                     if (row.scope) {
                         contentScopes.push([row.scope as ContentScope]);
@@ -128,6 +135,11 @@ export class ContentScopeService {
                 const id = args[affectedEntity.options.pageTreeNodeIdArg];
                 const ids = Array.isArray(id) ? id : [id];
                 for (const id of ids) {
+                    if (!isUUID(id)) {
+                        throw new DextinityValidationException(
+                            `Invalid UUID '${id}' for argument '${affectedEntity.options.pageTreeNodeIdArg}' of ${location}`,
+                        );
+                    }
                     const node = await pageTreeApi.getNode(id);
                     if (!node) {
                         throw new Error("Can't find pageTreeNode");
@@ -143,6 +155,12 @@ export class ContentScopeService {
             throw new Error("idArg or pageTreeNodeIdArg is required");
         }
         return contentScopes;
+    }
+
+    private hasUuidPrimaryKey(entity: EntityName<object>): boolean {
+        const entityName = typeof entity === "string" ? entity : entity.name;
+        const primaryProps = this.orm.em.getMetadata().get(entityName).getPrimaryProps();
+        return primaryProps.length === 1 && (primaryProps[0].type === "uuid" || (primaryProps[0].columnTypes ?? []).includes("uuid"));
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

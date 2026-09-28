@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { Field, FinalFormSelect } from "@comet/admin";
+import { Field, FinalFormSelect } from "@dextinity/admin";
 import { Divider, MenuItem } from "@mui/material";
 import { deepClone } from "@mui/x-data-grid/internals";
 import { FormattedMessage } from "react-intl";
@@ -17,7 +17,7 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockDa
 
     name: "DamFileDownloadLink",
 
-    displayName: <FormattedMessage id="comet.blocks.damFileDownloadLink" defaultMessage="CMS Asset" />,
+    displayName: <FormattedMessage id="dextinity.blocks.damFileDownloadLink" defaultMessage="CMS Asset" />,
 
     previewContent: (state) => (state.file ? [{ type: "text", content: state.file?.name }] : []),
 
@@ -121,15 +121,18 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockDa
                     <Field
                         name="openFileType"
                         fullWidth
-                        label={<FormattedMessage id="comet.blocks.damFileDownloadLink.openFileType" defaultMessage="Open file" />}
+                        label={<FormattedMessage id="dextinity.blocks.damFileDownloadLink.openFileType" defaultMessage="Open file" />}
                     >
                         {(props) => (
                             <FinalFormSelect {...props}>
                                 <MenuItem value="Download">
-                                    <FormattedMessage id="comet.blocks.damFileDownloadLink.openFileType.download" defaultMessage="as a download" />
+                                    <FormattedMessage
+                                        id="dextinity.blocks.damFileDownloadLink.openFileType.download"
+                                        defaultMessage="as a download"
+                                    />
                                 </MenuItem>
                                 <MenuItem value="NewTab">
-                                    <FormattedMessage id="comet.blocks.damFileDownloadLink.openFileType.newTab" defaultMessage="in a new tab" />
+                                    <FormattedMessage id="dextinity.blocks.damFileDownloadLink.openFileType.newTab" defaultMessage="in a new tab" />
                                 </MenuItem>
                             </FinalFormSelect>
                         )}

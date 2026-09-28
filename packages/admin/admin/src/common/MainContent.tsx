@@ -78,7 +78,7 @@ export interface MainContentProps extends ThemedComponentBaseProps {
 export function MainContent(inProps: MainContentProps) {
     const { children, fullHeight, disablePaddingTop, disablePaddingBottom, disablePadding, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminMainContent",
+        name: "DextinityAdminMainContent",
     });
 
     const mainRef = useRef<HTMLElement>(null);
@@ -99,17 +99,17 @@ export function MainContent(inProps: MainContentProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminMainContent: MainContentClassKey;
+        DextinityAdminMainContent: MainContentClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminMainContent: MainContentProps;
+        DextinityAdminMainContent: MainContentProps;
     }
 
     interface Components {
-        CometAdminMainContent?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminMainContent"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminMainContent"];
+        DextinityAdminMainContent?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminMainContent"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminMainContent"];
         };
     }
 }

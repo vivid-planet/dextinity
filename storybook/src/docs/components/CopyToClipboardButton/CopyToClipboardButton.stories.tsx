@@ -1,4 +1,4 @@
-import { CopyToClipboardButton } from "@comet/admin";
+import { CopyToClipboardButton } from "@dextinity/admin";
 import { Card, CardContent, Grid, Typography, useTheme } from "@mui/material";
 
 export default {

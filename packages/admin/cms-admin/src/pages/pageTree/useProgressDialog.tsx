@@ -1,4 +1,4 @@
-import { Button, messages } from "@comet/admin";
+import { Button, messages } from "@dextinity/admin";
 import {
     Box,
     // eslint-disable-next-line no-restricted-imports

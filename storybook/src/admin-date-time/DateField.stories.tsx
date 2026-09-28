@@ -1,11 +1,11 @@
-import { Alert, FinalForm } from "@comet/admin";
-import { DateField } from "@comet/admin-date-time";
+import { Alert, FinalForm } from "@dextinity/admin";
+import { DateField } from "@dextinity/admin-date-time";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 type Story = StoryObj<typeof DateField>;
 const config: Meta<typeof DateField> = {
     component: DateField,
-    title: "@comet/admin/form/DateField",
+    title: "@dextinity/admin/form/DateField",
     tags: ["deprecated"],
 };
 export default config;

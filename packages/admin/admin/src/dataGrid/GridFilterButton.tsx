@@ -1,4 +1,4 @@
-import { Filter } from "@comet/admin-icons";
+import { Filter } from "@dextinity/admin-icons";
 import { Chip } from "@mui/material";
 import { gridFilterModelSelector, GridPreferencePanelsValue, useGridApiContext, useGridSelector } from "@mui/x-data-grid";
 import { useCallback } from "react";

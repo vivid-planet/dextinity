@@ -6,10 +6,10 @@ The Admin Generator can also generate Form Views.
 
 ## Generate Form
 
-To generate a Form with the Admin Generator, you have to create a `.cometGen.ts` file. Those files are used by the Admin Generator to generate different kinds of interfaces (DataGrids or Forms). Create a new file `CustomerForm.cometGen.ts` in the `admin/src/customer` directory with the following content:
+To generate a Form with the Admin Generator, you have to create a `.dextinityGen.ts` file. Those files are used by the Admin Generator to generate different kinds of interfaces (DataGrids or Forms). Create a new file `CustomerForm.dextinityGen.ts` in the `admin/src/customer` directory with the following content:
 
 ```typescript
-import { future_FormConfig as FormConfig } from "@comet/cms-admin";
+import { future_FormConfig as FormConfig } from "@dextinity/cms-admin";
 import { GQLCustomer } from "@src/graphql.generated";
 
 export const CustomerForm: FormConfig<GQLCustomer> = {

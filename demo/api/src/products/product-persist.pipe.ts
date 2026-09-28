@@ -1,4 +1,4 @@
-import { type BlockDataInterface, DamImageBlock, type ImporterPipe } from "@comet/cms-api";
+import { type BlockDataInterface, DamImageBlock, type ImporterPipe } from "@dextinity/cms-api";
 import type { Connection, EntityManager, FilterQuery, IDatabaseDriver, Reference } from "@mikro-orm/core";
 import type { LoggerService } from "@nestjs/common";
 import { Transform, type TransformCallback } from "stream";

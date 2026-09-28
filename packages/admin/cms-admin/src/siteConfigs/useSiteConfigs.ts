@@ -1,12 +1,12 @@
-import { useCometConfig } from "../config/CometConfigContext";
+import { useDextinityConfig } from "../config/DextinityConfigContext";
 import type { SiteConfigsConfig } from "./siteConfigsConfig";
 
 export function useSiteConfigs<Configs = unknown>(): SiteConfigsConfig<Configs> {
-    const cometConfig = useCometConfig<Configs>();
+    const dextinityConfig = useDextinityConfig<Configs>();
 
-    if (!cometConfig.siteConfigs) {
-        throw new Error("No site configs configuration found. Make sure to set `siteConfigs` in `CometConfigProvider`.");
+    if (!dextinityConfig.siteConfigs) {
+        throw new Error("No site configs configuration found. Make sure to set `siteConfigs` in `DextinityConfigProvider`.");
     }
 
-    return cometConfig.siteConfigs;
+    return dextinityConfig.siteConfigs;
 }

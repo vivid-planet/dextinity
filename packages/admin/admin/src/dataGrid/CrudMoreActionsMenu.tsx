@@ -1,4 +1,4 @@
-import { MoreVertical } from "@comet/admin-icons";
+import { MoreVertical } from "@dextinity/admin-icons";
 import {
     Chip,
     type ComponentsOverrides,
@@ -143,7 +143,7 @@ export function CrudMoreActionsMenu({ slotProps, overallActions, selectiveAction
     return (
         <CrudMoreActionsMenuContext.Provider value={{ closeMenu: handleClose }}>
             <MoreActionsButton variant="textDark" endIcon={<MoreVertical />} {...buttonProps} onClick={handleClick} responsive>
-                <FormattedMessage id="comet.crudMoreActions.title" defaultMessage="More" />
+                <FormattedMessage id="dextinity.crudMoreActions.title" defaultMessage="More" />
                 {!!selectionSize && <MoreActionsSelectedItemsChip size="small" color="primary" {...chipProps} label={selectionSize} />}
             </MoreActionsButton>
             <Menu
@@ -160,7 +160,7 @@ export function CrudMoreActionsMenu({ slotProps, overallActions, selectiveAction
                     <CrudMoreActionsGroup
                         groupTitle={
                             hasSelectiveActions ? (
-                                <FormattedMessage id="comet.crudMoreActions.overallActions" defaultMessage="Overall actions" />
+                                <FormattedMessage id="dextinity.crudMoreActions.overallActions" defaultMessage="Overall actions" />
                             ) : undefined
                         }
                         {...groupProps}
@@ -195,7 +195,7 @@ export function CrudMoreActionsMenu({ slotProps, overallActions, selectiveAction
                     <CrudMoreActionsGroup
                         groupTitle={
                             hasOverallActions ? (
-                                <FormattedMessage id="comet.crudMoreActions.selectiveActions" defaultMessage="Selective actions" />
+                                <FormattedMessage id="dextinity.crudMoreActions.selectiveActions" defaultMessage="Selective actions" />
                             ) : undefined
                         }
                         {...groupProps}
@@ -233,17 +233,17 @@ export function CrudMoreActionsMenu({ slotProps, overallActions, selectiveAction
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminCrudMoreActionsMenu: CrudMoreActionsMenuProps;
+        DextinityAdminCrudMoreActionsMenu: CrudMoreActionsMenuProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminCrudMoreActionsMenu: CrudMoreActionsMenuClassKey;
+        DextinityAdminCrudMoreActionsMenu: CrudMoreActionsMenuClassKey;
     }
 
     interface Components {
-        CometAdminCrudMoreActionsMenu?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminCrudMoreActionsMenu"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminCrudMoreActionsMenu"];
+        DextinityAdminCrudMoreActionsMenu?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminCrudMoreActionsMenu"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminCrudMoreActionsMenu"];
         };
     }
 }

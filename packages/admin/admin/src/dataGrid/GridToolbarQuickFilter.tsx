@@ -1,4 +1,4 @@
-import { Clear, Search } from "@comet/admin-icons";
+import { Clear, Search } from "@dextinity/admin-icons";
 import { InputBase } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import { styled } from "@mui/material/styles";
@@ -25,7 +25,9 @@ export function GridToolbarQuickFilter({ placeholder }: GridToolbarQuickFilterPr
                     <InputBase
                         {...other}
                         inputRef={ref}
-                        placeholder={placeholder ?? intl.formatMessage({ id: "comet.dataGrid.quickFilter.placeholder", defaultMessage: "Search..." })}
+                        placeholder={
+                            placeholder ?? intl.formatMessage({ id: "dextinity.dataGrid.quickFilter.placeholder", defaultMessage: "Search..." })
+                        }
                         size="small"
                         slotProps={{
                             input: {

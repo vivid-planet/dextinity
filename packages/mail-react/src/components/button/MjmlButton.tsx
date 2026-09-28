@@ -82,10 +82,9 @@ function getThemedProps(
     };
 }
 
-// The wrapped MJML button has no `background-image` prop, so a gradient goes in a `<style>`
-// rule over the solid `backgroundColor`; variant rules come after the base so they override it.
-// Only the static value lives here; responsive overrides flow through generateResponsiveButtonCss.
-function generateStaticBackgroundImageCss(theme: Theme): string {
+// The wrapped MJML button has no `background-image` prop, so the value can only come from CSS. The
+// `!important` beats the `background` shorthand the button writes inline, which would reset the gradient.
+export function generateInlineBackgroundImageCss(theme: Theme): string {
     const { variants, ...baseStyles } = theme.button;
     const cssChunks: string[] = [];
 
@@ -115,17 +114,14 @@ function generateStaticBackgroundImageCss(theme: Theme): string {
 }
 
 export function generateMjmlButtonStyles(theme: Theme): string {
-    return [
-        generateStaticBackgroundImageCss(theme),
-        generateResponsiveButtonCss(theme, {
-            styleSelector: (variantName) => `.mjmlButton--${variantName} a`,
-        }),
-    ]
-        .filter(Boolean)
-        .join("\n");
+    return generateResponsiveButtonCss(theme, {
+        styleSelector: (variantName) => `.mjmlButton--${variantName} a`,
+    });
 }
 
 registerStyles(generateMjmlButtonStyles);
+
+registerStyles(generateInlineBackgroundImageCss, { inline: true });
 
 // The cell is already full-width; this widens the anchor inside it so a gradient covers the
 // whole bar and the whole bar is clickable. Inlined so it survives clients that drop `<style>`.
@@ -133,8 +129,6 @@ registerStyles(
     css`
         .mjmlButton--fullWidth a {
             display: block !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
             text-align: center !important;
         }
     `,

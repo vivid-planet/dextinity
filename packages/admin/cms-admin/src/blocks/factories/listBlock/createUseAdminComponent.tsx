@@ -1,4 +1,4 @@
-import { UndoSnackbar, useSnackbarApi } from "@comet/admin";
+import { UndoSnackbar, useSnackbarApi } from "@dextinity/admin";
 import { type ChangeEvent, type Dispatch, type ReactNode, type SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { v4 as uuid } from "uuid";
@@ -101,7 +101,7 @@ export function createUseAdminComponent<T extends BlockInterface>({
                         <UndoSnackbar
                             message={
                                 <FormattedMessage
-                                    id="comet.blocks.list.blockDeleted"
+                                    id="dextinity.blocks.list.blockDeleted"
                                     defaultMessage="{count, plural, one {block} other {# blocks}} deleted"
                                     values={{ count: blocksToRemove.length }}
                                 />

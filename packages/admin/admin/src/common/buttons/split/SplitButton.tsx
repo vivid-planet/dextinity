@@ -1,4 +1,4 @@
-import { ChevronDown } from "@comet/admin-icons";
+import { ChevronDown } from "@dextinity/admin-icons";
 import {
     // eslint-disable-next-line no-restricted-imports
     Button,
@@ -89,7 +89,7 @@ export function SplitButton(inProps: PropsWithChildren<SplitButtonProps>) {
         popoverProps,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminSplitButton" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminSplitButton" });
 
     const [showSelectButtonState, setShowSelectButtonState] = useState<boolean | undefined>(undefined);
 
@@ -186,12 +186,12 @@ export function SplitButton(inProps: PropsWithChildren<SplitButtonProps>) {
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminSplitButton: SplitButtonProps;
+        DextinityAdminSplitButton: SplitButtonProps;
     }
 
     interface Components {
-        CometAdminSplitButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminSplitButton"]>;
+        DextinityAdminSplitButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminSplitButton"]>;
         };
     }
 }

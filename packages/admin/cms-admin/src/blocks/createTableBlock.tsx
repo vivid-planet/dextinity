@@ -1,43 +1,88 @@
-import { Dialog, OkayButton, useStackApi } from "@comet/admin";
+import { Dialog, OkayButton, useStackApi } from "@dextinity/admin";
 import { DialogActions } from "@mui/material";
 import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { v4 as uuid } from "uuid";
 
-import type { TableBlockData, TableBlockInput } from "../blocks.generated";
+import type { TableBlockData } from "../blocks.generated";
 import type { BlockContext } from "./context/BlockContext";
-import type { RichTextBlock, RichTextBlockState } from "./createRichTextBlock";
+import type { RichTextBlock } from "./createRichTextBlock";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
 import { TableBlockContextProvider } from "./table/TableBlockContext";
 import { TableBlockGrid } from "./table/TableBlockGrid";
-import { BlockCategory, type BlockInterface, type BlockPreviewContext } from "./types";
+import {
+    BlockCategory,
+    type BlockInputApi,
+    type BlockInterface,
+    type BlockOutputApi,
+    type BlockPreviewContext,
+    type BlockState,
+    type ReadOnlyBlockRenderInterface,
+} from "./types";
 
-export type TableBlockFactoryOptions = {
-    richText: RichTextBlock;
+type RichTextBlockInterface = BlockInterface & ReadOnlyBlockRenderInterface;
+
+export type TableBlockFactoryOptions<RichText extends RichTextBlockInterface = RichTextBlock> = {
+    richText: RichText;
+    name?: string;
 };
 
-interface TableBlockCellValueState {
+interface TableBlockCellValueState<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    CellState = any,
+> {
     columnId: string;
-    value: RichTextBlockState;
+    value: CellState;
 }
 
-export interface TableBlockRowState {
+export interface TableBlockRowState<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    CellState = any,
+> {
     id: string;
     highlighted: boolean;
-    cellValues: TableBlockCellValueState[];
+    cellValues: TableBlockCellValueState<CellState>[];
 }
 
-export interface TableBlockState {
+export interface TableBlockState<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    CellState = any,
+> {
     columns: TableBlockData["columns"];
-    rows: TableBlockRowState[];
+    rows: TableBlockRowState<CellState>[];
 }
 
-type TableBlock = BlockInterface<TableBlockData, TableBlockState, TableBlockInput>;
+interface TableBlockCellValue<Value> {
+    columnId: string;
+    value: Value;
+}
 
-export const createTableBlock = ({ richText: RichTextBlock }: TableBlockFactoryOptions, override?: (block: TableBlock) => TableBlock): TableBlock => {
-    const getInitialTableState = (): TableBlockState => {
+interface TableBlockRow<Value> {
+    id: string;
+    highlighted: boolean;
+    cellValues: TableBlockCellValue<Value>[];
+}
+
+interface TableBlockCells<Value> {
+    columns: TableBlockData["columns"];
+    rows: TableBlockRow<Value>[];
+}
+
+type TableBlock<RichText extends RichTextBlockInterface> = BlockInterface<
+    TableBlockCells<BlockInputApi<RichText>>,
+    TableBlockState<BlockState<RichText>>,
+    TableBlockCells<BlockOutputApi<RichText>>
+>;
+
+export const createTableBlock = <RichText extends RichTextBlockInterface = RichTextBlock>(
+    { richText: RichTextBlock, name = "Table" }: TableBlockFactoryOptions<RichText>,
+    override?: (block: TableBlock<RichText>) => TableBlock<RichText>,
+): TableBlock<RichText> => {
+    type CellState = BlockState<RichText>;
+
+    const getInitialTableState = (): TableBlockState<CellState> => {
         const columnIdOne = uuid();
         const columnIdTwo = uuid();
 
@@ -67,16 +112,16 @@ export const createTableBlock = ({ richText: RichTextBlock }: TableBlockFactoryO
         };
     };
 
-    const TableBlock: TableBlock = {
+    const TableBlock: TableBlock<RichText> = {
         ...createBlockSkeleton(),
 
-        name: "Table",
-        displayName: <FormattedMessage id="comet.blocks.table.displayName" defaultMessage="Table" />,
+        name,
+        displayName: <FormattedMessage id="dextinity.blocks.table.displayName" defaultMessage="Table" />,
         category: BlockCategory.TextAndContent,
 
         defaultValues: getInitialTableState,
 
-        input2State: (input: TableBlockData): TableBlockState => ({
+        input2State: (input: TableBlockCells<BlockInputApi<RichText>>): TableBlockState<CellState> => ({
             columns: input.columns,
             rows: input.rows.map((row) => ({
                 ...row,
@@ -87,7 +132,7 @@ export const createTableBlock = ({ richText: RichTextBlock }: TableBlockFactoryO
             })),
         }),
 
-        state2Output: (state: TableBlockState): TableBlockInput => ({
+        state2Output: (state: TableBlockState<CellState>): TableBlockCells<BlockOutputApi<RichText>> => ({
             columns: state.columns,
             rows: state.rows.map((row) => ({
                 ...row,
@@ -98,7 +143,7 @@ export const createTableBlock = ({ richText: RichTextBlock }: TableBlockFactoryO
             })),
         }),
 
-        output2State: async (output: TableBlockInput, context: BlockContext): Promise<TableBlockState> => ({
+        output2State: async (output: TableBlockCells<BlockOutputApi<RichText>>, context: BlockContext): Promise<TableBlockState<CellState>> => ({
             columns: output.columns,
             rows: await Promise.all(
                 output.rows.map(async (row) => ({
@@ -113,7 +158,7 @@ export const createTableBlock = ({ richText: RichTextBlock }: TableBlockFactoryO
             ),
         }),
 
-        createPreviewState: (state: TableBlockState, previewCtx: BlockPreviewContext & BlockContext) => ({
+        createPreviewState: (state: TableBlockState<CellState>, previewCtx: BlockPreviewContext & BlockContext) => ({
             columns: state.columns,
             rows: state.rows.map((row) => ({
                 ...row,
@@ -138,12 +183,12 @@ export const createTableBlock = ({ richText: RichTextBlock }: TableBlockFactoryO
             return (
                 <TableBlockContextProvider RichTextBlock={RichTextBlock}>
                     <SelectPreviewComponent>
-                        <BlocksFinalForm<TableBlockState> onSubmit={updateState} initialValues={state}>
+                        <BlocksFinalForm<TableBlockState<CellState>> onSubmit={updateState} initialValues={state}>
                             <Dialog
                                 open={showDialog}
                                 maxWidth="xl"
                                 onClose={closeTableBlock}
-                                title={intl.formatMessage({ id: "comet.blocks.table.displayName", defaultMessage: "Table" })}
+                                title={intl.formatMessage({ id: "dextinity.blocks.table.displayName", defaultMessage: "Table" })}
                                 PaperProps={{ sx: { height: "100%", maxHeight: 880 } }}
                                 sx={(theme) => ({ zIndex: theme.zIndex.modal - 2 })}
                             >

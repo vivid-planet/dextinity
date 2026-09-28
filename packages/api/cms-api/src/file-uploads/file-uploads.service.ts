@@ -3,14 +3,13 @@ import { CreateRequestContext, EntityManager, EntityRepository, MikroORM } from 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { createHmac } from "crypto";
 import { addHours, addSeconds } from "date-fns";
-import hasha from "hasha";
 import { basename, extname, parse } from "path";
 import { Readable } from "stream";
 
 import { BlobStorageBackendService } from "../blob-storage/backends/blob-storage-backend.service";
 import { createHashedPath } from "../blob-storage/utils/create-hashed-path.util";
 import { FileUploadInput } from "../file-utils/file-upload.input";
-import { slugifyFilename } from "../file-utils/files.utils";
+import { calculateFileHash, slugifyFilename } from "../file-utils/files.utils";
 import { ALL_TYPES } from "../file-utils/images.constants";
 import { DownloadParams, ImageParams } from "./dto/file-uploads-download.params";
 import { FileUpload } from "./entities/file-upload.entity";
@@ -45,7 +44,7 @@ export class FileUploadsService {
     }
 
     async upload(file: FileUploadInput, expiresIn?: number): Promise<FileUpload> {
-        const contentHash = await hasha.fromFile(file.path, { algorithm: "md5" });
+        const contentHash = await calculateFileHash(file.path);
         await this.blobStorageBackendService.upload(file, contentHash, this.config.directory);
 
         const extension = extname(file.originalname);

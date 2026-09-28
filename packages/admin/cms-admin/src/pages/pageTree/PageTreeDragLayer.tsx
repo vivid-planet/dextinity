@@ -43,7 +43,7 @@ const PageTreeDragLayer = ({ numberSelectedPages }: PageTreeDragLayerProps) => {
                 ) : (
                     <Box pl={4}>
                         <FormattedMessage
-                            id="comet.pagetree.dragLayer.numberDraggedPages"
+                            id="dextinity.pagetree.dragLayer.numberDraggedPages"
                             defaultMessage="{numItems} pages"
                             values={{ numItems: numberSelectedPages }}
                         />

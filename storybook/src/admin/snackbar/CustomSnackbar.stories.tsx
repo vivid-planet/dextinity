@@ -1,4 +1,4 @@
-import { Button, SnackbarProvider, useSnackbarApi } from "@comet/admin";
+import { Button, SnackbarProvider, useSnackbarApi } from "@dextinity/admin";
 import { List, ListItem, Snackbar } from "@mui/material";
 
 let counter = 0;
@@ -45,7 +45,7 @@ const CustomSnackbar = () => {
 };
 
 export default {
-    title: "@comet/admin/snackbar",
+    title: "@dextinity/admin/snackbar",
 };
 
 export const _CustomSnackbar = () => {

@@ -1,4 +1,4 @@
-import { Clear } from "@comet/admin-icons";
+import { Clear } from "@dextinity/admin-icons";
 import { ButtonBase, type ButtonBaseProps, type ComponentsOverrides, inputAdornmentClasses } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
 import type { ReactNode } from "react";
@@ -46,7 +46,7 @@ export interface ClearInputButtonProps extends ButtonBaseProps {
 export function ClearInputButton(inProps: ClearInputButtonProps) {
     const { icon = <Clear />, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminClearInputButton",
+        name: "DextinityAdminClearInputButton",
     });
     return (
         <Root tabIndex={-1} {...restProps}>
@@ -57,17 +57,17 @@ export function ClearInputButton(inProps: ClearInputButtonProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminClearInputButton: ClearInputButtonClassKey;
+        DextinityAdminClearInputButton: ClearInputButtonClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminClearInputButton: ClearInputButtonProps;
+        DextinityAdminClearInputButton: ClearInputButtonProps;
     }
 
     interface Components {
-        CometAdminClearInputButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminClearInputButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminClearInputButton"];
+        DextinityAdminClearInputButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminClearInputButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminClearInputButton"];
         };
     }
 }

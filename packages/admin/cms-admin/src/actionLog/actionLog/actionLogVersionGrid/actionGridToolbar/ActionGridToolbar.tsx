@@ -1,5 +1,5 @@
-import { Button, DataGridToolbar, FillSpace } from "@comet/admin";
-import { ChangeImage } from "@comet/admin-icons";
+import { Button, DataGridToolbar, FillSpace } from "@dextinity/admin";
+import { ChangeImage } from "@dextinity/admin-icons";
 import type { GridToolbarProps } from "@mui/x-data-grid-pro";
 import type { FunctionComponent } from "react";
 import { FormattedMessage } from "react-intl";

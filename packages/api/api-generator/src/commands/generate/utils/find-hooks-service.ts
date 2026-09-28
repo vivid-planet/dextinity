@@ -1,4 +1,4 @@
-import type { CrudGeneratorOptions } from "@comet/cms-api";
+import type { CrudGeneratorOptions } from "@dextinity/cms-api";
 import type { EntityMetadata } from "@mikro-orm/core";
 import * as path from "path";
 import { Node, ts, type Type } from "ts-morph";

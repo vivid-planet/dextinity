@@ -1,4 +1,4 @@
-import { Warning } from "@comet/admin-icons";
+import { Warning } from "@dextinity/admin-icons";
 import { DialogContent, type Theme } from "@mui/material";
 import { styled } from "@mui/material/styles";
 

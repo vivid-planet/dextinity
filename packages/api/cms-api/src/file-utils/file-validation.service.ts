@@ -45,7 +45,7 @@ export class FileValidationService {
         if (file.mimetype === "image/svg+xml") {
             const fileContent = await readFile(file.path, { encoding: "utf-8" });
 
-            if (!isValidSvg(fileContent)) {
+            if (!(await isValidSvg(fileContent))) {
                 return "SVG contains forbidden content (e.g., JavaScript, security-relevant tags or attributes)";
             }
         }

@@ -1,5 +1,5 @@
 import { gql, type ObservableQuery, useApolloClient } from "@apollo/client";
-import { type IEditDialogApi, UndoSnackbar, useSnackbarApi } from "@comet/admin";
+import { type IEditDialogApi, UndoSnackbar, useSnackbarApi } from "@dextinity/admin";
 import { styled } from "@mui/material/styles";
 import isEqual from "lodash.isequal";
 import {
@@ -274,7 +274,7 @@ const PageTree: ForwardRefRenderFunction<PageTreeRefApi, PageTreeProps> = (
 
             snackbarApi.showSnackbar(
                 <UndoSnackbar
-                    message={<FormattedMessage id="comet.pagetree.pageMoved" defaultMessage="Page Moved" />}
+                    message={<FormattedMessage id="dextinity.pagetree.pageMoved" defaultMessage="Page Moved" />}
                     payload={{ previousPages: pages, pagesToUndo: pagesToMove }}
                     onUndoClick={async (payload) => {
                         if (payload) {

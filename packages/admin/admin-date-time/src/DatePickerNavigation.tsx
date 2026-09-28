@@ -1,5 +1,5 @@
-import { Button, createComponentSlot, type ThemedComponentBaseProps } from "@comet/admin";
-import { ArrowLeft, ArrowRight, ChevronDown } from "@comet/admin-icons";
+import { Button, createComponentSlot, type ThemedComponentBaseProps } from "@dextinity/admin";
+import { ArrowLeft, ArrowRight, ChevronDown } from "@dextinity/admin-icons";
 import { Box, buttonClasses, type ComponentsOverrides, IconButton, Menu, menuClasses, MenuItem } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
 import { useRef, useState } from "react";
@@ -19,10 +19,13 @@ export interface DatePickerNavigationProps
     maxDate: Date;
 }
 
+/**
+ * @deprecated The `@dextinity/admin-date-time` package is deprecated. Use the date/time components from `@dextinity/admin` instead.
+ */
 export const DatePickerNavigation = (inProps: DatePickerNavigationProps) => {
     const { focusedDate, changeShownDate, minDate, maxDate, slotProps, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminDatePickerNavigation",
+        name: "DextinityAdminDatePickerNavigation",
     });
     const intl = useIntl();
 
@@ -207,17 +210,17 @@ const SelectYearMenu = createComponentSlot(Menu)<DatePickerNavigationClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminDatePickerNavigation: DatePickerNavigationClassKey;
+        DextinityAdminDatePickerNavigation: DatePickerNavigationClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminDatePickerNavigation: DatePickerNavigationProps;
+        DextinityAdminDatePickerNavigation: DatePickerNavigationProps;
     }
 
     interface Components {
-        CometAdminDatePickerNavigation?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminDatePickerNavigation"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminDatePickerNavigation"];
+        DextinityAdminDatePickerNavigation?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminDatePickerNavigation"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminDatePickerNavigation"];
         };
     }
 }

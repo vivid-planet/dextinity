@@ -1,4 +1,4 @@
-import { createComponentSlot, type ThemedComponentBaseProps } from "@comet/admin";
+import { createComponentSlot, type ThemedComponentBaseProps } from "@dextinity/admin";
 import { type ComponentsOverrides, FormControl, type InputBaseProps } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
 import { useRef } from "react";
@@ -93,12 +93,12 @@ export interface DateTimePickerProps
 }
 
 /**
- * @deprecated Use `DateTimePicker` from `@comet/admin` instead.
+ * @deprecated Use `DateTimePicker` from `@dextinity/admin` instead.
  */
 export const DateTimePicker = (inProps: DateTimePickerProps) => {
     const { onChange, value, required, disabled, slotProps, onBlur, onFocus, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminLegacyDateTimePicker",
+        name: "DextinityAdminLegacyDateTimePicker",
     });
     const intl = useIntl();
     const datePickerRef = useRef<HTMLElement>(null);
@@ -159,7 +159,7 @@ export const DateTimePicker = (inProps: DateTimePickerProps) => {
                 <TimePicker
                     inputRef={timePickerRef}
                     value={value ? getTimeStringFromDate(value) : undefined}
-                    placeholder={intl.formatMessage({ id: "comet.timeTimePicker.time", defaultMessage: "Time" })}
+                    placeholder={intl.formatMessage({ id: "dextinity.timeTimePicker.time", defaultMessage: "Time" })}
                     onChange={onChangeTime}
                     fullWidth
                     required={required}
@@ -181,17 +181,17 @@ export const DateTimePicker = (inProps: DateTimePickerProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminLegacyDateTimePicker: DateTimePickerClassKey;
+        DextinityAdminLegacyDateTimePicker: DateTimePickerClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminLegacyDateTimePicker: DateTimePickerProps;
+        DextinityAdminLegacyDateTimePicker: DateTimePickerProps;
     }
 
     interface Components {
-        CometAdminLegacyDateTimePicker?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminLegacyDateTimePicker"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminLegacyDateTimePicker"];
+        DextinityAdminLegacyDateTimePicker?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminLegacyDateTimePicker"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminLegacyDateTimePicker"];
         };
     }
 }

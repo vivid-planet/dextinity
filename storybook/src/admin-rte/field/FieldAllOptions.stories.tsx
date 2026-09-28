@@ -1,5 +1,5 @@
-import { Button, Field, FormSection } from "@comet/admin";
-import { createFinalFormRte } from "@comet/admin-rte";
+import { Button, Field, FormSection } from "@dextinity/admin";
+import { createFinalFormRte } from "@dextinity/admin-rte";
 import { Card, CardContent, Grid } from "@mui/material";
 import { useState } from "react";
 import { Form } from "react-final-form";
@@ -12,7 +12,7 @@ const { RteField, RteReadOnly } = createFinalFormRte<ContentFormat>({
 });
 
 export default {
-    title: "@comet/admin-rte/field",
+    title: "@dextinity/admin-rte/field",
 };
 
 export const FieldAllOptions = {

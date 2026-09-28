@@ -1,4 +1,4 @@
-import { ArrowRight } from "@comet/admin-icons";
+import { ArrowRight } from "@dextinity/admin-icons";
 import { Box, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import type { Meta, StoryObj } from "@storybook/react-vite";

@@ -1,6 +1,6 @@
-import { ExtractBlockInputFactoryProps } from "@comet/cms-api";
-import { faker } from "@faker-js/faker";
+import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
+import { faker } from "@src/db/fixtures/faker";
 import { StageBlock } from "@src/documents/pages/blocks/stage.block";
 
 import { BasicStageBlockFixtureService } from "./blocks/stage/basic-stage-block-fixture.service";

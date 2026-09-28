@@ -3,7 +3,7 @@ title: Page Tree
 id: PageTree
 ---
 
-In COMET DXP, the page tree combines multiple functionalities. The main task is to show and access all pages of the website. Furthermore, the page tree also reflects the URL scheme of the resulting site. Hence, the navigation, the sitemap, and the website's menus also use the page tree data.
+In Dextinity, the page tree combines multiple functionalities. The main task is to show and access all pages of the website. Furthermore, the page tree also reflects the URL scheme of the resulting site. Hence, the navigation, the sitemap, and the website's menus also use the page tree data.
 
 ## Page Tree Action
 

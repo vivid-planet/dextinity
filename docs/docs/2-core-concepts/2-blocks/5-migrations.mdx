@@ -56,7 +56,7 @@ Each migration performs the necessary steps to migrate the block structure from 
 The version to which the migration migrates the block's structure is defined by the `toVersion` field.
 
 ```ts
-import { BlockMigration, BlockMigrationInterface } from "@comet/cms-api";
+import { BlockMigration, BlockMigrationInterface } from "@dextinity/cms-api";
 
 export class ChangeEyebrowMigration extends BlockMigration<(from: From) => To> implements BlockMigrationInterface {
     // highlight-next-line
@@ -136,7 +136,7 @@ Doing so prevents the need to adapt old migrations if the code changes at a late
 Finally, we add the migration to the block using the `migrate` option in `createBlock`.
 
 ```ts
-import { createBlock, typeSafeBlockMigrationPipe } from "@comet/cms-api";
+import { createBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
 
 ...
 
@@ -156,7 +156,7 @@ The next time the block is loaded from the database, the migration will be perfo
     <summary>Complete migration class</summary>
 
 ```ts title="1-change-eyebrow.migration.ts"
-import { BlockDataInterface, BlockMigration, BlockMigrationInterface } from "@comet/cms-api";
+import { BlockDataInterface, BlockMigration, BlockMigrationInterface } from "@dextinity/cms-api";
 
 interface From {
     headline: any;

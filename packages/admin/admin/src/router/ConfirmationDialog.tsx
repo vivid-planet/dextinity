@@ -1,4 +1,4 @@
-import { Close, Delete, Save, Warning } from "@comet/admin-icons";
+import { Close, Delete, Save, Warning } from "@dextinity/admin-icons";
 import {
     type ComponentsOverrides,
     // eslint-disable-next-line no-restricted-imports
@@ -125,7 +125,7 @@ export function RouterConfirmationDialog(inProps: RouterConfirmationDialogProps)
         showSaveButton = false,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminRouterConfirmationDialog" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminRouterConfirmationDialog" });
 
     return (
         <StyledDialog open={isOpen} onClose={() => handleClose(PromptAction.Cancel)} maxWidth="sm" {...slotProps?.root} {...restProps}>
@@ -162,12 +162,12 @@ export function RouterConfirmationDialog(inProps: RouterConfirmationDialogProps)
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminRouterConfirmationDialog: RouterConfirmationDialogClassKey;
+        DextinityAdminRouterConfirmationDialog: RouterConfirmationDialogClassKey;
     }
 
     interface Components {
-        CometAdminRouterConfirmationDialog?: {
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminRouterConfirmationDialog"];
+        DextinityAdminRouterConfirmationDialog?: {
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminRouterConfirmationDialog"];
         };
     }
 }

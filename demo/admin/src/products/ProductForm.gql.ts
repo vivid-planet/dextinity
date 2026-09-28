@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { damFileFieldFragment, finalFormFileUploadFragment } from "@comet/cms-admin";
+import { damFileFieldFragment, finalFormFileUploadFragment } from "@dextinity/cms-admin";
 
 export const productFormFragment = gql`
     fragment ProductFormManual on Product {

@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { Loading } from "@comet/admin";
+import { Loading } from "@dextinity/admin";
 import { createContext, type PropsWithChildren, useContext } from "react";
 import { FormattedMessage } from "react-intl";
 
@@ -65,7 +65,7 @@ export const CurrentUserProvider = ({ isAllowed, children }: PropsWithChildren<{
     if (error) {
         return (
             <FormattedMessage
-                id="comet.currentUser.loadError"
+                id="dextinity.currentUser.loadError"
                 defaultMessage="Cannot load user: {errorMessage}"
                 values={{ errorMessage: error.message }}
             />
@@ -101,7 +101,14 @@ export const CurrentUserProvider = ({ isAllowed, children }: PropsWithChildren<{
                 return user.permissions.some(
                     (p) =>
                         p.permission === permission &&
-                        (!contentScope || p.contentScopes.some((cs) => Object.entries(contentScope).every(([scope, value]) => cs[scope] === value))),
+                        (!contentScope ||
+                            p.contentScopes.some((cs) =>
+                                // A wildcard ("*") dimension in the user's content scopes allows any value for that dimension;
+                                // null and undefined are treated the same, matching the server-side check.
+                                Object.entries(contentScope).every(
+                                    ([scope, value]) => cs[scope] === "*" || cs[scope] === value || (cs[scope] == null && value == null),
+                                ),
+                            )),
                 );
             }),
     };

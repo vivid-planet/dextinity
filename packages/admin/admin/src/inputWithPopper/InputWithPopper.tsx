@@ -48,7 +48,7 @@ export const InputWithPopper = (inProps: InputWithPopperProps) => {
         inputRef: inputRefProp,
         slotProps,
         ...inputBaseProps
-    } = useThemeProps({ props: inProps, name: "CometAdminInputWithPopper" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminInputWithPopper" });
     const { Transition = Grow, ...inputBaseComponents } = components;
 
     const rootRef = useRef<HTMLDivElement>(null);

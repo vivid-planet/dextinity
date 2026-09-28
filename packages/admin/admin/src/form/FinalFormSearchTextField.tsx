@@ -1,4 +1,4 @@
-import { Search } from "@comet/admin-icons";
+import { Search } from "@dextinity/admin-icons";
 import { InputAdornment } from "@mui/material";
 import { useThemeProps } from "@mui/material/styles";
 import type { ReactNode } from "react";
@@ -19,13 +19,15 @@ type FinalFormSearchTextFieldInternalProps = FieldRenderProps<string, HTMLInputE
  * @see {@link SearchField} – preferred for typical form use. Use this only if no Field wrapper is needed.
  */
 export function FinalFormSearchTextField(inProps: FinalFormSearchTextFieldProps & FinalFormSearchTextFieldInternalProps) {
-    const { icon = <Search />, placeholder, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminFinalFormSearchTextField" });
+    const { icon = <Search />, placeholder, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminFinalFormSearchTextField" });
     const intl = useIntl();
 
     return (
         <FinalFormInput
             {...restProps}
-            placeholder={placeholder ?? intl.formatMessage({ id: "comet.finalformsearchtextfield.default.placeholder", defaultMessage: "Search" })}
+            placeholder={
+                placeholder ?? intl.formatMessage({ id: "dextinity.finalformsearchtextfield.default.placeholder", defaultMessage: "Search" })
+            }
             startAdornment={
                 <InputAdornment position="start" disablePointerEvents>
                     {icon}
@@ -38,12 +40,12 @@ export function FinalFormSearchTextField(inProps: FinalFormSearchTextFieldProps 
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminFinalFormSearchTextField: FinalFormSearchTextFieldProps;
+        DextinityAdminFinalFormSearchTextField: FinalFormSearchTextFieldProps;
     }
 
     interface Components {
-        CometAdminFinalFormSearchTextField?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFinalFormSearchTextField"]>;
+        DextinityAdminFinalFormSearchTextField?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFinalFormSearchTextField"]>;
         };
     }
 }

@@ -1,5 +1,5 @@
 import { gql, useApolloClient, useQuery } from "@apollo/client";
-import { DataGridToolbar, Field, FillSpace, FinalForm, type GridColDef, GridToolbarQuickFilter, Loading, useFormApiRef } from "@comet/admin";
+import { DataGridToolbar, Field, FillSpace, FinalForm, type GridColDef, GridToolbarQuickFilter, Loading, useFormApiRef } from "@dextinity/admin";
 import isEqual from "lodash.isequal";
 import type { FunctionComponent, PropsWithChildren } from "react";
 

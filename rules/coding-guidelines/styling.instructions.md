@@ -34,9 +34,7 @@ alwaysApply: false
 
 ## Browser support
 
-- Verify features via [caniuse.com](https://caniuse.com) against **All Users / Europe**.
-- **Site / frontend**: ≥93% usage → free to use. 90–93% → only if basic functionality still works without the feature; minor visual/behavioral degradation is acceptable. Below that → check with a stylist.
-- **Admin**: anything supported by current Chrome, Firefox, Safari is fair game.
+- See [browser-support.instructions.md](browser-support.instructions.md).
 
 ## Responsive
 

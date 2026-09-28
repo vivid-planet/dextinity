@@ -6,12 +6,12 @@ import {
     type FileSelectProps,
     type LoadingFileSelectItem,
     type ValidFileSelectItem,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import { useMemo, useState } from "react";
 import type { FieldRenderProps } from "react-final-form";
 import { FormattedMessage } from "react-intl";
 
-import { useCometConfig } from "../../config/CometConfigContext";
+import { useDextinityConfig } from "../../config/DextinityConfigContext";
 import type { GQLFinalFormFileUploadDownloadableFragment, GQLFinalFormFileUploadFragment } from "./FinalFormFileUpload.generated";
 
 export const finalFormFileUploadFragment = gql`
@@ -96,7 +96,7 @@ export const FinalFormFileUpload = <Multiple extends boolean | undefined>({
     const [tooManyFilesSelected, setTooManyFilesSelected] = useState(false);
     const [uploadingFiles, setUploadingFiles] = useState<LoadingFileSelectItem[]>([]);
     const [failedUploads, setFailedUploads] = useState<ErrorFileSelectItem[]>([]);
-    const { apiUrl } = useCometConfig();
+    const { apiUrl } = useDextinityConfig();
 
     const singleFile = (!multiple && typeof maxFiles === "undefined") || maxFiles === 1;
     const inputValue = useMemo<ValidFileSelectItem<GQLFinalFormFileUploadFragment | GQLFinalFormFileUploadDownloadableFragment>[]>(() => {
@@ -192,7 +192,7 @@ export const FinalFormFileUpload = <Multiple extends boolean | undefined>({
                             onChange([...inputValue, ...successfullyUploadedFiles]);
                         }
                     } else {
-                        let errorMessage = <FormattedMessage id="comet.finalFormFileUpload.uploadFailed" defaultMessage="Upload failed." />;
+                        let errorMessage = <FormattedMessage id="dextinity.finalFormFileUpload.uploadFailed" defaultMessage="Upload failed." />;
 
                         if (jsonResponse.message === "Unsupported mime type") {
                             errorMessage = commonFileErrorMessages.invalidFileType;

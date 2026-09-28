@@ -22,7 +22,7 @@ export type FullHeightContentProps = ThemedComponentBaseProps<{
 export const FullHeightContent = (inProps: FullHeightContentProps) => {
     const { children, slotProps, disableBottomContentSpacing, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminFullHeightContent",
+        name: "DextinityAdminFullHeightContent",
     });
 
     const elementRef = useRef<HTMLDivElement>(null);
@@ -58,17 +58,17 @@ const Root = createComponentSlot("div")<FullHeightContentClassKey, OwnerState>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFullHeightContent: FullHeightContentClassKey;
+        DextinityAdminFullHeightContent: FullHeightContentClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFullHeightContent: FullHeightContentProps;
+        DextinityAdminFullHeightContent: FullHeightContentProps;
     }
 
     interface Components {
-        CometAdminFullHeightContent?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFullHeightContent"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFullHeightContent"];
+        DextinityAdminFullHeightContent?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFullHeightContent"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFullHeightContent"];
         };
     }
 }

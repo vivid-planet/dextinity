@@ -6,6 +6,8 @@ export type FinalFormTimeRangePickerProps = TimeRangePickerProps;
 type FinalFormTimeRangePickerInternalProps = FieldRenderProps<TimeRange, HTMLInputElement | HTMLTextAreaElement>;
 
 /**
+ * @deprecated Use `TimeRangePickerField` from `@dextinity/admin` instead.
+ *
  * Final Form-compatible TimeRangePicker component.
  *
  * @see {@link TimeRangeField} – preferred for typical form use. Use this only if no Field wrapper is needed.

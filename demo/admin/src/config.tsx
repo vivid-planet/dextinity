@@ -1,4 +1,4 @@
-import cometConfig from "./comet-config.json";
+import dextinityConfig from "./dextinity-config.json";
 import { environment } from "./environment";
 import type { PublicSiteConfig } from "./site-configs";
 
@@ -15,7 +15,7 @@ export function createConfig() {
         }
     }
     return {
-        ...cometConfig,
+        ...dextinityConfig,
         apiUrl: `${window.location.origin}/api`,
         adminUrl: environmentVariables.ADMIN_URL,
         siteConfigs: JSON.parse(atob(environmentVariables.PUBLIC_SITE_CONFIGS)) as PublicSiteConfig[],

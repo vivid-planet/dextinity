@@ -1,4 +1,4 @@
-import { type IRteOptions, makeRteApi, Rte } from "@comet/admin-rte";
+import { type IRteOptions, makeRteApi, Rte } from "@dextinity/admin-rte";
 import { Box, Card, CardContent } from "@mui/material";
 
 const rteOptions: IRteOptions = {
@@ -12,7 +12,7 @@ const rteOptions: IRteOptions = {
 const [useRteApi] = makeRteApi();
 
 export default {
-    title: "@comet/admin-rte",
+    title: "@dextinity/admin-rte",
 };
 
 export const RteSortBlockTypes = {

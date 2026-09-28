@@ -1,5 +1,5 @@
-import { Button, type ButtonProps } from "@comet/admin";
-import { Time } from "@comet/admin-icons";
+import { Button, type ButtonProps } from "@dextinity/admin";
+import { Time } from "@dextinity/admin-icons";
 import { type PropsWithChildren, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
@@ -35,7 +35,7 @@ export function ActionLogButton<TQuery = Record<string, unknown>>({
     return (
         <>
             <Button {...restProps} variant={variant} startIcon={startIcon} onClick={() => setOpen(true)}>
-                {children ?? <FormattedMessage id="comet.actionLogButton.title" defaultMessage="Action Log" />}
+                {children ?? <FormattedMessage id="dextinity.actionLogButton.title" defaultMessage="Action Log" />}
             </Button>
             <ActionLogDialog<TQuery> entityId={entityId} queryName={queryName} name={name} open={open} onClose={() => setOpen(false)} />
         </>

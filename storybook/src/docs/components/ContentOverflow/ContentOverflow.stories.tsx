@@ -1,4 +1,4 @@
-import { ContentOverflow, type GridColDef } from "@comet/admin";
+import { ContentOverflow, type GridColDef } from "@dextinity/admin";
 import { Box, Link, Paper, Typography, type TypographyProps } from "@mui/material";
 import {} from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";

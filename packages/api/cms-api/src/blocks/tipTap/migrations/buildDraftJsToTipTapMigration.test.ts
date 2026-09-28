@@ -173,6 +173,174 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
         });
     });
 
+    describe("textBlockStyleMap", () => {
+        const block = createTipTapRichTextBlock(
+            {
+                textBlockStyles: [
+                    { name: "headline450", appliesTo: ["heading-2"] },
+                    { name: "paragraph200", appliesTo: ["paragraph"] },
+                ],
+                migrateFromDraftJs: {
+                    textBlockStyleMap: {
+                        "paragraph-small": "paragraph200",
+                        "headline-450": { textBlockType: "heading-2", textBlockStyle: "headline450" },
+                    },
+                },
+            },
+            "MigratedRichTextTextBlockStyles",
+        );
+
+        it("converts a custom block type to a heading keeping both level and textBlockStyle", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [draftBlock({ type: "headline-450", text: "Title" })],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [{ type: "heading", attrs: { level: 2, textBlockStyle: "headline450" }, content: [{ type: "text", text: "Title" }] }],
+            });
+        });
+
+        it("converts a custom block type to a styled paragraph", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [draftBlock({ type: "paragraph-small", text: "small" })],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [{ type: "paragraph", attrs: { textBlockStyle: "paragraph200" }, content: [{ type: "text", text: "small" }] }],
+            });
+        });
+    });
+
+    describe("nested lists", () => {
+        const block = createTipTapRichTextBlock({ migrateFromDraftJs: true }, "MigratedRichTextNestedLists");
+
+        it("converts the Draft.js list item depth into nested TipTap lists", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [
+                        draftBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
+                        draftBlock({ type: "unordered-list-item", text: "a.1", depth: 1 }),
+                        draftBlock({ type: "unordered-list-item", text: "b", depth: 0 }),
+                    ],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [
+                    {
+                        type: "bulletList",
+                        content: [
+                            {
+                                type: "listItem",
+                                content: [
+                                    { type: "paragraph", content: [{ type: "text", text: "a" }] },
+                                    {
+                                        type: "bulletList",
+                                        content: [{ type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "a.1" }] }] }],
+                                    },
+                                ],
+                            },
+                            { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "b" }] }] },
+                        ],
+                    },
+                ],
+            });
+        });
+    });
+
+    describe("listLevelMax", () => {
+        const block = createTipTapRichTextBlock({ listLevelMax: 1, migrateFromDraftJs: true }, "MigratedRichTextListLevelMax");
+
+        it("keeps the list flat instead of exceeding listLevelMax", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [
+                        draftBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
+                        draftBlock({ type: "unordered-list-item", text: "a.1", depth: 1 }),
+                    ],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [
+                    {
+                        type: "bulletList",
+                        content: [
+                            { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "a" }] }] },
+                            { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "a.1" }] }] },
+                        ],
+                    },
+                ],
+            });
+        });
+    });
+
+    describe("heading-only target schema", () => {
+        const block = createTipTapRichTextBlock(
+            {
+                paragraph: false,
+                heading: { levels: [2, 3, 4], defaultLevel: 3 },
+                migrateFromDraftJs: true,
+            },
+            "MigratedHeadingOnly",
+        );
+
+        it("migrates a DraftJS block without a heading level into a heading with the default level", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [draftBlock({ type: "unstyled", text: "Headline" })],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [{ type: "heading", attrs: { level: 3 }, content: [{ type: "text", text: "Headline" }] }],
+            });
+        });
+
+        it("keeps a DraftJS heading level that is allowed", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [draftBlock({ type: "header-two", text: "Headline" })],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [{ type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "Headline" }] }],
+            });
+        });
+
+        it("migrates empty DraftJS content into an empty heading with the default level", () => {
+            const data = block.blockDataFactory({
+                draftContent: { blocks: [], entityMap: {} },
+            });
+            expect(data.tipTapContent).toEqual({ type: "doc", content: [{ type: "heading", attrs: { level: 3 } }] });
+        });
+
+        it("falls back to headings with the default level when the conversion is invalid", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    // header-one is not one of the allowed levels, so the converted doc doesn't validate.
+                    blocks: [draftBlock({ type: "header-one", text: "Headline" })],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [{ type: "heading", attrs: { level: 3 }, content: [{ type: "text", text: "Headline" }] }],
+            });
+        });
+    });
+
     describe("maxTextBlocks fallback", () => {
         const block = createTipTapRichTextBlock({ maxTextBlocks: 2, migrateFromDraftJs: true }, "MigratedRichTextMaxBlocks");
 

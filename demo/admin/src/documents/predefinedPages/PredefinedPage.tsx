@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import { FileData, FileDataNotMenu } from "@comet/admin-icons";
-import type { DocumentInterface } from "@comet/cms-admin";
+import { FileData, FileDataNotMenu } from "@dextinity/admin-icons";
+import type { DocumentInterface } from "@dextinity/cms-admin";
 import { Chip } from "@mui/material";
 import type { GQLPredefinedPage, GQLPredefinedPageInput } from "@src/graphql.generated";
 import { FormattedMessage } from "react-intl";

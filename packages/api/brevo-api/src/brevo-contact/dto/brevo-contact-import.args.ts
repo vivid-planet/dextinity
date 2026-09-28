@@ -1,4 +1,4 @@
-import { IsUndefinable } from "@comet/cms-api";
+import { IsUndefinable } from "@dextinity/cms-api";
 import { Type } from "@nestjs/common";
 import { ArgsType, Field, ID } from "@nestjs/graphql";
 import { Type as TransformerType } from "class-transformer";

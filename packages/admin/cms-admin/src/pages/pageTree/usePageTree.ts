@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { useStoredState } from "@comet/admin";
+import { useStoredState } from "@dextinity/admin";
 import { type Dispatch, type SetStateAction, useCallback, useMemo, useState } from "react";
 
 import type { PageSearchMatch } from "../pageSearch/usePageSearch";

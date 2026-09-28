@@ -1,4 +1,11 @@
-import { createLinkBlock, DamFileDownloadLinkBlock, EmailLinkBlock, ExternalLinkBlock, InternalLinkBlock, PhoneLinkBlock } from "@comet/cms-admin";
+import {
+    createLinkBlock,
+    DamFileDownloadLinkBlock,
+    EmailLinkBlock,
+    ExternalLinkBlock,
+    InternalLinkBlock,
+    PhoneLinkBlock,
+} from "@dextinity/cms-admin";
 import { NewsLinkBlock } from "@src/news/blocks/NewsLinkBlock";
 import { defineMessage } from "react-intl";
 

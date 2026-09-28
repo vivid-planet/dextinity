@@ -1,4 +1,4 @@
-import { Dialog, StackLink, SubRoute } from "@comet/admin";
+import { Dialog, StackLink, SubRoute } from "@dextinity/admin";
 import { styled } from "@mui/material/styles";
 import type { ReactNode, SyntheticEvent } from "react";
 import { MemoryRouter } from "react-router";

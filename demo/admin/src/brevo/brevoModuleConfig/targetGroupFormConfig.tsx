@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
-import { Field, FinalFormSelect } from "@comet/admin";
-import type { EditTargetGroupFinalFormValues } from "@comet/brevo-admin";
+import { Field, FinalFormSelect } from "@dextinity/admin";
+import type { EditTargetGroupFinalFormValues } from "@dextinity/brevo-admin";
 import { MenuItem } from "@mui/material";
 import type { GQLBrevoContactBranch, GQLBrevoContactSalutation } from "@src/graphql.generated";
 import type { ReactNode } from "react";

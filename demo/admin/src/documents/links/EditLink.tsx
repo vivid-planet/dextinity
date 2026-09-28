@@ -11,9 +11,9 @@ import {
     Toolbar,
     ToolbarItem,
     useStackApi,
-} from "@comet/admin";
-import { ArrowLeft } from "@comet/admin-icons";
-import { BlockAdminComponentRoot, ContentScopeIndicator, createUsePage, PageName, TranslateContentMenuItem } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { ArrowLeft } from "@dextinity/admin-icons";
+import { BlockAdminComponentRoot, ContentScopeIndicator, createUsePage, PageName, TranslateContentMenuItem } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
 import { useIntl } from "react-intl";

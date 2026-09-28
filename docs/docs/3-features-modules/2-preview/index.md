@@ -2,7 +2,7 @@
 title: Preview
 ---
 
-COMET DXP comes with a built-in preview system. There are two different types of preview: the site preview and the block preview.
+Dextinity comes with a built-in preview system. There are two different types of preview: the site preview and the block preview.
 
 ## Block Preview
 
@@ -98,7 +98,7 @@ export const HeadlineBlock = withPreview(
 If you want to open the site preview at a particular place, you can do that with the following code:
 
 ```ts
-import { openPreviewWindow } from "@comet/cms-admin";
+import { openPreviewWindow } from "@dextinity/cms-admin";
 
 function myCustomFunction() {
     const { scope, match } = useContentScope();
@@ -109,7 +109,7 @@ function myCustomFunction() {
 We recommend using the default icon for the preview button, which can be imported as follows:
 
 ```ts
-import { Preview } from "@comet/admin-icons";
+import { Preview } from "@dextinity/admin-icons";
 ```
 
 :::warning

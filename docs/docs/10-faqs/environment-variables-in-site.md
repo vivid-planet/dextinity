@@ -2,7 +2,7 @@
 title: Environment variables in the site
 ---
 
-In COMET DXP, the Next.js site application is built once during CI and the resulting build artifact is reused across multiple environments (e.g., staging and production).
+In Dextinity, the Next.js site application is built once during CI and the resulting build artifact is reused across multiple environments (e.g., staging and production).
 This means environment variables that are evaluated at build time will have the same values in all environments.
 
 Using `process.env` on the server side (e.g., in Server Components, Route Handlers, or middleware) is fine, since those values are read at runtime.
@@ -15,7 +15,7 @@ Since the build happens once in CI, the values from the CI environment would be 
 This means staging and production would share the same values, which is incorrect.
 
 **Use site configs or a custom provider instead.**
-COMET provides a site config mechanism that allows you to pass environment-specific configuration at runtime.
+Dextinity provides a site config mechanism that allows you to pass environment-specific configuration at runtime.
 
 ## `process.env.*` in the Next.js config file is not supported
 

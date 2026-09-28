@@ -1,5 +1,157 @@
 # @comet/cli
 
+## 10.7.0
+
+## 10.6.0
+
+## 10.5.1
+
+### Patch Changes
+
+- 3a6c451: Make the generated `TipTapNode` type compatible with TipTap's `JSONContent`
+
+    `TipTapNode["type"]` is optional now, matching `JSONContent["type"]`. Both types can be used interchangeably, so no cast is needed when passing a rich text block's content to a TipTap utility or when rendering a `JSONContent` value with `renderTipTapRichText`. `renderTipTapRichText` renders a node without a `type` as a text node.
+
+    **Example**
+
+    ```ts
+    import { generateHTML } from "@tiptap/core";
+    import type { TipTapRichTextBlockData } from "@src/blocks.generated";
+
+    function renderToHtml(data: TipTapRichTextBlockData) {
+        return generateHTML(data.tipTapContent, extensions);
+    }
+    ```
+
+## 10.5.0
+
+## 10.4.0
+
+## 10.3.0
+
+### Minor Changes
+
+- 7e3a30f: Add `TipTapNode` type to `generate-block-types` output and use it for TipTap rich text blocks
+
+    TipTap rich text blocks were typed as `unknown`, forcing consumers to cast the content before rendering it.
+    They are now typed as `TipTapNode`, which is generated into `blocks.generated.ts` (together with `TipTapMark`) whenever a TipTap rich text block is used.
+
+    **Example**
+
+    ```tsx
+    // Before
+    const content = data.tipTapContent as TipTapNode;
+
+    // After
+    const content = data.tipTapContent;
+    ```
+
+## 10.2.0
+
+## 10.1.0
+
+## 10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/cli` to `@dextinity/cli`
+
+    Update the dependency in `package.json`.
+
+    **Breaking changes**
+    - Rename the `comet` binary to `dextinity`:
+
+        ```diff
+        - "generate-block-types": "comet generate-block-types"
+        + "generate-block-types": "dextinity generate-block-types"
+        ```
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/cli` to `@dextinity/cli`
+
+    Update the dependency in `package.json`.
+
+    **Breaking changes**
+    - Rename the `comet` binary to `dextinity`:
+
+        ```diff
+        - "generate-block-types": "comet generate-block-types"
+        + "generate-block-types": "dextinity generate-block-types"
+        ```
+
+## 9.5.0
+
+## 9.4.0
+
+## 9.3.0
+
+## 9.2.2
+
+## 9.2.1
+
+## 9.2.0
+
+## 9.1.1
+
+## 9.1.0
+
+## 9.0.1
+
+## 9.0.0
+
+### Major Changes
+
+- 2529907: Replace `install-agent-skills` with `install-agent-features` — a combined installer for agent skills and agent rules
+
+    `install-agent-features` installs skills from `skills/<name>/SKILL.md` and `agentic-plugin/skills/<name>/SKILL.md` (folders) and rules from `rules/<name>.md` (single markdown files) — both from the local repo and from external git repos listed in `agent-features.json`. Skills install into `.agents/skills/` and `.claude/skills/`; rules install into `.agents/rules/`, `.claude/rules/`, `.cursor/rules/`, and `.github/instructions/` so they are picked up by Claude Code, Cursor, GitHub Copilot, and other cloud agents. Rules support the same optional `metadata.internal: true` frontmatter as skills, and may be organized into subdirectories (the layout is preserved in each target).
+
+    Example `agent-features.json`:
+
+    ```json
+    {
+        "repos": ["https://github.com/vivid-planet/comet.git"]
+    }
+    ```
+
+    Run:
+
+    ```sh
+    npx @comet/cli install-agent-features
+    ```
+
+    **Breaking change:** the `install-agent-skills` command and its `agent-skills.json` config are removed. Migrate by renaming `agent-skills.json` to `agent-features.json` (the schema is identical) and replacing the `install-agent-skills` invocation in `package.json` and `install.sh` with `install-agent-features`.
+
+### Minor Changes
+
+- 644b4ee: Add node_modules skills and rules discovery to `install-agent-features` command
+
+    The command now scans direct dependencies in `node_modules` (including `@scoped` packages) for `skills/` and `rules/` directories and creates symlinks to agent-specific directories. This is compatible with the [npm-based Agent Skills convention](https://github.com/antfu/skills-npm/blob/HEAD/PROPOSAL.md) and extends it to also support rules.
+
+- 9746947: `install-agent-skills`: also install skills from `agentic-plugin/skills/`
+
+    In addition to the existing `skills/` directory, the command now installs skills from `agentic-plugin/skills/`. This allows shipping agent skills as part of a Claude Code plugin (with a `.claude-plugin/plugin.json` manifest) without losing the ability to install them via `install-agent-skills`.
+
+    Both directories are also fetched (via git sparse checkout) when consuming external repos listed in `agent-skills.json`. `skills/` keeps priority over `agentic-plugin/skills/`.
+
+### Patch Changes
+
+- 560a8f2: Cache `getSiteConfigs` and `op read` calls to avoid redundant execution
+
+    When a template contains multiple placeholders for the same environment, `getSiteConfigs(env)` and `op read` were called repeatedly with identical arguments. Both are now cached per invocation so each unique `env` and each unique `op://` URI is resolved only once.
+
+- b459ec7: Reduce published package size by keeping non-runtime build artifacts out of the bundle
+
+## 9.0.0-beta.6
+
+### Patch Changes
+
+- b459ec7: Reduce published package size by keeping non-runtime build artifacts out of the bundle
+
 ## 9.0.0-beta.5
 
 ### Minor Changes

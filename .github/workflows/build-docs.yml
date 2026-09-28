@@ -5,9 +5,6 @@ on:
         paths:
             - docs/**
             - storybook/**
-        branches:
-            - main
-            - next
     push:
         paths:
             - docs/**

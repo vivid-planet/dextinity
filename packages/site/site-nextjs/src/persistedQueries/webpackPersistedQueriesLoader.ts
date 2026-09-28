@@ -1,1 +1,1 @@
-export { default } from "@comet/site-react/webpackPersistedQueriesLoader";
+export { default } from "@dextinity/site-react/webpackPersistedQueriesLoader";

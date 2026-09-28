@@ -1,4 +1,4 @@
-import { Info } from "@comet/admin-icons";
+import { Info } from "@dextinity/admin-icons";
 import { Chip, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 

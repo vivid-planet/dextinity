@@ -65,12 +65,12 @@ fi
 
 # --- build cli + eslint-plugin (only when not built) ---
 if [ ! -d packages/cli/lib ]; then
-    echo ">>> building @comet/cli"
-    pnpm --filter '@comet/cli' run build
+    echo ">>> building @dextinity/cli"
+    pnpm --filter '@dextinity/cli' run build
 fi
 if [ ! -d packages/eslint-plugin/lib ]; then
-    echo ">>> building @comet/eslint-plugin"
-    pnpm --filter '@comet/eslint-plugin' run build
+    echo ">>> building @dextinity/eslint-plugin"
+    pnpm --filter '@dextinity/eslint-plugin' run build
 fi
 
 

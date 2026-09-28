@@ -22,23 +22,23 @@ const Root = createComponentSlot("div")<ToolbarFillSpaceClassKey>({
  * @deprecated Use `FillSpace` instead.
  */
 export const ToolbarFillSpace = (inProps: ToolbarFillSpaceProps) => {
-    const { children, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminToolbarFillSpace" });
+    const { children, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminToolbarFillSpace" });
     return <Root {...restProps}>{children}</Root>;
 };
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminToolbarFillSpace: ToolbarFillSpaceClassKey;
+        DextinityAdminToolbarFillSpace: ToolbarFillSpaceClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminToolbarFillSpace: ToolbarFillSpaceProps;
+        DextinityAdminToolbarFillSpace: ToolbarFillSpaceProps;
     }
 
     interface Components {
-        CometAdminToolbarFillSpace?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminToolbarFillSpace"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminToolbarFillSpace"];
+        DextinityAdminToolbarFillSpace?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminToolbarFillSpace"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminToolbarFillSpace"];
         };
     }
 }

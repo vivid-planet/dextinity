@@ -7,7 +7,7 @@ const currentDirectory = dirname(fileURLToPath(import.meta.url));
 const config: StorybookConfig = {
     stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
     staticDirs: ["./public"],
-    addons: ["@storybook/addon-docs", "@comet/mail-react/storybook"],
+    addons: ["@storybook/addon-docs", "@dextinity/mail-react/storybook"],
     framework: "@storybook/react-vite",
     viteFinal: (config) => {
         config.resolve = config.resolve || {};

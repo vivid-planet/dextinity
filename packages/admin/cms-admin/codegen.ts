@@ -11,6 +11,9 @@ const config: CodegenConfig = {
                 },
                 enumsAsTypes: true,
                 namingConvention: "keep",
+                scalars: {
+                    BigInt: "number",
+                },
                 typesPrefix: "GQL",
             },
         },
@@ -28,6 +31,9 @@ const config: CodegenConfig = {
                 },
                 enumsAsTypes: true,
                 namingConvention: "keep",
+                scalars: {
+                    BigInt: "number",
+                },
                 typesPrefix: "GQL",
             },
             plugins: ["named-operations-object", "typescript-operations"],

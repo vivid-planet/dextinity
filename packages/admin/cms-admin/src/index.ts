@@ -24,6 +24,7 @@ export { type BlocksConfig, BlocksConfigProvider, useBlocksConfig } from "./bloc
 export { type BlockContext } from "./blocks/context/BlockContext";
 export { BlockContextProvider } from "./blocks/context/BlockContextProvider";
 export { useBlockContext } from "./blocks/context/useBlockContext";
+export { createDamVideoBlock } from "./blocks/createDamVideoBlock";
 export { createImageLinkBlock } from "./blocks/createImageLinkBlock";
 export { createLinkBlock } from "./blocks/createLinkBlock";
 export type { RichTextBlockFactoryOptions } from "./blocks/createRichTextBlock";
@@ -110,6 +111,7 @@ export type {
     BlockPreviewStateInterface,
     BlockState,
     LinkBlockInterface,
+    ReadOnlyBlockRenderInterface,
     ReplaceDependencyObject,
     RootBlockInterface,
 } from "./blocks/types";
@@ -140,8 +142,8 @@ export { PageName } from "./common/PageName";
 export { SignOutButton } from "./common/signOutButton/SignOutButton";
 export { useEditState } from "./common/useEditState";
 export { useSaveState } from "./common/useSaveState";
-export type { CometConfig } from "./config/CometConfigContext";
-export { CometConfigProvider, useCometConfig } from "./config/CometConfigContext";
+export type { DextinityConfig } from "./config/DextinityConfigContext";
+export { DextinityConfigProvider, useDextinityConfig } from "./config/DextinityConfigContext";
 export { useContentLanguage } from "./contentLanguage/useContentLanguage";
 export { ContentScopeIndicator } from "./contentScope/ContentScopeIndicator";
 export { ContentScopeSelect } from "./contentScope/ContentScopeSelect";
@@ -156,6 +158,7 @@ export { JobRuntime } from "./cronJobs/JobRuntime";
 export { DamFileDownloadLinkBlock } from "./dam/blocks/DamFileDownloadLinkBlock";
 export { DamImageBlock } from "./dam/blocks/DamImageBlock";
 export { damDefaultAcceptedMimeTypes } from "./dam/config/damDefaultAcceptedMimeTypes";
+export { type DamFileCategory, getDamFileCategory } from "./dam/config/damFileCategory";
 export { useDamAcceptedMimeTypes } from "./dam/config/useDamAcceptedMimeTypes";
 export { useDamScope } from "./dam/config/useDamScope";
 export { useCurrentDamFolder } from "./dam/CurrentDamFolderProvider";
@@ -183,6 +186,7 @@ export {
 export { createDocumentRootBlocksMethods } from "./documents/createDocumentRootBlocksMethods";
 export type { DocumentInterface, DocumentType, InfoTagProps, SitePreviewActionProps } from "./documents/types";
 export { ChooseDamFileDialog } from "./form/file/chooseFile/ChooseDamFileDialog";
+export { SearchHeaderItem } from "./fullTextSearch/SearchHeaderItem";
 /** @deprecated Use `ChooseDamFileDialog` instead. */
 export { ChooseDamFileDialog as ChooseFileDialog } from "./form/file/chooseFile/ChooseDamFileDialog";
 export { ChooseDamFilesDialog } from "./form/file/chooseFile/ChooseDamFilesDialog";
@@ -201,7 +205,7 @@ export { serializeInitialValues } from "./form/serializeInitialValues";
 export { SyncFields } from "./form/SyncFields";
 export { useFormSaveConflict } from "./form/useFormSaveConflict";
 export { createEditPageNode } from "./pages/createEditPageNode";
-export { createUsePage } from "./pages/createUsePage";
+export { createUsePage, type PageState } from "./pages/createUsePage";
 export { PagesPage } from "./pages/pagesPage/PagesPage";
 export type { AllCategories } from "./pages/pageTree/PageTreeContext";
 export { useCopyPastePages } from "./pages/pageTree/useCopyPastePages";
@@ -241,8 +245,8 @@ export { UserPermissionsUserGrid } from "./userPermissions/UserGrid";
 export { UserPermissionsPage } from "./userPermissions/UserPermissionsPage";
 export { isLinkTarget } from "./validation/isLinkTarget";
 export { validateLinkTarget } from "./validation/validateLinkTarget";
-export { LatestWarningsDashboardWidget } from "./warnings/LatestWarningsDashboardWidget";
-export { WarningsPage } from "./warnings/WarningsPage";
+export { LatestWarningsDashboardWidget, type LatestWarningsDashboardWidgetProps } from "./warnings/LatestWarningsDashboardWidget";
+export { WarningsPage, type WarningsPageProps } from "./warnings/WarningsPage";
 import packageJson from "../package.json";
 
 export const version = packageJson.version;

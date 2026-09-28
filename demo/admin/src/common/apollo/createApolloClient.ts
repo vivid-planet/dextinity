@@ -1,6 +1,6 @@
 import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from "@apollo/client";
-import { createErrorDialogApolloLink } from "@comet/admin";
-import { includeInvisibleContentContext } from "@comet/cms-admin";
+import { createErrorDialogApolloLink } from "@dextinity/admin";
+import { includeInvisibleContentContext } from "@dextinity/cms-admin";
 import fragmentTypes from "@src/fragmentTypes.json";
 
 export const createApolloClient = (apiUrl: string) => {

@@ -3,6 +3,6 @@ import { FormattedMessage } from "react-intl";
 
 export function validateUrl(url?: string) {
     if (url && !isURL(url)) {
-        return <FormattedMessage id="comet.validation.validateUrl.invalid" defaultMessage="Invalid URL" />;
+        return <FormattedMessage id="dextinity.validation.validateUrl.invalid" defaultMessage="Invalid URL" />;
     }
 }

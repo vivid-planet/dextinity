@@ -65,10 +65,6 @@ jobs:
             - name: Install base dependencies
               run: pnpm install --frozen-lockfile
 
-            # Both builds select the package by path and fail when nothing matches. A base branch that
-            # predates a package rename carries the old name, so a name filter finds nothing while pnpm
-            # still exits successfully: the base build is skipped, `lib/` still holds the PR build, and
-            # the second measurement silently repeats the first.
             - name: Build cms-api (base)
               run: pnpm --fail-if-no-match --filter "./packages/api/cms-api" run build
 

@@ -292,6 +292,60 @@ export const TeaserVideoBlock = createDamVideoBlock(
 );
 ```
 
+#### Replacing the DamVideoBlock
+
+A project replacing the exported `DamVideoBlock` with a block that leaves options out keeps their stored values, as described above.
+To remove them, add a migration.
+
+Content the `DamVideoBlock` saved before its preview image migration moved into its [vendor chain](./5-migrations.mdx#vendor-migrations) carries that migration as `$$version: 1`.
+The new block reads that counter as its own version, so a migration to version 1 would take this content for migrated and skip it.
+Start the chain with a migration that mirrors the preview image migration instead, and remove the options in version 2:
+
+```ts title="video.block.ts"
+import { BlockMigration, type BlockMigrationInterface, createDamVideoBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
+
+interface WithoutPreviewImage {
+    damFileId?: string;
+    autoplay?: boolean;
+    showControls?: boolean;
+    loop?: boolean;
+}
+
+interface WithPreviewImage extends WithoutPreviewImage {
+    previewImage: unknown;
+}
+
+// Mirrors the DamVideoBlock's former version 1
+class AddPreviewImageMigration extends BlockMigration<(from: WithoutPreviewImage) => WithPreviewImage> implements BlockMigrationInterface {
+    public readonly toVersion = 1;
+
+    protected migrate(props: WithoutPreviewImage): WithPreviewImage {
+        return { ...props, previewImage: {} };
+    }
+}
+
+class RemoveControlsAndPreviewImageMigration extends BlockMigration<(from: WithPreviewImage) => { damFileId?: string }> implements BlockMigrationInterface {
+    public readonly toVersion = 2;
+
+    protected migrate({ damFileId }: WithPreviewImage) {
+        return { damFileId };
+    }
+}
+
+export const VideoBlock = createDamVideoBlock(
+    { supports: [] },
+    {
+        name: "Video",
+        migrate: {
+            version: 2,
+            migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration, RemoveControlsAndPreviewImageMigration]),
+        },
+    },
+);
+```
+
+Use the new block wherever the `DamVideoBlock` was used, for instance under the same key in a `BlocksBlock`, and run `migrateBlocks` to write the migrated data back.
+
 ### Admin
 
 Use the `createDamVideoBlock` factory:

@@ -7,6 +7,7 @@ import {
     EntityInfo,
     FileUpload,
     ImportTargetInterface,
+    InlineActionLogs,
     RequiredPermission,
     RootBlock,
     RootBlockEntity,
@@ -196,6 +197,7 @@ export class Product extends BaseEntity implements ImportTargetInterface {
         //sort: true, //not yet implemented
         input: true, //default is true
     })
+    @InlineActionLogs()
     colors = new Collection<ProductColor>(this);
 
     @OneToMany(() => ProductVariant, (variant) => variant.product, { orphanRemoval: true })

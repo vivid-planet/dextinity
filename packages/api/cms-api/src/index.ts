@@ -4,6 +4,7 @@ export { AccessLogModule } from "./access-log/access-log.module";
 export { ActionLogs } from "./action-logs/action-logs.decorator";
 export { ActionLogsModule } from "./action-logs/action-logs.module";
 export { ActionLogType } from "./action-logs/dto/action-log-type.enum";
+export { InlineActionLogs } from "./action-logs/inline-action-logs.decorator";
 export { DisableCometGuards } from "./auth/decorators/disable-comet-guards.decorator";
 export { GetCurrentUser } from "./auth/decorators/get-current-user.decorator";
 export { CometAuthGuard } from "./auth/guards/comet.guard";

@@ -47,7 +47,7 @@ jobs:
                   build-packages: "false"
 
             - name: Build cms-api (PR)
-              run: pnpm --filter '@dextinity/cms-api' run build
+              run: pnpm --filter "./packages/api/cms-api" run build
 
             - name: Measure cms-api base memory (PR)
               run: node scripts/measure-cms-api-memory.cjs > pr-memory.json
@@ -65,8 +65,12 @@ jobs:
             - name: Install base dependencies
               run: pnpm install --frozen-lockfile
 
+            # Both builds select the package by path rather than by name: a base branch that predates
+            # a package rename carries the old name, where a name filter matches nothing and pnpm exits
+            # successfully. The base build would then be skipped and `lib/` would still hold the PR
+            # build, so the second measurement silently repeats the first.
             - name: Build cms-api (base)
-              run: pnpm --filter '@dextinity/cms-api' run build
+              run: pnpm --filter "./packages/api/cms-api" run build
 
             - name: Measure cms-api base memory (base)
               run: node "$RUNNER_TEMP/measure-cms-api-memory.cjs" > base-memory.json

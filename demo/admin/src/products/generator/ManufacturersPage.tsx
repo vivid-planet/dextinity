@@ -15,7 +15,6 @@ import {
 } from "@dextinity/admin";
 import { Time } from "@dextinity/admin-icons";
 import { ActionLogsGrid, ContentScopeIndicator } from "@dextinity/cms-admin";
-import type { GQLQuery } from "@src/graphql.generated";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { ManufacturerForm } from "./generated/ManufacturerForm";
@@ -74,7 +73,7 @@ export function ManufacturersPage() {
                         <ToolbarBackButton />
                         <ToolbarAutomaticTitleItem />
                     </StackToolbar>
-                    <ActionLogsGrid<GQLQuery> queryName="manufacturerActionLogs" />
+                    <ActionLogsGrid entity="Manufacturer" />
                 </StackPage>
             </StackSwitch>
         </Stack>

@@ -1,19 +1,15 @@
-type UserPermission {
-  id: ID!
-  source: UserPermissionSource!
-  permission: Permission!
-  validFrom: DateTime
-  validTo: DateTime
-  reason: String
-  requestedBy: String
-  approvedBy: String
-  overrideContentScopes: Boolean!
-  contentScopes: [JSONObject!]!
+type UserPermissionsUser {
+  id: String!
+  name: String!
+  email: String!
+  permissionsCount: Int! @deprecated(reason: "The Permissions column was removed from the users list. Will be removed in the next version.")
+  contentScopesCount: Int! @deprecated(reason: "The Scopes column was removed from the users list. Will be removed in the next version.")
+  impersonationAllowed: Boolean!
 }
 
-enum UserPermissionSource {
-  MANUAL
-  BY_RULE
+type CurrentUserPermission {
+  permission: Permission!
+  contentScopes: [JSONObject!]!
 }
 
 enum Permission {
@@ -34,14 +30,44 @@ enum Permission {
 }
 
 """
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
-"""
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
 scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+type CurrentUser {
+  id: String!
+  name: String!
+  email: String!
+  permissions: [CurrentUserPermission!]!
+  impersonated: Boolean
+  authenticatedUser: UserPermissionsUser
+  accountUrl: String
+  permissionsForScope(scope: JSONObject!): [String!]!
+  allowedContentScopes: [ContentScopeWithLabel!]!
+}
+
+type UserPermission {
+  id: ID!
+  source: UserPermissionSource!
+  permission: Permission!
+  validFrom: DateTime
+  validTo: DateTime
+  reason: String
+  requestedBy: String
+  approvedBy: String
+  overrideContentScopes: Boolean!
+  contentScopes: [JSONObject!]!
+}
+
+enum UserPermissionSource {
+  MANUAL
+  BY_RULE
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type ActionLogsUser {
   id: ID!
@@ -75,35 +101,14 @@ enum ActionLogType {
   Deleted
 }
 
+type PaginatedActionLogs {
+  nodes: [ActionLog!]!
+  totalCount: Int!
+}
+
 type ContentScopeWithLabel {
   scope: JSONObject!
   label: JSONObject!
-}
-
-type UserPermissionsUser {
-  id: String!
-  name: String!
-  email: String!
-  permissionsCount: Int! @deprecated(reason: "The Permissions column was removed from the users list. Will be removed in the next version.")
-  contentScopesCount: Int! @deprecated(reason: "The Scopes column was removed from the users list. Will be removed in the next version.")
-  impersonationAllowed: Boolean!
-}
-
-type CurrentUserPermission {
-  permission: Permission!
-  contentScopes: [JSONObject!]!
-}
-
-type CurrentUser {
-  id: String!
-  name: String!
-  email: String!
-  permissions: [CurrentUserPermission!]!
-  impersonated: Boolean
-  authenticatedUser: UserPermissionsUser
-  accountUrl: String
-  permissionsForScope(scope: JSONObject!): [String!]!
-  allowedContentScopes: [ContentScopeWithLabel!]!
 }
 
 type EntityInfo {
@@ -549,6 +554,7 @@ input WarningSourceInfoInput {
 }
 
 type Query {
+  actionLogs(offset: Int! = 0, limit: Int! = 25, entity: String!, scope: JSONObject!, search: String, filter: ActionLogFilter, sort: [ActionLogSort!]): PaginatedActionLogs!
   builds(limit: Float): [Build!]!
   autoBuildStatus: AutoBuildStatus!
   buildTemplates: [BuildTemplate!]!
@@ -611,6 +617,54 @@ type Query {
   myFullTextSearch(search: String!, offset: Int! = 0, limit: Int! = 25, scope: JSONObject): PaginatedEntityInfo!
 }
 
+input ActionLogFilter {
+  userId: StringFilter
+  entityId: IdFilter
+  version: NumberFilter
+  createdAt: DateTimeFilter
+  and: [ActionLogFilter!]
+  or: [ActionLogFilter!]
+}
+
+input IdFilter {
+  isAnyOf: [ID!]
+  equal: ID
+  notEqual: ID
+}
+
+input NumberFilter {
+  equal: Float
+  lowerThan: Float
+  greaterThan: Float
+  lowerThanEqual: Float
+  greaterThanEqual: Float
+  notEqual: Float
+  isAnyOf: [Float!]
+  isEmpty: Boolean
+  isNotEmpty: Boolean
+}
+
+input DateTimeFilter {
+  equal: DateTime
+  lowerThan: DateTime
+  greaterThan: DateTime
+  lowerThanEqual: DateTime
+  greaterThanEqual: DateTime
+  notEqual: DateTime
+  isEmpty: Boolean
+  isNotEmpty: Boolean
+}
+
+input ActionLogSort {
+  field: ActionLogSortField!
+  direction: SortDirection! = ASC
+}
+
+enum ActionLogSortField {
+  version
+  createdAt
+}
+
 input RedirectScopeInput {
   thisScopeHasNoFields____: String
 }
@@ -632,17 +686,6 @@ input RedirectSourceTypeEnumFilter {
   isAnyOf: [RedirectSourceType!]
   equal: RedirectSourceType
   notEqual: RedirectSourceType
-}
-
-input DateTimeFilter {
-  equal: DateTime
-  lowerThan: DateTime
-  greaterThan: DateTime
-  lowerThanEqual: DateTime
-  greaterThanEqual: DateTime
-  notEqual: DateTime
-  isEmpty: Boolean
-  isNotEmpty: Boolean
 }
 
 input RedirectSort {

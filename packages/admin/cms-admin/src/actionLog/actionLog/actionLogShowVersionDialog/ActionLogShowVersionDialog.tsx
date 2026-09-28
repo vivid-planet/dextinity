@@ -1,37 +1,30 @@
 import { useQuery } from "@apollo/client";
 import { Dialog } from "@dextinity/admin";
-import { useMemo } from "react";
 import { useIntl } from "react-intl";
 
 import { type ContentScope, useContentScope } from "../../../contentScope/Provider";
 import { ActionLogCompare } from "../../components/actionLogCompare/ActionLogCompare";
 import { ActionLogShowVersion } from "../../components/actionLogShowVersion/ActionLogShowVersion";
-import { type ActionLogQueryName, buildActionLogsQuery } from "../actionLogsQuery";
-import type { GQLActionLogRowFragment } from "../actionLogsQuery.generated";
+import { actionLogsQuery } from "../actionLogsQuery";
+import type { GQLActionLogRowFragment, GQLActionLogsQuery, GQLActionLogsQueryVariables } from "../actionLogsQuery.generated";
 
-export type ActionLogShowVersionDialogProps<TQuery> = {
-    queryName: ActionLogQueryName<TQuery>;
+export type ActionLogShowVersionDialogProps = {
+    /**
+     * Class name of the logged entity, for instance `"News"`.
+     */
+    entity: string;
     row: GQLActionLogRowFragment | null;
     open: boolean;
     onClose: () => void;
 };
 
-type ActionLogsQueryResult = {
-    [key: string]: { nodes: GQLActionLogRowFragment[]; totalCount: number };
-};
-
-export function ActionLogShowVersionDialog<TQuery = Record<string, unknown>>({
-    queryName,
-    row,
-    open,
-    onClose,
-}: ActionLogShowVersionDialogProps<TQuery>) {
+export function ActionLogShowVersionDialog({ entity, row, open, onClose }: ActionLogShowVersionDialogProps) {
     const intl = useIntl();
     const { scope } = useContentScope();
-    const actionLogsQuery = useMemo(() => buildActionLogsQuery(queryName), [queryName]);
 
-    const { data, loading } = useQuery<ActionLogsQueryResult>(actionLogsQuery, {
+    const { data, loading } = useQuery<GQLActionLogsQuery, GQLActionLogsQueryVariables>(actionLogsQuery, {
         variables: {
+            entity,
             scope: scope as ContentScope,
             offset: 0,
             limit: 1,
@@ -44,7 +37,7 @@ export function ActionLogShowVersionDialog<TQuery = Record<string, unknown>>({
         skip: !open || row === null || row.version <= 1,
     });
 
-    const previous = data?.[queryName]?.nodes[0] ?? undefined;
+    const previous = data?.actionLogs?.nodes[0] ?? undefined;
     const hasDiff = row != null && previous != null;
 
     return (

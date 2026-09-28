@@ -27,14 +27,14 @@ const mockCreatedRow: GQLActionLogRowFragment = {
     createdAt: "2026-05-27T13:00:00Z",
 };
 
-type Story = StoryObj<ActionLogShowVersionDialogProps<Record<string, unknown>>>;
+type Story = StoryObj<ActionLogShowVersionDialogProps>;
 
-const meta: Meta<ActionLogShowVersionDialogProps<Record<string, unknown>>> = {
+const meta: Meta<ActionLogShowVersionDialogProps> = {
     component: ActionLogShowVersionDialog,
     tags: ["!autodocs"],
     title: "actionLog/actionLog/actionLogShowVersionDialog/ActionLogShowVersionDialog",
     args: {
-        queryName: "newsActionLogs",
+        entity: "News",
         open: true,
         onClose: () => undefined,
     },

@@ -1,17 +1,104 @@
-import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
+import type { ObjectQuery } from "@mikro-orm/core/typings";
+import { EntityManager, PostgreSqlDriver } from "@mikro-orm/postgresql";
+import { BadRequestException, ForbiddenException, Inject } from "@nestjs/common";
+import { Args, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
+import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
+import { filtersToMikroOrmQuery, gqlSortToMikroOrmOrderBy, searchToMikroOrmQuery } from "../common/filter/mikro-orm";
+import {
+    DisablePermissionCheck,
+    REQUIRED_PERMISSION_METADATA_KEY,
+    RequiredPermission,
+    RequiredPermissionMetadata,
+} from "../user-permissions/decorators/required-permission.decorator";
+import { CurrentUser } from "../user-permissions/dto/current-user";
+import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
+import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants";
 import { UserPermissionsService } from "../user-permissions/user-permissions.service";
+import { AccessControlServiceInterface, Permission } from "../user-permissions/user-permissions.types";
+import { getActionLogEntities } from "./action-logs.decorator";
 import { ActionLogType } from "./dto/action-log-type.enum";
+import { ActionLogsArgs } from "./dto/action-logs.args";
 import { ActionLogsUser } from "./dto/action-logs-user";
+import { PaginatedActionLogs } from "./dto/paginated-action-logs";
 import { ActionLog } from "./entities/action-log.entity";
 import { PreviousActionLogLoaderService } from "./previous-action-log-loader.service";
 
 @Resolver(() => ActionLog)
 export class ActionLogsResolver {
     constructor(
+        private readonly entityManager: EntityManager<PostgreSqlDriver>,
         private readonly userPermissionsService: UserPermissionsService,
         private readonly previousActionLogLoader: PreviousActionLogLoaderService,
+        @Inject(ACCESS_CONTROL_SERVICE) private readonly accessControlService: AccessControlServiceInterface,
     ) {}
+
+    /**
+     * The permission check cannot run in the guard: it depends on the `entity` argument, while the
+     * guard resolves a permission statically from the resolver's entity binding. `DisablePermissionCheck`
+     * therefore only gets past the guard — access is decided below, against the permission the
+     * requested entity declares.
+     */
+    @Query(() => PaginatedActionLogs)
+    @RequiredPermission(DisablePermissionCheck, { skipScopeCheck: true })
+    async actionLogs(
+        @Args() { entity, scope, search, filter, offset, limit, sort }: ActionLogsArgs,
+        @GetCurrentUser() user: CurrentUser,
+    ): Promise<PaginatedActionLogs> {
+        this.checkPermission(entity, scope, user);
+
+        const andFilters: ObjectQuery<ActionLog>[] = [{ entityName: entity }];
+
+        if (Object.keys(scope).length > 0) {
+            // Action log rows for entities without a scope have scope=NULL; match those too so
+            // unscoped entities still surface their logs when the page is rendered inside a scoped layout.
+            andFilters.push({ $or: [{ scope: null }, { scope: { $contains: [scope] } }] });
+        }
+
+        if (search) {
+            andFilters.push(searchToMikroOrmQuery(search, ["userId"]));
+        }
+
+        if (filter) {
+            andFilters.push(filtersToMikroOrmQuery(filter));
+        }
+
+        const [entities, totalCount] = await this.entityManager.findAndCount(
+            ActionLog,
+            { $and: andFilters },
+            {
+                offset,
+                limit,
+                orderBy: sort ? gqlSortToMikroOrmOrderBy(sort) : { createdAt: "DESC" },
+            },
+        );
+        return new PaginatedActionLogs(entities, totalCount);
+    }
+
+    private checkPermission(entity: string, scope: ContentScope, user: CurrentUser): void {
+        const entityClass = getActionLogEntities().find(({ name }) => name === entity);
+        if (!entityClass) {
+            const known = getActionLogEntities()
+                .map(({ name }) => name)
+                .join(", ");
+            throw new BadRequestException(`"${entity}" is not logged. Entities decorated with @ActionLogs(): ${known || "none"}.`);
+        }
+
+        const metadata = Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, entityClass) as RequiredPermissionMetadata | undefined;
+        const requiredPermissions = metadata?.requiredPermission ?? [];
+
+        if (requiredPermissions.includes(DisablePermissionCheck)) {
+            return;
+        }
+
+        const isAllowed = requiredPermissions
+            .filter((permission): permission is Permission => permission !== DisablePermissionCheck)
+            .some((permission) => this.accessControlService.isAllowed(user, permission, scope));
+
+        if (!isAllowed) {
+            throw new ForbiddenException(`No permission to read the action log of ${entity} in this scope.`);
+        }
+    }
 
     @ResolveField(() => ActionLog, {
         nullable: true,

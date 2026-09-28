@@ -130,7 +130,17 @@ describe("createDamVideoBlock preview image default", () => {
 
 describe("createDamVideoBlock migrations", () => {
     it("should add a preview image to data from before the exported block had one", () => {
-        expect(transformToBlockSave(DamVideoBlock.blockDataFactory({ damFileId }))).toEqual({ damFileId, previewImage: {}, $$version: 1 });
+        expect(transformToBlockSave(DamVideoBlock.blockDataFactory({ damFileId }))).toEqual({ damFileId, previewImage: {}, $$vendorVersion: 1 });
+    });
+
+    it("should move the version of data saved before the migration moved into the vendor chain", () => {
+        const previewImage = { damFile: { id: damFileId } };
+
+        expect(transformToBlockSave(DamVideoBlock.blockDataFactory({ damFileId, previewImage, $$version: 1 }))).toEqual({
+            damFileId,
+            previewImage,
+            $$vendorVersion: 1,
+        });
     });
 
     it("should neither migrate nor version data of a block created by the factory", () => {

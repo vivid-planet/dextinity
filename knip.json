@@ -5,7 +5,7 @@
             "entry": ["dev-pm.config.ts"],
             "project": ["*.{js,ts,tsx}"],
             "ignoreDependencies": ["open-cli"],
-            "ignoreBinaries": ["oauth2-proxy", "playwright"]
+            "ignoreBinaries": ["oauth2-proxy", "peers", "playwright"]
         },
         "packages/cli": {
             "project": ["./src/**/*.{ts,tsx}"]
@@ -64,7 +64,8 @@
         },
         "packages/api/api-generator": {
             "entry": ["./src/**/__tests__/**/*.ts"],
-            "project": ["./src/**/*.{ts,tsx}"]
+            "project": ["./src/**/*.{ts,tsx}"],
+            "ignoreDependencies": ["tsconfig-paths"]
         },
         "packages/api/brevo-api": {
             "project": ["./src/**/*.{ts,tsx}"]

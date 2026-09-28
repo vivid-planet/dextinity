@@ -1,7 +1,7 @@
 "use client";
 
+import { deepEqual } from "fast-equals";
 import { decodeJwt } from "jose";
-import isEqual from "lodash.isequal";
 import { createContext, type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 
@@ -164,7 +164,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
             });
 
         setPreviewElementsData((previousElementsData) => {
-            const dataDidNotChange = isEqual(previousElementsData, newPreviewElementsData);
+            const dataDidNotChange = deepEqual(previousElementsData, newPreviewElementsData);
 
             if (dataDidNotChange) {
                 // Returning the previous object (same reference) prevents the state-update from triggering a re-render

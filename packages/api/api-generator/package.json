@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/api-generator",
-    "version": "10.6.0",
+    "version": "10.7.0",
     "description": "Dextinity API Generator CLI tool",
     "repository": {
         "directory": "packages/api/api-generator",
@@ -42,6 +42,7 @@
         "pluralize": "^8.0.0",
         "ts-morph": "^25.0.1",
         "ts-node": "^10.9.2",
+        "tsconfig-paths": "^3.15.0",
         "typescript": "^5.9.3"
     },
     "devDependencies": {

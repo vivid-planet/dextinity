@@ -16,6 +16,7 @@ const config: StorybookConfig = {
             },
         },
         "@storybook/addon-vitest",
+        "storybook-addon-tag-badges",
         { name: "@dextinity/mail-react/storybook", options: { disablePreviewAnnotations: true } },
     ],
 

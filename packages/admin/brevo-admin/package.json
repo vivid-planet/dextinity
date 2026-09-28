@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/brevo-admin",
-    "version": "10.6.0",
+    "version": "10.7.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity",
@@ -41,7 +41,6 @@
     },
     "dependencies": {
         "@dextinity/admin": "workspace:*",
-        "@dextinity/admin-date-time": "workspace:*",
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/cms-admin": "workspace:*",
         "date-fns": "^4.4.0",

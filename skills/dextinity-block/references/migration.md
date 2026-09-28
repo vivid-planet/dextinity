@@ -193,7 +193,7 @@ import { ReplaceTextWithRichTextMigration } from "./migrations/2-replace-text-wi
 export const MyBlock = createBlock(MyBlockData, MyBlockInput, {
     name: "My",
     migrate: {
-        version: 2, // incremented from 1 to 2
+        version: 2,
         migrations: typeSafeBlockMigrationPipe([AddSubtitleMigration, ReplaceTextWithRichTextMigration]),
     },
 });

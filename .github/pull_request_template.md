@@ -1,7 +1,10 @@
 <!--
 This description becomes the commit message of the squashed commit, so keep it up to date
-as the pull request changes, and delete every section and comment you don't fill in —
-leftovers end up in the commit message.
+as the pull request changes, and delete every section and instruction comment you don't
+fill in — leftovers end up in the commit message.
+
+The task line at the very bottom is not an instruction: fill it in or delete it, as
+described there.
 
 See CONTRIBUTING.md#pull-requests for the full guidelines.
 -->
@@ -18,11 +21,15 @@ description is long enough that they help.
 ## Example
 
 <!--
-A new API needs an example in the code as well: a unit test (preferred), the
-implementation in Demo, or a development story in Storybook. Point at it here.
+Fill this in only for an example the reviewer can't reach from the diff: a development
+story in Storybook (link it) or the implementation in Demo (say how to get there), plus a
+sentence on what it shows.
 
-Delete this section if the change adds no new API — the example usage of your change
-belongs in the description above either way.
+Delete this section when a unit test is the example — reviewers find it in the diff, and a
+bare file path says nothing in the commit message.
+
+A new API needs an example in the code either way, and the example usage of your change
+belongs in the description above.
 -->
 
 ## Screenshots/screencasts
@@ -32,9 +39,10 @@ belongs in the description above either way.
 ## Changeset
 
 <!--
-Only fill this in when you deliberately don't add a changeset, so reviewers know it isn't
-an oversight: "None needed — Demo only". Delete this section when the pull request
-contains a changeset.
+Only fill this in when the pull request has no changeset and it isn't obvious why: "None
+needed — internal refactoring only", so reviewers know it isn't an oversight. Delete this
+section when the pull request contains a changeset, and when the change obviously needs
+none, for instance a repository-only change such as updating this template.
 -->
 
 ## Open TODOs/questions
@@ -47,9 +55,18 @@ is nothing open.
 ## Further information
 
 <!--
-Optional: alternative solutions you considered, related pull requests, links to relevant
-tasks, documentation etc. Delete this section if there is nothing to add.
+Rarely needed — delete this section unless the reviewer can't decide without it: an
+alternative solution you considered and rejected, a related pull request, a link to a
+task or documentation.
+
+Not here: how you verified the change (that's what CI and the example are for), and
+problems you noticed but deliberately left out of scope. Open a follow-up task for
+those instead of writing them down here.
 -->
 
-<!-- Task: https://vivid-planet.atlassian.net/browse/DEX-0000 -->
-<!-- Session: https://claude.ai/code/session_000000000000000000000000 -->
+<!--
+The task this change implements. Keep it as visible text at the very end of the
+description — replace the placeholder, or delete the line when there is no task.
+-->
+
+Task: https://vivid-planet.atlassian.net/browse/DEX-0000

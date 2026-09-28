@@ -1,5 +1,4 @@
 import type { JSONContent } from "@tiptap/core";
-import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import type { Schema } from "@tiptap/pm/model";
 import type { ClassConstructor } from "class-transformer";
 
@@ -39,13 +38,21 @@ function isDraftJsContent(value: unknown): value is DraftJsContent {
 interface BuildOptions extends ConvertOptions {
     schema: Schema;
     maxTextBlocks?: number;
-    headingLevels: HeadingLevel[];
     link?: Block;
 }
 
 export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConstructor<BlockMigrationInterface> {
-    const { schema, maxTextBlocks, headingLevels, resolvedOptions, link, textBlockStyleMap, inlineStyleMap, listLevelMax } = options;
+    const { schema, maxTextBlocks, resolvedOptions, link, textBlockMap, inlineStyleMap, listLevelMax } = options;
+    const textBlocks = resolvedOptions.textBlocks;
     const emptyDoc = buildEmptyTipTapDoc(resolvedOptions);
+
+    for (const [draftJsBlockType, { textBlock }] of Object.entries(textBlockMap ?? {})) {
+        // A name that doesn't exist would convert the content to whichever text block shares the
+        // DraftJS block's tag instead - silently, and only once, since the DraftJS content is gone afterwards.
+        if (!textBlocks.some((configured) => configured.name === textBlock)) {
+            throw new Error(`textBlockMap maps "${draftJsBlockType}" to the text block "${textBlock}", which is not configured`);
+        }
+    }
 
     return class DraftJsToTipTapMigration extends BlockMigration<(from: From) => To> implements BlockMigrationInterface {
         public readonly toVersion = 1;
@@ -59,8 +66,15 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
                 return { tipTapContent: emptyDoc };
             }
 
-            const converted = convertDraftJsToTipTap(from.draftContent, { resolvedOptions, link, textBlockStyleMap, inlineStyleMap, listLevelMax });
-            if (isValidTipTapContentSync(converted, schema, { maxTextBlocks, listLevelMax, headingLevels })) {
+            const converted = convertDraftJsToTipTap(from.draftContent, { resolvedOptions, link, textBlockMap, inlineStyleMap, listLevelMax });
+            if (
+                isValidTipTapContentSync(converted, schema, {
+                    maxTextBlocks,
+                    listLevelMax,
+                    textBlocks,
+                    defaultTextBlock: resolvedOptions.defaultTextBlock,
+                })
+            ) {
                 return { tipTapContent: converted };
             }
 
@@ -69,7 +83,7 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
             }
 
             const stripped = buildStrippedTipTapDoc(from.draftContent, resolvedOptions);
-            if (isValidTipTapContentSync(stripped, schema, { maxTextBlocks, headingLevels })) {
+            if (isValidTipTapContentSync(stripped, schema, { maxTextBlocks, textBlocks, defaultTextBlock: resolvedOptions.defaultTextBlock })) {
                 console.warn("DraftJS->TipTap migration failed, using stripped content");
                 return { tipTapContent: stripped };
             }

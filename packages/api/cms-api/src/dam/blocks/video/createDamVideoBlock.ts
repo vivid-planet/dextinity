@@ -19,6 +19,7 @@ import { ChildBlock } from "../../../blocks/decorators/child-block";
 import { ChildBlockInput } from "../../../blocks/decorators/child-block-input";
 import { AnnotationBlockMeta, BlockField } from "../../../blocks/decorators/field";
 import type { BlockFactoryNameOrOptions } from "../../../blocks/factories/types";
+import type { MigrateVendorOptions } from "../../../blocks/migrations/types";
 import { typeSafeBlockMigrationPipe } from "../../../blocks/migrations/typeSafeBlockMigrationPipe";
 import { DamFileAiContentType } from "../../files/entities/ai-content-type.enum";
 import { FILE_ENTITY } from "../../files/entities/file.entity";
@@ -63,8 +64,16 @@ interface DamVideoBlockInputInterface extends SimpleBlockInputInterface {
 }
 
 export function createDamVideoBlock(
-    { supports = defaultSupports }: CreateDamVideoBlockOptions = {},
+    options: CreateDamVideoBlockOptions = {},
     nameOrOptions: BlockFactoryNameOrOptions = "DamVideo",
+): Block<DamVideoBlockDataInterface, DamVideoBlockInputInterface> {
+    return buildDamVideoBlock(options, nameOrOptions);
+}
+
+function buildDamVideoBlock(
+    { supports = defaultSupports }: CreateDamVideoBlockOptions,
+    nameOrOptions: BlockFactoryNameOrOptions,
+    migrateVendor?: MigrateVendorOptions,
 ): Block<DamVideoBlockDataInterface, DamVideoBlockInputInterface> {
     const name = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
     const migrate = typeof nameOrOptions === "string" ? undefined : nameOrOptions.migrate;
@@ -286,16 +295,13 @@ export function createDamVideoBlock(
         blockMeta: new Meta(DamVideoBlockData),
         blockInputMeta: new InputMeta(DamVideoBlockInput),
         migrate,
+        migrateVendor,
     });
 }
 
-export const DamVideoBlock = createDamVideoBlock(
-    {},
-    {
-        name: "DamVideo",
-        migrate: {
-            version: 1,
-            migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration]),
-        },
-    },
-);
+export const DamVideoBlock = buildDamVideoBlock({}, "DamVideo", {
+    version: 1,
+    migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration]),
+    // The migration counted in the block's version before it moved into the vendor chain
+    legacyVersions: 1,
+});

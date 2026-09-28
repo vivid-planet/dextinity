@@ -27,7 +27,7 @@ export interface ToolbarProps
     hideTopBar?: boolean;
     /**
      * The height of the header above the toolbar. Default behaviour is to use the height of the headerHeight from the
-     * MasterLayoutContext, but can be overriden here
+     * MasterLayoutContext, but can be overridden here
      */
     headerHeight?: number;
 }

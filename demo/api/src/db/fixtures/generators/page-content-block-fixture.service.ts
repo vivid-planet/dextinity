@@ -24,7 +24,6 @@ import { SliderBlockFixtureService } from "./blocks/slider-fixture.service";
 import { BillboardTeaserBlockFixtureService } from "./blocks/teaser/billboard-teaser-block-fixture.service";
 import { TeaserBlockFixtureService } from "./blocks/teaser/teaser-block-fixture.service";
 import { KeyFactsBlockFixtureService } from "./blocks/text-and-content/key-facts-block-fixture.service";
-import { ProductTypesBlockFixtureService } from "./blocks/text-and-content/product-types-block.fixture";
 import { StandaloneHeadingBlockFixtureService } from "./blocks/text-and-content/standalone-heading-block-fixture.service";
 import { TableBlockFixtureService } from "./blocks/text-and-content/table-block-fixture.service";
 import { TextImageBlockFixtureService } from "./blocks/text-and-content/text-image-block-fixture.service";
@@ -55,7 +54,6 @@ export class PageContentBlockFixtureService {
         private readonly textImageBlockFixtureService: TextImageBlockFixtureService,
         private readonly sliderBlockFixtureService: SliderBlockFixtureService,
         private readonly standaloneRichTextBlockFixtureService: StandaloneRichTextBlockFixtureService,
-        private readonly productTypesBlockFixtureService: ProductTypesBlockFixtureService,
         private readonly pageTreeIndexBlockFixtureService: PageTreeIndexBlockFixtureService,
         private readonly contactFormBlockFixtureService: ContactFormBlockFixtureService,
         private readonly tableBlockFixtureService: TableBlockFixtureService,
@@ -68,11 +66,8 @@ export class PageContentBlockFixtureService {
 
         type SupportedBlocks = (typeof blocks)[number]["type"];
 
-        // TODO add fixtures for newsDetail, newsList, productList and productDetail
-        const fixtures: Record<
-            Exclude<SupportedBlocks, "newsDetail" | "newsList" | "productList" | "productDetail">,
-            [BlockCategory, BlockFixture]
-        > = {
+        // TODO add fixtures for newsDetail and newsList
+        const fixtures: Record<Exclude<SupportedBlocks, "newsDetail" | "newsList">, [BlockCategory, BlockFixture]> = {
             accordion: ["layout", this.accordionBlockFixtureService],
             columns: ["layout", this.columnsBlockFixtureService],
             contentGroup: ["layout", this.contentGroupBlockFixtureService],
@@ -92,7 +87,6 @@ export class PageContentBlockFixtureService {
             keyFacts: ["textAndContent", this.keyFactsBlockFixtureService],
             richtext: ["textAndContent", this.standaloneRichTextBlockFixtureService],
             textImage: ["textAndContent", this.textImageBlockFixtureService],
-            productTypes: ["textAndContent", this.productTypesBlockFixtureService],
             contactForm: ["form", this.contactFormBlockFixtureService],
             table: ["textAndContent", this.tableBlockFixtureService],
             tipTapRichText: ["textAndContent", this.tipTapRichTextBlockFixtureService],

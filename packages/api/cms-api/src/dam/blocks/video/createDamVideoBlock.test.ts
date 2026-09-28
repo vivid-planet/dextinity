@@ -17,6 +17,39 @@ class AddLoopMigration
     }
 }
 
+interface ExportedBlockDataWithoutPreviewImage {
+    damFileId?: string;
+    autoplay?: boolean;
+    showControls?: boolean;
+    loop?: boolean;
+}
+
+interface ExportedBlockData extends ExportedBlockDataWithoutPreviewImage {
+    previewImage: unknown;
+}
+
+class MirrorExportedBlockPreviewImageMigration
+    extends BlockMigration<(from: ExportedBlockDataWithoutPreviewImage) => ExportedBlockData>
+    implements BlockMigrationInterface
+{
+    public readonly toVersion = 1;
+
+    protected migrate(props: ExportedBlockDataWithoutPreviewImage) {
+        return { ...props, previewImage: {} };
+    }
+}
+
+class RemoveControlsAndPreviewImageMigration
+    extends BlockMigration<(from: ExportedBlockData) => { damFileId?: string }>
+    implements BlockMigrationInterface
+{
+    public readonly toVersion = 2;
+
+    protected migrate({ damFileId }: ExportedBlockData) {
+        return { damFileId };
+    }
+}
+
 const damFileId = "0a3a4f9c-1b19-4f7e-bd0a-8e0b6b1a2c3d";
 
 describe("createDamVideoBlock", () => {
@@ -156,5 +189,33 @@ describe("createDamVideoBlock migrations", () => {
         );
 
         expect(transformToBlockSave(block.blockDataFactory({ damFileId }))).toEqual({ damFileId, loop: true, $$version: 1 });
+    });
+
+    describe("replacing the exported block with one created by the factory", () => {
+        const block = createDamVideoBlock(
+            { supports: [] },
+            {
+                name: "ReplacingVideo",
+                migrate: {
+                    version: 2,
+                    migrations: typeSafeBlockMigrationPipe([MirrorExportedBlockPreviewImageMigration, RemoveControlsAndPreviewImageMigration]),
+                },
+            },
+        );
+        const options = { autoplay: true, showControls: false, loop: true };
+
+        it.each([
+            ["from before the preview image", { damFileId, ...options }],
+            ["saved before the migration moved into the vendor chain", { damFileId, ...options, previewImage: {}, $$version: 1 }],
+            ["saved with the vendor chain", { damFileId, ...options, previewImage: {}, $$vendorVersion: 1 }],
+        ])("should remove the unsupported options from content %s", (_, data) => {
+            const saved = transformToBlockSave(block.blockDataFactory(data));
+
+            expect(saved).toMatchObject({ damFileId, $$version: 2 });
+            expect(saved).not.toHaveProperty("autoplay");
+            expect(saved).not.toHaveProperty("showControls");
+            expect(saved).not.toHaveProperty("loop");
+            expect(saved).not.toHaveProperty("previewImage");
+        });
     });
 });

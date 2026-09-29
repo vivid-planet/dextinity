@@ -1,4 +1,4 @@
-import { messages } from "@comet/admin";
+import { messages } from "@dextinity/admin";
 import { Box, Chip } from "@mui/material";
 import { capitalCase } from "change-case";
 import isEqual from "lodash.isequal";

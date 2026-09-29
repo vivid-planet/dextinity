@@ -8,7 +8,7 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import { useMemo, useState } from "react";
 import { useIntl } from "react-intl";
 
@@ -41,12 +41,12 @@ export function GlobalActionLogGrid() {
             {
                 ...dataGridDateTimeColumn,
                 field: "createdAt",
-                headerName: intl.formatMessage({ id: "comet.globalActionLog.columns.createdAt", defaultMessage: "Date / Time" }),
+                headerName: intl.formatMessage({ id: "dextinity.globalActionLog.columns.createdAt", defaultMessage: "Date / Time" }),
                 width: 200,
             },
             {
                 field: "scope",
-                headerName: intl.formatMessage({ id: "comet.globalActionLog.columns.scope", defaultMessage: "Scope" }),
+                headerName: intl.formatMessage({ id: "dextinity.globalActionLog.columns.scope", defaultMessage: "Scope" }),
                 sortable: false,
                 filterable: false,
                 width: 150,
@@ -54,7 +54,7 @@ export function GlobalActionLogGrid() {
             },
             {
                 field: "type",
-                headerName: intl.formatMessage({ id: "comet.globalActionLog.columns.type", defaultMessage: "Type" }),
+                headerName: intl.formatMessage({ id: "dextinity.globalActionLog.columns.type", defaultMessage: "Type" }),
                 sortable: false,
                 filterable: false,
                 width: 150,
@@ -62,13 +62,13 @@ export function GlobalActionLogGrid() {
             },
             {
                 field: "entityName",
-                headerName: intl.formatMessage({ id: "comet.globalActionLog.columns.entityName", defaultMessage: "Entity type" }),
+                headerName: intl.formatMessage({ id: "dextinity.globalActionLog.columns.entityName", defaultMessage: "Entity type" }),
                 width: 150,
                 renderCell: ({ value }) => <EntityTypeChip label={value} />,
             },
             {
                 field: "entityId",
-                headerName: intl.formatMessage({ id: "comet.globalActionLog.columns.entity", defaultMessage: "Entity" }),
+                headerName: intl.formatMessage({ id: "dextinity.globalActionLog.columns.entity", defaultMessage: "Entity" }),
                 minWidth: 280,
                 flex: 1,
                 sortable: false,
@@ -76,7 +76,7 @@ export function GlobalActionLogGrid() {
             },
             {
                 field: "user",
-                headerName: intl.formatMessage({ id: "comet.globalActionLog.columns.user", defaultMessage: "User" }),
+                headerName: intl.formatMessage({ id: "dextinity.globalActionLog.columns.user", defaultMessage: "User" }),
                 minWidth: 200,
                 flex: 1,
                 sortable: false,

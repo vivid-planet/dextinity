@@ -48,12 +48,9 @@
     },
     "dependencies": {
         "@dextinity/admin": "workspace:*",
-        "@dextinity/admin-date-time": "workspace:*",
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/admin-rte": "workspace:*",
         "@tiptap/core": "^3.22.3",
-        "@tiptap/extension-heading": "^3.22.3",
-        "@tiptap/extension-paragraph": "^3.22.3",
         "@tiptap/extension-subscript": "^3.22.3",
         "@tiptap/extension-superscript": "^3.22.3",
         "@tiptap/pm": "^3.22.3",

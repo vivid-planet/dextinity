@@ -5,6 +5,9 @@ import {
     Button,
     CheckboxField,
     CheckboxListField,
+    DatePickerField,
+    DateRangePickerField,
+    DateTimePickerField,
     Field,
     FieldSet,
     FinalFormRangeInput,
@@ -16,9 +19,10 @@ import {
     SwitchField,
     TextAreaField,
     TextField,
+    TimePickerField,
+    TimeRangePickerField,
 } from "@dextinity/admin";
 import { ColorField } from "@dextinity/admin-color-picker";
-import { DateField, DateRangeField, DateTimeField, TimeField, TimeRangeField } from "@dextinity/admin-date-time";
 import { Box, Link, MenuItem } from "@mui/material";
 import { useMemo } from "react";
 import { Form } from "react-final-form";
@@ -309,12 +313,12 @@ export const AllFieldComponents = {
                                     fullWidth
                                 />
                             </FieldSet>
-                            <FieldSet title="Date and Time" supportText="@dextinity/admin-date-time">
-                                <DateField name="date" label="Date" variant={fieldVariant} fullWidth />
-                                <DateRangeField name="dateRange" label="Date Range" variant={fieldVariant} fullWidth />
-                                <TimeField name="time" label="Time" variant={fieldVariant} fullWidth />
-                                <TimeRangeField name="timeRange" label="Time Range" variant={fieldVariant} fullWidth />
-                                <DateTimeField name="dateTime" label="Date Time" variant={fieldVariant} fullWidth />
+                            <FieldSet title="Date and Time" supportText="@dextinity/admin">
+                                <DatePickerField name="date" label="Date" variant={fieldVariant} fullWidth />
+                                <DateRangePickerField name="dateRange" label="Date Range" variant={fieldVariant} fullWidth />
+                                <TimePickerField name="time" label="Time" variant={fieldVariant} fullWidth />
+                                <TimeRangePickerField name="timeRange" label="Time Range" variant={fieldVariant} fullWidth />
+                                <DateTimePickerField name="dateTime" label="Date Time" variant={fieldVariant} fullWidth />
                             </FieldSet>
                             <FieldSet title="Color" supportText="@dextinity/admin-color-picker">
                                 <ColorField name="hexColor" label="Color (hex)" variant={fieldVariant} fullWidth />

@@ -1,5 +1,6 @@
-import type { EntityRepository, QueryBuilder } from "@mikro-orm/postgresql";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { EntityRepository, MikroORM, QueryBuilder } from "@mikro-orm/postgresql";
+import { Logger } from "@nestjs/common";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { FileFilterInput } from "./dto/file.args";
 import type { FileInterface } from "./entities/file.entity";
@@ -115,5 +116,66 @@ describe.each(callers)("FilesService.$name — folder-by-default vs filter.ids",
         await call(service, { filter: { searchText: "logo" } });
 
         expect(hasFolderConstraint()).toBe(false);
+    });
+});
+
+describe("FilesService.saveDominantColor", () => {
+    const IMAGE_ID = "44444444-4444-4444-4444-444444444444";
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    function createServiceWithMockEntityManager({ flush }: { flush: () => Promise<void> }) {
+        const image: { dominantColor?: string } = {};
+        const entityManager = { findOneOrFail: vi.fn().mockResolvedValue(image), flush: vi.fn(flush) };
+        const orm = { em: { fork: () => entityManager } } as unknown as MikroORM;
+
+        const service = new FilesService(
+            null as never, // filesRepository
+            null as never, // damMediaAlternativesRepository
+            null as never, // blobStorageBackendService
+            null as never, // foldersService
+            null as never, // DAM_CONFIG
+            orm,
+            null as never, // entityManager
+        );
+
+        return { service, image, entityManager };
+    }
+
+    it("saves the calculated dominant color", async () => {
+        const { service, image, entityManager } = createServiceWithMockEntityManager({ flush: () => Promise.resolve() });
+        const dominantColorCalculator = { calculateDominantColor: vi.fn().mockResolvedValue("#ff0000") };
+
+        await service["saveDominantColor"]({ imageId: IMAGE_ID, contentHash: "content-hash", dominantColorCalculator });
+
+        expect(image.dominantColor).toBe("#ff0000");
+        expect(entityManager.flush).toHaveBeenCalled();
+    });
+
+    it("logs instead of rejecting when the calculation fails", async () => {
+        const loggerErrorSpy = vi.spyOn(Logger.prototype, "error").mockImplementation(() => undefined);
+        const { service, entityManager } = createServiceWithMockEntityManager({ flush: () => Promise.resolve() });
+        const dominantColorCalculator = { calculateDominantColor: vi.fn().mockRejectedValue(new Error("imgproxy failed")) };
+
+        await expect(
+            service["saveDominantColor"]({ imageId: IMAGE_ID, contentHash: "content-hash", dominantColorCalculator }),
+        ).resolves.toBeUndefined();
+
+        expect(entityManager.flush).not.toHaveBeenCalled();
+        expect(loggerErrorSpy).toHaveBeenCalledWith(`Failed to save dominant color for image ${IMAGE_ID}`, expect.any(Error));
+    });
+
+    it("logs instead of rejecting when saving fails", async () => {
+        const loggerErrorSpy = vi.spyOn(Logger.prototype, "error").mockImplementation(() => undefined);
+        const { service } = createServiceWithMockEntityManager({ flush: () => Promise.reject(new Error("flush failed")) });
+        const dominantColorCalculator = { calculateDominantColor: vi.fn().mockResolvedValue("#ff0000") };
+
+        await expect(
+            service["saveDominantColor"]({ imageId: IMAGE_ID, contentHash: "content-hash", dominantColorCalculator }),
+        ).resolves.toBeUndefined();
+
+        expect(loggerErrorSpy).toHaveBeenCalledWith(`Failed to save dominant color for image ${IMAGE_ID}`, expect.any(Error));
     });
 });

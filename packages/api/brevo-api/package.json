@@ -11,7 +11,8 @@
     "types": "lib/index.d.ts",
     "sideEffects": false,
     "files": [
-        "lib/*"
+        "lib/*",
+        "!lib/*.tsbuildinfo"
     ],
     "scripts": {
         "build": "$npm_execpath run clean && tsc -p tsconfig.build.json",
@@ -45,7 +46,6 @@
         "class-validator": "^0.14.3",
         "commander": "^14.0.3",
         "graphql-scalars": "1.25.0",
-        "lodash.isequal": "^4.5.0",
         "nest-commander": "^3.20.1",
         "uuid": "^11.1.1"
     },
@@ -64,7 +64,6 @@
         "@nestjs/testing": "^11.1.21",
         "@swc/core": "^1.15.40",
         "@types/inquirer": "^8.2.12",
-        "@types/lodash.isequal": "^4.5.8",
         "chokidar-cli": "^2.1.0",
         "eslint": "^9.39.4",
         "express": "^5.2.1",

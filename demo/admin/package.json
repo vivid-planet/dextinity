@@ -31,7 +31,6 @@
     "dependencies": {
         "@apollo/client": "^3.14.1",
         "@dextinity/admin": "workspace:*",
-        "@dextinity/admin-date-time": "workspace:*",
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/brevo-admin": "workspace:*",
         "@dextinity/cms-admin": "workspace:*",

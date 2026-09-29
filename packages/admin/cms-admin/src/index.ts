@@ -94,7 +94,9 @@ export type {
     TipTapInlineStyle,
     TipTapPlaceholder,
     TipTapRichTextBlockContent,
+    TipTapTextBlock,
     TipTapTextBlockStyle,
+    TipTapTextBlockTag,
     TipTapTextBlockType,
 } from "./blocks/tipTap/createTipTapRichTextBlock";
 export { createTipTapRichTextBlock } from "./blocks/tipTap/createTipTapRichTextBlock";

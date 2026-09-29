@@ -20,7 +20,12 @@ async function fetchAllPublishedProducts() {
         const data = await graphqlFetch<GQLProductListPageQuery, GQLProductListPageQueryVariables>(
             gql`
                 query ProductListPage($offset: Int!, $limit: Int!) {
-                    products(filter: { status: { equal: Published } }, sort: [{ field: title, direction: ASC }], offset: $offset, limit: $limit) {
+                    products(
+                        filter: { status: { equal: Published } }
+                        sort: [{ field: title, direction: ASC }, { field: id, direction: ASC }]
+                        offset: $offset
+                        limit: $limit
+                    ) {
                         nodes {
                             id
                             title

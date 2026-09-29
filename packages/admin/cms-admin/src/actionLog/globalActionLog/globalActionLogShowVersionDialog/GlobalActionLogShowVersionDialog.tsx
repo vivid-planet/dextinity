@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { Dialog, InlineAlert } from "@comet/admin";
+import { Dialog, InlineAlert } from "@dextinity/admin";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { ActionLogCompare } from "../../components/actionLogCompare/ActionLogCompare";
@@ -38,12 +38,12 @@ export function GlobalActionLogShowVersionDialog({ actionLogId, open, onClose }:
             onClose={onClose}
             open={open}
             title={intl.formatMessage({
-                id: "comet.globalActionLog.versionDialog.title",
+                id: "dextinity.globalActionLog.versionDialog.title",
                 defaultMessage: "Action Log",
             })}
         >
             {error && (
-                <InlineAlert title={<FormattedMessage id="comet.globalActionLog.versionDialog.error" defaultMessage="Error loading version" />} />
+                <InlineAlert title={<FormattedMessage id="dextinity.globalActionLog.versionDialog.error" defaultMessage="Error loading version" />} />
             )}
             {!error && actionLogId !== null && hasDiff && (
                 <ActionLogCompare afterVersion={current} beforeVersion={previous} error={Boolean(error)} id={actionLogId} loading={loading} />

@@ -15,7 +15,7 @@ import { CurrentUser } from "../user-permissions/dto/current-user";
 import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
 import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants";
 import { UserPermissionsService } from "../user-permissions/user-permissions.service";
-import { AccessControlServiceInterface, Permission } from "../user-permissions/user-permissions.types";
+import { AccessControlServiceInterface, Permission, SystemUser } from "../user-permissions/user-permissions.types";
 import { getActionLogEntities } from "./action-logs.decorator";
 import { ActionLogType } from "./dto/action-log-type.enum";
 import { ActionLogsArgs } from "./dto/action-logs.args";
@@ -43,7 +43,7 @@ export class ActionLogsResolver {
     @RequiredPermission(DisablePermissionCheck, { skipScopeCheck: true })
     async actionLogs(
         @Args() { entity, scope, search, filter, offset, limit, sort }: ActionLogsArgs,
-        @GetCurrentUser() user: CurrentUser,
+        @GetCurrentUser() user: CurrentUser | SystemUser,
     ): Promise<PaginatedActionLogs> {
         this.checkPermission(entity, scope, user);
 
@@ -75,13 +75,17 @@ export class ActionLogsResolver {
         return new PaginatedActionLogs(entities, totalCount);
     }
 
-    private checkPermission(entity: string, scope: ContentScope, user: CurrentUser): void {
+    private checkPermission(entity: string, scope: ContentScope, user: CurrentUser | SystemUser): void {
         const entityClass = getActionLogEntities().find(({ name }) => name === entity);
         if (!entityClass) {
             const known = getActionLogEntities()
                 .map(({ name }) => name)
                 .join(", ");
             throw new BadRequestException(`"${entity}" is not logged. Entities decorated with @ActionLogs(): ${known || "none"}.`);
+        }
+
+        if (typeof user === "string" && this.userPermissionsService.isSystemUser(user)) {
+            return;
         }
 
         const metadata = Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, entityClass) as RequiredPermissionMetadata | undefined;
@@ -91,9 +95,10 @@ export class ActionLogsResolver {
             return;
         }
 
+        const permissionScope = metadata?.options?.skipScopeCheck ? undefined : scope;
         const isAllowed = requiredPermissions
             .filter((permission): permission is Permission => permission !== DisablePermissionCheck)
-            .some((permission) => this.accessControlService.isAllowed(user, permission, scope));
+            .some((permission) => this.accessControlService.isAllowed(user, permission, permissionScope));
 
         if (!isAllowed) {
             throw new ForbiddenException(`No permission to read the action log of ${entity} in this scope.`);

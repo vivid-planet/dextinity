@@ -28,6 +28,14 @@ class PublicLoggedEntity {
     id: number;
 }
 
+@Entity()
+@ActionLogs()
+@RequiredPermission("products" as Permission, { skipScopeCheck: true })
+class UnscopedLoggedEntity {
+    @PrimaryKey()
+    id: number;
+}
+
 class AccessControlService extends AbstractAccessControlService {}
 
 const user = (permission: Permission, contentScopes: Array<Record<string, string>>): CurrentUser =>
@@ -51,7 +59,7 @@ describe("ActionLogsResolver", () => {
     beforeEach(() => {
         resolver = new ActionLogsResolver(
             createMock<EntityManager<PostgreSqlDriver>>({ findAndCount: async () => [[], 0] as [never[], number] }),
-            createMock<UserPermissionsService>(),
+            createMock<UserPermissionsService>({ isSystemUser: (id: string) => id === "system-user" }),
             createMock<PreviousActionLogLoaderService>(),
             new AccessControlService(),
         );
@@ -79,6 +87,25 @@ describe("ActionLogsResolver", () => {
         await expect(resolver.actionLogs({ ...args, entity: PublicLoggedEntity.name }, user("products" as Permission, []))).resolves.toMatchObject({
             totalCount: 0,
         });
+    });
+
+    it("allows a system user", async () => {
+        await expect(resolver.actionLogs(args, "system-user")).resolves.toMatchObject({ totalCount: 0 });
+    });
+
+    it("ignores the requested scope when the entity skips the scope check", async () => {
+        await expect(
+            resolver.actionLogs(
+                { ...args, entity: UnscopedLoggedEntity.name },
+                user("products" as Permission, [{ domain: "secondary", language: "en" }]),
+            ),
+        ).resolves.toMatchObject({ totalCount: 0 });
+    });
+
+    it("denies a user without the permission when the entity skips the scope check", async () => {
+        await expect(
+            resolver.actionLogs({ ...args, entity: UnscopedLoggedEntity.name }, user("news" as Permission, [{ domain: "main", language: "en" }])),
+        ).rejects.toThrow(ForbiddenException);
     });
 
     it("rejects an entity that is not logged", async () => {

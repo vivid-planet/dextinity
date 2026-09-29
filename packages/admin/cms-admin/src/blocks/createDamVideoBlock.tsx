@@ -21,16 +21,15 @@ import { resolveNewState } from "./utils";
 
 export type DamVideoBlockState = Omit<DamVideoBlockData, "previewImage"> & { previewImage: BlockState<typeof PixelImageBlock> };
 
-/**
- * What the editor can set besides the video file itself:
- * - `"controls"` — the playback options autoplay, loop and show controls. Bundled because autoplay and
- *   show controls depend on each other (a video with neither can't be played), so they're all offered or none.
- * - `"previewImage"` — the poster image shown before playback.
- */
 type DamVideoBlockSupports = "controls" | "previewImage";
 
-const defaultSupports: DamVideoBlockSupports[] = ["controls", "previewImage"];
-
+/**
+ * What the editor can set besides the video file itself. Disable anything the site implementation doesn't use.
+ *
+ * As long as the API block still has an option, its stored values are kept as they are and the editor just
+ * can't change them anymore. Whether an option is part of the block's data at all is decided by the API block,
+ * so disable the same options there.
+ */
 interface DamVideoBlockFactoryOptions {
     /**
      * The block's name. Must match the name of the block created with `createDamVideoBlock` in the API.
@@ -38,14 +37,18 @@ interface DamVideoBlockFactoryOptions {
      */
     name?: string;
     /**
-     * What the editor can set besides the video file itself. Leave out anything the site implementation
-     * doesn't use, for instance `["controls"]` for a site that renders no poster image, or `[]` for a site
-     * that only reads the file's URL.
-     *
-     * As long as the API block still supports an option, its stored values are kept as they are and the
-     * editor just can't change them anymore. Whether an option is part of the block's data at all is
-     * decided by the API block, so use the same `supports` there.
-     * @default ["controls", "previewImage"]
+     * The playback options autoplay, loop and show controls. Bundled because autoplay and show controls
+     * depend on each other (a video with neither can't be played), so they're all offered or none.
+     * @default true
+     */
+    controls?: boolean;
+    /**
+     * The poster image shown before playback.
+     * @default true
+     */
+    previewImage?: boolean;
+    /**
+     * @deprecated Use `controls` and `previewImage` instead, which only have to state what is disabled.
      */
     supports?: DamVideoBlockSupports[];
     tags?: Array<MessageDescriptor | string>;
@@ -54,13 +57,22 @@ interface DamVideoBlockFactoryOptions {
 export const createDamVideoBlock = (
     {
         name = "DamVideo",
-        supports = defaultSupports,
+        controls,
+        previewImage,
+        supports,
         tags = [defineMessage({ id: "dextinity.damVideoBlock.tag.video", defaultMessage: "Video" })],
     }: DamVideoBlockFactoryOptions = {},
     override?: (
         block: BlockInterface<DamVideoBlockData, DamVideoBlockState, DamVideoBlockInput>,
     ) => BlockInterface<DamVideoBlockData, DamVideoBlockState, DamVideoBlockInput>,
 ): BlockInterface<DamVideoBlockData, DamVideoBlockState, DamVideoBlockInput> => {
+    if (supports !== undefined && (controls !== undefined || previewImage !== undefined)) {
+        throw new Error(`The ${name} block got both "supports" and "controls" or "previewImage". Use "controls" and "previewImage" only.`);
+    }
+
+    const supportsControls = supports?.includes("controls") ?? controls ?? true;
+    const supportsPreviewImage = supports?.includes("previewImage") ?? previewImage ?? true;
+
     const DamVideoBlock: BlockInterface<DamVideoBlockData, DamVideoBlockState, DamVideoBlockInput> = {
         ...createBlockSkeleton(),
 
@@ -180,8 +192,8 @@ export const createDamVideoBlock = (
                             allowedMimetypes={["video/mp4", "video/webm"]}
                             preview={<Video fontSize="large" color="primary" />}
                         />
-                        {supports.includes("controls") && <VideoOptionsFields />}
-                        {supports.includes("previewImage") && (
+                        {supportsControls && <VideoOptionsFields />}
+                        {supportsPreviewImage && (
                             <BlockAdminComponentSection
                                 title={<FormattedMessage id="dextinity.blocks.video.previewImage" defaultMessage="Preview Image" />}
                             >

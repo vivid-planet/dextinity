@@ -28,23 +28,21 @@ import { DamVideoBlockTransformerService } from "./dam-video-block-transformer.s
 import { AddPreviewImageMigration } from "./migrations/1-add-preview-image.migration";
 
 /**
- * What the block stores besides the video file itself:
- * - `"controls"` — the playback options autoplay, loop and show controls. Bundled because autoplay and
- *   show controls depend on each other (a video with neither can't be played), so they're all offered or none.
- * - `"previewImage"` — the poster image shown before playback.
+ * What the block stores besides the video file itself. Disable anything the site implementation doesn't use.
+ * A disabled option is neither part of the block's data nor of its input.
  */
-export type DamVideoBlockSupports = "controls" | "previewImage";
-
-const defaultSupports: DamVideoBlockSupports[] = ["controls", "previewImage"];
-
 interface CreateDamVideoBlockOptions {
     /**
-     * What the block stores besides the video file itself. Leave out anything the site implementation
-     * doesn't use, for instance `["controls"]` for a site that renders no poster image, or `[]` for a site
-     * that only reads the file's URL. Anything left out is neither part of the block's data nor of its input.
-     * @default ["controls", "previewImage"]
+     * The playback options autoplay, loop and show controls. Bundled because autoplay and show controls
+     * depend on each other (a video with neither can't be played), so they're all offered or none.
+     * @default true
      */
-    supports?: DamVideoBlockSupports[];
+    controls?: boolean;
+    /**
+     * The poster image shown before playback.
+     * @default true
+     */
+    previewImage?: boolean;
 }
 
 export interface DamVideoBlockDataInterface extends BlockDataInterface {
@@ -71,7 +69,7 @@ export function createDamVideoBlock(
 }
 
 function buildDamVideoBlock(
-    { supports = defaultSupports }: CreateDamVideoBlockOptions,
+    { controls: supportsControls = true, previewImage: supportsPreviewImage = true }: CreateDamVideoBlockOptions,
     nameOrOptions: BlockFactoryNameOrOptions,
     migrateVendor?: MigrateVendorOptions,
 ): Block<DamVideoBlockDataInterface, DamVideoBlockInputInterface> {
@@ -80,12 +78,9 @@ function buildDamVideoBlock(
 
     if (getRegisteredBlocks().some((block) => block.name === name)) {
         throw new Error(
-            `A block named "${name}" is already registered. @dextinity/cms-api exports a ready-made DamVideoBlock, so a block created with createDamVideoBlock needs its own name, for instance createDamVideoBlock({ supports: [] }, "TeaserVideo").`,
+            `A block named "${name}" is already registered. @dextinity/cms-api exports a ready-made DamVideoBlock, so a block created with createDamVideoBlock needs its own name, for instance createDamVideoBlock({ controls: false, previewImage: false }, "TeaserVideo").`,
         );
     }
-
-    const supportsControls = supports.includes("controls");
-    const supportsPreviewImage = supports.includes("previewImage");
 
     const unsupportedFields = supportsControls ? [] : ["autoplay", "showControls", "loop"];
     const isSupported = (field: BlockMetaField) => !unsupportedFields.includes(field.name);

@@ -28,6 +28,10 @@ const createState = (state: Partial<DamVideoBlockState> = {}): DamVideoBlockStat
 });
 
 describe("createDamVideoBlock", () => {
+    it("should reject the deprecated supports next to the options replacing it", () => {
+        expect(() => createDamVideoBlock({ name: "TeaserVideo", supports: [], previewImage: false })).toThrow(/both "supports" and/);
+    });
+
     it("should create a block named DamVideo", () => {
         expect(createDamVideoBlock().name).toBe("DamVideo");
     });
@@ -74,7 +78,7 @@ describe("createDamVideoBlock", () => {
     describe("when the API block doesn't support a preview image", () => {
         // Its stored data has no previewImage at all, so every state and output of the Admin block has to cope
         // with a missing one.
-        const block = createDamVideoBlock({ name: "TeaserVideo", supports: [] });
+        const block = createDamVideoBlock({ name: "TeaserVideo", controls: false, previewImage: false });
         const storedInput = { damFileId: "video-1" } as unknown as Parameters<typeof block.input2State>[0];
 
         it("should turn a missing preview image into an empty one", () => {

@@ -45,7 +45,6 @@ import { BillboardTeaserBlockFixtureService } from "./generators/blocks/teaser/b
 import { TeaserBlockFixtureService } from "./generators/blocks/teaser/teaser-block-fixture.service";
 import { HeadingBlockFixtureService } from "./generators/blocks/text-and-content/heading-block-fixture.service";
 import { KeyFactsBlockFixtureService } from "./generators/blocks/text-and-content/key-facts-block-fixture.service";
-import { ProductTypesBlockFixtureService } from "./generators/blocks/text-and-content/product-types-block.fixture";
 import { RichTextBlockFixtureService } from "./generators/blocks/text-and-content/rich-text-block-fixture.service";
 import { StandaloneHeadingBlockFixtureService } from "./generators/blocks/text-and-content/standalone-heading-block-fixture.service";
 import { TableBlockFixtureService } from "./generators/blocks/text-and-content/table-block-fixture.service";
@@ -127,7 +126,6 @@ import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.s
         VimeoVideoBlockFixtureService,
         YouTubeVideoBlockFixtureService,
         NewsFixtureService,
-        ProductTypesBlockFixtureService,
         TableBlockFixtureService,
         TipTapRichTextBlockFixtureService,
         TipTapTableBlockFixtureService,

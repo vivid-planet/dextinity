@@ -1,11 +1,18 @@
-"use client";
-
+import { gql } from "@dextinity/site-nextjs";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
 
-import type { GQLProductDetailPageFragment } from "./fragment.generated";
+import type { GQLProductDetailContentFragment } from "./Content.generated";
+
+export const productDetailContentFragment = gql`
+    fragment ProductDetailContent on Product {
+        title
+        image
+        description
+    }
+`;
 
 type Props = {
-    product: GQLProductDetailPageFragment;
+    product: GQLProductDetailContentFragment;
 };
 export function Content({ product }: Props) {
     return (

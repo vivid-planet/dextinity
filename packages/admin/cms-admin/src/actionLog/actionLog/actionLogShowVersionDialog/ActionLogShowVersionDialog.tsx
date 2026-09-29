@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { Dialog } from "@comet/admin";
+import { Dialog } from "@dextinity/admin";
 import { useMemo } from "react";
 import { useIntl } from "react-intl";
 
@@ -54,7 +54,7 @@ export function ActionLogShowVersionDialog<TQuery = Record<string, unknown>>({
             onClose={onClose}
             open={open}
             title={intl.formatMessage({
-                id: "comet.actionLog.entity.versionDialog.title",
+                id: "dextinity.actionLog.entity.versionDialog.title",
                 defaultMessage: "Action Log",
             })}
         >

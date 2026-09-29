@@ -13,8 +13,8 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Time, View } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Time, View } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -84,12 +84,12 @@ export function ActionLogsGrid<TQuery = Record<string, unknown>>({ queryName }: 
             {
                 ...dataGridDateTimeColumn,
                 field: "createdAt",
-                headerName: intl.formatMessage({ id: "comet.actionLog.entity.columns.createdAt", defaultMessage: "Date / Time" }),
+                headerName: intl.formatMessage({ id: "dextinity.actionLog.entity.columns.createdAt", defaultMessage: "Date / Time" }),
                 width: 200,
             },
             {
                 field: "type",
-                headerName: intl.formatMessage({ id: "comet.actionLog.entity.columns.type", defaultMessage: "Action" }),
+                headerName: intl.formatMessage({ id: "dextinity.actionLog.entity.columns.type", defaultMessage: "Action" }),
                 sortable: false,
                 filterable: false,
                 width: 150,
@@ -97,7 +97,7 @@ export function ActionLogsGrid<TQuery = Record<string, unknown>>({ queryName }: 
             },
             {
                 field: "entityId",
-                headerName: intl.formatMessage({ id: "comet.actionLog.entity.columns.entity", defaultMessage: "Entity" }),
+                headerName: intl.formatMessage({ id: "dextinity.actionLog.entity.columns.entity", defaultMessage: "Entity" }),
                 minWidth: 280,
                 flex: 1,
                 sortable: false,
@@ -111,7 +111,7 @@ export function ActionLogsGrid<TQuery = Record<string, unknown>>({ queryName }: 
             },
             {
                 field: "user",
-                headerName: intl.formatMessage({ id: "comet.actionLog.entity.columns.user", defaultMessage: "User" }),
+                headerName: intl.formatMessage({ id: "dextinity.actionLog.entity.columns.user", defaultMessage: "User" }),
                 minWidth: 200,
                 flex: 1,
                 sortable: false,
@@ -127,7 +127,7 @@ export function ActionLogsGrid<TQuery = Record<string, unknown>>({ queryName }: 
                 filterable: false,
                 renderCell: ({ row }) => (
                     <>
-                        <Tooltip title={<FormattedMessage id="comet.actionLog.entity.actions.showVersion" defaultMessage="Show version" />}>
+                        <Tooltip title={<FormattedMessage id="dextinity.actionLog.entity.actions.showVersion" defaultMessage="Show version" />}>
                             <IconButton color="primary" onClick={() => setSelectedRow(row)}>
                                 <View />
                             </IconButton>
@@ -135,7 +135,7 @@ export function ActionLogsGrid<TQuery = Record<string, unknown>>({ queryName }: 
                         <Tooltip
                             title={
                                 <FormattedMessage
-                                    id="comet.actionLog.entity.actions.showEntityActionLog"
+                                    id="dextinity.actionLog.entity.actions.showEntityActionLog"
                                     defaultMessage="Show action log for this entity"
                                 />
                             }

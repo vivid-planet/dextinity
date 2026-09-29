@@ -1,5 +1,5 @@
 ---
-"@comet/cms-admin": minor
+"@dextinity/cms-admin": minor
 ---
 
 Add `ActionLogsGrid`

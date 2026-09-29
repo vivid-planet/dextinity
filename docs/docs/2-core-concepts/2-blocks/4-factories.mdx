@@ -230,16 +230,16 @@ export const FullWidthImageBlock = createCompositeBlock({
 ## DamVideoBlock
 
 The DamVideoBlock factory creates a block for a video from the DAM.
-Use `supports` to restrict what the block offers besides the video file itself:
+It has one option for each thing it offers besides the video file itself:
 
-- `"controls"`: The playback options autoplay, loop and show controls.
-- `"previewImage"`: The poster image shown before playback.
+- `controls`: The playback options autoplay, loop and show controls.
+- `previewImage`: The poster image shown before playback.
 
-Both are supported by default.
+Both are enabled by default and disabled by passing `false`.
 `@dextinity/cms-api` and `@dextinity/cms-admin` export a ready-made `DamVideoBlock` created with those defaults.
 Use the `createDamVideoBlock` factory when a site doesn't need all of them, for instance an app integration that only reads the video's URL.
 
-Give the block a name of its own — `DamVideo` is taken by the exported `DamVideoBlock` — and use that same name and the same `supports` in both the API and the Admin.
+Give the block a name of its own — `DamVideo` is taken by the exported `DamVideoBlock` — and use that same name and the same options in both the API and the Admin.
 
 ### API
 
@@ -249,20 +249,20 @@ Use the `createDamVideoBlock` factory:
 import { createDamVideoBlock } from "@dextinity/cms-api";
 
 // For a site that only reads the video's URL
-export const TeaserVideoBlock = createDamVideoBlock({ supports: [] }, "TeaserVideo");
+export const TeaserVideoBlock = createDamVideoBlock({ controls: false, previewImage: false }, "TeaserVideo");
 ```
 
-Unsupported options are part of neither the block's data nor its input, so they don't show up in `blocks.generated.ts` and aren't stored for new content.
+Disabled options are part of neither the block's data nor its input, so they don't show up in `blocks.generated.ts` and aren't stored for new content.
 
-Values that were stored before an option was left out survive reading: the block loads them unchanged, and `migrateBlocks` writes them back as they are.
-They don't survive editing, though — saving a block in the Admin rebuilds its data from the input, which no longer carries the unsupported options.
-So narrowing `supports` leaves existing content untouched until an editor saves that block, and drops the values from then on.
+Values that were stored before an option was disabled survive reading: the block loads them unchanged, and `migrateBlocks` writes them back as they are.
+They don't survive editing, though — saving a block in the Admin rebuilds its data from the input, which no longer carries the disabled options.
+So disabling an option leaves existing content untouched until an editor saves that block, and drops the values from then on.
 Note that such a value is no longer treated as a child block, so a preview image kept this way isn't part of the block index either.
 
 :::warning
 
-Narrowing `supports` is therefore not reversible for content that is edited in the meantime.
-Widening it again only brings back the values of blocks that nobody saved while the option was left out.
+Disabling an option is therefore not reversible for content that is edited in the meantime.
+Enabling it again only brings back the values of blocks that nobody saved while the option was disabled.
 
 :::
 
@@ -271,7 +271,7 @@ Widening it again only brings back the values of blocks that nobody saved while 
 A block that supports the preview image defaults a missing one to an empty preview image when it loads content.
 So replacing a block a project already has works without a migration: content stored before the preview image existed loads as a child block instead of leaving the field undefined.
 
-The default applies on read, which also covers content that no migration reaches — for instance content stored while `supports` left the preview image out, before it was widened to include it.
+The default applies on read, which also covers content that no migration reaches — for instance content stored while the preview image was disabled, before it was enabled again.
 
 Run `migrateBlocks` to write the defaulted data back:
 
@@ -287,14 +287,14 @@ Own migrations are passed via `migrate` and start with version 1, like for any o
 import { createDamVideoBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
 
 export const TeaserVideoBlock = createDamVideoBlock(
-    { supports: ["controls"] },
+    { previewImage: false },
     { name: "TeaserVideo", migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([AddSomethingMigration]) } },
 );
 ```
 
 #### Replacing the DamVideoBlock
 
-A project replacing the exported `DamVideoBlock` with a block that leaves options out keeps their stored values, as described above.
+A project replacing the exported `DamVideoBlock` with a block that disables options keeps their stored values, as described above.
 To remove them, add a migration.
 
 Content the `DamVideoBlock` saved before its preview image migration moved into its [vendor chain](./5-migrations.mdx#vendor-migrations) carries that migration as `$$version: 1`.
@@ -333,7 +333,7 @@ class RemoveControlsAndPreviewImageMigration extends BlockMigration<(from: WithP
 }
 
 export const VideoBlock = createDamVideoBlock(
-    { supports: [] },
+    { controls: false, previewImage: false },
     {
         name: "Video",
         migrate: {
@@ -353,12 +353,19 @@ Use the `createDamVideoBlock` factory:
 ```tsx title="TeaserVideoBlock.tsx"
 import { createDamVideoBlock } from "@dextinity/cms-admin";
 
-export const TeaserVideoBlock = createDamVideoBlock({ name: "TeaserVideo", supports: [] });
+export const TeaserVideoBlock = createDamVideoBlock({ name: "TeaserVideo", controls: false, previewImage: false });
 ```
 
-Unsupported options are hidden from the editor.
-As long as the API block still supports them, their stored values are kept — the Admin passes them through unchanged — so widening `supports` shows them in the editor again.
-Once the API block leaves them out too, they are dropped as described above.
+Disabled options are hidden from the editor.
+As long as the API block still has them, their stored values are kept — the Admin passes them through unchanged — so enabling them again shows them in the editor.
+Once the API block disables them too, they are dropped as described above.
+
+The `supports` array the Admin factory took before is deprecated. Replace it with the options:
+
+```diff
+-createDamVideoBlock({ name: "TeaserVideo", supports: ["controls"] });
++createDamVideoBlock({ name: "TeaserVideo", previewImage: false });
+```
 
 ### Site
 

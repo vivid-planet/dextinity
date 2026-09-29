@@ -11,7 +11,7 @@ import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "./t
 
 type ExternalLinkBlockOption = "openInNewWindow" | "noFollow";
 
-/** The options are optional because a block whose `fields` leave one out doesn't carry it at all. */
+/** The options are optional because a block of its own doesn't carry the ones it disables at all. */
 type WithOptionalOptions<T extends Record<ExternalLinkBlockOption, boolean>> = Omit<T, ExternalLinkBlockOption> &
     Partial<Pick<T, ExternalLinkBlockOption>>;
 
@@ -31,38 +31,34 @@ const allOptions: ExternalLinkBlockOption[] = ["openInNewWindow", "noFollow"];
 
 interface ExternalLinkBlockFactoryOptions {
     /**
-     * Which options the block's data has besides the URL. Must match the API block this is paired with:
+     * Offers "Open in new window". Defaults to `true`.
+     */
+    openInNewWindow?: boolean;
+    /**
+     * Offers "No follow". Defaults to `true`.
+     */
+    noFollow?: boolean;
+    /**
+     * The block's name. Must match the name of the API block this is paired with.
+     *
+     * Without a name of its own, the block keeps the name and the data of the `ExternalLinkBlock`, and a disabled
+     * option is only hidden from the editor: stored values are kept as they are, the API block and the site component
+     * are unaffected. Use that where an option has no meaning, for instance in redirects, where neither affects the
+     * resulting HTTP redirect.
+     *
+     * With a name of its own, the block is paired with an API block created by `createExternalLinkBlock` from
+     * `@dextinity/cms-api`, and a disabled option isn't part of its data either. Disable the same options as there:
      * sending a field the API block doesn't have is rejected by validation, and so is omitting one it has.
-     * Leave this alone unless you paired the block with an API block created by `createExternalLinkBlock`
-     * from `@dextinity/cms-api` — the `ExternalLinkBlock` shipped by the API has all of them.
-     * @default ["openInNewWindow", "noFollow"]
-     */
-    fields?: ExternalLinkBlockOption[];
-    /**
-     * Which of those options the editor can set. Leave out anything that has no meaning where the block is
-     * used, for instance `[]` for redirects, where neither option affects the resulting HTTP redirect.
-     *
-     * Values that are already stored are kept as they are, the editor just can't change them anymore.
-     * A field left out here stays part of the block's data, so the API block and the site component are
-     * unaffected. It also keeps its default, it isn't forced to a different value — to always open external
-     * links in a new tab, do so in the site implementation instead.
-     *
-     * Must be a subset of `fields`: the editor can't set an option the block doesn't have.
-     * @default the value of `fields`
-     */
-    supports?: ExternalLinkBlockOption[];
-    /**
-     * The block's name. Must match the name of the API block this is paired with. Required as soon as
-     * `fields` leaves an option out, because the name promises a field set — it is what ties stored data,
-     * the generated types and the site component together, and what the block clipboard matches on when
-     * deciding whether copied content fits where it is pasted.
      * @default "ExternalLink"
      */
     name?: string;
 }
 
+/**
+ * Creates an external link block that offers only the options that have an effect where it is used.
+ */
 export function createExternalLinkBlock(
-    options?: Omit<ExternalLinkBlockFactoryOptions, "fields"> & { fields?: undefined },
+    options?: Omit<ExternalLinkBlockFactoryOptions, "name"> & { name?: "ExternalLink" },
     override?: (block: CompleteExternalLinkBlock) => CompleteExternalLinkBlock,
 ): CompleteExternalLinkBlock;
 export function createExternalLinkBlock(
@@ -70,33 +66,19 @@ export function createExternalLinkBlock(
     override?: (block: ExternalLinkBlock) => ExternalLinkBlock,
 ): ExternalLinkBlock;
 export function createExternalLinkBlock(
-    { fields = allOptions, supports = fields, name }: ExternalLinkBlockFactoryOptions = {},
+    { name = "ExternalLink", ...options }: ExternalLinkBlockFactoryOptions = {},
     override?: ((block: CompleteExternalLinkBlock) => CompleteExternalLinkBlock) | ((block: ExternalLinkBlock) => ExternalLinkBlock),
 ): CompleteExternalLinkBlock | ExternalLinkBlock {
-    // A reduced field set only fits an API block of your own, so it must not keep the ExternalLink name:
-    // that name promises the field set of the API's ExternalLinkBlock, and it is also what the block
-    // clipboard matches on when deciding whether copied content fits where it is pasted.
-    const blockName = name ?? "ExternalLink";
-
-    if (blockName === "ExternalLink" && !allOptions.every((option) => fields.includes(option))) {
-        throw new Error(
-            `An external link block that leaves an option out of its "fields" needs a "name" of its own other than "ExternalLink", matching the API block it is paired with. The ExternalLinkBlock shipped by the API has all of them — use "supports" to hide an option from the editor while keeping it in the data.`,
-        );
-    }
-
-    const unsupportedFields = supports.filter((option) => !fields.includes(option));
-
-    if (unsupportedFields.length > 0) {
-        throw new Error(
-            `The ${blockName} block can't let the editor set ${unsupportedFields.join(", ")}, as it isn't part of its fields. Add it to "fields" or remove it from "supports".`,
-        );
-    }
+    const enabledOptions = allOptions.filter((option) => options[option] !== false);
+    // The ExternalLink name promises the data of the ExternalLinkBlock, which the block clipboard relies on when
+    // deciding whether copied content fits where it is pasted
+    const fields = name === "ExternalLink" ? allOptions : enabledOptions;
 
     const has = (option: ExternalLinkBlockOption) => fields.includes(option);
     const ExternalLinkBlock: ExternalLinkBlock = {
         ...createBlockSkeleton(),
 
-        name: blockName,
+        name,
 
         displayName: <FormattedMessage id="dextinity.blocks.externalLink" defaultMessage="External Link" />,
 
@@ -161,13 +143,13 @@ export function createExternalLinkBlock(
                             validate={(url) => validateLinkTarget(url)}
                             disableContentTranslation
                         />
-                        {supports.includes("openInNewWindow") && (
+                        {enabledOptions.includes("openInNewWindow") && (
                             <CheckboxField
                                 label={<FormattedMessage id="dextinity.blocks.link.external.openInNewWindow" defaultMessage="Open in new window" />}
                                 name="openInNewWindow"
                             />
                         )}
-                        {supports.includes("noFollow") && (
+                        {enabledOptions.includes("noFollow") && (
                             <CheckboxField
                                 label={<FormattedMessage id="dextinity.blocks.link.external.noFollow" defaultMessage="No follow" />}
                                 name="noFollow"
@@ -191,7 +173,7 @@ export function createExternalLinkBlock(
     };
 
     if (override) {
-        // Without a reduced `fields`, the block has all of them, which is what the overload for a complete block relies on
+        // Without a name of its own, the block has all fields, which is what the overload for a complete block relies on
         return (override as (block: ExternalLinkBlock) => ExternalLinkBlock)(ExternalLinkBlock);
     }
 

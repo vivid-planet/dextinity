@@ -67,7 +67,7 @@ export const Default: Story = {
     },
 };
 
-const WithoutOptionsBlock = createExternalLinkBlock({ supports: [] });
+const WithoutOptionsBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false });
 
 function WithoutOptionsStory() {
     const [state, setState] = useState(WithoutOptionsBlock.defaultValues());

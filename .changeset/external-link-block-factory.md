@@ -4,7 +4,7 @@
 
 Add `createExternalLinkBlock` factory
 
-The `ExternalLinkBlock` lets editors enter a URL and offers two options besides it: "Open in new window" and "No follow". Where an option has no effect — an internal application that is always embedded in an iframe, for instance — the factory leaves it out. Pass what the editor should be offered via `supports`; anything left out isn't rendered in the admin component. `ExternalLinkBlock` is now created from the factory with defaults and still exported next to it, so this is non-breaking.
+The `ExternalLinkBlock` offers "Open in new window" and "No follow" besides the URL, even where neither has an effect. The factory disables an option by passing `false`, both are enabled by default. `ExternalLinkBlock` is now created from the factory and still exported, so this is non-breaking.
 
 **Example**
 
@@ -14,23 +14,19 @@ import { createExternalLinkBlock, createLinkBlock, InternalLinkBlock } from "@de
 export const LinkBlock = createLinkBlock({
     supportedBlocks: {
         internal: InternalLinkBlock,
-        external: createExternalLinkBlock({ supports: [] }),
+        external: createExternalLinkBlock({ openInNewWindow: false, noFollow: false }),
     },
 });
 ```
 
-Values that are already stored are kept as they are, the editor just can't change them anymore. A field left out of `supports` stays part of the block's data, so the API block and the site component are unaffected. An option that is left out keeps its default — it isn't forced to a different value. To always open external links in a new tab, do so in the site implementation instead.
+Without a name of its own, the block keeps the name and the data of the `ExternalLinkBlock`: a disabled option is only hidden from the editor, stored values are kept, and the API block and the site component are unaffected.
 
-**Pairing with an API block of your own**
-
-`supports` is about the editor, not about the data: the block still carries and sends every field. To pair it with an API block that has fewer fields, use `fields` and `name` instead, matching that block exactly:
+With a name of its own, the block is paired with an API block created by `createExternalLinkBlock` from `@dextinity/cms-api`, and a disabled option isn't part of its data either. Use the same name and disable the same options as there:
 
 ```tsx
-export const UrlLinkBlock = createExternalLinkBlock({ fields: [], name: "UrlLink" });
+export const UrlLinkBlock = createExternalLinkBlock({ name: "UrlLink", openInNewWindow: false, noFollow: false });
 ```
-
-`fields` decides which options the block's data has, `supports` which of those the editor may set, defaulting to `fields`. Both must line up with the API block: sending a field it doesn't have is rejected by validation, and so is omitting one it has. Two rules are checked at creation time and throw if broken: `supports` has to be a subset of `fields`, and a reduced `fields` needs a `name` of its own — a block with fewer fields must not keep passing itself off as `ExternalLink`, not least because the block clipboard matches on the name.
 
 **Redirects no longer offer "Open in new window" and "No follow"**
 
-A redirect resolves to an HTTP redirect, which has neither a `target` nor a `rel` attribute, so both options were without effect there. They are now hidden from the redirects form. Stored values are left untouched.
+A redirect resolves to an HTTP redirect, which has neither a `target` nor a `rel` attribute, so both options were without effect there. Stored values are left untouched.

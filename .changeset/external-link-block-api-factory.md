@@ -4,20 +4,16 @@
 
 Add `createExternalLinkBlock` factory
 
-The `ExternalLinkBlock` has three fields: the target URL plus the options `openInNewWindow` and `noFollow`. Where an option has no meaning — an internal application that is always embedded in an iframe, or redirects, where neither affects the resulting HTTP redirect — the factory leaves it out of the block entirely. Pass the options the block should have via `supports`; an option left out is absent from `block-meta.json` and from the generated `…BlockData` / `…BlockInput` types, and sending it as input is rejected by validation.
+The `ExternalLinkBlock` always has the options `openInNewWindow` and `noFollow` besides the URL, even for sites that use neither. The factory removes an option from the block by passing `false`, both are enabled by default. A disabled option is absent from `block-meta.json` and the generated types, and sending it as input is rejected by validation.
 
 **Example**
 
 ```ts
 import { createExternalLinkBlock } from "@dextinity/cms-api";
 
-export const UrlLinkBlock = createExternalLinkBlock({ supports: [] }, "UrlLink");
+export const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "UrlLink");
 ```
 
-The block name is mandatory. A block's field set is part of what its name promises — the name ties stored data, the generated types, the admin block and the site component together, so one name means one field set. A block created with a reduced field set is a block of its own, not a variant of `ExternalLinkBlock`, and needs a matching admin block and site component under that same name.
+The block name is mandatory, since a block with other fields is a block of its own. It needs an admin block created with the same name and options, and a site component. `ExternalLinkBlock` is unchanged.
 
-`ExternalLinkBlock` is unchanged and keeps all three fields, so nothing existing is affected.
-
-Removing a field takes it out of the contract, not out of the database: values already stored under that block name stay in its JSON, but the block passes on only the fields it has, so they reach neither the admin nor the site. They are dropped the next time an editor saves the block.
-
-A block created by the factory carries the migrations shipped with the `ExternalLinkBlock` as vendor migrations, so it reads content the `ExternalLinkBlock` stored the same way and can replace it at an existing usage site. Its own migrations start with version 1, for instance to remove the values of the options left out.
+A block created by the factory carries the migrations shipped with the `ExternalLinkBlock` as vendor migrations, so it can replace the `ExternalLinkBlock` in an existing project: it reads the content the `ExternalLinkBlock` stored, and its own migrations start with version 1. Values stored for a disabled option aren't passed on to the admin or the site, and are dropped the next time an editor saves the block.

@@ -25,19 +25,19 @@ describe("createExternalLinkBlock", () => {
     });
 
     it("should not have a field for an option that is left out", () => {
-        expect(fieldNames(createExternalLinkBlock({ supports: [] }, "UrlLink"))).toEqual({
+        expect(fieldNames(createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "UrlLink"))).toEqual({
             fields: ["targetUrl"],
             inputFields: ["targetUrl"],
         });
 
-        expect(fieldNames(createExternalLinkBlock({ supports: ["noFollow"] }, "NoFollowLink"))).toEqual({
+        expect(fieldNames(createExternalLinkBlock({ openInNewWindow: false }, "NoFollowLink"))).toEqual({
             fields: ["targetUrl", "noFollow"],
             inputFields: ["targetUrl", "noFollow"],
         });
     });
 
-    it("should keep the field order stable regardless of how supports is ordered", () => {
-        expect(fieldNames(createExternalLinkBlock({ supports: ["noFollow", "openInNewWindow"] }, "ReorderedLink")).fields).toEqual([
+    it("should keep the field order stable regardless of the order of the options", () => {
+        expect(fieldNames(createExternalLinkBlock({ noFollow: true, openInNewWindow: true }, "ReorderedLink")).fields).toEqual([
             "targetUrl",
             "openInNewWindow",
             "noFollow",
@@ -45,13 +45,13 @@ describe("createExternalLinkBlock", () => {
     });
 
     it("should not leak fields between blocks created by separate calls", () => {
-        createExternalLinkBlock({ supports: [] }, "FirstLink");
+        createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "FirstLink");
 
         expect(fieldNames(createExternalLinkBlock({}, "SecondLink")).fields).toEqual(["targetUrl", "openInNewWindow", "noFollow"]);
     });
 
     it("should transform the input to block data", () => {
-        const UrlLinkBlock = createExternalLinkBlock({ supports: [] }, "TransformingLink");
+        const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "TransformingLink");
 
         expect(UrlLinkBlock.blockInputFactory({ targetUrl: "https://www.example.com" }).transformToBlockData().transformToSave()).toMatchObject({
             targetUrl: "https://www.example.com",
@@ -59,23 +59,23 @@ describe("createExternalLinkBlock", () => {
     });
 
     it("should reject a name that is already registered", () => {
-        createExternalLinkBlock({ supports: [] }, "TakenLink");
+        createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "TakenLink");
 
-        expect(() => createExternalLinkBlock({ supports: [] }, "TakenLink")).toThrow(/already registered/);
-        expect(() => createExternalLinkBlock({ supports: [] }, ExternalLinkBlock.name)).toThrow(/already registered/);
+        expect(() => createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "TakenLink")).toThrow(/already registered/);
+        expect(() => createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, ExternalLinkBlock.name)).toThrow(/already registered/);
     });
 
     describe("content stored by ExternalLinkBlock", () => {
         const stored = { targetUrl: "https://www.example.com", openInNewWindow: true, noFollow: true, $$version: 1 };
 
         it("should pass on only the fields the block has", async () => {
-            const UrlLinkBlock = createExternalLinkBlock({ supports: [] }, "StoredUrlLink");
+            const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "StoredUrlLink");
 
             expect(await UrlLinkBlock.blockDataFactory({ ...stored }).transformToPlain()).toEqual({ targetUrl: "https://www.example.com" });
         });
 
         it("should keep the stored values of options that are left out until the block is saved again", () => {
-            const UrlLinkBlock = createExternalLinkBlock({ supports: [] }, "KeepingUrlLink");
+            const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "KeepingUrlLink");
 
             expect(UrlLinkBlock.blockDataFactory({ ...stored }).transformToSave()).toEqual({
                 targetUrl: "https://www.example.com",
@@ -98,7 +98,7 @@ describe("createExternalLinkBlock", () => {
             }
 
             const UrlLinkBlock = createExternalLinkBlock(
-                { supports: [] },
+                { openInNewWindow: false, noFollow: false },
                 { name: "MigratedUrlLink", migrate: { version: 1, migrations: [RemoveLinkOptionsMigration] } },
             );
 
@@ -110,7 +110,7 @@ describe("createExternalLinkBlock", () => {
         });
 
         it("should add noFollow to content stored before it existed", async () => {
-            const NoFollowLinkBlock = createExternalLinkBlock({ supports: ["noFollow"] }, "LegacyNoFollowLink");
+            const NoFollowLinkBlock = createExternalLinkBlock({ openInNewWindow: false }, "LegacyNoFollowLink");
 
             expect(
                 await NoFollowLinkBlock.blockDataFactory({ targetUrl: "https://www.example.com", openInNewWindow: true }).transformToPlain(),
@@ -122,7 +122,7 @@ describe("createExternalLinkBlock", () => {
     });
 
     it("should leave options that are left out out of the block data created from the input", () => {
-        const UrlLinkBlock = createExternalLinkBlock({ supports: [] }, "InputUrlLink");
+        const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "InputUrlLink");
 
         expect(
             UrlLinkBlock.blockInputFactory({ targetUrl: "https://www.example.com", openInNewWindow: true } as never)

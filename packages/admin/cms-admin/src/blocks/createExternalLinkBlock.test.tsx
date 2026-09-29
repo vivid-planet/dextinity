@@ -8,39 +8,35 @@ describe("createExternalLinkBlock", () => {
     });
 
     it("should allow naming the block after the API block it is paired with", () => {
-        expect(createExternalLinkBlock({ fields: [], name: "UrlLink" }).name).toBe("UrlLink");
+        expect(createExternalLinkBlock({ name: "UrlLink", openInNewWindow: false, noFollow: false }).name).toBe("UrlLink");
     });
 
-    it("should keep a field the editor can't set in the block's data", () => {
-        const block = createExternalLinkBlock({ supports: [] });
+    it("should keep a disabled option in the block's data without a name of its own", () => {
+        const block = createExternalLinkBlock({ openInNewWindow: false, noFollow: false });
 
         expect(block.defaultValues()).toEqual({ targetUrl: undefined, openInNewWindow: false, noFollow: false });
         expect(block.state2Output(block.defaultValues())).toEqual({ targetUrl: undefined, openInNewWindow: false, noFollow: false });
     });
 
-    it("should require an own name as soon as a field is left out, so that the name keeps promising a field set", () => {
-        expect(() => createExternalLinkBlock({ fields: [] })).toThrow(/name/);
-        expect(() => createExternalLinkBlock({ fields: ["noFollow"] })).toThrow(/name/);
-        expect(() => createExternalLinkBlock({ fields: [], name: "ExternalLink" })).toThrow(/name/);
+    it("should keep a disabled option in the block's data when named ExternalLink explicitly", () => {
+        const block = createExternalLinkBlock({ name: "ExternalLink", openInNewWindow: false, noFollow: false });
+
+        expect(block.defaultValues()).toEqual({ targetUrl: undefined, openInNewWindow: false, noFollow: false });
     });
 
-    it("should leave a field out of the block's data when it isn't one of its fields", () => {
-        const block = createExternalLinkBlock({ fields: [], name: "UrlLink" });
+    it("should leave a disabled option out of the block's data with a name of its own", () => {
+        const block = createExternalLinkBlock({ name: "UrlLink", openInNewWindow: false, noFollow: false });
 
         expect(block.defaultValues()).toEqual({ targetUrl: undefined });
         expect(block.state2Output(block.defaultValues())).toEqual({ targetUrl: undefined });
         expect(block.url2State?.("https://www.example.com")).toEqual({ targetUrl: "https://www.example.com" });
     });
 
-    it("should leave out only the fields it was told to", () => {
-        expect(createExternalLinkBlock({ fields: ["noFollow"], name: "NoFollowLink" }).defaultValues()).toEqual({
+    it("should leave out only the options it was told to", () => {
+        expect(createExternalLinkBlock({ name: "NoFollowLink", openInNewWindow: false }).defaultValues()).toEqual({
             targetUrl: undefined,
             noFollow: false,
         });
-    });
-
-    it("should reject letting the editor set an option the block doesn't have", () => {
-        expect(() => createExternalLinkBlock({ fields: [], supports: ["noFollow"], name: "UrlLink" })).toThrow(/noFollow/);
     });
 
     it("should allow overriding the block", () => {
@@ -49,9 +45,11 @@ describe("createExternalLinkBlock", () => {
         expect(block.name).toBe("MyCustomExternalLink");
     });
 
-    it("should type the options as always present unless the block leaves one out of its fields", () => {
+    it("should type the options as always present unless the block has a name of its own", () => {
         expectTypeOf(createExternalLinkBlock().defaultValues().openInNewWindow).toEqualTypeOf<boolean>();
-        expectTypeOf(createExternalLinkBlock({ supports: [] }).defaultValues().noFollow).toEqualTypeOf<boolean>();
-        expectTypeOf(createExternalLinkBlock({ fields: [], name: "TypedUrlLink" }).defaultValues().noFollow).toEqualTypeOf<boolean | undefined>();
+        expectTypeOf(createExternalLinkBlock({ openInNewWindow: false, noFollow: false }).defaultValues().noFollow).toEqualTypeOf<boolean>();
+        expectTypeOf(createExternalLinkBlock({ name: "TypedUrlLink", noFollow: false }).defaultValues().noFollow).toEqualTypeOf<
+            boolean | undefined
+        >();
     });
 });

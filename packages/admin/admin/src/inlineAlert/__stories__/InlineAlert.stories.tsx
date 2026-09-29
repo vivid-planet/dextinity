@@ -1,4 +1,4 @@
-import { Clear, CometColor, InfoFilled, Reload, RemoveFilled, WarningSolid } from "@comet/admin-icons";
+import { Clear, DextinityIcon, InfoFilled, Reload, RemoveFilled, WarningSolid } from "@dextinity/admin-icons";
 import { Box } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -54,7 +54,7 @@ export const InlineAlertWithInfo: Story = {
  */
 export const InlineAlertWithCustomContent: Story = {
     args: {
-        icon: <CometColor sx={{ fontSize: "32px" }} />,
+        icon: <DextinityIcon sx={{ fontSize: "32px" }} />,
         title: "Custom Title",
         description: "Custom Description",
     },

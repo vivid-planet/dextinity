@@ -5,8 +5,8 @@ import {
     type InputWithPopperClassKey,
     type InputWithPopperProps,
     type ThemedComponentBaseProps,
-} from "@comet/admin";
-import { Time } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Time } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, InputAdornment, ListItemText, MenuItem, MenuList } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
 import { format } from "date-fns";
@@ -60,7 +60,7 @@ export interface TimePickerProps extends Omit<InputWithPopperProps, "children" |
 }
 
 /**
- * @deprecated Use `TimePicker` from `@comet/admin` instead.
+ * @deprecated Use `TimePicker` from `@dextinity/admin` instead.
  */
 export const TimePicker = (inProps: TimePickerProps) => {
     const {
@@ -75,7 +75,7 @@ export const TimePicker = (inProps: TimePickerProps) => {
         max = "23:59",
         slotProps,
         ...inputWithPopperProps
-    } = useThemeProps({ props: inProps, name: "CometAdminLegacyTimePicker" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminLegacyTimePicker" });
     const intl = useIntl();
     const focusedItemRef = useRef<HTMLLIElement>(null);
 
@@ -97,7 +97,7 @@ export const TimePicker = (inProps: TimePickerProps) => {
     return (
         <Root
             value={dateValue ? intl.formatTime(dateValue, formatOptions) : ""}
-            placeholder={placeholder ?? intl.formatMessage({ id: "comet.timePicker.select", defaultMessage: "Select" })}
+            placeholder={placeholder ?? intl.formatMessage({ id: "dextinity.timePicker.select", defaultMessage: "Select" })}
             startAdornment={
                 <StartAdornment position="start" disablePointerEvents {...slotProps?.startAdornment}>
                     <Time />
@@ -166,17 +166,17 @@ export const TimePicker = (inProps: TimePickerProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminLegacyTimePicker: TimePickerClassKey;
+        DextinityAdminLegacyTimePicker: TimePickerClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminLegacyTimePicker: TimePickerProps;
+        DextinityAdminLegacyTimePicker: TimePickerProps;
     }
 
     interface Components {
-        CometAdminLegacyTimePicker?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminLegacyTimePicker"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminLegacyTimePicker"];
+        DextinityAdminLegacyTimePicker?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminLegacyTimePicker"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminLegacyTimePicker"];
         };
     }
 }

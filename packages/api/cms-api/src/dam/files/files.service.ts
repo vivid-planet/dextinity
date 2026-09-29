@@ -1,31 +1,27 @@
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, MikroORM, QueryBuilder, raw, Utils } from "@mikro-orm/postgresql";
-import { forwardRef, Inject, Injectable, Logger } from "@nestjs/common";
+import { forwardRef, Inject, Injectable, Logger, Optional } from "@nestjs/common";
 import { createHmac } from "crypto";
 import exifr from "exifr";
 import { createReadStream } from "fs";
-import * as hasha from "hasha";
-import { basename, extname, parse } from "path";
+import { basename, extname } from "path";
 import probe from "probe-image-size";
 import * as rimraf from "rimraf";
-import { promisify } from "util";
-import { inflate as inflateCallback } from "zlib";
-
-const inflate = promisify(inflateCallback);
 
 import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service";
 import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util";
-import { CometEntityNotFoundException } from "../../common/errors/entity-not-found.exception";
+import { DextinityEntityNotFoundException } from "../../common/errors/entity-not-found.exception";
+import { DextinityValidationException } from "../../common/errors/validation.exception";
 import { SortDirection } from "../../common/sorting/sort-direction.enum";
 import { FileUploadInput } from "../../file-utils/file-upload.input";
-import { slugifyFilename } from "../../file-utils/files.utils";
+import { calculateFileHash, slugifyFilename } from "../../file-utils/files.utils";
 import { FocalPoint } from "../../file-utils/focal-point.enum";
-import { Extension, ResizingType } from "../../imgproxy/imgproxy.enum";
-import { ImgproxyService } from "../../imgproxy/imgproxy.service";
-import { ContentScopeService } from "../../user-permissions/content-scope.service";
-import { CometImageResolutionException } from "../common/errors/image-resolution.exception";
+import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
+import { DextinityImageResolutionException } from "../common/errors/image-resolution.exception";
+import { getDamFileCategory } from "../common/mimeTypes/dam-file-category";
 import { DamConfig } from "../dam.config";
-import { DAM_CONFIG } from "../dam.constants";
+import { DAM_CONFIG, DAM_DOMINANT_COLOR_CALCULATOR } from "../dam.constants";
+import { DominantColorCalculatorInterface } from "../dominant-color-calculator.interface";
 import { ImageCropAreaInput } from "../images/dto/image-crop-area.input";
 import { DamScopeInterface } from "../types";
 import { DamMediaAlternative } from "./dam-media-alternatives/entities/dam-media-alternative.entity";
@@ -119,7 +115,7 @@ const withFilesSelect = (
 
 @Injectable()
 export class FilesService {
-    protected readonly logger = new Logger(FilesService.name);
+    private readonly logger = new Logger(FilesService.name);
 
     constructor(
         @InjectRepository("DamFile") private readonly filesRepository: EntityRepository<FileInterface>,
@@ -127,10 +123,9 @@ export class FilesService {
         @Inject(forwardRef(() => BlobStorageBackendService)) private readonly blobStorageBackendService: BlobStorageBackendService,
         private readonly foldersService: FoldersService,
         @Inject(DAM_CONFIG) private readonly config: DamConfig,
-        private readonly imgproxyService: ImgproxyService,
         private readonly orm: MikroORM,
-        private readonly contentScopeService: ContentScopeService,
         private readonly entityManager: EntityManager,
+        @Optional() @Inject(DAM_DOMINANT_COLOR_CALCULATOR) private readonly dominantColorCalculator?: DominantColorCalculatorInterface,
     ) {}
 
     private selectQueryBuilder(): QueryBuilder<FileInterface> {
@@ -226,7 +221,7 @@ export class FilesService {
     }
 
     async calculateHashForFile(filePath: string): Promise<string> {
-        return hasha.fromFile(filePath, { algorithm: "md5" });
+        return calculateFileHash(filePath);
     }
 
     async findOneByFilenameAndFolder(
@@ -266,11 +261,23 @@ export class FilesService {
     ): Promise<FileInterface> {
         let result: FileInterface | undefined = undefined;
         try {
-            if (uploadedFile.mimetype !== fileToReplace.mimetype) {
-                throw new Error(
-                    `File cannot be replaced by a file with a different mimetype. Existing mimetype: ${fileToReplace.mimetype}, new mimetype: ${uploadedFile.mimetype}`,
+            const existingCategory = getDamFileCategory(fileToReplace.mimetype);
+            const uploadedCategory = getDamFileCategory(uploadedFile.mimetype);
+
+            if (existingCategory === "document") {
+                // Files in the "document" category serve varying purposes: a VTT file is a video's subtitles, a PDF is a download.
+                if (uploadedFile.mimetype !== fileToReplace.mimetype) {
+                    throw new DextinityValidationException(
+                        `File cannot be replaced by a file of a different mimetype. Existing mimetype: ${fileToReplace.mimetype}, new mimetype: ${uploadedFile.mimetype}`,
+                    );
+                }
+            } else if (uploadedCategory !== existingCategory) {
+                throw new DextinityValidationException(
+                    `File cannot be replaced by a file of a different category. Existing category: ${existingCategory} (${fileToReplace.mimetype}), new category: ${uploadedCategory} (${uploadedFile.mimetype})`,
                 );
             }
+
+            const name = await this.getNameForReplacedFile(fileToReplace, uploadedFile);
 
             const uploadedFileMetadata = await this.getFileMetadataForUpload(uploadedFile);
             const oldAndNewFileAreIdentical = fileToReplace.contentHash === uploadedFileMetadata.contentHash;
@@ -295,6 +302,7 @@ export class FilesService {
             }
 
             Object.assign(fileToReplace, {
+                name,
                 size: uploadedFile.size,
                 mimetype: uploadedFile.mimetype,
                 contentHash: uploadedFileMetadata.contentHash,
@@ -312,10 +320,33 @@ export class FilesService {
         return result;
     }
 
+    private async getNameForReplacedFile(fileToReplace: FileInterface, uploadedFile: FileUploadInput): Promise<string> {
+        const previousExtension = extname(fileToReplace.name);
+        const newExtension = extname(uploadedFile.originalname).toLowerCase();
+
+        if (newExtension === previousExtension.toLowerCase()) {
+            return fileToReplace.name;
+        }
+
+        // fileToReplace.name is already slugified, so only the extension needs to be swapped
+        const nameWithoutExtension = basename(fileToReplace.name, previousExtension);
+        const folderId = fileToReplace.folder?.id ?? null;
+
+        let name = `${nameWithoutExtension}${newExtension}`;
+        let counter = 1;
+
+        while ((await this.findOneByFilenameAndFolder({ filename: name, folderId }, fileToReplace.scope)) !== null) {
+            counter++;
+            name = `${nameWithoutExtension}-${counter}${newExtension}`;
+        }
+
+        return name;
+    }
+
     async updateById(id: string, data: UpdateFileInput): Promise<FileInterface> {
         const file = await this.findOneById(id);
         if (!file) {
-            throw new CometEntityNotFoundException();
+            throw new DextinityEntityNotFoundException();
         }
         return this.updateByEntity(file, data);
     }
@@ -346,8 +377,7 @@ export class FilesService {
         const updatedFiles = [];
 
         for (const file of files) {
-            // Convert to JS object because deep-comparing classes and objects doesn't work
-            if (targetFolder?.scope !== undefined && !this.contentScopeService.scopesAreEqual(file.scope, targetFolder.scope)) {
+            if (targetFolder?.scope !== undefined && !contentScopesAreEqual(file.scope, targetFolder.scope)) {
                 throw new Error("Target folder scope doesn't match file scope");
             }
 
@@ -360,7 +390,7 @@ export class FilesService {
     async delete(id: string): Promise<boolean> {
         const file = await this.findOneById(id);
         if (!file) {
-            throw new CometEntityNotFoundException();
+            throw new DextinityEntityNotFoundException();
         }
 
         const result = await this.filesRepository.nativeDelete(id);
@@ -413,18 +443,9 @@ export class FilesService {
                 ...assignData,
             });
 
-            if (result.image) {
-                // We do not want for our users to await the dominant color calculation. To prevent concurrency issues we must use a separate Unit of
-                // Work. This can be achieved by forking the EntityManager instance.
-                // See https://mikro-orm.io/docs/faq#you-cannot-call-emflush-from-inside-lifecycle-hook-handlers and
-                // https://mikro-orm.io/docs/unit-of-work for more information.
-                const entityManager = this.orm.em.fork();
-                const image = await entityManager.findOneOrFail(DamFileImage, result.image.id);
-
-                this.calculateDominantColor(contentHash).then((dominantColor) => {
-                    image.dominantColor = dominantColor;
-                    return entityManager.flush();
-                });
+            if (result.image && this.dominantColorCalculator) {
+                // We do not want for our users to await the dominant color calculation.
+                void this.saveDominantColor({ imageId: result.image.id, contentHash, dominantColorCalculator: this.dominantColorCalculator });
             }
             rimraf.sync(file.path);
         } catch (e) {
@@ -572,84 +593,38 @@ export class FilesService {
         return name;
     }
 
-    async calculateDominantColor(contentHash: string): Promise<string | undefined> {
-        const path = this.imgproxyService
-            .builder()
-            .resize(ResizingType.AUTO, 1)
-            .format(Extension.PNG)
-            .generateUrl(
-                `${this.blobStorageBackendService.getBackendFilePathPrefix()}${this.config.filesDirectory}/${createHashedPath(contentHash)}`,
-            );
-
-        const imgUrl = this.imgproxyService.getSignedUrl(path);
-        let imageResponse: Response;
+    private async saveDominantColor({
+        imageId,
+        contentHash,
+        dominantColorCalculator,
+    }: {
+        imageId: string;
+        contentHash: string;
+        dominantColorCalculator: DominantColorCalculatorInterface;
+    }): Promise<void> {
         try {
-            imageResponse = await fetch(imgUrl);
+            // To prevent concurrency issues we must use a separate Unit of Work. This can be achieved by forking the EntityManager instance.
+            // See https://mikro-orm.io/docs/faq#you-cannot-call-emflush-from-inside-lifecycle-hook-handlers and
+            // https://mikro-orm.io/docs/unit-of-work for more information.
+            const entityManager = this.orm.em.fork();
+            const image = await entityManager.findOneOrFail(DamFileImage, imageId);
+            image.dominantColor = await dominantColorCalculator.calculateDominantColor(contentHash);
+            await entityManager.flush();
         } catch (error) {
-            this.logger.error("Failed to calculate dominant color: imgproxy is not available", error);
-            return undefined;
-        }
-
-        if (!imageResponse.ok) {
-            this.logger.error(`Failed to calculate dominant color: imgproxy returned ${imageResponse.status} ${imageResponse.statusText}`);
-            return undefined;
-        }
-
-        try {
-            const arrayBuffer = await imageResponse.arrayBuffer();
-            const pngBuffer = Buffer.from(arrayBuffer);
-
-            // Parse the dominant color from the 1x1 PNG produced by imgproxy
-            return await this.parsePngPixelColor(pngBuffer);
-        } catch (error) {
-            this.logger.error("Failed to calculate dominant color: could not parse imgproxy response", error);
-            return undefined;
+            this.logger.error(`Failed to save dominant color for image ${imageId}`, error);
         }
     }
 
-    private async parsePngPixelColor(pngBuffer: Buffer): Promise<string | undefined> {
-        // PNG: 8-byte signature, then chunks (4-byte length + 4-byte type + data + 4-byte CRC)
-        let offset = 8;
-        let colorType = -1;
-        let palette: Buffer | undefined;
-
-        while (offset < pngBuffer.length) {
-            const length = pngBuffer.readUInt32BE(offset);
-            const type = pngBuffer.toString("ascii", offset + 4, offset + 8);
-            const data = pngBuffer.subarray(offset + 8, offset + 8 + length);
-
-            if (type === "IHDR") {
-                colorType = data[9];
-            } else if (type === "PLTE") {
-                palette = data;
-            } else if (type === "IDAT") {
-                const decompressed = await inflate(data);
-                // Decompressed scanline: [filter_byte, pixel_data...]
-                let r: number, g: number, b: number;
-                if (colorType === 3 && palette) {
-                    // Indexed color: pixel value is a palette index
-                    const index = decompressed[1] * 3;
-                    [r, g, b] = [palette[index], palette[index + 1], palette[index + 2]];
-                } else if (colorType === 0) {
-                    // Grayscale
-                    const gray = decompressed[1];
-                    [r, g, b] = [gray, gray, gray];
-                } else {
-                    // RGB (type 2) or RGBA (type 6): R, G, B are at bytes 1-3
-                    [r, g, b] = [decompressed[1], decompressed[2], decompressed[3]];
-                }
-                return `#${[r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
-            }
-
-            offset += 12 + length;
-        }
-
-        this.logger.warn("Failed to calculate dominant color: no IDAT chunk found in PNG");
-        return undefined;
+    /**
+     * @deprecated Use `DamDominantColorService.calculateDominantColor` instead. Returns `undefined` when `DamImagesModule`,
+     * which provides the imgproxy-backed calculator, is not registered.
+     */
+    async calculateDominantColor(contentHash: string): Promise<string | undefined> {
+        return this.dominantColorCalculator?.calculateDominantColor(contentHash);
     }
 
     async createFileUrl(file: FileInterface, { previewDamUrls = false }: { previewDamUrls?: boolean }): Promise<string> {
-        const filename = parse(file.name).name;
+        const filename = file.name;
 
         const baseUrl = [`/${this.config.basePath}/files`];
 
@@ -680,7 +655,7 @@ export class FilesService {
     }
 
     async createFileDownloadUrl(file: FileInterface, { previewDamUrls = false }: { previewDamUrls?: boolean }): Promise<string> {
-        const filename = parse(file.name).name;
+        const filename = file.name;
 
         const baseUrl = [`/dam/files/download`];
 
@@ -732,7 +707,7 @@ export class FilesService {
             image.height &&
             Math.round(((image.width * image.height) / 1000000) * 10) / 10 >= this.config.maxSrcResolution
         ) {
-            throw new CometImageResolutionException(`Maximal image resolution exceeded`);
+            throw new DextinityImageResolutionException(`Maximal image resolution exceeded`);
         }
 
         let exifData: Record<string, string | number | Uint8Array | number[] | Uint16Array> | undefined;

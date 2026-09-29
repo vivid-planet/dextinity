@@ -51,12 +51,12 @@ export default meta;
 /**
  * For rendering basic text, use the [Typography](https://mui.com/material-ui/react-typography/) component provided by MUI.
  *
- * _Comet Admin does not provide it's own `Typography`, it only adds additional functionality to the MUI `Typography` component._
+ * _Dextinity Admin does not provide it's own `Typography`, it only adds additional functionality to the MUI `Typography` component._
  */
 export const Default: Story = {};
 
 /**
- * When using the theme from `@comet/admin` the following additional variants are available to use when rendering lists:
+ * When using the theme from `@dextinity/admin` the following additional variants are available to use when rendering lists:
  *
  * - `list`
  * - `listItem`

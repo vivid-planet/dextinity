@@ -21,7 +21,7 @@ export const DataGridPagination: FunctionComponent<DataGridPaginationProps> = (i
         slotProps = {},
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminDataGridPagination",
+        name: "DextinityAdminDataGridPagination",
     });
 
     const apiRef = useGridApiContext();
@@ -49,7 +49,7 @@ export const DataGridPagination: FunctionComponent<DataGridPaginationProps> = (i
         <Root sx={sx} className={className} {...slotProps.root}>
             <PageInformation variant="body2" {...slotProps.pageInformation}>
                 <FormattedMessage
-                    id="comet.dataGridPagination.pageInformation"
+                    id="dextinity.dataGridPagination.pageInformation"
                     defaultMessage="{itemsFrom}-{itemsTo} of {itemsTotal, plural, one {# item} other {# items}}"
                     values={{
                         itemsFrom:
@@ -70,7 +70,7 @@ export const DataGridPagination: FunctionComponent<DataGridPaginationProps> = (i
                 labelDisplayedRows={() => {
                     return null;
                 }}
-                labelRowsPerPage={<FormattedMessage defaultMessage="Items per page:" id="comet.dataGridPagination.itemsPerPageLabel" />}
+                labelRowsPerPage={<FormattedMessage defaultMessage="Items per page:" id="dextinity.dataGridPagination.itemsPerPageLabel" />}
                 page={paginationState.paginationModel.page <= pageCount ? paginationState.paginationModel.page : pageCount}
                 rowsPerPage={paginationState.paginationModel.pageSize}
                 rowsPerPageOptions={rootProps.pageSizeOptions?.includes(paginationState.paginationModel.pageSize) ? rootProps.pageSizeOptions : []}
@@ -83,17 +83,17 @@ export const DataGridPagination: FunctionComponent<DataGridPaginationProps> = (i
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminDataGridPagination: DataGridPaginationProps;
+        DextinityAdminDataGridPagination: DataGridPaginationProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminDataGridPagination: DataGridPaginationClassKey;
+        DextinityAdminDataGridPagination: DataGridPaginationClassKey;
     }
 
     interface Components {
-        CometAdminDataGridPagination?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminDataGridPagination"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminDataGridPagination"];
+        DextinityAdminDataGridPagination?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminDataGridPagination"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminDataGridPagination"];
         };
     }
 }

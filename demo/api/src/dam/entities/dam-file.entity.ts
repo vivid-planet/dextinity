@@ -1,4 +1,4 @@
-import { createFileEntity } from "@comet/cms-api";
+import { createFileEntity } from "@dextinity/cms-api";
 
 import { DamScope } from "../dto/dam-scope";
 import { DamFolder } from "./dam-folder.entity";

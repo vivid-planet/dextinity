@@ -5,7 +5,7 @@ import { Type } from "@nestjs/common";
 import { Args, ID, Info, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { GraphQLResolveInfo } from "graphql";
 
-import { CometValidationException } from "../../../common/errors/validation.exception";
+import { DextinityValidationException } from "../../../common/errors/validation.exception";
 import { searchToMikroOrmQuery } from "../../../common/filter/mikro-orm";
 import { extractGraphqlFields } from "../../../common/graphql/extract-graphql-fields";
 import { AffectedEntity } from "../../../user-permissions/decorators/affected-entity.decorator";
@@ -50,7 +50,7 @@ export function createDamMediaAlternativeResolver({
             @Info() info: GraphQLResolveInfo,
         ): Promise<PaginatedDamMediaAlternatives> {
             if ((!forId && !alternativeId) || (forId && alternativeId)) {
-                throw new CometValidationException("Exactly one of 'for' or 'alternative' parameters must be provided");
+                throw new DextinityValidationException("Exactly one of 'for' or 'alternative' parameters must be provided");
             }
 
             let where: FilterQuery<DamMediaAlternative> = {};

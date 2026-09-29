@@ -1,8 +1,8 @@
-import { Cookie, Error, ThreeDotSaving } from "@comet/admin-icons";
+import { Cookie, Error, ThreeDotSaving } from "@dextinity/admin-icons";
 import { Card, CardContent, Grid, Typography } from "@mui/material";
 
 export default {
-    title: "@comet/admin-icons",
+    title: "@dextinity/admin-icons",
 };
 
 export const IconUsage = () => {

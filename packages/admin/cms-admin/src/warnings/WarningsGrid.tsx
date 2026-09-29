@@ -14,7 +14,7 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import { Chip } from "@mui/material";
 import type { GridFilterModel } from "@mui/x-data-grid";
 import { capitalCase } from "change-case";
@@ -24,6 +24,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { useContentScope } from "../contentScope/Provider";
 import { DataGrid } from "../dataGrid/DataGrid";
 import { useDependenciesConfig } from "../dependencies/dependenciesConfig";
+import { getDisplayNameString } from "../dependencies/getDisplayNameString";
 import { WarningActions } from "./WarningActions";
 import { WarningMessage } from "./WarningMessage";
 import { useWarningsConfig } from "./warningsConfig";
@@ -76,16 +77,20 @@ function WarningsGridToolbar() {
     );
 }
 
-export function WarningsGrid() {
+export interface WarningsGridProps {
+    showAllScopes?: boolean;
+}
+
+export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
     const intl = useIntl();
     const dataGridProps = {
-        ...useDataGridRemote({ initialFilter: { items: [{ field: "state", operator: "is", value: "open" }] } }),
+        ...useDataGridRemote({ initialFilter: { items: [{ field: "status", operator: "is", value: "open" }] } }),
         ...usePersistentColumnState("WarningsGrid"),
     };
     const { messages: warningMessages } = useWarningsConfig();
     const { entityDependencyMap } = useDependenciesConfig();
-    const { values: scopeValues } = useContentScope();
-    const scopes = scopeValues.map((item) => item.scope);
+    const { scope: currentScope, values: scopeValues } = useContentScope();
+    const scopes = showAllScopes ? scopeValues.map((item) => item.scope) : [currentScope];
 
     const scopeValueOptions = scopeValues.map((item) => {
         const label: string[] = [];
@@ -107,26 +112,24 @@ export function WarningsGrid() {
         {
             ...dataGridDateTimeColumn,
             field: "createdAt",
-            headerName: intl.formatMessage({ id: "warning.dateTime", defaultMessage: "Date / Time" }),
+            headerName: intl.formatMessage({ id: "dextinity.warning.dateTime", defaultMessage: "Date / Time" }),
             width: 200,
         },
         {
             field: "severity",
-            headerName: intl.formatMessage({ id: "warning.severity", defaultMessage: "Severity" }),
+            headerName: intl.formatMessage({ id: "dextinity.warning.severity", defaultMessage: "Severity" }),
             type: "singleSelect",
             valueOptions: [
-                { value: "high", label: intl.formatMessage({ id: "warning.severity.high", defaultMessage: "High" }) },
-                { value: "medium", label: intl.formatMessage({ id: "warning.severity.medium", defaultMessage: "Medium" }) },
-                { value: "low", label: intl.formatMessage({ id: "warning.severity.low", defaultMessage: "Low" }) },
+                { value: "high", label: intl.formatMessage({ id: "dextinity.warning.severity.high", defaultMessage: "High" }) },
+                { value: "medium", label: intl.formatMessage({ id: "dextinity.warning.severity.medium", defaultMessage: "Medium" }) },
+                { value: "low", label: intl.formatMessage({ id: "dextinity.warning.severity.low", defaultMessage: "Low" }) },
             ],
             width: 150,
             renderCell: (params) => <WarningSeverity severity={params.value} />,
         },
         {
-            field: "nameInfo",
-            headerName: intl.formatMessage({ id: "warning.nameAndInfo", defaultMessage: "Name/Info" }),
-            sortable: false,
-            filterable: false,
+            field: "name",
+            headerName: intl.formatMessage({ id: "dextinity.warning.name", defaultMessage: "Name" }),
             width: 200,
             renderCell: ({ row }) => {
                 return (
@@ -138,26 +141,39 @@ export function WarningsGrid() {
             },
         },
         {
-            field: "type",
-            headerName: intl.formatMessage({ id: "warning.type", defaultMessage: "Type" }),
+            field: "secondaryInformation",
+            headerName: intl.formatMessage({ id: "dextinity.warning.info", defaultMessage: "Info" }),
             sortable: false,
-            filterable: false,
+            visible: false,
+            valueGetter: (params, row) => row.entityInfo?.secondaryInformation,
+        },
+        {
+            field: "type",
+            headerName: intl.formatMessage({ id: "dextinity.warning.type", defaultMessage: "Type" }),
+            type: "singleSelect",
+            valueOptions: Object.entries(entityDependencyMap).map(([value, dependency]) => ({
+                value,
+                label: getDisplayNameString(dependency.displayName, intl, value),
+            })),
             width: 100,
+            valueGetter: (params, row) => row.sourceInfo.rootEntityName,
             renderCell: ({ row }) => (
                 <Chip label={entityDependencyMap[row.sourceInfo.rootEntityName]?.displayName ?? row.sourceInfo.rootEntityName} />
             ),
         },
         {
             field: "message",
-            headerName: intl.formatMessage({ id: "warning.message", defaultMessage: "Message" }),
+            headerName: intl.formatMessage({ id: "dextinity.warning.message", defaultMessage: "Message" }),
             flex: 1,
             renderCell: (params) => <WarningMessage message={params.value} warningMessages={warningMessages} />,
         },
         {
             field: "scope",
-            headerName: intl.formatMessage({ id: "warning.scope", defaultMessage: "Scope" }),
+            headerName: intl.formatMessage({ id: "dextinity.warning.scope", defaultMessage: "Scope" }),
             type: "singleSelect",
             sortable: false,
+            // Only the current scope is queried, so filtering by any other scope would return an empty grid.
+            filterable: showAllScopes,
             valueOptions: scopeValueOptions,
             valueFormatter: (value) => {
                 if (typeof value === "object" && value !== null) {
@@ -182,6 +198,7 @@ export function WarningsGrid() {
         {
             field: "actions",
             headerName: "",
+            filterable: false,
             sortable: false,
             renderCell: ({ row }) => <WarningActions scope={row.scope} sourceInfo={row.sourceInfo} />,
         },
@@ -191,8 +208,11 @@ export function WarningsGrid() {
         // Create a custom filter model by transforming the filterModel's items
         const customFilterModel = {
             ...filterModel,
-            items:
-                filterModel?.items.map((item) => {
+            items: (filterModel?.items ?? [])
+                // `filterable` only hides the column from the filter panel. The filter model is read from the URL,
+                // so a scope filter from an existing link would still reach the query and empty the grid.
+                .filter((item) => showAllScopes || item.field !== "scope")
+                .map((item) => {
                     if (item.field === "scope") {
                         if (typeof item.value === "string") {
                             return { ...item, value: JSON.parse(item.value) };
@@ -204,7 +224,7 @@ export function WarningsGrid() {
                     }
 
                     return item;
-                }) ?? [],
+                }),
         };
 
         return muiGridFilterToGql(columns, customFilterModel);
@@ -219,7 +239,7 @@ export function WarningsGrid() {
             search: gqlSearch,
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
-            sort: muiGridSortToGql(dataGridProps.sortModel),
+            sort: muiGridSortToGql(dataGridProps.sortModel, columns),
         },
     });
     const rowCount = useBufferedRowCount(data?.warnings.totalCount);

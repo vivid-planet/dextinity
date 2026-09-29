@@ -1,20 +1,21 @@
-import { RteReadOnly } from "@comet/admin-rte";
 import { alpha, styled } from "@mui/material/styles";
 
-import type { RichTextBlockState } from "../createRichTextBlock";
+import { useTableBlockContext } from "./TableBlockContext";
 
 type Props = {
     highlighted: boolean;
     recentlyPasted: boolean;
-    value: RichTextBlockState;
+    value: unknown;
 };
 
 export const CellValue = ({ highlighted, recentlyPasted, value }: Props) => {
+    const { RichTextBlock } = useTableBlockContext();
+
     return (
         <CellValueContainer $highlighted={highlighted} $recentlyPasted={recentlyPasted}>
             <RteContentWrapper>
                 <RteContent>
-                    <RteReadOnly value={value.editorState} />
+                    <RichTextBlock.ReadOnlyComponent state={value} />
                 </RteContent>
             </RteContentWrapper>
         </CellValueContainer>
@@ -51,12 +52,14 @@ const RteContentWrapper = styled("div")(({ theme }) => ({
     flexDirection: "column",
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
+    // The data grid sets a line height as tall as the row, which cell content inherits.
+    lineHeight: "normal",
 
-    ".CometAdminRteBlockElement-root:first-child, .MuiTypography-root:first-child": {
+    ".DextinityAdminRteBlockElement-root:first-child, .MuiTypography-root:first-child": {
         marginTop: 0,
     },
 
-    ".CometAdminRteBlockElement-root:last-child, .MuiTypography-root:last-child": {
+    ".DextinityAdminRteBlockElement-root:last-child, .MuiTypography-root:last-child": {
         marginBottom: 0,
     },
 }));

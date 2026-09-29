@@ -1,4 +1,4 @@
-import { ChevronDown } from "@comet/admin-icons";
+import { ChevronDown } from "@dextinity/admin-icons";
 import { inputAdornmentClasses, inputBaseClasses, type Palette } from "@mui/material";
 
 export const commonSelectDefaultProps = {

@@ -1,10 +1,10 @@
-import { Calendar } from "@comet/admin-icons";
+import { Calendar } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, css, inputLabelClasses, type Theme, useThemeProps } from "@mui/material";
 import type { DateTimeRangePickerProps as MuiDateTimeRangePickerProps } from "@mui/x-date-pickers-pro";
 import { type ComponentType, lazy, type ReactNode, Suspense, useState } from "react";
 import { useIntl } from "react-intl";
 
-import { ClearInputAdornment as CometClearInputAdornment } from "../../common/ClearInputAdornment";
+import { ClearInputAdornment as BaseClearInputAdornment } from "../../common/ClearInputAdornment";
 import { OpenPickerAdornment } from "../../common/OpenPickerAdornment";
 import { ReadOnlyAdornment } from "../../common/ReadOnlyAdornment";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
@@ -23,7 +23,7 @@ export type DateTimeRangePickerClassKey = "root" | "clearInputAdornment" | "read
 
 export type DateTimeRangePickerProps = ThemedComponentBaseProps<{
     root: ComponentType<MuiDateTimeRangePickerProps>;
-    clearInputAdornment: typeof CometClearInputAdornment;
+    clearInputAdornment: typeof BaseClearInputAdornment;
     readOnlyAdornment: typeof ReadOnlyAdornment;
     openPickerAdornment: typeof OpenPickerAdornment;
 }> & {
@@ -59,7 +59,7 @@ export type DateTimeRangePickerProps = ThemedComponentBaseProps<{
  * It provides two text fields with a calendar icon that opens a date-time range picker dialog. The component handles
  * Date objects and includes features like clearing, read-only state, and customizable icons.
  *
- * - [Storybook](https://storybook.comet-dxp.com/?path=/docs/@comet/admin_components-datetime-datetimerangepicker--docs)
+ * - [Storybook](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/admin_components-datetime-datetimerangepicker--docs)
  * - [MUI X DateTimeRangePicker Documentation](https://mui.com/x/react-date-pickers/date-time-range-picker/)
  */
 export const DateTimeRangePicker = (inProps: DateTimeRangePickerProps) => {
@@ -77,7 +77,7 @@ export const DateTimeRangePicker = (inProps: DateTimeRangePickerProps) => {
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminDateTimeRangePicker",
+        name: "DextinityAdminDateTimeRangePicker",
     });
     const intl = useIntl();
 
@@ -140,7 +140,7 @@ export const DateTimeRangePicker = (inProps: DateTimeRangePickerProps) => {
                                             ...slotProps?.openPickerAdornment?.slotProps,
                                             openPickerButton: {
                                                 "aria-label": intl.formatMessage({
-                                                    id: "comet.dateTimeRangePicker.openPicker",
+                                                    id: "dextinity.dateTimeRangePicker.openPicker",
                                                     defaultMessage: "Open date time range picker",
                                                 }),
                                                 ...slotProps?.openPickerAdornment?.slotProps?.openPickerButton,
@@ -192,24 +192,24 @@ const LazyRoot = lazy(async () => {
     };
 });
 
-const ClearInputAdornment = createComponentSlot(CometClearInputAdornment)<DateTimeRangePickerClassKey>({
+const ClearInputAdornment = createComponentSlot(BaseClearInputAdornment)<DateTimeRangePickerClassKey>({
     componentName: "DateTimeRangePicker",
     slotName: "clearInputAdornment",
 })();
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminDateTimeRangePicker: DateTimeRangePickerProps;
+        DextinityAdminDateTimeRangePicker: DateTimeRangePickerProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminDateTimeRangePicker: DateTimeRangePickerClassKey;
+        DextinityAdminDateTimeRangePicker: DateTimeRangePickerClassKey;
     }
 
     interface Components {
-        CometAdminDateTimeRangePicker?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminDateTimeRangePicker"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminDateTimeRangePicker"];
+        DextinityAdminDateTimeRangePicker?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminDateTimeRangePicker"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminDateTimeRangePicker"];
         };
     }
 }

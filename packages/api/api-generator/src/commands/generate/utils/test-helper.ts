@@ -1,6 +1,6 @@
 import * as process from "node:process";
 
-import type { Permission } from "@comet/cms-api";
+import type { Permission } from "@dextinity/cms-api";
 import { format, type Options, resolveConfig } from "prettier";
 import { Project, type SourceFile } from "ts-morph";
 

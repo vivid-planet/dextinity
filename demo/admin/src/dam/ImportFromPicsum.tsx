@@ -1,6 +1,6 @@
-import { Button, CancelButton, Dialog, Loading, SaveButton } from "@comet/admin";
-import { Reload } from "@comet/admin-icons";
-import { useCurrentDamFolder, useDamAcceptedMimeTypes, useDamFileUpload } from "@comet/cms-admin";
+import { Button, CancelButton, Dialog, Loading, SaveButton } from "@dextinity/admin";
+import { Reload } from "@dextinity/admin-icons";
+import { useCurrentDamFolder, useDamAcceptedMimeTypes, useDamFileUpload } from "@dextinity/cms-admin";
 import { Box, DialogActions, DialogContent } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useState } from "react";

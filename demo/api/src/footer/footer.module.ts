@@ -1,4 +1,4 @@
-import { DependenciesResolverFactory } from "@comet/cms-api";
+import { DependenciesResolverFactory } from "@dextinity/cms-api";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { Module } from "@nestjs/common";
 

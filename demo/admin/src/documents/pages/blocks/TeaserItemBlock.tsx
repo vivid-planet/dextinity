@@ -4,7 +4,7 @@ import {
     createCompositeBlockSelectField,
     createCompositeBlockTextField,
     createRichTextBlock,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 import type { TeaserItemBlockData } from "@src/blocks.generated";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";

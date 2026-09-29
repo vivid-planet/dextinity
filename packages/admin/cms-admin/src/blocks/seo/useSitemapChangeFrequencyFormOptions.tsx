@@ -7,49 +7,49 @@ const useSitemapChangeFrequencyFormOptions = (): Array<{ value: string; label: s
         {
             value: "always",
             label: intl.formatMessage({
-                id: "comet.blocks.seo.sitemap.changeFrequency.always",
+                id: "dextinity.blocks.seo.sitemap.changeFrequency.always",
                 defaultMessage: "always",
             }),
         },
         {
             value: "hourly",
             label: intl.formatMessage({
-                id: "comet.blocks.seo.sitemap.changeFrequency.hourly",
+                id: "dextinity.blocks.seo.sitemap.changeFrequency.hourly",
                 defaultMessage: "hourly",
             }),
         },
         {
             value: "daily",
             label: intl.formatMessage({
-                id: "comet.blocks.seo.sitemap.changeFrequency.daily",
+                id: "dextinity.blocks.seo.sitemap.changeFrequency.daily",
                 defaultMessage: "daily",
             }),
         },
         {
             value: "weekly",
             label: intl.formatMessage({
-                id: "comet.blocks.seo.sitemap.changeFrequency.weekly",
+                id: "dextinity.blocks.seo.sitemap.changeFrequency.weekly",
                 defaultMessage: "weekly",
             }),
         },
         {
             value: "monthly",
             label: intl.formatMessage({
-                id: "comet.blocks.seo.sitemap.changeFrequency.monthly",
+                id: "dextinity.blocks.seo.sitemap.changeFrequency.monthly",
                 defaultMessage: "monthly",
             }),
         },
         {
             value: "yearly",
             label: intl.formatMessage({
-                id: "comet.blocks.seo.sitemap.changeFrequency.yearly",
+                id: "dextinity.blocks.seo.sitemap.changeFrequency.yearly",
                 defaultMessage: "yearly",
             }),
         },
         {
             value: "never",
             label: intl.formatMessage({
-                id: "comet.blocks.seo.sitemap.changeFrequency.never",
+                id: "dextinity.blocks.seo.sitemap.changeFrequency.never",
                 defaultMessage: "never",
             }),
         },

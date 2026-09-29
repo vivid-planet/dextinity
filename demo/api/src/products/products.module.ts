@@ -1,9 +1,10 @@
-import { ActionLogsModule, FileUpload } from "@comet/cms-api";
+import { ActionLogsModule, FileUpload } from "@dextinity/cms-api";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@src/config/config.module";
 import { TranslationModule } from "@src/translation/translation.module";
 
+import { ProductPriceBlockTransformerService } from "./blocks/product-price-block-transformer.service";
 import { CustomProductResolver } from "./custom-product.resolver";
 import { Manufacturer } from "./entities/manufacturer.entity";
 import { ManufacturerCountry } from "./entities/manufacturer-country.entity";
@@ -71,6 +72,7 @@ import { ProductPublishedMail } from "./published-mail/product-published.mail";
         ProductCategoryTypeResolver,
         ProductService,
         ProductVariantService,
+        ProductPriceBlockTransformerService,
     ],
     exports: [],
 })

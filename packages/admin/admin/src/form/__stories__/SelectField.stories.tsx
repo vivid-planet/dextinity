@@ -1,4 +1,4 @@
-import { Lock } from "@comet/admin-icons";
+import { Lock } from "@dextinity/admin-icons";
 import { InputAdornment } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 

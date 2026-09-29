@@ -1,4 +1,4 @@
-import { Delete as DeleteIcon, Remove as RemoveIcon, WarningSolid } from "@comet/admin-icons";
+import { Delete as DeleteIcon, Remove as RemoveIcon, WarningSolid } from "@dextinity/admin-icons";
 import {
     // eslint-disable-next-line no-restricted-imports
     Dialog,
@@ -27,9 +27,9 @@ export const DeleteDialog = (props: DeleteDialogProps) => {
         <Dialog open={dialogOpen} onClose={onCancel} maxWidth="sm">
             <DialogTitle>
                 {deleteType === "delete" ? (
-                    <FormattedMessage id="comet.table.deleteDialog.title" defaultMessage="Attention. Please confirm." />
+                    <FormattedMessage id="dextinity.table.deleteDialog.title" defaultMessage="Attention. Please confirm." />
                 ) : (
-                    <FormattedMessage id="comet.common.deleteDialog.titleRemove" defaultMessage="Please confirm." />
+                    <FormattedMessage id="dextinity.common.deleteDialog.titleRemove" defaultMessage="Please confirm." />
                 )}
             </DialogTitle>
             <DialogContent sx={{ gap: (theme) => theme.spacing(2), display: "flex", alignItems: "center" }}>
@@ -37,15 +37,15 @@ export const DeleteDialog = (props: DeleteDialogProps) => {
                 {deleteType === "delete" ? (
                     deleteCount !== undefined && deleteCount > 1 ? (
                         <FormattedMessage
-                            id="comet.table.deleteDialog.contentMultiple"
+                            id="dextinity.table.deleteDialog.contentMultiple"
                             defaultMessage="You are about to delete {count} items permanently."
                             values={{ count: deleteCount }}
                         />
                     ) : (
-                        <FormattedMessage id="comet.table.deleteDialog.content" defaultMessage="You are about to delete this item permanently." />
+                        <FormattedMessage id="dextinity.table.deleteDialog.content" defaultMessage="You are about to delete this item permanently." />
                     )
                 ) : (
-                    <FormattedMessage id="comet.common.deleteDialog.contentRemove" defaultMessage="You are about to remove this item." />
+                    <FormattedMessage id="dextinity.common.deleteDialog.contentRemove" defaultMessage="You are about to remove this item." />
                 )}
             </DialogContent>
             <DialogActions>
@@ -56,9 +56,9 @@ export const DeleteDialog = (props: DeleteDialogProps) => {
                     variant="destructive"
                     tooltipErrorMessage={
                         deleteType === "delete" ? (
-                            <FormattedMessage id="comet.common.deleteFailed" defaultMessage="Failed to delete" />
+                            <FormattedMessage id="dextinity.common.deleteFailed" defaultMessage="Failed to delete" />
                         ) : (
-                            <FormattedMessage id="comet.common.removeFailed" defaultMessage="Failed to remove" />
+                            <FormattedMessage id="dextinity.common.removeFailed" defaultMessage="Failed to remove" />
                         )
                     }
                 >

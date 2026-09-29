@@ -1,4 +1,4 @@
-import { Add, StatusErrorSolid, StatusSuccessSolid, StatusWarningSolid } from "@comet/admin-icons";
+import { Add, StatusErrorSolid, StatusSuccessSolid, StatusWarningSolid } from "@dextinity/admin-icons";
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import type { Decorator, Meta, StoryObj } from "@storybook/react-vite";
 import { useEffect, useState } from "react";

@@ -1,10 +1,11 @@
-import { Field } from "@comet/admin";
-import { type DateRange, FinalFormDateRangePicker } from "@comet/admin-date-time";
+import { Field } from "@dextinity/admin";
+import { type DateRange, FinalFormDateRangePicker } from "@dextinity/admin-date-time";
 import { Card, CardContent } from "@mui/material";
 import { Form } from "react-final-form";
 
 export default {
-    title: "@comet/admin-date-time",
+    title: "@dextinity/admin-date-time",
+    tags: ["deprecated"],
 };
 
 export const DateRangePicker = () => {

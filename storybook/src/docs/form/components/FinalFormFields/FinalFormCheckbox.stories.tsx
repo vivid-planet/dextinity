@@ -1,4 +1,4 @@
-import { Button, CheckboxField, FinalForm } from "@comet/admin";
+import { Button, CheckboxField, FinalForm } from "@dextinity/admin";
 
 export default {
     title: "Docs/Form/Components/FinalForm Fields/FinalForm Checkbox",

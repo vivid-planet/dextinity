@@ -1,7 +1,7 @@
-import { ExtractBlockInputFactoryProps } from "@comet/cms-api";
-import { faker } from "@faker-js/faker";
+import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import { StandaloneHeadingBlock, TextAlignment } from "@src/common/blocks/standalone-heading.block";
+import { faker } from "@src/db/fixtures/faker";
 
 import { HeadingBlockFixtureService } from "./heading-block-fixture.service";
 

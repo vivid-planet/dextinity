@@ -13,7 +13,7 @@ import {
     Video,
     Vimeo,
     YouTube,
-} from "@comet/admin-icons";
+} from "@dextinity/admin-icons";
 import { Box, Divider } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -37,6 +37,69 @@ export default config;
  */
 export const ToggleButtonFieldStory: Story = {
     name: "Toggle Button Field",
+    args: {
+        label: "Sample Type",
+        name: "type",
+        disabled: false,
+        options: [
+            {
+                label: "Label",
+                value: "label",
+            },
+            {
+                label: "Label 2",
+                value: "label-2",
+            },
+            {
+                label: <Info />,
+                value: "icon",
+            },
+            {
+                label: (
+                    <Box display="flex" gap={2} alignItems="center" component="span">
+                        <Info />
+                        Icon and Label
+                    </Box>
+                ),
+                value: "icon+label",
+            },
+        ],
+    },
+    render: (args) => {
+        interface FormValues {
+            type: string;
+        }
+        return (
+            <FinalForm<FormValues>
+                initialValues={{ type: "label" }}
+                mode="edit"
+                onSubmit={() => {
+                    // not handled
+                }}
+                subscription={{ values: true }}
+            >
+                {({ values }) => {
+                    return (
+                        <>
+                            <ToggleButtonGroupField {...args} />
+
+                            <Alert title="FormState">
+                                <pre>{JSON.stringify(values, null, 2)}</pre>
+                            </Alert>
+                        </>
+                    );
+                }}
+            </FinalForm>
+        );
+    },
+};
+
+/**
+ * Individual options can be disabled by setting `disabled` on the option.
+ *
+ * Setting `disabled` on the field itself disables the whole group — an option cannot re-enable itself in that case.
+ */
+export const DisabledOptions: Story = {
     render: () => {
         type SampleType = "label" | "label-2" | "icon" | "icon+label";
         interface FormValues {
@@ -63,12 +126,14 @@ export const ToggleButtonFieldStory: Story = {
                                         value: "label",
                                     },
                                     {
-                                        label: "Label 2",
+                                        label: "Disabled",
                                         value: "label-2",
+                                        disabled: true,
                                     },
                                     {
                                         label: <Info />,
                                         value: "icon",
+                                        disabled: true,
                                     },
                                     {
                                         label: (

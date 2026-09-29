@@ -22,7 +22,7 @@ export function withPreviewMiddleware(middleware: CustomMiddleware) {
         if (host === process.env.PREVIEW_DOMAIN) {
             const siteConfig = await getSiteConfigForHost(host);
             if (!siteConfig) {
-                return NextResponse.json({ error: "Preview has to be called from within Comet Web preview" }, { status: 404 });
+                return NextResponse.json({ error: "Preview has to be called from within Dextinity Web preview" }, { status: 404 });
             }
         }
 

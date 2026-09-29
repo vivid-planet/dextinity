@@ -1,0 +1,15 @@
+{
+    "exclude": [
+        "node_modules",
+        "lib",
+        "**/*.test.tsx",
+        "**/*.test.ts",
+        "**/*.spec.tsx",
+        "**/*.spec.ts",
+        "**/__tests__",
+        "**/__stories__/**",
+        "**/*.stories.ts",
+        "**/*.stories.tsx"
+    ],
+    "extends": "./tsconfig.json"
+}

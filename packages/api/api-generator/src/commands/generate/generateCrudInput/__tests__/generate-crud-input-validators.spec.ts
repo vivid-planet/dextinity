@@ -1,4 +1,4 @@
-import { IsValidRedirectSource } from "@comet/cms-api";
+import { IsValidRedirectSource } from "@dextinity/cms-api";
 import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import {
@@ -306,7 +306,7 @@ describe("GenerateDefinedValidatorDecorators", () => {
                     getImportDeclaration.getNamedImports().some((namedImport) => namedImport.getName() === "IsValidRedirectSource"),
                 );
                 expect(isSlugImport).toBeDefined();
-                expect(isSlugImport?.getModuleSpecifierValue()).toBe("@comet/cms-api");
+                expect(isSlugImport?.getModuleSpecifierValue()).toBe("@dextinity/cms-api");
 
                 await orm.close();
             });

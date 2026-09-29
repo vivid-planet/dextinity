@@ -15,9 +15,9 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Add, Close, Remove, Save } from "@comet/admin-icons";
-import type { ContentScope } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { Add, Close, Remove, Save } from "@dextinity/admin-icons";
+import type { ContentScope } from "@dextinity/cms-admin";
 import { DialogActions, DialogTitle, IconButton, useTheme } from "@mui/material";
 import { Box } from "@mui/system";
 import type { GridSlotsComponent } from "@mui/x-data-grid";
@@ -69,18 +69,18 @@ const AssignedContactsGridToolbar = ({ onOpenDialog, scope, targetGroupId, sendD
         <>
             <DataGridToolbar>
                 <ToolbarTitleItem>
-                    <FormattedMessage id="cometBrevoModule.targetGroup.manuallyAssignedContacts.title" defaultMessage="Manually assigned contacts" />
+                    <FormattedMessage id="dextinity.targetGroup.manuallyAssignedContacts.title" defaultMessage="Manually assigned contacts" />
                 </ToolbarTitleItem>
                 <GridToolbarQuickFilter
                     placeholder={intl.formatMessage({
-                        id: "cometBrevoModule.targetGroup.assignedContacts.searchEmail",
+                        id: "dextinity.targetGroup.assignedContacts.searchEmail",
                         defaultMessage: "Search email address",
                     })}
                 />
                 <ToolbarFillSpace />
                 <CrudMoreActionsMenu overallActions={[moreActionsMenuItem]} />
                 <Button startIcon={<Add />} variant="primary" onClick={onOpenDialog}>
-                    <FormattedMessage id="cometBrevoModule.targetGroup.assignedContacts.addContact" defaultMessage="Add contacts" />
+                    <FormattedMessage id="dextinity.targetGroup.assignedContacts.addContact" defaultMessage="Add contacts" />
                 </Button>
             </DataGridToolbar>
             {component}
@@ -94,12 +94,12 @@ const AssignableContactsGridToolbar = () => {
     return (
         <DataGridToolbar>
             <ToolbarTitleItem>
-                <FormattedMessage id="cometBrevoModule.targetGroup.assignableContacts.title" defaultMessage="Assignable contacts" />
+                <FormattedMessage id="dextinity.targetGroup.assignableContacts.title" defaultMessage="Assignable contacts" />
             </ToolbarTitleItem>
             <ToolbarItem>
                 <GridToolbarQuickFilter
                     placeholder={intl.formatMessage({
-                        id: "cometBrevoModule.targetGroup.assignableContacts.searchEmail",
+                        id: "dextinity.targetGroup.assignableContacts.searchEmail",
                         defaultMessage: "Search email address",
                     })}
                 />
@@ -198,7 +198,7 @@ export function AddContactsGridSelect({ id, scope, assignedContactsTargetGroupBr
     const assignableContactsColumns: GridColDef<GQLTargetGroupBrevoContactsListFragment>[] = [
         {
             field: "createdAt",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.brevoContact.subscribedAt", defaultMessage: "Subscribed At" }),
+            headerName: intl.formatMessage({ id: "dextinity.brevoContact.subscribedAt", defaultMessage: "Subscribed At" }),
             filterable: false,
             sortable: false,
             width: 150,
@@ -206,7 +206,7 @@ export function AddContactsGridSelect({ id, scope, assignedContactsTargetGroupBr
         },
         {
             field: "modifiedAt",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.brevoContact.modifiedAt", defaultMessage: "Modified At" }),
+            headerName: intl.formatMessage({ id: "dextinity.brevoContact.modifiedAt", defaultMessage: "Modified At" }),
             filterable: false,
             sortable: false,
             width: 150,
@@ -214,7 +214,7 @@ export function AddContactsGridSelect({ id, scope, assignedContactsTargetGroupBr
         },
         {
             field: "email",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.brevoContact.email", defaultMessage: "Email" }),
+            headerName: intl.formatMessage({ id: "dextinity.brevoContact.email", defaultMessage: "Email" }),
             filterable: false,
             sortable: false,
             width: 150,
@@ -222,7 +222,7 @@ export function AddContactsGridSelect({ id, scope, assignedContactsTargetGroupBr
         },
         {
             field: "emailBlacklisted",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.brevoContact.emailBlocked", defaultMessage: "Email blocked" }),
+            headerName: intl.formatMessage({ id: "dextinity.brevoContact.emailBlocked", defaultMessage: "Email blocked" }),
             type: "boolean",
             filterable: false,
             sortable: false,
@@ -322,7 +322,7 @@ export function AddContactsGridSelect({ id, scope, assignedContactsTargetGroupBr
                                         }}
                                         variant="primary"
                                     >
-                                        <FormattedMessage id="cometBrevoModule.targetGroup.addBrevoContacts.dialog.save" defaultMessage="Save" />
+                                        <FormattedMessage id="dextinity.targetGroup.addBrevoContacts.dialog.save" defaultMessage="Save" />
                                     </Button>
                                 </DialogActions>
                             </Dialog>

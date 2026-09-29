@@ -1,7 +1,8 @@
-import { isWithPreviewPropsData, type PropsWithData, usePreview, withPreview } from "@comet/site-nextjs";
+import { isWithPreviewPropsData, type PropsWithData, usePreview, withPreview } from "@dextinity/site-nextjs";
 import type { AccordionBlockData } from "@src/blocks.generated";
 import { AccordionItemBlock } from "@src/common/blocks/AccordionItemBlock";
 import { PageLayout } from "@src/layout/PageLayout";
+import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import { useEffect, useMemo, useState } from "react";
 
 import styles from "./AccordionBlock.module.scss";
@@ -62,16 +63,18 @@ export const AccordionBlock = withPreview(
         };
 
         return (
-            <div className={styles.root}>
-                {data.blocks.map((block) => (
-                    <AccordionItemBlock
-                        key={block.key}
-                        data={block.props}
-                        onChange={() => handleChange(block.key)}
-                        isExpanded={expandedItems.has(block.key)}
-                    />
-                ))}
-            </div>
+            <AnimateBoxInOnScroll direction="bottom">
+                <div className={styles.root}>
+                    {data.blocks.map((block) => (
+                        <AccordionItemBlock
+                            key={block.key}
+                            data={block.props}
+                            onChange={() => handleChange(block.key)}
+                            isExpanded={expandedItems.has(block.key)}
+                        />
+                    ))}
+                </div>
+            </AnimateBoxInOnScroll>
         );
     },
     { label: "Accordion" },

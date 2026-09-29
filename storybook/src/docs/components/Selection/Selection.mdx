@@ -6,12 +6,12 @@ import * as SelectionStories from "./Selection.stories";
 
 # Selection
 
-In Comet Admin, a _selection_ can be used to manage which item of a list or table a user has currently selected.
+In Dextinity Admin, a _selection_ can be used to manage which item of a list or table a user has currently selected.
 
 The two most common use cases for selections are
 
 - creating and editing items in a dialog.
-  Comet Admin has a dedicated `EditDialog` component that uses selection internally.
+  Dextinity Admin has a dedicated `EditDialog` component that uses selection internally.
   You can find more infos in the [EditDialog docs](?path=/docs/docs-components-edit-dialog--docs#editdialog-and-table).
 
 - selecting items from a table to edit them in an adjacent form.
@@ -49,7 +49,7 @@ It provides the same values as `useSelection()`, but the variable names are slig
 
 In practice, a common requirement is that each item should have a unique URL.
 For that purpose, the id of the currently selected item has to be written to the URL path.
-Comet Admin has this functionality built-in.
+Dextinity Admin has this functionality built-in.
 
 To implement a selection with URL state, you can use the `useSelectionRoute()` hook or the `SelectionRoute` component.
 

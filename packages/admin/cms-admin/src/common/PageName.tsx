@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { LocalErrorScopeApolloContext } from "@comet/admin";
+import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 import { List, ListItem, ListItemText } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { JSX } from "react";

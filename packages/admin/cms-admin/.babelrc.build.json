@@ -1,0 +1,3 @@
+{
+    "ignore": ["**/__stories__/**", "**/*.stories.ts", "**/*.stories.tsx"]
+}

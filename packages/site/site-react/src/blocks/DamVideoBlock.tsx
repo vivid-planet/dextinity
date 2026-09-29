@@ -3,6 +3,8 @@
 import clsx from "clsx";
 import { type ComponentType, type ReactElement, type ReactNode, useCallback, useState } from "react";
 
+import { AiContentDisclosure, type AiContentDisclosureProps } from "../aiContentDisclosure/AiContentDisclosure";
+import { type AiContentAltTextPrefixLabels, getAiContentAltTextWithPrefix } from "../aiContentDisclosure/getAiContentAltTextWithPrefix";
 import type { DamVideoBlockData } from "../blocks.generated";
 import { withPreview } from "../iframebridge/withPreview";
 import { PreviewSkeleton } from "../previewskeleton/PreviewSkeleton";
@@ -21,6 +23,12 @@ interface DamVideoBlockProps extends PropsWithData<DamVideoBlockData> {
     playButtonAriaLabel?: string;
     pauseButtonAriaLabel?: string;
     playPauseButton?: ComponentType<PlayPauseButtonProps>;
+    /** Override props passed to the AI content disclosure badge. */
+    aiContentDisclosureProps?: Partial<AiContentDisclosureProps>;
+    /** Render your own AI content disclosure instead of the built-in badge. Pass `null` to render none, e.g. when the project renders its own. */
+    aiContentDisclosure?: ReactNode;
+    /** AI content prefix prepended to the accessible name. Defaults to English; ideally pass a translated string here. */
+    aiContentAltTextPrefixLabels?: Partial<AiContentAltTextPrefixLabels>;
 }
 
 export const DamVideoBlock = withPreview(
@@ -34,10 +42,19 @@ export const DamVideoBlock = withPreview(
         playButtonAriaLabel,
         pauseButtonAriaLabel,
         playPauseButton: PlayPauseButtonComponent,
+        aiContentDisclosureProps,
+        aiContentDisclosure,
+        aiContentAltTextPrefixLabels,
     }: DamVideoBlockProps) => {
         if (damFile === undefined) {
             return <PreviewSkeleton type="media" hasContent={false} aspectRatio={aspectRatio} />;
         }
+
+        const ariaLabel = getAiContentAltTextWithPrefix({
+            aiContentType: damFile?.aiContentType,
+            description: damFile?.altText,
+            prefixLabels: aiContentAltTextPrefixLabels,
+        });
 
         const [showPreviewImage, setShowPreviewImage] = useState(true);
         const [isPlaying, setIsPlaying] = useState(autoplay ?? false);
@@ -114,6 +131,7 @@ export const DamVideoBlock = withPreview(
                             playsInline
                             muted={autoplay}
                             ref={videoRef}
+                            aria-label={damFile.aiContentType ? ariaLabel : undefined}
                             className={clsx(styles.video, fill && styles.fill)}
                             style={!fill ? { "--aspect-ratio": aspectRatio.replace("x", " / ") } : undefined}
                         >
@@ -132,6 +150,12 @@ export const DamVideoBlock = withPreview(
                                     ariaLabelPlay={playButtonAriaLabel}
                                     ariaLabelPause={pauseButtonAriaLabel}
                                 />
+                            ))}
+                        {damFile.aiContentType &&
+                            (aiContentDisclosure !== undefined ? (
+                                aiContentDisclosure
+                            ) : (
+                                <AiContentDisclosure type={damFile.aiContentType} {...aiContentDisclosureProps} />
                             ))}
                     </div>
                 )}

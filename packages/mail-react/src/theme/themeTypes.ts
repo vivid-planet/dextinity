@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import type { ResponsiveValue } from "./responsiveValue.js";
 
 /**
@@ -27,7 +29,7 @@ export type TextVariantStyles = { [K in keyof TextStyleMap]?: ResponsiveValue<Te
  * Defines the variants available on the `MjmlText` component.
  *
  * ```ts
- * declare module "@comet/mail-react" {
+ * declare module "@dextinity/mail-react" {
  *     interface TextVariants {
  *         heading: true;
  *         body: true;
@@ -46,6 +48,34 @@ export type VariantName = keyof TextVariants extends never ? string : keyof Text
 export interface ThemeText extends TextStyles {
     defaultVariant?: VariantName;
     variants?: VariantsRecord;
+}
+
+/** The position of the item a marker belongs to. */
+export interface ListMarkerOptions {
+    /** The item's position in its own list, counting from zero. */
+    index: number;
+    /** The nesting level of the item's list, zero when it is not nested. */
+    depth: number;
+}
+
+/**
+ * A list item's marker content: a fixed node, or a function of the item's position.
+ * Use plain HTML elements, not MJML components.
+ */
+export type ListMarker = ReactNode | ((options: ListMarkerOptions) => ReactNode);
+
+/** Spacing tokens in pixels and marker content, applying to lists the RichText block renders. */
+export interface ThemeList {
+    /** The space before the marker, measured from the list's left edge. */
+    indent: ResponsiveValue;
+    /** The space between the marker and the item's text. */
+    markerGap: ResponsiveValue;
+    /** The space between items. The space below the last one comes from the text variant's `bottomSpacing`. */
+    itemSpacing: ResponsiveValue;
+    /** The marker of every item of an unordered list. */
+    unorderedMarker: ListMarker;
+    /** The marker of every item of an ordered list. */
+    orderedMarker: ListMarker;
 }
 
 /**
@@ -68,7 +98,7 @@ export type DividerVariantStyles = { [K in keyof DividerStyleMap]?: ResponsiveVa
  * Defines the variants available on the `MjmlDivider` and `HtmlDivider` components.
  *
  * ```ts
- * declare module "@comet/mail-react" {
+ * declare module "@dextinity/mail-react" {
  *     interface DividerVariants {
  *         thin: true;
  *         thick: true;
@@ -127,7 +157,7 @@ export type ButtonVariantStyles = { [K in keyof ButtonStyleMap]?: ResponsiveValu
  * Defines the variants available on the `MjmlButton` and `HtmlButton` components.
  *
  * ```ts
- * declare module "@comet/mail-react" {
+ * declare module "@dextinity/mail-react" {
  *     interface ButtonVariants {
  *         primary: true;
  *         secondary: true;
@@ -201,7 +231,7 @@ export interface ThemeColors {
 }
 
 /**
- * The root theme object that holds all design tokens for `@comet/mail-react`.
+ * The root theme object that holds all design tokens for `@dextinity/mail-react`.
  *
  * Every sub-interface is declared as an `interface` so consumers can
  * extend the theme at any level via TypeScript module augmentation.
@@ -210,6 +240,7 @@ export interface Theme {
     sizes: ThemeSizes;
     breakpoints: ThemeBreakpoints;
     text: ThemeText;
+    list: ThemeList;
     divider: ThemeDivider;
     button: ThemeButton;
     colors: ThemeColors;

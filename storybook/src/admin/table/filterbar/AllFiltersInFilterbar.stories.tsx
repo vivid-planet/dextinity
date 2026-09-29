@@ -10,7 +10,7 @@ import {
     Table,
     TableFilterFinalForm,
     useTableQueryFilter,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import { faker } from "@faker-js/faker";
 import { Box, Divider, Typography } from "@mui/material";
 
@@ -181,7 +181,7 @@ function Story({ tableData }: StoryProps) {
 }
 
 export default {
-    title: "@comet/admin/table/filterbar",
+    title: "@dextinity/admin/table/filterbar",
 };
 
 export const FilterbarWithAllKindsOfFilters = {

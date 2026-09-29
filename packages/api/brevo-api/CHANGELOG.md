@@ -1,5 +1,285 @@
 # @comet/brevo-api
 
+## 10.7.0
+
+### Patch Changes
+
+- 2b42996: Add `@RootBlockEntity()` and `@EntityInfo()` to the email campaign entity
+
+    The entity created by `createEmailCampaignEntity` has a root block (`content`), but was missing `@RootBlockEntity()`, so it wasn't picked up by the root block discovery. Blocks used inside an email campaign therefore never appeared in the block index: dependencies of the campaign's content weren't tracked, DAM files used in a campaign showed no usages, and their IDs weren't remapped when copying between scopes.
+
+    `@EntityInfo()` was missing as well, so the campaign had no entry in the `EntityInfo` view. Anything referencing a campaign (dependencies and warnings) couldn't resolve a name for it and logged a warning about the missing decorator instead.
+
+    The entity now uses `title` as name and `subject` as secondary information.
+
+- Updated dependencies [ae93af6]
+    - @dextinity/cms-api@10.7.0
+
+## 10.6.0
+
+### Patch Changes
+
+- Updated dependencies [073dcd7]
+- Updated dependencies [012411c]
+- Updated dependencies [d6a910e]
+    - @dextinity/cms-api@10.6.0
+
+## 10.5.1
+
+### Patch Changes
+
+- Updated dependencies [9d150e6]
+    - @dextinity/cms-api@10.5.1
+
+## 10.5.0
+
+### Patch Changes
+
+- 72d0ba7: Replace `axios` with the native `fetch` API when requesting the email campaign content from the frontend
+
+    This removes the `@nestjs/axios` and `axios` dependencies from the package.
+
+- Updated dependencies [f4d091f]
+- Updated dependencies [0be2f59]
+- Updated dependencies [02bba49]
+    - @dextinity/cms-api@10.5.0
+
+## 10.4.0
+
+### Patch Changes
+
+- Updated dependencies [a00f0b2]
+    - @dextinity/cms-api@10.4.0
+
+## 10.3.0
+
+### Patch Changes
+
+- Updated dependencies [0c211e9]
+- Updated dependencies [ddea65d]
+- Updated dependencies [66cb98a]
+- Updated dependencies [3ffe174]
+    - @dextinity/cms-api@10.3.0
+
+## 10.2.0
+
+### Patch Changes
+
+- Updated dependencies [a4ec0fe]
+- Updated dependencies [edf2027]
+    - @dextinity/cms-api@10.2.0
+
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/cms-api@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- @dextinity/cms-api@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/brevo-api` to `@dextinity/brevo-api`
+
+    Update the dependency in `package.json` and all imports:
+
+    ```diff
+    - import { BrevoModule } from "@comet/brevo-api";
+    + import { BrevoModule } from "@dextinity/brevo-api";
+    ```
+
+### Patch Changes
+
+- Updated dependencies [86f90cb]
+- Updated dependencies [f843a5e]
+    - @dextinity/cms-api@10.0.0
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/brevo-api` to `@dextinity/brevo-api`
+
+    Update the dependency in `package.json` and all imports:
+
+    ```diff
+    - import { BrevoModule } from "@comet/brevo-api";
+    + import { BrevoModule } from "@dextinity/brevo-api";
+    ```
+
+### Patch Changes
+
+- Updated dependencies [86f90cb]
+- Updated dependencies [f843a5e]
+- Updated dependencies [8c6be74]
+    - @dextinity/cms-api@10.0.0-beta.0
+
+## 9.5.0
+
+### Patch Changes
+
+- Updated dependencies [4eadaf5]
+- Updated dependencies [4eadaf5]
+    - @comet/cms-api@9.5.0
+
+## 9.4.0
+
+### Patch Changes
+
+- Updated dependencies [0dac371]
+- Updated dependencies [14d481e]
+- Updated dependencies [8c6be74]
+    - @comet/cms-api@9.4.0
+
+## 9.3.0
+
+### Patch Changes
+
+- Updated dependencies [a8e8f02]
+- Updated dependencies [924b66c]
+    - @comet/cms-api@9.3.0
+
+## 9.2.2
+
+### Patch Changes
+
+- Updated dependencies [d1022e2]
+- Updated dependencies [a2515ce]
+    - @comet/cms-api@9.2.2
+
+## 9.2.1
+
+### Patch Changes
+
+- @comet/cms-api@9.2.1
+
+## 9.2.0
+
+### Patch Changes
+
+- Updated dependencies [ee0bf93]
+- Updated dependencies [3c28742]
+- Updated dependencies [8d46a98]
+    - @comet/cms-api@9.2.0
+
+## 9.1.1
+
+### Patch Changes
+
+- @comet/cms-api@9.1.1
+
+## 9.1.0
+
+### Patch Changes
+
+- Updated dependencies [319f5b8]
+    - @comet/cms-api@9.1.0
+
+## 9.0.1
+
+### Patch Changes
+
+- @comet/cms-api@9.0.1
+
+## 9.0.0
+
+### Major Changes
+
+- 77a371e: Prevent importing dev dependencies in the API
+
+    Add `import/no-extraneous-dependencies` rule with `devDependencies` restriction to the NestJS ESLint config, preventing accidental imports of dev-only packages in production source files. Dev dependencies may only be imported in test files.
+
+    Fix `@comet/brevo-api` to correctly declare `@nestjs/graphql`, `graphql`, `graphql-scalars`, `lodash.isequal`, and `uuid` as dependencies/peerDependencies instead of devDependencies, since they are imported in source code.
+
+- f932845: Update `@getbrevo/brevo` to v5
+
+    The transactional mail service's `send` method now accepts a `SendTransacEmailRequest` (without `sender`) instead of a `SendSmtpEmail`. The commonly used fields (`to`, `subject`, `htmlContent`, `textContent`) are unchanged, so existing calls continue to work.
+
+### Minor Changes
+
+- dd51208: Update TypeScript compilation target to ES2023 and lib to ES2023 to match the required Node.js v22
+
+### Patch Changes
+
+- ba83625: Remove `node-fetch` dependency from `EcgRtrListService` in favor of Node's native `fetch`
+- Updated dependencies [f1a473a]
+- Updated dependencies [8954d64]
+- Updated dependencies [4c1aeb2]
+- Updated dependencies [67938b2]
+- Updated dependencies [c0cee12]
+- Updated dependencies [7fbe2a7]
+- Updated dependencies [54f57dd]
+- Updated dependencies [a50793a]
+- Updated dependencies [cac2b3b]
+- Updated dependencies [9d5f045]
+- Updated dependencies [c6703db]
+- Updated dependencies [8c2fdde]
+- Updated dependencies [b0ceb9c]
+- Updated dependencies [127a492]
+- Updated dependencies [fa5c7a4]
+- Updated dependencies [f6a2932]
+- Updated dependencies [35e9e0d]
+- Updated dependencies [91f4a9f]
+- Updated dependencies [6b7adc7]
+- Updated dependencies [31d9296]
+- Updated dependencies [19a0528]
+- Updated dependencies [71dce06]
+- Updated dependencies [1b37655]
+- Updated dependencies [f162fa5]
+- Updated dependencies [1ad7de3]
+- Updated dependencies [0e7d7e9]
+- Updated dependencies [3f3da52]
+- Updated dependencies [affbb11]
+- Updated dependencies [fad0167]
+- Updated dependencies [6793853]
+- Updated dependencies [a2c2eb5]
+- Updated dependencies [962a320]
+- Updated dependencies [802b0b8]
+- Updated dependencies [8bf0e5b]
+- Updated dependencies [70a77db]
+- Updated dependencies [2ea835c]
+- Updated dependencies [8498a7c]
+- Updated dependencies [ac59b62]
+- Updated dependencies [171c335]
+- Updated dependencies [8ad9dd8]
+- Updated dependencies [bc57b4a]
+- Updated dependencies [2fe9d4b]
+- Updated dependencies [dd51208]
+- Updated dependencies [8722deb]
+    - @comet/cms-api@9.0.0
+
+## 9.0.0-beta.6
+
+### Major Changes
+
+- f932845: Update `@getbrevo/brevo` to v5
+
+    The transactional mail service's `send` method now accepts a `SendTransacEmailRequest` (without `sender`) instead of a `SendSmtpEmail`. The commonly used fields (`to`, `subject`, `htmlContent`, `textContent`) are unchanged, so existing calls continue to work.
+
+### Patch Changes
+
+- Updated dependencies [f1a473a]
+- Updated dependencies [8954d64]
+- Updated dependencies [4c1aeb2]
+- Updated dependencies [67938b2]
+- Updated dependencies [7fbe2a7]
+- Updated dependencies [35e9e0d]
+- Updated dependencies [91f4a9f]
+- Updated dependencies [1b37655]
+- Updated dependencies [affbb11]
+- Updated dependencies [fad0167]
+- Updated dependencies [6793853]
+- Updated dependencies [70a77db]
+- Updated dependencies [8498a7c]
+- Updated dependencies [ac59b62]
+    - @comet/cms-api@9.0.0-beta.6
+
 ## 9.0.0-beta.5
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 services:
     postgres:
-        image: postgres:16
+        image: mirror.gcr.io/library/postgres:16
         pull_policy: weekly
         tty: true
         volumes:
@@ -15,7 +15,7 @@ services:
             - postgres
 
     imgproxy:
-        image: darthsim/imgproxy:v3
+        image: mirror.gcr.io/darthsim/imgproxy:v3
         pull_policy: weekly
         volumes:
             - ./demo/uploads:/uploads:ro
@@ -36,7 +36,7 @@ services:
             AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
 
     jaeger:
-        image: jaegertracing/all-in-one:1
+        image: mirror.gcr.io/jaegertracing/all-in-one:1
         pull_policy: weekly
         ports:
             - "127.0.0.1:${JAEGER_UI_PORT}:16686"
@@ -46,7 +46,7 @@ services:
             COLLECTOR_OTLP_HTTP_HOST_PORT: 0.0.0.0:4318
 
     valkey:
-        image: valkey/valkey:9
+        image: mirror.gcr.io/valkey/valkey:9
         pull_policy: weekly
         command: valkey-server --maxmemory 256M --maxmemory-policy allkeys-lru --loglevel warning --requirepass ${VALKEY_PASSWORD}
         ports:
@@ -55,7 +55,7 @@ services:
             - valkey
 
     mailpit:
-        image: axllent/mailpit
+        image: mirror.gcr.io/axllent/mailpit
         pull_policy: weekly
         ports:
             - "127.0.0.1:1025:1025" # SMTP server

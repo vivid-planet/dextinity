@@ -9,7 +9,7 @@ const envToDomainMap: Record<Environment, string> = {
 
 export default ((env) => {
     return {
-        name: "Comet Site Secondary",
+        name: "Dextinity Site Secondary",
         domains: {
             main: envToDomainMap[env],
         },
@@ -19,6 +19,9 @@ export default ((env) => {
                 languages: ["en", "de"],
             },
             recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY ?? "",
+            organization: {
+                name: "Dextinity Site Secondary",
+            },
         },
     };
 }) satisfies GetSiteConfig;

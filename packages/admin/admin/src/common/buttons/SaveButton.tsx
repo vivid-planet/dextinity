@@ -1,4 +1,4 @@
-import { Save } from "@comet/admin-icons";
+import { Save } from "@dextinity/admin-icons";
 import type { ComponentsOverrides } from "@mui/material";
 import { type Theme, useThemeProps } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
@@ -17,7 +17,7 @@ export function SaveButton(inProps: SaveButtonProps) {
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminSaveButton",
+        name: "DextinityAdminSaveButton",
     });
 
     return (
@@ -34,17 +34,17 @@ const Root = createComponentSlot(FeedbackButton)<SaveButtonClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminSaveButton: SaveButtonClassKey;
+        DextinityAdminSaveButton: SaveButtonClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminSaveButton: SaveButtonProps;
+        DextinityAdminSaveButton: SaveButtonProps;
     }
 
     interface Components {
-        CometAdminSaveButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminSaveButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminSaveButton"];
+        DextinityAdminSaveButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminSaveButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminSaveButton"];
         };
     }
 }

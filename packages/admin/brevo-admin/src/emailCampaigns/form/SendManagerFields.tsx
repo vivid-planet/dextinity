@@ -1,8 +1,7 @@
 import { useApolloClient, useMutation } from "@apollo/client";
-import { Field, FinalFormSelect, SaveButton, Tooltip, useAsyncOptionsProps, useStackSwitchApi } from "@comet/admin";
-import { FinalFormDateTimePicker } from "@comet/admin-date-time";
-import { Info, Newsletter } from "@comet/admin-icons";
-import { BlockAdminComponentPaper, BlockAdminComponentSectionGroup, type ContentScope } from "@comet/cms-admin";
+import { DateTimePickerField, Field, FinalFormSelect, SaveButton, Tooltip, useAsyncOptionsProps, useStackSwitchApi } from "@dextinity/admin";
+import { Info, Newsletter } from "@dextinity/admin-icons";
+import { BlockAdminComponentPaper, BlockAdminComponentSectionGroup, type ContentScope } from "@dextinity/cms-admin";
 import { Card } from "@mui/material";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -32,7 +31,7 @@ const validateScheduledAt = (value: Date, now: Date) => {
     if (value < now) {
         return (
             <FormattedMessage
-                id="cometBrevoModule.emailCampaigns.sendManager.scheduledAt.validationError.pastDate"
+                id="dextinity.emailCampaigns.sendManager.scheduledAt.validationError.pastDate"
                 defaultMessage="Date must be in the future"
             />
         );
@@ -65,7 +64,7 @@ export const SendManagerFields = ({ isCampaignCreated, scope, id, isSendable }: 
         <Card>
             <BlockAdminComponentPaper>
                 <BlockAdminComponentSectionGroup
-                    title={<FormattedMessage id="cometBrevoModule.emailCampaigns.sendManager.title" defaultMessage="Send Manager" />}
+                    title={<FormattedMessage id="dextinity.emailCampaigns.sendManager.title" defaultMessage="Send Manager" />}
                 >
                     <Field
                         component={FinalFormSelect}
@@ -75,23 +74,22 @@ export const SendManagerFields = ({ isCampaignCreated, scope, id, isSendable }: 
                         }}
                         {...selectAsyncMultipleProps}
                         name="targetGroups"
-                        label={<FormattedMessage id="cometBrevoModule.emailCampaigns.targetGroups" defaultMessage="Target groups" />}
+                        label={<FormattedMessage id="dextinity.emailCampaigns.targetGroups" defaultMessage="Target groups" />}
                         multiple
                         fullWidth
                     />
-                    <Field
+                    <DateTimePickerField
                         name="scheduledAt"
                         disabled={isCampaignCreated}
                         fullWidth
-                        clearable
                         label={
                             <>
-                                <FormattedMessage id="cometBrevoModule.emailCampaigns.scheduledAt" defaultMessage="Schedule date and time" />{" "}
+                                <FormattedMessage id="dextinity.emailCampaigns.scheduledAt" defaultMessage="Schedule date and time" />{" "}
                                 {isCampaignCreated && (
                                     <Tooltip
                                         title={
                                             <FormattedMessage
-                                                id="cometBrevoModule.emailCampaigns.scheduledAt.info"
+                                                id="dextinity.emailCampaigns.scheduledAt.info"
                                                 defaultMessage="Please select a target group and save the campaign before scheduling."
                                             />
                                         }
@@ -101,12 +99,8 @@ export const SendManagerFields = ({ isCampaignCreated, scope, id, isSendable }: 
                                 )}
                             </>
                         }
-                        component={FinalFormDateTimePicker}
                         validate={(value) => (isCampaignCreated ? undefined : validateScheduledAt(value, now))}
-                        componentsProps={{
-                            datePicker: { placeholder: "DD.MM.YYYY", minDate: now },
-                            timePicker: { placeholder: "HH:mm" },
-                        }}
+                        minDateTime={now}
                     />
 
                     <SaveButton
@@ -119,7 +113,7 @@ export const SendManagerFields = ({ isCampaignCreated, scope, id, isSendable }: 
                             setIsSendEmailCampaignNowDialogOpen(true);
                         }}
                     >
-                        <FormattedMessage id="cometBrevoModule.emailCampaigns.sendNow.sendText" defaultMessage="Send email campaign now" />
+                        <FormattedMessage id="dextinity.emailCampaigns.sendNow.sendText" defaultMessage="Send email campaign now" />
                     </SaveButton>
                     <SendEmailCampaignNowDialog
                         dialogOpen={isSendEmailCampaignNowDialogOpen}

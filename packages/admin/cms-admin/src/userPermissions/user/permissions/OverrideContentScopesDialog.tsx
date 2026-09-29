@@ -9,7 +9,7 @@ import {
     type GridColDef,
     GridToolbarQuickFilter,
     SaveButton,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import {
     CircularProgress,
     // eslint-disable-next-line no-restricted-imports
@@ -118,13 +118,16 @@ export const OverrideContentScopesDialog = ({ permissionId, userId, handleDialog
                 render={({ values }) => (
                     <>
                         <DialogTitle>
-                            <FormattedMessage id="comet.userPermissions.scopes" defaultMessage="Scopes" />
+                            <FormattedMessage id="dextinity.userPermissions.scopes" defaultMessage="Scopes" />
                         </DialogTitle>
                         <DialogContent>
                             <Field
                                 name="overrideContentScopes"
                                 label={
-                                    <FormattedMessage id="comet.userPermissions.overrideScopes" defaultMessage="Permission-specific Content-Scopes" />
+                                    <FormattedMessage
+                                        id="dextinity.userPermissions.overrideScopes"
+                                        defaultMessage="Permission-specific Content-Scopes"
+                                    />
                                 }
                                 component={FinalFormSwitch}
                                 type="checkbox"
@@ -165,7 +168,7 @@ export const OverrideContentScopesDialog = ({ permissionId, userId, handleDialog
                         </DialogContent>
                         <DialogActions>
                             <CancelButton onClick={() => handleDialogClose()}>
-                                <FormattedMessage id="comet.userPermissions.close" defaultMessage="Close" />
+                                <FormattedMessage id="dextinity.userPermissions.close" defaultMessage="Close" />
                             </CancelButton>
                             {!disabled && <SaveButton type="submit" />}
                         </DialogActions>

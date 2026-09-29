@@ -13,6 +13,7 @@ const damFileDetailFragment = gql`
         contentHash
         title
         altText
+        aiContentType
         image {
             width
             height

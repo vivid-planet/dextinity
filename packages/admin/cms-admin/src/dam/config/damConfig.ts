@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { useCometConfig } from "../../config/CometConfigContext";
+import { useDextinityConfig } from "../../config/DextinityConfigContext";
 
 export interface DamConfig {
     acceptedMimeTypes?: string[];
@@ -17,16 +17,39 @@ export interface DamConfig {
     allowedImageAspectRatios: string[];
     maxSrcResolution: number;
     basePath?: string;
+    videoPerformanceWarningFileSize?: number | false;
 }
 
-export function useDamConfig(): DamConfig {
-    const cometConfig = useCometConfig();
+const defaultVideoPerformanceWarningFileSize = 10;
 
-    if (!cometConfig.dam) {
-        throw new Error("No DAM configuration found. Make sure to set `dam` in `CometConfigProvider`.");
+export function useDamConfig(): DamConfig {
+    const dextinityConfig = useDextinityConfig();
+
+    if (!dextinityConfig.dam) {
+        throw new Error("No DAM configuration found. Make sure to set `dam` in `DextinityConfigProvider`.");
     }
 
-    return cometConfig.dam;
+    return dextinityConfig.dam;
+}
+
+interface VideoPerformanceWarning {
+    enabled: boolean;
+    maxFileSizeInBytes: number;
+    isVideoTooLarge: (file: { mimetype: string; size: number }) => boolean;
+}
+
+export function useVideoPerformanceWarning(): VideoPerformanceWarning {
+    const { videoPerformanceWarningFileSize } = useDamConfig();
+
+    const enabled = videoPerformanceWarningFileSize !== false;
+    const maxFileSizeInMegabytes =
+        typeof videoPerformanceWarningFileSize === "number" ? videoPerformanceWarningFileSize : defaultVideoPerformanceWarningFileSize;
+    const maxFileSizeInBytes = maxFileSizeInMegabytes * 1024 * 1024;
+
+    const isVideoTooLarge = (file: { mimetype: string; size: number }) =>
+        enabled && file.mimetype.startsWith("video/") && file.size > maxFileSizeInBytes;
+
+    return { enabled, maxFileSizeInBytes, isVideoTooLarge };
 }
 
 export function useDamBasePath(): string {

@@ -2,7 +2,7 @@ import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 
-import { CometValidationException } from "../common/errors/validation.exception";
+import { DextinityValidationException } from "../common/errors/validation.exception";
 import { RedirectsService } from "../redirects/redirects.service";
 import { AttachedDocumentStrictInput } from "./dto/attached-document.input";
 import { MovePageTreeNodesByPosInput, PageTreeNodeBaseCreateInput } from "./dto/page-tree-node.input";
@@ -36,18 +36,18 @@ export class PageTreeService {
         const readApi = this.createReadApi({ visibility: "all" });
 
         if (input.id && input.parentId && input.id === input.parentId) {
-            throw new CometValidationException("A page cannot be its own parent");
+            throw new DextinityValidationException("A page cannot be its own parent");
         }
 
         const path = await this.pathForParentAndSlug(input.parentId || null, input.slug);
 
         if (this.config.reservedPaths.includes(path)) {
-            throw new CometValidationException("Reserved path");
+            throw new DextinityValidationException("Reserved path");
         }
 
         const nodeWithSamePath = await this.nodeWithSamePath(path, scope);
         if (nodeWithSamePath) {
-            throw new CometValidationException("Slug leads to duplicate path");
+            throw new DextinityValidationException("Slug leads to duplicate path");
         }
 
         const { attachedDocument: attachedDocumentInput, parentId, ...restInput } = input;
@@ -109,13 +109,13 @@ export class PageTreeService {
         const newPath = this.newPathForSlug(existingNodePath, input.slug);
 
         if (this.config.reservedPaths.includes(newPath)) {
-            throw new CometValidationException("Reserved path");
+            throw new DextinityValidationException("Reserved path");
         }
 
         const nodeWithSamePath = await this.nodeWithSamePath(newPath, existingNode.scope);
 
         if (nodeWithSamePath && nodeWithSamePath.id !== id) {
-            throw new CometValidationException("Slug leads to duplicate path");
+            throw new DextinityValidationException("Slug leads to duplicate path");
         }
 
         const { attachedDocument: attachedDocumentInput, createAutomaticRedirectsOnSlugChange, ...restInput } = input;
@@ -197,7 +197,7 @@ export class PageTreeService {
             let currentParentId: string | null = input.parentId;
             while (currentParentId !== null) {
                 if (currentParentId === id) {
-                    throw new CometValidationException("A page cannot be its own parent or be moved under one of its descendants");
+                    throw new DextinityValidationException("A page cannot be its own parent or be moved under one of its descendants");
                 }
                 const parentNode = await readApi.getNode(currentParentId);
                 if (!parentNode) {
@@ -210,7 +210,7 @@ export class PageTreeService {
         const requestedPath = await this.pathForParentAndSlug(input.parentId, existingNode.slug);
 
         if (this.config.reservedPaths.includes(requestedPath)) {
-            throw new CometValidationException("Reserved path");
+            throw new DextinityValidationException("Reserved path");
         }
 
         let newSlug;
@@ -399,7 +399,10 @@ export class PageTreeService {
     }
 
     public async nodeWithSamePath(path: string, scope?: ScopeInterface): Promise<PageTreeNodeInterface | null> {
-        return this.createReadApi({ visibility: [Visibility.Published, Visibility.Unpublished] }).getNodeByPath(path, {
+        // The home page has the slug "home" but lives at the canonical path "/". getNodeByPath("/home") returns null by
+        // design, so the home page must be looked up via "/" to detect it as a duplicate (e.g. when copying it).
+        const lookupPath = path === "/home" ? "/" : path;
+        return this.createReadApi({ visibility: [Visibility.Published, Visibility.Unpublished] }).getNodeByPath(lookupPath, {
             scope,
         }); // Slugs of archived pages can be reused
     }

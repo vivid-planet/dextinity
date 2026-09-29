@@ -1,4 +1,4 @@
-import { makeRteApi, Rte } from "@comet/admin-rte";
+import { makeRteApi, Rte } from "@dextinity/admin-rte";
 import { ContentState, convertFromHTML } from "draft-js";
 import { stateToHTML } from "draft-js-export-html";
 import { stateToMarkdown } from "draft-js-export-markdown";

@@ -4,6 +4,7 @@ import { Query, Resolver } from "@nestjs/graphql";
 import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
 import { LABEL_ANNOTATION } from "../kubernetes/kubernetes.constants";
 import { KubernetesAuthenticationGuard } from "../kubernetes/kubernetes-authentication.guard";
+import { getAnnotation } from "../kubernetes/kubernetes-metadata";
 import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
 import { CurrentUser } from "../user-permissions/dto/current-user";
 import { BuildTemplatesService } from "./build-templates.service";
@@ -21,7 +22,7 @@ export class BuildTemplatesResolver {
         return builderCronJobs.map((cronJob) => ({
             id: cronJob.metadata?.uid as string,
             name: cronJob.metadata?.name as string,
-            label: cronJob.metadata?.annotations?.[LABEL_ANNOTATION],
+            label: getAnnotation(cronJob, LABEL_ANNOTATION),
         }));
     }
 }

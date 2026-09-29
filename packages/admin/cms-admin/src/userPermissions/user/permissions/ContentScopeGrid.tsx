@@ -10,8 +10,8 @@ import {
     messages,
     SaveBoundary,
     SaveBoundarySaveButton,
-} from "@comet/admin";
-import { Select } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Select } from "@dextinity/admin-icons";
 import {
     // eslint-disable-next-line no-restricted-imports
     Dialog,
@@ -26,6 +26,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import { DataGrid } from "../../../dataGrid/DataGrid";
 import { camelCaseToHumanReadable } from "../../utils/camelCaseToHumanReadable";
+import { deduplicateContentScopes } from "../../utils/deduplicateContentScopes";
 import type { GQLContentScopesQuery, GQLContentScopesQueryVariables } from "./ContentScopeGrid.generated";
 import { SelectScopesDialogContent } from "./selectScopesDialogContent/SelectScopesDialogContent";
 import type { GQLAvailableContentScopesQuery } from "./selectScopesDialogContent/SelectScopesDialogContent.generated";
@@ -75,22 +76,23 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
         return <Loading />;
     }
 
+    const userContentScopes = deduplicateContentScopes(data.userContentScopes);
     const columns: GridColDef<ContentScope>[] = generateGridColumnsFromContentScopeProperties(data.availableContentScopes);
 
     const toolbarSlotProps: ToolbarProps = {
         toolbarAction: (
             <Button startIcon={<Select />} onClick={() => setOpen(true)} variant="primary">
-                <FormattedMessage id="comet.userPermissions.selectScopes" defaultMessage="Assign scopes" />
+                <FormattedMessage id="dextinity.userPermissions.selectScopes" defaultMessage="Assign scopes" />
             </Button>
         ),
     };
 
     return (
-        <FieldSet title={intl.formatMessage({ id: "comet.userPermissions.assignedScopes", defaultMessage: "Assigned Scopes" })} disablePadding>
+        <FieldSet title={intl.formatMessage({ id: "dextinity.userPermissions.assignedScopes", defaultMessage: "Assigned Scopes" })} disablePadding>
             <DataGrid
-                rows={data.userContentScopes}
+                rows={userContentScopes}
                 columns={columns}
-                rowCount={data?.userContentScopes.length ?? 0}
+                rowCount={userContentScopes.length}
                 loading={false}
                 getRowId={(row) => JSON.stringify(row)}
                 slots={{
@@ -108,11 +110,11 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
             >
                 <Dialog open={open} maxWidth="lg">
                     <DialogTitle>
-                        <FormattedMessage id="comet.userScopes.dialog.title" defaultMessage="Select scopes" />
+                        <FormattedMessage id="dextinity.userScopes.dialog.title" defaultMessage="Select scopes" />
                     </DialogTitle>
                     <SelectScopesDialogContent
                         userId={userId}
-                        userContentScopes={data.userContentScopes}
+                        userContentScopes={userContentScopes}
                         userContentScopesSkipManual={data.userContentScopesSkipManual}
                     />
                     <DialogActions>

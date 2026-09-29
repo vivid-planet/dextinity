@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { validateSync } from "class-validator";
-import { AzureOpenAI } from "openai";
-import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import type { AzureOpenAI } from "openai";
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 import { FilesService } from "../../dam/files/files.service";
 import { ContentGenerationServiceInterface, SeoTags } from "../content-generation-service.interface";
@@ -44,7 +44,10 @@ export class AzureOpenAiContentGenerationService implements ContentGenerationSer
         return config;
     }
 
-    private createClient(config: AzureOpenAiConfig): AzureOpenAI {
+    private async createClient(config: AzureOpenAiConfig): Promise<AzureOpenAI> {
+        // Imported lazily so importing @dextinity/cms-api doesn't pull the openai package into
+        // memory unless the content-generation feature is actually used.
+        const { AzureOpenAI } = await import("openai");
         return new AzureOpenAI({
             apiKey: config.apiKey,
             deployment: config.deploymentId,
@@ -63,7 +66,7 @@ export class AzureOpenAiContentGenerationService implements ContentGenerationSer
             throw new Error("File doesn't exist");
         }
 
-        const client = this.createClient(config);
+        const client = await this.createClient(config);
         const prompt: Array<ChatCompletionMessageParam> = [
             {
                 role: "system",
@@ -97,7 +100,7 @@ export class AzureOpenAiContentGenerationService implements ContentGenerationSer
             throw new Error("File doesn't exist");
         }
 
-        const client = this.createClient(config);
+        const client = await this.createClient(config);
         const prompt: Array<ChatCompletionMessageParam> = [
             {
                 role: "system",
@@ -123,7 +126,7 @@ export class AzureOpenAiContentGenerationService implements ContentGenerationSer
     async generateSeoTags(content: string, { language }: { language: string }): Promise<SeoTags> {
         const config = this.getConfigForMethod("generateSeoTags");
 
-        const client = this.createClient(config);
+        const client = await this.createClient(config);
         const prompt: Array<ChatCompletionMessageParam> = [
             {
                 role: "system",

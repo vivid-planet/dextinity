@@ -1,4 +1,4 @@
-import { Error, Info, Warning } from "@comet/admin-icons";
+import { Error, Info, Warning } from "@dextinity/admin-icons";
 import type { ComponentsOverrides, Theme, Typography } from "@mui/material";
 import { useThemeProps } from "@mui/material/styles";
 import type { FunctionComponent, ReactNode } from "react";
@@ -71,16 +71,16 @@ const defaultIconMapping: Record<InlineAlertSeverity, ReactNode> = {
 };
 
 const defaultTitleMapping: Record<InlineAlertSeverity, ReactNode> = {
-    error: <FormattedMessage defaultMessage="Error" id="comet.inlineAlert.error.title" />,
-    warning: <FormattedMessage defaultMessage="Warning" id="comet.inlineAlert.warning.title" />,
-    info: <FormattedMessage defaultMessage="Info" id="comet.inlineAlert.info.title" />,
+    error: <FormattedMessage defaultMessage="Error" id="dextinity.inlineAlert.error.title" />,
+    warning: <FormattedMessage defaultMessage="Warning" id="dextinity.inlineAlert.warning.title" />,
+    info: <FormattedMessage defaultMessage="Info" id="dextinity.inlineAlert.info.title" />,
 };
 
 const defaultDescriptionMapping: Record<InlineAlertSeverity, ReactNode> = {
     error: (
         <FormattedMessage
             defaultMessage="An error occurred. Please try again later or contact the support."
-            id="comet.inlineAlert.error.description"
+            id="dextinity.inlineAlert.error.description"
         />
     ),
     warning: null,
@@ -104,7 +104,7 @@ export const InlineAlert: FunctionComponent<InlineAlertProps> = (inProps) => {
         sx,
         className,
         slotProps = {},
-    } = useThemeProps({ props: inProps, name: "CometAdminInlineAlert" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminInlineAlert" });
 
     const iconMapping = { ...defaultIconMapping, ...passedIconMapping };
     const titleMapping = { ...defaultTitleMapping, ...passedTitleMapping };
@@ -130,17 +130,17 @@ export const InlineAlert: FunctionComponent<InlineAlertProps> = (inProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminInlineAlert: InlineAlertProps;
+        DextinityAdminInlineAlert: InlineAlertProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminInlineAlert: InlineAlertClassKey;
+        DextinityAdminInlineAlert: InlineAlertClassKey;
     }
 
     interface Components {
-        CometAdminInlineAlert?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminInlineAlert"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminInlineAlert"];
+        DextinityAdminInlineAlert?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminInlineAlert"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminInlineAlert"];
         };
     }
 }

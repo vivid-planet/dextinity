@@ -1,4 +1,4 @@
-import { Add } from "@comet/admin-icons";
+import { Add } from "@dextinity/admin-icons";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { FullPageAlert } from "../FullPageAlert";

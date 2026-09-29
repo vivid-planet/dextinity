@@ -4,6 +4,7 @@ import { BaseVideoBlockData, BaseVideoBlockInput } from "../../../blocks/base-vi
 import { BlockDataInterface, BlockIndexData, blockInputToData, BlockMetaField, BlockMetaFieldKind, createBlock } from "../../../blocks/block";
 import { AnnotationBlockMeta, BlockField } from "../../../blocks/decorators/field";
 import { typeSafeBlockMigrationPipe } from "../../../blocks/migrations/typeSafeBlockMigrationPipe";
+import { DamFileAiContentType } from "../../files/entities/ai-content-type.enum";
 import { FILE_ENTITY } from "../../files/entities/file.entity";
 import { DamVideoBlockTransformerService } from "./dam-video-block-transformer.service";
 import { AddPreviewImageMigration } from "./migrations/1-add-preview-image.migration";
@@ -88,6 +89,12 @@ class Meta extends AnnotationBlockMeta {
                             nullable: true,
                         },
                         {
+                            name: "aiContentType",
+                            kind: BlockMetaFieldKind.Enum,
+                            enum: Object.values(DamFileAiContentType),
+                            nullable: true,
+                        },
+                        {
                             name: "archived",
                             kind: BlockMetaFieldKind.Boolean,
                             nullable: false,
@@ -136,9 +143,11 @@ class Meta extends AnnotationBlockMeta {
 export const DamVideoBlock = createBlock(DamVideoBlockData, DamVideoBlockInput, {
     name: "DamVideo",
     blockMeta: new Meta(DamVideoBlockData),
-    migrate: {
+    migrateVendor: {
         version: 1,
         migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration]),
+        // The migration counted in the block's version before it moved into the vendor chain
+        legacyVersions: 1,
     },
 });
 

@@ -13,6 +13,12 @@ export type BlockMetaField =
       }
     | {
           name: string;
+          kind: "TipTapRichTextBlock";
+          nullable: boolean;
+          childBlocks: Record<string, string>;
+      }
+    | {
+          name: string;
           kind: "Enum";
           nullable: boolean;
           enum: string[];

@@ -1,4 +1,4 @@
-import { BooleanFilter, DateTimeFilter, StringFilter } from "@comet/cms-api";
+import { BooleanFilter, DateTimeFilter, StringFilter } from "@dextinity/cms-api";
 import { Field, InputType } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsOptional, ValidateNested } from "class-validator";

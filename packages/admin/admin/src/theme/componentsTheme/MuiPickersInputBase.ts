@@ -59,11 +59,11 @@ export const getMuiPickersInputBase = (
                 },
             },
 
-            [`.CometAdminClearInputAdornment-root.${inputAdornmentClasses.positionStart}`]: {
+            [`.DextinityAdminClearInputAdornment-root.${inputAdornmentClasses.positionStart}`]: {
                 marginLeft: spacing(-2),
             },
 
-            [`.CometAdminClearInputAdornment-root.${inputAdornmentClasses.positionEnd}`]: {
+            [`.DextinityAdminClearInputAdornment-root.${inputAdornmentClasses.positionEnd}`]: {
                 marginRight: spacing(-2),
             },
         },

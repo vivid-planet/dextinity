@@ -1,4 +1,4 @@
-import type { PreviewData } from "@comet/site-react";
+import type { PreviewData } from "@dextinity/site-react";
 import { errors, jwtVerify, SignJWT } from "jose";
 import type { NextApiRequest } from "next";
 import { cookies, draftMode, headers as getHeaders } from "next/headers";
@@ -40,7 +40,7 @@ export async function setSitePreviewParams(payload: SitePreviewParams) {
         .setProtectedHeader({ alg: "HS256" })
         .setExpirationTime("1 day")
         .sign(new TextEncoder().encode(process.env.SITE_PREVIEW_SECRET));
-    (await cookies()).set("__comet_site_preview", jwt, { httpOnly: true, sameSite: "lax" });
+    (await cookies()).set("__dextinity_site_preview", jwt, { httpOnly: true, sameSite: "lax" });
     (await draftMode()).enable();
 }
 
@@ -64,7 +64,7 @@ export async function previewParams(options: { skipDraftModeCheck: boolean } = {
         }
     }
 
-    const cookie = (await cookies()).get("__comet_site_preview");
+    const cookie = (await cookies()).get("__dextinity_site_preview");
     if (cookie) {
         return verifyJwt<PreviewParams>(cookie.value);
     }

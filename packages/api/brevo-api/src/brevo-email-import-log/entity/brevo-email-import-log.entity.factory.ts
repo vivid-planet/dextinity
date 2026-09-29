@@ -1,4 +1,4 @@
-import { DocumentInterface, IsUndefinable } from "@comet/cms-api";
+import { DocumentInterface, IsUndefinable } from "@dextinity/cms-api";
 import { Embedded, Entity, Enum, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Field, ID, ObjectType } from "@nestjs/graphql";

@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import { Button, DataGridToolbar, FieldSet, FillSpace, GridCellContent, type GridColDef, TableDeleteButton } from "@comet/admin";
-import { Add, Delete, Edit, StateFilled } from "@comet/admin-icons";
+import { Button, DataGridToolbar, FieldSet, FillSpace, GridCellContent, type GridColDef, TableDeleteButton } from "@dextinity/admin";
+import { Add, Delete, Edit, StateFilled } from "@dextinity/admin-icons";
 import { IconButton, Typography } from "@mui/material";
 import type { GridToolbarProps } from "@mui/x-data-grid";
 import { differenceInDays, parseISO } from "date-fns";
@@ -67,7 +67,7 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
             field: "name",
             flex: 1,
             pinnable: false,
-            headerName: intl.formatMessage({ id: "comet.userPermissions.permission", defaultMessage: "Permission" }),
+            headerName: intl.formatMessage({ id: "dextinity.userPermissions.permission", defaultMessage: "Permission" }),
             renderCell: ({ row }) => <Typography variant="subtitle2">{camelCaseToHumanReadable(row.permission)}</Typography>,
         },
         {
@@ -75,13 +75,13 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
             width: 200,
             filterable: false,
             pinnable: false,
-            headerName: intl.formatMessage({ id: "comet.userPermissions.status", defaultMessage: "Status" }),
+            headerName: intl.formatMessage({ id: "dextinity.userPermissions.status", defaultMessage: "Status" }),
             renderCell: ({ row }) => (
                 <>
                     {row.validTo && differenceInDays(parseISO(row.validTo), new Date()) < 0 && (
                         <GridCellContent
                             icon={<StateFilled color="error" />}
-                            primaryText={<FormattedMessage id="comet.userPermissions.expired" defaultMessage="Expired" />}
+                            primaryText={<FormattedMessage id="dextinity.userPermissions.expired" defaultMessage="Expired" />}
                         />
                     )}
                     {row.validTo &&
@@ -89,12 +89,12 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
                     differenceInDays(parseISO(row.validTo), new Date()) < 30 ? (
                         <GridCellContent
                             icon={<StateFilled color="warning" />}
-                            primaryText={<FormattedMessage id="comet.userPermissions.expiringSoon" defaultMessage="Expiring soon" />}
+                            primaryText={<FormattedMessage id="dextinity.userPermissions.expiringSoon" defaultMessage="Expiring soon" />}
                         />
                     ) : (
                         <GridCellContent
                             icon={<StateFilled color="success" />}
-                            primaryText={<FormattedMessage id="comet.userPermissions.active" defaultMessage="Active" />}
+                            primaryText={<FormattedMessage id="dextinity.userPermissions.active" defaultMessage="Active" />}
                         />
                     )}
                 </>
@@ -104,13 +104,13 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
             field: "source",
             width: 200,
             pinnable: false,
-            headerName: intl.formatMessage({ id: "comet.userPermissions.source", defaultMessage: "Assignment type" }),
+            headerName: intl.formatMessage({ id: "dextinity.userPermissions.source", defaultMessage: "Assignment type" }),
         },
         {
             field: "validityPeriod",
             width: 200,
             pinnable: false,
-            headerName: intl.formatMessage({ id: "comet.userPermissions.validityPeriod", defaultMessage: "Validity period" }),
+            headerName: intl.formatMessage({ id: "dextinity.userPermissions.validityPeriod", defaultMessage: "Validity period" }),
             renderCell: ({ row }) =>
                 `${row.validFrom ? new Date(row.validFrom).toLocaleDateString() : "∞"} - ${
                     row.validTo ? new Date(row.validTo).toLocaleDateString() : "∞"
@@ -126,7 +126,7 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
             renderCell: ({ row }) =>
                 (row.source === "MANUAL" || row.overrideContentScopes) && (
                     <Button onClick={() => setOverrideContentScopesId(row.id)}>
-                        <FormattedMessage id="comet.userPermissions.overrideContentScopes" defaultMessage="Permission-specific Content-Scopes" />
+                        <FormattedMessage id="dextinity.userPermissions.overrideContentScopes" defaultMessage="Permission-specific Content-Scopes" />
                     </Button>
                 ),
         },
@@ -182,14 +182,14 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
                     setPermissionId("add");
                 }}
             >
-                <FormattedMessage id="comet.userPermissions.addPermission" defaultMessage="Add new permission" />
+                <FormattedMessage id="dextinity.userPermissions.addPermission" defaultMessage="Add new permission" />
             </Button>
         ),
     };
 
     return (
         <FieldSet
-            title={intl.formatMessage({ id: "comet.userPermissions.assignedPermissions", defaultMessage: "Assigned Permissions" })}
+            title={intl.formatMessage({ id: "dextinity.userPermissions.assignedPermissions", defaultMessage: "Assigned Permissions" })}
             disablePadding
         >
             <DataGrid<GQLPermissionForGridFragment>

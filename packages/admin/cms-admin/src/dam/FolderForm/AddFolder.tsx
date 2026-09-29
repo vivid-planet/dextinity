@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/client";
-import { FinalForm } from "@comet/admin";
+import { FinalForm } from "@dextinity/admin";
 
 import { useDamScope } from "../config/useDamScope";
 import { clearDamItemCache } from "../helpers/clearDamItemCache";

@@ -1,4 +1,4 @@
-import { createListBlock } from "@comet/cms-admin";
+import { createListBlock } from "@dextinity/cms-admin";
 import { TeaserItemBlock } from "@src/documents/pages/blocks/TeaserItemBlock";
 import { FormattedMessage } from "react-intl";
 

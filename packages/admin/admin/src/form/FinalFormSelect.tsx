@@ -1,4 +1,4 @@
-import { Error } from "@comet/admin-icons";
+import { Error } from "@dextinity/admin-icons";
 import { InputAdornment, LinearProgress, MenuItem, Select, type SelectProps, Typography } from "@mui/material";
 import type { ReactNode } from "react";
 import type { FieldRenderProps } from "react-final-form";
@@ -54,12 +54,12 @@ export const FinalFormSelect = <T,>({
 
     noOptionsText = (
         <Typography variant="body2">
-            <FormattedMessage id="finalFormSelect.noOptions" defaultMessage="No options." />
+            <FormattedMessage id="dextinity.finalFormSelect.noOptions" defaultMessage="No options." />
         </Typography>
     ),
     errorText = (
         <Typography variant="body2">
-            <FormattedMessage id="finalFormSelect.error" defaultMessage="Error loading options." />
+            <FormattedMessage id="dextinity.finalFormSelect.error" defaultMessage="Error loading options." />
         </Typography>
     ),
     disabled,
@@ -126,7 +126,7 @@ export const FinalFormSelect = <T,>({
             value={Array.isArray(value) ? value.map((i) => getOptionValue(i)) : getOptionValue(value)}
             renderValue={() => {
                 if (Array.isArray(value)) {
-                    return value.map((i) => getOptionLabel(i));
+                    return value.map((i) => getOptionLabel(i)).join(", ");
                 } else {
                     return getOptionLabel(value);
                 }
@@ -135,7 +135,7 @@ export const FinalFormSelect = <T,>({
             <LinearLoadingContainer>{showLinearProgress && <LinearProgress />}</LinearLoadingContainer>
             {showLoadingMessage && (
                 <MenuItemDisabledOverrideOpacity value="" disabled>
-                    <FormattedMessage id="common.loading" defaultMessage="Loading ..." />
+                    <FormattedMessage id="dextinity.common.loading" defaultMessage="Loading ..." />
                 </MenuItemDisabledOverrideOpacity>
             )}
 

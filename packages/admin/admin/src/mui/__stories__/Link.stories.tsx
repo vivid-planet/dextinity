@@ -6,7 +6,7 @@ export default {
 
 export const _Link = () => {
     return (
-        <Link href="https://github.com/vivid-planet/comet" target="_blank">
+        <Link href="https://github.com/vivid-planet/dextinity" target="_blank">
             Link with Default Styling
         </Link>
     );

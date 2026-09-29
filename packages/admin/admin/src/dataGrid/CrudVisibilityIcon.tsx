@@ -1,4 +1,4 @@
-import { Disabled, Online } from "@comet/admin-icons";
+import { Disabled, Online } from "@dextinity/admin-icons";
 import { useTheme } from "@mui/material";
 import type { JSX } from "react";
 

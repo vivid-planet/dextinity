@@ -1,11 +1,10 @@
-import { Controller, ForbiddenException, Get, Inject, NotFoundException, Param, Res, Type } from "@nestjs/common";
+import { Controller, ForbiddenException, Get, NotFoundException, Param, Res, Type } from "@nestjs/common";
 import { Response } from "express";
 
 import { GetCurrentUser } from "../../auth/decorators/get-current-user.decorator";
 import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
 import { CurrentUser } from "../../user-permissions/dto/current-user";
-import { ACCESS_CONTROL_SERVICE } from "../../user-permissions/user-permissions.constants";
-import { AccessControlServiceInterface } from "../../user-permissions/user-permissions.types";
+import { DamScopeAccessControlService } from "../scope-access-control.service";
 import { FoldersService } from "./folders.service";
 
 export const createFoldersController = ({ damBasePath }: { damBasePath: string }): Type<unknown> => {
@@ -13,7 +12,7 @@ export const createFoldersController = ({ damBasePath }: { damBasePath: string }
     class FoldersController {
         constructor(
             private readonly foldersService: FoldersService,
-            @Inject(ACCESS_CONTROL_SERVICE) private accessControlService: AccessControlServiceInterface,
+            private readonly scopeAccessControl: DamScopeAccessControlService,
         ) {}
 
         @RequiredPermission(["dam"], { skipScopeCheck: true }) // Scope is checked in method
@@ -24,7 +23,7 @@ export const createFoldersController = ({ damBasePath }: { damBasePath: string }
                 throw new NotFoundException("Folder not found");
             }
 
-            if (folder.scope && !this.accessControlService.isAllowed(user, "dam", folder.scope)) {
+            if (folder.scope && !this.scopeAccessControl.isAllowed(user, folder.scope)) {
                 throw new ForbiddenException("The current user is not allowed to access this scope and download this folder.");
             }
 

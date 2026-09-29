@@ -1,10 +1,10 @@
-import { Alert, DatePickerField, FinalForm } from "@comet/admin";
+import { Alert, DatePickerField, FinalForm } from "@dextinity/admin";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 type Story = StoryObj<typeof DatePickerField>;
 const config: Meta<typeof DatePickerField> = {
     component: DatePickerField,
-    title: "@comet/admin/datePicker/DatePickerField",
+    title: "@dextinity/admin/datePicker/DatePickerField",
 };
 export default config;
 

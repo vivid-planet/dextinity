@@ -9,7 +9,7 @@ const envToDomainMap: Record<Environment, string> = {
 
 export default ((env) => {
     return {
-        name: "Comet Site Main",
+        name: "Dextinity Site Main",
         domains: {
             main: envToDomainMap[env],
             additional: ["test.localhost:3000"],
@@ -20,6 +20,13 @@ export default ((env) => {
                 languages: ["en", "de"],
             },
             recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY ?? "",
+            organization: {
+                name: "Vivid Planet Software GmbH",
+                url: "https://www.vivid-planet.com",
+                logo: "/assets/dextinity-logo.svg",
+                sameAs: ["https://github.com/vivid-planet"],
+                description: "Vivid Planet Software GmbH develops Dextinity CMS, the open-source content management system.",
+            },
         },
     };
 }) satisfies GetSiteConfig;

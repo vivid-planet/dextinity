@@ -1,14 +1,9 @@
 addAssignees: author
 
-addReviewers: true
+addReviewers: false
 
-reviewers:
-    - johnnyomair
+runOnDraft: true
 
 skipKeywords:
     - Merge main into next
     - Version Packages
-
-skipUsers:
-    - renovate[bot]
-    - Copilot

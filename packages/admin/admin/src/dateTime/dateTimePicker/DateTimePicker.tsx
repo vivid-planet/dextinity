@@ -1,4 +1,4 @@
-import { Calendar } from "@comet/admin-icons";
+import { Calendar } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, css, inputLabelClasses, type Theme, useThemeProps } from "@mui/material";
 import {
     DateTimePicker as MuiDateTimePicker,
@@ -8,7 +8,7 @@ import {
 import { type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
 
-import { ClearInputAdornment as CometClearInputAdornment } from "../../common/ClearInputAdornment";
+import { ClearInputAdornment as BaseClearInputAdornment } from "../../common/ClearInputAdornment";
 import { OpenPickerAdornment } from "../../common/OpenPickerAdornment";
 import { ReadOnlyAdornment } from "../../common/ReadOnlyAdornment";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
@@ -19,7 +19,7 @@ export type DateTimePickerClassKey = "root" | "clearInputAdornment" | "readOnlyA
 
 export type DateTimePickerProps = ThemedComponentBaseProps<{
     root: typeof MuiDateTimePicker;
-    clearInputAdornment: typeof CometClearInputAdornment;
+    clearInputAdornment: typeof BaseClearInputAdornment;
     readOnlyAdornment: typeof ReadOnlyAdornment;
     openPickerAdornment: typeof OpenPickerAdornment;
 }> & {
@@ -55,7 +55,7 @@ export type DateTimePickerProps = ThemedComponentBaseProps<{
  * It provides a text field with a calendar icon that opens a date-time picker dialog. The component handles
  * Date objects and includes features like clearing, read-only state, and customizable icons.
  *
- * - [Storybook](https://storybook.comet-dxp.com/?path=/docs/@comet/admin_components-datetime-datetimepicker--docs)
+ * - [Storybook](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/admin_components-datetime-datetimepicker--docs)
  * - [MUI X DateTimePicker Documentation](https://mui.com/x/react-date-pickers/date-time-picker/)
  */
 export const DateTimePicker = (inProps: DateTimePickerProps) => {
@@ -73,7 +73,7 @@ export const DateTimePicker = (inProps: DateTimePickerProps) => {
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminDateTimePicker",
+        name: "DextinityAdminDateTimePicker",
     });
     const [open, setOpen] = useState(false);
     const intl = useIntl();
@@ -123,7 +123,7 @@ export const DateTimePicker = (inProps: DateTimePickerProps) => {
                                         ...slotProps?.openPickerAdornment?.slotProps,
                                         openPickerButton: {
                                             "aria-label": intl.formatMessage({
-                                                id: "comet.dateTimePicker.openPicker",
+                                                id: "dextinity.dateTimePicker.openPicker",
                                                 defaultMessage: "Open date time picker",
                                             }),
                                             ...slotProps?.openPickerAdornment?.slotProps?.openPickerButton,
@@ -166,24 +166,24 @@ const Root = createComponentSlot(MuiDateTimePicker)<DateTimePickerClassKey>({
     }
 `);
 
-const ClearInputAdornment = createComponentSlot(CometClearInputAdornment)<DateTimePickerClassKey>({
+const ClearInputAdornment = createComponentSlot(BaseClearInputAdornment)<DateTimePickerClassKey>({
     componentName: "DateTimePicker",
     slotName: "clearInputAdornment",
 })();
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminDateTimePicker: DateTimePickerProps;
+        DextinityAdminDateTimePicker: DateTimePickerProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminDateTimePicker: DateTimePickerClassKey;
+        DextinityAdminDateTimePicker: DateTimePickerClassKey;
     }
 
     interface Components {
-        CometAdminDateTimePicker?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminDateTimePicker"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminDateTimePicker"];
+        DextinityAdminDateTimePicker?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminDateTimePicker"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminDateTimePicker"];
         };
     }
 }

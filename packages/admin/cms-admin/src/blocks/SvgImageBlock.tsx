@@ -1,10 +1,10 @@
 import { gql } from "@apollo/client";
-import { Field } from "@comet/admin";
+import { Field } from "@dextinity/admin";
 import { deepClone } from "@mui/x-data-grid/internals";
 import { FormattedMessage } from "react-intl";
 
 import type { SvgImageBlockData, SvgImageBlockInput } from "../blocks.generated";
-import { useCometConfig } from "../config/CometConfigContext";
+import { useDextinityConfig } from "../config/DextinityConfigContext";
 import { useDamAcceptedMimeTypes } from "../dam/config/useDamAcceptedMimeTypes";
 import { FileField } from "../form/file/FileField";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
@@ -27,7 +27,7 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
 
     name: "SVG",
 
-    displayName: <FormattedMessage id="comet.blocks.svgImage" defaultMessage="SVG" />,
+    displayName: <FormattedMessage id="dextinity.blocks.svgImage" defaultMessage="SVG" />,
 
     defaultValues: () => ({}),
 
@@ -116,7 +116,7 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
     definesOwnPadding: true,
 
     AdminComponent: ({ state, updateState }) => {
-        const { apiUrl } = useCometConfig();
+        const { apiUrl } = useDextinityConfig();
         const { filteredAcceptedMimeTypes } = useDamAcceptedMimeTypes();
 
         const previewUrl = createPreviewUrl(state, { apiUrl });
@@ -133,7 +133,7 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
                         name="damFile"
                         component={FileField}
                         fullWidth
-                        buttonText={<FormattedMessage id="comet.blocks.image.chooseImage" defaultMessage="Choose image" />}
+                        buttonText={<FormattedMessage id="dextinity.blocks.image.chooseImage" defaultMessage="Choose image" />}
                         allowedMimetypes={filteredAcceptedMimeTypes.svgImage}
                         preview={<img src={previewUrl} width="70" height="70" />}
                     />

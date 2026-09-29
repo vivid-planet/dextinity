@@ -1,4 +1,4 @@
-import { useDataGridRemote, usePersistentColumnState } from "@comet/admin";
+import { useDataGridRemote, usePersistentColumnState } from "@dextinity/admin";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { MemoryRouter } from "react-router";
 

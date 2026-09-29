@@ -1,5 +1,980 @@
 # @comet/cms-admin
 
+## 10.7.0
+
+### Minor Changes
+
+- ae93af6: Support heading-only TipTap rich text blocks
+
+    `paragraph` is now a feature of `createTipTapRichTextBlock` like the other text block types, enabled by default. Turning it off results in a heading-only block (e.g. a headline): the text block type select only offers headings, the editor starts with a heading instead of a paragraph, and content containing a paragraph is rejected during validation.
+
+    The `heading` options gain a `defaultLevel`, the level a newly created heading gets. It defaults to the lowest allowed level and must be one of them. `migrateFromDraftJs` uses it for Draft.js blocks that don't carry a heading level, so migrated content doesn't fall back to paragraphs the schema doesn't allow.
+
+    **Example**
+
+    A headline block that only offers H2-H4 and starts with an H3:
+
+    ```tsx
+    createTipTapRichTextBlock({
+        paragraph: false,
+        heading: { levels: [2, 3, 4], defaultLevel: 3 },
+        maxTextBlocks: 1,
+    });
+    ```
+
+    Lists are disabled in a heading-only block, because a list item's content starts with a paragraph. Enabling one explicitly throws, as does turning off `paragraph` and `heading` together, which would leave no text block type at all.
+
+- 0ba6e01: Display only warnings of the currently selected scope by default
+
+    Previously, `WarningsPage` and `LatestWarningsDashboardWidget` displayed the warnings of all scopes the user is allowed to access.
+    Now, they only display the warnings of the currently selected scope by default.
+    Switching the scope automatically updates the displayed warnings.
+    Warnings without a scope (e.g., DAM warnings) and warnings with a partial scope (e.g., only `domain`) remain visible.
+    In `WarningsPage`, filtering the `scope` column is only possible with `showAllScopes`, because it otherwise queries a single scope.
+
+    Use the new `showAllScopes` prop to restore the previous behavior:
+
+    ```tsx
+    <WarningsPage showAllScopes />
+    ```
+
+    ```tsx
+    <LatestWarningsDashboardWidget showAllScopes />
+    ```
+
+### Patch Changes
+
+- 33cfcdd: Fix an empty paragraph appearing after switching a block to a heading
+
+    Turning the editor's only (or last) block into a heading via the text block type dropdown left an empty paragraph behind it. This came from TipTap's `TrailingNode` extension, which inserts an empty paragraph after the last block whenever that block isn't of the schema's default type, so a document never ends on a block with no direct way to place the cursor after it. A heading doesn't need that: pressing Enter at its end already creates a paragraph below it, unlike a non-text block such as an inserted child block.
+
+    `createTipTapRichTextBlock` now excludes headings from that check, so switching a block to a heading (and back) no longer adds or leaves behind an extra paragraph.
+
+- 320f47a: Fix invalid HTML nesting in `textBlockStyles` node views
+
+    `TextBlockStyleParagraph` and `TextBlockStyleHeading` rendered their editable content in a `NodeViewContent`, which defaults to a `<div>`. Wrapped in a `<p>`, a heading tag, or a custom `element` that renders one of those tags, this produced invalid markup (a `<div>` inside a `<p>`/heading), which React flags as a DOM nesting warning in development. `NodeViewContent` now renders as a `<span>`, which both tags allow as content.
+    - @dextinity/admin@10.7.0
+    - @dextinity/admin-date-time@10.7.0
+    - @dextinity/admin-icons@10.7.0
+    - @dextinity/admin-rte@10.7.0
+
+## 10.6.0
+
+### Minor Changes
+
+- 65d5f1c: Add `minHeight` option to `createTipTapRichTextBlock`
+
+    The editor's content area previously had a hardcoded minimum height of 200px with no way to override it. Compact use cases (e.g. a single-line rich text field) now have a supported way to shrink it:
+
+    ```ts
+    createTipTapRichTextBlock({ minHeight: 0 });
+    ```
+
+### Patch Changes
+
+- @dextinity/admin@10.6.0
+- @dextinity/admin-date-time@10.6.0
+- @dextinity/admin-icons@10.6.0
+- @dextinity/admin-rte@10.6.0
+
+## 10.5.1
+
+### Patch Changes
+
+- d800488: Fix the DAM video block losing its playback settings when no video file is selected
+
+    `output2State` dropped `autoplay`, `loop` and `showControls` when the block had no `damFileId`, so the stored playback settings were reset as soon as the video file was removed.
+
+- 9cbbd61: Track the preview image of the video blocks as a block dependency
+
+    `createDamVideoBlock`, `YouTubeVideoBlock` and `VimeoVideoBlock` didn't report the DAM file used as preview image as a dependency, so it showed no usages and its ID wasn't remapped when copying pages between scopes, leaving a dangling reference.
+    The blocks now delegate to `PixelImageBlock` for the preview image. `createDamVideoBlock` merges the result with the dependency of its own video file.
+
+- 97fd75d: Implement `extractTextContents` in the SEO block
+
+    The SEO block only extracted the text contents of the Open Graph image, so its own texts (HTML title, meta description, Open Graph title and description) were missing wherever block text contents are used, e.g., for SEO text generation.
+    - @dextinity/admin@10.5.1
+    - @dextinity/admin-date-time@10.5.1
+    - @dextinity/admin-icons@10.5.1
+    - @dextinity/admin-rte@10.5.1
+
+## 10.5.0
+
+### Minor Changes
+
+- 0be2f59: Replace the TipTap Rich Text Block's `supports` array with one option per feature
+
+    `createTipTapRichTextBlock` now takes a single root options object with one option per editor feature, similar to TipTap's `StarterKit` configuration. Feature-specific options move into a nested options object of the feature they belong to, so `headingLevels` becomes `heading: { levels: [...] }`.
+
+    Every feature is enabled by default (except `underline`) and is disabled by passing `false`, so a configuration only has to state what deviates from the defaults instead of repeating every supported feature. Links stay the exception: they are enabled by passing the link block as `link`.
+
+    **Example**
+
+    ```ts
+    // Before
+    createTipTapRichTextBlock({
+        supports: ["bold", "italic", "strike", "sub", "sup", "heading", "ordered-list", "unordered-list"],
+        headingLevels: [2, 3],
+    });
+
+    // After
+    createTipTapRichTextBlock({
+        nonBreakingSpace: false,
+        softHyphen: false,
+        heading: { levels: [2, 3] },
+    });
+    ```
+
+    The features are named after their option: `bold`, `italic`, `underline`, `strike`, `sub`, `sup`, `heading`, `orderedList`, `unorderedList`, `nonBreakingSpace`, `softHyphen` and `link`. Additionally, `undoRedoButtons` (Admin only) shows or hides the undo/redo buttons in the toolbar; the keyboard shortcuts work regardless. The document-level limits `maxTextBlocks` and `listLevelMax` are unchanged.
+
+- ceca60a: Add an in-toolbar translate button to the TipTap rich text block
+
+    The Draft.js-based rich text block already has a toolbar button to translate a single field, with an optional dialog to review the translation before applying it. The TipTap rich text block had no equivalent, leaving document-wide translation as the only option for TipTap fields.
+
+    The button now appears in the TipTap toolbar whenever a `ContentTranslationServiceProvider` is enabled, and can be hidden per block with the new `contentTranslation` option:
+
+    ```tsx
+    createTipTapRichTextBlock({ contentTranslation: false });
+    ```
+
+### Patch Changes
+
+- @dextinity/admin@10.5.0
+- @dextinity/admin-date-time@10.5.0
+- @dextinity/admin-icons@10.5.0
+- @dextinity/admin-rte@10.5.0
+
+## 10.4.0
+
+### Minor Changes
+
+- 4b9ead5: Add `icon` option to `TipTapInlineStyle`
+
+    Custom inline styles shown in the rich text toolbar's "More options" menu can now specify an `icon`, displayed next to the label the same way Superscript/Subscript already are:
+
+    ```tsx
+    createTipTapRichTextBlock({
+        inlineStyles: [
+            {
+                name: "highlight",
+                label: <FormattedMessage id="..." defaultMessage="Highlight" />,
+                icon: RteHighlight,
+                element: (props) => <span style={{ backgroundColor: "#fff3cd" }} {...props} />,
+            },
+        ],
+    });
+    ```
+
+    `icon` is optional; menu items without one keep rendering as before.
+
+- 4b9ead5: Move custom TipTap inline styles into the toolbar's "More options" menu
+
+    Custom `inlineStyles` (e.g. a project-specific "Uppercase" style) used to render as their own always-visible dropdown in the rich text toolbar. They now appear as toggleable menu items inside the "More options" ("...") menu, next to Superscript/Subscript, matching how the previous Draft.js-based rich text editor exposed custom inline styles as toolbar toggles rather than a separate dropdown.
+
+- a00f0b2: Support wildcard values for content scope dimensions in `getContentScopesForUser`
+
+    `getContentScopesForUser` can now use the wildcard value `"*"` as the value of a content scope dimension to grant access to any value for that dimension. The wildcard is matched during the content scope check, so it does not need to be part of `availableContentScopes`.
+
+    **Example**
+
+    ```ts
+    getContentScopesForUser(user: User): ContentScopesForUser {
+        // Grant access to every language within the "main" domain
+        return [{ domain: "main", language: "*" }];
+    }
+    ```
+
+    For users with access to all content scopes, `currentUser.permissions[].contentScopes` now returns a single wildcard scope (e.g. `[{ domain: "*", language: "*" }]`) instead of the enumerated `availableContentScopes`. The default `isAllowed` and `currentUser.allowedContentScopes` handle the wildcard; a custom `isAllowed` must treat `"*"` as matching any value of a dimension.
+
+### Patch Changes
+
+- b6cbbd9: Move icons to the start of the TipTap "More options" menu items
+
+    Superscript, Subscript, and custom inline-style menu items placed their icon directly after the label using a custom flexbox layout, so the icon's horizontal position varied with the label's length. They now use MUI's `ListItemIcon`/`ListItemText` with the icon leading the label, matching MUI's own menu item convention.
+    - @dextinity/admin@10.4.0
+    - @dextinity/admin-date-time@10.4.0
+    - @dextinity/admin-icons@10.4.0
+    - @dextinity/admin-rte@10.4.0
+
+## 10.3.0
+
+### Minor Changes
+
+- 504c97f: Expose `setPageState` in the `usePage` hook returned by `createUsePage`
+
+    Until now, the page state could only be read, so features that modify a page's content had to be built into `createUsePage` itself (like `translateContent`).
+    `setPageState` allows applications to change the page's content programmatically, for instance, to apply changes suggested by an assistant.
+    The changes are applied locally only, `handleSavePage` persists them.
+
+    Additionally, the `PageState` type is exported now.
+
+    **Example**
+
+    ```tsx
+    const { pageState, setPageState } = usePage({ pageId: id });
+
+    const applySuggestedHtmlTitle = (htmlTitle: string) => {
+        setPageState((pageState) => {
+            if (!pageState?.document) {
+                return pageState;
+            }
+
+            return {
+                ...pageState,
+                document: {
+                    ...pageState.document,
+                    seo: { ...pageState.document.seo, htmlTitle },
+                },
+            };
+        });
+    };
+    ```
+
+- ddea65d: Remove the "Permissions" and "Scopes" columns from the user permissions users list
+
+    The users list now shows the name, the email and the row actions. The `permissionsCount` and `contentScopesCount` fields of `UserPermissionsUser` are deprecated and now return `0`. They will be removed in the next major version.
+
+- 66cb98a: DAM: Allow replacing a file with a file of the same category instead of the same mimetype
+
+    Previously, "Replace File" only accepted a file with the exact same mimetype, so a JPEG couldn't be replaced by a WebP even though both are pixel images. Now a file can be replaced by any file of the same category:
+
+    | Category     | Examples             |
+    | ------------ | -------------------- |
+    | `pixelImage` | JPEG, PNG, WebP      |
+    | `svgImage`   | SVG                  |
+    | `audio`      | MP3, OGG, WAV        |
+    | `video`      | MP4, WebM, QuickTime |
+    | `document`   | PDF, DOCX, VTT, ZIP  |
+
+    SVG images and pixel images remain separate categories.
+
+    Files in the `document` category still require the exact same mimetype, since their purposes vary too much: a VTT file is a video's subtitles, whereas a PDF is a download, so replacing one with the other must not be possible.
+
+    The file's usages stay unchanged. Only the extension of the file's name is adjusted to match the new file (for instance, `photo.jpg` becomes `photo.webp`). If a file with that name already exists in the same folder, a counter is appended to keep the name unique (for instance, `photo-2.webp`), and the Admin shows a snackbar informing about the new name.
+
+    The new `getDamFileCategory` helper is exported from both packages:
+
+    ```ts
+    import { getDamFileCategory } from "@dextinity/cms-api"; // or "@dextinity/cms-admin"
+
+    getDamFileCategory("image/webp"); // "pixelImage"
+    getDamFileCategory("image/svg+xml"); // "svgImage"
+    ```
+
+### Patch Changes
+
+- 12be273: Fix the block list not marking the block that is hovered in a block preview
+
+    `HoverPreviewComponent` built the block's route from `useRouteMatch`, which does not see the path of a `SubRoute`. Below a `SaveBoundary` the route therefore missed that segment and never matched the route the preview reports, so hovering a block in the preview left its list entry unmarked, and hovering a list entry left the block in the preview unmarked. The route is now built from `useSubRoutePrefix`, the prefix the block routes in `BlockPreviewContext` already use.
+
+- 876887b: Fix order of `link` and special character (`nonBreakingSpace`, `softHyphen`) buttons in the TipTap rich text block toolbar
+
+    They were swapped; `link` now appears before the special character buttons.
+
+- 0c211e9: Stop deduplicating content scopes in the user permissions API
+
+    `UserPermissionsService.getAvailableContentScopes()`, `getContentScopes()` and `getPermissionsAndContentScopes()` no longer deduplicate their content scopes. Deduplication only mattered for how the scopes are displayed, so it now happens in the admin where the lists are rendered. This also removes the `lodash.uniqwith` dependency.
+
+    Projects that consume `UserPermissionsPublicService` or the `currentUser` / `availableContentScopes` GraphQL fields directly and rely on the scopes being unique should deduplicate them on their side.
+
+- Updated dependencies [4d6408f]
+    - @dextinity/admin@10.3.0
+    - @dextinity/admin-date-time@10.3.0
+    - @dextinity/admin-rte@10.3.0
+    - @dextinity/admin-icons@10.3.0
+
+## 10.2.0
+
+### Minor Changes
+
+- 7f9e1f7: Add `createDamVideoBlock` factory
+
+    The factory allows restricting what the editor can set on a video, for sites that don't use all of it.
+    Pass what the site supports via `supports` — anything left out isn't shown in the block's admin component anymore.
+    Values that are already stored stay untouched, the editor just can't change them anymore.
+    The preview image remains part of the block's data in any case, leaving it out only hides it from the editor.
+
+    `supports` takes `"controls"` (the playback options autoplay, loop and show controls, offered together since autoplay and show controls depend on each other) and `"previewImage"` (the poster image).
+
+    `DamVideoBlock` is now created with the factory and is still exported, so nothing needs to be changed in existing applications.
+
+    **Example**
+
+    A site that renders no poster image:
+
+    ```tsx
+    import { createDamVideoBlock } from "@dextinity/cms-admin";
+
+    export const DamVideoBlock = createDamVideoBlock({ supports: ["controls"] });
+    ```
+
+    A site that only reads the video file's URL, so the editor is left with just the file to choose:
+
+    ```tsx
+    export const DamVideoBlock = createDamVideoBlock({ supports: [] });
+    ```
+
+- edf2027: Allow restricting selectable heading levels in the TipTap rich text block via a new `headingLevels` option
+
+    `createTipTapRichTextBlock` accepts a new `headingLevels?: number[]` option to limit which heading levels (1-6) are selectable. Defaults to `[1, 2, 3, 4, 5, 6]`, so existing usages are unaffected. Must be a non-empty array of unique integers between 1 and 6, otherwise an error is thrown.
+
+    ```tsx
+    createTipTapRichTextBlock({
+        supports: ["heading"],
+        headingLevels: [2, 3, 4],
+    });
+    ```
+
+### Patch Changes
+
+- 30fad2a: Make the TipTap rich text block's toolbar sticky
+
+    The toolbar now stays fixed at the top of the editor while scrolling through longer text content, matching the previous Draft.js-based rich text editor's behavior.
+    - @dextinity/admin@10.2.0
+    - @dextinity/admin-date-time@10.2.0
+    - @dextinity/admin-icons@10.2.0
+    - @dextinity/admin-rte@10.2.0
+
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/admin@10.1.0
+- @dextinity/admin-date-time@10.1.0
+- @dextinity/admin-icons@10.1.0
+- @dextinity/admin-rte@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- Updated dependencies [48748b0]
+    - @dextinity/admin@10.0.1
+    - @dextinity/admin-date-time@10.0.1
+    - @dextinity/admin-rte@10.0.1
+    - @dextinity/admin-icons@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/cms-admin` to `@dextinity/cms-admin`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename `CometConfigProvider` to `DextinityConfigProvider`, `useCometConfig` to `useDextinityConfig` and the `CometConfig` type to `DextinityConfig`. By convention, the project's `comet-config.json` is renamed to `dextinity-config.json`
+    - Rename the `cometType` property of iframe messages to `dextinityType`. The site must use a matching `@dextinity/site-react` or `@dextinity/site-nextjs` version
+    - Rename the site preview cookie from `__comet_site_preview` to `__dextinity_site_preview` and the impersonation cookie from `comet-impersonate-user-id` to `dextinity-impersonate-user-id`
+    - Expect the renamed `DextinityImageResolutionException` and `DextinityValidationException` error codes in DAM file uploads. A matching `@dextinity/cms-api` version is required
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme` and the generated CSS class names
+    - Rename the CSS variables from `--comet-admin-*` to `--dextinity-admin-*`
+    - Replace the Comet logo in the header, the about modal and the site preview with the Dextinity logo
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+    - @dextinity/admin-date-time@10.0.0
+    - @dextinity/admin-icons@10.0.0
+    - @dextinity/admin-rte@10.0.0
+    - @dextinity/admin@10.0.0
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/cms-admin` to `@dextinity/cms-admin`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename `CometConfigProvider` to `DextinityConfigProvider`, `useCometConfig` to `useDextinityConfig` and the `CometConfig` type to `DextinityConfig`. By convention, the project's `comet-config.json` is renamed to `dextinity-config.json`
+    - Rename the `cometType` property of iframe messages to `dextinityType`. The site must use a matching `@dextinity/site-react` or `@dextinity/site-nextjs` version
+    - Rename the site preview cookie from `__comet_site_preview` to `__dextinity_site_preview` and the impersonation cookie from `comet-impersonate-user-id` to `dextinity-impersonate-user-id`
+    - Expect the renamed `DextinityImageResolutionException` and `DextinityValidationException` error codes in DAM file uploads. A matching `@dextinity/cms-api` version is required
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme` and the generated CSS class names
+    - Rename the CSS variables from `--comet-admin-*` to `--dextinity-admin-*`
+    - Replace the Comet logo in the header, the about modal and the site preview with the Dextinity logo
+
+### Patch Changes
+
+## 9.5.0
+
+### Patch Changes
+
+- @comet/admin@9.5.0
+- @comet/admin-date-time@9.5.0
+- @comet/admin-icons@9.5.0
+- @comet/admin-rte@9.5.0
+
+## 9.4.0
+
+### Minor Changes
+
+- ca88ec6: Add `ReadOnlyBlockRenderInterface`
+
+    A block that implements the interface provides a `ReadOnlyComponent` that renders its state without an editing UI. Rich text blocks implement it:
+
+    ```tsx
+    const RichTextBlock = createRichTextBlock({ link: LinkBlock });
+
+    <RichTextBlock.ReadOnlyComponent state={state} />;
+    ```
+
+- ca88ec6: Accept any rich text block in `createTableBlock`, such as TipTap
+
+    The `richText` option accepts any block that implements `ReadOnlyBlockRenderInterface`:
+
+    ```ts
+    const TipTapRichTextBlock = createTipTapRichTextBlock(...);
+
+    createTableBlock({ richText: TipTapRichTextBlock, name: "TipTapTable" });
+    ```
+
+- 71d6a95: Add read-only rendering to the TipTap rich text block
+
+    `createTipTapRichTextBlock` now returns a `ReadOnlyComponent` that renders saved content without an editing UI, for showing the content where it must not be editable.
+
+    ```tsx
+    const RichTextBlock = createTipTapRichTextBlock();
+
+    <RichTextBlock.ReadOnlyComponent state={state} />;
+    ```
+
+### Patch Changes
+
+- 4e27111: Rename the TipTap block type dropdown's `Default` entry to `Paragraph`, after the HTML tag it produces
+- 0f17fbd: Open the `Permissions` tab by default when editing a user in the `UserPermissionsPage`
+
+    Selecting a user now opens the `Permissions` tab instead of `Basic Data`, while the tab order stays unchanged. Users without the `userPermissions` permission (who don't see the `Permissions` tab) continue to open the `Basic Data` tab.
+
+- Updated dependencies [bf1ff64]
+- Updated dependencies [085b9ac]
+    - @comet/admin@9.4.0
+    - @comet/admin-date-time@9.4.0
+    - @comet/admin-rte@9.4.0
+    - @comet/admin-icons@9.4.0
+
+## 9.3.0
+
+### Minor Changes
+
+- 924b66c: Add `underline` support to `createTipTapRichTextBlock`
+
+    The `underline` inline style is now part of the `supports` list and can be toggled via a new toolbar button. The underline mark is validated by the API, rendered as `<u>` by `renderTipTapRichText`, and the DraftJS migration maps the `UNDERLINE` inline style to it when supported. Per default it is disabled, pass a `supports` list with `underline` to enable it.
+
+### Patch Changes
+
+- Updated dependencies [7b2d8db]
+    - @comet/admin@9.3.0
+    - @comet/admin-date-time@9.3.0
+    - @comet/admin-rte@9.3.0
+    - @comet/admin-icons@9.3.0
+
+## 9.2.2
+
+### Patch Changes
+
+- @comet/admin@9.2.2
+- @comet/admin-date-time@9.2.2
+- @comet/admin-icons@9.2.2
+- @comet/admin-rte@9.2.2
+
+## 9.2.1
+
+### Patch Changes
+
+- @comet/admin@9.2.1
+- @comet/admin-date-time@9.2.1
+- @comet/admin-icons@9.2.1
+- @comet/admin-rte@9.2.1
+
+## 9.2.0
+
+### Minor Changes
+
+- ee0bf93: Add AI content disclosure for DAM assets (EU AI Act, Article 50)
+
+    Editors can mark a DAM asset as **AI generated** or **AI modified** in the file settings. When such an asset is published, the site renders the official EU AI-content label and merges the disclosure into the media element's accessible name, so screen-reader users learn which asset is AI.
+
+    **API**
+
+    New `aiContentType` field (`Generated` | `Modified`) on DAM files, exposed through the `PixelImage` and `DamVideo` blocks.
+
+    **Admin**
+
+    New "AI content" field in the DAM file settings, shown for image, video and audio assets only (other file types cannot constitute a deep fake).
+
+    **Site**
+
+    `PixelImageBlock` and `DamVideoBlock` render the disclosure automatically for marked assets. Both accept props to customize it:
+    - `aiContentDisclosureProps` — override the badge.
+    - `customAiContentDisclosure` — render your own disclosure, or `null` for none.
+    - `aiContentAltTextPrefixLabels` — localize the accessible-name prefix (defaults to English).
+
+    `@comet/site-react` also exports the `AiContentDisclosure` badge and the `getAiContentAltTextWithPrefix` helper.
+
+- ba56f97: Warn editors when videos that are too large for performant delivery are used
+
+    Videos are delivered without optimization, so large videos can lead to poor loading performance. A warning is now shown when a video exceeds a configurable file size:
+    - as a snackbar after uploading it to the DAM
+    - as an alert on the DAM asset detail page
+    - as an alert in the `DamVideoBlock` when such a video is selected
+
+    The threshold defaults to 10 MB and can be configured (or the warning disabled entirely) via the new `videoPerformanceWarningFileSize` option in the `dam` config:
+
+    ```tsx
+    <CometConfigProvider
+        dam={{
+            // ...
+            videoPerformanceWarningFileSize: 25, // warn for videos larger than 25 MB
+            // or set to `false` to disable the warning globally
+        }}
+    >
+    ```
+
+### Patch Changes
+
+- 8c866a3: Persist the DAM sorting preference across sessions
+
+    The Digital Asset Management asset list now remembers the selected sorting (column and direction) in `localStorage` instead of resetting to alphabetical (`name` ascending) on every visit.
+
+- 48d06d6: Fix hard-to-read text color in the DAM drag & drop upload overlay
+
+    The upload overlay (shown when dragging files over a DAM folder) used a dark grey text color on its near-black background, making the text hard to read. It now uses white text for proper contrast.
+
+- eb0b156: Fix the warnings page crashing due to an invalid `state` filter
+
+    The `WarningsGrid` initialized its default filter with the field `state` instead of `status`, which doesn't exist on the `WarningFilter` input type. This caused the GraphQL request to fail with a `400 Bad Request`, crashing the warnings page (`/system/warnings`).
+
+- Updated dependencies [5a05d97]
+    - @comet/admin@9.2.0
+    - @comet/admin-date-time@9.2.0
+    - @comet/admin-rte@9.2.0
+    - @comet/admin-icons@9.2.0
+
+## 9.1.1
+
+### Patch Changes
+
+- 097f85a: Fix the dependencies list crashing due to an invalid `visible` filter
+
+    The `DependenciesList` initialized the `visible` filter with the string `"true"` instead of the boolean `true`, causing the GraphQL request to fail with a `400 Bad Request` (`Boolean cannot represent a non boolean value`). This made the dependencies/dependents tab (e.g., on global content) crash with a network error. This is the counterpart to the earlier fix for `DependentsList`.
+    - @comet/admin@9.1.1
+    - @comet/admin-date-time@9.1.1
+    - @comet/admin-icons@9.1.1
+    - @comet/admin-rte@9.1.1
+
+## 9.1.0
+
+### Minor Changes
+
+- 319f5b8: Allow filtering, searching and sorting warnings by name, info and type
+
+    The warnings data grid now supports filtering and full-text searching by the related entity's name and secondary information, filtering by type, and sorting by name and type.
+
+    On the API, the `WarningFilter` gains `name` and `secondaryInformation` fields and `WarningSortField` gains a `name` value. The related entity's name and secondary information are resolved by joining the `EntityInfo` view, while the type is read from the warning's `sourceInfo`. The view is only joined when a query actually references name or info. A migration adds an index on the `EntityInfo` join keys to keep that join fast.
+
+### Patch Changes
+
+- @comet/admin@9.1.0
+- @comet/admin-date-time@9.1.0
+- @comet/admin-icons@9.1.0
+- @comet/admin-rte@9.1.0
+
+## 9.0.1
+
+### Patch Changes
+
+- 0c8063e: Fix the dependents list crashing due to an invalid `visible` filter
+
+    The `DependentsList` initialized the `visible` filter with the string `"true"` instead of the boolean `true`, causing the GraphQL request to fail with a `400 Bad Request` (`Boolean cannot represent a non boolean value`). This made the dependents tab (e.g., on assets) crash with a network error.
+    - @comet/admin@9.0.1
+    - @comet/admin-date-time@9.0.1
+    - @comet/admin-icons@9.0.1
+    - @comet/admin-rte@9.0.1
+
+## 9.0.0
+
+### Major Changes
+
+- 8c2fdde: Add filtering and sorting to `DependenciesList` and `DependentsList`
+
+    Users can now filter dependencies/dependents by name, type, secondary information, and visibility, and sort by all columns. A default filter shows only visible items. The `GqlFilter` type is now exported from `@comet/admin`.
+
+    **Breaking changes:**
+
+    **`@comet/cms-api`:** `DependencyFilter.targetGraphqlObjectType` and `DependentFilter.rootGraphqlObjectType` changed from `string` to `StringFilter`. Update any code passing a plain string to use `{ equal: "..." }` instead.
+
+    **`@comet/cms-api`:** `DependenciesService.getDependents()` and `getDependencies()` consolidated the `filter`, `paginationArgs`, and `options` parameters into a single `options` object. If you call these methods directly, merge the arguments:
+
+    ```ts
+    // Before
+    service.getDependents(target, filter, { offset, limit }, { forceRefresh, sort });
+
+    // After
+    service.getDependents(target, { filter, offset, limit, forceRefresh, sort });
+    ```
+
+    **`@comet/cms-admin`:** The GQL queries passed to `DependenciesList` and `DependentsList` must now accept `$filter` and `$sort` variables and forward them to the `dependencies`/`dependents` field. Update your queries as follows:
+
+    ```graphql
+    # DependentsList
+    query MyDependents($id: ID!, $offset: Int!, $limit: Int!, $forceRefresh: Boolean = false, $filter: DependentFilter, $sort: [DependencySort!]) {
+        item: myEntity(id: $id) {
+            id
+            dependents(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
+                nodes {
+                    rootGraphqlObjectType
+                    rootId
+                    rootColumnName
+                    jsonPath
+                    name
+                    secondaryInformation
+                    visible
+                }
+                totalCount
+            }
+        }
+    }
+
+    # DependenciesList
+    query MyDependencies($id: ID!, $offset: Int!, $limit: Int!, $forceRefresh: Boolean = false, $filter: DependencyFilter, $sort: [DependencySort!]) {
+        item: myEntity(id: $id) {
+            id
+            dependencies(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
+                nodes {
+                    targetGraphqlObjectType
+                    targetId
+                    rootColumnName
+                    jsonPath
+                    name
+                    secondaryInformation
+                    visible
+                }
+                totalCount
+            }
+        }
+    }
+    ```
+
+- ee24125: Remove `createHttpClient` function
+
+    Use native fetch instead.
+
+- 5f1566a: Make packages ESM-only
+- 99140f8: Bump MUI X Data Grid peer dependency to v8
+
+    See the migration guide for information on how to upgrade.
+
+- 790e8d0: Remove the `filesInfoText` slot from `FileSelect`
+- 85b09a2: Replace `DependencyList` with `DependenciesList` and `DependentsList`
+
+    **Breaking change:** `DependencyList` has been removed. Use `DependenciesList` for queries returning `item.dependencies` and `DependentsList` for queries returning `item.dependents`.
+
+- 171c335: Redirects: add `domain` source type
+
+    To fully support domain redirects, additional handling is required in the site middleware.
+
+### Minor Changes
+
+- 4c1aeb2: Add `noFollow` option to `ExternalLinkBlock`
+
+    Editors can now mark an external link as `nofollow` via a new checkbox in the admin form. When enabled, the rendered `<a>` tag receives `rel="nofollow"`. Existing links are unaffected by an automatic block-data migration that sets `noFollow` to `false`.
+
+- dc8f29c: Add `SitePreviewAction` to `DocumentInterface`
+
+    Allows overriding the site preview button in the page tree row actions on a per-document-type basis. When set, the provided component replaces the default preview `RowActionsItem`, enabling custom preview URL construction (e.g., using additional GraphQL queries or scope data).
+
+    **Example**
+
+    ```tsx
+    import { RowActionsItem } from "@comet/admin";
+    import { Preview } from "@comet/admin-icons";
+    import { type DocumentInterface, openSitePreviewWindow, type SitePreviewActionProps } from "@comet/cms-admin";
+
+    function PageSitePreviewAction({ pageTreeNode }: SitePreviewActionProps) {
+        // Use hooks to construct a custom preview URL
+        const previewPath = useCustomPreviewPath(pageTreeNode);
+
+        return (
+            <RowActionsItem
+                icon={<Preview />}
+                disabled={!previewPath}
+                onClick={() => {
+                    if (previewPath) {
+                        openSitePreviewWindow(previewPath, "/custom-root");
+                    }
+                }}
+            >
+                Open preview
+            </RowActionsItem>
+        );
+    }
+
+    export const Page: DocumentInterface = {
+        // ...
+        SitePreviewAction: PageSitePreviewAction,
+    };
+    ```
+
+- c0cee12: Add `placeholders` option to `createTipTapRichTextBlock` that allows inserting pre-defined placeholder tokens into the rich text editor. Placeholders are rendered as non-editable chips and can only be removed as a whole unit.
+- 7fbe2a7: Add `allowPageDelete` option to disable deletion of pages in the PageTree. When set to `false`, the delete option is hidden in the Admin UI and the API blocks deletion attempts.
+- d7b77af: Add `onError` to `CometConfig` for centralized error reporting from all error boundaries
+
+    `CometConfigProvider` now accepts an optional `onError(error, errorInfo)` callback that is invoked whenever any descendant `ErrorBoundary` catches an error. Use this to forward errors to a reporting service such as Sentry.
+
+    **Example**
+
+    ```tsx
+    <CometConfigProvider
+        {...config}
+        onError={(error, errorInfo) => {
+            // Report the error to your error tracking service
+            console.error(error, errorInfo.componentStack);
+        }}
+    >
+        {children}
+    </CometConfigProvider>
+    ```
+
+- f066335: Add support for React 19
+- c6703db: Export `ChooseDamFilesDialog`
+
+    Allows building custom multi-file picker UIs on top of the DAM file dialog (e.g. bulk-adding files to a list block).
+
+    ```tsx
+    import { ChooseDamFilesDialog } from "@comet/cms-admin";
+
+    <ChooseDamFilesDialog open={open} onClose={onClose} onConfirm={(fileIds) => ...} initialFileIds={[]} allowedMimetypes={["image/jpeg"]} />
+    ```
+
+- 8cb0844: Export `isLinkTarget` and `validateLinkTarget`
+- 127a492: Add TipTapRichTextBlock as an alternative to RichTextBlock
+- c6703db: Add `multiple` prop to `FileField` for selecting multiple DAM files
+
+    `FileField` now accepts `multiple={true}` to select a list of DAM files instead of a single file. Multi-file values are typed as `GQLDamFileFieldFileFragment[]` (the same fragment used in single-file mode); the component renders a stacked list of files with per-row menu and remove actions. The picker dialog pre-checks the current selection via `initialFileIds` and returns the picked file ids on confirm. The single-file API is unchanged.
+
+    **Example**
+
+    ```tsx
+    <Field name="files" component={FileField} multiple preview={(file) => <Thumbnail fileId={file.id} />} />
+    ```
+
+- 25f7342: Export `PageTreeSelect`
+- 71dce06: Make DataGrid columns in DAM sortable
+
+    Make Name, Type/Format, Info, Creation, and Latest Change columns in the `FolderDataGrid` sortable via column header clicks, using the standard `muiGridSortToGql` pattern from generated grids. Remove the separate Sort dropdown from the toolbar. Sort state is now stored in URL params instead of localStorage.
+
+- 7ab96c2: Add `SearchHeaderItem` component for full-text search
+
+    The `SearchHeaderItem` component renders a search input (intended for the header) that opens a dropdown with the results of the `myFullTextSearch` query. The search is restricted to the currently selected content scope. Clicking a result opens the corresponding entity using the `entityDependencyMap` from the `DependenciesConfig` (the same mechanism used by warnings and dependencies).
+
+    **Example**
+
+    ```tsx
+    import { Header, SearchHeaderItem } from "@comet/cms-admin";
+
+    <Header>
+        <SearchHeaderItem />
+        <ContentScopeControls />
+        <UserHeaderItem />
+    </Header>;
+    ```
+
+- 8ad9dd8: Add support for deleting multiple redirects in the grid
+- bc57b4a: Add support for child blocks in `createTipTapRichTextBlock`
+
+    Child blocks can now be embedded into the TipTap rich text editor, similar to the existing link feature. Configure the supported blocks via the new `childBlocks` option (both admin and API): a record keyed by a stable key, where each entry is `{ block, display }`. `display` is either `"block"` (a standalone block element on its own line) or `"inline"` (rendered inline within the surrounding text). A "+" button in the toolbar opens a menu listing the configured child blocks. Selecting one opens a dialog with the block's Admin component; on confirmation, the block is inserted into the editor as a non-editable preview that can be edited (by clicking it) or removed.
+
+    **Example**
+
+    ```tsx
+    createTipTapRichTextBlock({
+        childBlocks: { productPrice: { block: ProductPriceBlock, display: "inline" } },
+    });
+    ```
+
+- 2fe9d4b: Add support for translating page and document content
+
+    Content translation can now be applied to entire documents at once, in addition to the existing field-level translation.
+
+    **Setup**
+
+    Wrap the application with `AzureAiTranslatorProvider` (supports `batchTranslate` automatically):
+
+    ```tsx
+    <AzureAiTranslatorProvider enabled showApplyTranslationDialog>
+        {children}
+    </AzureAiTranslatorProvider>
+    ```
+
+    **Making a document type translatable**
+
+    Add `createDocumentTranslationMethods` and the `TranslatableInterface` type to the document definition:
+
+    ```tsx
+    import { createDocumentTranslationMethods, type TranslatableInterface } from "@comet/cms-admin";
+
+    const rootBlocks = {
+        content: PageContentBlock,
+        seo: SeoBlock,
+    };
+
+    export const Page: DocumentInterface & TranslatableInterface & DependencyInterface = {
+        // ...existing config
+        ...createDocumentRootBlocksMethods(rootBlocks),
+        ...createDocumentTranslationMethods(rootBlocks),
+    };
+    ```
+
+    **Adding translate action to the edit page**
+
+    `createUsePage` now returns a `translateContent` function. Use it with `TranslateContentMenuItem` inside a `CrudMoreActionsMenu`:
+
+    ```tsx
+    const { translateContent /* ...other fields */ } = usePage({ pageId: id });
+
+    <CrudMoreActionsMenu overallActions={[<TranslateContentMenuItem translateContent={translateContent} />]} />;
+    ```
+
+    **Page tree integration**
+
+    The page tree context menu and bulk action toolbar automatically show a "Translate" action for pages. This translates the page name, slug, and document content.
+
+### Patch Changes
+
+- 92281f1: Add `"sideEffects"` to package.json for better tree-shakability
+- 1475f4a: Hide selective actions of DAM more actions menu in `ChooseDamFileDialog`
+- 3cbf0ff: Show `ArchivedTag` next to the title on the DAM file detail page
+
+    Previously the archived state was only visible in the DAM file list, which could be confusing when opening an archived file's detail page via link.
+
+- 8a93124: Fix `hideContextMenu` not hiding the context menu column in the DAM `DataGrid`
+
+    The visibility flag was applied to a no-longer-existing `contextMenu` column id; the column had been renamed to `actions`. The flag now targets the correct column.
+
+- 0e9189b: Export `AnonymousBlockInterface` type
+- fa5c7a4: Fix `FileField` breaking image block selection
+
+    The `DamFileFieldFile` fragment lost the image dimensions (`width`, `height`, `cropArea`) needed by `DamImageBlock`/`PixelImageBlock`. Selecting an image inside an image block crashed because those fields were missing. Restored them on the fragment.
+
+    Composing the fragment into a parent collection (e.g. a many-to-many to `DamFile`) exposed a Mikro-ORM gotcha: `Collection.loadItems()` does not honor `eager: true`, so each loaded `DamFile` had an uninitialized `image` Reference and GraphQL threw `Cannot return null for non-nullable field DamFileImage.width`. Added an `image` `@ResolveField` on `FilesResolver` that initializes the Reference if needed, so consumers don't have to remember to populate it.
+
+- 5d006c1: Fix `1-NaN of NaN` pagination footer and `rowCount` warning in DAM `FolderDataGrid`
+
+    The grid now routes `totalCount` through `useBufferedRowCount`, so `rowCount` stays a number across refetches instead of becoming `undefined` while data is loading.
+
+- 31d9296: Fix duplicate TipTap `'link'` extension warning by explicitly disabling StarterKit's built-in Link extension
+
+    StarterKit (v3+) includes `@tiptap/extension-link` by default. Since we register our own `CmsLink` mark (also named `"link"`), this caused a "Duplicate extension names found: ['link']" warning. Setting `link: false` in `StarterKit.configure()` resolves this.
+
+- c7f80e9: Fix page search not expanding the tree when navigating between matches after "Collapse all"
+
+    Previously, jumping to the next or previous search match only scrolled to the match without expanding its collapsed ancestors. After collapsing the tree via "Collapse all" during an active search, continuing the search revealed nothing. Navigating between matches now re-expands the current match's ancestors before scrolling to it.
+
+- ae85ba9: Fix `TipTapRichTextBlock` toolbar colors to match the existing `RichTextBlock` toolbar
+
+    The TipTap toolbar incorrectly used Comet's `greyPalette` (where `greyPalette[100]` is `#D9D9D9`) for the toolbar background, button icon, hover, and disabled states. This made the toolbar look noticeably darker than the existing Draft.js-based `RichTextBlock` toolbar, which uses MUI's lighter `grey` palette (`grey[100]` is `#F5F5F5`). The TipTap toolbar now uses the same MUI grey shades for these states so the two toolbars look consistent.
+
+- b459ec7: Reduce published package size by keeping non-runtime build artifacts out of the bundle
+- f29b2d7: Deprecate `ChooseFileDialog` export
+
+    `ChooseFileDialog` was renamed to `ChooseDamFileDialog`
+
+- 5e87236: Remove pagination from `StartBuildsDialog` data grid
+
+    The `buildTemplates` query always returns all templates, so the page-based pagination in the dialog grid was misleading. All templates are now displayed at once.
+
+- 4729b3f: Prevent links in the `TableBlock` RTE cell preview from opening when editing a cell
+
+    Double-clicking a cell to edit it would open any link in the preview.
+    Pointer events are now disabled on the preview, while text selection still works.
+
+- ab5e547: Validate the SEO block's structured data field as JSON
+
+    The structured data field in the SEO block now shows a validation error when the entered value is not valid JSON. This matches the existing API-side `@IsJSON()` validation and prevents invalid payloads from being saved.
+
+- Updated dependencies [92281f1]
+- Updated dependencies [15e771b]
+- Updated dependencies [d7b77af]
+- Updated dependencies [3fda20b]
+- Updated dependencies [1a83c01]
+- Updated dependencies [15e771b]
+- Updated dependencies [8c2fdde]
+- Updated dependencies [f066335]
+- Updated dependencies [b4ba869]
+- Updated dependencies [57678d0]
+- Updated dependencies [fdabaf1]
+- Updated dependencies [8e40458]
+- Updated dependencies [5f1566a]
+- Updated dependencies [99140f8]
+- Updated dependencies [b459ec7]
+- Updated dependencies [cabba53]
+- Updated dependencies [8e3a074]
+- Updated dependencies [3fda20b]
+- Updated dependencies [fd5c36f]
+- Updated dependencies [3c81ff0]
+- Updated dependencies [631540c]
+- Updated dependencies [2fe9d4b]
+- Updated dependencies [460cbfb]
+- Updated dependencies [9cb3f95]
+    - @comet/admin@9.0.0
+    - @comet/admin-date-time@9.0.0
+    - @comet/admin-icons@9.0.0
+    - @comet/admin-rte@9.0.0
+
+## 9.0.0-beta.6
+
+### Minor Changes
+
+- 4c1aeb2: Add `noFollow` option to `ExternalLinkBlock`
+
+    Editors can now mark an external link as `nofollow` via a new checkbox in the admin form. When enabled, the rendered `<a>` tag receives `rel="nofollow"`. Existing links are unaffected by an automatic block-data migration that sets `noFollow` to `false`.
+
+- 7fbe2a7: Add `allowPageDelete` option to disable deletion of pages in the PageTree. When set to `false`, the delete option is hidden in the Admin UI and the API blocks deletion attempts.
+- 7ab96c2: Add `SearchHeaderItem` component for full-text search
+
+    The `SearchHeaderItem` component renders a search input (intended for the header) that opens a dropdown with the results of the `myFullTextSearch` query. The search is restricted to the currently selected content scope. Clicking a result opens the corresponding entity using the `entityDependencyMap` from the `DependenciesConfig` (the same mechanism used by warnings and dependencies).
+
+    **Example**
+
+    ```tsx
+    import { Header, SearchHeaderItem } from "@comet/cms-admin";
+
+    <Header>
+        <SearchHeaderItem />
+        <ContentScopeControls />
+        <UserHeaderItem />
+    </Header>;
+    ```
+
+### Patch Changes
+
+- 0e9189b: Export `AnonymousBlockInterface` type
+- c7f80e9: Fix page search not expanding the tree when navigating between matches after "Collapse all"
+
+    Previously, jumping to the next or previous search match only scrolled to the match without expanding its collapsed ancestors. After collapsing the tree via "Collapse all" during an active search, continuing the search revealed nothing. Navigating between matches now re-expands the current match's ancestors before scrolling to it.
+
+- b459ec7: Reduce published package size by keeping non-runtime build artifacts out of the bundle
+- 5e87236: Remove pagination from `StartBuildsDialog` data grid
+
+    The `buildTemplates` query always returns all templates, so the page-based pagination in the dialog grid was misleading. All templates are now displayed at once.
+
+- Updated dependencies [15e771b]
+- Updated dependencies [1a83c01]
+- Updated dependencies [15e771b]
+- Updated dependencies [b4ba869]
+- Updated dependencies [57678d0]
+- Updated dependencies [b459ec7]
+    - @comet/admin@9.0.0-beta.6
+    - @comet/admin-date-time@9.0.0-beta.6
+    - @comet/admin-rte@9.0.0-beta.6
+    - @comet/admin-icons@9.0.0-beta.6
+
 ## 9.0.0-beta.5
 
 ### Minor Changes

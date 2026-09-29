@@ -1,5 +1,5 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { RouterMemoryRouter } from "@comet/admin";
+import { RouterMemoryRouter } from "@dextinity/admin";
 import type { Decorator } from "@storybook/react-vite";
 
 export function editDialogDecorator(): Decorator {

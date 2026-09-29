@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
 
-import { useCometConfig } from "../config/CometConfigContext";
-import { warningMessages as cometWarningMessages } from "./warningMessages";
+import { useDextinityConfig } from "../config/DextinityConfigContext";
+import { warningMessages as baseWarningMessages } from "./warningMessages";
 
 export interface WarningsConfig {
     messages: Record<string, ReactNode>;
 }
 
 export function useWarningsConfig(): WarningsConfig {
-    const cometConfig = useCometConfig();
+    const dextinityConfig = useDextinityConfig();
 
-    return { ...cometConfig.warnings, messages: { ...cometConfig.warnings?.messages, ...cometWarningMessages } };
+    return { ...dextinityConfig.warnings, messages: { ...dextinityConfig.warnings?.messages, ...baseWarningMessages } };
 }

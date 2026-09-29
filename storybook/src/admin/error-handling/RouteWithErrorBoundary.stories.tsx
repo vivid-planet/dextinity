@@ -1,4 +1,4 @@
-import { Alert, MainNavigation, MainNavigationItemRouterLink, MasterLayout, RouteWithErrorBoundary } from "@comet/admin";
+import { Alert, MainNavigation, MainNavigationItemRouterLink, MasterLayout, RouteWithErrorBoundary } from "@dextinity/admin";
 import { Card, CardContent, Typography } from "@mui/material";
 import { Redirect, Route, Switch } from "react-router";
 
@@ -39,7 +39,7 @@ function MasterMenu() {
 }
 
 export default {
-    title: "@comet/admin/error-handling/error-boundaries",
+    title: "@dextinity/admin/error-handling/error-boundaries",
     decorators: [storyRouterDecorator()],
 };
 

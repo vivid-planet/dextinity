@@ -7,7 +7,7 @@ import { useCurrentUser, useUserPermissionCheck } from "../hooks/currentUser";
 
 export const StopImpersonationButton = (buttonProps: ButtonProps) => {
     const stopImpersonation = async () => {
-        Cookies.remove("comet-impersonate-user-id");
+        Cookies.remove("dextinity-impersonate-user-id");
         location.href = "/";
     };
 
@@ -22,7 +22,7 @@ export const StartImpersonationButton = ({ userId }: { userId: string }) => {
     const currentUser = useCurrentUser();
     const isAllowed = useUserPermissionCheck();
     const startImpersonation = async () => {
-        Cookies.set("comet-impersonate-user-id", userId);
+        Cookies.set("dextinity-impersonate-user-id", userId);
         location.href = "/";
     };
 

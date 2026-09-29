@@ -1,4 +1,4 @@
-import { AnchorBlock, ColumnsBlockFactory, createBlocksBlock } from "@comet/cms-api";
+import { AnchorBlock, ColumnsBlockFactory, createBlocksBlock } from "@dextinity/cms-api";
 import { AccordionBlock } from "@src/common/blocks/accordion.block";
 import { MediaGalleryBlock } from "@src/common/blocks/media-gallery.block";
 import { SpaceBlock } from "@src/common/blocks/space.block";

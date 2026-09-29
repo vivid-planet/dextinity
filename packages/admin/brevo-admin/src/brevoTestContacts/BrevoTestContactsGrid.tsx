@@ -16,9 +16,9 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Add, Delete, Edit } from "@comet/admin-icons";
-import type { ContentScope } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { Add, Delete, Edit } from "@dextinity/admin-icons";
+import type { ContentScope } from "@dextinity/cms-admin";
 import { Box, IconButton } from "@mui/material";
 import type { GridSlotsComponent } from "@mui/x-data-grid";
 import type { ReactElement } from "react";
@@ -58,17 +58,17 @@ type BrevoTestContactsGridToolbarProps = {
 function BrevoTestContactsGridToolbar({ intl, totalCount }: BrevoTestContactsGridToolbarProps) {
     const disableButton = totalCount >= 100;
     const tooltipMessage = intl.formatMessage({
-        id: "cometBrevoModule.brevoTestContact.contactLimitReached",
+        id: "dextinity.brevoTestContact.contactLimitReached",
         defaultMessage: "Contact limit of 100 reached. You cannot add more contacts.",
     });
     return (
         <DataGridToolbar>
             <ToolbarTitleItem>
-                <FormattedMessage id="cometBrevoModule.brevoTestContact.title" defaultMessage="Test contacts" />
+                <FormattedMessage id="dextinity.brevoTestContact.title" defaultMessage="Test contacts" />
             </ToolbarTitleItem>
             <GridToolbarQuickFilter
                 placeholder={intl.formatMessage({
-                    id: "cometBrevoModule.brevoTestContact.searchEmail",
+                    id: "dextinity.brevoTestContact.searchEmail",
                     defaultMessage: "Search email address",
                 })}
             />
@@ -76,7 +76,7 @@ function BrevoTestContactsGridToolbar({ intl, totalCount }: BrevoTestContactsGri
             <Tooltip title={disableButton ? tooltipMessage : ""}>
                 <span>
                     <Button startIcon={<Add />} component={StackLink} pageName="add" payload="add" variant="primary" disabled={disableButton}>
-                        <FormattedMessage id="cometBrevoModule.brevoTestContact.newContact" defaultMessage="New test contact" />
+                        <FormattedMessage id="dextinity.brevoTestContact.newContact" defaultMessage="New test contact" />
                     </Button>
                 </span>
             </Tooltip>
@@ -113,7 +113,7 @@ export function BrevoTestContactsGrid({
     const columns: GridColDef<GQLBrevoContactsListFragment>[] = [
         {
             field: "createdAt",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.brevoTestContact.subscribedAt", defaultMessage: "Subscribed At" }),
+            headerName: intl.formatMessage({ id: "dextinity.brevoTestContact.subscribedAt", defaultMessage: "Subscribed At" }),
             filterable: false,
             sortable: false,
             width: 150,
@@ -121,7 +121,7 @@ export function BrevoTestContactsGrid({
         },
         {
             field: "modifiedAt",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.brevoTestContact.modifiedAt", defaultMessage: "Modified At" }),
+            headerName: intl.formatMessage({ id: "dextinity.brevoTestContact.modifiedAt", defaultMessage: "Modified At" }),
             filterable: false,
             sortable: false,
             width: 150,
@@ -129,7 +129,7 @@ export function BrevoTestContactsGrid({
         },
         {
             field: "email",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.brevoTestContact.email", defaultMessage: "Email" }),
+            headerName: intl.formatMessage({ id: "dextinity.brevoTestContact.email", defaultMessage: "Email" }),
             filterable: false,
             sortable: false,
             width: 150,
@@ -191,7 +191,7 @@ export function BrevoTestContactsGrid({
             <Box sx={{ marginBottom: 4 }}>
                 <Alert severity="warning">
                     <FormattedMessage
-                        id="cometBrevoModule.brevoTestContact.testContactAlert"
+                        id="dextinity.brevoTestContact.testContactAlert"
                         defaultMessage="Contacts in this list are only added for testing purposes. Users do not get a double-opt in to confirm their subscription."
                     />
                 </Alert>

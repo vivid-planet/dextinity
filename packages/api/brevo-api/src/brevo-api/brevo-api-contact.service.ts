@@ -1,4 +1,4 @@
-import * as Brevo from "@getbrevo/brevo";
+import { Brevo } from "@getbrevo/brevo";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
@@ -12,6 +12,7 @@ import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-impo
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { handleBrevoError, isErrorFromBrevo } from "./brevo-api.utils";
+import { BrevoApiClientFactory } from "./brevo-api-client.factory";
 import { BrevoApiContactList } from "./dto/brevo-api-contact-list";
 
 export interface CreateDoubleOptInContactData {
@@ -22,34 +23,13 @@ export interface CreateDoubleOptInContactData {
 
 @Injectable()
 export class BrevoApiContactsService {
-    private readonly contactsApis = new Map<string, Brevo.ContactsApi>();
-
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
         @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
+        private readonly clientFactory: BrevoApiClientFactory,
         @Optional() private readonly blacklistedContactsService: BlacklistedContactsService,
         @Optional() private readonly brevoContactLogService: BrevoEmailImportLogService,
     ) {}
-
-    private getContactsApi(scope: EmailCampaignScopeInterface): Brevo.ContactsApi {
-        try {
-            const existingContactsApiForScope = this.contactsApis.get(JSON.stringify(scope));
-
-            if (existingContactsApiForScope) {
-                return existingContactsApiForScope;
-            }
-
-            const { apiKey } = this.config.brevo.resolveConfig(scope);
-            const contactsApi = new Brevo.ContactsApi();
-            contactsApi.setApiKey(Brevo.ContactsApiApiKeys.apiKey, apiKey);
-
-            this.contactsApis.set(JSON.stringify(scope), contactsApi);
-
-            return contactsApi;
-        } catch (error) {
-            handleBrevoError(error);
-        }
-    }
 
     public async createDoubleOptInBrevoContact(
         { email, redirectionUrl, attributes }: CreateDoubleOptInContactData,
@@ -59,16 +39,15 @@ export class BrevoApiContactsService {
     ): Promise<boolean> {
         try {
             if (redirectionUrl) {
-                const contact = {
+                await this.clientFactory.getClient(scope).contacts.createDoiContact({
                     email,
                     includeListIds: brevoIds,
                     templateId,
                     redirectionUrl,
                     attributes,
-                };
-                const { response } = await this.getContactsApi(scope).createDoiContact(contact);
+                });
 
-                return response.statusCode === 204 || response.statusCode === 201;
+                return true;
             }
             return false;
         } catch (error) {
@@ -77,35 +56,31 @@ export class BrevoApiContactsService {
     }
 
     public async createBrevoContactWithoutDoubleOptIn(
-        { email, attributes }: Brevo.CreateContact,
+        { email, attributes }: Brevo.CreateContactRequest,
         brevoIds: number[],
-        templateId: number,
         scope: EmailCampaignScopeInterface,
     ): Promise<boolean> {
-        const contact = {
+        await this.clientFactory.getClient(scope).contacts.createContact({
             email,
             listIds: brevoIds,
-            templateId,
             attributes,
-        };
-        const { response } = await this.getContactsApi(scope).createContact(contact);
+        });
 
-        return response.statusCode === 204 || response.statusCode === 201;
+        return true;
     }
 
     public async createTestContact(
-        { email, attributes }: Brevo.CreateContact,
+        { email, attributes }: Brevo.CreateContactRequest,
         brevoIds: number[],
         scope: EmailCampaignScopeInterface,
     ): Promise<boolean> {
-        const contact = {
+        await this.clientFactory.getClient(scope).contacts.createContact({
             email,
             listIds: brevoIds,
             attributes,
-        };
-        const { response } = await this.getContactsApi(scope).createContact(contact);
+        });
 
-        return response.statusCode === 204 || response.statusCode === 201;
+        return true;
     }
 
     public async updateContact(
@@ -123,8 +98,9 @@ export class BrevoApiContactsService {
         importId?: string,
     ): Promise<BrevoContactInterface> {
         try {
-            const idAsString = id.toString(); // brevo expects a string, because it can be an email or the id, so we have to transform the id to string
-            await this.getContactsApi(scope).updateContact(idAsString, { emailBlacklisted: blocked, attributes, listIds, unlinkListIds });
+            await this.clientFactory
+                .getClient(scope)
+                .contacts.updateContact({ identifier: id, emailBlacklisted: blocked, attributes, listIds, unlinkListIds });
 
             const brevoContact = await this.findContact(id, scope);
 
@@ -142,10 +118,13 @@ export class BrevoApiContactsService {
         }
     }
 
-    public async updateMultipleContacts(contacts: Brevo.UpdateBatchContactsContactsInner[], scope: EmailCampaignScopeInterface): Promise<boolean> {
+    public async updateMultipleContacts(
+        contacts: Brevo.UpdateBatchContactsRequest.Contacts.Item[],
+        scope: EmailCampaignScopeInterface,
+    ): Promise<boolean> {
         try {
-            const { response } = await this.getContactsApi(scope).updateBatchContacts({ contacts });
-            return response.statusCode === 204;
+            await this.clientFactory.getClient(scope).contacts.updateBatchContacts({ contacts });
+            return true;
         } catch (error) {
             handleBrevoError(error);
         }
@@ -153,16 +132,16 @@ export class BrevoApiContactsService {
 
     public async deleteContact(id: number, scope: EmailCampaignScopeInterface): Promise<boolean> {
         try {
-            const idAsString = id.toString(); // brevo expects a string, because it can be an email or the id, so we have to transform the id to string
-            const { body } = await this.getContactsApi(scope).getContactInfo(idAsString);
+            const contactsApi = this.clientFactory.getClient(scope).contacts;
+            const contact = await contactsApi.getContactInfo({ identifier: id });
 
-            if (body.email && this.config.contactsWithoutDoi?.allowAddingContactsWithoutDoi) {
-                await this.blacklistedContactsService.addBlacklistedContacts([body.email], scope);
+            if (contact.email && this.config.contactsWithoutDoi?.allowAddingContactsWithoutDoi) {
+                await this.blacklistedContactsService.addBlacklistedContacts([contact.email], scope);
             }
 
-            const { response } = await this.getContactsApi(scope).deleteContact(idAsString);
+            await contactsApi.deleteContact({ identifier: id });
 
-            return response.statusCode === 204;
+            return true;
         } catch (error) {
             handleBrevoError(error);
         }
@@ -170,13 +149,12 @@ export class BrevoApiContactsService {
 
     public async findContact(idOrEmail: string | number, scope: EmailCampaignScopeInterface): Promise<BrevoContactInterface | null> {
         try {
-            const idAsString = String(idOrEmail); // brevo expects a string, because it can be an email or the id
-            const { body } = await this.getContactsApi(scope).getContactInfo(idAsString);
+            const contact = await this.clientFactory.getClient(scope).contacts.getContactInfo({ identifier: idOrEmail });
 
-            return body;
+            return contact;
         } catch (error) {
             // Brevo returns a 404 error if no contact is found and a 400 error if an invalid email is provided.
-            if (isErrorFromBrevo(error) && (error.status === 404 || error.status === 400)) {
+            if (isErrorFromBrevo(error) && (error.statusCode === 404 || error.statusCode === 400)) {
                 return null;
             }
 
@@ -186,15 +164,14 @@ export class BrevoApiContactsService {
 
     public async getContactInfoByEmail(email: string, scope: EmailCampaignScopeInterface): Promise<BrevoContactInterface | null> {
         try {
-            const data = await this.getContactsApi(scope).getContactInfo(email);
-            const contact = data.body;
+            const contact = await this.clientFactory.getClient(scope).contacts.getContactInfo({ identifier: email });
             if (!contact) {
                 return null;
             }
             return contact;
         } catch (error) {
             // Brevo returns a 404 error if no contact is found and a 400 error if an invalid email is provided.
-            if (isErrorFromBrevo(error) && (error.status === 404 || error.status === 400)) {
+            if (isErrorFromBrevo(error) && (error.statusCode === 404 || error.statusCode === 400)) {
                 return null;
             }
             handleBrevoError(error);
@@ -208,9 +185,9 @@ export class BrevoApiContactsService {
         scope: EmailCampaignScopeInterface,
     ): Promise<[BrevoContactInterface[], number]> {
         try {
-            const data = await this.getContactsApi(scope).getContactsFromList(id, undefined, limit, offset);
+            const data = await this.clientFactory.getClient(scope).contacts.getContactsFromList({ listId: id, limit, offset });
 
-            return [data.body.contacts, data.body.count];
+            return [data.contacts, data.count];
         } catch (error) {
             handleBrevoError(error);
         }
@@ -218,8 +195,8 @@ export class BrevoApiContactsService {
 
     public async getContactCountByListId(id: number, scope: EmailCampaignScopeInterface): Promise<number> {
         try {
-            const data = await this.getContactsApi(scope).getContactsFromList(id);
-            return data.body.count;
+            const data = await this.clientFactory.getClient(scope).contacts.getContactsFromList({ listId: id });
+            return data.count;
         } catch (error) {
             handleBrevoError(error);
         }
@@ -227,9 +204,9 @@ export class BrevoApiContactsService {
 
     public async findContacts(limit: number, offset: number, scope: EmailCampaignScopeInterface): Promise<BrevoContactInterface[]> {
         try {
-            const data = await this.getContactsApi(scope).getContacts(limit, offset);
+            const data = await this.clientFactory.getClient(scope).contacts.getContacts({ limit, offset });
 
-            return data.body.contacts;
+            return data.contacts;
         } catch (error) {
             handleBrevoError(error);
         }
@@ -237,15 +214,12 @@ export class BrevoApiContactsService {
 
     public async deleteContacts(contacts: BrevoContactInterface[], scope: EmailCampaignScopeInterface): Promise<boolean> {
         try {
+            const contactsApi = this.clientFactory.getClient(scope).contacts;
             for (const contact of contacts) {
-                const idAsString = contact.id.toString();
                 if (contact.email && this.config.contactsWithoutDoi?.allowAddingContactsWithoutDoi) {
                     await this.blacklistedContactsService.addBlacklistedContacts([contact.email], scope);
                 }
-                const response = await this.getContactsApi(scope).deleteContact(idAsString);
-                if (response.response.statusCode !== 204) {
-                    return false;
-                }
+                await contactsApi.deleteContact({ identifier: contact.id });
             }
             return true;
         } catch (error) {
@@ -256,20 +230,18 @@ export class BrevoApiContactsService {
     public async blacklistMultipleContacts(emails: string[], scope: EmailCampaignScopeInterface): Promise<void> {
         const blacklistedContacts = emails.map((email) => ({ email, emailBlacklisted: true }));
 
-        await this.getContactsApi(scope).updateBatchContacts({ contacts: blacklistedContacts });
+        await this.clientFactory.getClient(scope).contacts.updateBatchContacts({ contacts: blacklistedContacts });
     }
 
     public async createBrevoContactList(title: string, scope: EmailCampaignScopeInterface): Promise<number | undefined> {
         const brevoConfig = await this.brevoConfigRepository.findOne({ scope });
 
         try {
-            const contactList = {
+            const data = await this.clientFactory.getClient(scope).contacts.createList({
                 name: title,
                 folderId: brevoConfig?.folderId ?? 1,
-            };
-
-            const data = await this.getContactsApi(scope).createList(contactList);
-            return data.body.id;
+            });
+            return data.id;
         } catch (error) {
             handleBrevoError(error);
         }
@@ -277,8 +249,8 @@ export class BrevoApiContactsService {
 
     public async updateBrevoContactList(id: number, title: string, scope: EmailCampaignScopeInterface): Promise<boolean> {
         try {
-            const data = await this.getContactsApi(scope).updateList(id, { name: title });
-            return data.response.statusCode === 204;
+            await this.clientFactory.getClient(scope).contacts.updateList({ listId: id, name: title });
+            return true;
         } catch (error) {
             handleBrevoError(error);
         }
@@ -286,8 +258,8 @@ export class BrevoApiContactsService {
 
     public async deleteBrevoContactList(id: number, scope: EmailCampaignScopeInterface): Promise<boolean> {
         try {
-            const data = await this.getContactsApi(scope).deleteList(id);
-            return data.response.statusCode === 204;
+            await this.clientFactory.getClient(scope).contacts.deleteList({ listId: id });
+            return true;
         } catch (error) {
             handleBrevoError(error);
         }
@@ -295,8 +267,8 @@ export class BrevoApiContactsService {
 
     public async findBrevoContactListById(id: number, scope: EmailCampaignScopeInterface): Promise<BrevoApiContactList> {
         try {
-            const data = await this.getContactsApi(scope).getList(id);
-            return data.body;
+            const data = await this.clientFactory.getClient(scope).contacts.getList({ listId: id });
+            return data;
         } catch (error) {
             handleBrevoError(error);
         }
@@ -305,7 +277,7 @@ export class BrevoApiContactsService {
     public async findBrevoContactListsByIds(ids: number[], scope: EmailCampaignScopeInterface): Promise<BrevoApiContactList[]> {
         try {
             const lists: BrevoApiContactList[] = [];
-            for await (const list of await this.getBrevoContactListResponses(scope)) {
+            for await (const list of this.getBrevoContactListResponses(scope)) {
                 if (ids.includes(list.id)) {
                     lists.push(list);
                 }
@@ -322,8 +294,8 @@ export class BrevoApiContactsService {
 
         while (true) {
             try {
-                const listsResponse = await this.getContactsApi(scope).getLists(limit, offset);
-                const lists = listsResponse.body.lists ?? [];
+                const listsResponse = await this.clientFactory.getClient(scope).contacts.getLists({ limit, offset });
+                const lists = listsResponse.lists ?? [];
 
                 if (lists.length === 0) {
                     break;

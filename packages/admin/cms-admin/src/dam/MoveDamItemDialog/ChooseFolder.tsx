@@ -1,4 +1,4 @@
-import { ArrowRight, BallTriangle, PageTree, TreeCollapse, TreeExpand } from "@comet/admin-icons";
+import { ArrowRight, BallTriangle, PageTree, TreeCollapse, TreeExpand } from "@dextinity/admin-icons";
 import { ListItem, type SvgIconProps } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { type CSSProperties, type ForwardRefExoticComponent, type ReactNode, type RefAttributes, useEffect, useRef } from "react";
@@ -66,7 +66,7 @@ export const ChooseFolder = ({
                                     <StyledListItem offset={20 + 36} style={style}>
                                         <div>
                                             <BallTriangle sx={{ marginRight: "20px" }} />
-                                            <FormattedMessage id="comet.dam.moveDamItemDialog.loading" defaultMessage="Loading ..." />
+                                            <FormattedMessage id="dextinity.dam.moveDamItemDialog.loading" defaultMessage="Loading ..." />
                                         </div>
                                     </StyledListItem>
                                 );
@@ -76,7 +76,7 @@ export const ChooseFolder = ({
                                 return (
                                     <ChooseFolderItem
                                         Icon={PageTree}
-                                        message={<FormattedMessage id="comet.pages.dam.assetManager" defaultMessage="Asset Manager" />}
+                                        message={<FormattedMessage id="dextinity.pages.dam.assetManager" defaultMessage="Asset Manager" />}
                                         offset={20}
                                         isChosen={selectedId === null}
                                         onClick={() => {

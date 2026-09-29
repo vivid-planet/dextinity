@@ -1,6 +1,6 @@
 import { useApolloClient } from "@apollo/client";
-import { Button, Tooltip, UndoSnackbar, useSnackbarApi } from "@comet/admin";
-import { Archive, Copy, Delete, Offline, Online, Paste, ThreeDotSaving, Translate, TreeCollapseAll } from "@comet/admin-icons";
+import { Button, Tooltip, UndoSnackbar, useSnackbarApi } from "@dextinity/admin";
+import { Archive, Copy, Delete, Offline, Online, Paste, ThreeDotSaving, Translate, TreeCollapseAll } from "@dextinity/admin-icons";
 import { Checkbox, Grid, IconButton, useTheme } from "@mui/material";
 import { type ReactNode, useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -92,7 +92,7 @@ export const PagesPageActionToolbar = ({
 
         showUndoSnackbar(
             pageTreeNodes,
-            <FormattedMessage id="comet.pagesPageActionToolbar.undo.publishedSelected" defaultMessage="Published selected pages" />,
+            <FormattedMessage id="dextinity.pagesPageActionToolbar.undo.publishedSelected" defaultMessage="Published selected pages" />,
         );
     };
 
@@ -104,7 +104,7 @@ export const PagesPageActionToolbar = ({
 
         showUndoSnackbar(
             pageTreeNodes,
-            <FormattedMessage id="comet.pagesPageActionToolbar.undo.unpublishedSelected" defaultMessage="Unpublished selected pages" />,
+            <FormattedMessage id="dextinity.pagesPageActionToolbar.undo.unpublishedSelected" defaultMessage="Unpublished selected pages" />,
         );
     };
 
@@ -116,7 +116,7 @@ export const PagesPageActionToolbar = ({
 
         showUndoSnackbar(
             pageTreeNodes,
-            <FormattedMessage id="comet.pagesPageActionToolbar.undo.archivedSelected" defaultMessage="Archived selected pages" />,
+            <FormattedMessage id="dextinity.pagesPageActionToolbar.undo.archivedSelected" defaultMessage="Archived selected pages" />,
         );
     };
 
@@ -133,11 +133,11 @@ export const PagesPageActionToolbar = ({
                                 onChange={onSelectAllPressed}
                             />
                         }
-                        label={<FormattedMessage id="comet.pagesPageActionToolbar.selectAll" defaultMessage="Select all" />}
+                        label={<FormattedMessage id="dextinity.pagesPageActionToolbar.selectAll" defaultMessage="Select all" />}
                     />
                 </Grid>
                 <CenterContainer>
-                    <Tooltip title={<FormattedMessage id="comet.pagesPageActionToolbar.tooltip.publish" defaultMessage="Publish" />}>
+                    <Tooltip title={<FormattedMessage id="dextinity.pagesPageActionToolbar.tooltip.publish" defaultMessage="Publish" />}>
                         <span>
                             <IconButton
                                 disabled={selectedTree.size === 0}
@@ -154,7 +154,7 @@ export const PagesPageActionToolbar = ({
                             </IconButton>
                         </span>
                     </Tooltip>
-                    <Tooltip title={<FormattedMessage id="comet.pagesPageActionToolbar.tooltip.unpublish" defaultMessage="Unpublish" />}>
+                    <Tooltip title={<FormattedMessage id="dextinity.pagesPageActionToolbar.tooltip.unpublish" defaultMessage="Unpublish" />}>
                         <span>
                             <IconButton
                                 disabled={selectedTree.size === 0}
@@ -167,7 +167,7 @@ export const PagesPageActionToolbar = ({
                             </IconButton>
                         </span>
                     </Tooltip>
-                    <Tooltip title={<FormattedMessage id="comet.pagesPageActionToolbar.tooltip.archive" defaultMessage="Archive" />}>
+                    <Tooltip title={<FormattedMessage id="dextinity.pagesPageActionToolbar.tooltip.archive" defaultMessage="Archive" />}>
                         <span>
                             <IconButton
                                 disabled={selectedTree.size === 0}
@@ -181,7 +181,7 @@ export const PagesPageActionToolbar = ({
                         </span>
                     </Tooltip>
                     <Separator />
-                    <Tooltip title={<FormattedMessage id="comet.pagesPageActionToolbar.tooltip.copy" defaultMessage="Copy" />}>
+                    <Tooltip title={<FormattedMessage id="dextinity.pagesPageActionToolbar.tooltip.copy" defaultMessage="Copy" />}>
                         <span>
                             <IconButton
                                 disabled={selectedTree.size === 0}
@@ -198,7 +198,7 @@ export const PagesPageActionToolbar = ({
                             </IconButton>
                         </span>
                     </Tooltip>
-                    <Tooltip title={<FormattedMessage id="comet.pagesPageActionToolbar.tooltip.paste" defaultMessage="Paste" />}>
+                    <Tooltip title={<FormattedMessage id="dextinity.pagesPageActionToolbar.tooltip.paste" defaultMessage="Paste" />}>
                         <span>
                             <IconButton
                                 onClick={async () => {
@@ -217,7 +217,7 @@ export const PagesPageActionToolbar = ({
                         </span>
                     </Tooltip>
                     {translateEnabled && (
-                        <Tooltip title={<FormattedMessage id="comet.pagesPageActionToolbar.tooltip.translate" defaultMessage="Translate" />}>
+                        <Tooltip title={<FormattedMessage id="dextinity.pagesPageActionToolbar.tooltip.translate" defaultMessage="Translate" />}>
                             <span>
                                 <IconButton
                                     disabled={selectedTree.size === 0 || translating || !hasTranslatableContent}
@@ -230,7 +230,7 @@ export const PagesPageActionToolbar = ({
                         </Tooltip>
                     )}
                     {allowPageDelete && (
-                        <Tooltip title={<FormattedMessage id="comet.pagesPageActionToolbar.tooltip.delete" defaultMessage="Delete" />}>
+                        <Tooltip title={<FormattedMessage id="dextinity.pagesPageActionToolbar.tooltip.delete" defaultMessage="Delete" />}>
                             <span>
                                 <IconButton
                                     disabled={selectedTree.size === 0}
@@ -261,7 +261,7 @@ export const PagesPageActionToolbar = ({
                         size="small"
                         variant="textDark"
                     >
-                        <FormattedMessage id="comet.pages.pages.collapseAll" defaultMessage="Collapse all" />
+                        <FormattedMessage id="dextinity.pages.pages.collapseAll" defaultMessage="Collapse all" />
                     </Button>
                 </Grid>
             </Root>

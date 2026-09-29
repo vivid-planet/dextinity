@@ -28,7 +28,7 @@ MAILER_SEND_ALL_MAILS_BCC?: string[];
 ```ts title="/api/src/config/config.ts"
 mailer: {
     // Mailer configuration
-    defaultFrom: '"Comet Demo" <comet-demo@comet-dxp.com>',
+    defaultFrom: '"Dextinity Demo" <dextinity-demo@dextinity.com>',
     sendAllMailsTo: envVars.MAILER_SEND_ALL_MAILS_TO,
     sendAllMailsBcc: envVars.MAILER_SEND_ALL_MAILS_BCC,
 
@@ -56,14 +56,11 @@ services:
 # mailer
 MAILER_HOST=localhost
 MAILER_PORT=1025
-MAILER_SEND_ALL_MAILS_TO=demo-leaddev@comet-dxp.com,demo-pm@comet-dxp.com
+MAILER_SEND_ALL_MAILS_TO=demo-lead-dev@dextinity.com,demo-pm@dextinity.com
 ```
 
 ```ts title="/api/src/app.module.ts"
-imports: [
-    ...
-    MailerModule.register(config.mailer),
-]
+imports: [...MailerModule.register(config.mailer)];
 ```
 
 ```yaml title="/deployment/helm/values.tpl.yaml"
@@ -72,7 +69,7 @@ api:
     ...
     MAILER_HOST: "localhost"
     MAILER_PORT: 25
-    MAILER_SEND_ALL_MAILS_TO: "demo-leaddev@comet-dxp.com,demo-pm@comet-dxp.com"
+    MAILER_SEND_ALL_MAILS_TO: "demo-lead-dev@dextinity.com,demo-pm@dextinity.com"
 ```
 
 ## Usage
@@ -101,8 +98,8 @@ async publishAllProducts(): Promise<boolean> {
     ...
     await this.mailerService.sendMail({
         mailTypeForLogging: "products-published",
-        to: "product-manager@comet-dxp.com",
-        cc: "vice-product-manager@comet-dxp.com",
+        to: "product-manager@dextinity.com",
+        cc: "vice-product-manager@dextinity.com",
         subject: "All products have been published",
     });
     ...
@@ -118,7 +115,7 @@ The `MailerModule.register` config accepts two recipient-overriding options that
 Sends every mail to the given addresses instead of the original `to`. The original `cc` and `bcc` are dropped. Intended for non-prod environments to prevent mails from reaching real users.
 
 ```sh title="/.env"
-MAILER_SEND_ALL_MAILS_TO=demo-leaddev@comet-dxp.com,demo-pm@comet-dxp.com
+MAILER_SEND_ALL_MAILS_TO=demo-lead-dev@dextinity.com,demo-pm@dextinity.com
 ```
 
 #### `sendAllMailsBcc`
@@ -126,7 +123,7 @@ MAILER_SEND_ALL_MAILS_TO=demo-leaddev@comet-dxp.com,demo-pm@comet-dxp.com
 Adds the given addresses as an additional BCC to every mail. Intended as a production backup recipient. Not applied when `sendAllMailsTo` is set.
 
 ```sh title="/.env"
-MAILER_SEND_ALL_MAILS_BCC=mail-archive@comet-dxp.com,mail-backup@comet-dxp.com
+MAILER_SEND_ALL_MAILS_BCC=mail-archive@dextinity.com,mail-backup@dextinity.com
 ```
 
 ---

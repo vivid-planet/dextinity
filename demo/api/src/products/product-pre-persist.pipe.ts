@@ -1,4 +1,4 @@
-import type { ImporterPipe } from "@comet/cms-api";
+import type { ImporterPipe } from "@dextinity/cms-api";
 import { type Connection, type EntityManager, type IDatabaseDriver, Reference } from "@mikro-orm/core";
 import type { LoggerService } from "@nestjs/common";
 import slugify from "slugify";

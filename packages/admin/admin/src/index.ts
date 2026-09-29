@@ -25,7 +25,6 @@ export { SplitButtonContext, type SplitButtonContextOptions } from "./common/but
 export { useSplitButtonContext } from "./common/buttons/split/useSplitButtonContext";
 export type { ClearInputAdornmentClassKey } from "./common/ClearInputAdornment";
 export { ClearInputAdornment, type ClearInputAdornmentProps } from "./common/ClearInputAdornment";
-export { CometLogo } from "./common/CometLogo";
 export { DeleteDialog } from "./common/DeleteDialog";
 export { Dialog, type DialogClassKey, type DialogProps } from "./common/Dialog";
 export { FieldSet, type FieldSetClassKey, type FieldSetProps } from "./common/FieldSet";
@@ -114,6 +113,8 @@ export {
 export { DateTimeRangePickerField, type DateTimeRangePickerFieldProps } from "./dateTime/dateTimeRangePickerField/DateTimeRangePickerField";
 export { TimePicker, type TimePickerClassKey, type TimePickerProps } from "./dateTime/timePicker/TimePicker";
 export { TimePickerField, type TimePickerFieldProps } from "./dateTime/timePickerField/TimePickerField";
+export { type TimeRange, TimeRangePicker, type TimeRangePickerClassKey, type TimeRangePickerProps } from "./dateTime/timeRangePicker/TimeRangePicker";
+export { TimeRangePickerField, type TimeRangePickerFieldProps } from "./dateTime/timeRangePickerField/TimeRangePickerField";
 export { DeleteMutation } from "./DeleteMutation";
 export { EditDialog, useEditDialog } from "./editDialog/EditDialog";
 export { EditDialogApiContext, type IEditDialogApi, useEditDialogApi } from "./editDialog/EditDialogApiContext";
@@ -172,7 +173,11 @@ export { FinalFormNumberInput, type FinalFormNumberInputProps } from "./form/Fin
 export { FinalFormRangeInput, type FinalFormRangeInputClassKey, type FinalFormRangeInputProps } from "./form/FinalFormRangeInput";
 export { FinalFormSearchTextField, type FinalFormSearchTextFieldProps } from "./form/FinalFormSearchTextField";
 export { FinalFormSelect, type FinalFormSelectProps } from "./form/FinalFormSelect";
-export { FinalFormToggleButtonGroup, type FinalFormToggleButtonGroupProps } from "./form/FinalFormToggleButtonGroup";
+export {
+    FinalFormToggleButtonGroup,
+    type FinalFormToggleButtonGroupClassKey,
+    type FinalFormToggleButtonGroupProps,
+} from "./form/FinalFormToggleButtonGroup";
 export { FormSection, type FormSectionClassKey, type FormSectionProps } from "./form/FormSection";
 export { OnChangeField } from "./form/helpers/OnChangeField";
 export { FinalFormRadio, type FinalFormRadioProps } from "./form/Radio";
@@ -316,7 +321,7 @@ export { Tab, Tabs, type TabsClassKey, type TabsProps } from "./tabs/Tabs";
 export { TabScrollButton, type TabScrollButtonClassKey, type TabScrollButtonProps } from "./tabs/TabScrollButton";
 export { breakpointsOptions, breakpointValues } from "./theme/breakpointsOptions";
 export { errorPalette, greyPalette, infoPalette, primaryPalette, successPalette, warningPalette } from "./theme/colors";
-export { createCometTheme } from "./theme/createCometTheme";
+export { createDextinityTheme } from "./theme/createDextinityTheme";
 export { paletteOptions } from "./theme/paletteOptions";
 export { shadows } from "./theme/shadows";
 export { createTypographyOptions } from "./theme/typographyOptions";

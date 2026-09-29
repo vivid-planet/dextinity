@@ -1,7 +1,8 @@
 import type { JSONContent } from "@tiptap/core";
 
 import type { Block } from "../../block";
-import type { TipTapSupports } from "../createTipTapRichTextBlock";
+import type { TipTapResolvedOptions } from "../createTipTapRichTextBlock";
+import { findTextBlockForTag, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks";
 
 interface DraftJsInlineStyleRange {
     style: string;
@@ -38,28 +39,52 @@ interface DraftJsContent {
     entityMap: Record<string, DraftJsEntity>;
 }
 
+interface TextBlockMapping {
+    /**
+     * Name of the TipTap text block the DraftJS block is converted to. Naming it explicitly keeps
+     * the semantic tag of a DraftJS block type that was rendered as a heading (e.g. a custom
+     * `headline450` block type rendered as `<h2>`).
+     */
+    textBlock: string;
+    /**
+     * TipTap `textBlockStyle` attribute value applied to the converted text block. Leave it out for
+     * a text block that offers no styles.
+     */
+    textBlockStyle?: string;
+}
+
 interface ConvertOptions {
-    supports?: TipTapSupports[];
+    resolvedOptions: TipTapResolvedOptions;
     link?: Block;
     /**
-     * Maps DraftJS block types (e.g. custom `paragraph-small`) to a TipTap paragraph
-     * `textBlockStyle` attribute value. Matched blocks become `{ type: "paragraph", attrs: { textBlockStyle: ... } }`.
+     * Maps DraftJS block types (e.g. custom `paragraph-small`) to the TipTap text block they are
+     * converted to, and to the `textBlockStyle` applied to it. A DraftJS block type that isn't
+     * mapped becomes the text block its own type implies: `header-one`…`header-six` keep their
+     * heading level, everything else becomes a paragraph.
      */
-    textBlockStyleMap?: Record<string, string>;
+    textBlockMap?: Record<string, TextBlockMapping>;
     /**
      * Maps DraftJS custom inline style names (e.g. `highlight` from a DraftJS `customInlineStyles`
      * configuration) to TipTap `inlineStyle` mark type values.
      * Matched ranges become `{ type: "inlineStyle", attrs: { type: <mappedValue> } }`.
      */
     inlineStyleMap?: Record<string, string>;
+    /**
+     * Limits the nesting depth of the generated lists. Draft.js list items that are indented deeper
+     * are placed on the deepest allowed level instead.
+     */
+    listLevelMax?: number;
 }
 
-const INLINE_STYLE_TO_MARK: Record<string, { mark: string; supports: TipTapSupports }> = {
-    BOLD: { mark: "bold", supports: "bold" },
-    ITALIC: { mark: "italic", supports: "italic" },
-    STRIKETHROUGH: { mark: "strike", supports: "strike" },
-    SUP: { mark: "superscript", supports: "sup" },
-    SUB: { mark: "subscript", supports: "sub" },
+type TipTapMarkOption = "bold" | "italic" | "underline" | "strike" | "sup" | "sub";
+
+const INLINE_STYLE_TO_MARK: Record<string, { mark: string; option: TipTapMarkOption }> = {
+    BOLD: { mark: "bold", option: "bold" },
+    ITALIC: { mark: "italic", option: "italic" },
+    UNDERLINE: { mark: "underline", option: "underline" },
+    STRIKETHROUGH: { mark: "strike", option: "strike" },
+    SUP: { mark: "superscript", option: "sup" },
+    SUB: { mark: "subscript", option: "sub" },
 };
 
 const HEADER_TYPE_TO_LEVEL: Record<string, number> = {
@@ -71,8 +96,42 @@ const HEADER_TYPE_TO_LEVEL: Record<string, number> = {
     "header-six": 6,
 };
 
-function makeEmptyDoc(): JSONContent {
-    return { type: "doc", content: [{ type: "paragraph" }] };
+/**
+ * Rejects a configuration in which a DraftJS heading could become either of two text blocks sharing
+ * its tag. The conversion would pick the first of them, and it runs once - the DraftJS content is
+ * gone afterwards - so the choice has to be written down instead of guessed.
+ */
+export function assertDraftJsHeadingsAreUnambiguous({
+    resolvedOptions,
+    textBlockMap = {},
+}: {
+    resolvedOptions: TipTapResolvedOptions;
+    textBlockMap?: Record<string, TextBlockMapping>;
+}): void {
+    const { textBlocks, defaultTextBlock } = resolvedOptions;
+
+    for (const [draftJsType, level] of Object.entries(HEADER_TYPE_TO_LEVEL)) {
+        const tag = `h${level}` as TipTapTextBlockTag;
+        if (defaultTextBlock.tag === tag || textBlockMap[draftJsType] !== undefined) {
+            continue;
+        }
+
+        const textBlocksSharingTag = textBlocks.filter((textBlock) => textBlock.tag === tag);
+        if (textBlocksSharingTag.length > 1) {
+            const names = textBlocksSharingTag.map((textBlock) => `"${textBlock.name}"`).join(", ");
+            throw new Error(
+                `The text blocks ${names} share the tag "${tag}", so migrateFromDraftJs cannot tell which one a "${draftJsType}" block becomes. Name it in textBlockMap under "${draftJsType}", or make it the defaultTextBlock.`,
+            );
+        }
+    }
+}
+
+/**
+ * Builds a document with a single empty text block, matching the target schema's default text block
+ * type (a paragraph, or a heading for a heading-only schema).
+ */
+export function buildEmptyTipTapDoc(resolvedOptions: TipTapResolvedOptions): JSONContent {
+    return { type: "doc", content: [makeTextBlockNode([], { textBlock: resolvedOptions.defaultTextBlock })] };
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -84,13 +143,19 @@ interface InlineSegment {
     marks: NonNullable<JSONContent["marks"]>;
 }
 
-function buildInlineContent(
-    block: DraftJsBlock,
-    entityMap: Record<string, DraftJsEntity>,
-    supports: Set<TipTapSupports>,
-    hasLink: boolean,
-    inlineStyleMap: Record<string, string>,
-): JSONContent[] {
+function buildInlineContent({
+    block,
+    entityMap,
+    resolvedOptions,
+    hasLink,
+    inlineStyleMap,
+}: {
+    block: DraftJsBlock;
+    entityMap: Record<string, DraftJsEntity>;
+    resolvedOptions: TipTapResolvedOptions;
+    hasLink: boolean;
+    inlineStyleMap: Record<string, string>;
+}): JSONContent[] {
     const text = block.text ?? "";
     if (text.length === 0) {
         return [];
@@ -138,7 +203,7 @@ function buildInlineContent(
         for (const range of styleRanges) {
             if (range.start <= start && range.end >= end) {
                 const mapping = INLINE_STYLE_TO_MARK[range.style];
-                if (mapping && supports.has(mapping.supports)) {
+                if (mapping && resolvedOptions[mapping.option]) {
                     if (!marks.some((mark) => mark.type === mapping.mark)) {
                         marks.push({ type: mapping.mark });
                     }
@@ -167,7 +232,7 @@ function buildInlineContent(
         segments.push({ text: segmentText, marks });
     }
 
-    return segments.flatMap((segment) => splitAtomChars(segment.text, segment.marks, supports));
+    return segments.flatMap((segment) => splitAtomChars(segment.text, segment.marks, resolvedOptions));
 }
 
 const NBSP_CHAR = "\u00a0";
@@ -185,11 +250,10 @@ function makeTextNode(text: string, marks: NonNullable<JSONContent["marks"]>): J
 // RTE persists non-breaking-spaces and soft-hyphens) becomes a dedicated TipTap atom node
 // when the corresponding feature is supported. Otherwise the characters are preserved as-is
 // inside the surrounding text node.
-function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, supports: Set<TipTapSupports>): JSONContent[] {
-    const supportsNbsp = supports.has("non-breaking-space");
-    const supportsShy = supports.has("soft-hyphen");
+function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, resolvedOptions: TipTapResolvedOptions): JSONContent[] {
+    const { nonBreakingSpace, softHyphen } = resolvedOptions;
 
-    if ((!supportsNbsp && !supportsShy) || (!text.includes(NBSP_CHAR) && !text.includes(SOFT_HYPHEN_CHAR))) {
+    if ((!nonBreakingSpace && !softHyphen) || (!text.includes(NBSP_CHAR) && !text.includes(SOFT_HYPHEN_CHAR))) {
         return text.length === 0 ? [] : [makeTextNode(text, marks)];
     }
 
@@ -203,10 +267,10 @@ function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, 
     };
 
     for (const char of text) {
-        if (char === NBSP_CHAR && supportsNbsp) {
+        if (char === NBSP_CHAR && nonBreakingSpace) {
             flushBuffer();
             nodes.push({ type: "nonBreakingSpace" });
-        } else if (char === SOFT_HYPHEN_CHAR && supportsShy) {
+        } else if (char === SOFT_HYPHEN_CHAR && softHyphen) {
             flushBuffer();
             nodes.push({ type: "softHyphen" });
         } else {
@@ -217,10 +281,43 @@ function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, 
     return nodes;
 }
 
-function makeLeafBlockNode(type: "paragraph" | "heading", inlineContent: JSONContent[], headingLevel?: number): JSONContent {
-    const node: JSONContent = { type };
-    if (type === "heading" && headingLevel !== undefined) {
-        node.attrs = { level: headingLevel };
+/**
+ * The text block a DraftJS block is converted to: the one `textBlockMap` names, or the one carrying
+ * the tag the DraftJS block type implies. Several text blocks may carry that tag, so the default
+ * text block wins over the first of them - `assertDraftJsHeadingsAreUnambiguous` rejects the
+ * configurations that leaves undecided.
+ */
+function resolveTargetTextBlock({
+    name,
+    headingLevel,
+    resolvedOptions,
+}: {
+    name?: string;
+    headingLevel?: number;
+    resolvedOptions: TipTapResolvedOptions;
+}): TipTapResolvedTextBlock {
+    const { textBlocks, defaultTextBlock } = resolvedOptions;
+    if (name !== undefined) {
+        const byName = textBlocks.find((textBlock) => textBlock.name === name);
+        if (byName) {
+            return byName;
+        }
+    }
+    const tag: TipTapTextBlockTag = headingLevel !== undefined ? (`h${headingLevel}` as TipTapTextBlockTag) : "p";
+    if (defaultTextBlock.tag === tag) {
+        return defaultTextBlock;
+    }
+    return findTextBlockForTag({ tag, textBlocks }) ?? defaultTextBlock;
+}
+
+function makeTextBlockNode(
+    inlineContent: JSONContent[],
+    { textBlock, textBlockStyle }: { textBlock: TipTapResolvedTextBlock; textBlockStyle?: string },
+): JSONContent {
+    const node: JSONContent = { type: "textBlock", attrs: { textBlock: textBlock.name } };
+
+    if (textBlockStyle !== undefined) {
+        node.attrs = { ...node.attrs, textBlockStyle };
     }
     if (inlineContent.length > 0) {
         node.content = inlineContent;
@@ -228,109 +325,137 @@ function makeLeafBlockNode(type: "paragraph" | "heading", inlineContent: JSONCon
     return node;
 }
 
-function makeParagraphWithTextBlockStyle(inlineContent: JSONContent[], textBlockStyle: string): JSONContent {
-    const node: JSONContent = { type: "paragraph", attrs: { textBlockStyle } };
-    if (inlineContent.length > 0) {
-        node.content = inlineContent;
-    }
-    return node;
-}
-
-function makeListItem(inlineContent: JSONContent[]): JSONContent {
+function makeListItem(inlineContent: JSONContent[], resolvedOptions: TipTapResolvedOptions): JSONContent {
     return {
         type: "listItem",
-        content: [makeLeafBlockNode("paragraph", inlineContent)],
+        content: [makeTextBlockNode(inlineContent, { textBlock: resolveTargetTextBlock({ resolvedOptions }) })],
     };
 }
 
-export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined | null, options: ConvertOptions = {}): JSONContent {
+type ListType = "orderedList" | "bulletList";
+
+const LIST_BLOCK_TYPE_TO_LIST: Record<string, { listType: ListType; option: "orderedList" | "unorderedList" }> = {
+    "unordered-list-item": { listType: "bulletList", option: "unorderedList" },
+    "ordered-list-item": { listType: "orderedList", option: "orderedList" },
+};
+
+interface OpenList {
+    type: ListType;
+    items: JSONContent[];
+}
+
+export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined | null, options: ConvertOptions): JSONContent {
+    const resolvedOptions = options.resolvedOptions;
+
     if (!draftContent || !Array.isArray(draftContent.blocks) || draftContent.blocks.length === 0) {
-        return makeEmptyDoc();
+        return buildEmptyTipTapDoc(resolvedOptions);
     }
 
-    const supports = new Set<TipTapSupports>(options.supports ?? []);
     const hasLink = !!options.link;
-    const textBlockStyleMap = options.textBlockStyleMap ?? {};
+    const textBlockMap = options.textBlockMap ?? {};
     const inlineStyleMap = options.inlineStyleMap ?? {};
     const entityMap = draftContent.entityMap ?? {};
+    const maxListLevels = options.listLevelMax !== undefined ? Math.max(options.listLevelMax, 1) : undefined;
 
     const topLevel: JSONContent[] = [];
 
-    let currentListType: "orderedList" | "bulletList" | null = null;
-    let currentListItems: JSONContent[] = [];
+    // Draft.js stores list nesting as a flat sequence of list items carrying a `depth`, while TipTap
+    // nests a sub-list inside the `listItem` it belongs to. The stack holds the lists that are
+    // currently open, from the outermost level to the level the previous list item was placed on.
+    const openLists: OpenList[] = [];
 
-    const flushList = () => {
-        if (currentListType && currentListItems.length > 0) {
-            topLevel.push({ type: currentListType, content: currentListItems });
+    const closeDeepestList = () => {
+        const closedList = openLists.pop();
+        if (!closedList || closedList.items.length === 0) {
+            return;
         }
-        currentListType = null;
-        currentListItems = [];
+
+        const list: JSONContent = { type: closedList.type, content: closedList.items };
+        const parentList = openLists[openLists.length - 1];
+        if (parentList) {
+            const parentItem = parentList.items[parentList.items.length - 1];
+            parentItem.content = [...(parentItem.content ?? []), list];
+        } else {
+            topLevel.push(list);
+        }
+    };
+
+    const flushLists = () => {
+        while (openLists.length > 0) {
+            closeDeepestList();
+        }
+    };
+
+    const addListItem = (listType: ListType, depth: number, inlineContent: JSONContent[]) => {
+        // A list item may only be indented one level deeper than its predecessor, no matter how
+        // large the gap in Draft.js is. `listLevelMax` limits the nesting further.
+        let level = Math.min(Math.max(depth, 0), openLists.length);
+        if (maxListLevels !== undefined) {
+            level = Math.min(level, maxListLevels - 1);
+        }
+
+        while (openLists.length > level + 1) {
+            closeDeepestList();
+        }
+        if (openLists.length === level + 1 && openLists[level].type !== listType) {
+            closeDeepestList();
+        }
+        if (openLists.length === level) {
+            openLists.push({ type: listType, items: [] });
+        }
+
+        openLists[openLists.length - 1].items.push(makeListItem(inlineContent, resolvedOptions));
     };
 
     for (const block of draftContent.blocks) {
-        const inlineContent = buildInlineContent(block, entityMap, supports, hasLink, inlineStyleMap);
+        const inlineContent = buildInlineContent({ block, entityMap, resolvedOptions, hasLink, inlineStyleMap });
 
-        if (block.type === "unordered-list-item" && supports.has("unordered-list")) {
-            if (currentListType !== "bulletList") {
-                flushList();
-                currentListType = "bulletList";
-            }
-            currentListItems.push(makeListItem(inlineContent));
+        const listMapping = LIST_BLOCK_TYPE_TO_LIST[block.type];
+        if (listMapping && resolvedOptions[listMapping.option]) {
+            addListItem(listMapping.listType, block.depth ?? 0, inlineContent);
             continue;
         }
 
-        if (block.type === "ordered-list-item" && supports.has("ordered-list")) {
-            if (currentListType !== "orderedList") {
-                flushList();
-                currentListType = "orderedList";
-            }
-            currentListItems.push(makeListItem(inlineContent));
-            continue;
-        }
+        flushLists();
 
-        flushList();
+        const mapping = textBlockMap[block.type];
 
-        const mappedTextBlockStyle = textBlockStyleMap[block.type];
-        if (mappedTextBlockStyle !== undefined) {
-            topLevel.push(makeParagraphWithTextBlockStyle(inlineContent, mappedTextBlockStyle));
-            continue;
-        }
-
-        const headerLevel = HEADER_TYPE_TO_LEVEL[block.type];
-        if (headerLevel !== undefined && supports.has("heading")) {
-            topLevel.push(makeLeafBlockNode("heading", inlineContent, headerLevel));
-        } else {
-            topLevel.push(makeLeafBlockNode("paragraph", inlineContent));
-        }
+        topLevel.push(
+            makeTextBlockNode(inlineContent, {
+                textBlock: resolveTargetTextBlock({
+                    name: mapping?.textBlock,
+                    headingLevel: HEADER_TYPE_TO_LEVEL[block.type],
+                    resolvedOptions,
+                }),
+                textBlockStyle: mapping?.textBlockStyle,
+            }),
+        );
     }
 
-    flushList();
+    flushLists();
 
     if (topLevel.length === 0) {
-        return makeEmptyDoc();
+        return buildEmptyTipTapDoc(resolvedOptions);
     }
 
     return { type: "doc", content: topLevel };
 }
 
-export function buildStrippedTipTapDoc(draftContent: DraftJsContent | undefined | null): JSONContent {
+export function buildStrippedTipTapDoc(draftContent: DraftJsContent | undefined | null, resolvedOptions: TipTapResolvedOptions): JSONContent {
     if (!draftContent || !Array.isArray(draftContent.blocks) || draftContent.blocks.length === 0) {
-        return makeEmptyDoc();
+        return buildEmptyTipTapDoc(resolvedOptions);
     }
 
     const content: JSONContent[] = draftContent.blocks.map((block) => {
         const text = block.text ?? "";
-        if (text.length === 0) {
-            return { type: "paragraph" };
-        }
-        return { type: "paragraph", content: [{ type: "text", text }] };
+        return makeTextBlockNode(text.length === 0 ? [] : [{ type: "text", text }], { textBlock: resolvedOptions.defaultTextBlock });
     });
 
     if (content.length === 0) {
-        return makeEmptyDoc();
+        return buildEmptyTipTapDoc(resolvedOptions);
     }
 
     return { type: "doc", content };
 }
 
-export type { ConvertOptions, DraftJsContent };
+export type { ConvertOptions, DraftJsContent, TextBlockMapping };

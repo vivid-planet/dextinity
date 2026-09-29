@@ -1,4 +1,4 @@
-import { Accept, Copy } from "@comet/admin-icons";
+import { Accept, Copy } from "@dextinity/admin-icons";
 // eslint-disable-next-line no-restricted-imports
 import { Button, Dialog, Divider, List, ListItem, Stack, Typography } from "@mui/material";
 import DialogActions from "@mui/material/DialogActions";
@@ -15,11 +15,11 @@ import { messages } from "../../messages";
 export type ErrorType = "network" | "graphql" | "unauthorized" | "unauthenticated" | "unknown";
 
 const errorTypeLabels: Record<ErrorType, ReactNode> = {
-    graphql: <FormattedMessage id="comet.errorDialog.details.errorType.graphql" defaultMessage="Server error" />,
-    network: <FormattedMessage id="comet.errorDialog.details.errorType.network" defaultMessage="Network error" />,
-    unauthorized: <FormattedMessage id="comet.errorDialog.details.errorType.unauthorized" defaultMessage="Not authorized" />,
-    unauthenticated: <FormattedMessage id="comet.errorDialog.details.errorType.unauthenticated" defaultMessage="Unauthenticated" />,
-    unknown: <FormattedMessage id="comet.errorDialog.details.errorType.unknown" defaultMessage="Unknown error" />,
+    graphql: <FormattedMessage id="dextinity.errorDialog.details.errorType.graphql" defaultMessage="Server error" />,
+    network: <FormattedMessage id="dextinity.errorDialog.details.errorType.network" defaultMessage="Network error" />,
+    unauthorized: <FormattedMessage id="dextinity.errorDialog.details.errorType.unauthorized" defaultMessage="Not authorized" />,
+    unauthenticated: <FormattedMessage id="dextinity.errorDialog.details.errorType.unauthenticated" defaultMessage="Unauthenticated" />,
+    unknown: <FormattedMessage id="dextinity.errorDialog.details.errorType.unknown" defaultMessage="Unknown error" />,
 };
 
 export interface ErrorDialogOptions {
@@ -100,7 +100,7 @@ function DefaultUserMessage({ error, additionalInformation }: DefaultUserMessage
         <>
             <Typography variant="h6">
                 <FormattedMessage
-                    id="comet.errorDialog.defaultUserMessage"
+                    id="dextinity.errorDialog.defaultUserMessage"
                     defaultMessage="The following {errorCount, plural, one {error} other {errors} } {errorCount, plural, one {has} other {have} } occurred:"
                     values={{ errorCount: error.length }}
                 />
@@ -114,7 +114,7 @@ function DefaultUserMessage({ error, additionalInformation }: DefaultUserMessage
             </Typography>
             <Typography gutterBottom>
                 <FormattedMessage
-                    id="comet.errorDialog.copyToClipboardInstruction"
+                    id="dextinity.errorDialog.copyToClipboardInstruction"
                     defaultMessage="This information may prove useful for debugging the {errorCount, plural, one {error} other {errors} }. Please copy it and send it to your administrator."
                     values={{ errorCount: error.length }}
                 />
@@ -125,33 +125,33 @@ function DefaultUserMessage({ error, additionalInformation }: DefaultUserMessage
                     <Divider sx={{ marginTop: 4, marginBottom: 4 }} />
                     <Typography component="p" variant="caption">
                         <strong>
-                            <FormattedMessage id="comet.errorDialog.details" defaultMessage="Error details" />
+                            <FormattedMessage id="dextinity.errorDialog.details" defaultMessage="Error details" />
                         </strong>
                     </Typography>
                     <Typography component="p" variant="caption">
                         <FormattedMessage
-                            id="comet.errorDialog.details.errorType"
+                            id="dextinity.errorDialog.details.errorType"
                             defaultMessage="Type: {errorType}"
                             values={{ errorType: errorTypeLabels[additionalInformation.errorType] }}
                         />
                     </Typography>
                     <Typography component="p" variant="caption">
                         <FormattedMessage
-                            id="comet.errorDialog.details.httpStatus"
+                            id="dextinity.errorDialog.details.httpStatus"
                             defaultMessage="HTTP status: {httpStatus}"
                             values={{ httpStatus: additionalInformation.httpStatus }}
                         />
                     </Typography>
                     <Typography component="p" variant="caption">
                         <FormattedMessage
-                            id="comet.errorDialog.details.url"
+                            id="dextinity.errorDialog.details.url"
                             defaultMessage="URL: {url}"
                             values={{ url: additionalInformation.url }}
                         />
                     </Typography>
                     <Typography component="p" variant="caption">
                         <FormattedMessage
-                            id="comet.errorDialog.details.timestamp"
+                            id="dextinity.errorDialog.details.timestamp"
                             defaultMessage="Timestamp: {timeStamp}"
                             values={{ timeStamp: additionalInformation.timestamp }}
                         />
@@ -166,10 +166,10 @@ function UnauthenticatedUserMessage(): JSX.Element {
     return (
         <>
             <Typography gutterBottom>
-                <FormattedMessage id="comet.errorDialog.sessionExpired.message" defaultMessage="Your login-session has expired." />
+                <FormattedMessage id="dextinity.errorDialog.sessionExpired.message" defaultMessage="Your login-session has expired." />
             </Typography>
             <Button href="/" color="info" variant="outlined">
-                <FormattedMessage id="comet.errorDialog.sessionExpired.button" defaultMessage="Re-login" />
+                <FormattedMessage id="dextinity.errorDialog.sessionExpired.button" defaultMessage="Re-login" />
             </Button>
         </>
     );
@@ -183,7 +183,7 @@ function UnauthorizedUserMessage({ error }: Pick<ErrorDialogOptions, "error">): 
     return (
         <>
             <Typography gutterBottom>
-                <FormattedMessage id="comet.errorDialog.unauthorized.message" defaultMessage="You are not authorized to perform this action." />
+                <FormattedMessage id="dextinity.errorDialog.unauthorized.message" defaultMessage="You are not authorized to perform this action." />
             </Typography>
             <ErrorList>
                 {error.map((error) => (
@@ -234,12 +234,12 @@ function CopyToClipboardButton({ copyData }: CopyToClipboardButtonProps): JSX.El
     return (
         <Stack direction="row" spacing={2}>
             <Button variant="outlined" startIcon={<Copy />} onClick={handleCopyClick}>
-                <FormattedMessage id="comet.errorDialog.copyToClipboardButton.text" defaultMessage="Copy to clipboard" />
+                <FormattedMessage id="dextinity.errorDialog.copyToClipboardButton.text" defaultMessage="Copy to clipboard" />
             </Button>
             {showSuccess && (
                 <Typography variant="caption" sx={{ display: "inline-flex", alignItems: "center", gap: 1, color: "success.main" }}>
                     <Accept color="success" />
-                    <FormattedMessage id="comet.errorDialog.copyToClipboardButton.success" defaultMessage="Copied" />
+                    <FormattedMessage id="dextinity.errorDialog.copyToClipboardButton.success" defaultMessage="Copied" />
                 </Typography>
             )}
         </Stack>

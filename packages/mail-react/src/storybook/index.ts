@@ -7,6 +7,14 @@ export function managerEntries(existing: string[] = []) {
     return [...existing, resolve(directoryOfThisFile, "manager.js")];
 }
 
-export function previewAnnotations(input: string[] = []) {
-    return [...input, resolve(directoryOfThisFile, "preview.js")];
+type PreviewAnnotationsOptions = {
+    /**
+     * Set this when this Storybook's own stories must not be rendered as emails.
+     * The addon UI stays registered and appears on mail stories from a composed Storybook.
+     */
+    disablePreviewAnnotations?: boolean;
+};
+
+export function previewAnnotations(input: string[] = [], { disablePreviewAnnotations }: PreviewAnnotationsOptions = {}) {
+    return disablePreviewAnnotations ? input : [...input, resolve(directoryOfThisFile, "preview.js")];
 }

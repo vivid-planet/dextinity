@@ -1,5 +1,5 @@
 import { type ApolloError, gql, type TypedDocumentNode, useApolloClient, useQuery } from "@apollo/client";
-import { messages, SaveButton } from "@comet/admin";
+import { messages, SaveButton } from "@dextinity/admin";
 import isEqual from "lodash.isequal";
 import {
     type ComponentProps,
@@ -84,7 +84,7 @@ type ReplaceBlockInputDataWithBlockState<Doc extends Record<string, unknown> | n
           [K in keyof Doc]: K extends "id" ? string : K extends keyof RootBlocks ? BlockState<RootBlocks[K]> : Doc[K]; // key id is always a string and never a block
       };
 
-type PageState<
+export type PageState<
     GQLEditPageQuery extends GQLEditPageQueryInterface<PageType> | null,
     RootBlocks extends RootBlocksInterface,
     PageType extends string,
@@ -110,6 +110,12 @@ interface UsePageProps {
 }
 interface UsePageApi<PageState, RootBlocks extends RootBlocksInterface> {
     pageState?: PageState;
+    /**
+     * Updates the page state, for instance, to programmatically change the content of a root block.
+     *
+     * The changes are only applied locally, call `handleSavePage` to persist them.
+     */
+    setPageState: Dispatch<SetStateAction<PageState | undefined>>;
     rootBlocksApi: BlockNodeApi<RootBlocks>;
     handleSavePage: () => Promise<void>;
     hasChanges?: boolean;
@@ -483,6 +489,7 @@ export const createUsePage: CreateUsePage =
                 hasChanges,
                 handleSavePage,
                 pageState,
+                setPageState,
                 rootBlocksApi,
                 loading,
                 error,

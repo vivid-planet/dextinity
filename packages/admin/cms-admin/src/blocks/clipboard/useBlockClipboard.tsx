@@ -1,4 +1,4 @@
-import { readClipboardText, writeClipboardText } from "@comet/admin";
+import { readClipboardText, writeClipboardText } from "@dextinity/admin";
 import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
@@ -76,7 +76,7 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
                 canPaste: false,
                 error: (
                     <FormattedMessage
-                        id="comet.blocks.cannotPasteBlock.messageFailedToReadClipboard"
+                        id="dextinity.blocks.cannotPasteBlock.messageFailedToReadClipboard"
                         defaultMessage="Can't read clipboard content. Please make sure that clipboard access is given"
                     />
                 ),
@@ -86,7 +86,7 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
         if (text.trim() === "") {
             return {
                 canPaste: false,
-                error: <FormattedMessage id="comet.blocks.cannotPasteBlock.messageEmptyClipboard" defaultMessage="Clipboard is empty" />,
+                error: <FormattedMessage id="dextinity.blocks.cannotPasteBlock.messageEmptyClipboard" defaultMessage="Clipboard is empty" />,
             };
         }
 
@@ -99,7 +99,7 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
                 canPaste: false,
                 error: (
                     <FormattedMessage
-                        id="comet.blocks.cannotPasteBlock.messageFailedToParseClipboard"
+                        id="dextinity.blocks.cannotPasteBlock.messageFailedToParseClipboard"
                         defaultMessage="Content from clipboard aren't valid blocks"
                     />
                 ),
@@ -116,7 +116,7 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
                     canPaste: false,
                     error: (
                         <FormattedMessage
-                            id="comet.blocks.cannotPasteBlock.messageUnsupportedBlock"
+                            id="dextinity.blocks.cannotPasteBlock.messageUnsupportedBlock"
                             defaultMessage="Blocks from clipboard aren't allowed here"
                         />
                     ),
@@ -132,7 +132,7 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
                     canPaste: false,
                     error: (
                         <FormattedMessage
-                            id="comet.blocks.cannotPasteBlock.messageFailedToCreateBlock"
+                            id="dextinity.blocks.cannotPasteBlock.messageFailedToCreateBlock"
                             defaultMessage="Failed to create a copy of the blocks from clipboard"
                         />
                     ),

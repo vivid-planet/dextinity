@@ -1,5 +1,5 @@
-import { Button } from "@comet/admin";
-import { ArrowRight } from "@comet/admin-icons";
+import { Button } from "@dextinity/admin";
+import { ArrowRight } from "@dextinity/admin-icons";
 import { Box, Chip, Stack } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { Meta, StoryObj } from "@storybook/react-vite";

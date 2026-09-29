@@ -1,4 +1,4 @@
-import { Field, type FieldProps } from "@comet/admin";
+import { Field, type FieldProps } from "@dextinity/admin";
 
 import { FinalFormFileUpload, type FinalFormFileUploadProps } from "./FinalFormFileUpload";
 import type { GQLFinalFormFileUploadDownloadableFragment, GQLFinalFormFileUploadFragment } from "./FinalFormFileUpload.generated";

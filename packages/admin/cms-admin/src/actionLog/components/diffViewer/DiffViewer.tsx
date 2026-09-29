@@ -1,4 +1,4 @@
-import { ChevronDown } from "@comet/admin-icons";
+import { ChevronDown } from "@dextinity/admin-icons";
 import { useTheme } from "@mui/material";
 import type { FunctionComponent } from "react";
 import ReactDiffViewer, { DiffMethod, type ReactDiffViewerProps } from "react-diff-viewer-continued";
@@ -28,7 +28,7 @@ export const DiffViewer: FunctionComponent<DiffViewerProps> = ({
                                       <ChevronDown />
                                       <FormattedMessage
                                           defaultMessage="Expand {foldedLines} {foldedLines, plural, =0 {lines} one {line} other {lines}}"
-                                          id="comet.diffViewer.codeFoldMessage"
+                                          id="dextinity.diffViewer.codeFoldMessage"
                                           values={{ foldedLines: totalFoldedLines }}
                                       />
                                   </CodeFoldMessageContainer>

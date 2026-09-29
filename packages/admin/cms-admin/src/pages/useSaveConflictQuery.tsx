@@ -1,5 +1,5 @@
 import { type DocumentNode, type OperationVariables, type QueryOptions, type TypedDocumentNode, useApolloClient } from "@apollo/client";
-import { LocalErrorScopeApolloContext } from "@comet/admin";
+import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 
 import { type SaveConflictHookReturn, useSaveConflict } from "./useSaveConflict";
 

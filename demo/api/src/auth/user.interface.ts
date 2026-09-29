@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-imports
-import { User } from "@comet/cms-api";
+import { User } from "@dextinity/cms-api";
 
-declare module "@comet/cms-api" {
+declare module "@dextinity/cms-api" {
     interface User {
         isAdmin: boolean;
     }

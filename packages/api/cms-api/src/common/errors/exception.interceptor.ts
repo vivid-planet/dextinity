@@ -10,8 +10,8 @@ import {
 import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
 
-import { CometException } from "./comet.exception";
-import { CometValidationException } from "./validation.exception";
+import { DextinityException } from "./dextinity.exception";
+import { DextinityValidationException } from "./validation.exception";
 
 // Inspired by https://docs.nestjs.com/interceptors#more-operators
 @Injectable()
@@ -24,14 +24,14 @@ export class ExceptionInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
         return next.handle().pipe(
             catchError((error) => {
-                if (error instanceof CometException) {
+                if (error instanceof DextinityException) {
                     const errorObject: Record<string, unknown> = {
                         statusCode: 400,
                         message: error.message,
                         error: error.constructor.name,
                         validationErrors: [],
                     };
-                    if (error instanceof CometValidationException) {
+                    if (error instanceof DextinityValidationException) {
                         errorObject.validationErrors = error.errors;
                     }
                     // Business-Logic-Level errors should be handled by the client itself and should not be considered as "server-errors"

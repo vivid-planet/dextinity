@@ -1,5 +1,5 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { Field, FinalForm, FinalFormInput, type ISelectionApi, Loading } from "@comet/admin";
+import { Field, FinalForm, FinalFormInput, type ISelectionApi, Loading } from "@dextinity/admin";
 import { FormattedMessage } from "react-intl";
 
 import { FileField } from "../../form/file/FileField";
@@ -106,11 +106,11 @@ export const MediaAlternativeForm = ({ mode, selectionApi, fileId, id, type, dir
                 required
             />
             <Field
-                label={<FormattedMessage id="comet.dam.mediaAlternativeForm.language.label" defaultMessage="Language" />}
+                label={<FormattedMessage id="dextinity.dam.mediaAlternativeForm.language.label" defaultMessage="Language" />}
                 name="language"
                 helperText={
                     <FormattedMessage
-                        id="comet.dam.mediaAlternativeForm.language.helperText"
+                        id="dextinity.dam.mediaAlternativeForm.language.helperText"
                         defaultMessage="Please enter the language as a language code (e.g., en, de, it, ...)."
                     />
                 }

@@ -1,4 +1,4 @@
-import { gql } from "@comet/site-nextjs";
+import { gql } from "@dextinity/site-nextjs";
 
 export const pageLinkFragment = gql`
     fragment PageLink on PageTreeNode {

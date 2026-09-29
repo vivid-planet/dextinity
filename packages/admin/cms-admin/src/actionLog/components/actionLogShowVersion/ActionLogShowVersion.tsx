@@ -1,5 +1,5 @@
-import { Button, InlineAlert, Loading } from "@comet/admin";
-import { ArrowLeft } from "@comet/admin-icons";
+import { Button, InlineAlert, Loading } from "@dextinity/admin";
+import { ArrowLeft } from "@dextinity/admin-icons";
 import { Box } from "@mui/material";
 import type { FunctionComponent } from "react";
 import { FormattedMessage } from "react-intl";

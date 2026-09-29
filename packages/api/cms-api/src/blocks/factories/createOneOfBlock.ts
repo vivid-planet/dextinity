@@ -11,17 +11,18 @@ import {
     BlockInputInterface,
     BlockMetaField,
     BlockMetaFieldKind,
+    BlockMetaInterface,
     ChildBlockInfo,
     createBlock,
     ExtractBlockData,
     ExtractBlockInput,
     isBlockDataInterface,
     isBlockInputInterface,
-    MigrateOptions,
     SimpleBlockInputInterface,
     TraversableTransformBlockResponse,
 } from "../block";
 import { AnnotationBlockMeta, BlockField } from "../decorators/field";
+import type { MigrateOptions } from "../migrations/types";
 import { BlockFactoryNameOrOptions } from "./types";
 
 type BaseBlockMap = Record<string, Block<BlockDataInterface, BlockInputInterface>>;
@@ -294,25 +295,27 @@ export function createOneOfBlock<
     }: CreateOneOfBlockOptions<BlockMap, Data, Input>,
     nameOrOptions: BlockFactoryNameOrOptions,
 ): OneOfBlock<BlockMap, Data, Input> {
+    const attachedBlockObject: BlockMetaInterface = {
+        fields: [
+            { name: "type", kind: BlockMetaFieldKind.String, nullable: false },
+            {
+                name: "props",
+                kind: BlockMetaFieldKind.OneOfBlocks,
+                blocks: supportedBlocks,
+                nullable: false,
+            },
+        ],
+    };
+
+    const attachedBlocksField: BlockMetaField = {
+        name: "attachedBlocks",
+        kind: BlockMetaFieldKind.NestedObjectList,
+        object: attachedBlockObject,
+        nullable: false,
+    };
+
     class Meta extends AnnotationBlockMeta {
         get fields(): BlockMetaField[] {
-            const attachedBlocksField: BlockMetaField = {
-                name: "attachedBlocks",
-                kind: BlockMetaFieldKind.NestedObjectList,
-                object: {
-                    fields: [
-                        { name: "type", kind: BlockMetaFieldKind.String, nullable: false },
-                        {
-                            name: "props",
-                            kind: BlockMetaFieldKind.OneOfBlocks,
-                            blocks: supportedBlocks,
-                            nullable: false,
-                        },
-                    ],
-                },
-                nullable: false,
-            };
-
             return [
                 ...super.fields,
                 attachedBlocksField,
@@ -325,21 +328,35 @@ export function createOneOfBlock<
                     name: "block",
                     kind: BlockMetaFieldKind.NestedObject,
                     nullable: true,
-                    object: attachedBlocksField.object,
+                    object: attachedBlockObject,
                 },
             ];
         }
     }
 
+    class InputMeta extends AnnotationBlockMeta {
+        get fields(): BlockMetaField[] {
+            return [attachedBlocksField, ...super.fields];
+        }
+    }
+
     let name: string;
+    let description: string | undefined;
     let migrate: MigrateOptions | undefined;
 
     if (typeof nameOrOptions === "string") {
         name = nameOrOptions;
     } else {
         name = nameOrOptions.name;
+        description = nameOrOptions.description;
         migrate = nameOrOptions.migrate;
     }
 
-    return createBlock(OneOfBlockData, OneOfBlockInput, { name, blockMeta: new Meta(OneOfBlockData), migrate });
+    return createBlock(OneOfBlockData, OneOfBlockInput, {
+        name,
+        description,
+        blockMeta: new Meta(OneOfBlockData),
+        blockInputMeta: new InputMeta(OneOfBlockInput),
+        migrate,
+    });
 }

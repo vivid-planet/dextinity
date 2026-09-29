@@ -2,6 +2,8 @@ import { gql, useApolloClient, useQuery } from "@apollo/client";
 import {
     AsyncSelectField,
     CheckboxField,
+    DatePickerField,
+    DateTimePickerField,
     Field,
     filterByFragment,
     FinalForm,
@@ -13,8 +15,7 @@ import {
     TextAreaField,
     TextField,
     useFormApiRef,
-} from "@comet/admin";
-import { DateField, DateTimeField } from "@comet/admin-date-time";
+} from "@dextinity/admin";
 import {
     type BlockState,
     createFinalFormBlock,
@@ -26,7 +27,7 @@ import {
     queryUpdatedAt,
     resolveHasSaveConflict,
     useFormSaveConflict,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 import { InputAdornment, MenuItem } from "@mui/material";
 import type { GQLProductMutationErrorCode, GQLProductType } from "@src/graphql.generated";
 import type {
@@ -68,7 +69,7 @@ const rootBlocks = {
     image: DamImageBlock,
 };
 
-// Set types for FinalFormFileUpload manually, as they cannot be generated from the fragment in `@comet/cms-admin`
+// Set types for FinalFormFileUpload manually, as they cannot be generated from the fragment in `@dextinity/cms-admin`
 type ProductFormManualFragment = Omit<GQLProductFormManualFragment, "priceList" | "datasheets" | "relatedImages"> & {
     priceList: GQLFinalFormFileUploadFragment | null;
     datasheets: Array<GQLFinalFormFileUploadFragment>;
@@ -233,7 +234,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                         disableSlider
                     />
                     <TextAreaField fullWidth name="description" label={<FormattedMessage id="product.description" defaultMessage="Description" />} />
-                    <DateField
+                    <DatePickerField
                         required
                         fullWidth
                         name="availableSince"
@@ -397,7 +398,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                         label={<FormattedMessage id="product.relatedImages" defaultMessage="Related images" />}
                         buttonText={<FormattedMessage id="product.relatedImages.choose" defaultMessage="Choose related images" />}
                     />
-                    <DateTimeField
+                    <DateTimePickerField
                         label={<FormattedMessage id="product.lastCheckedAt" defaultMessage="Last checked at" />}
                         name="lastCheckedAt"
                         fullWidth

@@ -8,7 +8,7 @@ import {
     ToolbarActions,
     ToolbarItem,
     useExportDisplayedTableData,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import { Typography } from "@mui/material";
 
 interface IExampleRow extends IRow {
@@ -26,7 +26,7 @@ const CustomHeader = () => {
 };
 
 export default {
-    title: "@comet/admin/table",
+    title: "@dextinity/admin/table",
 };
 
 export const ExportDisplayedTableData = () => {

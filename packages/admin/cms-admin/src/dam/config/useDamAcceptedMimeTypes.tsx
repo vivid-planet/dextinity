@@ -1,38 +1,17 @@
 import { useDamConfig } from "./damConfig";
 import { damDefaultAcceptedMimeTypes } from "./damDefaultAcceptedMimeTypes";
-
-const isSvgImage = (mimeType: string): boolean => {
-    return mimeType === "image/svg+xml";
-};
-
-const isPixelImage = (mimeType: string): boolean => {
-    return mimeType.startsWith("image/") && !isSvgImage(mimeType);
-};
-
-const isAudio = (mimeType: string): boolean => {
-    return mimeType.startsWith("audio/");
-};
-
-const isVideo = (mimeType: string): boolean => {
-    return mimeType.startsWith("video/");
-};
-
-const isDocument = (mimeType: string): boolean => {
-    return !isSvgImage(mimeType) && !isPixelImage(mimeType) && !isAudio(mimeType) && !isVideo(mimeType);
-};
+import { type DamFileCategory, getDamFileCategory } from "./damFileCategory";
 
 interface UseDamAcceptedMimeTypesApi {
     allAcceptedMimeTypes: string[];
-    filteredAcceptedMimeTypes: {
-        svgImage: string[];
-        pixelImage: string[];
-        audio: string[];
-        video: string[];
-        document: string[];
+    filteredAcceptedMimeTypes: Record<DamFileCategory, string[]> & {
         pdf: string[];
         captions: string[];
     };
 }
+
+const filterByCategory = (mimeTypes: string[], category: DamFileCategory) =>
+    mimeTypes.filter((mimeType) => getDamFileCategory(mimeType) === category);
 
 export const useDamAcceptedMimeTypes = (): UseDamAcceptedMimeTypesApi => {
     const damConfig = useDamConfig();
@@ -41,13 +20,13 @@ export const useDamAcceptedMimeTypes = (): UseDamAcceptedMimeTypesApi => {
     return {
         allAcceptedMimeTypes,
         filteredAcceptedMimeTypes: {
-            svgImage: allAcceptedMimeTypes.filter((mimetype) => mimetype === "image/svg+xml"),
-            pixelImage: allAcceptedMimeTypes.filter(isPixelImage),
-            audio: allAcceptedMimeTypes.filter(isAudio),
-            video: allAcceptedMimeTypes.filter(isVideo),
-            document: allAcceptedMimeTypes.filter(isDocument),
-            pdf: allAcceptedMimeTypes.filter((mimetype) => mimetype === "application/pdf"),
-            captions: allAcceptedMimeTypes.filter((mimetype) => mimetype === "text/vtt"),
+            svgImage: filterByCategory(allAcceptedMimeTypes, "svgImage"),
+            pixelImage: filterByCategory(allAcceptedMimeTypes, "pixelImage"),
+            audio: filterByCategory(allAcceptedMimeTypes, "audio"),
+            video: filterByCategory(allAcceptedMimeTypes, "video"),
+            document: filterByCategory(allAcceptedMimeTypes, "document"),
+            pdf: allAcceptedMimeTypes.filter((mimeType) => mimeType === "application/pdf"),
+            captions: allAcceptedMimeTypes.filter((mimeType) => mimeType === "text/vtt"),
         },
     };
 };

@@ -10,8 +10,8 @@ import {
 import { ErrorHttpStatusCode } from "@nestjs/common/utils/http-error-by-code.util";
 import { Response } from "express";
 
-import { CometException } from "./comet.exception";
-import { CometValidationException } from "./validation.exception";
+import { DextinityException } from "./dextinity.exception";
+import { DextinityValidationException } from "./validation.exception";
 
 @Catch()
 export class ExceptionFilter implements NestExceptionFilter {
@@ -23,7 +23,7 @@ export class ExceptionFilter implements NestExceptionFilter {
         let statusCode: ErrorHttpStatusCode;
         let returnedError: Error;
 
-        if (exception instanceof CometException) {
+        if (exception instanceof DextinityException) {
             const errorObject: Record<string, unknown> = {
                 statusCode: 400,
                 message: exception.message,
@@ -31,7 +31,7 @@ export class ExceptionFilter implements NestExceptionFilter {
                 validationErrors: [],
             };
 
-            if (exception instanceof CometValidationException) {
+            if (exception instanceof DextinityValidationException) {
                 errorObject.validationErrors = exception.errors;
             }
 

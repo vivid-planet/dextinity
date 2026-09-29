@@ -1,4 +1,4 @@
-import { BrevoModule } from "@comet/brevo-api";
+import { BrevoModule } from "@dextinity/brevo-api";
 import {
     AccessLogModule,
     ActionLogsModule,
@@ -23,7 +23,7 @@ import {
     SentryModule,
     UserPermissionsModule,
     WarningsModule,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { ApolloDriver, ApolloDriverConfig, ValidationError } from "@nestjs/apollo";
 import { DynamicModule, Module } from "@nestjs/common";
@@ -49,7 +49,8 @@ import { TranslationModule } from "@src/translation/translation.module";
 import { Request } from "express";
 
 import { AccessControlService } from "./auth/access-control.service";
-import { AuthModule, SYSTEM_USER_NAME } from "./auth/auth.module";
+import { AuthModule } from "./auth/auth.module";
+import { SYSTEM_USER_NAME } from "./auth/constants";
 import { UserService } from "./auth/user.service";
 import { DamScope } from "./dam/dto/dam-scope";
 import { DamFile } from "./dam/entities/dam-file.entity";
@@ -71,6 +72,7 @@ import { ProductsModule } from "./products/products.module";
 import { RedirectScope } from "./redirects/dto/redirect-scope";
 import { RedirectTargetUrlService } from "./redirects/redirect-target-url.service";
 import { StatusModule } from "./status/status.module";
+import { WelcomeEmailModule } from "./welcome-email/welcome-email.module";
 
 @Module({})
 export class AppModule {
@@ -126,6 +128,12 @@ export class AppModule {
                                 label: { domain: siteConfig.name },
                             })),
                         ),
+                        availableContentScopeDimensions: [
+                            { name: "domain", label: "Domain (Website)" },
+                            { name: "language", label: "Language" },
+                            // "product" is declared here so it shows up in the admin panel although it is not part of availableContentScopes
+                            { name: "product", label: "Product Category" },
+                        ],
                         userService,
                         accessControlService,
                         systemUsers: [SYSTEM_USER_NAME],
@@ -215,21 +223,20 @@ export class AppModule {
                 NewsModule,
                 MenusModule,
                 FooterModule,
+                WelcomeEmailModule,
                 PredefinedPagesModule,
                 CronJobsModule,
                 MailerModule.register(config.mailer),
                 MailTemplatesModule,
                 ProductsModule,
                 ...(config.azureAiTranslator ? [AzureAiTranslatorModule.register(config.azureAiTranslator)] : []),
-                AccessLogModule.forRoot({
-                    shouldLogRequest: ({ user }) => {
-                        // Ignore system user
-                        if (user === "system-user") {
-                            return false;
-                        }
-                        return true;
-                    },
-                }),
+                ...(!config.debug
+                    ? [
+                          AccessLogModule.forRoot({
+                              shouldLogRequest: ({ req }) => !req.route.path.startsWith("/api/healthcheck/"),
+                          }),
+                      ]
+                    : []),
                 OpenTelemetryModule,
                 ...(config.sentry ? [SentryModule.forRootAsync(config.sentry)] : []),
                 WarningsModule,

@@ -1,4 +1,4 @@
-import { Button, readClipboardText, writeClipboardText } from "@comet/admin";
+import { Button, readClipboardText, writeClipboardText } from "@dextinity/admin";
 
 export default {
     title: "Docs/Helper/Clipboard",

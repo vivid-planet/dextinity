@@ -25,6 +25,13 @@ When running in the cloud/web environment and repo is cloned from scratch, if re
 
 When making changes to demo api, either start the api and verify it's running or at least run `pnpm run console --help` to verify AppModule is configured correctly and schema.gql/block-meta.json regenerates.
 
+## Comments
+
+- Default to writing no comments. Only add a comment when the _why_ is non-obvious (hidden constraint, workaround, surprising invariant).
+- Never write comments that restate _what_ the code does — the names should do that.
+- Prefer descriptive identifiers over explanatory comments — comments drift out of sync with the code.
+- Never reference the current task, ticket, or PR in comments — that context belongs in the PR description and rots in code.
+
 ## Linting
 
 Run the appropriate checks after every change and fix all reported errors.
@@ -91,14 +98,15 @@ Demo frontend site (Next.js)
 - Start using `pnpm exec dev-pm start @demo-site`
 - access at: http://localhost:3000/
 
-
 ### dev-pm
 
 Use dev-pm for managing demo processes:
+
 - command: `pnpm exec -- dev-pm`
 - config: `dev-pm.config.ts`
 
 Common commands:
+
 - start script/service: `pnpm exec -- dev-pm start scriptName`
 - start group `pnpm exec -- dev-pm start @group`
 - view status `pnpm exec -- dev-pm status`
@@ -108,48 +116,48 @@ Common commands:
 
 ### Admin (`packages/admin/`)
 
-| Package                     | Description                                                                               |
-| --------------------------- | ----------------------------------------------------------------------------------------- |
-| `@comet/admin`              | Core admin components and framework (React, MUI, Apollo, Final Form)                      |
-| `@comet/admin-babel-preset` | Shared Babel preset for transpiling admin packages                                        |
-| `@comet/admin-color-picker` | Color picker form field component                                                         |
-| `@comet/admin-date-time`    | Date/time picker form field components                                                    |
-| `@comet/admin-icons`        | SVG icon library as React components                                                      |
-| `@comet/admin-rte`          | Rich text editor component (Draft.js-based)                                               |
-| `@comet/admin-generator`    | CLI tool that generates admin CRUD UIs from GraphQL schemas (`comet-admin-generator` bin) |
-| `@comet/cms-admin`          | Admin UI for CMS features (pages, blocks, content management)                             |
-| `@comet/brevo-admin`        | Admin UI for Brevo email/marketing integration                                            |
+| Package                         | Description                                                                                   |
+| ------------------------------- | --------------------------------------------------------------------------------------------- |
+| `@dextinity/admin`              | Core admin components and framework (React, MUI, Apollo, Final Form)                          |
+| `@dextinity/admin-babel-preset` | Shared Babel preset for transpiling admin packages                                            |
+| `@dextinity/admin-color-picker` | Color picker form field component                                                             |
+| `@dextinity/admin-date-time`    | Date/time picker form field components                                                        |
+| `@dextinity/admin-icons`        | SVG icon library as React components                                                          |
+| `@dextinity/admin-rte`          | Rich text editor component (Draft.js-based)                                                   |
+| `@dextinity/admin-generator`    | CLI tool that generates admin CRUD UIs from GraphQL schemas (`dextinity-admin-generator` bin) |
+| `@dextinity/cms-admin`          | Admin UI for CMS features (pages, blocks, content management)                                 |
+| `@dextinity/brevo-admin`        | Admin UI for Brevo email/marketing integration                                                |
 
 ### API (`packages/api/`)
 
-| Package                | Description                                                                                |
-| ---------------------- | ------------------------------------------------------------------------------------------ |
-| `@comet/cms-api`       | NestJS/GraphQL API for CMS features (file uploads, translations, blocks, S3/Azure storage) |
-| `@comet/brevo-api`     | NestJS integration for the Brevo email/marketing service                                   |
-| `@comet/api-generator` | CLI tool that generates TypeScript types from GraphQL schemas (`comet-api-generator` bin)  |
+| Package                    | Description                                                                                   |
+| -------------------------- | --------------------------------------------------------------------------------------------- |
+| `@dextinity/cms-api`       | NestJS/GraphQL API for CMS features (file uploads, translations, blocks, S3/Azure storage)    |
+| `@dextinity/brevo-api`     | NestJS integration for the Brevo email/marketing service                                      |
+| `@dextinity/api-generator` | CLI tool that generates TypeScript types from GraphQL schemas (`dextinity-api-generator` bin) |
 
 ### Site (`packages/site/`)
 
-| Package              | Description                                                   |
-| -------------------- | ------------------------------------------------------------- |
-| `@comet/site-react`  | React components and utilities for the frontend/site layer    |
-| `@comet/site-nextjs` | Next.js-specific site layer components (extends `site-react`) |
+| Package                  | Description                                                   |
+| ------------------------ | ------------------------------------------------------------- |
+| `@dextinity/site-react`  | React components and utilities for the frontend/site layer    |
+| `@dextinity/site-nextjs` | Next.js-specific site layer components (extends `site-react`) |
 
 ### Utilities
 
-| Package                | Description                                                |
-| ---------------------- | ---------------------------------------------------------- |
-| `@comet/cli`           | Central CLI entry point for Comet projects (`comet` bin)   |
-| `@comet/eslint-config` | Shared ESLint configurations                               |
-| `@comet/eslint-plugin` | Custom ESLint rules for Comet projects                     |
-| `@comet/mail-react`    | Utilities for building HTML emails with React (MJML-based) |
+| Package                    | Description                                                      |
+| -------------------------- | ---------------------------------------------------------------- |
+| `@dextinity/cli`           | Central CLI entry point for Dextinity projects (`dextinity` bin) |
+| `@dextinity/eslint-config` | Shared ESLint configurations                                     |
+| `@dextinity/eslint-plugin` | Custom ESLint rules for Dextinity projects                       |
+| `@dextinity/mail-react`    | Utilities for building HTML emails with React (MJML-based)       |
 
 ### Docs & Storybook
 
-| Package           | Description                                       |
-| ----------------- | ------------------------------------------------- |
-| `comet-storybook` | Storybook for all Comet components (`storybook/`) |
-| `comet-docs`      | Docusaurus documentation site (`docs/`)           |
+| Package               | Description                                           |
+| --------------------- | ----------------------------------------------------- |
+| `dextinity-storybook` | Storybook for all Dextinity components (`storybook/`) |
+| `dextinity-docs`      | Docusaurus documentation site (`docs/`)               |
 
 ## Changesets and changelog
 
@@ -169,7 +177,7 @@ Example:
 
 ```markdown
 ---
-"@comet/package-name": patch
+"@dextinity/package-name": patch
 ---
 
 Fix description here
@@ -178,7 +186,18 @@ Fix description here
 ## Commit messages
 
 - Do not use Conventional Commits.
-- If a change is scoped to one package, prefix the commit message with the affected package name. Don't include `@comet/` in the package name.
+- If a change is scoped to one package, prefix the commit message with the affected package name. Don't include `@dextinity/` in the package name.
+
+## Pull request descriptions
+
+- Fill in `.github/pull_request_template.md`. Don't add sections beyond it, and delete the sections and instruction comments that don't apply.
+- End the description with the template's task line as plain visible text, not as an HTML comment: `Task: …` (only when there is a task).
+- Describe why the change is needed, not what changed. Never restate the diff: no file-by-file list of changes, no summary of the code the reviewer is about to read.
+- Don't document how you arrived at the change: which files you read, which documentation you checked, which checks you ran to verify it. Only the outcome belongs in the description.
+- Delete the "Example" section when a unit test is the example — the reviewer finds it in the diff, and a bare file path is worthless in the commit message. Fill it in only for an example the diff doesn't lead to: a linked Storybook story or the implementation in Demo, with a sentence on what it shows.
+- Default to deleting "Further information". Add it only for something the reviewer needs in order to decide and can't get from the diff: an alternative you rejected, a related pull request, a link to a task or documentation. Adjacent problems you noticed and left out of scope belong in a follow-up task, not in the description.
+- Keep the length proportional to the change. A one-line fix gets a paragraph, not a report.
+- The description becomes the message of the squashed commit. See CONTRIBUTING.md#pull-requests.
 
 ## Generated demo files
 
@@ -187,7 +206,7 @@ Fix description here
 
 ### admin-generator
 
-The source for generated files are \*.cometGen.tsx config files. Modify those and re-run `admin-generator` for changes.
+The source for generated files are \*.dextinityGen.tsx config files. Modify those and re-run `admin-generator` for changes.
 
 ### api-generator
 

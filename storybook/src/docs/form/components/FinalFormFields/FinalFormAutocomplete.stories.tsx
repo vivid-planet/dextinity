@@ -1,4 +1,4 @@
-import { Button, Field, FinalForm, FinalFormAsyncAutocomplete, FinalFormAutocomplete } from "@comet/admin";
+import { Button, Field, FinalForm, FinalFormAsyncAutocomplete, FinalFormAutocomplete } from "@dextinity/admin";
 import { useMemo } from "react";
 
 interface Option {

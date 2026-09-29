@@ -6,11 +6,11 @@ describe("IsSlug", () => {
     describe("findAll", () => {
         it("should accept a valid slug", async () => {
             const validator = new IsSlugConstraint();
-            expect(await validator.validate("comet")).toBe(true);
+            expect(await validator.validate("dextinity")).toBe(true);
         });
         it("should accept a valid slug with numbers", async () => {
             const validator = new IsSlugConstraint();
-            expect(await validator.validate("comet--2")).toBe(true);
+            expect(await validator.validate("dextinity--2")).toBe(true);
         });
         it("should accept a valid slug with special char at the end", async () => {
             const validator = new IsSlugConstraint();
@@ -18,7 +18,7 @@ describe("IsSlug", () => {
         });
         it("should accept a valid slug with uppercase characters", async () => {
             const validator = new IsSlugConstraint();
-            expect(await validator.validate("Comet")).toBe(true);
+            expect(await validator.validate("Dextinity")).toBe(true);
         });
         it("should not accept space", async () => {
             const validator = new IsSlugConstraint();

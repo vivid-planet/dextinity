@@ -9,7 +9,7 @@ import {
     createBlock,
     ExtractBlockInput,
     IsUndefinable,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { MediaBlock } from "@src/common/blocks/media.block";
 import { IsString } from "class-validator";
 

@@ -1,6 +1,6 @@
-import { DamVideoBlock, ExtractBlockInputFactoryProps } from "@comet/cms-api";
-import { faker } from "@faker-js/faker";
+import { DamVideoBlock, ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
+import { faker } from "@src/db/fixtures/faker";
 
 import { VideoFixtureService } from "../../video-fixture.service";
 import { PixelImageBlockFixtureService } from "./pixel-image-block-fixture.service";

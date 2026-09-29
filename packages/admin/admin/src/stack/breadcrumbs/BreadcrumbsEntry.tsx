@@ -1,4 +1,4 @@
-import { LevelUp } from "@comet/admin-icons";
+import { LevelUp } from "@dextinity/admin-icons";
 import { IconButton as MuiIconButton, type Link as MuiLink, Typography } from "@mui/material";
 import { css } from "@mui/material/styles";
 import { Link as RouterLink } from "react-router-dom";

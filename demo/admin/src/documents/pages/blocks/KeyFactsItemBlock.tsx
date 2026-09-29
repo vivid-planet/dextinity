@@ -1,4 +1,4 @@
-import { BlockCategory, createCompositeBlock, createCompositeBlockTextField, createRichTextBlock, SvgImageBlock } from "@comet/cms-admin";
+import { BlockCategory, createCompositeBlock, createCompositeBlockTextField, createRichTextBlock, SvgImageBlock } from "@dextinity/cms-admin";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
 import { FormattedMessage } from "react-intl";
 

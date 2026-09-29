@@ -1,4 +1,4 @@
-import { CrudField } from "@comet/cms-api";
+import { CrudField } from "@dextinity/cms-api";
 import { BaseEntity, Collection, defineConfig, Entity, ManyToMany, MikroORM, PrimaryKey } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { v4 as uuid } from "uuid";

@@ -1,4 +1,4 @@
-import { createTheme } from "@comet/mail-react";
+import { createTheme } from "@dextinity/mail-react";
 
 export const theme = createTheme({
     text: {
@@ -28,7 +28,7 @@ export const theme = createTheme({
     },
 });
 
-declare module "@comet/mail-react" {
+declare module "@dextinity/mail-react" {
     interface TextVariants {
         heading: true;
         body: true;

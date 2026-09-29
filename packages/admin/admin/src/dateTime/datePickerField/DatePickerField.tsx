@@ -16,7 +16,7 @@ export type DatePickerFieldProps = FinalFormDatePickerProps & FieldProps<string,
  *
  * Use this component when working with Final Form. For standalone usage, use `DatePicker` instead.
  *
- * - [Storybook](https://storybook.comet-dxp.com/?path=/docs/@comet/admin_components-datetime-datepickerfield--docs)
+ * - [Storybook](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/admin_components-datetime-datepickerfield--docs)
  */
 export const DatePickerField = (props: DatePickerFieldProps) => {
     return <Field component={FinalFormDatePicker} {...props} />;

@@ -1,4 +1,4 @@
-import { Alert, useSnackbarApi } from "@comet/admin";
+import { Alert, useSnackbarApi } from "@dextinity/admin";
 import { Snackbar } from "@mui/material";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -37,7 +37,7 @@ export function useSaveConflict(options: SaveConflictOptions): SaveConflictHookR
                     <Snackbar anchorOrigin={{ vertical: "bottom", horizontal: "left" }} autoHideDuration={5000}>
                         <Alert severity="success">
                             <FormattedMessage
-                                id="comet.saveConflict.autoReloadSuccessfull"
+                                id="dextinity.saveConflict.autoReloadSuccessfull"
                                 defaultMessage="This content has changed. We've refreshed the page for you."
                             />
                         </Alert>

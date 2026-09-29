@@ -1,4 +1,4 @@
-import { readClipboardText } from "@comet/admin";
+import { readClipboardText } from "@dextinity/admin";
 import type { z } from "zod";
 
 export const getClipboardValueForSchema = async <T>(schema: z.ZodType<T>): Promise<T | null> => {

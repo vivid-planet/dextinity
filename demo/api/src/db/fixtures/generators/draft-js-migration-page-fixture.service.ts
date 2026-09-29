@@ -1,4 +1,4 @@
-import { PageTreeNodeBaseCreateInput, PageTreeNodeVisibility, PageTreeService } from "@comet/cms-api";
+import { PageTreeNodeBaseCreateInput, PageTreeNodeVisibility, PageTreeService } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { PageContentBlock } from "@src/documents/pages/blocks/page-content.block";
@@ -38,11 +38,11 @@ const legacyDraftJsContent = {
         },
         {
             key: "33333333-3333-3333-3333-333333333333",
-            text: "And here is a strikethrough plus a link to comet.",
+            text: "And here is a strikethrough plus a link to Dextinity.",
             type: "unstyled",
             depth: 0,
             inlineStyleRanges: [{ style: "STRIKETHROUGH", offset: 14, length: 13 }],
-            entityRanges: [{ key: 0, offset: 43, length: 5 }],
+            entityRanges: [{ key: 0, offset: 43, length: 9 }],
             data: {},
         },
         {
@@ -79,6 +79,15 @@ const legacyDraftJsContent = {
         },
         {
             key: "55555555-5555-5555-5555-555555555555",
+            text: "Nested bullet point",
+            type: "unordered-list-item",
+            depth: 1,
+            inlineStyleRanges: [],
+            entityRanges: [],
+            data: {},
+        },
+        {
+            key: "55555555-5555-5555-5555-5555555555aa",
             text: "Second bullet point",
             type: "unordered-list-item",
             depth: 0,
@@ -91,6 +100,15 @@ const legacyDraftJsContent = {
             text: "First ordered item",
             type: "ordered-list-item",
             depth: 0,
+            inlineStyleRanges: [],
+            entityRanges: [],
+            data: {},
+        },
+        {
+            key: "66666666-6666-6666-6666-6666666666aa",
+            text: "Nested ordered item",
+            type: "ordered-list-item",
+            depth: 1,
             inlineStyleRanges: [],
             entityRanges: [],
             data: {},
@@ -110,7 +128,7 @@ const legacyDraftJsContent = {
             type: "LINK",
             mutability: "MUTABLE",
             data: {
-                attachedBlocks: [{ type: "external", props: { targetUrl: "https://comet-dxp.com", openInNewWindow: true } }],
+                attachedBlocks: [{ type: "external", props: { targetUrl: "https://dextinity.com", openInNewWindow: true } }],
                 activeType: "external",
             },
         },

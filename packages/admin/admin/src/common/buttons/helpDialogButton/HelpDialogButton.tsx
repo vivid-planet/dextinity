@@ -1,4 +1,4 @@
-import { QuestionMark } from "@comet/admin-icons";
+import { QuestionMark } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, type IconButton, type Theme, useThemeProps } from "@mui/material";
 import { type FunctionComponent, type ReactNode, useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -20,12 +20,12 @@ export type HelpDialogButtonProps = ThemedComponentBaseProps<{
 
 export const HelpDialogButton: FunctionComponent<HelpDialogButtonProps> = (inProps) => {
     const {
-        dialogTitle = <FormattedMessage id="comet.helpDialogButton.title" defaultMessage="Help" />,
+        dialogTitle = <FormattedMessage id="dextinity.helpDialogButton.title" defaultMessage="Help" />,
         dialogDescription,
         icon = <QuestionMark />,
         slotProps = {},
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminHelpDialogButton" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminHelpDialogButton" });
     const [showHelp, setShowHelp] = useState(false);
 
     return (
@@ -55,17 +55,17 @@ export const HelpDialogButton: FunctionComponent<HelpDialogButtonProps> = (inPro
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminHelpDialogButton: HelpDialogButtonProps;
+        DextinityAdminHelpDialogButton: HelpDialogButtonProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminHelpDialogButton: HelpDialogButtonClassKey;
+        DextinityAdminHelpDialogButton: HelpDialogButtonClassKey;
     }
 
     interface Components {
-        CometAdminHelpDialogButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminHelpDialogButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminHelpDialogButton"];
+        DextinityAdminHelpDialogButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminHelpDialogButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminHelpDialogButton"];
         };
     }
 }

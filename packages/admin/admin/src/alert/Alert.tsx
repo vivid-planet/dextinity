@@ -1,4 +1,4 @@
-import { Close } from "@comet/admin-icons";
+import { Close } from "@dextinity/admin-icons";
 // eslint-disable-next-line no-restricted-imports
 import { Alert as MuiAlert, alertClasses, AlertTitle, IconButton, Typography } from "@mui/material";
 import { css, useThemeProps } from "@mui/material/styles";
@@ -55,7 +55,7 @@ type OwnerState = {
  * and custom content, actions and close functionality to communicate various types of information.
  * Use for feedback messages, notifications, or status updates.
  *
- * - [Storybook](https://storybook.comet-dxp.com/?path=/docs/@comet/admin_components-alert-alert--docs)
+ * - [Storybook](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/admin_components-alert-alert--docs)
  * - [MUI Documentation](https://mui.com/material-ui/react-alert/)
  */
 export const Alert = forwardRef<HTMLDivElement, AlertProps>((inProps, ref) => {
@@ -67,7 +67,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>((inProps, ref) => {
         action,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminAlert" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminAlert" });
     const singleRow = !title && (action || onClose);
 
     const ownerState: OwnerState = {
@@ -179,17 +179,17 @@ const CloseIcon = createComponentSlot(IconButton)<AlertClassKey, OwnerState>({
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminAlert: AlertProps;
+        DextinityAdminAlert: AlertProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminAlert: AlertClassKey;
+        DextinityAdminAlert: AlertClassKey;
     }
 
     interface Components {
-        CometAdminAlert?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminAlert"]>;
-            styleOverrides?: ComponentNameToClassKey["CometAdminAlert"];
+        DextinityAdminAlert?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminAlert"]>;
+            styleOverrides?: ComponentNameToClassKey["DextinityAdminAlert"];
         };
     }
 }

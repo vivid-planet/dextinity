@@ -1,4 +1,4 @@
-import { MailerService, RequiredPermission } from "@comet/cms-api";
+import { MailerService, RequiredPermission } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Mutation, Resolver } from "@nestjs/graphql";
 
@@ -21,7 +21,7 @@ export class CustomProductResolver {
 
         await this.mailerService.sendMail({
             ...(await this.productPublishedMail.generateMail({
-                recipient: { name: "Product Manager", email: "product-manager@comet-dxp.com", language: "en" },
+                recipient: { name: "Product Manager", email: "product-manager@dextinity.com", language: "en" },
                 countProductPublished: countProductPublished,
             })),
         });

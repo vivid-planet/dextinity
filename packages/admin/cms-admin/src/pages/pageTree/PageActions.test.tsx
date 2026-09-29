@@ -15,6 +15,10 @@ vi.mock("../../contentScope/Provider", () => ({
     }),
 }));
 
+vi.mock("../../contentLanguage/useContentLanguage", () => ({
+    useContentLanguage: () => "en",
+}));
+
 let mockDocumentTypes: Record<string, DocumentInterface>;
 let mockAllowPageDelete: boolean | undefined;
 
@@ -31,8 +35,8 @@ vi.mock("./usePageTreeContext", () => ({
     }),
 }));
 
-vi.mock("@comet/admin", async (importOriginal) => {
-    const actual = await importOriginal<typeof import("@comet/admin")>();
+vi.mock("@dextinity/admin", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("@dextinity/admin")>();
     return {
         ...actual,
         useStackSwitchApi: () => ({

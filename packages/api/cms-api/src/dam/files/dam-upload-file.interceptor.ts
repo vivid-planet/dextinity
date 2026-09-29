@@ -7,7 +7,7 @@ import os from "os";
 import { Observable, throwError } from "rxjs";
 import { v4 as uuid } from "uuid";
 
-import { CometValidationException } from "../../common/errors/validation.exception";
+import { DextinityValidationException } from "../../common/errors/validation.exception";
 import { FileValidationService } from "../../file-utils/file-validation.service";
 import { FILE_UPLOAD_FIELD } from "../../file-utils/files.constants";
 import { removeMulterTempFile } from "../../file-utils/files.utils";
@@ -48,7 +48,7 @@ export function DamUploadFileInterceptor(fieldName: string = FILE_UPLOAD_FIELD):
                     if (errorMessage === undefined) {
                         cb(null, true);
                     } else {
-                        cb(new CometValidationException(errorMessage), false);
+                        cb(new DextinityValidationException(errorMessage), false);
                     }
                 },
             };

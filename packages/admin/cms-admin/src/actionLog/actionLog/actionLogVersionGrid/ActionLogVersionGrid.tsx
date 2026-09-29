@@ -1,5 +1,5 @@
-import { type GridColDef, useBufferedRowCount, type useDataGridRemote, type usePersistentColumnState } from "@comet/admin";
-import { View } from "@comet/admin-icons";
+import { type GridColDef, useBufferedRowCount, type useDataGridRemote, type usePersistentColumnState } from "@dextinity/admin";
+import { View } from "@dextinity/admin-icons";
 import { IconButton, Typography } from "@mui/material";
 import { gridClasses, type GridRowSelectionModel, type GridSlotsComponent } from "@mui/x-data-grid";
 import { type FunctionComponent, useMemo, useState } from "react";

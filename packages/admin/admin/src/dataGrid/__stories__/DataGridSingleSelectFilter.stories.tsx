@@ -1,4 +1,4 @@
-import { Check, Close, Education } from "@comet/admin-icons";
+import { Check, Close, Education } from "@dextinity/admin-icons";
 import { Box } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 

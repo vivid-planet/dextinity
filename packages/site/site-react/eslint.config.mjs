@@ -1,12 +1,12 @@
 import { defineConfig, globalIgnores } from "eslint/config";
-import eslintConfigReact from "@comet/eslint-config/future/react.js";
+import eslintConfigReact from "@dextinity/eslint-config/future/react.js";
 
 export default defineConfig([
     globalIgnores(["src/*.generated.ts", "lib/**", "**/*.generated.ts", "block-meta.json"]),
     ...eslintConfigReact,
     {
         rules: {
-            "@comet/no-other-module-relative-import": "off",
+            "@dextinity/no-other-module-relative-import": "off",
         },
     },
     {

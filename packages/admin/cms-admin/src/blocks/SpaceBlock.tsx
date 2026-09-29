@@ -1,4 +1,4 @@
-import { Field, FinalFormInput } from "@comet/admin";
+import { Field, FinalFormInput } from "@dextinity/admin";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import type { SpaceBlockData, SpaceBlockInput } from "../blocks.generated";
@@ -19,7 +19,7 @@ export const SpaceBlock: BlockInterface<SpaceBlockData, State, SpaceBlockInput> 
 
     name: "Space",
 
-    displayName: <FormattedMessage id="comet.blocks.space" defaultMessage="Space" />,
+    displayName: <FormattedMessage id="dextinity.blocks.space" defaultMessage="Space" />,
 
     defaultValues: () => ({ height: DEFAULT_HEIGHT }),
 
@@ -42,14 +42,14 @@ export const SpaceBlock: BlockInterface<SpaceBlockData, State, SpaceBlockInput> 
                             if (!isHeightValid(v)) {
                                 return intl.formatMessage(
                                     {
-                                        id: "comet.blocks.space.validationError",
+                                        id: "dextinity.blocks.space.validationError",
                                         defaultMessage: "The maximum height is {limit, number}px",
                                     },
                                     { limit: 1000 },
                                 );
                             }
                         }}
-                        label={<FormattedMessage id="comet.blocks.space.height" defaultMessage="Height" />}
+                        label={<FormattedMessage id="dextinity.blocks.space.height" defaultMessage="Height" />}
                         name="height"
                         type="number"
                         required

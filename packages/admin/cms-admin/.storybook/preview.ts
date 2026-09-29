@@ -2,7 +2,8 @@ import type { Preview } from "@storybook/react-vite";
 import { type GlobalTypes } from "storybook/internal/csf";
 
 import { ApolloDecorator } from "./decorators/Apollo.decorator";
-import { CometConfigProviderDecorator } from "./decorators/CometConfigProvider.decorator";
+import { DextinityConfigProviderDecorator } from "./decorators/DextinityConfigProvider.decorator";
+import { ContentScopeProviderDecorator } from "./decorators/ContentScopeProvider.decorator";
 import { CurrentUserProviderDecorator } from "./decorators/CurrentUserProvider.decorator";
 import { DndProviderDecorator } from "./decorators/DndProvider.decorator";
 import { IntlDecorator, LocaleOption } from "./decorators/IntlProvider.decorator";
@@ -21,7 +22,7 @@ export const globalTypes: GlobalTypes = {
             title: "Theme",
             icon: "paintbrush",
             items: [
-                { value: ThemeOption.Comet, right: "🟩", title: "Comet Theme" },
+                { value: ThemeOption.Dextinity, right: "🟩", title: "Dextinity Theme" },
                 { value: ThemeOption.Mui, right: "🟦", title: "Mui Theme" },
             ],
             dynamicTitle: true,
@@ -56,7 +57,18 @@ export const globalTypes: GlobalTypes = {
 
 const preview: Preview = {
     tags: ["autodocs"],
-    decorators: [ThemeProviderDecorator, IntlDecorator, LayoutDecorator, RouterDecorator, CometConfigProviderDecorator, SnackbarDecorator, DndProviderDecorator, CurrentUserProviderDecorator, ApolloDecorator],
+    decorators: [
+        ThemeProviderDecorator,
+        IntlDecorator,
+        LayoutDecorator,
+        ContentScopeProviderDecorator,
+        RouterDecorator,
+        DextinityConfigProviderDecorator,
+        SnackbarDecorator,
+        DndProviderDecorator,
+        CurrentUserProviderDecorator,
+        ApolloDecorator,
+    ],
     loaders: [
         async () => {
             await mswReady;

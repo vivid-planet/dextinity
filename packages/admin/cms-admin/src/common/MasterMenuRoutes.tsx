@@ -1,4 +1,4 @@
-import { RouteWithErrorBoundary } from "@comet/admin";
+import { RouteWithErrorBoundary } from "@dextinity/admin";
 import type { ReactNode } from "react";
 import { Redirect, type RouteProps, Switch, useRouteMatch } from "react-router-dom";
 

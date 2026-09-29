@@ -1,5 +1,5 @@
-import { CrudMoreActionsMenuItem, useContentTranslationService, useErrorDialog } from "@comet/admin";
-import { Translate } from "@comet/admin-icons";
+import { CrudMoreActionsMenuItem, useContentTranslationService, useErrorDialog } from "@dextinity/admin";
+import { Translate } from "@dextinity/admin-icons";
 import { CircularProgress, ListItemIcon, ListItemText } from "@mui/material";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
@@ -27,10 +27,10 @@ export const TranslateContentMenuItem = ({ translateContent, disabled }: Props) 
             await translateContent(effectiveBatchTranslate);
         } catch (error) {
             errorDialog?.showError({
-                title: <FormattedMessage id="comet.translator.error.title" defaultMessage="Translation failed" />,
+                title: <FormattedMessage id="dextinity.translator.error.title" defaultMessage="Translation failed" />,
                 userMessage: (
                     <FormattedMessage
-                        id="comet.translator.error.message"
+                        id="dextinity.translator.error.message"
                         defaultMessage="An error occurred while translating the content. Please try again."
                     />
                 ),
@@ -44,7 +44,7 @@ export const TranslateContentMenuItem = ({ translateContent, disabled }: Props) 
     return (
         <CrudMoreActionsMenuItem disabled={disabled || translating} onClick={handleTranslate}>
             <ListItemIcon>{translating ? <CircularProgress size={16} /> : <Translate />}</ListItemIcon>
-            <ListItemText primary={<FormattedMessage id="comet.translator.translate" defaultMessage="Translate" />} />
+            <ListItemText primary={<FormattedMessage id="dextinity.translator.translate" defaultMessage="Translate" />} />
         </CrudMoreActionsMenuItem>
     );
 };

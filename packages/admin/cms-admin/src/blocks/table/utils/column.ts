@@ -2,8 +2,8 @@ import { v4 as uuid } from "uuid";
 import { z } from "zod";
 
 import type { TableBlockData } from "../../../blocks.generated";
-import type { RichTextBlock, RichTextBlockState } from "../../createRichTextBlock";
 import type { TableBlockState } from "../../createTableBlock";
+import type { BlockInterface } from "../../types";
 import { insertRowDataAtIndex, type RowInsertData } from "./row";
 import { rteSchema } from "./rteSchema";
 
@@ -23,10 +23,14 @@ export const columnInsertSchema = z.object({
 export type ColumnInsertData = {
     size: ColumnSize;
     highlighted: boolean;
-    cellValues: RichTextBlockState[];
+    cellValues: unknown[];
 };
 
-export const getDuplicatedColumnInsertData = (state: TableBlockState, columnIndex: number, RichTextBlock: RichTextBlock): ColumnInsertData | null => {
+export const getDuplicatedColumnInsertData = (
+    state: TableBlockState,
+    columnIndex: number,
+    RichTextBlock: BlockInterface,
+): ColumnInsertData | null => {
     const sourceColumn = state.columns[columnIndex];
 
     if (!sourceColumn) {
@@ -43,7 +47,7 @@ export const getDuplicatedColumnInsertData = (state: TableBlockState, columnInde
     };
 };
 
-export const getInsertDataFromColumnById = (state: TableBlockState, columnId: string, RichTextBlock: RichTextBlock): ColumnInsertData | null => {
+export const getInsertDataFromColumnById = (state: TableBlockState, columnId: string, RichTextBlock: BlockInterface): ColumnInsertData | null => {
     const column = state.columns.find(({ id }) => id === columnId);
     if (!column) {
         return null;
@@ -61,9 +65,9 @@ export const getInsertDataFromColumnById = (state: TableBlockState, columnId: st
 
 export const insertColumnDataAtIndex = (
     state: TableBlockState,
-    columnInsertData: { size: ColumnSize; highlighted: boolean; cellValues: RichTextBlockState[] },
+    columnInsertData: { size: ColumnSize; highlighted: boolean; cellValues: unknown[] },
     index: number,
-    RichTextBlock: RichTextBlock,
+    RichTextBlock: BlockInterface,
     newColumnId: string = uuid(),
 ): TableBlockState => {
     const numberOfRowsToBeAdded = columnInsertData.cellValues.length - state.rows.length;

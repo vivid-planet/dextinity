@@ -1,4 +1,4 @@
-import { PageTreeNodeInterface, PageTreeReadApiService, PageTreeService } from "@comet/cms-api";
+import { PageTreeNodeInterface, PageTreeReadApiService, PageTreeService } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import { PageTreeNodeScope } from "@src/page-tree/dto/page-tree-node-scope";
 

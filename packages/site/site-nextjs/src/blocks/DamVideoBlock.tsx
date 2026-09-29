@@ -1,4 +1,4 @@
-import { DamVideoBlock as SiteReactDamVideoBlock, type VideoPreviewImageProps } from "@comet/site-react";
+import { DamVideoBlock as SiteReactDamVideoBlock, type VideoPreviewImageProps } from "@dextinity/site-react";
 import type { ComponentProps } from "react";
 
 import { VideoPreviewImage } from "./helpers/VideoPreviewImage";

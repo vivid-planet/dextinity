@@ -1,9 +1,9 @@
 import { createContext, type ReactNode, useContext } from "react";
 
-import type { RichTextBlock } from "../createRichTextBlock";
+import type { BlockInterface, ReadOnlyBlockRenderInterface } from "../types";
 
 type TableBlockContextValue = {
-    RichTextBlock: RichTextBlock;
+    RichTextBlock: BlockInterface & ReadOnlyBlockRenderInterface;
 };
 
 const TableBlockContext = createContext<TableBlockContextValue | undefined>(undefined);

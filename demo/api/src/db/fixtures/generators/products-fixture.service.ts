@@ -1,7 +1,7 @@
-import { DamImageBlock } from "@comet/cms-api";
-import { faker } from "@faker-js/faker";
+import { DamImageBlock } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, Logger } from "@nestjs/common";
+import { faker } from "@src/db/fixtures/faker";
 import { Manufacturer } from "@src/products/entities/manufacturer.entity";
 import { Product, ProductStatus } from "@src/products/entities/product.entity";
 import { ProductCategory } from "@src/products/entities/product-category.entity";

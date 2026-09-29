@@ -1,4 +1,4 @@
-import { Field, type FieldProps } from "@comet/admin";
+import { Field, type FieldProps } from "@dextinity/admin";
 
 import type { DateRange } from "./DateRangePicker";
 import { FinalFormDateRangePicker, type FinalFormDateRangePickerProps } from "./FinalFormDateRangePicker";
@@ -6,7 +6,7 @@ import { FinalFormDateRangePicker, type FinalFormDateRangePickerProps } from "./
 export type DateRangeFieldProps = FieldProps<DateRange, HTMLInputElement> & FinalFormDateRangePickerProps;
 
 /**
- * @deprecated Use `DateRangePickerField` from `@comet/admin` instead.
+ * @deprecated Use `DateRangePickerField` from `@dextinity/admin` instead.
  */
 export const DateRangeField = ({ ...restProps }: DateRangeFieldProps) => {
     return <Field component={FinalFormDateRangePicker} {...restProps} />;

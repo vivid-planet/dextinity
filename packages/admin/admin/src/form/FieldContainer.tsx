@@ -86,7 +86,7 @@ const Root = createComponentSlot(FormControl)<FieldContainerClassKey, OwnerState
         ownerState.variant === "horizontal" &&
         css`
             container-type: inline-size;
-            container-name: comet-admin-field-container-root;
+            container-name: dextinity-admin-field-container-root;
         `}
 
         ${ownerState.fieldMargin !== "never" &&
@@ -119,7 +119,7 @@ const InnerContainer = createComponentSlot("div")<FieldContainerClassKey, OwnerS
     ({ theme, ownerState }) => css`
         ${ownerState.variant === "horizontal" &&
         css`
-            @container comet-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
+            @container dextinity-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
                 display: flex;
                 flex-direction: row;
                 max-width: 944px;
@@ -137,9 +137,9 @@ const InnerContainer = createComponentSlot("div")<FieldContainerClassKey, OwnerS
                 border-color: ${theme.palette.error.main};
             }
 
-            .CometAdminRte-root:not(:focus-within),
-            .CometAdminRte-root:hover:not(:focus-within) {
-                --comet-admin-rte-outer-border-color: ${theme.palette.error.main};
+            .DextinityAdminRte-root:not(:focus-within),
+            .DextinityAdminRte-root:hover:not(:focus-within) {
+                --dextinity-admin-rte-outer-border-color: ${theme.palette.error.main};
             }
         `}
 
@@ -153,9 +153,9 @@ const InnerContainer = createComponentSlot("div")<FieldContainerClassKey, OwnerS
                 border-color: ${theme.palette.warning.main};
             }
 
-            .CometAdminRte-root:not(:focus-within),
-            .CometAdminRte-root:hover:not(:focus-within) {
-                --comet-admin-rte-outer-border-color: ${theme.palette.warning.main};
+            .DextinityAdminRte-root:not(:focus-within),
+            .DextinityAdminRte-root:hover:not(:focus-within) {
+                --dextinity-admin-rte-outer-border-color: ${theme.palette.warning.main};
             }
         `}
     `,
@@ -172,7 +172,7 @@ const Label = createComponentSlot(FormLabel)<FieldContainerClassKey, OwnerState>
 
             ${ownerState.variant === "horizontal" &&
             css`
-                @container comet-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
+                @container dextinity-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
                     display: block;
                 }
             `}
@@ -180,7 +180,7 @@ const Label = createComponentSlot(FormLabel)<FieldContainerClassKey, OwnerState>
 
         ${ownerState.variant === "horizontal" &&
         css`
-            @container comet-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
+            @container dextinity-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
                 width: calc(100% / 3);
                 flex-shrink: 0;
                 flex-grow: 0;
@@ -213,7 +213,7 @@ const InputContainer = createComponentSlot("div")<FieldContainerClassKey, OwnerS
         ${ownerState.variant === "horizontal" &&
         ownerState.fullWidth &&
         css`
-            @container comet-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
+            @container dextinity-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
                 flex-grow: 1;
                 /* Overrides the flex default (min-width: auto), which would prevent the item from shrinking below its content width and cause layout overflow. */
                 min-width: 0;
@@ -222,10 +222,10 @@ const InputContainer = createComponentSlot("div")<FieldContainerClassKey, OwnerS
 
         ${ownerState.variant === "horizontal" &&
         css`
-            @container comet-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
+            @container dextinity-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
                 min-height: 40px;
 
-                > .CometAdminFormFieldContainer-root {
+                > .DextinityAdminFormFieldContainer-root {
                     margin-bottom: 0;
                 }
             }
@@ -324,7 +324,7 @@ export const FieldContainer = (inProps: PropsWithChildren<FieldContainerProps>) 
         fieldMargin = "onlyIfNotLast",
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminFormFieldContainer" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminFormFieldContainer" });
     const fullWidth = passedFullWidth ?? variant === "horizontal";
 
     const hasError = !!error;
@@ -389,17 +389,17 @@ export const FieldContainer = (inProps: PropsWithChildren<FieldContainerProps>) 
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFormFieldContainer: FieldContainerClassKey;
+        DextinityAdminFormFieldContainer: FieldContainerClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFormFieldContainer: FieldContainerProps;
+        DextinityAdminFormFieldContainer: FieldContainerProps;
     }
 
     interface Components {
-        CometAdminFormFieldContainer?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFormFieldContainer"]>;
-            styleOverrides?: ComponentsOverrides["CometAdminFormFieldContainer"];
+        DextinityAdminFormFieldContainer?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFormFieldContainer"]>;
+            styleOverrides?: ComponentsOverrides["DextinityAdminFormFieldContainer"];
         };
     }
 }

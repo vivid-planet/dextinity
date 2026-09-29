@@ -9,7 +9,7 @@ import {
     createBlock,
     createListBlock,
     ExtractBlockInput,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { MediaGalleryItemBlock } from "@src/common/blocks/media-gallery-item.block";
 import { MediaAspectRatios } from "@src/util/mediaAspectRatios";
 import { IsEnum } from "class-validator";

@@ -5,12 +5,15 @@ import {
     type PropsWithData,
     renderTipTapRichText,
     type TipTapMarkHandler,
-    type TipTapNode,
     type TipTapNodeHandler,
     withPreview,
-} from "@comet/site-nextjs";
-import type { LinkBlockData, TipTapRichTextBlockData } from "@src/blocks.generated";
+} from "@dextinity/site-nextjs";
+import type { LinkBlockData, ProductPriceBlockData, ProductTeaserBlockData, TipTapRichTextBlockData } from "@src/blocks.generated";
 import { PageLayout } from "@src/layout/PageLayout";
+import { ProductPriceBlock } from "@src/products/blocks/ProductPriceBlock";
+import { ProductTeaserBlock } from "@src/products/blocks/ProductTeaserBlock";
+import type { LoadedData as ProductTeaserLoadedData } from "@src/products/blocks/ProductTeaserBlock.loader";
+import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 
 import { Typography, type TypographyProps } from "../components/Typography";
 import { isValidLink } from "../helpers/HiddenIfInvalidLink";
@@ -19,38 +22,46 @@ import styles from "./RichTextBlock.module.scss";
 
 type TypographyVariant = TypographyProps<"p">["variant"];
 
-const headingLevelToVariant: Record<1 | 2 | 3 | 4 | 5 | 6, TypographyVariant> = {
-    1: "headline600",
-    2: "headline550",
-    3: "headline500",
-    4: "headline450",
-    5: "headline400",
-    6: "headline350",
+const textBlockToVariant: Record<string, TypographyVariant> = {
+    display: "headline600",
+    "heading-1": "headline550",
+    "heading-2": "headline500",
+    "heading-3": "headline450",
+    "heading-4": "headline400",
+    "heading-5": "headline350",
+};
+
+const renderCmsBlock: TipTapNodeHandler = ({ node }) => {
+    if (node.attrs?.blockType === "productPrice") {
+        return <ProductPriceBlock data={node.attrs?.data as ProductPriceBlockData} />;
+    }
+    if (node.attrs?.blockType === "productTeaser") {
+        return <ProductTeaserBlock data={node.attrs?.data as ProductTeaserBlockData & { loaded: ProductTeaserLoadedData }} />;
+    }
+    return null;
 };
 
 const nodeMapping: Record<string, TipTapNodeHandler> = {
-    paragraph: ({ node, children }) => (
-        <Typography variant={(node.attrs?.textBlockStyle as TypographyVariant | null) ?? undefined} bottomSpacing className={styles.text}>
-            {children}
-        </Typography>
-    ),
-    heading: ({ node, children }) => {
-        const level = (node.attrs?.level as 1 | 2 | 3 | 4 | 5 | 6) ?? 1;
+    textBlock: ({ node, children }) => {
+        // A paragraph picks its typography from the style the editor applied, a heading from the text block itself.
+        const variant = textBlockToVariant[node.attrs?.textBlock as string] ?? (node.attrs?.textBlockStyle as TypographyVariant | null) ?? undefined;
         return (
-            <Typography variant={headingLevelToVariant[level]} bottomSpacing className={styles.text}>
+            <Typography variant={variant} bottomSpacing className={styles.text}>
                 {children}
             </Typography>
         );
     },
     listItem: ({ node, children }) => {
-        const firstParagraph = node.content?.find((child) => child.type === "paragraph");
-        const textBlockStyle = (firstParagraph?.attrs?.textBlockStyle as TypographyVariant | null) ?? undefined;
+        const firstTextBlock = node.content?.find((child) => child.type === "textBlock");
+        const textBlockStyle = (firstTextBlock?.attrs?.textBlockStyle as TypographyVariant | null) ?? undefined;
         return (
             <Typography as="li" variant={textBlockStyle} className={styles.text}>
                 {children}
             </Typography>
         );
     },
+    cmsBlock: renderCmsBlock,
+    cmsInlineBlock: renderCmsBlock,
 };
 
 const markMapping: Record<string, TipTapMarkHandler> = {
@@ -67,12 +78,18 @@ const markMapping: Record<string, TipTapMarkHandler> = {
     },
 };
 
-const TipTapRichTextBlock = withPreview(
-    ({ data }: PropsWithData<TipTapRichTextBlockData>) => {
-        const content = data.tipTapContent as TipTapNode;
+interface TipTapRichTextBlockProps extends PropsWithData<TipTapRichTextBlockData> {
+    disableLastBottomSpacing?: boolean;
+}
+
+export const TipTapRichTextBlock = withPreview(
+    ({ data, disableLastBottomSpacing }: TipTapRichTextBlockProps) => {
+        const content = data.tipTapContent;
+        const rendered = renderTipTapRichText({ content, nodeMapping, markMapping });
+
         return (
             <PreviewSkeleton title="RichText" type="rows" hasContent={hasTipTapRichTextContent(content)}>
-                {renderTipTapRichText({ content, nodeMapping, markMapping })}
+                {disableLastBottomSpacing ? <div className={styles.disableLastBottomSpacing}>{rendered}</div> : rendered}
             </PreviewSkeleton>
         );
     },
@@ -82,7 +99,9 @@ const TipTapRichTextBlock = withPreview(
 export const PageContentTipTapRichTextBlock = (props: PropsWithData<TipTapRichTextBlockData>) => (
     <PageLayout grid>
         <div className={styles.pageLayoutContent}>
-            <TipTapRichTextBlock {...props} />
+            <AnimateBoxInOnScroll direction="bottom" offset={300}>
+                <TipTapRichTextBlock {...props} />
+            </AnimateBoxInOnScroll>
         </div>
     </PageLayout>
 );

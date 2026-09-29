@@ -1,0 +1,69 @@
+{
+    "files": [
+        {
+            "path": "rules/coding-guidelines/api-nestjs.instructions.md",
+            "description": "NestJS service/controller layering, MikroORM, GraphQL, ACL",
+            "scope": ["**/api/**/*.ts"]
+        },
+        {
+            "path": "rules/coding-guidelines/cdn.instructions.md",
+            "description": "Cache-Control header policy for GET routes (Site and API)",
+            "scope": [
+                "**/api/**/*.controller.ts",
+                "**/api/**/*.resolver.ts",
+                "**/site/**/route.ts",
+                "**/site/**/next.config.js",
+                "**/site/**/next.config.ts",
+                "**/site/**/next.config.mjs"
+            ]
+        },
+        {
+            "path": "rules/coding-guidelines/general.instructions.md",
+            "description": "Language-agnostic naming, control-flow, and comment rules",
+            "scope": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.mjs", "**/*.cjs"]
+        },
+        {
+            "path": "rules/coding-guidelines/git.instructions.md",
+            "description": "Git, commit, PR, and changeset conventions for this repo"
+        },
+        {
+            "path": "rules/coding-guidelines/kubernetes.instructions.md",
+            "description": "CronJob intervals, environments, replicas, resource requests/limits",
+            "scope": ["**/*.yaml", "**/*.yml", "**/helm/**", "**/k8s/**"]
+        },
+        {
+            "path": "rules/coding-guidelines/libraries.instructions.md",
+            "description": "Criteria for adding or replacing npm packages",
+            "scope": ["**/package.json"]
+        },
+        {
+            "path": "rules/coding-guidelines/naming.instructions.md",
+            "description": "File, folder, DB, and branch naming conventions across api/admin/site",
+            "scope": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.sql"]
+        },
+        {
+            "path": "rules/coding-guidelines/postgresql.instructions.md",
+            "description": "UUID IDs, column types, forward-only migrations, DB defaults",
+            "scope": ["**/*.entity.ts", "**/entities/**/*.ts", "**/migrations/**/*.ts", "**/*.sql"]
+        },
+        {
+            "path": "rules/coding-guidelines/react.instructions.md",
+            "description": "React component, prop, state, fragment, and anti-pattern rules",
+            "scope": ["**/*.ts", "**/*.tsx"]
+        },
+        {
+            "path": "rules/coding-guidelines/security.instructions.md",
+            "description": "Security-by-design, privacy, authorization, defense-in-depth principles"
+        },
+        {
+            "path": "rules/coding-guidelines/styling.instructions.md",
+            "description": "Theme usage, Emotion/styled-components, responsive, SVG handling",
+            "scope": ["**/*.tsx", "**/*.sc.ts", "**/*.css", "**/*.scss"]
+        },
+        {
+            "path": "rules/coding-guidelines/typescript.instructions.md",
+            "description": "TypeScript style — options objects, named exports, async/await, enums",
+            "scope": ["**/*.ts", "**/*.tsx"]
+        }
+    ]
+}

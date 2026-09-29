@@ -1,4 +1,4 @@
-import type { BaseSiteConfig, ExtractPrivateSiteConfig, ExtractPublicSiteConfig } from "@comet/cli";
+import type { BaseSiteConfig, ExtractPrivateSiteConfig, ExtractPublicSiteConfig } from "@dextinity/cli";
 
 export type ContentScope = {
     domain: string;
@@ -12,6 +12,13 @@ export interface SiteConfig extends BaseSiteConfig {
             languages: string[];
         };
         recaptchaSiteKey: string;
+        organization: {
+            name: string;
+            url?: string;
+            logo?: string;
+            sameAs?: string[];
+            description?: string;
+        };
     };
 }
 

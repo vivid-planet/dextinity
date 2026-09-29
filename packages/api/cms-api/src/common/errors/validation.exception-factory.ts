@@ -1,7 +1,7 @@
 import type { ValidationError } from "@nestjs/common";
 
-import { CometValidationException } from "./validation.exception";
+import { DextinityValidationException } from "./validation.exception";
 
-export function ValidationExceptionFactory(errors: ValidationError[]): CometValidationException {
-    return new CometValidationException("Validation failed", errors);
+export function ValidationExceptionFactory(errors: ValidationError[]): DextinityValidationException {
+    return new DextinityValidationException("Validation failed", errors);
 }

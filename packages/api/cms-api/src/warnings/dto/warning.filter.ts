@@ -56,6 +56,18 @@ export class WarningFilter {
     @Type(() => StringFilter)
     type?: StringFilter;
 
+    @Field(() => StringFilter, { nullable: true })
+    @ValidateNested()
+    @IsOptional()
+    @Type(() => StringFilter)
+    name?: StringFilter;
+
+    @Field(() => StringFilter, { nullable: true })
+    @ValidateNested()
+    @IsOptional()
+    @Type(() => StringFilter)
+    secondaryInformation?: StringFilter;
+
     @Field(() => WarningSeverityEnumFilter, { nullable: true })
     @ValidateNested()
     @IsOptional()

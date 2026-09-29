@@ -13,7 +13,7 @@ export { migrationsList } from "./mikro-orm/migrations/migrations";
 export { BrevoPermission } from "./permissions/brevo-permission.enum";
 export { createTargetGroupEntity } from "./target-group/entity/target-group-entity.factory";
 
-declare module "@comet/cms-api" {
+declare module "@dextinity/cms-api" {
     export interface PermissionOverrides {
         brevo: BrevoPermission;
     }

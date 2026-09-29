@@ -1,10 +1,11 @@
 "use client";
 
-import { createFetchInMemoryCache, useIFrameBridge } from "@comet/site-nextjs";
+import type { Config } from "@dextinity/mail-react";
+import { createFetchInMemoryCache, useIFrameBridge } from "@dextinity/site-nextjs";
 import type { EmailCampaignContentBlockData } from "@src/blocks.generated";
-import { RenderedMailForBlockPreview } from "@src/brevo/components/RenderedMailForBlockPreview";
-import type { EmailCampaignConfig } from "@src/brevo/util/getEmailCampaignConfig";
-import { renderMailContentAsMjml } from "@src/brevo/util/renderMailContentAsMjml";
+import { EmailCampaignMail } from "@src/brevo/EmailCampaignMail";
+import { replaceMailHtmlPlaceholders } from "@src/brevo/util/replaceMailHtmlPlaceholders";
+import { RenderedMailForBlockPreview } from "@src/mail/components/RenderedMailForBlockPreview";
 import type { ContentScope } from "@src/site-configs";
 import { withBlockPreview } from "@src/util/blockPreview";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
@@ -14,10 +15,12 @@ import type { IntlConfig } from "react-intl";
 
 const cachingFetch = createFetchInMemoryCache(fetch);
 
+const replacePlaceholdersForPreview = (html: string) => replaceMailHtmlPlaceholders(html, "preview");
+
 interface BrevoEmailCampaignPreviewProps {
     language: string;
     messages: IntlConfig["messages"];
-    config: EmailCampaignConfig;
+    config: Config;
 }
 
 function BrevoEmailCampaignPreviewComponent({ language, messages, config }: BrevoEmailCampaignPreviewProps) {
@@ -48,9 +51,12 @@ function BrevoEmailCampaignPreviewComponent({ language, messages, config }: Brev
         return null;
     }
 
-    const mjmlContent = renderMailContentAsMjml(blockData, { locale: language, messages }, config);
-
-    return <RenderedMailForBlockPreview mjmlContent={mjmlContent} />;
+    return (
+        <RenderedMailForBlockPreview
+            mail={<EmailCampaignMail content={blockData} config={config} locale={language} messages={messages} />}
+            transformHtml={replacePlaceholdersForPreview}
+        />
+    );
 }
 
 export const BrevoEmailCampaignPreview = withBlockPreview(BrevoEmailCampaignPreviewComponent);

@@ -194,7 +194,7 @@ export function ActionLogsGrid<TQuery = Record<string, unknown>>({ queryName }: 
                 slots={{ toolbar: ActionLogsGridToolbar }}
                 showToolbar
             />
-            <ActionLogShowVersionDialog queryName={queryName} row={selectedRow} open={selectedRow !== null} onClose={() => setSelectedRow(null)} />
+            <ActionLogShowVersionDialog row={selectedRow} open={selectedRow !== null} onClose={() => setSelectedRow(null)} />
             {openEntityId !== null && <ActionLogDialog queryName={queryName} entityId={openEntityId} open onClose={() => setOpenEntityId(null)} />}
         </MainContent>
     );

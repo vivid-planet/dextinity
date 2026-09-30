@@ -14,7 +14,15 @@ const mockUpdatedRow: GQLActionLogRowFragment = {
     createdAt: "2026-05-27T15:30:00Z",
     scope: [{ domain: "main", language: "en" }],
     snapshot: { title: "Release 9.0", slug: "release-9-0" },
-    previousVersion: { __typename: "ActionLog", snapshot: { title: "Release 9.0 (draft)", slug: "release-9-0" } },
+    previousVersion: {
+        __typename: "ActionLog",
+        id: "log2",
+        user: { __typename: "ActionLogsUser", id: "bob", name: "Bob" },
+        entityName: "News",
+        version: 2,
+        createdAt: "2026-05-27T14:00:00Z",
+        snapshot: { title: "Release 9.0 (draft)", slug: "release-9-0" },
+    },
 };
 
 const mockCreatedRow: GQLActionLogRowFragment = {
@@ -27,14 +35,13 @@ const mockCreatedRow: GQLActionLogRowFragment = {
     createdAt: "2026-05-27T13:00:00Z",
 };
 
-type Story = StoryObj<ActionLogShowVersionDialogProps<Record<string, unknown>>>;
+type Story = StoryObj<ActionLogShowVersionDialogProps>;
 
-const meta: Meta<ActionLogShowVersionDialogProps<Record<string, unknown>>> = {
+const meta: Meta<ActionLogShowVersionDialogProps> = {
     component: ActionLogShowVersionDialog,
     tags: ["!autodocs"],
     title: "actionLog/actionLog/actionLogShowVersionDialog/ActionLogShowVersionDialog",
     args: {
-        queryName: "newsActionLogs",
         open: true,
         onClose: () => undefined,
     },

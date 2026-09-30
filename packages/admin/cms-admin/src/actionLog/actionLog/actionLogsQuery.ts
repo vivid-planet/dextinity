@@ -18,7 +18,7 @@ export const actionLogRowFragment = gql`
             name
         }
         previousVersion {
-            snapshot
+            ...ActionLogCompare
         }
         ...ActionLogCompare
     }

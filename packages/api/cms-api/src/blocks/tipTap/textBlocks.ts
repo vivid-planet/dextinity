@@ -175,19 +175,10 @@ export function getStyledNodes<TextBlock extends { styles: unknown[] }, List ext
 }
 
 /**
- * The styles of all text blocks and lists, deduplicated by name. A name identifies a style, so a
- * style shared by several text blocks is represented by the first definition of that name.
+ * Whether anything offers a style at all, which decides whether the text block node carries a
+ * `textBlockStyle` attribute.
  */
-export function collectTextBlockStyles<Style extends TipTapTextBlockStyle>(styledNodes: Array<{ styles: Style[] }>): Style[] {
-    const styles = new Map<string, Style>();
-    for (const styledNode of styledNodes) {
-        for (const style of styledNode.styles) {
-            if (!styles.has(style.name)) {
-                styles.set(style.name, style);
-            }
-        }
-    }
-    return [...styles.values()];
-}
+export const hasTextBlockStyles = (styledNodes: Array<{ styles: TipTapTextBlockStyle[] }>): boolean =>
+    styledNodes.some((styledNode) => styledNode.styles.length > 0);
 
 export const hasParagraphTextBlock = (textBlocks: TipTapResolvedTextBlock[]): boolean => textBlocks.some((textBlock) => textBlock.tag === "p");

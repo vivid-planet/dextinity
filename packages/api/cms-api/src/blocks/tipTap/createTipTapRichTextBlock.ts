@@ -37,11 +37,11 @@ import { buildNoopMigration } from "./migrations/buildNoopMigration";
 import { buildTextBlockNodeMigration } from "./migrations/buildTextBlockNodeMigration";
 import { assertDraftJsHeadingsAreUnambiguous, type TextBlockMapping } from "./migrations/convertDraftJsToTipTap";
 import {
-    collectTextBlockStyles,
     defaultTextBlocks,
     findDefaultTextBlock,
     getStyledNodes,
     hasParagraphTextBlock,
+    hasTextBlockStyles,
     orderedListName,
     resolveList,
     resolveTextBlocks,
@@ -260,7 +260,7 @@ function buildExtensions({
     hasBlockChildBlocks: boolean;
     hasInlineChildBlocks: boolean;
 }): Extensions {
-    const hasTextBlockStyles = collectTextBlockStyles(getStyledNodes(resolvedOptions)).length > 0;
+    const hasStyles = hasTextBlockStyles(getStyledNodes(resolvedOptions));
     const hasInlineStyles = inlineStyles.length > 0;
     const hasPlaceholders = placeholders.length > 0;
     const hasParagraph = hasParagraphTextBlock(resolvedOptions.textBlocks);
@@ -284,7 +284,7 @@ function buildExtensions({
             codeBlock: false,
             link: false,
         }),
-        createTextBlock({ ...resolvedOptions, hasTextBlockStyles }),
+        createTextBlock({ ...resolvedOptions, hasTextBlockStyles: hasStyles }),
         ...(hasParagraph ? [TextBlockListItem] : []),
         ...(hasInlineStyles ? [InlineStyleMark] : []),
         ...(resolvedOptions.sup ? [Superscript] : []),

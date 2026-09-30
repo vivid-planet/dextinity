@@ -9,6 +9,7 @@ import {
     useDataGridRemote,
     usePersistentColumnState,
 } from "@dextinity/admin";
+import { Chip } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useIntl } from "react-intl";
 
@@ -20,7 +21,6 @@ import { ScopeCell } from "../../components/scopeCell/ScopeCell";
 import { UserCell } from "../../components/userCell/UserCell";
 import { globalActionLogGridQuery } from "./GlobalActionLogGrid.gql";
 import type { GQLGlobalActionLogGridQuery, GQLGlobalActionLogGridQueryVariables } from "./GlobalActionLogGrid.gql.generated";
-import { EntityTypeChip } from "./GlobalActionLogGrid.sc";
 
 export function GlobalActionLogGrid() {
     const intl = useIntl();
@@ -59,7 +59,7 @@ export function GlobalActionLogGrid() {
                 field: "entityName",
                 headerName: intl.formatMessage({ id: "dextinity.globalActionLog.columns.entityName", defaultMessage: "Entity type" }),
                 width: 150,
-                renderCell: ({ value }) => <EntityTypeChip label={value} />,
+                renderCell: ({ value }) => <Chip label={value} />,
             },
             {
                 field: "entityId",

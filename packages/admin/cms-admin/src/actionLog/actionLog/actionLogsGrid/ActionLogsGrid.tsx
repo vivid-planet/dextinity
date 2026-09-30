@@ -128,7 +128,13 @@ export function ActionLogsGrid<TQuery = Record<string, unknown>>({ queryName }: 
                 renderCell: ({ row }) => (
                     <>
                         <Tooltip title={<FormattedMessage id="dextinity.actionLog.entity.actions.showVersion" defaultMessage="Show version" />}>
-                            <IconButton color="primary" onClick={() => setSelectedRow(row)}>
+                            <IconButton
+                                color="primary"
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    setSelectedRow(row);
+                                }}
+                            >
                                 <View />
                             </IconButton>
                         </Tooltip>
@@ -140,7 +146,12 @@ export function ActionLogsGrid<TQuery = Record<string, unknown>>({ queryName }: 
                                 />
                             }
                         >
-                            <IconButton onClick={() => setOpenEntityId(row.entityId)}>
+                            <IconButton
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    setOpenEntityId(row.entityId);
+                                }}
+                            >
                                 <Time />
                             </IconButton>
                         </Tooltip>

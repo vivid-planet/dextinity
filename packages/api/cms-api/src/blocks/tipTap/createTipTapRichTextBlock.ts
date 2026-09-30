@@ -431,11 +431,6 @@ function IsTipTapContent(
                                 const validationErrors = await validate(linkBlock.blockInputFactory(data as any), {
                                     forbidNonWhitelisted: true,
                                     whitelist: true,
-                                    // A link block without any validation decorators (e.g. a link type without fields)
-                                    // would otherwise be rejected as an "unknown value" by class-validator's
-                                    // forbidUnknownValues (default since v0.14). whitelist + forbidNonWhitelisted
-                                    // still reject unexpected properties.
-                                    forbidUnknownValues: false,
                                 });
                                 if (validationErrors.length > 0) {
                                     return false;
@@ -457,11 +452,6 @@ function IsTipTapContent(
                                     {
                                         forbidNonWhitelisted: true,
                                         whitelist: true,
-                                        // A child block without any validation decorators (e.g. a block without fields)
-                                        // would otherwise be rejected as an "unknown value" by class-validator's
-                                        // forbidUnknownValues (default since v0.14). whitelist + forbidNonWhitelisted
-                                        // still reject unexpected properties.
-                                        forbidUnknownValues: false,
                                     },
                                 );
                                 if (validationErrors.length > 0) {

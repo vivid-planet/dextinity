@@ -1,5 +1,6 @@
 import type { Type } from "@nestjs/common";
 import { type ClassConstructor, instanceToPlain, plainToInstance } from "class-transformer";
+import { Allow } from "class-validator";
 import type { WarningSeverity as WarningSeverityEnum } from "src/warnings/entities/warning-severity.enum";
 
 import { AnnotationBlockMeta, getBlockFieldData, getFieldKeys } from "./decorators/field";
@@ -197,6 +198,12 @@ export abstract class BlockInput<BlockType extends BlockDataInterface = BlockDat
         return instanceToPlain(dataWithChildBlocksTransformed) as CreateToPlainReturn<this>;
     }
 }
+
+// Register a single class-validator metadata entry on the base class that every block input inherits.
+// Without it, a block without fields (e.g. a link type with no fields) has zero metadata and is rejected
+// by class-validator's forbidUnknownValues (default since v0.14) as an "unknown value". `@Allow()` only
+// registers metadata; it validates nothing and does not require the property to exist on instances.
+Allow()(BlockInput.prototype, "__blockInput");
 
 export function isBlockInputInterface(test: unknown | BlockInputInterface): test is BlockInputInterface {
     if (test !== null && typeof test === "object") {

@@ -24,11 +24,6 @@ export class ActionLogsArgs extends OffsetBasedPaginationArgs {
     @IsObject()
     scope: ContentScope;
 
-    @Field({ nullable: true })
-    @IsString()
-    @IsUndefinable()
-    search?: string;
-
     @Field(() => ActionLogFilter, { nullable: true })
     @ValidateNested()
     @Type(() => ActionLogFilter)

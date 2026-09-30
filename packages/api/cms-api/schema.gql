@@ -554,7 +554,7 @@ input WarningSourceInfoInput {
 }
 
 type Query {
-  actionLogs(offset: Int! = 0, limit: Int! = 25, entity: String!, scope: JSONObject!, search: String, filter: ActionLogFilter, sort: [ActionLogSort!]): PaginatedActionLogs!
+  actionLogs(offset: Int! = 0, limit: Int! = 25, entity: String!, scope: JSONObject!, filter: ActionLogFilter, sort: [ActionLogSort!]): PaginatedActionLogs!
   builds(limit: Float): [Build!]!
   autoBuildStatus: AutoBuildStatus!
   buildTemplates: [BuildTemplate!]!

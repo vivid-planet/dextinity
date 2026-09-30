@@ -2002,7 +2002,7 @@ input ProductVariantUpdateInput {
 }
 
 type Query {
-  actionLogs(entity: String!, filter: ActionLogFilter, limit: Int! = 25, offset: Int! = 0, scope: JSONObject!, search: String, sort: [ActionLogSort!]): PaginatedActionLogs!
+  actionLogs(entity: String!, filter: ActionLogFilter, limit: Int! = 25, offset: Int! = 0, scope: JSONObject!, sort: [ActionLogSort!]): PaginatedActionLogs!
   autoBuildStatus: AutoBuildStatus!
   blockPreviewJwt(includeInvisible: Boolean!, scope: JSONObject!, url: String!): String!
   brevoConfig(scope: EmailCampaignContentScopeInput!): BrevoConfig

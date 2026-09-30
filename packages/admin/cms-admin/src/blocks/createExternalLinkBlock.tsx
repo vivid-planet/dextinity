@@ -39,24 +39,13 @@ interface ExternalLinkBlockFactoryOptions {
      */
     noFollow?: boolean;
     /**
-     * The block's name. Must match the name of the API block this is paired with.
-     *
-     * Without a name of its own, the block keeps the name and the data of the `ExternalLinkBlock`, and a disabled
-     * option is only hidden from the editor: stored values are kept as they are, the API block and the site component
-     * are unaffected. Use that where an option has no meaning, for instance in redirects, where neither affects the
-     * resulting HTTP redirect.
-     *
-     * With a name of its own, the block is paired with an API block created by `createExternalLinkBlock` from
-     * `@dextinity/cms-api`, and a disabled option isn't part of its data either. Disable the same options as there:
-     * sending a field the API block doesn't have is rejected by validation, and so is omitting one it has.
+     * Without a name of its own, a disabled option is only hidden from the editor. With one, the block is paired with
+     * the API block of that name, and a disabled option isn't part of its data either.
      * @default "ExternalLink"
      */
     name?: string;
 }
 
-/**
- * Creates an external link block that offers only the options that have an effect where it is used.
- */
 export function createExternalLinkBlock(
     options?: Omit<ExternalLinkBlockFactoryOptions, "name"> & { name?: "ExternalLink" },
     override?: (block: CompleteExternalLinkBlock) => CompleteExternalLinkBlock,

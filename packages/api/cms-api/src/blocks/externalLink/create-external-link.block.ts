@@ -31,16 +31,8 @@ interface ExternalLinkBlockFactoryOptions {
 }
 
 /**
- * Creates an external link block with the options the site supports. In contrast to hiding a field in the admin, an
- * option disabled here doesn't exist at all: it is absent from `block-meta.json` and the generated types, and sending
- * it as input is rejected by validation.
- *
- * Because the block's field set is part of what its name promises, the block needs its own name — hence the mandatory
- * `nameOrOptions`. It is a block of its own, not a variant of `ExternalLinkBlock`, and needs a matching admin block and
- * site component under that same name.
- *
- * Disabling an option does not delete values that are already stored under that name. They stay in the block's JSON,
- * but aren't passed on to the admin or the site, until a migration removes them or the block is saved again.
+ * Creates an external link block without the options disabled here. A block with other options than the
+ * `ExternalLinkBlock` needs a name of its own.
  */
 export function createExternalLinkBlock(options: ExternalLinkBlockFactoryOptions, nameOrOptions: BlockFactoryNameOrOptions) {
     const name = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;

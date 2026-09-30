@@ -47,11 +47,11 @@ interface ExternalLinkBlockFactoryOptions {
 }
 
 export function createExternalLinkBlock(
-    options?: Omit<ExternalLinkBlockFactoryOptions, "name"> & { name?: "ExternalLink" },
+    options?: Omit<ExternalLinkBlockFactoryOptions, "name">,
     override?: (block: CompleteExternalLinkBlock) => CompleteExternalLinkBlock,
 ): CompleteExternalLinkBlock;
 export function createExternalLinkBlock(
-    options: ExternalLinkBlockFactoryOptions,
+    options: ExternalLinkBlockFactoryOptions & { name: string },
     override?: (block: ExternalLinkBlock) => ExternalLinkBlock,
 ): ExternalLinkBlock;
 export function createExternalLinkBlock(

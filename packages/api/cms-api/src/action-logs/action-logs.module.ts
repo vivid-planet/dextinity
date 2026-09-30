@@ -7,6 +7,7 @@ import { ActionLogsResolverFactory } from "./action-logs.resolver.factory";
 import { ActionLogsService } from "./action-logs.service";
 import { ActionLogsSubscriber } from "./action-logs.subscriber";
 import { ActionLogsFeatureModule } from "./action-logs-feature.module";
+import { ActionLogsUserLoaderService } from "./action-logs-user-loader.service";
 import { ActionLog } from "./entities/action-log.entity";
 import { PreviousActionLogLoaderService } from "./previous-action-log-loader.service";
 
@@ -15,7 +16,7 @@ export class ActionLogsModule {
         return {
             module: ActionLogsModule,
             imports: [MikroOrmModule.forFeature([ActionLog])],
-            providers: [ActionLogsSubscriber, ActionLogsService, ActionLogsResolver, PreviousActionLogLoaderService],
+            providers: [ActionLogsSubscriber, ActionLogsService, ActionLogsResolver, PreviousActionLogLoaderService, ActionLogsUserLoaderService],
         };
     }
 

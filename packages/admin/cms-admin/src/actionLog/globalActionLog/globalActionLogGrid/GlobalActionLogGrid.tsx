@@ -145,7 +145,7 @@ export function GlobalActionLogGrid() {
     const intl = useIntl();
     const { values: scopeValues } = useContentScope();
     const [selectedRow, setSelectedRow] = useState<GQLGlobalActionLogGridFragment | null>(null);
-    const [openEntity, setOpenEntity] = useState<{ entityName: string; entityId: string; scope?: ContentScope } | null>(null);
+    const [openEntity, setOpenEntity] = useState<{ entityName: string; entityId: string } | null>(null);
 
     const dataGridProps = {
         ...useDataGridRemote({ initialSort: [{ field: "createdAt", sort: "desc" }] }),
@@ -241,7 +241,7 @@ export function GlobalActionLogGrid() {
                         <IconButton
                             onClick={(event) => {
                                 event.stopPropagation();
-                                setOpenEntity({ entityName: row.entityName, entityId: row.entityId, scope: row.scope?.[0] });
+                                setOpenEntity({ entityName: row.entityName, entityId: row.entityId });
                             }}
                         >
                             <Time />
@@ -289,7 +289,7 @@ export function GlobalActionLogGrid() {
                     <ActionLogDialog
                         entity={openEntity.entityName}
                         entityId={openEntity.entityId}
-                        scope={openEntity.scope}
+                        acrossScopes
                         open
                         onClose={() => setOpenEntity(null)}
                     />

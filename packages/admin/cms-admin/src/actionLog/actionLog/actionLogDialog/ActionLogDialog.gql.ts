@@ -26,3 +26,15 @@ export const actionLogDialogQuery = gql`
     }
     ${actionLogDialogFragment}
 `;
+
+export const allActionLogsDialogQuery = gql`
+    query AllActionLogsDialog($offset: Int!, $limit: Int!, $filter: ActionLogFilter, $sort: [ActionLogSort!]) {
+        allActionLogs(offset: $offset, limit: $limit, filter: $filter, sort: $sort) {
+            nodes {
+                ...ActionLogDialog
+            }
+            totalCount
+        }
+    }
+    ${actionLogDialogFragment}
+`;

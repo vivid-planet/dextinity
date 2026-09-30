@@ -7,8 +7,14 @@ import { type ContentScope, useContentScope } from "../../../contentScope/Provid
 import { ActionLogCompare } from "../../components/actionLogCompare/ActionLogCompare";
 import { ActionLogShowVersion } from "../../components/actionLogShowVersion/ActionLogShowVersion";
 import { ActionLogVersionGrid } from "../actionLogVersionGrid/ActionLogVersionGrid";
-import { actionLogDialogQuery } from "./ActionLogDialog.gql";
-import type { GQLActionLogDialogFragment, GQLActionLogDialogQuery, GQLActionLogDialogQueryVariables } from "./ActionLogDialog.gql.generated";
+import { actionLogDialogQuery, allActionLogsDialogQuery } from "./ActionLogDialog.gql";
+import type {
+    GQLActionLogDialogFragment,
+    GQLActionLogDialogQuery,
+    GQLActionLogDialogQueryVariables,
+    GQLAllActionLogsDialogQuery,
+    GQLAllActionLogsDialogQueryVariables,
+} from "./ActionLogDialog.gql.generated";
 
 type ActionLogDialogView =
     | { type: "grid" }
@@ -26,18 +32,18 @@ export type ActionLogDialogProps = {
      */
     name?: string;
     /**
-     * Scope to read the action log in. Defaults to the current content scope; pass the scope of an action log row
-     * when the dialog is opened from a list of several scopes.
+     * Reads the versions of the entity in every scope the user may read, through `allActionLogs`, instead of the
+     * current content scope. Requires the `actionLog` permission. Use it when the dialog is opened from the action
+     * log of all entities, whose rows can belong to any scope.
      */
-    scope?: ContentScope;
+    acrossScopes?: boolean;
     open: boolean;
     onClose: () => void;
 };
 
-export function ActionLogDialog({ entity, entityId, name, scope: requestedScope, open, onClose }: ActionLogDialogProps) {
+export function ActionLogDialog({ entity, entityId, name, acrossScopes, open, onClose }: ActionLogDialogProps) {
     const intl = useIntl();
-    const { scope: currentScope } = useContentScope();
-    const scope = requestedScope ?? currentScope;
+    const { scope } = useContentScope();
     const [view, setView] = useState<ActionLogDialogView>({ type: "grid" });
 
     useEffect(() => {
@@ -50,20 +56,24 @@ export function ActionLogDialog({ entity, entityId, name, scope: requestedScope,
     const persistentColumnState = usePersistentColumnState(`ActionLogDialog-${entity}`);
 
     const filter = useMemo(() => ({ entityId: { equal: entityId } }), [entityId]);
+    const pagination = {
+        offset: dataGridRemote.paginationModel.page * dataGridRemote.paginationModel.pageSize,
+        limit: dataGridRemote.paginationModel.pageSize,
+        sort: muiGridSortToGql(dataGridRemote.sortModel),
+    };
 
-    const { data, loading, error } = useQuery<GQLActionLogDialogQuery, GQLActionLogDialogQueryVariables>(actionLogDialogQuery, {
-        variables: {
-            entity,
-            scope: scope as ContentScope,
-            offset: dataGridRemote.paginationModel.page * dataGridRemote.paginationModel.pageSize,
-            limit: dataGridRemote.paginationModel.pageSize,
-            filter,
-            sort: muiGridSortToGql(dataGridRemote.sortModel),
-        },
-        skip: !open,
+    const scopedQuery = useQuery<GQLActionLogDialogQuery, GQLActionLogDialogQueryVariables>(actionLogDialogQuery, {
+        variables: { entity, scope: scope as ContentScope, filter, ...pagination },
+        skip: !open || acrossScopes,
     });
 
-    const result = data?.actionLogs;
+    const acrossScopesQuery = useQuery<GQLAllActionLogsDialogQuery, GQLAllActionLogsDialogQueryVariables>(allActionLogsDialogQuery, {
+        variables: { filter: { ...filter, entityName: { equal: entity } }, ...pagination },
+        skip: !open || !acrossScopes,
+    });
+
+    const { loading, error } = acrossScopes ? acrossScopesQuery : scopedQuery;
+    const result = acrossScopes ? acrossScopesQuery.data?.allActionLogs : scopedQuery.data?.actionLogs;
     const rows = result?.nodes ?? [];
 
     return (

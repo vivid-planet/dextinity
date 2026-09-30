@@ -120,7 +120,13 @@ export function ActionLogsGrid({ entity }: ActionLogsGridProps) {
                 renderCell: ({ row }) => (
                     <>
                         <Tooltip title={<FormattedMessage id="dextinity.actionLog.entity.actions.showVersion" defaultMessage="Show version" />}>
-                            <IconButton color="primary" onClick={() => setSelectedRow(row)}>
+                            <IconButton
+                                color="primary"
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    setSelectedRow(row);
+                                }}
+                            >
                                 <View />
                             </IconButton>
                         </Tooltip>
@@ -132,7 +138,12 @@ export function ActionLogsGrid({ entity }: ActionLogsGridProps) {
                                 />
                             }
                         >
-                            <IconButton onClick={() => setOpenEntityId(row.entityId)}>
+                            <IconButton
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    setOpenEntityId(row.entityId);
+                                }}
+                            >
                                 <Time />
                             </IconButton>
                         </Tooltip>
@@ -176,7 +187,7 @@ export function ActionLogsGrid({ entity }: ActionLogsGridProps) {
                 slots={{ toolbar: ActionLogsGridToolbar }}
                 showToolbar
             />
-            <ActionLogShowVersionDialog entity={entity} row={selectedRow} open={selectedRow !== null} onClose={() => setSelectedRow(null)} />
+            <ActionLogShowVersionDialog row={selectedRow} open={selectedRow !== null} onClose={() => setSelectedRow(null)} />
             {openEntityId !== null && <ActionLogDialog entity={entity} entityId={openEntityId} open onClose={() => setOpenEntityId(null)} />}
         </MainContent>
     );

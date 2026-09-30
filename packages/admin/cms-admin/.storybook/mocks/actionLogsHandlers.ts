@@ -1,6 +1,6 @@
 import { graphql, HttpResponse } from "msw";
 
-const mockNodes = [
+const mockLogs = [
     {
         __typename: "ActionLog",
         id: "log4",
@@ -12,7 +12,6 @@ const mockNodes = [
         createdAt: "2026-05-28T09:00:00Z",
         scope: [{ domain: "main", language: "en" }],
         snapshot: null,
-        previousVersion: null,
     },
     {
         __typename: "ActionLog",
@@ -25,7 +24,6 @@ const mockNodes = [
         createdAt: "2026-05-27T15:30:00Z",
         scope: [{ domain: "main", language: "en" }],
         snapshot: { title: "Release 9.0", slug: "release-9-0" },
-        previousVersion: { __typename: "ActionLog", id: "log2" },
     },
     {
         __typename: "ActionLog",
@@ -38,7 +36,6 @@ const mockNodes = [
         createdAt: "2026-05-27T14:00:00Z",
         scope: [{ domain: "main", language: "en" }],
         snapshot: { title: "Release 9.0 (draft)", slug: "release-9-0" },
-        previousVersion: { __typename: "ActionLog", id: "log1" },
     },
     {
         __typename: "ActionLog",
@@ -51,9 +48,13 @@ const mockNodes = [
         createdAt: "2026-05-27T13:00:00Z",
         scope: [{ domain: "main", language: "en" }],
         snapshot: { title: "Release", slug: "release" },
-        previousVersion: null,
     },
 ];
+
+const mockNodes = mockLogs.map((log) => ({
+    ...log,
+    previousVersion: mockLogs.find((previous) => previous.entityId === log.entityId && previous.version === log.version - 1) ?? null,
+}));
 
 type MockFilter = { entityId?: { equal?: string }; version?: { lowerThan?: number } };
 

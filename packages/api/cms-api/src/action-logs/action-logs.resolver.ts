@@ -1,5 +1,5 @@
 import type { ObjectQuery } from "@mikro-orm/core/typings";
-import { EntityManager, PostgreSqlDriver } from "@mikro-orm/postgresql";
+import { EntityManager, PostgreSqlDriver, raw } from "@mikro-orm/postgresql";
 import { BadRequestException, ForbiddenException, Inject } from "@nestjs/common";
 import { Args, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
@@ -50,11 +50,23 @@ export class ActionLogsResolver {
 
         const andFilters: ObjectQuery<ActionLog>[] = [{ entityName: entity }];
 
-        if (Object.keys(scope).length > 0) {
-            // Action log rows for entities without a scope have scope=NULL; match those too so
-            // unscoped entities still surface their logs when the page is rendered inside a scoped layout.
-            andFilters.push({ $or: [{ scope: null }, { scope: { $contains: [scope] } }] });
-        }
+        // Action log rows for entities without a scope have scope=NULL; match those too so
+        // unscoped entities still surface their logs when the page is rendered inside a scoped layout.
+        // A scoped row must hold the requested scope exactly: `$contains` alone would also match a scope
+        // with fewer dimensions, which passes the permission check for a user who holds only one of the
+        // scopes it covers. `$contains` stays in the query for the GIN index.
+        andFilters.push({
+            $or: [
+                { scope: null },
+                {
+                    scope: { $contains: [scope] },
+                    [raw(
+                        (alias) => `exists (select 1 from jsonb_array_elements(${alias}."scope") as "rowScope" where "rowScope" = ?::jsonb)`,
+                        [JSON.stringify(scope)],
+                    )]: true,
+                },
+            ],
+        });
 
         if (filter) {
             andFilters.push(filtersToMikroOrmQuery(filter));

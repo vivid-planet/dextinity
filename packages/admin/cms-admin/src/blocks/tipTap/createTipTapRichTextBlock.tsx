@@ -36,10 +36,10 @@ import { createListLevelMaxExtension, getListNestingDepthFromJson, trimListNesti
 import { TextBlockContext } from "./TextBlockContext";
 import {
     allHeadingLevels,
-    collectTextBlockStyles,
     findDefaultTextBlock,
     getStyledNodes,
     hasParagraphTextBlock,
+    hasTextBlockStyles,
     orderedListName,
     resolveList,
     resolveTextBlocks,
@@ -466,9 +466,9 @@ function buildTipTapExtensions({
     listLevelMax?: number;
 }): Extensions {
     const styledNodes = getStyledNodes(resolvedOptions);
-    const hasTextBlockStyles = collectTextBlockStyles(styledNodes).length > 0;
+    const hasStyles = hasTextBlockStyles(styledNodes);
     // A text block with an `element` needs the node view to preview it, even without any styles.
-    const styled = hasTextBlockStyles || styledNodes.some((styledNode) => styledNode.element !== undefined);
+    const styled = hasStyles || styledNodes.some((styledNode) => styledNode.element !== undefined);
     const hasInlineStyles = inlineStyles.length > 0;
     const hasLink = resolvedOptions.link && !!linkBlock;
     const hasPlaceholders = placeholders.length > 0;
@@ -500,7 +500,7 @@ function buildTipTapExtensions({
             // doesn't need TrailingNode's own empty paragraph the way a trailing atom node (e.g. a child block) does.
             trailingNode: { notAfter: ["textBlock"] },
         }),
-        createTextBlock({ ...resolvedOptions, hasTextBlockStyles, styled }),
+        createTextBlock({ ...resolvedOptions, hasTextBlockStyles: hasStyles, styled }),
         ...(hasParagraph ? [TextBlockListItem] : []),
         ...(hasInlineStyles ? [InlineStyleMark] : []),
         ...(resolvedOptions.sup ? [Superscript] : []),
@@ -571,7 +571,8 @@ export const TipTapEditor = ({
     });
     const textBlockContextValue = {
         textBlocks: resolvedOptions.textBlocks,
-        textBlockStyles: collectTextBlockStyles(getStyledNodes(resolvedOptions)),
+        orderedList: resolvedOptions.orderedList,
+        unorderedList: resolvedOptions.unorderedList,
     };
 
     const editor = useEditor({

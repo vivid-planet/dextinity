@@ -165,24 +165,11 @@ export const getStyledNodes = ({
 ];
 
 /**
- * The styles of all text blocks and lists, deduplicated by name. A style shared by several text
- * blocks must be the same definition - repeating a name with a different definition is rejected,
- * since a name identifies a style throughout the editor.
+ * Whether anything offers a style at all, which decides whether the text block node carries a
+ * `textBlockStyle` attribute.
  */
-export function collectTextBlockStyles(styledNodes: Array<{ styles: TipTapTextBlockStyle[] }>): TipTapTextBlockStyle[] {
-    const styles = new Map<string, TipTapTextBlockStyle>();
-    for (const styledNode of styledNodes) {
-        for (const style of styledNode.styles) {
-            const existingStyle = styles.get(style.name);
-            if (existingStyle === undefined) {
-                styles.set(style.name, style);
-            } else if (existingStyle !== style) {
-                throw new Error(`The text block style "${style.name}" is defined more than once. Share the same definition instead.`);
-            }
-        }
-    }
-    return [...styles.values()];
-}
+export const hasTextBlockStyles = (styledNodes: Array<{ styles: TipTapTextBlockStyle[] }>): boolean =>
+    styledNodes.some((styledNode) => styledNode.styles.length > 0);
 
 /**
  * The text block new content starts with: the configured `defaultTextBlock`, or the first one.

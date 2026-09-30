@@ -1,14 +1,11 @@
 import { createContext } from "react";
 
-import type { TipTapResolvedTextBlock, TipTapTextBlockStyle } from "./textBlocks";
+import type { TipTapResolvedList, TipTapResolvedTextBlock } from "./textBlocks";
 
 interface TextBlockContextValue {
     textBlocks: TipTapResolvedTextBlock[];
-    /**
-     * The styles of all text blocks and lists, deduplicated by name, so a node's `textBlockStyle`
-     * can be rendered wherever it is used.
-     */
-    textBlockStyles: TipTapTextBlockStyle[];
+    orderedList: false | TipTapResolvedList;
+    unorderedList: false | TipTapResolvedList;
 }
 
-export const TextBlockContext = createContext<TextBlockContextValue>({ textBlocks: [], textBlockStyles: [] });
+export const TextBlockContext = createContext<TextBlockContextValue>({ textBlocks: [], orderedList: false, unorderedList: false });

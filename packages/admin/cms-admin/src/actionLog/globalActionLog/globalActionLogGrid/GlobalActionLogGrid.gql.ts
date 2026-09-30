@@ -1,29 +1,15 @@
 import { gql } from "@apollo/client";
 
-const globalActionLogGridFragment = gql`
-    fragment GlobalActionLogGrid on ActionLog {
-        id
-        user {
-            id
-            name
-        }
-        entityName
-        entityId
-        version
-        type
-        createdAt
-        scope
-    }
-`;
+import { actionLogRowFragment } from "../../actionLog/actionLogsQuery";
 
 export const globalActionLogGridQuery = gql`
-    query GlobalActionLogGrid($offset: Int!, $limit: Int!, $sort: [ActionLogSort!], $scopes: [JSONObject!]!) {
-        actionLogs(offset: $offset, limit: $limit, sort: $sort, scopes: $scopes) {
+    query GlobalActionLogGrid($offset: Int!, $limit: Int!, $sort: [ActionLogSort!]) {
+        allActionLogs(offset: $offset, limit: $limit, sort: $sort) {
             nodes {
-                ...GlobalActionLogGrid
+                ...ActionLogRow
             }
             totalCount
         }
     }
-    ${globalActionLogGridFragment}
+    ${actionLogRowFragment}
 `;

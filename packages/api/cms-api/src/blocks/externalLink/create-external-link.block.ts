@@ -3,12 +3,21 @@ import { IsBoolean, IsOptional } from "class-validator";
 import { BlockData, BlockInput, createBlock } from "../block";
 import { BlockField } from "../decorators/field";
 import type { BlockFactoryNameOrOptions } from "../factories/types";
+import type { MigrateVendorOptions } from "../migrations/types";
+import { typeSafeBlockMigrationPipe } from "../migrations/typeSafeBlockMigrationPipe";
 import { IsLinkTarget } from "../validator/is-link-target.validator";
-import { externalLinkMigrateVendor } from "./external-link-migrate-vendor";
+import { AddNoFollowMigration } from "./migrations/1-add-no-follow.migration";
 
 type ExternalLinkBlockOption = "openInNewWindow" | "noFollow";
 
 const allOptions: ExternalLinkBlockOption[] = ["openInNewWindow", "noFollow"];
+
+const migrateVendor: MigrateVendorOptions = {
+    version: 1,
+    migrations: typeSafeBlockMigrationPipe([AddNoFollowMigration]),
+    // The migration counted in the block's version before it moved into the vendor chain
+    legacyVersions: 1,
+};
 
 interface ExternalLinkBlockFactoryOptions {
     /**
@@ -81,6 +90,6 @@ export function createExternalLinkBlock(options: ExternalLinkBlockFactoryOptions
         IsBoolean()(ExternalLinkBlockInput.prototype, field);
     }
 
-    // Content stored by ExternalLinkBlock carries its vendor migrations, so a block replacing it needs them as well
-    return createBlock(ExternalLinkBlockData, ExternalLinkBlockInput, { name, migrate, migrateVendor: externalLinkMigrateVendor });
+    // Shared with the ExternalLinkBlock, so that a block replacing it reads the content it stored
+    return createBlock(ExternalLinkBlockData, ExternalLinkBlockInput, { name, migrate, migrateVendor });
 }

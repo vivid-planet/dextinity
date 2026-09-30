@@ -14,6 +14,6 @@ import { createExternalLinkBlock } from "@dextinity/cms-api";
 export const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "UrlLink");
 ```
 
-The block name is mandatory, since a block with other fields is a block of its own. It needs an admin block created with the same name and options, and a site component. `ExternalLinkBlock` is unchanged.
+The block name is mandatory, since a block with other fields is a block of its own. It needs an admin block created with the same name and options, and a site component. `ExternalLinkBlock` is now created from the factory and still exported, so this is non-breaking.
 
 A block created by the factory carries the migrations shipped with the `ExternalLinkBlock` as vendor migrations, so it can replace the `ExternalLinkBlock` in an existing project: it reads the content the `ExternalLinkBlock` stored, and its own migrations start with version 1. Values stored for a disabled option aren't passed on to the admin or the site, and are dropped the next time an editor saves the block.

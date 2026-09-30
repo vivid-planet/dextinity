@@ -1,6 +1,7 @@
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import type { DynamicModule } from "@nestjs/common";
 
+import { ActionLogsAclService } from "./action-logs.acl.service";
 import { ActionLogsResolver } from "./action-logs.resolver";
 import { ActionLogsService } from "./action-logs.service";
 import { ActionLogsSubscriber } from "./action-logs.subscriber";
@@ -12,7 +13,7 @@ export class ActionLogsModule {
         return {
             module: ActionLogsModule,
             imports: [MikroOrmModule.forFeature([ActionLog])],
-            providers: [ActionLogsSubscriber, ActionLogsService, ActionLogsResolver, PreviousActionLogLoaderService],
+            providers: [ActionLogsSubscriber, ActionLogsService, ActionLogsAclService, ActionLogsResolver, PreviousActionLogLoaderService],
         };
     }
 }

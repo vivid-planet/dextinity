@@ -9,6 +9,7 @@ import { DisablePermissionCheck, RequiredPermission } from "../user-permissions/
 import { CurrentUser } from "../user-permissions/dto/current-user";
 import { UserPermissionsService } from "../user-permissions/user-permissions.service";
 import { Permission } from "../user-permissions/user-permissions.types";
+import { ActionLogsAclService } from "./action-logs.acl.service";
 import { ActionLogs } from "./action-logs.decorator";
 import { ActionLogsResolver } from "./action-logs.resolver";
 import { ActionLogsService } from "./action-logs.service";
@@ -84,11 +85,14 @@ describe("ActionLogsResolver", () => {
     };
 
     beforeEach(() => {
+        const userPermissionsService = createMock<UserPermissionsService>({ isSystemUser: (id: string) => id === "system-user" });
+        const actionLogsService = createActionLogsService([LoggedEntity, UnscopedLoggedEntity]);
         resolver = new ActionLogsResolver(
             createMock<EntityManager<PostgreSqlDriver>>({ findAndCount: async () => [[], 0] as [never[], number] }),
-            createMock<UserPermissionsService>({ isSystemUser: (id: string) => id === "system-user" }),
+            userPermissionsService,
             createMock<PreviousActionLogLoaderService>(),
             createActionLogsService([LoggedEntity, PublicLoggedEntity, UnscopedLoggedEntity]),
+            new ActionLogsAclService(actionLogsService, userPermissionsService),
             new AccessControlService(),
         );
     });
@@ -146,6 +150,12 @@ describe("ActionLogsResolver", () => {
         await expect(
             resolver.actionLogs({ ...args, entity: UnregisteredLoggedEntity.name }, user("news" as Permission, [{ domain: "main", language: "en" }])),
         ).rejects.toThrow(BadRequestException);
+    });
+
+    it("returns an empty page of all action logs when the user can read no entity", async () => {
+        await expect(
+            resolver.allActionLogs({ offset: 0, limit: 25 }, user("actionLog" as Permission, [{ domain: "main", language: "en" }])),
+        ).resolves.toMatchObject({ nodes: [], totalCount: 0 });
     });
 
     it("fails on init when a logged entity declares no permission", () => {

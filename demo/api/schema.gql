@@ -27,7 +27,6 @@ input ActionLogFilter {
   and: [ActionLogFilter!]
   createdAt: DateTimeFilter
   entityId: IdFilter
-  entityName: StringFilter
   or: [ActionLogFilter!]
   userId: StringFilter
   version: NumberFilter
@@ -40,6 +39,7 @@ input ActionLogSort {
 
 enum ActionLogSortField {
   createdAt
+  entityName
   version
 }
 
@@ -2005,6 +2005,11 @@ input ProductVariantUpdateInput {
 
 type Query {
   actionLogs(entity: String!, filter: ActionLogFilter, limit: Int! = 25, offset: Int! = 0, scope: JSONObject!, sort: [ActionLogSort!]): PaginatedActionLogs!
+
+  """
+  Returns the action log of all entities, restricted to the entries the user could read in the action log of each entity.
+  """
+  allActionLogs(filter: ActionLogFilter, limit: Int! = 25, offset: Int! = 0, sort: [ActionLogSort!]): PaginatedActionLogs!
   autoBuildStatus: AutoBuildStatus!
   blockPreviewJwt(includeInvisible: Boolean!, scope: JSONObject!, url: String!): String!
   brevoConfig(scope: EmailCampaignContentScopeInput!): BrevoConfig

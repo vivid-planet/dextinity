@@ -32,9 +32,9 @@ export class PreviousActionLogLoaderService {
                         (candidate) =>
                             candidate.entityName === key.entityName && candidate.entityId === key.entityId && candidate.version < key.version,
                     );
-                    // Access to a row is checked against its own scopes. A previous version in other scopes could hold
-                    // content the user may not read, so it is not returned.
-                    return previous && scopesAreEqual(previous.scope, key.scope) ? previous : null;
+                    // Access to a row is checked against one of its own scopes. A previous version that lacks one of the
+                    // current row's scopes could hold content the user may not read, so it is not returned.
+                    return previous && containsAllScopes(previous.scope, key.scope) ? previous : null;
                 });
             },
             { cacheKeyFn: (key) => `${key.entityName}/${key.entityId}/${key.version}` },
@@ -46,9 +46,9 @@ export class PreviousActionLogLoaderService {
     }
 }
 
-function scopesAreEqual(scopes: ContentScope[] | undefined | null, otherScopes: ContentScope[] | undefined | null): boolean {
-    if (!scopes || !otherScopes) {
-        return !scopes && !otherScopes;
+function containsAllScopes(scopes: ContentScope[] | undefined | null, requiredScopes: ContentScope[] | undefined | null): boolean {
+    if (!scopes || !requiredScopes) {
+        return !scopes && !requiredScopes;
     }
-    return scopes.length === otherScopes.length && scopes.every((scope) => otherScopes.some((otherScope) => isDeepStrictEqual(scope, otherScope)));
+    return requiredScopes.every((requiredScope) => scopes.some((scope) => isDeepStrictEqual(scope, requiredScope)));
 }

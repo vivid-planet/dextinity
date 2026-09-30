@@ -46,65 +46,53 @@ export function containsInvalidTextBlock({
     defaultTextBlock,
     orderedList,
     unorderedList,
-    list,
-    insideListItem = false,
 }: {
     content: TipTapContent;
     textBlocks: TipTapResolvedTextBlock[];
     defaultTextBlock: TipTapResolvedTextBlock;
     orderedList: false | TipTapResolvedList;
     unorderedList: false | TipTapResolvedList;
-    list?: TipTapResolvedList;
-    insideListItem?: boolean;
 }): boolean {
-    if (typeof content !== "object" || content === null) {
-        return false;
-    }
-
-    if (content.type === "orderedList" && orderedList) {
-        list = orderedList;
-    } else if (content.type === "bulletList" && unorderedList) {
-        list = unorderedList;
-    }
-
-    if (content.type === "textBlock") {
-        const name = content.attrs?.textBlock;
-        // A node naming none is the default text block, which the schema fills in - and which may be
-        // a heading, since only lists need a `p` text block to exist at all.
-        const textBlock = name == null ? defaultTextBlock : textBlocks.find((candidate) => candidate.name === name);
-        if (!textBlock) {
-            return true;
-        }
-        if (insideListItem && textBlock.tag !== "p") {
-            return true;
+    // `list` is the list the walk is currently inside, which decides the styles a list item's content
+    // may use; `insideListItem` keeps headings out of list items.
+    function walk(content: TipTapContent, list: false | TipTapResolvedList, insideListItem: boolean): boolean {
+        if (typeof content !== "object" || content === null) {
+            return false;
         }
 
-        const styleName = content.attrs?.textBlockStyle;
-        if (styleName != null) {
-            const isOwnStyle = textBlock.styles.some((style) => style.name === styleName);
-            const isListStyle = insideListItem && list ? list.styles.some((style) => style.name === styleName) : false;
-            if (!isOwnStyle && !isListStyle) {
+        const containingList = content.type === "orderedList" ? orderedList : content.type === "bulletList" ? unorderedList : list;
+
+        if (content.type === "textBlock") {
+            const name = content.attrs?.textBlock;
+            // A node naming none is the default text block, which the schema fills in - and which may
+            // be a heading, since only lists need a `p` text block to exist at all.
+            const textBlock = name == null ? defaultTextBlock : textBlocks.find((candidate) => candidate.name === name);
+            if (!textBlock) {
                 return true;
             }
+            if (insideListItem && textBlock.tag !== "p") {
+                return true;
+            }
+
+            const styleName = content.attrs?.textBlockStyle;
+            if (styleName != null) {
+                const isOwnStyle = textBlock.styles.some((style) => style.name === styleName);
+                const isListStyle = insideListItem && containingList ? containingList.styles.some((style) => style.name === styleName) : false;
+                if (!isOwnStyle && !isListStyle) {
+                    return true;
+                }
+            }
         }
+
+        if (!Array.isArray(content.content)) {
+            return false;
+        }
+
+        const childrenInsideListItem = content.type === "listItem" || insideListItem;
+        return content.content.some((child: TipTapContent) => walk(child, containingList, childrenInsideListItem));
     }
 
-    if (!Array.isArray(content.content)) {
-        return false;
-    }
-
-    const childrenInsideListItem = content.type === "listItem" || insideListItem;
-    return content.content.some((child: TipTapContent) =>
-        containsInvalidTextBlock({
-            content: child,
-            textBlocks,
-            defaultTextBlock,
-            orderedList,
-            unorderedList,
-            list,
-            insideListItem: childrenInsideListItem,
-        }),
-    );
+    return walk(content, false, false);
 }
 
 export function getListNestingDepth(content: TipTapContent, currentDepth = 0): number {

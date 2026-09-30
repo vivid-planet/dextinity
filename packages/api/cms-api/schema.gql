@@ -626,6 +626,7 @@ type Query {
 input ActionLogFilter {
   userId: StringFilter
   entityId: IdFilter
+  entityName: StringFilter
   version: NumberFilter
   createdAt: DateTimeFilter
   scope: ActionLogScopeFilter

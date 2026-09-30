@@ -93,12 +93,12 @@ describe("ActionLogsAclService", () => {
         expect(scopeConditions).toHaveLength(2);
     });
 
-    it("restricts scoped entities to unscoped rows when the user holds the permission in no content scope", () => {
-        const [newsFilter] = getEntityFilters(
+    it("excludes scoped entities, including their unscoped rows, when the user holds the permission in no content scope", () => {
+        const entityFilters = getEntityFilters(
             aclService.getReadableActionLogsFilter(user(actionLogPermission, { permission: "news" as Permission, contentScopes: [] })),
         );
 
-        expect(newsFilter).toEqual({ entityName: "News", $or: [{ scope: null }] });
+        expect(entityFilters.map(({ entityName }) => entityName)).toEqual(["PublicEntity"]);
     });
 
     it("returns null when the user can read no entity besides those that disable the check", () => {

@@ -55,10 +55,16 @@ export class ActionLogsAclService {
                 continue;
             }
 
+            // The log of the single entity checks the permission for a requested scope, so a grant without any content
+            // scope reads no row there, not even the unscoped ones.
             const contentScopes = grants.flatMap(({ contentScopes }) => contentScopes);
+            if (contentScopes.length === 0) {
+                continue;
+            }
+
             entityFilters.push({
                 entityName: entityClass.name,
-                $or: [{ scope: null }, ...(contentScopes.length > 0 ? [rowScopeWithinAnyOf(contentScopes)] : [])],
+                $or: [{ scope: null }, rowScopeWithinAnyOf(contentScopes)],
             });
         }
 

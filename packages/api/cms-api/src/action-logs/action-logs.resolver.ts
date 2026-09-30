@@ -16,11 +16,13 @@ import { ContentScope } from "../user-permissions/interfaces/content-scope.inter
 import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants";
 import { UserPermissionsService } from "../user-permissions/user-permissions.service";
 import { AccessControlServiceInterface, Permission, SystemUser } from "../user-permissions/user-permissions.types";
+import { ActionLogsAclService } from "./action-logs.acl.service";
 import { ActionLogsService } from "./action-logs.service";
 import { containsAllScopes } from "./contains-all-scopes";
 import { ActionLogType } from "./dto/action-log-type.enum";
 import { ActionLogsArgs } from "./dto/action-logs.args";
 import { ActionLogsUser } from "./dto/action-logs-user";
+import { AllActionLogsArgs } from "./dto/all-action-logs.args";
 import { PaginatedActionLogs } from "./dto/paginated-action-logs";
 import { ActionLog } from "./entities/action-log.entity";
 import { PreviousActionLogLoaderService } from "./previous-action-log-loader.service";
@@ -32,6 +34,7 @@ export class ActionLogsResolver {
         private readonly userPermissionsService: UserPermissionsService,
         private readonly previousActionLogLoader: PreviousActionLogLoaderService,
         private readonly actionLogsService: ActionLogsService,
+        private readonly actionLogsAclService: ActionLogsAclService,
         @Inject(ACCESS_CONTROL_SERVICE) private readonly accessControlService: AccessControlServiceInterface,
     ) {}
 
@@ -68,6 +71,37 @@ export class ActionLogsResolver {
                 },
             ],
         });
+
+        if (filter) {
+            andFilters.push(filtersToMikroOrmQuery(filter));
+        }
+
+        const [entities, totalCount] = await this.entityManager.findAndCount(
+            ActionLog,
+            { $and: andFilters },
+            {
+                offset,
+                limit,
+                orderBy: sort ? gqlSortToMikroOrmOrderBy(sort) : { createdAt: "DESC" },
+            },
+        );
+        return new PaginatedActionLogs(entities, totalCount);
+    }
+
+    @Query(() => PaginatedActionLogs, {
+        description: "Returns the action log of all entities, restricted to the entries the user could read in the action log of each entity.",
+    })
+    @RequiredPermission("actionLog", { skipScopeCheck: true })
+    async allActionLogs(
+        @Args() { filter, offset, limit, sort }: AllActionLogsArgs,
+        @GetCurrentUser() user: CurrentUser | SystemUser,
+    ): Promise<PaginatedActionLogs> {
+        const readableActionLogsFilter = this.actionLogsAclService.getReadableActionLogsFilter(user);
+        if (readableActionLogsFilter === null) {
+            return new PaginatedActionLogs([], 0);
+        }
+
+        const andFilters: ObjectQuery<ActionLog>[] = [readableActionLogsFilter];
 
         if (filter) {
             andFilters.push(filtersToMikroOrmQuery(filter));

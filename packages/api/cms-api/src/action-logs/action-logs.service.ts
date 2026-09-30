@@ -34,9 +34,6 @@ export class ActionLogsService implements OnModuleInit {
         }
     }
 
-    /**
-     * Entities registered with MikroORM and decorated with `@ActionLogs()`.
-     */
     getLoggedEntities(): ReadonlyArray<Type<AnyEntity>> {
         return this.loggedEntities;
     }

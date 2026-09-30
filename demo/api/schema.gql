@@ -27,6 +27,7 @@ input ActionLogFilter {
   and: [ActionLogFilter!]
   createdAt: DateTimeFilter
   entityId: IdFilter
+  entityName: StringFilter
   or: [ActionLogFilter!]
   scope: ActionLogScopeFilter
   userId: StringFilter

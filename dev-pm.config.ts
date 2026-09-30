@@ -270,6 +270,12 @@ export default defineConfig({
             script: "pnpm --filter dextinity-demo-site run css:types:watch",
             group: ["demo-site", "demo"],
         },
+        {
+            name: "demo-site-storybook",
+            script: "pnpm --filter dextinity-demo-site run storybook",
+            group: ["demo-site", "demo"],
+            waitOn: waitOnPackages("@dextinity/site-nextjs"),
+        },
 
         // group docs
         {

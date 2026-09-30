@@ -3,10 +3,10 @@ import { useIntl } from "react-intl";
 
 import { ActionLogCompare } from "../../components/actionLogCompare/ActionLogCompare";
 import { ActionLogShowVersion } from "../../components/actionLogShowVersion/ActionLogShowVersion";
-import type { GQLActionLogRowFragment } from "../actionLogsQuery.generated";
+import type { GQLActionLogShowVersionDialogFragment } from "./ActionLogShowVersionDialog.gql.generated";
 
 export type ActionLogShowVersionDialogProps = {
-    row: GQLActionLogRowFragment | null;
+    row: GQLActionLogShowVersionDialogFragment | null;
     open: boolean;
     onClose: () => void;
 };
@@ -31,3 +31,5 @@ export function ActionLogShowVersionDialog({ row, open, onClose }: ActionLogShow
         </Dialog>
     );
 }
+
+export { actionLogShowVersionDialogFragment } from "./ActionLogShowVersionDialog.gql";

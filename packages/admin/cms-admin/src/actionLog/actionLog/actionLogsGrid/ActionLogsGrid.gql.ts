@@ -1,37 +1,34 @@
 import { gql } from "@apollo/client";
 
-import { actionLogCompareFragment } from "../components/actionLogCompare/ActionLogCompare";
+import { actionLogShowVersionDialogFragment } from "../actionLogShowVersionDialog/ActionLogShowVersionDialog";
 
-export const actionLogRowFragment = gql`
-    fragment ActionLogRow on ActionLog {
+export const actionLogsGridFragment = gql`
+    fragment ActionLogsGrid on ActionLog {
         id
-        entityName
         entityId
-        version
         type
         createdAt
-        scope
         snapshot
         user {
             id
             name
         }
         previousVersion {
-            ...ActionLogCompare
+            snapshot
         }
-        ...ActionLogCompare
+        ...ActionLogShowVersionDialog
     }
-    ${actionLogCompareFragment}
+    ${actionLogShowVersionDialogFragment}
 `;
 
-export const actionLogsQuery = gql`
+export const actionLogsGridQuery = gql`
     query ActionLogs($entity: String!, $scope: JSONObject!, $offset: Int!, $limit: Int!, $filter: ActionLogFilter, $sort: [ActionLogSort!]) {
         actionLogs(entity: $entity, scope: $scope, offset: $offset, limit: $limit, filter: $filter, sort: $sort) {
             nodes {
-                ...ActionLogRow
+                ...ActionLogsGrid
             }
             totalCount
         }
     }
-    ${actionLogRowFragment}
+    ${actionLogsGridFragment}
 `;

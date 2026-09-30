@@ -4,6 +4,6 @@
 
 Open the version history of an entity from `GlobalActionLogPage`
 
-A row action on the global Action Log opens `ActionLogDialog` for the entity of the row, including a deleted one, in the scope of the row.
+A row action on the global Action Log opens `ActionLogDialog` for the entity of the row, including a deleted one.
 
-`ActionLogDialog` accepts a `scope` to read the action log in, which defaults to the current content scope.
+`ActionLogDialog` accepts `acrossScopes` to read the versions of the entity in every scope the user may read, through `allActionLogs`, instead of the current content scope.

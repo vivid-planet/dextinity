@@ -43,6 +43,12 @@ export class ActionLogFilter {
     @IsUndefinable()
     entityId?: IdFilter;
 
+    @Field(() => StringFilter, { nullable: true })
+    @ValidateNested()
+    @Type(() => StringFilter)
+    @IsUndefinable()
+    entityName?: StringFilter;
+
     @Field(() => NumberFilter, { nullable: true })
     @ValidateNested()
     @Type(() => NumberFilter)

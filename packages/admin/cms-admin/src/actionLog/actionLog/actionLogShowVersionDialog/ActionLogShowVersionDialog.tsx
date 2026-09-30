@@ -26,8 +26,8 @@ export function ActionLogShowVersionDialog({ row, open, onClose }: ActionLogShow
                 defaultMessage: "Action Log",
             })}
         >
-            {row && previous && <ActionLogCompare afterVersion={row} beforeVersion={previous} loading={false} id={row.id} />}
-            {row && !previous && <ActionLogShowVersion actionLog={row} loading={false} id={row.id} />}
+            {row && previous && <ActionLogCompare afterVersion={row} beforeVersion={previous} loading={false} id={row.entityId} />}
+            {row && !previous && <ActionLogShowVersion actionLog={row} loading={false} id={row.entityId} />}
         </Dialog>
     );
 }

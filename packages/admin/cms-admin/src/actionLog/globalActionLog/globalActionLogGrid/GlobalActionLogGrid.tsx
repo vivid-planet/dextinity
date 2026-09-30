@@ -12,31 +12,26 @@ import {
 import { useMemo, useState } from "react";
 import { useIntl } from "react-intl";
 
-import { useContentScope } from "../../../contentScope/Provider";
 import { DataGrid } from "../../../dataGrid/DataGrid";
+import { ActionLogShowVersionDialog } from "../../actionLog/actionLogShowVersionDialog/ActionLogShowVersionDialog";
+import type { GQLActionLogRowFragment } from "../../actionLog/actionLogsQuery.generated";
 import { ActionLogTypeChip } from "../../components/actionLogTypeChip/ActionLogTypeChip";
 import { ScopeCell } from "../../components/scopeCell/ScopeCell";
 import { UserCell } from "../../components/userCell/UserCell";
-import { GlobalActionLogShowVersionDialog } from "../globalActionLogShowVersionDialog/GlobalActionLogShowVersionDialog";
 import { globalActionLogGridQuery } from "./GlobalActionLogGrid.gql";
-import type {
-    GQLGlobalActionLogGridFragment,
-    GQLGlobalActionLogGridQuery,
-    GQLGlobalActionLogGridQueryVariables,
-} from "./GlobalActionLogGrid.gql.generated";
+import type { GQLGlobalActionLogGridQuery, GQLGlobalActionLogGridQueryVariables } from "./GlobalActionLogGrid.gql.generated";
 import { EntityTypeChip } from "./GlobalActionLogGrid.sc";
 
 export function GlobalActionLogGrid() {
     const intl = useIntl();
-    const { values: scopeValues } = useContentScope();
-    const [openVersionId, setOpenVersionId] = useState<string | null>(null);
+    const [selectedRow, setSelectedRow] = useState<GQLActionLogRowFragment | null>(null);
 
     const dataGridProps = {
         ...useDataGridRemote({ initialSort: [{ field: "createdAt", sort: "desc" }] }),
         ...usePersistentColumnState("GlobalActionLogGrid"),
     };
 
-    const columns = useMemo<GridColDef<GQLGlobalActionLogGridFragment>[]>(
+    const columns = useMemo<GridColDef<GQLActionLogRowFragment>[]>(
         () => [
             {
                 ...dataGridDateTimeColumn,
@@ -87,18 +82,15 @@ export function GlobalActionLogGrid() {
         [intl],
     );
 
-    const scopes = useMemo(() => scopeValues.map((item) => item.scope), [scopeValues]);
-
     const { data, loading, error } = useQuery<GQLGlobalActionLogGridQuery, GQLGlobalActionLogGridQueryVariables>(globalActionLogGridQuery, {
         variables: {
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
-            scopes,
             sort: muiGridSortToGql(dataGridProps.sortModel),
         },
     });
 
-    const rowCount = useBufferedRowCount(data?.actionLogs.totalCount);
+    const rowCount = useBufferedRowCount(data?.allActionLogs.totalCount);
 
     if (error) {
         throw error;
@@ -109,15 +101,15 @@ export function GlobalActionLogGrid() {
             <DataGrid
                 {...dataGridProps}
                 columns={columns}
-                rows={data?.actionLogs.nodes ?? []}
+                rows={data?.allActionLogs.nodes ?? []}
                 rowCount={rowCount}
                 loading={loading}
                 disableRowSelectionOnClick
-                onRowClick={({ row }) => setOpenVersionId(row.id)}
+                onRowClick={({ row }) => setSelectedRow(row)}
                 slots={{ toolbar: DataGridToolbar }}
                 showToolbar
             />
-            <GlobalActionLogShowVersionDialog actionLogId={openVersionId} open={openVersionId !== null} onClose={() => setOpenVersionId(null)} />
+            <ActionLogShowVersionDialog row={selectedRow} open={selectedRow !== null} onClose={() => setSelectedRow(null)} />
         </MainContent>
     );
 }

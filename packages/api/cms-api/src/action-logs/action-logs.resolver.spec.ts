@@ -3,6 +3,7 @@ import { Entity, EntityManager, PostgreSqlDriver, PrimaryKey } from "@mikro-orm/
 import { BadRequestException, ForbiddenException } from "@nestjs/common";
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { DiscoverService } from "../dependencies/discover.service";
 import { AbstractAccessControlService } from "../user-permissions/access-control.service";
 import { DisablePermissionCheck, RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
 import { CurrentUser } from "../user-permissions/dto/current-user";
@@ -10,6 +11,7 @@ import { UserPermissionsService } from "../user-permissions/user-permissions.ser
 import { Permission } from "../user-permissions/user-permissions.types";
 import { ActionLogs } from "./action-logs.decorator";
 import { ActionLogsResolver } from "./action-logs.resolver";
+import { ActionLogsService } from "./action-logs.service";
 import { PreviousActionLogLoaderService } from "./previous-action-log-loader.service";
 
 @Entity()
@@ -36,7 +38,32 @@ class UnscopedLoggedEntity {
     id: number;
 }
 
+@Entity()
+@ActionLogs()
+@RequiredPermission("news" as Permission)
+class UnregisteredLoggedEntity {
+    @PrimaryKey()
+    id: number;
+}
+
+@Entity()
+@ActionLogs()
+class LoggedEntityWithoutPermission {
+    @PrimaryKey()
+    id: number;
+}
+
 class AccessControlService extends AbstractAccessControlService {}
+
+const createActionLogsService = (entities: unknown[]): ActionLogsService => {
+    const service = new ActionLogsService(
+        createMock(),
+        createMock(),
+        createMock<DiscoverService>({ discoverTargetEntities: () => entities.map((entity) => ({ entity })) as never }),
+    );
+    service.onModuleInit();
+    return service;
+};
 
 const user = (permission: Permission, contentScopes: Array<Record<string, string>>): CurrentUser =>
     ({
@@ -61,6 +88,7 @@ describe("ActionLogsResolver", () => {
             createMock<EntityManager<PostgreSqlDriver>>({ findAndCount: async () => [[], 0] as [never[], number] }),
             createMock<UserPermissionsService>({ isSystemUser: (id: string) => id === "system-user" }),
             createMock<PreviousActionLogLoaderService>(),
+            createActionLogsService([LoggedEntity, PublicLoggedEntity, UnscopedLoggedEntity]),
             new AccessControlService(),
         );
     });
@@ -112,5 +140,15 @@ describe("ActionLogsResolver", () => {
         await expect(resolver.actionLogs({ ...args, entity: "Unlogged" }, user("news" as Permission, [{ domain: "main" }]))).rejects.toThrow(
             BadRequestException,
         );
+    });
+
+    it("rejects a decorated entity that is not registered with MikroORM", async () => {
+        await expect(
+            resolver.actionLogs({ ...args, entity: UnregisteredLoggedEntity.name }, user("news" as Permission, [{ domain: "main", language: "en" }])),
+        ).rejects.toThrow(BadRequestException);
+    });
+
+    it("fails on init when a logged entity declares no permission", () => {
+        expect(() => createActionLogsService([LoggedEntityWithoutPermission])).toThrow(/missing a @RequiredPermission decorator/);
     });
 });

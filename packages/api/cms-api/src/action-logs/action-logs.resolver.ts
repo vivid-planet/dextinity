@@ -16,7 +16,7 @@ import { ContentScope } from "../user-permissions/interfaces/content-scope.inter
 import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants";
 import { UserPermissionsService } from "../user-permissions/user-permissions.service";
 import { AccessControlServiceInterface, Permission, SystemUser } from "../user-permissions/user-permissions.types";
-import { getActionLogEntities } from "./action-logs.decorator";
+import { ActionLogsService } from "./action-logs.service";
 import { ActionLogType } from "./dto/action-log-type.enum";
 import { ActionLogsArgs } from "./dto/action-logs.args";
 import { ActionLogsUser } from "./dto/action-logs-user";
@@ -30,6 +30,7 @@ export class ActionLogsResolver {
         private readonly entityManager: EntityManager<PostgreSqlDriver>,
         private readonly userPermissionsService: UserPermissionsService,
         private readonly previousActionLogLoader: PreviousActionLogLoaderService,
+        private readonly actionLogsService: ActionLogsService,
         @Inject(ACCESS_CONTROL_SERVICE) private readonly accessControlService: AccessControlServiceInterface,
     ) {}
 
@@ -76,11 +77,10 @@ export class ActionLogsResolver {
     }
 
     private checkPermission(entity: string, scope: ContentScope, user: CurrentUser | SystemUser): void {
-        const entityClass = getActionLogEntities().find(({ name }) => name === entity);
+        const loggedEntities = this.actionLogsService.getLoggedEntities();
+        const entityClass = loggedEntities.find(({ name }) => name === entity);
         if (!entityClass) {
-            const known = getActionLogEntities()
-                .map(({ name }) => name)
-                .join(", ");
+            const known = loggedEntities.map(({ name }) => name).join(", ");
             throw new BadRequestException(`"${entity}" is not logged. Entities decorated with @ActionLogs(): ${known || "none"}.`);
         }
 

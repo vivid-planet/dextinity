@@ -1,3 +1,27 @@
+type EntityInfo {
+  id: String!
+  entityName: String!
+  name: String!
+  secondaryInformation: String
+}
+
+type Dependency {
+  rootId: String!
+  rootGraphqlObjectType: String!
+  rootColumnName: String!
+  jsonPath: String!
+  visible: Boolean!
+  targetGraphqlObjectType: String!
+  targetId: String!
+  name: String
+  secondaryInformation: String
+}
+
+type PaginatedDependencies {
+  nodes: [Dependency!]!
+  totalCount: Int!
+}
+
 type UserPermission {
   id: ID!
   source: UserPermissionSource!
@@ -109,30 +133,6 @@ type CurrentUser {
   accountUrl: String
   permissionsForScope(scope: JSONObject!): [String!]!
   allowedContentScopes: [ContentScopeWithLabel!]!
-}
-
-type EntityInfo {
-  id: String!
-  entityName: String!
-  name: String!
-  secondaryInformation: String
-}
-
-type Dependency {
-  rootId: String!
-  rootGraphqlObjectType: String!
-  rootColumnName: String!
-  jsonPath: String!
-  visible: Boolean!
-  targetGraphqlObjectType: String!
-  targetId: String!
-  name: String
-  secondaryInformation: String
-}
-
-type PaginatedDependencies {
-  nodes: [Dependency!]!
-  totalCount: Int!
 }
 
 type DamMediaAlternative {

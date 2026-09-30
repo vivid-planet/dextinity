@@ -25,8 +25,8 @@ import { ActionLogTypeChip } from "../../components/actionLogTypeChip/ActionLogT
 import { UserCell } from "../../components/userCell/UserCell";
 import { ActionLogDialog } from "../actionLogDialog/ActionLogDialog";
 import { ActionLogShowVersionDialog } from "../actionLogShowVersionDialog/ActionLogShowVersionDialog";
-import { type ActionLogQueryName, buildActionLogsQuery } from "../actionLogsQuery";
-import type { GQLActionLogRowFragment } from "../actionLogsQuery.generated";
+import { type ActionLogQueryName, buildActionLogsQuery } from "./ActionLogsGrid.gql";
+import type { GQLActionLogsGridFragment } from "./ActionLogsGrid.gql.generated";
 
 export type ActionLogsGridProps<TQuery> = {
     /**
@@ -63,13 +63,13 @@ function ActionLogsGridToolbar() {
 }
 
 type ActionLogsQueryResult = {
-    [key: string]: { nodes: GQLActionLogRowFragment[]; totalCount: number };
+    [key: string]: { nodes: GQLActionLogsGridFragment[]; totalCount: number };
 };
 
 export function ActionLogsGrid<TQuery = Record<string, unknown>>({ queryName }: ActionLogsGridProps<TQuery>) {
     const intl = useIntl();
     const { scope } = useContentScope();
-    const [selectedRow, setSelectedRow] = useState<GQLActionLogRowFragment | null>(null);
+    const [selectedRow, setSelectedRow] = useState<GQLActionLogsGridFragment | null>(null);
     const [openEntityId, setOpenEntityId] = useState<string | null>(null);
 
     const actionLogsQuery = useMemo(() => buildActionLogsQuery(queryName), [queryName]);
@@ -79,7 +79,7 @@ export function ActionLogsGrid<TQuery = Record<string, unknown>>({ queryName }: 
         ...usePersistentColumnState(`ActionLogsGrid-${queryName}`),
     };
 
-    const columns = useMemo<GridColDef<GQLActionLogRowFragment>[]>(
+    const columns = useMemo<GridColDef<GQLActionLogsGridFragment>[]>(
         () => [
             {
                 ...dataGridDateTimeColumn,

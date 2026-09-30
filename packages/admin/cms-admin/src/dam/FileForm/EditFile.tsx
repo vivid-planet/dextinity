@@ -24,6 +24,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Link as RouterLink } from "react-router-dom";
 import ReactSplit from "react-split";
 
+import { fullCropArea } from "../../common/image/cropArea";
 import { useContentScope } from "../../contentScope/Provider";
 import { useDependenciesConfig } from "../../dependencies/dependenciesConfig";
 import { DependentsList } from "../../dependencies/DependentsList";
@@ -134,13 +135,18 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
                     width: null,
                     height: null,
                 };
-            } else {
+            } else if (values.crop.width && values.crop.height) {
                 cropArea = {
                     focalPoint: values.focalPoint,
                     x: values.crop.x,
                     y: values.crop.y,
-                    width: values.crop.width ? Math.ceil(values.crop.width) : undefined,
-                    height: values.crop.height ? Math.ceil(values.crop.height) : undefined,
+                    width: Math.ceil(values.crop.width),
+                    height: Math.ceil(values.crop.height),
+                };
+            } else {
+                cropArea = {
+                    focalPoint: values.focalPoint,
+                    ...fullCropArea,
                 };
             }
 

@@ -41,8 +41,8 @@ export const ImageCrop = (props: ImageCropProps) => {
                         disabled={disabled}
                         style={{ width: "auto", height: "auto" }}
                         onChange={(newCrop, percentCrop) => {
-                            // Prevent reset at first rendering
-                            if (percentCrop.width === 0 && percentCrop.height === 0 && percentCrop.x === 0 && percentCrop.y === 0) {
+                            // A pointer down without a drag reports an empty selection, which must not replace the existing crop area
+                            if (percentCrop.width === 0 || percentCrop.height === 0) {
                                 return;
                             }
 

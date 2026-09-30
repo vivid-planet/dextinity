@@ -5,6 +5,7 @@ import { DamFileAiContentType } from "../files/entities/ai-content-type.enum";
 import { FilesService } from "../files/files.service";
 import { ImageCropArea } from "../images/entities/image-crop-area.entity";
 import { ImagesService } from "../images/images.service";
+import { isUsableCropArea } from "../images/images.util";
 import { DamScopeInterface } from "../types";
 import { PixelImageBlockData } from "./pixel-image.block";
 
@@ -54,6 +55,8 @@ export class PixelImageBlockTransformerService implements BlockTransformerServic
 
         const fileUrl = includeInvisibleContent ? await this.filesService.createFileUrl(file, { previewDamUrls }) : undefined;
 
+        const cropArea = block.cropArea && isUsableCropArea(block.cropArea) ? { ...block.cropArea } : undefined;
+
         return {
             damFile: {
                 id: file.id,
@@ -78,8 +81,8 @@ export class PixelImageBlockTransformerService implements BlockTransformerServic
                     : undefined,
                 fileUrl,
             },
-            cropArea: block.cropArea ? { ...block.cropArea } : undefined,
-            urlTemplate: this.imagesService.createUrlTemplate({ file, cropArea: block.cropArea }, { previewDamUrls }),
+            cropArea,
+            urlTemplate: this.imagesService.createUrlTemplate({ file, cropArea }, { previewDamUrls }),
         };
     }
 }

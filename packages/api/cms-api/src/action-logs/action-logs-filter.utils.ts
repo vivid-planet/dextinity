@@ -1,6 +1,7 @@
-import type { ObjectQuery } from "@mikro-orm/postgresql";
+import { type ObjectQuery, raw } from "@mikro-orm/postgresql";
 
 import { filtersToMikroOrmQuery } from "../common/filter/mikro-orm";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
 import type { ActionLogFilter } from "./dto/action-log.filter";
 import type { ActionLog } from "./entities/action-log.entity";
 
@@ -8,17 +9,17 @@ export function actionLogFilterToWhere(filter: ActionLogFilter): ObjectQuery<Act
     const andConditions: ObjectQuery<ActionLog>[] = [];
 
     if (filter.scope) {
-        if (filter.scope.isGlobal === true) {
-            andConditions.push({ scope: null });
+        if (filter.scope.isGlobal !== undefined) {
+            andConditions.push({ scope: filter.scope.isGlobal ? null : { $ne: null } });
         }
         if (filter.scope.equal !== undefined) {
-            andConditions.push({ scope: { $contains: [filter.scope.equal] } });
+            andConditions.push(rowHoldsScope(filter.scope.equal));
         }
         if (filter.scope.isAnyOf !== undefined && filter.scope.isAnyOf.length > 0) {
-            andConditions.push({ $or: filter.scope.isAnyOf.map((scope) => ({ scope: { $contains: [scope] } })) });
+            andConditions.push({ $or: filter.scope.isAnyOf.map(rowHoldsScope) });
         }
         if (filter.scope.notEqual !== undefined) {
-            andConditions.push({ $not: { scope: { $contains: [filter.scope.notEqual] } } });
+            andConditions.push({ $not: rowHoldsScope(filter.scope.notEqual) });
         }
     }
 
@@ -41,4 +42,18 @@ export function actionLogFilterToWhere(filter: ActionLogFilter): ObjectQuery<Act
         return andConditions[0];
     }
     return { $and: andConditions };
+}
+
+/**
+ * `$contains` alone would also match a row that holds a scope with more dimensions, for instance `main/de` for
+ * `{ domain: "main" }`. It stays in the query for the GIN index.
+ */
+function rowHoldsScope(scope: ContentScope): ObjectQuery<ActionLog> {
+    return {
+        scope: { $contains: [scope] },
+        [raw(
+            (alias) => `exists (select 1 from jsonb_array_elements(${alias}."scope") as "rowScope" where "rowScope" = ?::jsonb)`,
+            [JSON.stringify(scope)],
+        )]: true,
+    };
 }

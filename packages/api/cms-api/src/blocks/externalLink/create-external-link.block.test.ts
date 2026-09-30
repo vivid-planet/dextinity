@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import { BlockMigration } from "../migrations/BlockMigration";
 import type { BlockMigrationInterface } from "../migrations/types";
 import { createExternalLinkBlock } from "./create-external-link.block";
-import { ExternalLinkBlock } from "./external-link.block";
 
 function fieldNames(block: ReturnType<typeof createExternalLinkBlock>) {
     return {
@@ -56,13 +55,6 @@ describe("createExternalLinkBlock", () => {
         expect(UrlLinkBlock.blockInputFactory({ targetUrl: "https://www.example.com" }).transformToBlockData().transformToSave()).toMatchObject({
             targetUrl: "https://www.example.com",
         });
-    });
-
-    it("should reject a name that is already registered", () => {
-        createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "TakenLink");
-
-        expect(() => createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "TakenLink")).toThrow(/already registered/);
-        expect(() => createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, ExternalLinkBlock.name)).toThrow(/already registered/);
     });
 
     describe("content stored by ExternalLinkBlock", () => {

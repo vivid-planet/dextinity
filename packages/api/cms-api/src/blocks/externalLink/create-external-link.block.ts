@@ -1,6 +1,6 @@
 import { IsBoolean, IsOptional } from "class-validator";
 
-import { BlockData, BlockInput, createBlock, getRegisteredBlocks } from "../block";
+import { BlockData, BlockInput, createBlock } from "../block";
 import { BlockField } from "../decorators/field";
 import type { BlockFactoryNameOrOptions } from "../factories/types";
 import { IsLinkTarget } from "../validator/is-link-target.validator";
@@ -36,12 +36,6 @@ interface ExternalLinkBlockFactoryOptions {
 export function createExternalLinkBlock(options: ExternalLinkBlockFactoryOptions, nameOrOptions: BlockFactoryNameOrOptions) {
     const name = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
     const migrate = typeof nameOrOptions === "string" ? undefined : nameOrOptions.migrate;
-
-    if (getRegisteredBlocks().some((block) => block.name === name)) {
-        throw new Error(
-            `A block named "${name}" is already registered. A block created with createExternalLinkBlock needs a name of its own, for instance createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "UrlLink").`,
-        );
-    }
 
     const supportedFields = allOptions.filter((option) => options[option] !== false);
 

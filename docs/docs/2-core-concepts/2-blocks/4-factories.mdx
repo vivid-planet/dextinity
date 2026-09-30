@@ -294,7 +294,7 @@ export const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, no
 ```
 
 The name is mandatory: a block's field set is part of what its name promises, so a block with other fields is a block of
-its own. The factory throws on a name that is already registered, `ExternalLink` included.
+its own.
 
 Replacing the `ExternalLinkBlock` at an existing usage site, for instance under the `external` key of a `LinkBlock`,
 needs no migration: a `OneOfBlock` resolves by key, not by block name. Values stored for a disabled option stay in the

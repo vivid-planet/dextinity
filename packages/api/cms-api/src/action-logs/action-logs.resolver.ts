@@ -15,7 +15,8 @@ export class ActionLogsResolver {
 
     @ResolveField(() => ActionLog, {
         nullable: true,
-        description: "The most recent earlier action log entry for the same entity. Null when this is the first version.",
+        description:
+            "The most recent earlier action log entry for the same entity. Null when this is the first version, or when the earlier entry lacks one of this entry's scopes.",
     })
     async previousVersion(@Parent() actionLog: ActionLog): Promise<ActionLog | null> {
         if (actionLog.version <= 1) {

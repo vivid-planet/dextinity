@@ -15,23 +15,26 @@ import { useIntl } from "react-intl";
 
 import { DataGrid } from "../../../dataGrid/DataGrid";
 import { ActionLogShowVersionDialog } from "../../actionLog/actionLogShowVersionDialog/ActionLogShowVersionDialog";
-import type { GQLActionLogRowFragment } from "../../actionLog/actionLogsQuery.generated";
 import { ActionLogTypeChip } from "../../components/actionLogTypeChip/ActionLogTypeChip";
 import { ScopeCell } from "../../components/scopeCell/ScopeCell";
 import { UserCell } from "../../components/userCell/UserCell";
 import { globalActionLogGridQuery } from "./GlobalActionLogGrid.gql";
-import type { GQLGlobalActionLogGridQuery, GQLGlobalActionLogGridQueryVariables } from "./GlobalActionLogGrid.gql.generated";
+import type {
+    GQLGlobalActionLogGridFragment,
+    GQLGlobalActionLogGridQuery,
+    GQLGlobalActionLogGridQueryVariables,
+} from "./GlobalActionLogGrid.gql.generated";
 
 export function GlobalActionLogGrid() {
     const intl = useIntl();
-    const [selectedRow, setSelectedRow] = useState<GQLActionLogRowFragment | null>(null);
+    const [selectedRow, setSelectedRow] = useState<GQLGlobalActionLogGridFragment | null>(null);
 
     const dataGridProps = {
         ...useDataGridRemote({ initialSort: [{ field: "createdAt", sort: "desc" }] }),
         ...usePersistentColumnState("GlobalActionLogGrid"),
     };
 
-    const columns = useMemo<GridColDef<GQLActionLogRowFragment>[]>(
+    const columns = useMemo<GridColDef<GQLGlobalActionLogGridFragment>[]>(
         () => [
             {
                 ...dataGridDateTimeColumn,

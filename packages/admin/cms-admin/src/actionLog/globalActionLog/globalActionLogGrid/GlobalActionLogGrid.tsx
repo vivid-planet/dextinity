@@ -44,6 +44,9 @@ function scopeColumnToGqlFilter(filterItem: GridFilterItem) {
         if (includesGlobal) {
             return { scope: { isGlobal: true } };
         }
+        if (contentScopes.length === 0) {
+            return { scope: {} };
+        }
         return { scope: { isAnyOf: contentScopes } };
     }
     if (typeof filterItem.value !== "string") {

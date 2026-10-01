@@ -14,19 +14,19 @@ import { ContentScope } from "../../user-permissions/interfaces/content-scope.in
 class ActionLogScopeFilter {
     @Field(() => [GraphQLJSONObject], { nullable: true })
     @IsOptional()
-    isAnyOf?: ContentScope[];
+    isAnyOf?: ContentScope[] | null;
 
     @Field(() => GraphQLJSONObject, { nullable: true })
     @IsOptional()
-    equal?: ContentScope;
+    equal?: ContentScope | null;
 
     @Field(() => GraphQLJSONObject, { nullable: true })
     @IsOptional()
-    notEqual?: ContentScope;
+    notEqual?: ContentScope | null;
 
     @Field(() => Boolean, { nullable: true })
     @IsOptional()
-    isGlobal?: boolean;
+    isGlobal?: boolean | null;
 }
 
 @InputType()

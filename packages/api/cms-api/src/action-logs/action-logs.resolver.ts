@@ -18,6 +18,7 @@ import { UserPermissionsService } from "../user-permissions/user-permissions.ser
 import { AccessControlServiceInterface, Permission, SystemUser } from "../user-permissions/user-permissions.types";
 import { ActionLogsAclService } from "./action-logs.acl.service";
 import { ActionLogsService } from "./action-logs.service";
+import { containsAllScopes } from "./contains-all-scopes";
 import { ActionLogType } from "./dto/action-log-type.enum";
 import { ActionLogsArgs } from "./dto/action-logs.args";
 import { ActionLogsUser } from "./dto/action-logs-user";
@@ -49,7 +50,7 @@ export class ActionLogsResolver {
         @Args() { entity, scope, filter, offset, limit, sort }: ActionLogsArgs,
         @GetCurrentUser() user: CurrentUser | SystemUser,
     ): Promise<PaginatedActionLogs> {
-        this.checkPermission(entity, scope, user);
+        this.checkPermission({ entity, scope, user });
 
         const andFilters: ObjectQuery<ActionLog>[] = [{ entityName: entity }];
 
@@ -118,7 +119,7 @@ export class ActionLogsResolver {
         return new PaginatedActionLogs(entities, totalCount);
     }
 
-    private checkPermission(entity: string, scope: ContentScope, user: CurrentUser | SystemUser): void {
+    private checkPermission({ entity, scope, user }: { entity: string; scope: ContentScope; user: CurrentUser | SystemUser }): void {
         const loggedEntities = this.actionLogsService.getLoggedEntities();
         const entityClass = loggedEntities.find(({ name }) => name === entity);
         if (!entityClass) {
@@ -150,13 +151,23 @@ export class ActionLogsResolver {
     @ResolveField(() => ActionLog, {
         nullable: true,
         description:
-            "The most recent earlier action log entry for the same entity. Null when this is the first version, or when the earlier entry belongs to other scopes.",
+            "The most recent earlier action log entry for the same entity. Null when this is the first version, or when the earlier entry is scoped and lacks one of this entry's scopes.",
     })
     async previousVersion(@Parent() actionLog: ActionLog): Promise<ActionLog | null> {
         if (actionLog.version <= 1) {
             return null;
         }
-        return this.previousActionLogLoader.load(actionLog);
+        const previous = await this.previousActionLogLoader.load(actionLog);
+        if (!previous) {
+            return null;
+        }
+        // An unscoped row is listed in every scope, so the user may read it anyway.
+        if (previous.scope == null) {
+            return previous;
+        }
+        // Access to a row is checked against one of its own scopes. A previous version that lacks one of the
+        // current row's scopes could hold content the user may not read, so it is not returned.
+        return containsAllScopes(previous.scope, actionLog.scope) ? previous : null;
     }
 
     @ResolveField(() => ActionLogType, {

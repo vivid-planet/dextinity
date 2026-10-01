@@ -1,3 +1,22 @@
+type EntityInfo {
+  id: String!
+  entityName: String!
+  name: String!
+  secondaryInformation: String
+}
+
+type Dependency {
+  rootId: String!
+  rootGraphqlObjectType: String!
+  rootColumnName: String!
+  jsonPath: String!
+  visible: Boolean!
+  targetGraphqlObjectType: String!
+  targetId: String!
+  name: String
+  secondaryInformation: String
+}
+
 type ActionLog {
   id: ID!
   scope: [JSONObject!]
@@ -47,25 +66,6 @@ enum Permission {
   actionLog
   brevoNewsletterConfig
   brevoNewsletter
-}
-
-type EntityInfo {
-  id: String!
-  entityName: String!
-  name: String!
-  secondaryInformation: String
-}
-
-type Dependency {
-  rootId: String!
-  rootGraphqlObjectType: String!
-  rootColumnName: String!
-  jsonPath: String!
-  visible: Boolean!
-  targetGraphqlObjectType: String!
-  targetId: String!
-  name: String
-  secondaryInformation: String
 }
 
 type DamMediaAlternative {

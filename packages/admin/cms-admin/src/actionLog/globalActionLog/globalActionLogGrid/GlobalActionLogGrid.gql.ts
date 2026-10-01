@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-import { actionLogRowFragment } from "../../actionLog/actionLogsQuery";
+import { actionLogShowVersionDialogFragment } from "../../actionLog/actionLogShowVersionDialog/ActionLogShowVersionDialog";
 
 const globalActionLogGridFragment = gql`
     fragment GlobalActionLogGrid on ActionLog {
@@ -14,9 +14,9 @@ const globalActionLogGridFragment = gql`
             id
             name
         }
-        ...ActionLogRow
+        ...ActionLogShowVersionDialog
     }
-    ${actionLogRowFragment}
+    ${actionLogShowVersionDialogFragment}
 `;
 
 export const globalActionLogGridQuery = gql`

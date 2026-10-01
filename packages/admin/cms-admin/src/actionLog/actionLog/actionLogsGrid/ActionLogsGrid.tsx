@@ -25,8 +25,8 @@ import { ActionLogTypeChip } from "../../components/actionLogTypeChip/ActionLogT
 import { UserCell } from "../../components/userCell/UserCell";
 import { ActionLogDialog } from "../actionLogDialog/ActionLogDialog";
 import { ActionLogShowVersionDialog } from "../actionLogShowVersionDialog/ActionLogShowVersionDialog";
-import { actionLogsQuery } from "../actionLogsQuery";
-import type { GQLActionLogRowFragment, GQLActionLogsQuery, GQLActionLogsQueryVariables } from "../actionLogsQuery.generated";
+import { actionLogsGridQuery } from "./ActionLogsGrid.gql";
+import type { GQLActionLogsGridFragment, GQLActionLogsQuery, GQLActionLogsQueryVariables } from "./ActionLogsGrid.gql.generated";
 
 export type ActionLogsGridProps = {
     /**
@@ -63,7 +63,7 @@ function ActionLogsGridToolbar() {
 export function ActionLogsGrid({ entity }: ActionLogsGridProps) {
     const intl = useIntl();
     const { scope } = useContentScope();
-    const [selectedRow, setSelectedRow] = useState<GQLActionLogRowFragment | null>(null);
+    const [selectedRow, setSelectedRow] = useState<GQLActionLogsGridFragment | null>(null);
     const [openEntityId, setOpenEntityId] = useState<string | null>(null);
 
     const dataGridProps = {
@@ -71,7 +71,7 @@ export function ActionLogsGrid({ entity }: ActionLogsGridProps) {
         ...usePersistentColumnState(`ActionLogsGrid-${entity}`),
     };
 
-    const columns = useMemo<GridColDef<GQLActionLogRowFragment>[]>(
+    const columns = useMemo<GridColDef<GQLActionLogsGridFragment>[]>(
         () => [
             {
                 ...dataGridDateTimeColumn,
@@ -156,7 +156,7 @@ export function ActionLogsGrid({ entity }: ActionLogsGridProps) {
 
     const { filter: gqlFilter } = muiGridFilterToGql(columns, dataGridProps.filterModel);
 
-    const { data, loading, error } = useQuery<GQLActionLogsQuery, GQLActionLogsQueryVariables>(actionLogsQuery, {
+    const { data, loading, error } = useQuery<GQLActionLogsQuery, GQLActionLogsQueryVariables>(actionLogsGridQuery, {
         variables: {
             entity,
             scope: scope as ContentScope,

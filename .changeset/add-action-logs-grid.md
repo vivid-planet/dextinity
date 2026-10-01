@@ -6,7 +6,7 @@ Add `ActionLogsGrid`
 
 Grid of every action log entry for one entity type, including entries whose entity has since been deleted. Pass the entity's class name; the grid reads the `actionLogs` query and filters by it.
 
-`ActionLogShowVersionDialog` and `actionLogRowFragment` are exported along with it.
+`ActionLogShowVersionDialog` and its `actionLogShowVersionDialogFragment` are exported along with it.
 
 **Example**
 

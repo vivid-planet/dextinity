@@ -1,3 +1,27 @@
+type EntityInfo {
+  id: String!
+  entityName: String!
+  name: String!
+  secondaryInformation: String
+}
+
+type Dependency {
+  rootId: String!
+  rootGraphqlObjectType: String!
+  rootColumnName: String!
+  jsonPath: String!
+  visible: Boolean!
+  targetGraphqlObjectType: String!
+  targetId: String!
+  name: String
+  secondaryInformation: String
+}
+
+type PaginatedDependencies {
+  nodes: [Dependency!]!
+  totalCount: Int!
+}
+
 type UserPermission {
   id: ID!
   source: UserPermissionSource!
@@ -59,7 +83,7 @@ type ActionLog {
   createdAt: DateTime!
 
   """
-  The most recent earlier action log entry for the same entity. Null when this is the first version, or when the earlier entry belongs to other scopes.
+  The most recent earlier action log entry for the same entity. Null when this is the first version, or when the earlier entry is scoped and lacks one of this entry's scopes.
   """
   previousVersion: ActionLog
 
@@ -110,30 +134,6 @@ type CurrentUser {
   accountUrl: String
   permissionsForScope(scope: JSONObject!): [String!]!
   allowedContentScopes: [ContentScopeWithLabel!]!
-}
-
-type EntityInfo {
-  id: String!
-  entityName: String!
-  name: String!
-  secondaryInformation: String
-}
-
-type Dependency {
-  rootId: String!
-  rootGraphqlObjectType: String!
-  rootColumnName: String!
-  jsonPath: String!
-  visible: Boolean!
-  targetGraphqlObjectType: String!
-  targetId: String!
-  name: String
-  secondaryInformation: String
-}
-
-type PaginatedDependencies {
-  nodes: [Dependency!]!
-  totalCount: Int!
 }
 
 type DamMediaAlternative {

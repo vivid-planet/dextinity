@@ -208,7 +208,7 @@ export function GlobalActionLogGrid() {
                 <ActionLogDialog
                     entity={openEntity.entityName}
                     entityId={openEntity.entityId}
-                    acrossScopes
+                    showAllScopes
                     open
                     onClose={() => setOpenEntity(null)}
                 />

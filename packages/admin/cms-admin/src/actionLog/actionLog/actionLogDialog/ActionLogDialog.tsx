@@ -99,6 +99,7 @@ export function ActionLogDialog({ entity, entityId, name, showAllScopes, open, o
                     id={entityId}
                     loading={loading}
                     name={name}
+                    showScope={showAllScopes}
                     onShowVersionClick={(versionId) => {
                         const row = rows.find((r) => r.id === versionId);
                         if (row) {

@@ -10,11 +10,16 @@ import {
     BlockMetaFieldKind,
     ChildBlockInfo,
     ExtractBlockInputFactoryProps,
+<<<<<<< HEAD
     MigrateOptions,
+=======
+    registerBlock,
+>>>>>>> main
     TransformBlockResponse,
 } from "../block";
 import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator";
 import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
+import type { MigrateOptions } from "../migrations/types";
 import { strictBlockDataFactoryDecorator } from "./strictBlockDataFactoryDecorator";
 import { strictBlockInputFactoryDecorator } from "./strictBlockInputFactoryDecorator";
 
@@ -119,7 +124,7 @@ export function composeBlocks<BlockMap extends BaseBlockMap>(
     // Decorate BlockDataFactory
     let decorateBlockDataFactory = blockDataFactory;
     if (MIGRATE.migrations) {
-        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator(MIGRATE.migrations, name);
+        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator({ migrate: MIGRATE, blockName: name });
         decorateBlockDataFactory = blockDataFactoryDecorator1(decorateBlockDataFactory);
     }
     decorateBlockDataFactory = strictBlockDataFactoryDecorator(decorateBlockDataFactory);

@@ -9,9 +9,10 @@ export class TipTapRichTextBlockFixtureService {
             tipTapContent: {
                 type: "doc",
                 content: [
-                    { type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "TipTap rich text" }] },
+                    { type: "textBlock", attrs: { textBlock: "heading-1" }, content: [{ type: "text", text: "TipTap rich text" }] },
                     {
-                        type: "paragraph",
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph" },
                         content: [
                             { type: "text", text: "This content is built with " },
                             { type: "text", marks: [{ type: "bold" }], text: "type-safe" },

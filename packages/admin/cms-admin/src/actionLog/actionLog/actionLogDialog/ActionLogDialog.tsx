@@ -7,8 +7,14 @@ import { type ContentScope, useContentScope } from "../../../contentScope/Provid
 import { ActionLogCompare } from "../../components/actionLogCompare/ActionLogCompare";
 import { ActionLogShowVersion } from "../../components/actionLogShowVersion/ActionLogShowVersion";
 import { ActionLogVersionGrid } from "../actionLogVersionGrid/ActionLogVersionGrid";
-import { actionLogDialogQuery } from "./ActionLogDialog.gql";
-import type { GQLActionLogDialogFragment, GQLActionLogDialogQuery, GQLActionLogDialogQueryVariables } from "./ActionLogDialog.gql.generated";
+import { actionLogDialogQuery, allActionLogsDialogQuery } from "./ActionLogDialog.gql";
+import type {
+    GQLActionLogDialogFragment,
+    GQLActionLogDialogQuery,
+    GQLActionLogDialogQueryVariables,
+    GQLAllActionLogsDialogQuery,
+    GQLAllActionLogsDialogQueryVariables,
+} from "./ActionLogDialog.gql.generated";
 
 type ActionLogDialogView =
     | { type: "grid" }
@@ -25,11 +31,17 @@ export type ActionLogDialogProps = {
      * Latest name of the entity, displayed in the dialog title.
      */
     name?: string;
+    /**
+     * Reads the versions of the entity in every scope the user may read, through `allActionLogs`, instead of the
+     * current content scope. Requires the `actionLog` permission. Use it when the dialog is opened from the action
+     * log of all entities, whose rows can belong to any scope.
+     */
+    showAllScopes?: boolean;
     open: boolean;
     onClose: () => void;
 };
 
-export function ActionLogDialog({ entity, entityId, name, open, onClose }: ActionLogDialogProps) {
+export function ActionLogDialog({ entity, entityId, name, showAllScopes, open, onClose }: ActionLogDialogProps) {
     const intl = useIntl();
     const { scope } = useContentScope();
     const [view, setView] = useState<ActionLogDialogView>({ type: "grid" });
@@ -44,20 +56,24 @@ export function ActionLogDialog({ entity, entityId, name, open, onClose }: Actio
     const persistentColumnState = usePersistentColumnState(`ActionLogDialog-${entity}`);
 
     const filter = useMemo(() => ({ entityId: { equal: entityId } }), [entityId]);
+    const pagination = {
+        offset: dataGridRemote.paginationModel.page * dataGridRemote.paginationModel.pageSize,
+        limit: dataGridRemote.paginationModel.pageSize,
+        sort: muiGridSortToGql(dataGridRemote.sortModel),
+    };
 
-    const { data, loading, error } = useQuery<GQLActionLogDialogQuery, GQLActionLogDialogQueryVariables>(actionLogDialogQuery, {
-        variables: {
-            entity,
-            scope: scope as ContentScope,
-            offset: dataGridRemote.paginationModel.page * dataGridRemote.paginationModel.pageSize,
-            limit: dataGridRemote.paginationModel.pageSize,
-            filter,
-            sort: muiGridSortToGql(dataGridRemote.sortModel),
-        },
-        skip: !open,
+    const scopedQuery = useQuery<GQLActionLogDialogQuery, GQLActionLogDialogQueryVariables>(actionLogDialogQuery, {
+        variables: { entity, scope: scope as ContentScope, filter, ...pagination },
+        skip: !open || showAllScopes,
     });
 
-    const result = data?.actionLogs;
+    const allScopesQuery = useQuery<GQLAllActionLogsDialogQuery, GQLAllActionLogsDialogQueryVariables>(allActionLogsDialogQuery, {
+        variables: { filter: { ...filter, entityName: { equal: entity } }, ...pagination },
+        skip: !open || !showAllScopes,
+    });
+
+    const { loading, error } = showAllScopes ? allScopesQuery : scopedQuery;
+    const result = showAllScopes ? allScopesQuery.data?.allActionLogs : scopedQuery.data?.actionLogs;
     const rows = result?.nodes ?? [];
 
     return (
@@ -83,6 +99,7 @@ export function ActionLogDialog({ entity, entityId, name, open, onClose }: Actio
                     id={entityId}
                     loading={loading}
                     name={name}
+                    showScope={showAllScopes}
                     onShowVersionClick={(versionId) => {
                         const row = rows.find((r) => r.id === versionId);
                         if (row) {

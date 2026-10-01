@@ -1,5 +1,6 @@
 import type { Type } from "@nestjs/common";
 import { type ClassConstructor, instanceToPlain, plainToInstance } from "class-transformer";
+import { Allow, getMetadataStorage } from "class-validator";
 import type { WarningSeverity as WarningSeverityEnum } from "src/warnings/entities/warning-severity.enum";
 
 import { AnnotationBlockMeta, getBlockFieldData, getFieldKeys } from "./decorators/field";
@@ -309,6 +310,14 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
     if (options.migrate || migrateVendor) {
         // Overwrite the transformToSave of BlockDate to append the version numbers
         BlockDataMigrationVersion(options.migrate?.version, migrateVendor?.version)(BlockData);
+    }
+
+    // A block without any fields has no class-validator metadata. class-validator's forbidUnknownValues
+    // (default since v0.14) would then reject its input as an "unknown value" on every validation path
+    // (the global ValidationPipe via @ValidateNested, OneOfBlock/ListBlock, the TipTap RTE). Register one
+    // inert @Allow() so the class carries metadata; it validates nothing and need not exist on instances.
+    if (getMetadataStorage().getTargetValidationMetadatas(BlockInput, "", false, false).length === 0) {
+        Allow()(BlockInput.prototype, "__blockInput");
     }
 
     const blockDataFactory: BlockDataFactory<BlockType> = (o) => {

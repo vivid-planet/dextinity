@@ -1,6 +1,7 @@
 import { validate } from "class-validator";
 import { describe, expect, it } from "vitest";
 
+import { BlockData, BlockInput, blockInputToData, createBlock } from "../block";
 import { ExternalLinkBlock } from "../externalLink/external-link.block";
 import { createLinkBlock } from "../factories/createLinkBlock";
 import {
@@ -12,6 +13,16 @@ import {
     type TipTapRichTextBlockInputInterface,
     type TipTapTextBlock,
 } from "./createTipTapRichTextBlock";
+
+// A block without any fields (and thus without validation decorators), e.g. a link type that only
+// needs its type to be selected. class-validator's forbidUnknownValues must not reject it.
+class NoFieldsBlockData extends BlockData {}
+class NoFieldsBlockInput extends BlockInput {
+    transformToBlockData(): NoFieldsBlockData {
+        return blockInputToData(NoFieldsBlockData, this);
+    }
+}
+const NoFieldsBlock = createBlock(NoFieldsBlockData, NoFieldsBlockInput, "NoFields");
 
 const paragraphOnly: TipTapTextBlock[] = [{ name: "paragraph", tag: "p" }];
 
@@ -1018,6 +1029,40 @@ describe("createTipTapRichTextBlock validation", () => {
             const errors = await validate(input);
             expect(errors).toHaveLength(1);
         });
+
+        it("should accept a link mark whose selected link type has no fields", async () => {
+            const LinkBlockWithNoFieldsType = createLinkBlock({ supportedBlocks: { noFields: NoFieldsBlock } }, "TestLinkNoFields");
+            const blockWithNoFieldsLink = createTipTapRichTextBlock({ link: LinkBlockWithNoFieldsType }, "TestWithNoFieldsLink");
+            const input = blockWithNoFieldsLink.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "textBlock",
+                            content: [
+                                {
+                                    type: "text",
+                                    marks: [
+                                        {
+                                            type: "link",
+                                            attrs: {
+                                                data: {
+                                                    attachedBlocks: [{ type: "noFields", props: {} }],
+                                                    activeType: "noFields",
+                                                },
+                                            },
+                                        },
+                                    ],
+                                    text: "click here",
+                                },
+                            ],
+                        },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
+        });
     });
 
     describe("maxTextBlocks option", () => {
@@ -1588,6 +1633,18 @@ describe("createTipTapRichTextBlock validation", () => {
             });
             const errors = await validate(input);
             expect(errors).toHaveLength(1);
+        });
+
+        it("should accept a child block node without fields", async () => {
+            const blockWithNoFieldsChild = createTipTapRichTextBlock(
+                onlyFeatures({ bold: true, childBlocks: { noFields: { block: NoFieldsBlock, display: "block" } } }),
+                "TestNoFieldsChildBlock",
+            );
+            const input = blockWithNoFieldsChild.blockInputFactory({
+                tipTapContent: cmsBlockNode("noFields", {}),
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
         });
 
         it("should return childBlocksInfo for child block nodes", () => {

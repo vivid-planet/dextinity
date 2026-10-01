@@ -1,4 +1,5 @@
 import { useDataGridRemote, usePersistentColumnState } from "@dextinity/admin";
+import type { GridSortModel } from "@mui/x-data-grid";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { MemoryRouter } from "react-router";
 
@@ -51,6 +52,20 @@ const mockActionLogs: { totalCount: number; nodes: GQLActionLogVersionGridFragme
     ],
 };
 
+// `useDataGridRemote` leaves sorting to the server, so the story sorts the mock rows in its place.
+function sortLikeServer(actionLogs: typeof mockActionLogs | undefined, sortModel: GridSortModel): typeof mockActionLogs | undefined {
+    const [sortItem] = sortModel;
+    if (!actionLogs || !sortItem) {
+        return actionLogs;
+    }
+    const field = sortItem.field as "version" | "createdAt";
+    const nodes = [...actionLogs.nodes].sort((a, b) => {
+        const order = a[field] < b[field] ? -1 : a[field] > b[field] ? 1 : 0;
+        return sortItem.sort === "desc" ? -order : order;
+    });
+    return { ...actionLogs, nodes };
+}
+
 type Story = StoryObj<typeof ActionLogVersionGrid>;
 const meta: Meta<typeof ActionLogVersionGrid> = {
     component: ActionLogVersionGrid,
@@ -71,7 +86,7 @@ const StandardStory = (args: React.ComponentProps<typeof ActionLogVersionGrid>) 
         ...useDataGridRemote({ initialSort: [{ field: "version", sort: "desc" }] }),
         ...usePersistentColumnState("ActionLogVersionGrid"),
     };
-    return <ActionLogVersionGrid {...args} {...dataGridProps} />;
+    return <ActionLogVersionGrid {...args} {...dataGridProps} actionLogs={sortLikeServer(args.actionLogs, dataGridProps.sortModel)} />;
 };
 
 export const Standard: Story = {

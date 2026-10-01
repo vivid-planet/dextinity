@@ -17,6 +17,7 @@ import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.con
 import { UserPermissionsService } from "../user-permissions/user-permissions.service";
 import { AccessControlServiceInterface, Permission, SystemUser } from "../user-permissions/user-permissions.types";
 import { ActionLogsService } from "./action-logs.service";
+import { containsAllScopes } from "./contains-all-scopes";
 import { ActionLogType } from "./dto/action-log-type.enum";
 import { ActionLogsArgs } from "./dto/action-logs.args";
 import { ActionLogsUser } from "./dto/action-logs-user";
@@ -122,7 +123,10 @@ export class ActionLogsResolver {
         if (actionLog.version <= 1) {
             return null;
         }
-        return this.previousActionLogLoader.load(actionLog);
+        const previous = await this.previousActionLogLoader.load(actionLog);
+        // Access to a row is checked against one of its own scopes. A previous version that lacks one of the
+        // current row's scopes could hold content the user may not read, so it is not returned.
+        return previous && containsAllScopes(previous.scope, actionLog.scope) ? previous : null;
     }
 
     @ResolveField(() => ActionLogType, {

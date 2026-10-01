@@ -1,6 +1,6 @@
 import type { Type } from "@nestjs/common";
 import { type ClassConstructor, instanceToPlain, plainToInstance } from "class-transformer";
-import { Allow } from "class-validator";
+import { Allow, getMetadataStorage } from "class-validator";
 import type { WarningSeverity as WarningSeverityEnum } from "src/warnings/entities/warning-severity.enum";
 
 import { AnnotationBlockMeta, getBlockFieldData, getFieldKeys } from "./decorators/field";
@@ -199,12 +199,6 @@ export abstract class BlockInput<BlockType extends BlockDataInterface = BlockDat
     }
 }
 
-// Register a single class-validator metadata entry on the base class that every block input inherits.
-// Without it, a block without fields (e.g. a link type with no fields) has zero metadata and is rejected
-// by class-validator's forbidUnknownValues (default since v0.14) as an "unknown value". `@Allow()` only
-// registers metadata; it validates nothing and does not require the property to exist on instances.
-Allow()(BlockInput.prototype, "__blockInput");
-
 export function isBlockInputInterface(test: unknown | BlockInputInterface): test is BlockInputInterface {
     if (test !== null && typeof test === "object") {
         if (typeof (test as BlockInputInterface).transformToBlockData === "function") {
@@ -302,6 +296,14 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
     if (options.migrate && options.migrate.version > 0) {
         // Overwrite the transformToSave of BlockDate to append the version number
         BlockDataMigrationVersion(options.migrate.version)(BlockData);
+    }
+
+    // A block without any fields has no class-validator metadata. class-validator's forbidUnknownValues
+    // (default since v0.14) would then reject its input as an "unknown value" on every validation path
+    // (the global ValidationPipe via @ValidateNested, OneOfBlock/ListBlock, the TipTap RTE). Register one
+    // inert @Allow() so the class carries metadata; it validates nothing and need not exist on instances.
+    if (getMetadataStorage().getTargetValidationMetadatas(BlockInput, "", false, false).length === 0) {
+        Allow()(BlockInput.prototype, "__blockInput");
     }
 
     const blockDataFactory: BlockDataFactory<BlockType> = (o) => {

@@ -1,3 +1,27 @@
+type EntityInfo {
+  id: String!
+  entityName: String!
+  name: String!
+  secondaryInformation: String
+}
+
+type Dependency {
+  rootId: String!
+  rootGraphqlObjectType: String!
+  rootColumnName: String!
+  jsonPath: String!
+  visible: Boolean!
+  targetGraphqlObjectType: String!
+  targetId: String!
+  name: String
+  secondaryInformation: String
+}
+
+type PaginatedDependencies {
+  nodes: [Dependency!]!
+  totalCount: Int!
+}
+
 type UserPermission {
   id: ID!
   source: UserPermissionSource!
@@ -75,6 +99,11 @@ enum ActionLogType {
   Deleted
 }
 
+type PaginatedActionLogs {
+  nodes: [ActionLog!]!
+  totalCount: Int!
+}
+
 type ContentScopeWithLabel {
   scope: JSONObject!
   label: JSONObject!
@@ -104,30 +133,6 @@ type CurrentUser {
   accountUrl: String
   permissionsForScope(scope: JSONObject!): [String!]!
   allowedContentScopes: [ContentScopeWithLabel!]!
-}
-
-type EntityInfo {
-  id: String!
-  entityName: String!
-  name: String!
-  secondaryInformation: String
-}
-
-type Dependency {
-  rootId: String!
-  rootGraphqlObjectType: String!
-  rootColumnName: String!
-  jsonPath: String!
-  visible: Boolean!
-  targetGraphqlObjectType: String!
-  targetId: String!
-  name: String
-  secondaryInformation: String
-}
-
-type PaginatedDependencies {
-  nodes: [Dependency!]!
-  totalCount: Int!
 }
 
 type DamMediaAlternative {
@@ -549,6 +554,7 @@ input WarningSourceInfoInput {
 }
 
 type Query {
+  actionLogs(offset: Int! = 0, limit: Int! = 25, entity: String!, scope: JSONObject!, filter: ActionLogFilter, sort: [ActionLogSort!]): PaginatedActionLogs!
   builds(limit: Float): [Build!]!
   autoBuildStatus: AutoBuildStatus!
   buildTemplates: [BuildTemplate!]!
@@ -611,6 +617,54 @@ type Query {
   myFullTextSearch(search: String!, offset: Int! = 0, limit: Int! = 25, scope: JSONObject): PaginatedEntityInfo!
 }
 
+input ActionLogFilter {
+  userId: StringFilter
+  entityId: IdFilter
+  version: NumberFilter
+  createdAt: DateTimeFilter
+  and: [ActionLogFilter!]
+  or: [ActionLogFilter!]
+}
+
+input IdFilter {
+  isAnyOf: [ID!]
+  equal: ID
+  notEqual: ID
+}
+
+input NumberFilter {
+  equal: Float
+  lowerThan: Float
+  greaterThan: Float
+  lowerThanEqual: Float
+  greaterThanEqual: Float
+  notEqual: Float
+  isAnyOf: [Float!]
+  isEmpty: Boolean
+  isNotEmpty: Boolean
+}
+
+input DateTimeFilter {
+  equal: DateTime
+  lowerThan: DateTime
+  greaterThan: DateTime
+  lowerThanEqual: DateTime
+  greaterThanEqual: DateTime
+  notEqual: DateTime
+  isEmpty: Boolean
+  isNotEmpty: Boolean
+}
+
+input ActionLogSort {
+  field: ActionLogSortField!
+  direction: SortDirection! = ASC
+}
+
+enum ActionLogSortField {
+  version
+  createdAt
+}
+
 input RedirectScopeInput {
   thisScopeHasNoFields____: String
 }
@@ -632,17 +686,6 @@ input RedirectSourceTypeEnumFilter {
   isAnyOf: [RedirectSourceType!]
   equal: RedirectSourceType
   notEqual: RedirectSourceType
-}
-
-input DateTimeFilter {
-  equal: DateTime
-  lowerThan: DateTime
-  greaterThan: DateTime
-  lowerThanEqual: DateTime
-  greaterThanEqual: DateTime
-  notEqual: DateTime
-  isEmpty: Boolean
-  isNotEmpty: Boolean
 }
 
 input RedirectSort {

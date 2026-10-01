@@ -1,18 +1,28 @@
 import { ArgsType, Field } from "@nestjs/graphql";
 import { Type } from "class-transformer";
-import { IsString, ValidateNested } from "class-validator";
+import { IsObject, IsString, ValidateNested } from "class-validator";
+import { GraphQLJSONObject } from "graphql-scalars";
 
 import { OffsetBasedPaginationArgs } from "../../common/pagination/offset-based.args";
 import { IsUndefinable } from "../../common/validators/is-undefinable";
+import { ContentScope } from "../../user-permissions/interfaces/content-scope.interface";
 import { ActionLogFilter } from "./action-log.filter";
 import { ActionLogSort } from "./action-log.sort";
 
 @ArgsType()
 export class ActionLogsArgs extends OffsetBasedPaginationArgs {
-    @Field({ nullable: true })
+    /**
+     * Class name of an entity decorated with `@ActionLogs()`, for instance `News`. Not an enum,
+     * because the set of entities differs per project while cms-admin types its queries against
+     * the library schema.
+     */
+    @Field()
     @IsString()
-    @IsUndefinable()
-    search?: string;
+    entity: string;
+
+    @Field(() => GraphQLJSONObject)
+    @IsObject()
+    scope: ContentScope;
 
     @Field(() => ActionLogFilter, { nullable: true })
     @ValidateNested()

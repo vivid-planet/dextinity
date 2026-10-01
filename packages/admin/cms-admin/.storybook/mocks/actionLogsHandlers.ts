@@ -70,10 +70,10 @@ const buildResponse = (filter?: MockFilter) => {
 };
 
 export const actionLogsHandlers = [
-    graphql.query("NewsActionLogs", ({ variables }) =>
+    graphql.query("ActionLogs", ({ variables }) =>
         HttpResponse.json({
             data: {
-                newsActionLogs: buildResponse(variables.filter as MockFilter | undefined),
+                actionLogs: buildResponse(variables.filter as MockFilter | undefined),
             },
         }),
     ),

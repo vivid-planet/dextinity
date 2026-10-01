@@ -21,7 +21,6 @@ import {
 import { Add as AddIcon, Edit, Time } from "@dextinity/admin-icons";
 import { ActionLogsGrid, ContentScopeIndicator } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
-import type { GQLQuery } from "@src/graphql.generated";
 import { ProductVariantsGrid } from "@src/products/generator/generated/ProductVariantsGrid";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -191,7 +190,7 @@ export function ProductsPage() {
                         <ToolbarBackButton />
                         <ToolbarAutomaticTitleItem />
                     </StackToolbar>
-                    <ActionLogsGrid<GQLQuery> queryName="productActionLogs" />
+                    <ActionLogsGrid entity="Product" />
                 </StackPage>
             </ProductsStackSwitch>
         </Stack>

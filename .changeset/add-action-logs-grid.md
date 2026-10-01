@@ -4,7 +4,7 @@
 
 Add `ActionLogsGrid`
 
-Grid of every action log entry for one entity type, including entries whose entity has since been deleted. It reads the top-level entity-scoped query that `ActionLogsModule.forFeature()` generates on the API, so pass that query's name and your app's `GQLQuery` as the generic to have the name checked against the schema.
+Grid of every action log entry for one entity type, including entries whose entity has since been deleted. Pass the entity's class name; the grid reads the `actionLogs` query and filters by it.
 
 `ActionLogShowVersionDialog` and its `actionLogShowVersionDialogFragment` are exported along with it.
 
@@ -16,6 +16,6 @@ Grid of every action log entry for one entity type, including entries whose enti
         <ToolbarBackButton />
         <ToolbarAutomaticTitleItem />
     </StackToolbar>
-    <ActionLogsGrid<GQLQuery> queryName="newsActionLogs" />
+    <ActionLogsGrid entity="News" />
 </StackPage>
 ```

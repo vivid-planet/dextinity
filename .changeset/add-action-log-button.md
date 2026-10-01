@@ -9,5 +9,5 @@ Drop-in button that opens the `ActionLogDialog` and manages its open state inter
 **Example**
 
 ```tsx
-<ActionLogButton<GQLQuery> id={id} rootField="manufacturer" name={manufacturer.name} />
+<ActionLogButton entity="Manufacturer" entityId={id} name={manufacturer.name} />
 ```

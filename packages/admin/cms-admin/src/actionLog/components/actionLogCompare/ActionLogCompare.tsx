@@ -22,7 +22,7 @@ type ActionLogCompareProps = {
      * Latest name of the actual object, displayed in the title
      */
     name?: string;
-    onClickShowVersionHistory: () => void;
+    onClickShowVersionHistory?: () => void;
 };
 
 export const ActionLogCompare: FunctionComponent<ActionLogCompareProps> = ({
@@ -46,11 +46,13 @@ export const ActionLogCompare: FunctionComponent<ActionLogCompareProps> = ({
 
     return (
         <Root>
-            <Box marginBottom={4}>
-                <Button onClick={onClickShowVersionHistory} startIcon={<ArrowLeft />} variant="primary">
-                    <FormattedMessage defaultMessage="Show Version History" id="actionLog.actionLogCompare.showVersionHistory" />
-                </Button>
-            </Box>
+            {onClickShowVersionHistory && (
+                <Box marginBottom={4}>
+                    <Button onClick={onClickShowVersionHistory} startIcon={<ArrowLeft />} variant="primary">
+                        <FormattedMessage defaultMessage="Show Version History" id="actionLog.actionLogCompare.showVersionHistory" />
+                    </Button>
+                </Box>
+            )}
 
             <ActionLogHeader
                 action={

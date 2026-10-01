@@ -1,6 +1,7 @@
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
 
 import { UserPermissionsService } from "../user-permissions/user-permissions.service";
+import { containsAllScopes } from "./contains-all-scopes";
 import { ActionLogType } from "./dto/action-log-type.enum";
 import { ActionLogsUser } from "./dto/action-logs-user";
 import { ActionLog } from "./entities/action-log.entity";
@@ -15,13 +16,24 @@ export class ActionLogsResolver {
 
     @ResolveField(() => ActionLog, {
         nullable: true,
-        description: "The most recent earlier action log entry for the same entity. Null when this is the first version.",
+        description:
+            "The most recent earlier action log entry for the same entity. Null when this is the first version, or when the earlier entry is scoped and lacks one of this entry's scopes.",
     })
     async previousVersion(@Parent() actionLog: ActionLog): Promise<ActionLog | null> {
         if (actionLog.version <= 1) {
             return null;
         }
-        return this.previousActionLogLoader.load(actionLog);
+        const previous = await this.previousActionLogLoader.load(actionLog);
+        if (!previous) {
+            return null;
+        }
+        // An unscoped row is listed in every scope, so the user may read it anyway.
+        if (previous.scope == null) {
+            return previous;
+        }
+        // Access to a row is checked against one of its own scopes. A previous version that lacks one of the
+        // current row's scopes could hold content the user may not read, so it is not returned.
+        return containsAllScopes(previous.scope, actionLog.scope) ? previous : null;
     }
 
     @ResolveField(() => ActionLogType, {

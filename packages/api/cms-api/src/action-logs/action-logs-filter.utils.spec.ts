@@ -28,6 +28,14 @@ describe("actionLogFilterToWhere", () => {
         expect(where.$or).toHaveLength(2);
     });
 
+    it("matches no rows for an empty isAnyOf, like the other isAnyOf filters", () => {
+        expect(actionLogFilterToWhere({ scope: { isAnyOf: [] } })).toEqual({ id: { $in: [] } });
+    });
+
+    it("ignores scope filter fields that are null", () => {
+        expect(actionLogFilterToWhere({ scope: { isAnyOf: null, equal: null, notEqual: null, isGlobal: null } })).toEqual({});
+    });
+
     it("combines the scope filter with the other fields", () => {
         const where = actionLogFilterToWhere({ scope: { isGlobal: true }, version: Object.assign(new NumberFilter(), { equal: 1 }) }) as {
             $and: unknown[];

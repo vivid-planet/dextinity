@@ -9,16 +9,16 @@ export function actionLogFilterToWhere(filter: ActionLogFilter): ObjectQuery<Act
     const andConditions: ObjectQuery<ActionLog>[] = [];
 
     if (filter.scope) {
-        if (filter.scope.isGlobal !== undefined) {
+        if (filter.scope.isGlobal != null) {
             andConditions.push({ scope: filter.scope.isGlobal ? null : { $ne: null } });
         }
-        if (filter.scope.equal !== undefined) {
+        if (filter.scope.equal != null) {
             andConditions.push(rowHoldsScope(filter.scope.equal));
         }
-        if (filter.scope.isAnyOf !== undefined && filter.scope.isAnyOf.length > 0) {
-            andConditions.push({ $or: filter.scope.isAnyOf.map(rowHoldsScope) });
+        if (filter.scope.isAnyOf != null) {
+            andConditions.push(filter.scope.isAnyOf.length > 0 ? { $or: filter.scope.isAnyOf.map(rowHoldsScope) } : { id: { $in: [] } });
         }
-        if (filter.scope.notEqual !== undefined) {
+        if (filter.scope.notEqual != null) {
             andConditions.push({ $not: rowHoldsScope(filter.scope.notEqual) });
         }
     }

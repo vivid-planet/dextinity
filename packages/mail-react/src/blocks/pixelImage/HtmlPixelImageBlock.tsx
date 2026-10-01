@@ -1,11 +1,11 @@
 import clsx from "clsx";
-import type { ComponentProps, ReactNode } from "react";
+import type { ReactNode } from "react";
 
-import { HtmlImage } from "../../components/image/HtmlImage.js";
+import { HtmlImage, type HtmlImageProps } from "../../components/image/HtmlImage.js";
 import type { PixelImageBlockBaseProps } from "./common.js";
 import { usePixelImageBlockData } from "./usePixelImageBlockData.js";
 
-export type HtmlPixelImageBlockProps = Omit<ComponentProps<"img">, "src" | "width" | "height"> & PixelImageBlockBaseProps;
+export type HtmlPixelImageBlockProps = Omit<HtmlImageProps, "src" | "width" | "height"> & PixelImageBlockBaseProps;
 
 /**
  * Renders a pixel-image from the DAM as a raw `<img>` tag.

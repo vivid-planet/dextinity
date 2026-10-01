@@ -30,7 +30,8 @@ const BlockAdminComponentRoot = (props: PropsWithChildren<Props>) => {
 export { BlockAdminComponentRoot };
 
 const ChildrenContainer = styled("div")`
-    .DextinityAdminRte-root > .DextinityAdminRteToolbar-root {
+    .DextinityAdminRte-root > .DextinityAdminRteToolbar-root,
+    .DextinityAdminTipTapToolbar-root {
         top: 70px;
     }
 `;

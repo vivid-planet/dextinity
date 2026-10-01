@@ -1,16 +1,28 @@
+import { mailerTransport } from "@src/util/mailer";
 import { assessRecaptchaToken } from "@src/util/recaptcha/assessRecaptchaToken";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+const fromEmail = process.env.CONTACT_FORM_FROM_EMAIL;
+const toEmail = process.env.CONTACT_FORM_TO_EMAIL;
+
+if (!fromEmail) {
+    throw new Error("Missing CONTACT_FORM_FROM_EMAIL environment variable");
+}
+
+if (!toEmail) {
+    throw new Error("Missing CONTACT_FORM_TO_EMAIL environment variable");
+}
+
 const queryValidationSchema = z.object({
     name: z.string(),
     company: z.string().optional(),
     email: z.string().email(),
-    phone: z.string().optional(),
+    phoneNumber: z.string().optional(),
     subject: z.string(),
     message: z.string(),
-    privacyConsent: z.boolean(),
+    privacyConsent: z.literal(true),
     recaptchaToken: z.string(),
     attachments: z.array(z.uuid()).default([]),
 });
@@ -47,7 +59,31 @@ export async function POST(request: NextRequest, context: RouteContext<"/[visibi
         });
     }
 
+    const { name, company, email, phoneNumber, subject, message, attachments } = validationResult.data;
+
+    const details = [
+        `Name: ${name}`,
+        company && `Company: ${company}`,
+        `Email: ${email}`,
+        phoneNumber && `Phone number: ${phoneNumber}`,
+        `Subject: ${subject}`,
+        attachments.length > 0 && `Attachments: ${attachments.join(", ")}`,
+    ].filter(Boolean);
+
     try {
+        const { rejected } = await mailerTransport.sendMail({
+            from: fromEmail,
+            to: process.env.MAILER_SEND_ALL_MAILS_TO || toEmail,
+            replyTo: email,
+            subject: "Contact form inquiry",
+            text: `${details.join("\n")}\n\n${message}`,
+        });
+
+        if (rejected.length > 0) {
+            console.error("The mail server rejected the contact form inquiry for", rejected);
+            return NextResponse.json({ error: "Something went wrong processing the contact form" }, { status: 500 });
+        }
+
         return NextResponse.json(
             { success: true },
             {

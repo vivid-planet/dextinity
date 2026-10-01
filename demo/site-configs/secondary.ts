@@ -19,6 +19,9 @@ export default ((env) => {
                 languages: ["en", "de"],
             },
             recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY ?? "",
+            organization: {
+                name: "Dextinity Site Secondary",
+            },
         },
     };
 }) satisfies GetSiteConfig;

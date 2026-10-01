@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import type createDOMPurify from "dompurify";
 import fs from "fs";
 import { unlink } from "fs/promises";
@@ -13,6 +14,12 @@ import type { FileUploadInput } from "./file-upload.input";
 import { FILE_UPLOAD_FIELD } from "./files.constants";
 
 const pipeline = promisify(stream.pipeline);
+
+export async function calculateFileHash(filePath: string): Promise<string> {
+    const hash = createHash("md5");
+    await pipeline(fs.createReadStream(filePath), hash);
+    return hash.digest("hex");
+}
 
 export function slugifyFilename(filename: string, extension: string): string {
     const extensionWithDot = extension.startsWith(".") ? extension : `.${extension}`;

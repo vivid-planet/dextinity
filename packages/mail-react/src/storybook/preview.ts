@@ -7,6 +7,7 @@ export const initialGlobals = {
 };
 
 export const parameters = {
+    showDextinityMailAddonUi: true,
     viewport: {
         options: {
             mobile: {

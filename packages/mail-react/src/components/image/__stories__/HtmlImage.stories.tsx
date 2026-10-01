@@ -22,6 +22,7 @@ const config: Meta<typeof HtmlImage> = {
     },
     argTypes: {
         src: { control: false },
+        borderRadius: { control: "number" },
     },
 };
 
@@ -55,6 +56,32 @@ export const FullWidth: Story = {
                     <tr>
                         <td>
                             <HtmlImage {...args} src={`https://picsum.photos/seed/html-image-full-width/${args.width}/${args.height}`} />
+                        </td>
+                    </tr>
+                </MjmlRaw>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+};
+
+export const RoundedCorners: Story = {
+    args: {
+        borderRadius: 16,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: "Rounds the image corners through the `borderRadius` prop.",
+            },
+        },
+    },
+    render: (args) => (
+        <MjmlSection indent>
+            <MjmlColumn>
+                <MjmlRaw>
+                    <tr>
+                        <td>
+                            <HtmlImage {...args} src={`https://picsum.photos/seed/html-image-rounded/${args.width}/${args.height}`} />
                         </td>
                     </tr>
                 </MjmlRaw>

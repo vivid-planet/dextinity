@@ -242,6 +242,8 @@ Full-width horizontal row with theme integration.
 </MjmlSection>
 ```
 
+`disableResponsiveBehavior` wraps the columns in an `MjmlGroup`. Every multi-column section needs it, because the group is what makes MJML write the column widths inline — see [`layout-patterns.md`](layout-patterns.md) → Column Widths Must Be Inline.
+
 Indentation values come from `theme.sizes.contentIndentation`, which supports responsive values.
 
 **Inside `MjmlWrapper`:** the theme-default `backgroundColor` is suppressed so the wrapper's background shows through. An explicit `backgroundColor` prop still wins.

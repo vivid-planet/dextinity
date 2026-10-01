@@ -148,14 +148,21 @@ Set via the `category` option or in the override function:
 
 Controls the collapsed preview row of a block inside list/blocks blocks. Set in the override function.
 
+Show a string field:
+
 ```tsx
-// Show a string field
 block.previewContent = (state) => [{ type: "text", content: state.title }];
+```
 
-// Handle optional fields
+Guard an optional field:
+
+```tsx
 block.previewContent = (state) => (state.title !== undefined ? [{ type: "text", content: state.title }] : []);
+```
 
-// Nothing to show
+Show nothing:
+
+```tsx
 block.previewContent = () => [];
 ```
 

@@ -26,6 +26,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import { DataGrid } from "../../../dataGrid/DataGrid";
 import { camelCaseToHumanReadable } from "../../utils/camelCaseToHumanReadable";
+import { deduplicateContentScopes } from "../../utils/deduplicateContentScopes";
 import type { GQLContentScopesQuery, GQLContentScopesQueryVariables } from "./ContentScopeGrid.generated";
 import { SelectScopesDialogContent } from "./selectScopesDialogContent/SelectScopesDialogContent";
 import type { GQLAvailableContentScopesQuery } from "./selectScopesDialogContent/SelectScopesDialogContent.generated";
@@ -75,6 +76,7 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
         return <Loading />;
     }
 
+    const userContentScopes = deduplicateContentScopes(data.userContentScopes);
     const columns: GridColDef<ContentScope>[] = generateGridColumnsFromContentScopeProperties(data.availableContentScopes);
 
     const toolbarSlotProps: ToolbarProps = {
@@ -88,9 +90,9 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
     return (
         <FieldSet title={intl.formatMessage({ id: "dextinity.userPermissions.assignedScopes", defaultMessage: "Assigned Scopes" })} disablePadding>
             <DataGrid
-                rows={data.userContentScopes}
+                rows={userContentScopes}
                 columns={columns}
-                rowCount={data?.userContentScopes.length ?? 0}
+                rowCount={userContentScopes.length}
                 loading={false}
                 getRowId={(row) => JSON.stringify(row)}
                 slots={{
@@ -112,7 +114,7 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
                     </DialogTitle>
                     <SelectScopesDialogContent
                         userId={userId}
-                        userContentScopes={data.userContentScopes}
+                        userContentScopes={userContentScopes}
                         userContentScopesSkipManual={data.userContentScopesSkipManual}
                     />
                     <DialogActions>

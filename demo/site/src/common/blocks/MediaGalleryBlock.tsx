@@ -6,6 +6,7 @@ import type { MediaGalleryBlockData } from "@src/blocks.generated";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
 import { Typography } from "@src/common/components/Typography";
 import { PageLayout } from "@src/layout/PageLayout";
+import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -53,31 +54,33 @@ export const MediaGalleryBlock = withPreview(
                     aria-label={intl.formatMessage({ id: "mediaGalleryBlock.prevSlide", defaultMessage: "Previous slide" })}
                     disabled={activeItem === 0}
                 />
-                <BasicSwiper
-                    className={styles.swiper}
-                    slidesPerView={1}
-                    slidesPerGroup={1}
-                    modules={[Navigation]}
-                    navigation={{ prevEl: prevButtonRef.current, nextEl: nextButtonRef.current }}
-                    longSwipesRatio={0.1}
-                    threshold={3}
-                    allowTouchMove
-                    watchOverflow
-                    speed={400}
-                    onSwiper={setSwiper}
-                    onSlideChange={(swiper) => {
-                        setActiveItem(swiper.activeIndex);
-                    }}
-                >
-                    {data.items.blocks.map((block) => (
-                        <SwiperSlide key={block.key}>
-                            <MediaBlock data={block.props.media} aspectRatio={data.aspectRatio} />
-                            <Typography variant="paragraph200" className={styles.mediaCaption}>
-                                {block.props.caption}
-                            </Typography>
-                        </SwiperSlide>
-                    ))}
-                </BasicSwiper>
+                <AnimateBoxInOnScroll direction="bottom">
+                    <BasicSwiper
+                        className={styles.swiper}
+                        slidesPerView={1}
+                        slidesPerGroup={1}
+                        modules={[Navigation]}
+                        navigation={{ prevEl: prevButtonRef.current, nextEl: nextButtonRef.current }}
+                        longSwipesRatio={0.1}
+                        threshold={3}
+                        allowTouchMove
+                        watchOverflow
+                        speed={400}
+                        onSwiper={setSwiper}
+                        onSlideChange={(swiper) => {
+                            setActiveItem(swiper.activeIndex);
+                        }}
+                    >
+                        {data.items.blocks.map((block) => (
+                            <SwiperSlide key={block.key}>
+                                <MediaBlock data={block.props.media} aspectRatio={data.aspectRatio} />
+                                <Typography variant="paragraph200" className={styles.mediaCaption}>
+                                    {block.props.caption}
+                                </Typography>
+                            </SwiperSlide>
+                        ))}
+                    </BasicSwiper>
+                </AnimateBoxInOnScroll>
                 <Typography variant="paragraph300" className={styles.customPagination} role="status" aria-live="polite" aria-atomic="true">
                     <FormattedMessage
                         id="mediaGalleryBlock.pagination"

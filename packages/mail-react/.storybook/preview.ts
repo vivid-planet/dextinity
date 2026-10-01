@@ -7,7 +7,7 @@ export const parameters = {
     layout: "fullscreen",
     options: {
         storySort: {
-            order: ["Docs", "*"],
+            order: ["Docs", "Examples", "Layout Patterns", "Components", "Blocks", "*"],
         },
     },
     docs: {

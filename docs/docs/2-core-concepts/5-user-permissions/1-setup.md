@@ -68,6 +68,15 @@ It's also possible to add additional properties and meta information to permissi
 `getContentScopesForUser` returns the general scopes for the user but can be overridden for each permission in `getPermissionsForUser`. Please refer to the types that the IDE offers.
 :::
 
+`getContentScopesForUser` may use the wildcard value `"*"` for a single content scope dimension to allow any value for it. The wildcard is matched during the content scope check and does not need to be part of `availableContentScopes`.
+
+```ts
+getContentScopesForUser(user: User): ContentScopesForUser {
+    // Grant access to every language within the "main" domain
+    return [{ domain: "main", language: "*" }];
+}
+```
+
 ## Admin
 
 Add the `UserPermissionsPage` component. Currently, it's not possible to customize the admin panel.

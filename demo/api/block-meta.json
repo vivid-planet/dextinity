@@ -890,6 +890,29 @@
         ],
         "inputFields": [
             {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "pixelImage": "PixelImage",
+                                "svgImage": "SvgImage"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
                 "name": "activeType",
                 "kind": "String",
                 "nullable": false
@@ -1070,6 +1093,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "text": "RichText",
+                                "twoListSizesText": "MailTwoListSizesRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -1109,6 +1133,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "text": "RichText",
+                                "twoListSizesText": "MailTwoListSizesRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -1650,6 +1675,33 @@
         ],
         "inputFields": [
             {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "internal": "InternalLink",
+                                "external": "ExternalLink",
+                                "damFileDownload": "DamFileDownloadLink",
+                                "email": "EmailLink",
+                                "phone": "PhoneLink",
+                                "news": "NewsLink"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
                 "name": "activeType",
                 "kind": "String",
                 "nullable": false
@@ -1901,6 +1953,29 @@
         ],
         "inputFields": [
             {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "external": "ExternalLink",
+                                "phone": "PhoneLink"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
                 "name": "activeType",
                 "kind": "String",
                 "nullable": false
@@ -1935,6 +2010,23 @@
                     "medium",
                     "large"
                 ],
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "MailTwoListSizesRichText",
+        "fields": [
+            {
+                "name": "draftContent",
+                "kind": "Json",
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "draftContent",
+                "kind": "Json",
                 "nullable": false
             }
         ]
@@ -1999,6 +2091,31 @@
             }
         ],
         "inputFields": [
+            {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "image": "DamImage",
+                                "damVideo": "DamVideo",
+                                "youTubeVideo": "YouTubeVideo",
+                                "vimeoVideo": "VimeoVideo"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
             {
                 "name": "activeType",
                 "kind": "String",
@@ -2959,6 +3076,30 @@
             }
         ],
         "inputFields": [
+            {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "internal": "InternalLink",
+                                "external": "ExternalLink",
+                                "news": "NewsLink"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
             {
                 "name": "activeType",
                 "kind": "String",
@@ -4286,6 +4427,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "text": "RichText",
+                                "twoListSizesText": "MailTwoListSizesRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
@@ -4324,6 +4466,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "text": "RichText",
+                                "twoListSizesText": "MailTwoListSizesRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",

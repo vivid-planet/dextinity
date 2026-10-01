@@ -21,6 +21,11 @@ export const theme = createTheme({
                 lineHeight: { default: "24px", mobile: "20px" },
                 bottomSpacing: "16px",
             },
+            copySmall: {
+                fontSize: { default: "13px", mobile: "12px" },
+                lineHeight: { default: "20px", mobile: "18px" },
+                bottomSpacing: "12px",
+            },
         },
     },
     button: {
@@ -41,6 +46,7 @@ declare module "@dextinity/mail-react" {
         title: true;
         header: true;
         copy: true;
+        copySmall: true;
     }
 
     interface ButtonVariants {

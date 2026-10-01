@@ -4,7 +4,7 @@ import { BadRequestException, ForbiddenException, Inject } from "@nestjs/common"
 import { Args, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
 import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
-import { filtersToMikroOrmQuery, gqlSortToMikroOrmOrderBy } from "../common/filter/mikro-orm";
+import { gqlSortToMikroOrmOrderBy } from "../common/filter/mikro-orm";
 import {
     DisablePermissionCheck,
     REQUIRED_PERMISSION_METADATA_KEY,
@@ -18,6 +18,7 @@ import { UserPermissionsService } from "../user-permissions/user-permissions.ser
 import { AccessControlServiceInterface, Permission, SystemUser } from "../user-permissions/user-permissions.types";
 import { ActionLogsAclService } from "./action-logs.acl.service";
 import { ActionLogsService } from "./action-logs.service";
+import { actionLogFilterToWhere } from "./action-logs-filter.utils";
 import { containsAllScopes } from "./contains-all-scopes";
 import { ActionLogType } from "./dto/action-log-type.enum";
 import { ActionLogsArgs } from "./dto/action-logs.args";
@@ -73,7 +74,7 @@ export class ActionLogsResolver {
         });
 
         if (filter) {
-            andFilters.push(filtersToMikroOrmQuery(filter));
+            andFilters.push(actionLogFilterToWhere(filter));
         }
 
         const [entities, totalCount] = await this.entityManager.findAndCount(
@@ -104,7 +105,7 @@ export class ActionLogsResolver {
         const andFilters: ObjectQuery<ActionLog>[] = [readableActionLogsFilter];
 
         if (filter) {
-            andFilters.push(filtersToMikroOrmQuery(filter));
+            andFilters.push(actionLogFilterToWhere(filter));
         }
 
         const [entities, totalCount] = await this.entityManager.findAndCount(

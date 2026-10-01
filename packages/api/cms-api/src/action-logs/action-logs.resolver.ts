@@ -1,6 +1,7 @@
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
 
 import { UserPermissionsService } from "../user-permissions/user-permissions.service";
+import { containsAllScopes } from "./contains-all-scopes";
 import { ActionLogType } from "./dto/action-log-type.enum";
 import { ActionLogsUser } from "./dto/action-logs-user";
 import { ActionLog } from "./entities/action-log.entity";
@@ -22,7 +23,10 @@ export class ActionLogsResolver {
         if (actionLog.version <= 1) {
             return null;
         }
-        return this.previousActionLogLoader.load(actionLog);
+        const previous = await this.previousActionLogLoader.load(actionLog);
+        // Access to a row is checked against one of its own scopes. A previous version that lacks one of the
+        // current row's scopes could hold content the user may not read, so it is not returned.
+        return previous && containsAllScopes(previous.scope, actionLog.scope) ? previous : null;
     }
 
     @ResolveField(() => ActionLogType, {

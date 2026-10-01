@@ -97,6 +97,11 @@ function createListItem(text: string, textBlockStyle?: string) {
     };
 }
 
+const nestedListWithAndWithoutStyle = {
+    type: "bulletList",
+    content: [createListItem("A nested item with no style"), createListItem("A nested item with the listLarge style", "listLarge")],
+};
+
 export const listVariantsBlockData: TipTapRichTextBlockData = {
     tipTapContent: {
         type: "doc",
@@ -105,9 +110,12 @@ export const listVariantsBlockData: TipTapRichTextBlockData = {
                 type: "bulletList",
                 content: [
                     createListItem("An item with no style"),
-                    createListItem("A second item with no style"),
+                    { type: "listItem", content: [...createListItem("A second item with no style").content, nestedListWithAndWithoutStyle] },
                     createListItem("An item with the listLarge style", "listLarge"),
-                    createListItem("A second item with the listLarge style", "listLarge"),
+                    {
+                        type: "listItem",
+                        content: [...createListItem("A second item with the listLarge style", "listLarge").content, nestedListWithAndWithoutStyle],
+                    },
                 ],
             },
             { type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "A paragraph with no style." }] },

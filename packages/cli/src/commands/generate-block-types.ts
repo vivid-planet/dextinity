@@ -24,6 +24,16 @@ export interface TipTapNode {
 }
 `;
 
+function writeBlockDescription(description: string | undefined) {
+    if (!description) {
+        return;
+    }
+
+    // A description containing */ would close the comment early and break the generated file
+    const lines = description.split("\n").map((line) => (line ? ` * ${line.split("*/").join("*\\/")}` : " *"));
+    content += `/**\n${lines.join("\n")}\n */\n`;
+}
+
 function writeFieldType(field: BlockMetaField, blockNamePostfix: string) {
     if (field.kind === "String") {
         content += "string";
@@ -121,6 +131,7 @@ const generateBlockTypes = new Command("generate-block-types")
         const sortedBlockMeta = blockMeta.sort((a, b) => a.name.localeCompare(b.name));
 
         sortedBlockMeta.forEach((block) => {
+            writeBlockDescription(block.description);
             content += `export interface ${block.name}BlockData {\n`;
             block.fields.forEach((field) => {
                 content += field.name;
@@ -136,6 +147,7 @@ const generateBlockTypes = new Command("generate-block-types")
 
         if (options.inputs) {
             sortedBlockMeta.forEach((block) => {
+                writeBlockDescription(block.description);
                 content += `export interface ${block.name}BlockInput {\n`;
                 block.inputFields.forEach((field) => {
                     content += field.name;

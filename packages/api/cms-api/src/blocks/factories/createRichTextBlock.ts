@@ -20,6 +20,7 @@ import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/
 import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
 import { SearchText } from "../search/get-search-text";
 import { BlockFactoryNameOrOptions } from "./types";
+import { withDefaultDescription } from "./withDefaultDescription";
 
 interface CreateRichTextBlockOptions {
     link: Block;
@@ -76,8 +77,10 @@ export function createRichTextBlock<LinkBlock extends Block>(
         throw new Error("Provided 'link' is undefined. This is most likely due to a circular import");
     }
 
-    const blockName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
-    const blockDescription = typeof nameOrOptions === "string" ? undefined : nameOrOptions.description;
+    const { name: blockName, description: blockDescription } = withDefaultDescription(
+        nameOrOptions,
+        "Formatted text, edited in the Draft.js based rich text editor.",
+    );
     const migrate = typeof nameOrOptions !== "string" ? nameOrOptions.migrate : undefined;
 
     @BlockDataMigrationVersion(migrate?.version)

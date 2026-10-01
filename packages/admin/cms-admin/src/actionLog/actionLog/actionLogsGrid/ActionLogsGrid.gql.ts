@@ -3,7 +3,7 @@ import { parse } from "graphql";
 
 import { actionLogShowVersionDialogFragment } from "../actionLogShowVersionDialog/ActionLogShowVersionDialog";
 
-export const actionLogsGridFragment = gql`
+const actionLogsGridFragment = gql`
     fragment ActionLogsGrid on ActionLog {
         id
         entityId

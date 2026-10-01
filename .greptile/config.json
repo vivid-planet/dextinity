@@ -1,5 +1,6 @@
 {
-    "skipReview": "AUTOMATIC",
+    "autoReview": ["open"],
+    "triggerOnDrafts": false,
     "autoApprove": {
         "enabled": true,
         "riskCeiling": "medium",

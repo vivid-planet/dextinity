@@ -36,12 +36,12 @@ export type ActionLogDialogProps = {
      * current content scope. Requires the `actionLog` permission. Use it when the dialog is opened from the action
      * log of all entities, whose rows can belong to any scope.
      */
-    acrossScopes?: boolean;
+    showAllScopes?: boolean;
     open: boolean;
     onClose: () => void;
 };
 
-export function ActionLogDialog({ entity, entityId, name, acrossScopes, open, onClose }: ActionLogDialogProps) {
+export function ActionLogDialog({ entity, entityId, name, showAllScopes, open, onClose }: ActionLogDialogProps) {
     const intl = useIntl();
     const { scope } = useContentScope();
     const [view, setView] = useState<ActionLogDialogView>({ type: "grid" });
@@ -64,16 +64,16 @@ export function ActionLogDialog({ entity, entityId, name, acrossScopes, open, on
 
     const scopedQuery = useQuery<GQLActionLogDialogQuery, GQLActionLogDialogQueryVariables>(actionLogDialogQuery, {
         variables: { entity, scope: scope as ContentScope, filter, ...pagination },
-        skip: !open || acrossScopes,
+        skip: !open || showAllScopes,
     });
 
-    const acrossScopesQuery = useQuery<GQLAllActionLogsDialogQuery, GQLAllActionLogsDialogQueryVariables>(allActionLogsDialogQuery, {
+    const allScopesQuery = useQuery<GQLAllActionLogsDialogQuery, GQLAllActionLogsDialogQueryVariables>(allActionLogsDialogQuery, {
         variables: { filter: { ...filter, entityName: { equal: entity } }, ...pagination },
-        skip: !open || !acrossScopes,
+        skip: !open || !showAllScopes,
     });
 
-    const { loading, error } = acrossScopes ? acrossScopesQuery : scopedQuery;
-    const result = acrossScopes ? acrossScopesQuery.data?.allActionLogs : scopedQuery.data?.actionLogs;
+    const { loading, error } = showAllScopes ? allScopesQuery : scopedQuery;
+    const result = showAllScopes ? allScopesQuery.data?.allActionLogs : scopedQuery.data?.actionLogs;
     const rows = result?.nodes ?? [];
 
     return (

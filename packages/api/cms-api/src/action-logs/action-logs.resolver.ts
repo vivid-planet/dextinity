@@ -17,16 +17,23 @@ export class ActionLogsResolver {
     @ResolveField(() => ActionLog, {
         nullable: true,
         description:
-            "The most recent earlier action log entry for the same entity. Null when this is the first version, or when the earlier entry lacks one of this entry's scopes.",
+            "The most recent earlier action log entry for the same entity. Null when this is the first version, or when the earlier entry is scoped and lacks one of this entry's scopes.",
     })
     async previousVersion(@Parent() actionLog: ActionLog): Promise<ActionLog | null> {
         if (actionLog.version <= 1) {
             return null;
         }
         const previous = await this.previousActionLogLoader.load(actionLog);
+        if (!previous) {
+            return null;
+        }
+        // An unscoped row is listed in every scope, so the user may read it anyway.
+        if (previous.scope == null) {
+            return previous;
+        }
         // Access to a row is checked against one of its own scopes. A previous version that lacks one of the
         // current row's scopes could hold content the user may not read, so it is not returned.
-        return previous && containsAllScopes(previous.scope, actionLog.scope) ? previous : null;
+        return containsAllScopes(previous.scope, actionLog.scope) ? previous : null;
     }
 
     @ResolveField(() => ActionLogType, {

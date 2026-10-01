@@ -68,6 +68,14 @@ function isListNode(node: TipTapNode): boolean {
     return node.type === "bulletList" || node.type === "orderedList";
 }
 
+function isOrderedListNode(node: TipTapNode): boolean {
+    return node.type === "orderedList";
+}
+
+function getListTextBlockName(listNode: TipTapNode): string {
+    return isOrderedListNode(listNode) ? "ordered-list" : "unordered-list";
+}
+
 function getListItems(listNode: TipTapNode): TipTapNode[] {
     return (listNode.content ?? []).filter((child) => child.type === "listItem");
 }
@@ -216,38 +224,39 @@ function renderListItemContent({ item, path, depth, context }: { item: TipTapNod
     return content;
 }
 
-function renderListItems({
-    items,
+function renderListItem({
+    item,
     path,
     depth,
+    textStyle,
     context,
 }: {
-    items: TipTapNode[];
+    item: TipTapNode;
     path: string;
     depth: number;
+    textStyle?: BlockTypeTextProps;
     context: RenderContext;
-}): RichTextListItem[] {
-    return items.map((item, index) => {
-        const itemPath = `${path}-${String(index)}`;
-
-        return { key: itemPath, content: renderListItemContent({ item, path: itemPath, depth, context }) };
-    });
+}): RichTextListItem {
+    return { key: path, content: renderListItemContent({ item, path, depth, context }), textStyle };
 }
 
 function renderNestedList({ node, path, depth, context }: { node: TipTapNode; path: string; depth: number; context: RenderContext }): ReactNode {
-    return (
-        <RichTextList
-            key={path}
-            ordered={node.type === "orderedList"}
-            depth={depth}
-            items={renderListItems({ items: getListItems(node), path, depth, context })}
-        />
+    const items = getListItems(node).map((item, index) =>
+        renderListItem({
+            item,
+            path: `${path}-${String(index)}`,
+            depth,
+            textStyle: resolveBlockTypeProps({ textBlockStyle: getFirstTextBlockStyle(item), textBlock: getListTextBlockName(node), context }),
+            context,
+        }),
     );
+
+    return <RichTextList key={path} ordered={isOrderedListNode(node)} depth={depth} items={items} />;
 }
 
 function renderList({ node, path, isLast, context }: { node: TipTapNode; path: string; isLast: boolean; context: RenderContext }): ReactNode[] {
     const BlockText = context.blockTextComponent;
-    const ordered = node.type === "orderedList";
+    const ordered = isOrderedListNode(node);
     const groups = groupListItemsByTextBlockStyle(node);
 
     return groups.map((group, groupIndex) => {
@@ -255,7 +264,7 @@ function renderList({ node, path, isLast, context }: { node: TipTapNode; path: s
         const isLastGroup = groupIndex === groups.length - 1;
         const blockTypeProps = resolveBlockTypeProps({
             textBlockStyle: group.textBlockStyle,
-            textBlock: ordered ? "ordered-list" : "unordered-list",
+            textBlock: getListTextBlockName(node),
             context,
         });
 
@@ -272,7 +281,7 @@ function renderList({ node, path, isLast, context }: { node: TipTapNode; path: s
                     hasItemSpacingBelowLastItem={!isLastGroup}
                     firstMarkerIndex={group.firstItemIndex}
                     depth={0}
-                    items={renderListItems({ items: group.items, path: groupPath, depth: 0, context })}
+                    items={group.items.map((item, index) => renderListItem({ item, path: `${groupPath}-${String(index)}`, depth: 0, context }))}
                 />
             </BlockText>
         );

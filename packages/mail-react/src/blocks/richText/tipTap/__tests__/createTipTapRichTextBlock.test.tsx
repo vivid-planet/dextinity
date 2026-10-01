@@ -45,6 +45,14 @@ function getListMarkerOf(markup: string, itemText: string): string | undefined {
     return row?.match(/class="richTextBlock__listItemMarker"[^>]*>([^<]*)</)?.[1];
 }
 
+function getListItemTextStyleOf(markup: string, itemText: string): string | undefined {
+    return markup.match(new RegExp(`class="richTextBlock__listItemText"[^>]*style="([^"]*)"[^>]*>${itemText}<`))?.[1];
+}
+
+function getListItemClassOf(markup: string, itemText: string): string | undefined {
+    return markup.match(new RegExp(`<tr class="([^"]*)"><td[^>]*>[^<]*</td><td[^>]*>${itemText}<`))?.[1];
+}
+
 const themeWithVariants = createTheme({
     text: {
         variants: {
@@ -86,6 +94,79 @@ describe("createTipTapRichTextBlock", () => {
         expect(getListClassOf(markup, "One")).not.toContain("richTextBlock__list--variantBody");
         expect(getListClassOf(markup, "Two")).toContain("richTextBlock__list--variantBody");
         expect(getListMarkerOf(markup, "Two")).toBe("2.");
+    });
+
+    it("renders a nested list item with its own text block style", () => {
+        const { HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+            textBlockStyles: { heading: { variant: "heading1" }, body: { variant: "body" } },
+        });
+        const data = createBlockData([
+            {
+                type: "bulletList",
+                content: [
+                    {
+                        type: "listItem",
+                        content: [
+                            createParagraph("Parent", { textBlockStyle: "heading" }),
+                            { type: "bulletList", content: [createListItem("Child", { textBlockStyle: "body" })] },
+                        ],
+                    },
+                ],
+            },
+        ]);
+        const markup = renderWithTheme(<HtmlTipTapRichTextBlock data={data} />, themeWithVariants);
+
+        expect(getListItemTextStyleOf(markup, "Parent")).toContain("font-size:32px");
+        expect(getListItemTextStyleOf(markup, "Child")).toContain("font-size:16px");
+        expect(getListItemTextStyleOf(markup, "Child")).toContain("font-weight:normal");
+    });
+
+    it("renders a nested list item without a text block style with the `textBlocks` style of its list, not with the enclosing item's style", () => {
+        const { HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+            textBlocks: { "unordered-list": { fontSize: "20px" } },
+            textBlockStyles: { heading: { variant: "heading1" } },
+        });
+        const data = createBlockData([
+            {
+                type: "bulletList",
+                content: [
+                    {
+                        type: "listItem",
+                        content: [
+                            createParagraph("Parent", { textBlockStyle: "heading" }),
+                            { type: "bulletList", content: [createListItem("Child")] },
+                        ],
+                    },
+                ],
+            },
+        ]);
+        const markup = renderWithTheme(<HtmlTipTapRichTextBlock data={data} />, themeWithVariants);
+
+        expect(getListItemTextStyleOf(markup, "Child")).toContain("font-size:20px");
+    });
+
+    it("gives a nested list item's row the classes of its own text block style", () => {
+        const { HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+            textBlockStyles: { heading: { variant: "heading1" }, body: { variant: "body", className: "bodyText" } },
+        });
+        const data = createBlockData([
+            {
+                type: "bulletList",
+                content: [
+                    {
+                        type: "listItem",
+                        content: [
+                            createParagraph("Parent", { textBlockStyle: "heading" }),
+                            { type: "bulletList", content: [createListItem("Child", { textBlockStyle: "body" })] },
+                        ],
+                    },
+                ],
+            },
+        ]);
+        const markup = renderWithTheme(<HtmlTipTapRichTextBlock data={data} />, themeWithVariants);
+
+        expect(getListItemClassOf(markup, "Child")).toContain("richTextBlock__listItem--variantBody");
+        expect(getListItemClassOf(markup, "Child")).toContain("bodyText");
     });
 
     it("leaves no `mj-text` tag in the compiled mail for a nested list", () => {

@@ -17,7 +17,12 @@ import {
 } from "@dextinity/admin";
 import { Card, CardContent, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
+<<<<<<< HEAD
 import { deepEqual } from "fast-equals";
+=======
+import { format } from "date-fns";
+import isEqual from "lodash.isequal";
+>>>>>>> main
 import { type ReactNode, useCallback } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Link as RouterLink } from "react-router-dom";
@@ -187,8 +192,8 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
                     type: file.license?.type ?? "NO_LICENSE",
                     details: file.license?.details,
                     author: file.license?.author,
-                    durationFrom: file.license?.durationFrom ? Date.parse(file.license?.durationFrom) : undefined,
-                    durationTo: file.license?.durationTo ? Date.parse(file.license?.durationTo) : undefined,
+                    durationFrom: file.license?.durationFrom ? format(new Date(file.license.durationFrom), "yyyy-MM-dd") : undefined,
+                    durationTo: file.license?.durationTo ? format(new Date(file.license.durationTo), "yyyy-MM-dd") : undefined,
                 },
             }}
             initialValuesEqual={(prevValues, newValues) => deepEqual(prevValues, newValues)}

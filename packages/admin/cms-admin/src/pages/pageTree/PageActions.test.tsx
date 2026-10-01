@@ -15,6 +15,10 @@ vi.mock("../../contentScope/Provider", () => ({
     }),
 }));
 
+vi.mock("../../contentLanguage/useContentLanguage", () => ({
+    useContentLanguage: () => "en",
+}));
+
 let mockDocumentTypes: Record<string, DocumentInterface>;
 let mockAllowPageDelete: boolean | undefined;
 

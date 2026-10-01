@@ -3,6 +3,10 @@ on:
     pull_request:
         types: [opened]
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
     auto-assign:
         # auto-assign-action has no option to skip pull requests based on their author,

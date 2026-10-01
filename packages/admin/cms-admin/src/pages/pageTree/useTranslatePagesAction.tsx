@@ -4,6 +4,7 @@ import { DialogActions, DialogContent, DialogContentText } from "@mui/material";
 import { type ReactNode, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
+import { useContentLanguage } from "../../contentLanguage/useContentLanguage";
 import { useContentScope } from "../../contentScope/Provider";
 import type { DocumentInterface, GQLDocument } from "../../documents/types";
 import type { TranslatableInterface } from "../../translation/TranslatableInterface";
@@ -33,6 +34,7 @@ export function useTranslatePagesAction({ pages, documentTypes }: Props): {
     const apolloClient = useApolloClient();
     const { enabled, translate, batchTranslate } = useContentTranslationService();
     const { scope } = useContentScope();
+    const language = useContentLanguage({ scope });
     const errorDialog = useErrorDialog();
     const [translating, setTranslating] = useState(false);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
@@ -108,7 +110,7 @@ export function useTranslatePagesAction({ pages, documentTypes }: Props): {
                     const [translatedName, ...rest] = translatedTexts;
                     translatedContentTexts = rest;
 
-                    const translatedSlug = transformToSlug(translatedName, scope.language);
+                    const translatedSlug = transformToSlug(translatedName, language);
 
                     if (translatedName !== page.name || translatedSlug !== page.slug) {
                         const available = await findAvailableSlug(apolloClient, {

@@ -10,7 +10,7 @@ import {
     type GridRenderEditCellParams,
     useGridApiRef,
 } from "@mui/x-data-grid-pro";
-import { type ComponentProps, type Dispatch, type SetStateAction, useEffect } from "react";
+import { type ComponentProps, type Dispatch, type SetStateAction, useCallback, useEffect } from "react";
 
 import type { TableBlockData } from "../../blocks.generated";
 import type { TableBlockState } from "../createTableBlock";
@@ -20,6 +20,8 @@ import { dataGridStyles } from "./dataGridStyles";
 import { EditCell } from "./EditCell";
 import { RowActionsCell } from "./RowActionsCell";
 import { useTableBlockContext } from "./TableBlockContext";
+import { useScrollToAndHighlightCell } from "./useScrollToAndHighlightCell";
+import { type CellPosition, createCellKey } from "./utils/cellRoute";
 import { ensureMinimumTableState } from "./utils/ensureMinimumTableState";
 import { useTemporarilyHighlightedIds } from "./utils/useTemporarilyHighlightedIds";
 
@@ -45,13 +47,18 @@ const flexForColumnSize: Record<ColumnSize, number> = {
 type Props = {
     state: TableBlockState;
     updateState: Dispatch<SetStateAction<TableBlockState>>;
+    clickedCell?: CellPosition;
 };
 
-export const TableBlockGrid = ({ state, updateState }: Props) => {
+export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
     const { RichTextBlock } = useTableBlockContext();
     const apiRef = useGridApiRef();
     const { highlightedIds: recentlyPastedRowIds, highlightTemporarily: addToRecentlyPastedRowIds } = useTemporarilyHighlightedIds();
     const { highlightedIds: recentlyPastedColumnIds, highlightTemporarily: addToRecentlyPastedColumnIds } = useTemporarilyHighlightedIds();
+    const { highlightedIds: recentlyClickedCellKeys, highlightTemporarily: highlightCellKey } = useTemporarilyHighlightedIds();
+
+    const highlightCell = useCallback((cell: CellPosition) => highlightCellKey(createCellKey(cell)), [highlightCellKey]);
+    useScrollToAndHighlightCell({ apiRef, cell: clickedCell, highlightCell });
 
     useEffect(() => {
         if (state.columns.length === 0 || state.rows.length === 0) {
@@ -152,12 +159,13 @@ export const TableBlockGrid = ({ state, updateState }: Props) => {
                 const rowFromState = state.rows.find((rowInState) => rowInState.id === row.id);
                 const rowWasRecentlyPasted = recentlyPastedRowIds.includes(row.id);
                 const columnWasRecentlyPasted = recentlyPastedColumnIds.includes(columnId);
+                const cellWasRecentlyClicked = recentlyClickedCellKeys.includes(createCellKey({ rowId: row.id, columnId }));
 
                 return (
                     <CellValue
                         value={value}
                         highlighted={rowFromState?.highlighted || highlighted}
-                        isTemporarilyHighlighted={rowWasRecentlyPasted || columnWasRecentlyPasted}
+                        isTemporarilyHighlighted={rowWasRecentlyPasted || columnWasRecentlyPasted || cellWasRecentlyClicked}
                     />
                 );
             },

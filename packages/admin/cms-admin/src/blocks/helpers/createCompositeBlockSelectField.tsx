@@ -5,18 +5,19 @@ import type { BlockMethods } from "../types";
 import { createCompositeBlockField } from "./composeBlocks/createCompositeBlockField";
 
 type Unpacked<T> = T extends (infer U)[] ? U : T;
+type OptionValue<T> = Unpacked<NonNullable<T>>;
 
-interface Options<T extends string | number | string[] | number[]> extends Partial<SelectFieldProps<Unpacked<T>>> {
+interface Options<T extends string | number | string[] | number[] | undefined> extends Partial<SelectFieldProps<OptionValue<T>>> {
     defaultValue: T;
-    options: Array<SelectFieldOption<Unpacked<T>>>;
+    options: Array<SelectFieldOption<OptionValue<T>>>;
     /**
      * @deprecated Set the props directly instead of nesting inside fieldProps
      */
-    fieldProps?: Partial<SelectFieldProps<Unpacked<T>>>;
+    fieldProps?: Partial<SelectFieldProps<OptionValue<T>>>;
     extractTextContents?: BlockMethods["extractTextContents"];
 }
 
-export function createCompositeBlockSelectField<T extends string | number | string[] | number[]>({
+export function createCompositeBlockSelectField<T extends string | number | string[] | number[] | undefined>({
     defaultValue,
     options,
     fullWidth = true,

@@ -43,4 +43,15 @@ describe("createCompositeBlockSelectField", () => {
         });
         expect(block.defaultValues()).toEqual([1]);
     });
+
+    it("supports undefined for an optional value", () => {
+        const [block] = createCompositeBlockSelectField<"a" | "b" | undefined>({
+            defaultValue: undefined,
+            options: [
+                { label: "A", value: "a" },
+                { label: "B", value: "b" },
+            ],
+        });
+        expect(block.defaultValues()).toBeUndefined();
+    });
 });

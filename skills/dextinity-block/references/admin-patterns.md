@@ -104,6 +104,7 @@ blocks: {
             defaultValue: "primary",
             options: variantOptions,
             label: <FormattedMessage id="myBlock.variant" defaultMessage="Variant" />,
+            required: true,
         }),
         hiddenInSubroute: true,
     },

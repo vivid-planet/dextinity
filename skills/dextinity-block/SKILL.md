@@ -55,7 +55,7 @@ Extract from the user's request:
     - **Number** — numeric with min/max (`overlay`).
     - **Boolean** — toggle/switch (`showOverlay`).
     - **Numeric select** — fixed numeric options. Use `@IsInt()` + `@BlockField()` in the API (not `type: "enum"`); use `createCompositeBlockSelectField` with number options in Admin. See [select.md](references/select.md).
-    - **Enum/select** — fixed string values (`variant`, `alignment`). See [select.md](references/select.md).
+    - **Enum/select** — fixed string values (`variant`, `alignment`). Decide whether each single select is required or optional. See [select.md](references/select.md#required-or-optional).
     - **RichText** — formatted text. Choose shared `RichTextBlock` or a scoped inline one. See [rich-text.md](references/rich-text.md).
     - **Image** — choose `DamImageBlock`, `PixelImageBlock`, `SvgImageBlock`, or a project-specific `MediaBlock`. See [image.md](references/image.md).
     - **Child block** — any other existing block used as a property.

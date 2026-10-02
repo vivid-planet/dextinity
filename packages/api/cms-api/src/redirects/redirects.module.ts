@@ -2,7 +2,6 @@ import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { ClassProvider, DynamicModule, Global, Module, ModuleMetadata, Type, ValueProvider } from "@nestjs/common";
 
 import { Block } from "../blocks/block";
-import { ExternalLinkBlock } from "../blocks/externalLink/external-link.block";
 import { createOneOfBlock, OneOfBlock } from "../blocks/factories/createOneOfBlock";
 import { DependenciesResolverFactory } from "../dependencies/dependencies.resolver.factory";
 import { InternalLinkBlock, InternalLinkBlockData, InternalLinkBlockInput } from "../page-tree/blocks/internal-link.block";
@@ -13,12 +12,13 @@ import { DefaultRedirectTargetUrlService, RedirectTargetUrlServiceInterface } fr
 import { REDIRECTS_LINK_BLOCK, REDIRECTS_TARGET_URL_SERVICE } from "./redirects.constants";
 import { createRedirectsResolver } from "./redirects.resolver";
 import { RedirectsService } from "./redirects.service";
+import { RedirectsExternalLinkBlock } from "./redirects-external-link.block";
 import { RedirectScopeInterface } from "./types";
 
 type CustomTargets = Record<string, Block>;
 
 export type RedirectsLinkBlock = OneOfBlock<
-    CustomTargets & { internal: Block<InternalLinkBlockData, InternalLinkBlockInput>; external: typeof ExternalLinkBlock }
+    CustomTargets & { internal: Block<InternalLinkBlockData, InternalLinkBlockInput>; external: typeof RedirectsExternalLinkBlock }
 >;
 
 interface Config extends Pick<ModuleMetadata, "imports"> {
@@ -32,7 +32,7 @@ export class RedirectsModule {
     static register({ customTargets, Scope, TargetUrlService = DefaultRedirectTargetUrlService, imports }: Config = {}): DynamicModule {
         const linkBlock = createOneOfBlock(
             {
-                supportedBlocks: { internal: InternalLinkBlock, external: ExternalLinkBlock, ...customTargets },
+                supportedBlocks: { internal: InternalLinkBlock, external: RedirectsExternalLinkBlock, ...customTargets },
                 allowEmpty: false,
             },
             "RedirectsLink",

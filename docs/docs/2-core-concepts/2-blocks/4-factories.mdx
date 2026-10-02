@@ -252,6 +252,95 @@ Values that are already stored are kept as they are.
 The preview image in particular stays part of the block's data either way, since the API's child block is non-nullable.
 :::
 
+## ExternalLinkBlock
+
+The `ExternalLinkBlock` lets editors enter a URL and offers two options besides it: "Open in new window" and "No follow".
+Where an option has no effect — for instance in redirects, which resolve to an HTTP redirect without `target` or `rel` —
+use the `createExternalLinkBlock` factory to disable it. Both options are enabled by default and disabled by passing
+`false`.
+
+A disabled option doesn't exist in the block at all: it is absent from `block-meta.json` and the generated types, and
+sending it as input is rejected by validation. Such a block is a block of its own, with its own name, and needs an API
+block, an admin block and a site component.
+
+### API
+
+```ts title="url-link.block.ts"
+import { createExternalLinkBlock } from "@dextinity/cms-api";
+
+export const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "UrlLink");
+```
+
+Replacing the `ExternalLinkBlock` at an existing usage site, for instance under the `external` key of a `LinkBlock`,
+needs no migration: a `OneOfBlock` resolves by key, not by block name. Values stored for a disabled option stay in the
+block's JSON but aren't passed on to the admin or the site, and are dropped the next time an editor saves the block.
+
+To remove them right away, add a migration. A block created by the factory carries the migrations shipped with the
+`ExternalLinkBlock` as [vendor migrations](./5-migrations.mdx#vendor-migrations), so it reads content the
+`ExternalLinkBlock` stored the same way, and its own migrations start with version 1:
+
+```ts title="url-link.block.ts"
+import { BlockMigration, type BlockMigrationInterface, createExternalLinkBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
+
+interface From {
+    targetUrl?: string;
+    openInNewWindow: boolean;
+    noFollow: boolean;
+}
+
+interface To {
+    targetUrl?: string;
+}
+
+class RemoveLinkOptionsMigration extends BlockMigration<(from: From) => To> implements BlockMigrationInterface {
+    public readonly toVersion = 1;
+
+    protected migrate({ targetUrl }: From): To {
+        return { targetUrl };
+    }
+}
+
+export const UrlLinkBlock = createExternalLinkBlock(
+    { openInNewWindow: false, noFollow: false },
+    { name: "UrlLink", migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([RemoveLinkOptionsMigration]) } },
+);
+```
+
+Run `pnpm console migrateBlocks` to write the migrated data back.
+
+### Admin
+
+Use the same name and disable the same options as in the API:
+
+```tsx title="UrlLinkBlock.tsx"
+import { createExternalLinkBlock } from "@dextinity/cms-admin";
+
+export const UrlLinkBlock = createExternalLinkBlock({ name: "UrlLink", openInNewWindow: false, noFollow: false });
+```
+
+### Site
+
+Rendered as a `OneOfBlock` target, as in the [LinkBlock](#linkblock) example, the `ExternalLinkBlock` from
+`@dextinity/site-nextjs` can render the block as well: an option the block doesn't have is `undefined` and treated like
+`false`. When passing the data typed, for instance as `UrlLinkBlockData`, write a component of your own:
+
+```tsx title="UrlLinkBlock.tsx"
+import { PropsWithData } from "@dextinity/site-nextjs";
+import { UrlLinkBlockData } from "@src/blocks.generated";
+import { PropsWithChildren } from "react";
+
+export function UrlLinkBlock({ data: { targetUrl }, children }: PropsWithChildren<PropsWithData<UrlLinkBlockData>>) {
+    if (!targetUrl) {
+        return <span>{children}</span>;
+    }
+
+    return <a href={targetUrl}>{children}</a>;
+}
+```
+
+The `ExternalLinkBlock` additionally hands the link over to the admin in the site preview. Keep that in mind for content
+that is edited in the site preview.
+
 ## FinalFormBlock (Admin only)
 
 The FinalFormBlock factory can be used to convert a block's `AdminComponent` API to the Final Form `Field` API.
@@ -362,6 +451,9 @@ export const LinkBlock = createLinkBlock({
     },
 });
 ```
+
+To leave out "Open in new window" or "No follow", pass an `external` block created with
+[`createExternalLinkBlock`](#externallinkblock) instead of `ExternalLinkBlock`, in the API and the admin.
 
 ### Site
 

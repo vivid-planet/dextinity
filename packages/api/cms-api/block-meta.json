@@ -821,6 +821,23 @@
         ]
     },
     {
+        "name": "RedirectsExternalLink",
+        "fields": [
+            {
+                "name": "targetUrl",
+                "kind": "String",
+                "nullable": true
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "targetUrl",
+                "kind": "String",
+                "nullable": true
+            }
+        ]
+    },
+    {
         "name": "RichText",
         "fields": [
             {

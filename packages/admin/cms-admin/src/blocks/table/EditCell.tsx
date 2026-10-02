@@ -60,4 +60,9 @@ const EditPopper = styled(Popper)(({ theme }) => ({
 const EditorWrapper = styled(Box)(({ theme }) => ({
     position: "relative",
     boxShadow: theme.shadows[1],
+
+    "& :has(> .DextinityAdminRteToolbar-root, > .DextinityAdminTipTapToolbar-root)": {
+        maxHeight: "60vh",
+        overflowY: "auto",
+    },
 }));

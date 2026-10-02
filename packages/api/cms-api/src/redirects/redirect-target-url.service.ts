@@ -1,10 +1,10 @@
 import { Injectable, Scope } from "@nestjs/common";
 
 import { ExtractBlockData } from "../blocks/block";
-import { ExternalLinkBlock } from "../blocks/externalLink/external-link.block";
 import { InternalLinkBlock } from "../page-tree/blocks/internal-link.block";
 import { PageTreeReadApiService } from "../page-tree/page-tree-read-api.service";
 import { RedirectsLinkBlock } from "./redirects.module";
+import { RedirectsExternalLinkBlock } from "./redirects-external-link.block";
 
 export type RedirectTargetUrlServiceInterface = {
     resolveTargetUrl(target: ExtractBlockData<RedirectsLinkBlock>["attachedBlocks"][number]): Promise<string | undefined>;
@@ -27,7 +27,7 @@ export class DefaultRedirectTargetUrlService implements RedirectTargetUrlService
                 return this.pageTreeReadApi.nodePath(targetPageNode);
             }
         } else if (target.type === "external") {
-            return (target.props as ExtractBlockData<typeof ExternalLinkBlock>).targetUrl;
+            return (target.props as ExtractBlockData<typeof RedirectsExternalLinkBlock>).targetUrl;
         } else {
             if (process.env.NODE_ENV === "development") {
                 throw new Error(`Unsupported custom redirect target: ${target.type}. You need to implement a custom target URL service`);

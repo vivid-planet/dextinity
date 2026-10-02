@@ -3019,6 +3019,23 @@
         ]
     },
     {
+        "name": "RedirectsExternalLink",
+        "fields": [
+            {
+                "name": "targetUrl",
+                "kind": "String",
+                "nullable": true
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "targetUrl",
+                "kind": "String",
+                "nullable": true
+            }
+        ]
+    },
+    {
         "name": "RedirectsLink",
         "fields": [
             {
@@ -3036,7 +3053,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "internal": "InternalLink",
-                                "external": "ExternalLink",
+                                "external": "RedirectsExternalLink",
                                 "news": "NewsLink"
                             },
                             "nullable": false
@@ -3065,7 +3082,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "internal": "InternalLink",
-                                "external": "ExternalLink",
+                                "external": "RedirectsExternalLink",
                                 "news": "NewsLink"
                             },
                             "nullable": false
@@ -3091,7 +3108,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "internal": "InternalLink",
-                                "external": "ExternalLink",
+                                "external": "RedirectsExternalLink",
                                 "news": "NewsLink"
                             },
                             "nullable": false

@@ -17,3 +17,7 @@ export const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, no
 The block name is mandatory, since a block with other fields is a block of its own. It needs an admin block created with the same name and options, and a site component. `ExternalLinkBlock` is now created from the factory and still exported, so this is non-breaking.
 
 A block created by the factory carries the migrations shipped with the `ExternalLinkBlock` as vendor migrations, so it can replace the `ExternalLinkBlock` in an existing project: it reads the content the `ExternalLinkBlock` stored, and its own migrations start with version 1. Values stored for a disabled option aren't passed on to the admin or the site, and are dropped the next time an editor saves the block.
+
+**Redirects no longer store "Open in new window" and "No follow"**
+
+A redirect resolves to an HTTP redirect, which has neither a `target` nor a `rel` attribute, so both options were without effect there. The external target of `RedirectsModule` is now a `RedirectsExternalLink` block without them. Stored redirects load as before.

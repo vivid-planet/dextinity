@@ -271,6 +271,7 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
         AdminComponent: ({ state, updateState }) => {
             const {
                 cannotPasteBlockErrorDialog,
+                clipboardProgressDialog,
                 createUpdateSubBlocksFn,
                 totalVisibleBlocks,
                 updateClipboardContent,
@@ -513,6 +514,7 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                         </StackPage>
                     </StackSwitch>
                     {cannotPasteBlockErrorDialog}
+                    {clipboardProgressDialog}
                 </SelectPreviewComponent>
             );
         },

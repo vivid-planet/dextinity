@@ -3,16 +3,12 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 import { createExternalLinkBlock } from "./createExternalLinkBlock";
 
 describe("createExternalLinkBlock", () => {
-    it("should create a block named ExternalLink", () => {
-        expect(createExternalLinkBlock().name).toBe("ExternalLink");
-    });
-
-    it("should allow naming the block after the API block it is paired with", () => {
+    it("should name the block after the API block it is paired with", () => {
         expect(createExternalLinkBlock({ name: "UrlLink", openInNewWindow: false, noFollow: false }).name).toBe("UrlLink");
     });
 
     it("should have all options by default", () => {
-        const block = createExternalLinkBlock();
+        const block = createExternalLinkBlock({ name: "ExternalLink" });
 
         expect(block.defaultValues()).toEqual({ targetUrl: undefined, openInNewWindow: false, noFollow: false });
         expect(block.state2Output(block.defaultValues())).toEqual({ targetUrl: undefined, openInNewWindow: false, noFollow: false });
@@ -34,13 +30,13 @@ describe("createExternalLinkBlock", () => {
     });
 
     it("should allow overriding the block", () => {
-        const block = createExternalLinkBlock({}, (block) => ({ ...block, name: "MyCustomExternalLink" }));
+        const block = createExternalLinkBlock({ name: "ExternalLink" }, (block) => ({ ...block, name: "MyCustomExternalLink" }));
 
         expect(block.name).toBe("MyCustomExternalLink");
     });
 
     it("should type an option as present unless it is disabled", () => {
-        expectTypeOf(createExternalLinkBlock().defaultValues().openInNewWindow).toEqualTypeOf<boolean>();
+        expectTypeOf(createExternalLinkBlock({ name: "ExternalLink" }).defaultValues().openInNewWindow).toEqualTypeOf<boolean>();
         const defaultValues = createExternalLinkBlock({ name: "TypedNoFollowLink", openInNewWindow: false }).defaultValues();
 
         expectTypeOf(defaultValues).not.toHaveProperty("openInNewWindow");

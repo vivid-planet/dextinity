@@ -26,7 +26,7 @@ function readState(canvas: { getByTestId: (id: string) => HTMLElement }): Extern
     return JSON.parse(canvas.getByTestId("state").textContent ?? "{}");
 }
 
-const ExternalLinkBlock = createExternalLinkBlock();
+const ExternalLinkBlock = createExternalLinkBlock({ name: "ExternalLink" });
 
 function ExternalLinkBlockStory() {
     const [state, setState] = useState(ExternalLinkBlock.defaultValues());

@@ -1,3 +1,3 @@
 import { createExternalLinkBlock } from "./createExternalLinkBlock";
 
-export const ExternalLinkBlock = createExternalLinkBlock();
+export const ExternalLinkBlock = createExternalLinkBlock({ name: "ExternalLink" });

@@ -22,9 +22,8 @@ interface ExternalLinkBlockFactoryOptions {
     noFollow?: boolean;
     /**
      * Must match the name of the API block this is paired with.
-     * @default "ExternalLink"
      */
-    name?: string;
+    name: string;
 }
 
 type OptionValue<Options, Option extends ExternalLinkBlockOption> = Option extends keyof Options ? Options[Option] : undefined;
@@ -55,12 +54,12 @@ type ExternalLinkBlock<Options = ExternalLinkBlockFactoryOptions> = BlockInterfa
 
 const allOptions: ExternalLinkBlockOption[] = ["openInNewWindow", "noFollow"];
 
-export function createExternalLinkBlock<const Options extends ExternalLinkBlockFactoryOptions = Record<never, never>>(
-    options?: Options,
+export function createExternalLinkBlock<const Options extends ExternalLinkBlockFactoryOptions>(
+    options: Options,
     override?: (block: ExternalLinkBlock<Options>) => ExternalLinkBlock<Options>,
 ): ExternalLinkBlock<Options> {
-    const { name = "ExternalLink" }: ExternalLinkBlockFactoryOptions = options ?? {};
-    const fields = allOptions.filter((option) => options?.[option] !== false);
+    const { name } = options;
+    const fields = allOptions.filter((option) => options[option] !== false);
 
     const has = (option: ExternalLinkBlockOption) => fields.includes(option);
     const ExternalLinkBlock: ExternalLinkBlock = {

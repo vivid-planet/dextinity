@@ -31,8 +31,7 @@ interface ExternalLinkBlockFactoryOptions {
 }
 
 /**
- * Creates an external link block without the options disabled here. A block with other options than the
- * `ExternalLinkBlock` needs a name of its own.
+ * Creates an external link block without the options disabled here.
  */
 export function createExternalLinkBlock(options: ExternalLinkBlockFactoryOptions, nameOrOptions: BlockFactoryNameOrOptions) {
     const name = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;

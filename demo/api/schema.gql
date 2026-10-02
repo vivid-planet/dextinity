@@ -547,6 +547,7 @@ type Dependency {
   rootColumnName: String!
   rootGraphqlObjectType: String!
   rootId: String!
+  scope: JSONObject
   secondaryInformation: String
   targetGraphqlObjectType: String!
   targetId: String!

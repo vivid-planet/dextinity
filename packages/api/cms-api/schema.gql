@@ -91,6 +91,7 @@ type Dependency {
   targetId: String!
   name: String
   secondaryInformation: String
+  scope: JSONObject
 }
 
 type PaginatedDependencies {

@@ -5,19 +5,23 @@ import { FinalFormCheckbox, type FinalFormCheckboxProps } from "../Checkbox";
 import { Field, type FieldProps } from "../Field";
 
 export interface CheckboxFieldProps extends FieldProps<string, HTMLInputElement> {
-    fieldLabel?: ReactNode;
+    checkboxLabel?: ReactNode;
     componentsProps?: {
         formControlLabel?: FormControlLabelProps;
         finalFormCheckbox?: FinalFormCheckboxProps;
     };
 }
 
-export const CheckboxField = ({ fieldLabel, label, componentsProps = {}, ...restProps }: CheckboxFieldProps) => {
+export const CheckboxField = ({ checkboxLabel, componentsProps = {}, ...restProps }: CheckboxFieldProps) => {
     const { formControlLabel: formControlLabelProps, finalFormCheckbox: finalFormCheckboxProps } = componentsProps;
     return (
-        <Field type="checkbox" label={fieldLabel} {...restProps}>
+        <Field type="checkbox" {...restProps}>
             {(props) => (
-                <FormControlLabel label={label} control={<FinalFormCheckbox {...props} {...finalFormCheckboxProps} />} {...formControlLabelProps} />
+                <FormControlLabel
+                    label={checkboxLabel}
+                    control={<FinalFormCheckbox {...props} {...finalFormCheckboxProps} />}
+                    {...formControlLabelProps}
+                />
             )}
         </Field>
     );

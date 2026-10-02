@@ -11,24 +11,6 @@ import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "./t
 
 type ExternalLinkBlockOption = "openInNewWindow" | "noFollow";
 
-/** The options are optional because a block of its own doesn't carry the ones it disables at all. */
-type WithOptionalOptions<T extends Record<ExternalLinkBlockOption, boolean>> = Omit<T, ExternalLinkBlockOption> &
-    Partial<Pick<T, ExternalLinkBlockOption>>;
-
-export type ExternalLinkBlockState = WithOptionalOptions<ExternalLinkBlockData>;
-
-type State = ExternalLinkBlockState;
-
-type Output = WithOptionalOptions<ExternalLinkBlockInput>;
-
-type ExternalLinkBlock = BlockInterface<ExternalLinkBlockData, State, Output> & LinkBlockInterface<State>;
-
-/** A block with all fields, as `ExternalLinkBlock` itself, whose options are therefore always present. */
-type CompleteExternalLinkBlock = BlockInterface<ExternalLinkBlockData, ExternalLinkBlockData, ExternalLinkBlockInput> &
-    LinkBlockInterface<ExternalLinkBlockData>;
-
-const allOptions: ExternalLinkBlockOption[] = ["openInNewWindow", "noFollow"];
-
 interface ExternalLinkBlockFactoryOptions {
     /**
      * Offers "Open in new window". Defaults to `true`.
@@ -39,29 +21,46 @@ interface ExternalLinkBlockFactoryOptions {
      */
     noFollow?: boolean;
     /**
-     * Without a name of its own, a disabled option is only hidden from the editor. With one, the block is paired with
-     * the API block of that name, and a disabled option isn't part of its data either.
+     * Must match the name of the API block this is paired with.
      * @default "ExternalLink"
      */
     name?: string;
 }
 
-export function createExternalLinkBlock(
-    options?: Omit<ExternalLinkBlockFactoryOptions, "name">,
-    override?: (block: CompleteExternalLinkBlock) => CompleteExternalLinkBlock,
-): CompleteExternalLinkBlock;
-export function createExternalLinkBlock(
-    options: ExternalLinkBlockFactoryOptions & { name: string },
-    override?: (block: ExternalLinkBlock) => ExternalLinkBlock,
-): ExternalLinkBlock;
-export function createExternalLinkBlock(
-    { name = "ExternalLink", ...options }: ExternalLinkBlockFactoryOptions = {},
-    override?: ((block: CompleteExternalLinkBlock) => CompleteExternalLinkBlock) | ((block: ExternalLinkBlock) => ExternalLinkBlock),
-): CompleteExternalLinkBlock | ExternalLinkBlock {
-    const enabledOptions = allOptions.filter((option) => options[option] !== false);
-    // The ExternalLink name promises the data of the ExternalLinkBlock, which the block clipboard relies on when
-    // deciding whether copied content fits where it is pasted
-    const fields = name === "ExternalLink" ? allOptions : enabledOptions;
+type OptionValue<Options, Option extends ExternalLinkBlockOption> = Option extends keyof Options ? Options[Option] : undefined;
+
+type DisabledOptions<Options> = {
+    [Option in ExternalLinkBlockOption]: [OptionValue<Options, Option>] extends [false] ? Option : never;
+}[ExternalLinkBlockOption];
+
+/** Options whose value isn't known at compile time, for instance when passed as a `boolean` variable. */
+type UndecidedOptions<Options> = {
+    [Option in ExternalLinkBlockOption]: [OptionValue<Options, Option>] extends [false]
+        ? never
+        : false extends OptionValue<Options, Option>
+          ? Option
+          : never;
+}[ExternalLinkBlockOption];
+
+type WithOptions<T, Options> = Omit<T, DisabledOptions<Options> | UndecidedOptions<Options>> & Partial<Pick<T, UndecidedOptions<Options> & keyof T>>;
+
+export type ExternalLinkBlockState = WithOptions<ExternalLinkBlockData, ExternalLinkBlockFactoryOptions>;
+
+type ExternalLinkBlock<Options = ExternalLinkBlockFactoryOptions> = BlockInterface<
+    ExternalLinkBlockData,
+    WithOptions<ExternalLinkBlockData, Options>,
+    WithOptions<ExternalLinkBlockInput, Options>
+> &
+    LinkBlockInterface<WithOptions<ExternalLinkBlockData, Options>>;
+
+const allOptions: ExternalLinkBlockOption[] = ["openInNewWindow", "noFollow"];
+
+export function createExternalLinkBlock<const Options extends ExternalLinkBlockFactoryOptions = Record<never, never>>(
+    options?: Options,
+    override?: (block: ExternalLinkBlock<Options>) => ExternalLinkBlock<Options>,
+): ExternalLinkBlock<Options> {
+    const { name = "ExternalLink" }: ExternalLinkBlockFactoryOptions = options ?? {};
+    const fields = allOptions.filter((option) => options?.[option] !== false);
 
     const has = (option: ExternalLinkBlockOption) => fields.includes(option);
     const ExternalLinkBlock: ExternalLinkBlock = {
@@ -132,13 +131,13 @@ export function createExternalLinkBlock(
                             validate={(url) => validateLinkTarget(url)}
                             disableContentTranslation
                         />
-                        {enabledOptions.includes("openInNewWindow") && (
+                        {fields.includes("openInNewWindow") && (
                             <CheckboxField
                                 label={<FormattedMessage id="dextinity.blocks.link.external.openInNewWindow" defaultMessage="Open in new window" />}
                                 name="openInNewWindow"
                             />
                         )}
-                        {enabledOptions.includes("noFollow") && (
+                        {fields.includes("noFollow") && (
                             <CheckboxField
                                 label={<FormattedMessage id="dextinity.blocks.link.external.noFollow" defaultMessage="No follow" />}
                                 name="noFollow"
@@ -161,10 +160,12 @@ export function createExternalLinkBlock(
         extractTextContents: (state) => (state.targetUrl ? [state.targetUrl] : []),
     };
 
+    // The fields are filtered at runtime by the same options that ExternalLinkBlock<Options> filters at compile time
+    const block = ExternalLinkBlock as unknown as ExternalLinkBlock<Options>;
+
     if (override) {
-        // Without a name of its own, the block has all fields, which is what the overload for a complete block relies on
-        return (override as (block: ExternalLinkBlock) => ExternalLinkBlock)(ExternalLinkBlock);
+        return override(block);
     }
 
-    return ExternalLinkBlock;
+    return block;
 }

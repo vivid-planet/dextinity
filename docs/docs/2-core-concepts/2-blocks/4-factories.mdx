@@ -259,33 +259,11 @@ Where an option has no effect — for instance in redirects, which resolve to an
 use the `createExternalLinkBlock` factory to disable it. Both options are enabled by default and disabled by passing
 `false`.
 
-How far a disabled option disappears depends on the block's name:
+A disabled option doesn't exist in the block at all: it is absent from `block-meta.json` and the generated types, and
+sending it as input is rejected by validation. Such a block is a block of its own, with its own name, and needs an API
+block, an admin block and a site component.
 
-- **Hidden from the editor**: An admin block without a name of its own keeps the name and the data of the
-  `ExternalLinkBlock`. The option is only hidden, stored values are kept, and the API block and the site component are
-  unaffected. This works per usage site.
-- **Removed from the block**: A block of its own, with its own name in API and admin, doesn't have the option at all. It
-  is absent from `block-meta.json` and the generated types, and sending it as input is rejected by validation.
-
-### Hiding an option from the editor (Admin only)
-
-```tsx title="LinkBlock.tsx"
-import { createExternalLinkBlock, createLinkBlock, InternalLinkBlock } from "@dextinity/cms-admin";
-
-export const LinkBlock = createLinkBlock({
-    supportedBlocks: {
-        internal: InternalLinkBlock,
-        external: createExternalLinkBlock({ noFollow: false }),
-    },
-});
-```
-
-Everything built on that link block (`createTextLinkBlock`, `createImageLinkBlock`, rich text links, …) picks it up
-automatically. To always open external links in a new tab, do so in the site implementation instead.
-
-### A block of its own
-
-#### API
+### API
 
 ```ts title="url-link.block.ts"
 import { createExternalLinkBlock } from "@dextinity/cms-api";
@@ -333,7 +311,7 @@ export const UrlLinkBlock = createExternalLinkBlock(
 
 Run `pnpm console migrateBlocks` to write the migrated data back.
 
-#### Admin
+### Admin
 
 Use the same name and disable the same options as in the API:
 
@@ -343,7 +321,7 @@ import { createExternalLinkBlock } from "@dextinity/cms-admin";
 export const UrlLinkBlock = createExternalLinkBlock({ name: "UrlLink", openInNewWindow: false, noFollow: false });
 ```
 
-#### Site
+### Site
 
 Rendered as a `OneOfBlock` target, as in the [LinkBlock](#linkblock) example, the `ExternalLinkBlock` from
 `@dextinity/site-nextjs` can render the block as well: an option the block doesn't have is `undefined` and treated like
@@ -477,8 +455,8 @@ export const LinkBlock = createLinkBlock({
 });
 ```
 
-To hide the "Open in new window" or "No follow" option from editors, pass an `external` block created with
-[`createExternalLinkBlock`](#externallinkblock) instead of `ExternalLinkBlock`.
+To leave out "Open in new window" or "No follow", pass an `external` block created with
+[`createExternalLinkBlock`](#externallinkblock) instead of `ExternalLinkBlock`, in the API and the admin.
 
 ### Site
 

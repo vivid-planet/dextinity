@@ -11,20 +11,14 @@ describe("createExternalLinkBlock", () => {
         expect(createExternalLinkBlock({ name: "UrlLink", openInNewWindow: false, noFollow: false }).name).toBe("UrlLink");
     });
 
-    it("should keep a disabled option in the block's data without a name of its own", () => {
-        const block = createExternalLinkBlock({ openInNewWindow: false, noFollow: false });
+    it("should have all options by default", () => {
+        const block = createExternalLinkBlock();
 
         expect(block.defaultValues()).toEqual({ targetUrl: undefined, openInNewWindow: false, noFollow: false });
         expect(block.state2Output(block.defaultValues())).toEqual({ targetUrl: undefined, openInNewWindow: false, noFollow: false });
     });
 
-    it("should keep a disabled option in the block's data when named ExternalLink explicitly", () => {
-        const block = createExternalLinkBlock({ name: "ExternalLink", openInNewWindow: false, noFollow: false });
-
-        expect(block.defaultValues()).toEqual({ targetUrl: undefined, openInNewWindow: false, noFollow: false });
-    });
-
-    it("should leave a disabled option out of the block's data with a name of its own", () => {
+    it("should leave a disabled option out of the block's data", () => {
         const block = createExternalLinkBlock({ name: "UrlLink", openInNewWindow: false, noFollow: false });
 
         expect(block.defaultValues()).toEqual({ targetUrl: undefined });
@@ -45,10 +39,18 @@ describe("createExternalLinkBlock", () => {
         expect(block.name).toBe("MyCustomExternalLink");
     });
 
-    it("should type the options as always present unless the block has a name of its own", () => {
+    it("should type an option as present unless it is disabled", () => {
         expectTypeOf(createExternalLinkBlock().defaultValues().openInNewWindow).toEqualTypeOf<boolean>();
-        expectTypeOf(createExternalLinkBlock({ openInNewWindow: false, noFollow: false }).defaultValues().noFollow).toEqualTypeOf<boolean>();
-        expectTypeOf(createExternalLinkBlock({ name: "TypedUrlLink", noFollow: false }).defaultValues().noFollow).toEqualTypeOf<
+        const defaultValues = createExternalLinkBlock({ name: "TypedNoFollowLink", openInNewWindow: false }).defaultValues();
+
+        expectTypeOf(defaultValues).not.toHaveProperty("openInNewWindow");
+        expectTypeOf(defaultValues.noFollow).toEqualTypeOf<boolean>();
+    });
+
+    it("should type an option as optional when it isn't known whether it is disabled", () => {
+        const isNoFollowEnabled: boolean = Math.random() > 0.5;
+
+        expectTypeOf(createExternalLinkBlock({ name: "TypedUndecidedLink", noFollow: isNoFollowEnabled }).defaultValues().noFollow).toEqualTypeOf<
             boolean | undefined
         >();
     });

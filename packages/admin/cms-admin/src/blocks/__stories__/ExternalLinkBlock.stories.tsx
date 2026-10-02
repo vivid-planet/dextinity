@@ -67,7 +67,7 @@ export const Default: Story = {
     },
 };
 
-const WithoutOptionsBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false });
+const WithoutOptionsBlock = createExternalLinkBlock({ name: "UrlLink", openInNewWindow: false, noFollow: false });
 
 function WithoutOptionsStory() {
     const [state, setState] = useState(WithoutOptionsBlock.defaultValues());
@@ -90,8 +90,9 @@ export const WithoutOptions: StoryObj<typeof WithoutOptionsStory> = {
             expect(canvas.queryAllByRole("checkbox")).toHaveLength(0);
         });
 
-        await step("Both options stay part of the data, they are only hidden from the editor", async () => {
-            expect(readState(canvas)).toMatchObject({ openInNewWindow: false, noFollow: false });
+        await step("Neither option is part of the data", async () => {
+            expect(readState(canvas)).not.toHaveProperty("openInNewWindow");
+            expect(readState(canvas)).not.toHaveProperty("noFollow");
         });
     },
 };

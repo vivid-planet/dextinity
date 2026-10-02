@@ -17,6 +17,7 @@ export const StandaloneMediaBlock = createCompositeBlock(
                     label: <FormattedMessage id="standaloneMedia.aspectRatio" defaultMessage="Aspect Ratio" />,
                     defaultValue: "16x9",
                     options: mediaAspectRatioOptions,
+                    required: true,
                 }),
             },
         },

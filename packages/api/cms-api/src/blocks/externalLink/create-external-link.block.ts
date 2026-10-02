@@ -81,6 +81,5 @@ export function createExternalLinkBlock(options: ExternalLinkBlockFactoryOptions
         IsBoolean()(ExternalLinkBlockInput.prototype, field);
     }
 
-    // Shared with the ExternalLinkBlock, so that a block replacing it reads the content it stored
     return createBlock(ExternalLinkBlockData, ExternalLinkBlockInput, { name, migrate, migrateVendor });
 }

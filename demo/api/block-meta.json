@@ -2559,7 +2559,6 @@
                                 "table": "Table",
                                 "tipTapTable": "TipTapTable",
                                 "tipTapRichText": "TipTapRichText",
-                                "productList": "ProductList",
                                 "pageTreeIndex": "PageTreeIndex",
                                 "contactForm": "ContactForm"
                             },
@@ -2628,7 +2627,6 @@
                                 "table": "Table",
                                 "tipTapTable": "TipTapTable",
                                 "tipTapRichText": "TipTapRichText",
-                                "productList": "ProductList",
                                 "pageTreeIndex": "PageTreeIndex",
                                 "contactForm": "ContactForm"
                             },
@@ -2904,59 +2902,6 @@
                     ]
                 },
                 "nullable": true
-            }
-        ]
-    },
-    {
-        "name": "ProductList",
-        "fields": [
-            {
-                "name": "types",
-                "kind": "Enum",
-                "enum": [
-                    "cap",
-                    "shirt",
-                    "tie",
-                    "pants",
-                    "jacket",
-                    "shoes",
-                    "socks",
-                    "mug",
-                    "pen",
-                    "calendar",
-                    "notebook",
-                    "bag",
-                    "watch",
-                    "sunglasses",
-                    "wallet"
-                ],
-                "nullable": false,
-                "array": true
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "types",
-                "kind": "Enum",
-                "enum": [
-                    "cap",
-                    "shirt",
-                    "tie",
-                    "pants",
-                    "jacket",
-                    "shoes",
-                    "socks",
-                    "mug",
-                    "pen",
-                    "calendar",
-                    "notebook",
-                    "bag",
-                    "watch",
-                    "sunglasses",
-                    "wallet"
-                ],
-                "nullable": false,
-                "array": true
             }
         ]
     },

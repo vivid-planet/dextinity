@@ -138,11 +138,12 @@ describe("inject-site-configs", () => {
         // Commander keeps parsed option values on the command instance, so each run needs a fresh one.
         vi.resetModules();
         const { injectSiteConfigsCommand } = await import("./site-configs");
-        await injectSiteConfigsCommand.parseAsync(["-i", "template.env", "-o", "out.env", "-f", "site-configs.mjs", ...args], { from: "user" });
-
-        const output = fs.readFileSync(join(workingDirectory, "out.env")).toString();
-        fs.rmSync(workingDirectory, { recursive: true });
-        return output;
+        try {
+            await injectSiteConfigsCommand.parseAsync(["-i", "template.env", "-o", "out.env", "-f", "site-configs.mjs", ...args], { from: "user" });
+            return fs.readFileSync(join(workingDirectory, "out.env")).toString();
+        } finally {
+            fs.rmSync(workingDirectory, { recursive: true });
+        }
     }
 
     const secrets = {

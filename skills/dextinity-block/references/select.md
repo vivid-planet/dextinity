@@ -10,7 +10,19 @@ The basic enum definition (`export enum Variant { ... }`, `@IsEnum`, `@BlockFiel
 
 A single select is optional only when "no value" has its own meaning on the site (for example, no badge). Otherwise, it is required: set `defaultValue` and `required: true`, as in the examples below.
 
-An optional select uses a nullable API field (see [api-patterns.md](api-patterns.md#savability)) and `createCompositeBlockField` with a `SelectField`:
+An optional select uses a nullable API field (see [api-patterns.md](api-patterns.md#savability)) and `createCompositeBlockSelectField` with `defaultValue: undefined`:
+
+```tsx
+badgeColor: {
+    block: createCompositeBlockSelectField<ExampleBlockData["badgeColor"]>({
+        label: <FormattedMessage id="exampleBlock.badgeColor" defaultMessage="Badge color" />,
+        defaultValue: undefined,
+        options: badgeColorOptions,
+    }),
+},
+```
+
+Before `@dextinity/cms-admin` 10.9.0, use `createCompositeBlockField` with a `SelectField` instead:
 
 ```tsx
 badgeColor: {

@@ -52,16 +52,12 @@ type ExternalLinkBlock<Options = ExternalLinkBlockFactoryOptions> = BlockInterfa
 > &
     LinkBlockInterface<WithOptions<ExternalLinkBlockData, Options>>;
 
-const allOptions: ExternalLinkBlockOption[] = ["openInNewWindow", "noFollow"];
-
 export function createExternalLinkBlock<const Options extends ExternalLinkBlockFactoryOptions>(
     options: Options,
     override?: (block: ExternalLinkBlock<Options>) => ExternalLinkBlock<Options>,
 ): ExternalLinkBlock<Options> {
-    const { name } = options;
-    const fields = allOptions.filter((option) => options[option] !== false);
+    const { name, openInNewWindow = true, noFollow = true } = options;
 
-    const has = (option: ExternalLinkBlockOption) => fields.includes(option);
     const ExternalLinkBlock: ExternalLinkBlock = {
         ...createBlockSkeleton(),
 
@@ -71,8 +67,8 @@ export function createExternalLinkBlock<const Options extends ExternalLinkBlockF
 
         defaultValues: () => ({
             targetUrl: undefined,
-            ...(has("openInNewWindow") ? { openInNewWindow: false } : {}),
-            ...(has("noFollow") ? { noFollow: false } : {}),
+            ...(openInNewWindow ? { openInNewWindow: false } : {}),
+            ...(noFollow ? { noFollow: false } : {}),
         }),
 
         category: BlockCategory.Navigation,
@@ -84,16 +80,16 @@ export function createExternalLinkBlock<const Options extends ExternalLinkBlockF
         state2Output: (state) => {
             return {
                 targetUrl: state.targetUrl,
-                ...(has("openInNewWindow") ? { openInNewWindow: state.openInNewWindow } : {}),
-                ...(has("noFollow") ? { noFollow: state.noFollow } : {}),
+                ...(openInNewWindow ? { openInNewWindow: state.openInNewWindow } : {}),
+                ...(noFollow ? { noFollow: state.noFollow } : {}),
             };
         },
 
         output2State: async (output) => {
             return {
                 targetUrl: output.targetUrl,
-                ...(has("openInNewWindow") ? { openInNewWindow: output.openInNewWindow } : {}),
-                ...(has("noFollow") ? { noFollow: output.noFollow } : {}),
+                ...(openInNewWindow ? { openInNewWindow: output.openInNewWindow } : {}),
+                ...(noFollow ? { noFollow: output.noFollow } : {}),
             };
         },
 
@@ -105,8 +101,8 @@ export function createExternalLinkBlock<const Options extends ExternalLinkBlockF
             if (isLinkTarget(url)) {
                 return {
                     targetUrl: url,
-                    ...(has("openInNewWindow") ? { openInNewWindow: false } : {}),
-                    ...(has("noFollow") ? { noFollow: false } : {}),
+                    ...(openInNewWindow ? { openInNewWindow: false } : {}),
+                    ...(noFollow ? { noFollow: false } : {}),
                 };
             }
 
@@ -130,13 +126,13 @@ export function createExternalLinkBlock<const Options extends ExternalLinkBlockF
                             validate={(url) => validateLinkTarget(url)}
                             disableContentTranslation
                         />
-                        {fields.includes("openInNewWindow") && (
+                        {openInNewWindow && (
                             <CheckboxField
                                 label={<FormattedMessage id="dextinity.blocks.link.external.openInNewWindow" defaultMessage="Open in new window" />}
                                 name="openInNewWindow"
                             />
                         )}
-                        {fields.includes("noFollow") && (
+                        {noFollow && (
                             <CheckboxField
                                 label={<FormattedMessage id="dextinity.blocks.link.external.noFollow" defaultMessage="No follow" />}
                                 name="noFollow"

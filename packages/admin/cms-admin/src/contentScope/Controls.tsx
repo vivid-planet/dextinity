@@ -1,7 +1,7 @@
 import type { JSX, ReactNode } from "react";
 
 import { ContentScopeSelect } from "./ContentScopeSelect";
-import { type ContentScope, useContentScope } from "./Provider";
+import { type ContentScope, type ContentScopeValues, useContentScope } from "./Provider";
 
 interface ContentScopeControlsProps {
     searchable?: boolean;
@@ -20,7 +20,24 @@ export function ContentScopeControls({ searchable = true, icon, groupBy }: Conte
             options={values}
             searchable={searchable}
             icon={icon}
-            groupBy={groupBy ?? Object.keys(scope)[0]}
+            groupBy={groupBy ?? getSharedDimension(values)}
         />
     );
+}
+
+// The current scope's own shape isn't representative of all available scopes, so a fallback dimension
+// is only safe to pick when every scope shares the exact same set of dimensions.
+function getSharedDimension(values: ContentScopeValues): keyof ContentScope | undefined {
+    const [first, ...rest] = values;
+    if (!first) {
+        return undefined;
+    }
+
+    const dimensions = Object.keys(first.scope);
+    const allScopesShareDimensions = rest.every((value) => {
+        const otherDimensions = Object.keys(value.scope);
+        return otherDimensions.length === dimensions.length && dimensions.every((dimension) => otherDimensions.includes(dimension));
+    });
+
+    return allScopesShareDimensions ? dimensions[0] : undefined;
 }

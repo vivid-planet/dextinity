@@ -60,7 +60,7 @@
         "@types/react-dom": "^19.2.3",
         "change-case": "^5.4.4",
         "chokidar-cli": "^3.0.0",
-        "eslint": "^9.39.4",
+        "eslint": "^9.39.5",
         "npm-run-all2": "^8.0.4",
         "prettier": "^3.6.2",
         "ts-node": "^10.9.2",

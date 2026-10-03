@@ -1,7 +1,7 @@
 import { RteBold, RteItalic, RteStrikethrough, RteSub, RteSup, RteUnderlined } from "@dextinity/admin-icons";
 import * as detectBrowser from "detect-browser";
 import { type Editor, type EditorState, RichUtils } from "draft-js";
-import { type RefObject, useCallback, useMemo } from "react";
+import { type MouseEvent, type RefObject, useCallback, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 
 import type { SupportedThings } from "../Rte";

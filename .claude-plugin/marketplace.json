@@ -1,0 +1,16 @@
+{
+    "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+    "name": "comet-plugin-marketplace",
+    "version": "1.0.0",
+    "description": "Comet DXP Claude Code plugin marketplace — agent skills for working with Comet libraries.",
+    "owner": { "name": "Vivid Planet", "url": "https://www.vivid-planet.com" },
+    "plugins": [
+        {
+            "name": "comet",
+            "description": "Comet DXP Claude Code plugin — provides agent skills for working with Comet libraries (blocks, mail-react, etc.).",
+            "source": { "source": "git-subdir", "url": "https://github.com/vivid-planet/comet.git", "path": "agentic-plugin" },
+            "version": "1.0.0",
+            "category": "productivity"
+        }
+    ]
+}

@@ -27,21 +27,23 @@ export function MjmlWarningsPanel({ active }: { active: boolean }) {
 
     return (
         <AddonPanel active={active}>
-            {renderResult && (
-                <div style={{ padding: 16 }}>
-                    {renderResult.mjmlWarnings.length === 0 ? (
-                        <p style={{ color: "green" }}>✓ No MJML warnings</p>
-                    ) : (
-                        <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
-                            {renderResult.mjmlWarnings.map((warning, index) => (
-                                <li key={index} style={{ marginBottom: 8 }}>
-                                    <strong>{warning.tagName}</strong> (line {warning.line}): {warning.message}
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
-            )}
+            <React.Fragment>
+                {renderResult && (
+                    <div style={{ padding: 16 }}>
+                        {renderResult.mjmlWarnings.length === 0 ? (
+                            <p style={{ color: "green" }}>✓ No MJML warnings</p>
+                        ) : (
+                            <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+                                {renderResult.mjmlWarnings.map((warning, index) => (
+                                    <li key={index} style={{ marginBottom: 8 }}>
+                                        <strong>{warning.tagName}</strong> (line {warning.line}): {warning.message}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                )}
+            </React.Fragment>
         </AddonPanel>
     );
 }

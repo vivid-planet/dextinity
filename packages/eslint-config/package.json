@@ -46,7 +46,7 @@
         "@dextinity/eslint-plugin": "workspace:*",
         "@eslint/eslintrc": "^3.3.6",
         "@eslint/js": "^9.39.5",
-        "@graphql-eslint/eslint-plugin": "^4.4.0",
+        "@graphql-eslint/eslint-plugin": "^4.4.1",
         "@next/eslint-plugin-next": "^16.2.10",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-formatjs": "^5.4.2",

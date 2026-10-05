@@ -6,8 +6,6 @@ type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
  */
 export type TipTapTextBlockTag = "p" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
-export type TipTapListTag = "ol" | "ul";
-
 export interface TipTapTextBlockStyle {
     /**
      * Identifies the style. Stored in the content's `textBlockStyle` attribute.
@@ -41,7 +39,6 @@ export interface TipTapResolvedTextBlock extends TipTapTextBlockBase {
 
 export interface TipTapResolvedList {
     name: string;
-    tag: TipTapListTag;
     styles: TipTapTextBlockStyle[];
 }
 
@@ -113,16 +110,14 @@ export function resolveTextBlocks<T extends TipTapTextBlockBase & { styles?: Tip
 export function resolveList<Style extends TipTapTextBlockStyle>({
     list,
     name,
-    tag,
 }: {
     list: boolean | { styles: Style[] } | undefined;
     name: string;
-    tag: TipTapListTag;
-}): { name: string; tag: TipTapListTag; styles: Style[] } | false {
+}): { name: string; styles: Style[] } | false {
     if (!list) {
         return false;
     }
-    return { name, tag, styles: resolveStyles({ name, styles: list === true ? undefined : list.styles }) };
+    return { name, styles: resolveStyles({ name, styles: list === true ? undefined : list.styles }) };
 }
 
 /**

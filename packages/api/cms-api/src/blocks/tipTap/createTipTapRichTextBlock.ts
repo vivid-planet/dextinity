@@ -239,8 +239,8 @@ export function resolveTipTapOptions({
         textBlocks: resolvedTextBlocks,
         defaultTextBlock: findDefaultTextBlock({ textBlocks: resolvedTextBlocks, defaultTextBlock }),
         // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
-        orderedList: resolveList({ list: orderedList ?? hasParagraph, name: orderedListName, tag: "ol" }),
-        unorderedList: resolveList({ list: unorderedList ?? hasParagraph, name: unorderedListName, tag: "ul" }),
+        orderedList: resolveList({ list: orderedList ?? hasParagraph, name: orderedListName }),
+        unorderedList: resolveList({ list: unorderedList ?? hasParagraph, name: unorderedListName }),
         nonBreakingSpace,
         softHyphen,
         link: !!link,

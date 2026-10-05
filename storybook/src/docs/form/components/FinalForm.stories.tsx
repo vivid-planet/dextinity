@@ -48,7 +48,7 @@ export const FinalFormApiRef = {
                 <button
                     onClick={() => {
                         //Using apiRef can access FormApi outside of <FinalForm>
-                        apiRef.current?.submit();
+                        void apiRef.current?.submit();
                     }}
                 >
                     submit

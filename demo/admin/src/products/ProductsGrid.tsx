@@ -82,7 +82,7 @@ function ProductsGridToolbar({ exportApi, selectionModel }: ProductsGridToolbarP
                         icon: <Online htmlColor={theme.palette.success.main} />,
                         onClick: () => {
                             for (const id of Array.from(selectionModel.ids)) {
-                                client.mutate<GQLUpdateProductStatusMutation, GQLUpdateProductStatusMutationVariables>({
+                                void client.mutate<GQLUpdateProductStatusMutation, GQLUpdateProductStatusMutationVariables>({
                                     mutation: updateProductStatusMutation,
                                     variables: { id: id as string, status: "Published" },
                                     optimisticResponse: {
@@ -98,7 +98,7 @@ function ProductsGridToolbar({ exportApi, selectionModel }: ProductsGridToolbarP
                         icon: <Disabled />,
                         onClick: () => {
                             for (const id of Array.from(selectionModel.ids)) {
-                                client.mutate<GQLUpdateProductStatusMutation, GQLUpdateProductStatusMutationVariables>({
+                                void client.mutate<GQLUpdateProductStatusMutation, GQLUpdateProductStatusMutationVariables>({
                                     mutation: updateProductStatusMutation,
                                     variables: { id: id as string, status: "Unpublished" },
                                     optimisticResponse: {

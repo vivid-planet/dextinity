@@ -67,24 +67,24 @@ export const InlineStyles: StoryObj<typeof InlineStylesBlockStory> = {
             "Without bold/italic/underline/strike buttons, superscript/subscript/inline styles render as their own toolbar buttons instead of a 'More options' menu",
             async () => {
                 await waitFor(
-                    () => {
-                        expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                    async () => {
+                        await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                     },
                     { timeout: 5000 },
                 );
 
-                expect(canvas.queryByRole("button", { name: "More options" })).not.toBeInTheDocument();
-                expect(canvas.getAllByRole("button")).toHaveLength(4);
+                await expect(canvas.queryByRole("button", { name: "More options" })).not.toBeInTheDocument();
+                await expect(canvas.getAllByRole("button")).toHaveLength(4);
             },
         );
 
         const [superscriptButton, subscriptButton, highlightButton, tagButton] = canvas.getAllByRole("button");
 
         await step("Highlight and tag buttons are enabled even without a selection, like superscript/subscript", async () => {
-            expect(superscriptButton).toBeEnabled();
-            expect(subscriptButton).toBeEnabled();
-            expect(highlightButton).toBeEnabled();
-            expect(tagButton).toBeEnabled();
+            await expect(superscriptButton).toBeEnabled();
+            await expect(subscriptButton).toBeEnabled();
+            await expect(highlightButton).toBeEnabled();
+            await expect(tagButton).toBeEnabled();
         });
 
         await step("Type text and select it", async () => {
@@ -93,8 +93,8 @@ export const InlineStyles: StoryObj<typeof InlineStylesBlockStory> = {
             await userEvent.keyboard("hello");
 
             await waitFor(
-                () => {
-                    expect(editor).toHaveTextContent("hello");
+                async () => {
+                    await expect(editor).toHaveTextContent("hello");
                 },
                 { timeout: 3000 },
             );
@@ -113,39 +113,39 @@ export const InlineStyles: StoryObj<typeof InlineStylesBlockStory> = {
 
         await step("Toggle superscript directly from the toolbar button", async () => {
             await userEvent.click(superscriptButton);
-            await waitFor(() => {
-                expect(document.querySelector("sup")).toHaveTextContent("hello");
+            await waitFor(async () => {
+                await expect(document.querySelector("sup")).toHaveTextContent("hello");
             });
 
             await userEvent.click(superscriptButton);
-            await waitFor(() => {
-                expect(document.querySelector("sup")).toBeNull();
+            await waitFor(async () => {
+                await expect(document.querySelector("sup")).toBeNull();
             });
         });
 
         await step("Toggle subscript directly from the toolbar button", async () => {
             await userEvent.click(subscriptButton);
-            await waitFor(() => {
-                expect(document.querySelector("sub")).toHaveTextContent("hello");
+            await waitFor(async () => {
+                await expect(document.querySelector("sub")).toHaveTextContent("hello");
             });
 
             await userEvent.click(subscriptButton);
-            await waitFor(() => {
-                expect(document.querySelector("sub")).toBeNull();
+            await waitFor(async () => {
+                await expect(document.querySelector("sub")).toBeNull();
             });
         });
 
         await step("Toggle the 'Highlight' inline style directly from the toolbar button", async () => {
             await userEvent.click(highlightButton);
-            await waitFor(() => {
+            await waitFor(async () => {
                 const styledEl = document.querySelector('[data-inline-style="highlight"]');
-                expect(styledEl).toBeTruthy();
-                expect(styledEl).toHaveTextContent("hello");
+                await expect(styledEl).toBeTruthy();
+                await expect(styledEl).toHaveTextContent("hello");
             });
 
             await userEvent.click(highlightButton);
-            await waitFor(() => {
-                expect(document.querySelector("[data-inline-style]")).toBeNull();
+            await waitFor(async () => {
+                await expect(document.querySelector("[data-inline-style]")).toBeNull();
             });
         });
 
@@ -153,21 +153,21 @@ export const InlineStyles: StoryObj<typeof InlineStylesBlockStory> = {
             await userEvent.click(subscriptButton);
             await userEvent.click(highlightButton);
 
-            await waitFor(() => {
-                expect(document.querySelector("sub")).toHaveTextContent("hello");
-                expect(document.querySelector('[data-inline-style="highlight"]')).toHaveTextContent("hello");
+            await waitFor(async () => {
+                await expect(document.querySelector("sub")).toHaveTextContent("hello");
+                await expect(document.querySelector('[data-inline-style="highlight"]')).toHaveTextContent("hello");
             });
         });
 
         await step("Switching to 'Tag' replaces 'Highlight' (both share the same inline-style mark) but leaves subscript untouched", async () => {
             await userEvent.click(tagButton);
 
-            await waitFor(() => {
-                expect(document.querySelector('[data-inline-style="highlight"]')).toBeNull();
+            await waitFor(async () => {
+                await expect(document.querySelector('[data-inline-style="highlight"]')).toBeNull();
                 const tagEl = document.querySelector('[data-inline-style="tag"]');
-                expect(tagEl).toBeTruthy();
-                expect(tagEl).toHaveTextContent("hello");
-                expect(document.querySelector("sub")).toHaveTextContent("hello");
+                await expect(tagEl).toBeTruthy();
+                await expect(tagEl).toHaveTextContent("hello");
+                await expect(document.querySelector("sub")).toHaveTextContent("hello");
             });
         });
     },
@@ -197,15 +197,15 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
 
             // Heading select only — custom inline styles live in the "More options" menu, not a dropdown.
             const comboboxes = canvas.getAllByRole("combobox");
-            expect(comboboxes).toHaveLength(1);
+            await expect(comboboxes).toHaveLength(1);
         });
 
         await step("Type text and select it", async () => {
@@ -214,8 +214,8 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
             await userEvent.keyboard("hello");
 
             await waitFor(
-                () => {
-                    expect(editor).toHaveTextContent("hello");
+                async () => {
+                    await expect(editor).toHaveTextContent("hello");
                 },
                 { timeout: 3000 },
             );
@@ -235,11 +235,11 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
 
         await step("Verify highlight element (from `element` prop) is rendered with its styling", async () => {
             await waitFor(
-                () => {
+                async () => {
                     const styledEl = document.querySelector('[data-inline-style="highlight"]');
-                    expect(styledEl).toBeTruthy();
-                    expect(styledEl).toHaveTextContent("hello");
-                    expect(styledEl).toHaveStyle({ backgroundColor: "rgb(255, 243, 205)" });
+                    await expect(styledEl).toBeTruthy();
+                    await expect(styledEl).toHaveTextContent("hello");
+                    await expect(styledEl).toHaveStyle({ backgroundColor: "rgb(255, 243, 205)" });
                 },
                 { timeout: 3000 },
             );
@@ -247,10 +247,10 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
 
         await step("'Highlight' menu item is now shown as selected", async () => {
             await userEvent.click(canvas.getByRole("button", { name: "More options" }));
-            await waitFor(() => {
+            await waitFor(async () => {
                 // MenuItem's `selected` prop is exposed as the `Mui-selected` state class, not an ARIA attribute
                 // (role="menuitem" has no `aria-selected` in the ARIA spec — that's only valid on option/tab/etc.).
-                expect(within(document.body).getByRole("menuitem", { name: "Highlight" })).toHaveClass("Mui-selected");
+                await expect(within(document.body).getByRole("menuitem", { name: "Highlight" })).toHaveClass("Mui-selected");
             });
         });
 
@@ -260,12 +260,12 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
 
         await step("Verify tag element replaces the highlight element", async () => {
             await waitFor(
-                () => {
-                    expect(document.querySelector('[data-inline-style="highlight"]')).toBeNull();
+                async () => {
+                    await expect(document.querySelector('[data-inline-style="highlight"]')).toBeNull();
                     const tagEl = document.querySelector('[data-inline-style="tag"]');
-                    expect(tagEl).toBeTruthy();
-                    expect(tagEl).toHaveTextContent("hello");
-                    expect(tagEl).toHaveStyle({ backgroundColor: "rgb(224, 240, 255)", color: "rgb(0, 102, 204)" });
+                    await expect(tagEl).toBeTruthy();
+                    await expect(tagEl).toHaveTextContent("hello");
+                    await expect(tagEl).toHaveStyle({ backgroundColor: "rgb(224, 240, 255)", color: "rgb(0, 102, 204)" });
                 },
                 { timeout: 3000 },
             );
@@ -276,8 +276,8 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
             await userEvent.click(within(document.body).getByRole("menuitem", { name: "Tag" }));
 
             await waitFor(
-                () => {
-                    expect(document.querySelector("[data-inline-style]")).toBeNull();
+                async () => {
+                    await expect(document.querySelector("[data-inline-style]")).toBeNull();
                 },
                 { timeout: 3000 },
             );
@@ -317,20 +317,20 @@ export const CombinedTextBlockAndInlineStyles: StoryObj<typeof InlineStylesBlock
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready with the text block style dropdown and the inline styles in the More options menu", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
 
             // Heading select + text block style select — inline styles live in the "More options" menu, not a dropdown.
             const comboboxes = canvas.getAllByRole("combobox");
-            expect(comboboxes.length).toBeGreaterThanOrEqual(2);
+            await expect(comboboxes.length).toBeGreaterThanOrEqual(2);
 
             await userEvent.click(canvas.getByRole("button", { name: "More options" }));
-            await waitFor(() => {
-                expect(within(document.body).getByRole("menuitem", { name: "Highlight" })).toBeInTheDocument();
-                expect(within(document.body).getByRole("menuitem", { name: "Tag" })).toBeInTheDocument();
+            await waitFor(async () => {
+                await expect(within(document.body).getByRole("menuitem", { name: "Highlight" })).toBeInTheDocument();
+                await expect(within(document.body).getByRole("menuitem", { name: "Tag" })).toBeInTheDocument();
             });
         });
     },

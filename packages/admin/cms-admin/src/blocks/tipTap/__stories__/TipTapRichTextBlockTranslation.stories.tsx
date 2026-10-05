@@ -75,9 +75,9 @@ export const Translation: StoryObj<typeof TranslationStory> = {
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready with a translate button", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
-                    expect(canvas.getByRole("button")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                    await expect(canvas.getByRole("button")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -87,8 +87,8 @@ export const Translation: StoryObj<typeof TranslationStory> = {
             await userEvent.click(canvas.getByRole("button"));
 
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toHaveTextContent("HELLO WORLD");
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toHaveTextContent("HELLO WORLD");
                 },
                 { timeout: 3000 },
             );
@@ -101,8 +101,8 @@ export const TranslationWithApplyDialog: StoryObj<typeof TranslationStory> = {
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready with a translate button", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("button")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("button")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -112,24 +112,24 @@ export const TranslationWithApplyDialog: StoryObj<typeof TranslationStory> = {
             await userEvent.click(canvas.getByRole("button"));
 
             await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("heading", { name: "Translation", level: 2 })).toBeInTheDocument();
+                async () => {
+                    await expect(within(document.body).getByRole("heading", { name: "Translation", level: 2 })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
 
             const dialog = within(document.body).getByRole("dialog");
-            expect(within(dialog).getByText("Hello world")).toBeInTheDocument();
-            expect(within(dialog).getByText("HELLO WORLD")).toBeInTheDocument();
+            await expect(within(dialog).getByText("Hello world")).toBeInTheDocument();
+            await expect(within(dialog).getByText("HELLO WORLD")).toBeInTheDocument();
         });
 
         await step("Applying the translation updates the editor and closes the dialog", async () => {
             await userEvent.click(within(document.body).getByRole("button", { name: "Apply" }));
 
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toHaveTextContent("HELLO WORLD");
-                    expect(within(document.body).queryByRole("dialog")).not.toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toHaveTextContent("HELLO WORLD");
+                    await expect(within(document.body).queryByRole("dialog")).not.toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -168,8 +168,8 @@ export const TranslationRespectsHeadingLevels: StoryObj<typeof TranslationHeadin
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready with a translate button", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("button")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("button")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -179,8 +179,8 @@ export const TranslationRespectsHeadingLevels: StoryObj<typeof TranslationHeadin
             await userEvent.click(canvas.getByRole("button"));
 
             await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("dialog")).toBeInTheDocument();
+                async () => {
+                    await expect(within(document.body).getByRole("dialog")).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -191,12 +191,12 @@ export const TranslationRespectsHeadingLevels: StoryObj<typeof TranslationHeadin
             await userEvent.click(within(dialog).getByRole("combobox"));
 
             await waitFor(
-                () => {
+                async () => {
                     const body = within(document.body);
-                    expect(body.getByText("Heading 2")).toBeInTheDocument();
-                    expect(body.getByText("Heading 3")).toBeInTheDocument();
-                    expect(body.queryByText("Heading 1")).not.toBeInTheDocument();
-                    expect(body.queryByText("Heading 4")).not.toBeInTheDocument();
+                    await expect(body.getByText("Heading 2")).toBeInTheDocument();
+                    await expect(body.getByText("Heading 3")).toBeInTheDocument();
+                    await expect(body.queryByText("Heading 1")).not.toBeInTheDocument();
+                    await expect(body.queryByText("Heading 4")).not.toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );

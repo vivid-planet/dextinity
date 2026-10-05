@@ -167,7 +167,7 @@ export class TableLocalChanges<TData extends { id: string; [key: string]: any }>
         this.setState({
             loading: true,
         });
-        this.props.onSubmit(this.state.changes);
+        await this.props.onSubmit(this.state.changes);
         this.setState({
             loading: false,
             changes: {},

@@ -72,7 +72,7 @@ export class UserPermissionResolver {
     @Mutation(() => Boolean)
     @SkipBuild()
     async userPermissionsDeletePermission(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
-        this.entityManager.remove(await this.getPermission(id)).flush();
+        await this.entityManager.remove(await this.getPermission(id)).flush();
         return true;
     }
 

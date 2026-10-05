@@ -184,7 +184,7 @@ export function CrudContextMenu<CopyData>(inProps: CrudContextMenuProps<CopyData
                         <CopyUrlItem
                             icon={copyUrlIcon}
                             onClick={() => {
-                                writeClipboardText(url);
+                                void writeClipboardText(url);
                             }}
                             {...slotProps?.copyUrlItem}
                         >

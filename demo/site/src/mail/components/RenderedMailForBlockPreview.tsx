@@ -10,7 +10,7 @@ export const RenderedMailForBlockPreview: FC<Props> = ({ mail, transformHtml }) 
     const [mailHtml, setMailHtml] = useState<string>("");
 
     useEffect(() => {
-        (async () => {
+        void (async () => {
             const { renderMailHtml } = await import("@dextinity/mail-react/client");
             const { html, mjmlWarnings } = renderMailHtml(mail);
 

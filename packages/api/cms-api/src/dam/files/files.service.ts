@@ -450,7 +450,7 @@ export class FilesService {
                 const entityManager = this.orm.em.fork();
                 const image = await entityManager.findOneOrFail(DamFileImage, result.image.id);
 
-                dominantColorCalculator.calculateDominantColor(contentHash).then((dominantColor) => {
+                void dominantColorCalculator.calculateDominantColor(contentHash).then((dominantColor) => {
                     image.dominantColor = dominantColor;
                     return entityManager.flush();
                 });

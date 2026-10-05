@@ -406,7 +406,7 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                                                         stackApi.activatePage("edit", key);
                                                                     }}
                                                                     onCopyClick={() => {
-                                                                        updateClipboardContent([
+                                                                        void updateClipboardContent([
                                                                             {
                                                                                 name: block.name,
                                                                                 visible: data.visible,
@@ -419,7 +419,7 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                                                         ]);
                                                                     }}
                                                                     onPasteClick={() => {
-                                                                        pasteBlock(blockIndex + 1);
+                                                                        void pasteBlock(blockIndex + 1);
                                                                     }}
                                                                     selected={data.selected}
                                                                     onSelectedClick={(selected) => {

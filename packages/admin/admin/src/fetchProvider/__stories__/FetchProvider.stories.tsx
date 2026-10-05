@@ -10,7 +10,7 @@ function ExampleFetch() {
             const response = await fetch(`/users`);
             setData(await response.json());
         };
-        fetchData();
+        void fetchData();
     }, [fetch]);
     return <div>{JSON.stringify(data)}</div>;
 }

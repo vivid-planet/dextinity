@@ -8,7 +8,7 @@ function AutosaveSpy() {
                 if (dirty) {
                     // works around endless loop when using setState from inside render
                     setTimeout(() => {
-                        form.submit();
+                        void form.submit();
                     }, 1);
                 }
                 return null;

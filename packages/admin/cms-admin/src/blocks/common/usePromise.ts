@@ -22,7 +22,7 @@ export function usePromise<S>(fn?: undefined | (() => Promise<S> | S), options?:
                 setState(result);
             }
         };
-        evaluateFn();
+        void evaluateFn();
     }, [fn]);
 
     return state;

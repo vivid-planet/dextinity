@@ -22,7 +22,7 @@ export const ClipboardFallbackSizeLimit = function () {
             <Grid>
                 <Button
                     onClick={() => {
-                        writeClipboardText(writtenClipboardContent);
+                        void writeClipboardText(writtenClipboardContent);
                     }}
                 >
                     Write clipboard

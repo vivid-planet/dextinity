@@ -57,7 +57,7 @@ export const watchMode = async () => {
             childProcesses[path] = childProcess;
 
             try {
-                handleChildProcess(childProcess);
+                await handleChildProcess(childProcess);
             } catch (e) {
                 console.error(`❌ Error processing ${path} with error: ${e}`);
             }

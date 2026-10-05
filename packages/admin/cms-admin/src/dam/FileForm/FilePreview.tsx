@@ -91,12 +91,12 @@ export const FilePreview = ({ file }: FilePreviewProps) => {
                     startIcon={file.archived ? <Restore /> : <Archive />}
                     onClick={() => {
                         if (file.archived) {
-                            client.mutate<GQLRestoreFileMutation, GQLRestoreFileMutationVariables>({
+                            void client.mutate<GQLRestoreFileMutation, GQLRestoreFileMutationVariables>({
                                 mutation: restoreDamFileMutation,
                                 variables: { id: file.id },
                             });
                         } else {
-                            client.mutate<GQLArchiveFileMutation, GQLArchiveFileMutationVariables>({
+                            void client.mutate<GQLArchiveFileMutation, GQLArchiveFileMutationVariables>({
                                 mutation: archiveDamFileMutation,
                                 variables: { id: file.id },
                             });

@@ -63,7 +63,7 @@
         "@nestjs/platform-express": "^11.2.7",
         "@nestjs/testing": "^11.2.7",
         "@swc/core": "^1.16.13",
-        "@types/inquirer": "^8.2.12",
+        "@types/inquirer": "^8.2.13",
         "chokidar-cli": "^2.1.0",
         "eslint": "^9.39.5",
         "express": "^5.2.1",

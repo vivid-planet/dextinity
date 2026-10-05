@@ -254,7 +254,7 @@ export const isTextBlockAllowedInListItem = (textBlock: TipTapResolvedTextBlock)
 /**
  * Whether the styled node offers the style.
  */
-const hasStyle = (styledNode: TipTapResolvedStyledNode, style: string): boolean => styledNode.styles.some(({ name }) => name === style);
+export const hasStyle = (styledNode: TipTapResolvedStyledNode, style: string): boolean => styledNode.styles.some(({ name }) => name === style);
 
 /**
  * Keeps the applied style if the text block (or list) offers it, and falls back to its default style

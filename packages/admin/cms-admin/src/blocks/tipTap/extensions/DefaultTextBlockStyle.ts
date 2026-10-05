@@ -2,13 +2,17 @@ import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 
 import { findListNodeType } from "../findListNodeType";
-import { findTextBlock, type TipTapResolvedList, type TipTapResolvedStyledNode, type TipTapResolvedTextBlock } from "../textBlocks";
+import { findTextBlock, hasStyle, type TipTapResolvedList, type TipTapResolvedTextBlock } from "../textBlocks";
 
 /**
- * Applies a text block's (or a list's) `defaultStyle` to every text block that carries no style yet.
- * The editor creates such nodes in several ways that don't go through the toolbar - pressing Enter
- * at the end of a text block, the keyboard shortcuts, pasting - so filling the style in here keeps
- * them all consistent without reimplementing each of those.
+ * Keeps every text block's style one that it may carry: fills in the `defaultStyle` of the text
+ * block (or of the list it sits in) where there is none, and replaces a style neither of them
+ * offers - which the API rejects.
+ *
+ * The editor changes text blocks in several ways that don't go through the toolbar - pressing Enter
+ * at the end of a text block, the `Mod-Alt-<level>` shortcuts, the `#` input rules, pasting - and
+ * none of them touch the style. Correcting it here keeps them all consistent without reimplementing
+ * each of those.
  *
  * Only runs on an actual document change, so opening content written before a `defaultStyle` was
  * configured leaves it untouched until it is edited.
@@ -36,27 +40,39 @@ export function createDefaultTextBlockStyle({
                         }
 
                         const transaction = newState.tr;
-                        let changed = false;
+                        let hasChanged = false;
 
                         newState.doc.descendants((node, pos) => {
-                            if (node.type.name !== "textBlock" || node.attrs.textBlockStyle != null) {
+                            if (node.type.name !== "textBlock") {
                                 return;
                             }
 
                             // A list wins over the text block inside its items, so a list item's
-                            // content starts with the list's default style.
+                            // content takes the list's default style.
                             const listNodeType = findListNodeType(newState.doc.resolve(pos));
                             const list = listNodeType === "orderedList" ? orderedList : listNodeType === "bulletList" ? unorderedList : false;
-                            const styledNode: TipTapResolvedStyledNode | undefined =
-                                (list || undefined) ?? findTextBlock({ name: node.attrs.textBlock, textBlocks });
+                            const textBlock = findTextBlock({ name: node.attrs.textBlock, textBlocks });
+                            const styledNode = list || textBlock;
+                            if (!styledNode) {
+                                return;
+                            }
 
-                            if (styledNode?.defaultStyle != null) {
+                            const style = node.attrs.textBlockStyle as string | null;
+                            // Inside a list item the text block's own styles count too, since a
+                            // styled text block keeps its style when it is turned into one.
+                            const isStyleOffered =
+                                style !== null && (hasStyle(styledNode, style) || (textBlock !== undefined && hasStyle(textBlock, style)));
+                            if (isStyleOffered) {
+                                return;
+                            }
+
+                            if (styledNode.defaultStyle !== style) {
                                 transaction.setNodeAttribute(pos, "textBlockStyle", styledNode.defaultStyle);
-                                changed = true;
+                                hasChanged = true;
                             }
                         });
 
-                        return changed ? transaction : null;
+                        return hasChanged ? transaction : null;
                     },
                 }),
             ];

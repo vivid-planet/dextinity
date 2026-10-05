@@ -355,11 +355,18 @@ export const TipTapToolbar = ({
             liftOutOfList(editor);
         }
 
+        // A list wins over the text block inside its items, so a switch that stays inside a list
+        // keeps the list's style instead of falling back to the new text block's. Read after the
+        // lift above, which leaves no list for a text block that can't be a list item's content.
+        const listNodeType = findListNodeType(editor.state.selection.$from);
+        const activeList =
+            listNodeType === "orderedList" ? resolvedOptions.orderedList : listNodeType === "bulletList" ? resolvedOptions.unorderedList : false;
+
         // Switching the type only renames the node's text block - the tag follows from the configuration.
         editor
             .chain()
             .focus()
-            .updateAttributes("textBlock", { textBlock: textBlock.name, textBlockStyle: resolveStyle(textBlock, activeStyle) })
+            .updateAttributes("textBlock", { textBlock: textBlock.name, textBlockStyle: resolveStyle(activeList || textBlock, activeStyle) })
             .run();
     };
 

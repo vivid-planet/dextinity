@@ -1662,5 +1662,22 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
                 { timeout: 3000 },
             );
         });
+
+        await step("The text block shortcut swaps in the new text block's default style", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+
+            // "Intro Text" belongs to the paragraph alone, so the heading can't keep it.
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{Alt>}{${mod}>}1{/${mod}}{/Alt}`);
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 1 })).toHaveAttribute("data-text-block-style", "large-heading");
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Large Heading");
+                },
+                { timeout: 3000 },
+            );
+        });
     },
 };

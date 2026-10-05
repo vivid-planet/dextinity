@@ -25,6 +25,7 @@ export const MediaGalleryBlock = createCompositeBlock(
                     label: <FormattedMessage id="mediaGalleryBlock.mediaGallery.aspectRatio" defaultMessage="Aspect Ratio" />,
                     defaultValue: "16x9",
                     options: mediaAspectRatioOptions,
+                    required: true,
                 }),
                 hiddenInSubroute: true,
             },

@@ -81,6 +81,22 @@ describe("resolveOpReferences", () => {
         expect(result).toBe('{"apiKey":"resolved-api-key","apiSecret":"resolved-api-secret","dbPassword":"resolved-db-password"}');
     });
 
+    it("should insert secrets containing replacement patterns literally", () => {
+        mockedExecSync.mockImplementation((cmd: string) => {
+            if (cmd === "op --version") {
+                return Buffer.from("2.0.0");
+            }
+            if (cmd === 'op read "op://vault/item/password"') {
+                return "a$&b$'c$`d$1\n";
+            }
+            return "";
+        });
+
+        const result = resolveOpReferences('{"key":"{{ op://vault/item/password }}"}');
+
+        expect(result).toBe('{"key":"a$&b$\'c$`d$1"}');
+    });
+
     it("should not call op CLI when no op:// references are present", () => {
         const result = resolveOpReferences('{"key":"plain-value"}');
 

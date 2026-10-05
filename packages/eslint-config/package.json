@@ -44,7 +44,7 @@
     "dependencies": {
         "@calm/eslint-plugin-react-intl": "^1.4.1",
         "@dextinity/eslint-plugin": "workspace:*",
-        "@eslint/eslintrc": "^3.3.6",
+        "@eslint/eslintrc": "^3.3.7",
         "@eslint/js": "^9.39.5",
         "@graphql-eslint/eslint-plugin": "^4.4.0",
         "@next/eslint-plugin-next": "^16.2.10",

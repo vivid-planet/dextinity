@@ -774,6 +774,39 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
                 { timeout: 3000 },
             );
         });
+
+        await step("Nest a bullet list inside the ordered list", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("{Enter}Nested item{Tab}");
+
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Shift>}8{/Shift}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("ol ul")).toBeTruthy();
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("The innermost list decides: the nested bullet list offers its own styles, not the outer list's", async () => {
+            const textBlockStyleSelect = canvas.getAllByRole("combobox")[1];
+            await userEvent.click(textBlockStyleSelect);
+
+            await waitFor(
+                () => {
+                    const options = within(document.body)
+                        .getAllByRole("option")
+                        .map((option) => option.textContent);
+                    expect(options).toEqual(["Default", "List Large", "List Small", "Universal"]);
+                },
+                { timeout: 3000 },
+            );
+
+            await userEvent.keyboard("{Escape}");
+        });
     },
 };
 

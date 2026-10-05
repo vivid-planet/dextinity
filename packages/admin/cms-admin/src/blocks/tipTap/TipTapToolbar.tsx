@@ -41,6 +41,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
 import type { TipTapChildBlock, TipTapInlineStyle, TipTapPlaceholder, TipTapResolvedOptions } from "./createTipTapRichTextBlock";
+import { findListNodeType } from "./findListNodeType";
 import { liftOutOfList } from "./liftOutOfList";
 import { findTextBlock, getStyledNodes, isTextBlockAllowedInListItem, orderedListName, unorderedListName } from "./textBlocks";
 import { TipTapBlockDialog } from "./TipTapBlockDialog";
@@ -196,12 +197,14 @@ export const TipTapToolbar = ({
             const attrs = e.getAttributes("textBlock");
             const activeTextBlock = findTextBlock({ name: attrs.textBlock, textBlocks }) ?? resolvedOptions.defaultTextBlock;
             // A list wins over the text block inside its items, so a list's own styles are offered
-            // for a list item's content.
+            // for a list item's content. Nested lists may mix types, so the innermost one decides -
+            // `isActive` would match an outer list of the other type and offer its styles instead.
             const activeStyledNode = (() => {
-                if (e.isActive("orderedList")) {
+                const listNodeType = findListNodeType(e.state.selection.$from);
+                if (listNodeType === "orderedList") {
                     return orderedListName;
                 }
-                if (e.isActive("bulletList")) {
+                if (listNodeType === "bulletList") {
                     return unorderedListName;
                 }
                 return activeTextBlock.name;

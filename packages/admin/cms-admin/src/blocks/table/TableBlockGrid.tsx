@@ -21,7 +21,7 @@ import { EditCell } from "./EditCell";
 import { RowActionsCell } from "./RowActionsCell";
 import { useTableBlockContext } from "./TableBlockContext";
 import { ensureMinimumTableState } from "./utils/ensureMinimumTableState";
-import { useRecentlyPastedIds } from "./utils/useRecentlyPastedIds";
+import { useTemporarilyHighlightedIds } from "./utils/useTemporarilyHighlightedIds";
 
 type ColumnSize = TableBlockData["columns"][number]["size"];
 type TableBlockColumn = TableBlockData["columns"][number];
@@ -50,8 +50,8 @@ type Props = {
 export const TableBlockGrid = ({ state, updateState }: Props) => {
     const { RichTextBlock } = useTableBlockContext();
     const apiRef = useGridApiRef();
-    const { recentlyPastedIds: recentlyPastedRowIds, addToRecentlyPastedIds: addToRecentlyPastedRowIds } = useRecentlyPastedIds();
-    const { recentlyPastedIds: recentlyPastedColumnIds, addToRecentlyPastedIds: addToRecentlyPastedColumnIds } = useRecentlyPastedIds();
+    const { highlightedIds: recentlyPastedRowIds, highlightTemporarily: addToRecentlyPastedRowIds } = useTemporarilyHighlightedIds();
+    const { highlightedIds: recentlyPastedColumnIds, highlightTemporarily: addToRecentlyPastedColumnIds } = useTemporarilyHighlightedIds();
 
     useEffect(() => {
         if (state.columns.length === 0 || state.rows.length === 0) {
@@ -157,7 +157,7 @@ export const TableBlockGrid = ({ state, updateState }: Props) => {
                     <CellValue
                         value={value}
                         highlighted={rowFromState?.highlighted || highlighted}
-                        recentlyPasted={rowWasRecentlyPasted || columnWasRecentlyPasted}
+                        isTemporarilyHighlighted={rowWasRecentlyPasted || columnWasRecentlyPasted}
                     />
                 );
             },

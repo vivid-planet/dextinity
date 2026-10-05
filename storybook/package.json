@@ -80,7 +80,7 @@
         "eslint": "^9.39.5",
         "eslint-plugin-storybook": "^10.3.5",
         "graphql-mocks": "^0.12.0",
-        "immutable": "^3.8.2",
+        "immutable": "^3.8.4",
         "msw": "^2.14.6",
         "npm-run-all2": "^8.0.4",
         "playwright": "^1.62.0",

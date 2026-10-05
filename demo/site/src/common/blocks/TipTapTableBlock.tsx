@@ -7,40 +7,38 @@ import clsx from "clsx";
 import styles from "./TableBlock.module.scss";
 import { TipTapRichTextBlock } from "./TipTapRichTextBlock";
 
-const Table = withPreview(
-    ({ data }: PropsWithData<TipTapTableBlockData>) => (
-        <AnimateBoxInOnScroll direction="bottom" offset={300}>
-            <table className={styles.table}>
-                <tbody>
-                    {data.rows.map((row) => (
-                        <tr key={row.id} className={styles.row}>
-                            {data.columns.map((column) => {
-                                const cellValue = row.cellValues.find((cellValue) => cellValue.columnId === column.id);
-                                const highlightCell = row.highlighted || column.highlighted;
+export const TipTapTableBlock = withPreview(
+    ({ data }: PropsWithData<TipTapTableBlockData>) => {
+        return (
+            <PageLayout grid>
+                <div className={styles.pageLayoutContent}>
+                    <AnimateBoxInOnScroll direction="bottom" offset={300}>
+                        <table className={styles.table}>
+                            <tbody>
+                                {data.rows.map((row) => (
+                                    <tr key={row.id} className={styles.row}>
+                                        {data.columns.map((column) => {
+                                            const cellValue = row.cellValues.find((cellValue) => cellValue.columnId === column.id);
+                                            const highlightCell = row.highlighted || column.highlighted;
 
-                                return (
-                                    <td key={column.id} className={clsx([styles.cell, highlightCell && styles["cell--highlighted"]])}>
-                                        {cellValue?.value && (
-                                            <div className={styles["cell__content"]}>
-                                                <TipTapRichTextBlock data={cellValue.value} disableLastBottomSpacing />
-                                            </div>
-                                        )}
-                                    </td>
-                                );
-                            })}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </AnimateBoxInOnScroll>
-    ),
+                                            return (
+                                                <td key={column.id} className={clsx([styles.cell, highlightCell && styles["cell--highlighted"]])}>
+                                                    {cellValue?.value && (
+                                                        <div className={styles["cell__content"]}>
+                                                            <TipTapRichTextBlock data={cellValue.value} disableLastBottomSpacing />
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            );
+                                        })}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </AnimateBoxInOnScroll>
+                </div>
+            </PageLayout>
+        );
+    },
     { label: "TipTap Table" },
-);
-
-export const TipTapTableBlock = ({ data }: PropsWithData<TipTapTableBlockData>) => (
-    <PageLayout grid>
-        <div className={styles.pageLayoutContent}>
-            <Table data={data} />
-        </div>
-    </PageLayout>
 );

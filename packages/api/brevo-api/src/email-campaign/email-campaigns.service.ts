@@ -128,7 +128,7 @@ export class EmailCampaignsService {
                     wrap(campaign).assign({ sendingState });
                 }
             }
-            this.entityManager.flush();
+            await this.entityManager.flush();
         }
 
         return campaigns;

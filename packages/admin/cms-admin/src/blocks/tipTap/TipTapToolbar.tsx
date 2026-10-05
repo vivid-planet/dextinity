@@ -49,13 +49,13 @@ import {
     getStyledNodes,
     isTextBlockAllowedInListItem,
     orderedListName,
-    resolveStyle,
     type TipTapResolvedList,
     type TipTapResolvedTextBlock,
     unorderedListName,
 } from "./textBlocks";
 import { TipTapBlockDialog } from "./TipTapBlockDialog";
 import { TipTapLinkDialog } from "./TipTapLinkDialog";
+import { updateTextBlockStyles } from "./updateTextBlockStyles";
 
 const toolbarButtonSx = {
     display: "flex",
@@ -341,8 +341,6 @@ export const TipTapToolbar = ({
         })),
     ];
 
-    const activeStyle = editorState.activeTextBlockStyle || null;
-
     const handleTextBlockChange = (e: SelectChangeEvent) => {
         const textBlock = textBlocks.find((candidate: TipTapResolvedTextBlock) => candidate.name === e.target.value);
         if (!textBlock) {
@@ -355,26 +353,24 @@ export const TipTapToolbar = ({
             liftOutOfList(editor);
         }
 
+        // Switching the type only renames the node's text block - the tag follows from the configuration.
+        editor.chain().focus().updateAttributes("textBlock", { textBlock: textBlock.name }).run();
+
         // A list wins over the text block inside its items, so a switch that stays inside a list
         // keeps the list's style instead of falling back to the new text block's. Read after the
         // lift above, which leaves no list for a text block that can't be a list item's content.
-        const listNodeType = findListNodeType(editor.state.selection.$from);
-        const activeList =
-            listNodeType === "orderedList" ? resolvedOptions.orderedList : listNodeType === "bulletList" ? resolvedOptions.unorderedList : false;
-
-        // Switching the type only renames the node's text block - the tag follows from the configuration.
-        editor
-            .chain()
-            .focus()
-            .updateAttributes("textBlock", { textBlock: textBlock.name, textBlockStyle: resolveStyle(activeList || textBlock, activeStyle) })
-            .run();
+        updateTextBlockStyles(editor, (_, pos) => {
+            const listNodeType = findListNodeType(editor.state.doc.resolve(pos));
+            const activeList =
+                listNodeType === "orderedList" ? resolvedOptions.orderedList : listNodeType === "bulletList" ? resolvedOptions.unorderedList : false;
+            return activeList || textBlock;
+        });
     };
 
     const handleListToggle = (list: TipTapResolvedList) => {
         toggleTextBlockList(editor, {
             list,
-            textBlock: textBlocks.find((textBlock) => textBlock.name === editorState.activeTextBlock),
-            activeStyle,
+            textBlocks,
             orderedList: resolvedOptions.orderedList,
             unorderedList: resolvedOptions.unorderedList,
         });

@@ -2,25 +2,24 @@ import { Extension } from "@tiptap/core";
 import type { Editor } from "@tiptap/react";
 
 import { findListNodeType } from "../findListNodeType";
-import { findTextBlock, resolveStyle, type TipTapResolvedList, type TipTapResolvedStyledNode, type TipTapResolvedTextBlock } from "../textBlocks";
+import { findTextBlock, type TipTapResolvedList, type TipTapResolvedTextBlock } from "../textBlocks";
+import { updateTextBlockStyles } from "../updateTextBlockStyles";
 
 /**
- * Toggles a list and applies the style of whatever now holds the cursor's text block: the list's
- * styles replace the text block's while it sits in a list, and the other way round when the list is
- * toggled off.
+ * Toggles a list and applies to every text block the selection holds the style of whatever now
+ * holds it: the list's styles replace the text block's while it sits in a list, and the other way
+ * round when the list is toggled off.
  */
 export function toggleTextBlockList(
     editor: Editor,
     {
         list,
-        textBlock,
-        activeStyle,
+        textBlocks,
         orderedList,
         unorderedList,
     }: {
         list: TipTapResolvedList;
-        textBlock?: TipTapResolvedStyledNode;
-        activeStyle: string | null;
+        textBlocks: TipTapResolvedTextBlock[];
         orderedList: false | TipTapResolvedList;
         unorderedList: false | TipTapResolvedList;
     },
@@ -28,19 +27,13 @@ export function toggleTextBlockList(
     const chain = editor.chain().focus();
     (list.tag === "ol" ? chain.toggleOrderedList() : chain.toggleBulletList()).run();
 
-    // Which list the text block ended up in is only clear after the toggle: nested lists may mix
-    // types, so toggling can convert the innermost list instead of lifting the text block out of
-    // every list.
-    const listNodeType = findListNodeType(editor.state.selection.$from);
-    const activeList = listNodeType === "orderedList" ? orderedList : listNodeType === "bulletList" ? unorderedList : false;
-
-    const styledNode = activeList || textBlock;
-    if (styledNode) {
-        editor
-            .chain()
-            .updateAttributes("textBlock", { textBlockStyle: resolveStyle(styledNode, activeStyle) })
-            .run();
-    }
+    // Which list a text block ended up in is only clear after the toggle: nested lists may mix
+    // types, so toggling can convert the innermost list instead of lifting it out of every list.
+    updateTextBlockStyles(editor, (node, pos) => {
+        const listNodeType = findListNodeType(editor.state.doc.resolve(pos));
+        const activeList = listNodeType === "orderedList" ? orderedList : listNodeType === "bulletList" ? unorderedList : false;
+        return activeList || findTextBlock({ name: node.attrs.textBlock, textBlocks });
+    });
 }
 
 /**
@@ -69,14 +62,7 @@ export function createTextBlockList({
             for (const list of [orderedList, unorderedList]) {
                 if (list) {
                     shortcuts[list.tag === "ol" ? "Mod-Shift-7" : "Mod-Shift-8"] = () => {
-                        const attributes = this.editor.getAttributes("textBlock");
-                        toggleTextBlockList(this.editor, {
-                            list,
-                            textBlock: findTextBlock({ name: attributes.textBlock as string | null, textBlocks }),
-                            activeStyle: (attributes.textBlockStyle as string | null) ?? null,
-                            orderedList,
-                            unorderedList,
-                        });
+                        toggleTextBlockList(this.editor, { list, textBlocks, orderedList, unorderedList });
                         return true;
                     };
                 }

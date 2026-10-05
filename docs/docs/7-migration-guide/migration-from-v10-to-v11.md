@@ -160,6 +160,105 @@ If your project has to keep its own consumer, handle the new kind wherever you s
   }
 ```
 
+## Admin
+
+### Update `react-intl` to v12
+
+The admin packages now require `react-intl` v12. Older versions declare a peer dependency on TypeScript 5, which blocks the update to TypeScript 6.
+
+Update `react-intl` in `admin/package.json`:
+
+```sh
+cd admin
+npm install react-intl@^12.1.2
+```
+
+If your API or site packages use `react-intl` as well, update them to the same version so the whole project shares one `react-intl` version. If you use `@formatjs/cli` to extract messages, update it to the latest 6.x version as well.
+
+`react-intl` v12 requires React 18 or later, so the admin packages no longer support React 16 and 17. If your admin still uses one of them, update `react` and `react-dom` to v18 or v19 first.
+
+`react-intl` v12 is ESM-only. Bundlers (Vite, Next.js) handle this on their own. A CommonJS API (e.g., NestJS) loads it via `require()`, which Node.js supports from 20.19 and 22.12 on.
+
+#### Replace deep imports
+
+`react-intl` no longer allows imports from its internal files. Import from the package root instead:
+
+```diff
+- import { FormattedMessage } from "react-intl/lib";
++ import { FormattedMessage } from "react-intl";
+```
+
+#### Declare the values of predefined messages
+
+Messages created with `defineMessage` or `defineMessages` are typed now. Without a type parameter, a message accepts no values, so passing values to it fails to compile:
+
+```
+Type 'number' is not assignable to type 'never'.
+```
+
+Messages written inline in `<FormattedMessage>` or `intl.formatMessage()` aren't affected.
+
+Find the predefined messages that take values — the ones whose `defaultMessage` contains a placeholder (`{name}`) or a rich text tag (`<strong>`):
+
+```sh
+grep -rn -A3 "defineMessages\?(" src
+```
+
+Declare their values as a type parameter. Rich text tags use `MessageTag`:
+
+```diff
+- import { defineMessage } from "react-intl";
++ import { defineMessage, type MessageTag } from "react-intl";
+
+- const headingMessage = defineMessage({ id: "heading", defaultMessage: "Heading {level}" });
++ const headingMessage = defineMessage<{ level: number }>({ id: "heading", defaultMessage: "Heading {level}" });
+
+- const errorMessage = defineMessage({ id: "error", defaultMessage: "<strong>Error:</strong> {message}" });
++ const errorMessage = defineMessage<{ strong: MessageTag; message: string }>({
++     id: "error",
++     defaultMessage: "<strong>Error:</strong> {message}",
++ });
+```
+
+The type parameter of `defineMessages` must list every message of the call. If only some of them take values, move those into a `defineMessages` call of their own:
+
+```diff
+- const messages = defineMessages({
+-     save: { id: "save", defaultMessage: "Save" },
+-     greeting: { id: "greeting", defaultMessage: "Hello {name}" },
+- });
++ const messages = {
++     ...defineMessages({
++         save: { id: "save", defaultMessage: "Save" },
++     }),
++     ...defineMessages<{ greeting: { name: string } }>({
++         greeting: { id: "greeting", defaultMessage: "Hello {name}" },
++     }),
++ };
+```
+
+Moving messages between calls doesn't change their IDs, so the extracted messages and the translations stay the same.
+
+:::note
+
+When typed messages are exported from code that emits declaration files (e.g., a shared library), TypeScript reports `TS2742: The inferred type of '…' cannot be named`. Annotate them with `TypedMessageDescriptor`:
+
+```ts
+const greetingMessages: { greeting: TypedMessageDescriptor<{ name: string }> } = defineMessages<{ greeting: { name: string } }>({
+    greeting: { id: "greeting", defaultMessage: "Hello {name}" },
+});
+```
+
+:::
+
+Then verify that the admin compiles and the messages still extract:
+
+```sh
+cd admin
+npx tsc --noEmit
+npm run intl:extract
+```
+
 ## Agent features
 
 ### Get the `dev-pm` skill from `dev-process-manager`

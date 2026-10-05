@@ -3,6 +3,7 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, Logger } from "@nestjs/common";
 import { faker } from "@src/db/fixtures/faker";
 import { MailButtonAlignment, MailButtonVariant } from "@src/mail/blocks/mail-button.block";
+import { MailImageAspectRatio } from "@src/mail/blocks/mail-image.block";
 import { MailSpacing } from "@src/mail/blocks/mail-spacer.block";
 import { WelcomeEmailContentBlock } from "@src/welcome-email/blocks/welcome-email-content.block";
 import { WelcomeEmail } from "@src/welcome-email/entities/welcome-email.entity";
@@ -63,7 +64,12 @@ export class WelcomeEmailFixtureService {
                         props: { draftContent: draftContent([{ text: "Welcome to our newsletter", type: "title" }], {}) },
                     },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
-                    { key: faker.string.uuid(), visible: true, type: "image", props: { image, fullWidth: true } },
+                    {
+                        key: faker.string.uuid(),
+                        visible: true,
+                        type: "image",
+                        props: { image, fullWidth: true, aspectRatio: MailImageAspectRatio["16x9"] },
+                    },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.small } },
                     {
                         key: faker.string.uuid(),

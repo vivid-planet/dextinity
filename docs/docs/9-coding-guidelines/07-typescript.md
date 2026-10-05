@@ -41,7 +41,7 @@ getSortedJobs({
 - Use named exports only (Exception: Default exports are allowed only if technically required)  
   **Reason:** They are harder to locate and refactor.
 
-- Use relative imports only for sibling or child files within a module (for anything else, use imports via @src)
+- If the project defines the `@src` alias, use relative imports only for sibling or child files within a module (for anything else, use imports via `@src`).
 
 - Prefer async/await over callbacks
 

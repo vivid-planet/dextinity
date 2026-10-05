@@ -28,7 +28,7 @@ alwaysApply: false
 ## Imports / exports
 
 - Use **named exports only**. Default exports are allowed only when technically required (e.g. a framework demands it).
-- Use relative imports only for **sibling or child** files within the same module. Everything else uses the `@src/…` alias.
+- If the project defines the `@src/…` alias (`paths` in `tsconfig.json`), use relative imports only for **sibling or child** files within the same module. Everything else uses the alias.
 
 ## Async & iteration
 

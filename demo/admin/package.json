@@ -56,7 +56,7 @@
         "react-dnd-multi-backend": "^9.0.0",
         "react-dom": "^19.2.6",
         "react-final-form": "^6.5.9",
-        "react-intl": "^7.1.11",
+        "react-intl": "^7.1.14",
         "react-router": "^5.3.4",
         "react-router-dom": "^5.3.4",
         "use-debounce": "^10.0.6",

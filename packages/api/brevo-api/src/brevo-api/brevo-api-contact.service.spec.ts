@@ -1,5 +1,5 @@
 import { Brevo, BrevoError } from "@getbrevo/brevo";
-import { getRepositoryToken } from "@mikro-orm/nestjs";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Test, type TestingModule } from "@nestjs/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -21,7 +21,7 @@ describe("BrevoApiContactsService", () => {
             providers: [
                 BrevoApiContactsService,
                 { provide: BREVO_MODULE_CONFIG, useValue: { brevo: {} } },
-                { provide: getRepositoryToken("BrevoConfig"), useValue: {} },
+                { provide: EntityManager, useValue: {} },
                 { provide: BrevoApiClientFactory, useValue: { getClient: () => ({ contacts: contactsApi }) } },
             ],
         }).compile();

@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, raw } from "@mikro-orm/postgresql";
+import { EntityManager, raw } from "@mikro-orm/postgresql";
 import { UnauthorizedException } from "@nestjs/common";
 import { Args, ID, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
@@ -23,13 +22,12 @@ export class WarningResolver {
     constructor(
         private readonly entityManager: EntityManager,
         private readonly entityInfoService: EntityInfoService,
-        @InjectRepository(Warning) private readonly repository: EntityRepository<Warning>,
     ) {}
 
     @Query(() => Warning)
     @AffectedEntity(Warning)
     async warning(@Args("id", { type: () => ID }) id: string): Promise<Warning> {
-        const warning = await this.repository.findOneOrFail(id);
+        const warning = await this.entityManager.findOneOrFail(Warning, id);
         return warning;
     }
 

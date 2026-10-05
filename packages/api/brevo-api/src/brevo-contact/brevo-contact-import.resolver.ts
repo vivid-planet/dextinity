@@ -1,6 +1,5 @@
 import { CurrentUser, FileUpload, FileUploadsService, GetCurrentUser, RequiredPermission } from "@dextinity/cms-api";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Type } from "@nestjs/common";
 import { Args, ArgsType, Mutation, Resolver } from "@nestjs/graphql";
 import { Readable } from "stream";
@@ -29,7 +28,6 @@ export function createBrevoContactImportResolver({
         constructor(
             @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
             @Inject(BrevoContactImportService) private readonly brevoContactImportService: BrevoContactImportService,
-            @InjectRepository(FileUpload) private readonly fileUploadRepository: EntityRepository<FileUpload>,
             private readonly entityManager: EntityManager,
             private readonly fileUploadsService: FileUploadsService,
         ) {}
@@ -40,7 +38,7 @@ export function createBrevoContactImportResolver({
             @GetCurrentUser() user: CurrentUser,
         ): Promise<CsvImportInformation> {
             const importId: string = uuid();
-            const fileUpload = await this.fileUploadRepository.findOne(fileId);
+            const fileUpload = await this.entityManager.findOne(FileUpload, fileId);
 
             if (!fileUpload) {
                 throw new Error("File not found");

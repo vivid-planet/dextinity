@@ -1,6 +1,5 @@
 import { AffectedEntity, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, wrap } from "@mikro-orm/postgresql";
+import { EntityManager, wrap } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 
@@ -29,7 +28,6 @@ export function createBrevoConfigResolver({
             private readonly brevoSenderApiService: BrevoApiSenderService,
             private readonly brevoFolderIdService: BrevoApiFoldersService,
             private readonly brevoTransactionalEmailsApiService: BrevoTransactionalMailsService,
-            @InjectRepository(BrevoConfig) private readonly repository: EntityRepository<BrevoConfigInterface>,
         ) {}
 
         private async brevoIsValidSender({
@@ -96,7 +94,7 @@ export function createBrevoConfigResolver({
             @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope))
             scope: typeof Scope,
         ): Promise<boolean> {
-            const brevoConfig = await this.repository.findOne({ scope });
+            const brevoConfig = await this.entityManager.findOne<BrevoConfigInterface>(BrevoConfig, { scope });
             return !!brevoConfig;
         }
 
@@ -105,7 +103,7 @@ export function createBrevoConfigResolver({
             @Args("scope", { type: () => Scope }, new DynamicDtoValidationPipe(Scope))
             scope: typeof Scope,
         ): Promise<BrevoConfigInterface | null> {
-            const brevoConfig = await this.repository.findOne({ scope });
+            const brevoConfig = await this.entityManager.findOne<BrevoConfigInterface>(BrevoConfig, { scope });
             return brevoConfig;
         }
 
@@ -127,7 +125,7 @@ export function createBrevoConfigResolver({
                 throw new Error("Folder ID is not valid. ");
             }
 
-            const brevoConfig = this.repository.create({
+            const brevoConfig = this.entityManager.create<BrevoConfigInterface>(BrevoConfig, {
                 ...input,
                 scope,
             });
@@ -144,7 +142,7 @@ export function createBrevoConfigResolver({
             @Args("input", { type: () => BrevoConfigUpdateInput }) input: BrevoConfigUpdateInput,
             @Args("lastUpdatedAt", { type: () => Date, nullable: true }) lastUpdatedAt?: Date,
         ): Promise<BrevoConfigInterface> {
-            const brevoConfig = await this.repository.findOneOrFail(id);
+            const brevoConfig = await this.entityManager.findOneOrFail<BrevoConfigInterface>(BrevoConfig, id);
             if (input.senderMail && input.senderName) {
                 if (!(await this.brevoIsValidSender({ email: input.senderMail, name: input.senderName, scope: brevoConfig.scope }))) {
                     throw new Error("Sender not found");

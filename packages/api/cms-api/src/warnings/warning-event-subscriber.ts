@@ -1,5 +1,5 @@
 import { EntityName, EventArgs, EventSubscriber } from "@mikro-orm/core";
-import { EntityClass, EntityManager, EntityRepository, MikroORM } from "@mikro-orm/postgresql";
+import { EntityClass, EntityManager, MikroORM } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { ModuleRef, Reflector } from "@nestjs/core";
 import { BlockWarning, BlockWarningsServiceInterface } from "src/blocks/block";
@@ -136,9 +136,7 @@ export class WarningEventSubscriber implements EventSubscriber {
 
             const createWarnings = this.reflector.getAllAndOverride<CreateWarningsMeta>(CREATE_WARNINGS_METADATA_KEY, [entity]);
             if (createWarnings && args.entity.id) {
-                const repository: EntityRepository<{ id: string; scope: ContentScope }> = this.entityManager.getRepository(entity);
-
-                const row = await repository.findOneOrFail(args.entity.id);
+                const row = await this.entityManager.findOneOrFail<{ id: string; scope: ContentScope }>(entity, args.entity.id);
 
                 let warnings: WarningData[] = [];
                 if (isInjectableService(createWarnings)) {

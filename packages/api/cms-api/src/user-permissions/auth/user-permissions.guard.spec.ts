@@ -96,9 +96,7 @@ describe("UserPermissionsGuard", () => {
         });
     };
     const mockAffectedEntityValues = (values: { id: number | string; [key: string]: unknown }[]) => {
-        orm.em.getRepository = vi
-            .fn()
-            .mockReturnValue({ findOneOrFail: vi.fn().mockImplementation((id: number | string) => values.find((v) => v.id === id)) });
+        orm.em.findOneOrFail = vi.fn().mockImplementation((_entityName: unknown, id: number | string) => values.find((v) => v.id === id));
     };
 
     beforeEach(async () => {

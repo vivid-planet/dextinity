@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import {
     BadRequestException,
     Controller,
@@ -39,7 +38,7 @@ export function createFileUploadsDownloadController(options: { public: boolean }
     class BaseFileUploadsDownloadController {
         protected readonly logger = new Logger(BaseFileUploadsDownloadController.name);
         constructor(
-            @InjectRepository(FileUpload) private readonly fileUploadsRepository: EntityRepository<FileUpload>,
+            private readonly entityManager: EntityManager,
             @Inject(BlobStorageBackendService) private readonly blobStorageBackendService: BlobStorageBackendService,
             @Inject(FILE_UPLOADS_CONFIG) private readonly config: FileUploadsConfig,
             private readonly fileUploadsService: FileUploadsService,
@@ -49,7 +48,7 @@ export function createFileUploadsDownloadController(options: { public: boolean }
 
         @Get(":hash/:id/:timeout")
         async download(@Param() { hash, ...params }: HashDownloadParams, @Res() res: Response, @Headers("range") range?: string): Promise<void> {
-            const file = await this.fileUploadsRepository.findOne(params.id);
+            const file = await this.entityManager.findOne(FileUpload, params.id);
 
             if (!file) {
                 throw new NotFoundException();
@@ -61,7 +60,7 @@ export function createFileUploadsDownloadController(options: { public: boolean }
 
         @Get("preview/:hash/:id/:timeout")
         async preview(@Param() { hash, ...params }: HashDownloadParams, @Res() res: Response, @Headers("range") range?: string): Promise<void> {
-            const file = await this.fileUploadsRepository.findOne(params.id);
+            const file = await this.entityManager.findOne(FileUpload, params.id);
 
             if (!file) {
                 throw new NotFoundException();
@@ -158,7 +157,7 @@ export function createFileUploadsDownloadController(options: { public: boolean }
                 throw new GoneException();
             }
 
-            const file = await this.fileUploadsRepository.findOne(params.id);
+            const file = await this.entityManager.findOne(FileUpload, params.id);
 
             if (!file) {
                 throw new NotFoundException();

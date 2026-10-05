@@ -1,6 +1,5 @@
 import { DiscoveryService } from "@golevelup/nestjs-discovery";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
 import { isFuture, isPast } from "date-fns";
 import { Request } from "express";
@@ -31,8 +30,7 @@ export class UserPermissionsService {
         @Inject(USER_PERMISSIONS_OPTIONS) private readonly options: UserPermissionsOptions,
         @Inject(USER_PERMISSIONS_USER_SERVICE) @Optional() private readonly userService: UserPermissionsUserServiceInterface | undefined,
         @Inject(ACCESS_CONTROL_SERVICE) private readonly accessControlService: AccessControlServiceInterface,
-        @InjectRepository(UserPermission) private readonly permissionRepository: EntityRepository<UserPermission>,
-        @InjectRepository(UserContentScopes) private readonly contentScopeRepository: EntityRepository<UserContentScopes>,
+        private readonly entityManager: EntityManager,
         private readonly discoveryService: DiscoveryService,
     ) {}
 
@@ -148,7 +146,7 @@ export class UserPermissionsService {
     }
 
     async warmupHasPermissionCache() {
-        this.manualPermissions = (await this.permissionRepository.find({ permission: { $in: await this.getAvailablePermissions() } }))
+        this.manualPermissions = (await this.entityManager.find(UserPermission, { permission: { $in: await this.getAvailablePermissions() } }))
             .filter((p) => (!p.validFrom || isPast(p.validFrom)) && (!p.validTo || isFuture(p.validTo)))
             .map((p) => ({ userId: p.userId, permission: p.permission }));
     }
@@ -181,7 +179,7 @@ export class UserPermissionsService {
     async getPermissions(user: User): Promise<UserPermission[]> {
         const availablePermissions = await this.getAvailablePermissions();
         const permissions = (
-            await this.permissionRepository.find({
+            await this.entityManager.find(UserPermission, {
                 $and: [{ userId: user.id }, { permission: { $in: availablePermissions } }],
             })
         ).map((p) => {
@@ -235,7 +233,7 @@ export class UserPermissionsService {
         }
 
         if (includeContentScopesManual) {
-            const entity = await this.contentScopeRepository.findOne({ userId: user.id });
+            const entity = await this.entityManager.findOne(UserContentScopes, { userId: user.id });
             if (entity) {
                 contentScopes.push(...entity.contentScopes);
             }

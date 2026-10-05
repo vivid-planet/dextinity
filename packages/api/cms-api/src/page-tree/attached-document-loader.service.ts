@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, Scope } from "@nestjs/common";
 import DataLoader from "dataloader";
 
@@ -9,16 +8,13 @@ import { PageTreeNodeInterface } from "./types";
 @Injectable({ scope: Scope.REQUEST })
 export class AttachedDocumentLoaderService {
     private dataLoader: DataLoader<string, unknown | null>;
-    constructor(
-        @InjectRepository(AttachedDocument) public readonly attachedDocumentsRepository: EntityRepository<AttachedDocument>,
-        private readonly em: EntityManager,
-    ) {
+    constructor(private readonly em: EntityManager) {
         this.dataLoader = new DataLoader<string, unknown | null>(async (keys): Promise<unknown[]> => {
             const documentsMap = new Map<string, unknown | null>();
 
             const attachedDocumentsByType: Record<string, AttachedDocument[]> = {};
             const attachedDocumentsByKey = new Map<string, AttachedDocument>();
-            for (const attachedDocument of await this.attachedDocumentsRepository.find({
+            for (const attachedDocument of await this.em.find(AttachedDocument, {
                 $or: keys.map((key) => {
                     const [pageTreeNodeId, type] = key.split("$");
                     return {
@@ -36,8 +32,10 @@ export class AttachedDocumentLoaderService {
             }
 
             for (const [type, attachedDocuments] of Object.entries(attachedDocumentsByType)) {
-                const repository = this.em.getRepository(type);
-                for (const document of await repository.find(attachedDocuments.map((i) => i.documentId))) {
+                for (const document of await this.em.find(
+                    type,
+                    attachedDocuments.map((i) => i.documentId),
+                )) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     documentsMap.set((document as any).id, document);
                 }

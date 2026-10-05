@@ -1,4 +1,3 @@
-import { getRepositoryToken } from "@mikro-orm/nestjs";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Test, type TestingModule } from "@nestjs/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -8,7 +7,6 @@ import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.con
 import { BuildTemplatesService } from "./build-templates.service";
 import { CONTENT_SCOPE_ANNOTATION } from "./builds.constants";
 import { BuildsService } from "./builds.service";
-import { ChangesSinceLastBuild } from "./entities/changes-since-last-build.entity";
 
 const jobMain = {
     metadata: {
@@ -60,7 +58,6 @@ describe("BuildsService", () => {
             imports: [KubernetesModule.register({ helmRelease: "test" })],
             providers: [
                 BuildsService,
-                { provide: getRepositoryToken(ChangesSinceLastBuild), useValue: {} },
                 { provide: BuildTemplatesService, useValue: mockedBuildTemplatesService },
                 { provide: ACCESS_CONTROL_SERVICE, useValue: {} },
                 { provide: EntityManager, useValue: {} },

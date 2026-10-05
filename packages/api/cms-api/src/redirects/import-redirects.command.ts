@@ -1,6 +1,5 @@
 import * as csv from "@fast-csv/parse";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { CreateRequestContext, EntityManager, EntityRepository, FilterQuery, MikroORM } from "@mikro-orm/postgresql";
+import { CreateRequestContext, EntityManager, FilterQuery, MikroORM } from "@mikro-orm/postgresql";
 import { forwardRef, Inject } from "@nestjs/common";
 import * as console from "console";
 import * as fs from "fs";
@@ -32,7 +31,6 @@ export class ImportRedirectsCommand extends CommandRunner {
         private readonly orm: MikroORM,
         private readonly entityManager: EntityManager,
         @Inject(forwardRef(() => PageTreeService)) private readonly pageTreeService: PageTreeService,
-        @InjectRepository("Redirect") private readonly repository: EntityRepository<RedirectInterface>,
         @Inject(REDIRECTS_LINK_BLOCK) private readonly linkBlock: RedirectsLinkBlock,
     ) {
         super();
@@ -55,11 +53,11 @@ export class ImportRedirectsCommand extends CommandRunner {
             if (row["scope"]) {
                 where["scope"] = row["scope"];
             }
-            const existingRedirect = await this.repository.findOne(where);
+            const existingRedirect = await this.entityManager.findOne<RedirectInterface>("Redirect", where);
 
             if (row["target_type"] === "internal" && node) {
                 if (existingRedirect) {
-                    this.repository.assign(existingRedirect, {
+                    this.entityManager.assign(existingRedirect, {
                         target: this.linkBlock
                             .blockInputFactory({
                                 attachedBlocks: [
@@ -78,7 +76,7 @@ export class ImportRedirectsCommand extends CommandRunner {
 
                     successes++;
                 } else {
-                    const redirect = this.repository.create({
+                    const redirect = this.entityManager.create<RedirectInterface>("Redirect", {
                         sourceType: RedirectSourceType.path,
                         source: row["source"],
                         target: this.linkBlock
@@ -105,7 +103,7 @@ export class ImportRedirectsCommand extends CommandRunner {
                 }
             } else if (row["target_type"] === "external") {
                 if (existingRedirect) {
-                    this.repository.assign(existingRedirect, {
+                    this.entityManager.assign(existingRedirect, {
                         target: this.linkBlock
                             .blockInputFactory({
                                 attachedBlocks: [
@@ -126,7 +124,7 @@ export class ImportRedirectsCommand extends CommandRunner {
 
                     successes++;
                 } else {
-                    const redirect = this.repository.create({
+                    const redirect = this.entityManager.create<RedirectInterface>("Redirect", {
                         sourceType: RedirectSourceType.path,
                         source: row["source"],
                         target: this.linkBlock

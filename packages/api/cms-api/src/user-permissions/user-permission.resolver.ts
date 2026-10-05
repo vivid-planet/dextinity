@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, ArgsType, Field, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { IsString } from "class-validator";
 
@@ -21,7 +20,6 @@ class UserPermissionListArgs {
 export class UserPermissionResolver {
     constructor(
         private readonly service: UserPermissionsService,
-        @InjectRepository(UserPermission) private readonly permissionRepository: EntityRepository<UserPermission>,
         private readonly entityManager: EntityManager,
     ) {}
 
@@ -88,7 +86,7 @@ export class UserPermissionResolver {
     }
 
     async getPermission(id: string, userId?: string): Promise<UserPermission> {
-        const permission = await this.permissionRepository.findOne(id);
+        const permission = await this.entityManager.findOne(UserPermission, id);
         if (permission) {
             permission.source = UserPermissionSource.MANUAL;
             return permission;

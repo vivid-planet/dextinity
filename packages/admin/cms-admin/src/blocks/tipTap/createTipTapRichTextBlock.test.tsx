@@ -1,10 +1,13 @@
-import type { JSONContent } from "@tiptap/core";
+import { Editor, type JSONContent } from "@tiptap/core";
 import { describe, expect, it } from "vitest";
 
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "../types";
 import {
+    buildTipTapExtensions,
     createTipTapRichTextBlock,
+    resolveTipTapOptions,
+    type TipTapRichTextBlockFactoryOptions,
     type TipTapRichTextBlockState,
     type TipTapTextBlock,
     type TipTapTextBlockElementProps,
@@ -73,6 +76,66 @@ describe("createTipTapRichTextBlock", () => {
         });
         expect(block.defaultValues()).toEqual({
             tipTapContent: { type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "heading-3" } }] },
+        });
+    });
+
+    describe("editor", () => {
+        function createEditor(options: TipTapRichTextBlockFactoryOptions = {}) {
+            return new Editor({
+                extensions: buildTipTapExtensions({
+                    resolvedOptions: resolveTipTapOptions(options),
+                    inlineStyles: [],
+                    placeholders: [],
+                    childBlocks: {},
+                }),
+            });
+        }
+
+        const listItem = (text: string): JSONContent => ({
+            type: "listItem",
+            content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text }] }],
+        });
+
+        it("should use the text block as the schema's default block type, not a list", () => {
+            const editor = createEditor();
+            expect(editor.schema.topNodeType.contentMatch.defaultType?.name).toBe("textBlock");
+        });
+
+        it.each(["orderedList", "bulletList"])("should end content ending with an %s with an empty default text block", (listType) => {
+            const editor = createEditor();
+
+            editor.commands.setContent({ type: "doc", content: [{ type: listType, content: [listItem("item")] }] });
+
+            expect(editor.state.doc.lastChild?.toJSON()).toEqual({ type: "textBlock", attrs: { textBlock: "paragraph" } });
+        });
+
+        it("should leave a single empty default text block after deleting all content", () => {
+            const editor = createEditor();
+            editor.commands.setContent({ type: "doc", content: [{ type: "orderedList", content: [listItem("item")] }] });
+
+            editor.commands.selectAll();
+            editor.commands.deleteSelection();
+
+            expect(editor.getJSON()).toEqual({ type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "paragraph" } }] });
+        });
+
+        it("should fill an emptied heading-only block with the default text block", () => {
+            const editor = createEditor({
+                textBlocks: [
+                    { name: "heading-1", label: "Heading 1", tag: "h1" },
+                    { name: "heading-2", label: "Heading 2", tag: "h2" },
+                ],
+                defaultTextBlock: "heading-2",
+            });
+            editor.commands.setContent({
+                type: "doc",
+                content: [{ type: "textBlock", attrs: { textBlock: "heading-1" }, content: [{ type: "text", text: "Title" }] }],
+            });
+
+            editor.commands.selectAll();
+            editor.commands.deleteSelection();
+
+            expect(editor.getJSON()).toEqual({ type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "heading-2" } }] });
         });
     });
 

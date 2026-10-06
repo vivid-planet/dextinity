@@ -100,7 +100,7 @@ const defaultTextBlocks: TipTapTextBlock[] = [
     })),
 ];
 
-function resolveTipTapOptions({
+export function resolveTipTapOptions({
     undoRedoButtons = true,
     bold = true,
     italic = true,
@@ -185,7 +185,7 @@ export interface TipTapChildBlock {
     display: "block" | "inline";
 }
 
-interface TipTapRichTextBlockFactoryOptions {
+export interface TipTapRichTextBlockFactoryOptions {
     /**
      * Shows the undo/redo buttons in the toolbar. The keyboard shortcuts work regardless. Defaults to `true`.
      */
@@ -448,7 +448,7 @@ function collectLinkMarksData(content: JSONContent): unknown[] {
     return results;
 }
 
-function buildTipTapExtensions({
+export function buildTipTapExtensions({
     resolvedOptions,
     inlineStyles,
     placeholders,

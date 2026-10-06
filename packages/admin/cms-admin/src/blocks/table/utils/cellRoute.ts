@@ -1,18 +1,18 @@
 export type CellPosition = {
-    rowId: string;
     columnId: string;
+    rowId: string;
 };
 
 const cellKeySeparator = ":";
 
-export const createCellKey = ({ rowId, columnId }: CellPosition) => `${rowId}${cellKeySeparator}${columnId}`;
+export const createCellKey = ({ columnId, rowId }: CellPosition) => `${columnId}${cellKeySeparator}${rowId}`;
 
 export const createCellRoute = (tableRoute: string, cell: CellPosition) => `${tableRoute}#${createCellKey(cell)}`;
 
 export const parseCellHash = (hash: string): CellPosition | undefined => {
-    const [rowId, columnId] = hash.replace(/^#/, "").split(cellKeySeparator);
-    if (!rowId || !columnId) {
+    const [columnId, rowId] = hash.replace(/^#/, "").split(cellKeySeparator);
+    if (!columnId || !rowId) {
         return undefined;
     }
-    return { rowId, columnId };
+    return { columnId, rowId };
 };

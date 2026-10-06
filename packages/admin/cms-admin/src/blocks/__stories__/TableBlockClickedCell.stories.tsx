@@ -34,7 +34,7 @@ function TableBlockOpenedFromCellH25InThePreview() {
     const [state, setState] = useState(tableLargerThanTheDialog);
 
     return (
-        <MemoryRouter initialEntries={["/table#25:H"]}>
+        <MemoryRouter initialEntries={["/table#H:25"]}>
             <TableBlock.AdminComponent state={state} updateState={setState} />
         </MemoryRouter>
     );

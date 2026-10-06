@@ -159,7 +159,7 @@ export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
                 const rowFromState = state.rows.find((rowInState) => rowInState.id === row.id);
                 const rowWasRecentlyPasted = recentlyPastedRowIds.includes(row.id);
                 const columnWasRecentlyPasted = recentlyPastedColumnIds.includes(columnId);
-                const cellWasRecentlyClicked = recentlyClickedCellKeys.includes(createCellKey({ rowId: row.id, columnId }));
+                const cellWasRecentlyClicked = recentlyClickedCellKeys.includes(createCellKey({ columnId, rowId: row.id }));
 
                 return (
                     <CellValue

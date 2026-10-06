@@ -168,7 +168,7 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
                     ...cell,
                     value: {
                         ...RichTextBlock.createPreviewState(cell.value, previewCtx),
-                        adminMeta: { route: createCellRoute(previewCtx.parentUrl, { rowId: row.id, columnId: cell.columnId }) },
+                        adminMeta: { route: createCellRoute(previewCtx.parentUrl, { columnId: cell.columnId, rowId: row.id }) },
                     },
                 })),
             })),

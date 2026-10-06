@@ -145,7 +145,7 @@
         "storybook": "^10.3.5",
         "storybook-addon-tag-badges": "^3.1.0",
         "typescript": "5.9.3",
-        "vite": "^7.3.1",
+        "vite": "^7.3.6",
         "vite-tsconfig-paths": "^6.0.3",
         "vitest": "^4.1.11"
     },

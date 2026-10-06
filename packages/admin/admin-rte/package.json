@@ -72,7 +72,7 @@
         "react-intl": "^7.1.14",
         "rimraf": "^6.1.2",
         "typescript": "^5.9.3",
-        "vitest": "^4.1.8"
+        "vitest": "^4.1.11"
     },
     "peerDependencies": {
         "@mui/material": "^7.0.0",

@@ -49,7 +49,7 @@
         "npm-run-all2": "^8.0.4",
         "rimraf": "^6.1.2",
         "typescript": "^5.9.3",
-        "vitest": "^4.1.8"
+        "vitest": "^4.1.11"
     },
     "engines": {
         "node": ">=22.0.0"

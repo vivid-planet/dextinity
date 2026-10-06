@@ -65,8 +65,9 @@ those instead of writing them down here.
 -->
 
 <!--
-The task this change implements. Keep it as visible text at the very end of the
-description — replace the placeholder, or delete the line when there is no task.
+The task this change implements. Keep it as visible text at the end of the
+description; only an AI tool attribution may follow it, and only when the change was
+made with one. Replace the placeholder, or delete the line when there is no task.
 -->
 
 Task: https://vivid-planet.atlassian.net/browse/DEX-0000

@@ -52,7 +52,7 @@ class MyBlockInput extends BlockInput {
     }
 }
 
-export const MyBlock = createBlock(MyBlockData, MyBlockInput, { name: "My" });
+export const MyBlock = createBlock(MyBlockData, MyBlockInput, "My");
 ```
 
 Key rules:
@@ -60,8 +60,7 @@ Key rules:
 - `transformToBlockData()` must call `blockInputToData(DataClass, this)` — never manually map properties.
 - `@ChildBlock` properties in `BlockData` are always typed as `BlockDataInterface`.
 - `@ChildBlockInput` properties in `BlockInput` are always typed as `ExtractBlockInput<typeof SomeBlock>`.
-- The `name` passed to `createBlock` is PascalCase **without** a "Block" suffix and must be unique across the project.
-- Add a `description` next to the `name` only where the name and fields don't say what the block is for. See [Description](#description).
+- The third argument to `createBlock` is the block name: PascalCase **without** a "Block" suffix, unique across the project. Pass an options object with `name` instead only when you set another option, such as a `description`. See [Description](#description).
 
 ---
 

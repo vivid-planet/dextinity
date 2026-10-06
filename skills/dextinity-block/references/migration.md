@@ -156,7 +156,7 @@ After writing the migration class, register it in the block's `createBlock` call
 
 ### First Migration on a Block
 
-When a block has **no existing migrations**, add `migrate` to the options object of `createBlock`. If the third argument is still a plain name string, convert it to an options object with `name` and `migrate`:
+When a block has **no existing migrations**, the third argument of `createBlock` is usually a plain name string. Convert it to an options object with `name` and `migrate`. If it already is an options object, for instance because it sets a `description`, add `migrate` to it:
 
 ```ts
 // Before (no migrations)

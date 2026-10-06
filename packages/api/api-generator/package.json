@@ -61,7 +61,7 @@
         "rimraf": "^6.1.2",
         "unplugin-swc": "^1.5.9",
         "uuid": "^11.1.1",
-        "vitest": "^4.1.8"
+        "vitest": "^4.1.11"
     },
     "peerDependencies": {
         "@mikro-orm/cli": "^6.0.0",

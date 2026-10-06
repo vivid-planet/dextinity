@@ -89,8 +89,8 @@
         "@types/react-dom": "^19.2.3",
         "@types/react-router": "^5.1.20",
         "@types/react-router-dom": "^5.3.3",
-        "@vitest/browser": "4.1.8",
-        "@vitest/browser-playwright": "4.1.8",
+        "@vitest/browser": "4.1.11",
+        "@vitest/browser-playwright": "4.1.11",
         "eslint": "^9.39.5",
         "eslint-plugin-storybook": "^10.3.5",
         "final-form": "^4.20.10",
@@ -114,7 +114,7 @@
         "typescript": "^5.9.3",
         "vite": "^7.3.1",
         "vite-tsconfig-paths": "^6.0.4",
-        "vitest": "^4.1.8"
+        "vitest": "^4.1.11"
     },
     "peerDependencies": {
         "@apollo/client": "^3.7.0",

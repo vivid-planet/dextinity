@@ -18,8 +18,6 @@ export function createTextBlock({
 }) {
     return Node.create({
         name: "textBlock",
-        // TipTap's own priority for the paragraph extension, which makes the text block the schema's
-        // first block node and therefore ProseMirror's default block type, as in the Admin's schema.
         priority: 1000,
         group: "block",
         content: "inline*",

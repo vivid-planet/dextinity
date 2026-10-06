@@ -21,6 +21,7 @@
         "strictNullChecks": true,
         "strictPropertyInitialization": false,
         "target": "ES2023",
-        "useDefineForClassFields": false
+        "useDefineForClassFields": false,
+        "verbatimModuleSyntax": true
     }
 }

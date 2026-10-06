@@ -1,15 +1,15 @@
-import { CrudGenerator, CrudGeneratorHooksService, CurrentUser, MutationError } from "@dextinity/cms-api";
+import { CrudGenerator, type CrudGeneratorHooksService, type CurrentUser, type MutationError } from "@dextinity/cms-api";
 import { Entity, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, defineConfig, MikroORM } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
 
-import { findHooksService } from "../find-hooks-service";
-import { testPermission } from "../test-helper";
-import { TestEntity } from "./find-hooks-service/test-entity.entity";
-import { TestEntityService } from "./find-hooks-service/test-entity.service";
-import { TestEntity3 } from "./find-hooks-service/test-entity3.entity";
+import { findHooksService } from "../find-hooks-service.js";
+import { testPermission } from "../test-helper.js";
+import { TestEntity } from "./find-hooks-service/test-entity.entity.js";
+import { TestEntityService } from "./find-hooks-service/test-entity.service.js";
+import { TestEntity3 } from "./find-hooks-service/test-entity3.entity.js";
 
 export class Test2MutationError implements MutationError {
     code: string;
@@ -58,7 +58,7 @@ describe("find-hooks-service", () => {
         expect(hooksService.imports).toEqual([
             {
                 name: "Test2MutationError",
-                importPath: "./find-hooks-service.spec",
+                importPath: "./find-hooks-service.spec.js",
             },
         ]);
         expect(hooksService.validateCreateInput).toBeDefined();
@@ -91,11 +91,11 @@ describe("find-hooks-service", () => {
         expect(hooksService.imports).toEqual([
             {
                 name: "TestEntityService",
-                importPath: "./find-hooks-service/test-entity.service",
+                importPath: "./find-hooks-service/test-entity.service.js",
             },
             {
                 name: "TestMutationError",
-                importPath: "./find-hooks-service/test-entity.service",
+                importPath: "./find-hooks-service/test-entity.service.js",
             },
         ]);
         expect(hooksService.validateCreateInput).toBeDefined();
@@ -127,11 +127,11 @@ describe("find-hooks-service", () => {
         expect(hooksService.imports).toEqual([
             {
                 name: "TestEntity3Service",
-                importPath: "./find-hooks-service/test-entity3.service",
+                importPath: "./find-hooks-service/test-entity3.service.js",
             },
             {
                 name: "TestEntity3MutationError",
-                importPath: "./find-hooks-service/test-entity3-error",
+                importPath: "./find-hooks-service/test-entity3-error.js",
             },
         ]);
         expect(hooksService.validateCreateInput).toBeDefined();

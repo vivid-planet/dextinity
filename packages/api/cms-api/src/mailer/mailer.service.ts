@@ -2,13 +2,13 @@ import { EntityManager } from "@mikro-orm/core";
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { subDays } from "date-fns";
 import { htmlToText } from "html-to-text";
-import { Transporter } from "nodemailer";
-import Mail, { Address, Options as MailOptions } from "nodemailer/lib/mailer";
+import type { Transporter } from "nodemailer";
+import type { Address, default as Mail, Options as MailOptions } from "nodemailer/lib/mailer/index.js";
 
-import { MailerLog } from "./entities/mailer-log.entity";
-import { MailerLogStatus } from "./entities/mailer-log-status.enum";
-import { MAILER_MODULE_TRANSPORT, MAILER_SERVICE_CONFIG } from "./mailer.constants";
-import { MailerModuleConfig } from "./mailer.module";
+import { MailerLog } from "./entities/mailer-log.entity.js";
+import { MailerLogStatus } from "./entities/mailer-log-status.enum.js";
+import { MAILER_MODULE_TRANSPORT, MAILER_SERVICE_CONFIG } from "./mailer.constants.js";
+import type { MailerModuleConfig } from "./mailer.module.js";
 
 type MailerServiceConfig = Omit<MailerModuleConfig, "transport">;
 

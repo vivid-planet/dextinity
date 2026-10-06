@@ -4,7 +4,7 @@ exports[`GenerateCrudInputJsonImport > should generate import for array class pr
 "import { Field, InputType, ID, Int } from "@nestjs/graphql";
 import { Transform, Type } from "class-transformer";
 import { GraphQLJSONObject, GraphQLLocalDate } from "graphql-scalars";
-import { BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
+import { type BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
 import {
     IsArray,
     IsBoolean,
@@ -19,7 +19,7 @@ import {
     IsUUID,
     ValidateNested,
 } from "class-validator";
-import { NestedObject } from "../../.generate-crud-input-json-import-nested-object";
+import { NestedObject } from "../../.generate-crud-input-json-import-nested-object.js";
 
 @InputType()
 export class TestEntityWithJsonObject1Input {
@@ -39,7 +39,7 @@ exports[`GenerateCrudInputJsonImport > should generate import for array type pro
 "import { Field, InputType, ID, Int } from "@nestjs/graphql";
 import { Transform, Type } from "class-transformer";
 import { GraphQLJSONObject, GraphQLLocalDate } from "graphql-scalars";
-import { BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
+import { type BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
 import {
     IsArray,
     IsBoolean,
@@ -54,7 +54,7 @@ import {
     IsUUID,
     ValidateNested,
 } from "class-validator";
-import { NestedType } from "../../.generate-crud-input-json-import-nested-object";
+import type { NestedType } from "../../.generate-crud-input-json-import-nested-object.js";
 
 @InputType()
 export class TestEntityWithJsonType2Input {
@@ -73,7 +73,7 @@ exports[`GenerateCrudInputJsonImport > should generate import for class property
 "import { Field, InputType, ID, Int } from "@nestjs/graphql";
 import { Transform, Type } from "class-transformer";
 import { GraphQLJSONObject, GraphQLLocalDate } from "graphql-scalars";
-import { BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
+import { type BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
 import {
     IsArray,
     IsBoolean,
@@ -88,7 +88,7 @@ import {
     IsUUID,
     ValidateNested,
 } from "class-validator";
-import { NestedObject } from "../../.generate-crud-input-json-import-nested-object";
+import { NestedObject } from "../../.generate-crud-input-json-import-nested-object.js";
 
 @InputType()
 export class TestEntityWithJsonObject1Input {
@@ -108,7 +108,7 @@ exports[`GenerateCrudInputJsonImport > should generate import for type property 
 "import { Field, InputType, ID, Int } from "@nestjs/graphql";
 import { Transform, Type } from "class-transformer";
 import { GraphQLJSONObject, GraphQLLocalDate } from "graphql-scalars";
-import { BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
+import { type BlockInputInterface, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
 import {
     IsArray,
     IsBoolean,
@@ -123,7 +123,7 @@ import {
     IsUUID,
     ValidateNested,
 } from "class-validator";
-import { NestedType } from "../../.generate-crud-input-json-import-nested-object";
+import type { NestedType } from "../../.generate-crud-input-json-import-nested-object.js";
 
 @InputType()
 export class TestEntityWithJsonType1Input {

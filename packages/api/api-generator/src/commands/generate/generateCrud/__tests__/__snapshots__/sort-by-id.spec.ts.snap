@@ -5,8 +5,8 @@ exports[`sort by id > id not be default value if sort is disabled 1`] = `
 import { Type } from "class-transformer";
 import { IsOptional, IsString, ValidateNested, IsEnum, IsUUID } from "class-validator";
 import { OffsetBasedPaginationArgs, SortDirection } from "@dextinity/cms-api";
-import { TestEntity3Filter } from "./test-entity3.filter";
-import { TestEntity3Sort, TestEntity3SortField } from "./test-entity3.sort";
+import { TestEntity3Filter } from "./test-entity3.filter.js";
+import { TestEntity3Sort, TestEntity3SortField } from "./test-entity3.sort.js";
 
 @ArgsType()
 export class TestEntity3sArgs extends OffsetBasedPaginationArgs {

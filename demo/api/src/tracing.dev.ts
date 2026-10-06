@@ -1,8 +1,13 @@
+import { register } from "node:module";
+
 import { diag, DiagConsoleLogger, DiagLogLevel } from "@opentelemetry/api";
 import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
 import { PrometheusExporter } from "@opentelemetry/exporter-prometheus";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { NodeSDK } from "@opentelemetry/sdk-node";
+
+// Lets the instrumentations patch modules loaded via ESM `import`, which bypasses the `require` hooks they use otherwise.
+register("@opentelemetry/instrumentation/hook.mjs", import.meta.url);
 
 diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
 

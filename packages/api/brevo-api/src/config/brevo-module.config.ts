@@ -1,12 +1,11 @@
 import type { Block } from "@dextinity/cms-api";
 import type { Type } from "@nestjs/common";
-import type { EmailCampaignInterface } from "src/email-campaign/entities/email-campaign-entity.factory";
-import type { TargetGroupInterface } from "src/target-group/entity/target-group-entity.factory";
-import type { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "src/types";
 
-import type { BlacklistedContactsInterface } from "../blacklisted-contacts/entity/blacklisted-contacts.entity.factory";
-import type { BrevoEmailImportLogInterface } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
-import type { BrevoContactFilterAttributesInterface } from "../types";
+import type { BlacklistedContactsInterface } from "../blacklisted-contacts/entity/blacklisted-contacts.entity.factory.js";
+import type { BrevoEmailImportLogInterface } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory.js";
+import type { EmailCampaignInterface } from "../email-campaign/entities/email-campaign-entity.factory.js";
+import type { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory.js";
+import type { BrevoContactAttributesInterface, BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "../types.js";
 
 interface FrontendConfig {
     url: string;
@@ -16,9 +15,13 @@ interface FrontendConfig {
     };
 }
 
+// Declared as a method to make the parameter bivariant, so applications can narrow the scope to their own scope type
+type ResolveFrontendConfig = { resolve(scope: EmailCampaignScopeInterface): FrontendConfig }["resolve"];
+
 export interface BrevoModuleConfig {
     brevo: {
-        resolveConfig: (scope: EmailCampaignScopeInterface) => {
+        // Method syntax makes the parameter bivariant, so applications can narrow the scope to their own scope type
+        resolveConfig(scope: EmailCampaignScopeInterface): {
             apiKey: string;
             redirectUrlForImport: string;
         };
@@ -35,7 +38,7 @@ export interface BrevoModuleConfig {
     emailCampaigns: {
         Scope: Type<EmailCampaignScopeInterface>;
         EmailCampaignContentBlock: Block;
-        frontend: FrontendConfig | ((scope: EmailCampaignScopeInterface) => FrontendConfig);
+        frontend: FrontendConfig | ResolveFrontendConfig;
     };
     contactsWithoutDoi?: {
         allowAddingContactsWithoutDoi?: boolean;

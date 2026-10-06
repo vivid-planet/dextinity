@@ -1,6 +1,7 @@
 import console from "node:console";
 import { realpathSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 
 import {
     CRUD_GENERATOR_METADATA_KEY,
@@ -13,10 +14,10 @@ import type { MikroORM } from "@mikro-orm/core";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { format, resolveConfig } from "prettier";
 
-import { buildOptions } from "./generateCrud/build-options";
-import { generateCrud } from "./generateCrud/generate-crud";
-import { generateCrudSingle } from "./generateCrudSingle/generate-crud-single";
-import { writeGeneratedFiles } from "./utils/write-generated-files";
+import { buildOptions } from "./generateCrud/build-options.js";
+import { generateCrud } from "./generateCrud/generate-crud.js";
+import { generateCrudSingle } from "./generateCrudSingle/generate-crud-single.js";
+import { writeGeneratedFiles } from "./utils/write-generated-files.js";
 /**
  * Generate mode for the generator.
  *
@@ -33,6 +34,10 @@ export const generateFiles = async (
 ) => {
     let orm: MikroORM | null = null;
     try {
+        const settings = CLIHelper.getSettings();
+        if (settings.preferTs !== false) {
+            await CLIHelper.registerTypeScriptSupport(settings.tsConfigPath, settings.tsLoader);
+        }
         orm = await CLIHelper.getORM(undefined, undefined, { dbName: "generator" });
     } catch (e) {
         console.warn(e);
@@ -43,6 +48,15 @@ export const generateFiles = async (
 
         const entities = orm.em.getMetadata().getAll();
         LazyMetadataStorage.load();
+
+        for (const entity of entities.values()) {
+            for (const metadata of [entity, ...entity.props.map((prop) => prop.targetMeta)]) {
+                if (metadata?.path?.startsWith("file:")) {
+                    // MikroORM derives the path from the stack trace, which contains file URLs for ES modules
+                    metadata.path = fileURLToPath(metadata.path);
+                }
+            }
+        }
 
         for (const entity of entities.values()) {
             if (!entity.class) {

@@ -7,7 +7,6 @@ export default defineConfig([
     {
         rules: {
             "@dextinity/no-other-module-relative-import": "off",
-            "package-json/require-exports": "off", // TODO reenable after migrating to ESM
         },
     },
 ]);

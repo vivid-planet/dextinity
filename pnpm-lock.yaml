@@ -508,6 +508,9 @@ importers:
       '@opentelemetry/exporter-trace-otlp-http':
         specifier: ^0.217.0
         version: 0.217.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation':
+        specifier: ^0.217.0
+        version: 0.217.0(@opentelemetry/api@1.9.1)(supports-color@8.1.1)
       '@opentelemetry/sdk-node':
         specifier: ^0.217.0
         version: 0.217.0(@opentelemetry/api@1.9.1)(supports-color@8.1.1)
@@ -659,12 +662,6 @@ importers:
       storybook:
         specifier: ^10.3.5
         version: 10.3.5(@testing-library/dom@10.4.1)(prettier@3.6.2)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      ts-node:
-        specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.15.41)(@types/node@24.13.3)(typescript@5.9.3)
-      tsconfig-paths:
-        specifier: ^3.15.0
-        version: 3.15.0
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2009,9 +2006,6 @@ importers:
       ts-morph:
         specifier: ^25.0.1
         version: 25.0.1
-      ts-node:
-        specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.15.41)(@types/node@24.13.3)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2149,6 +2143,9 @@ importers:
       '@nestjs/testing':
         specifier: ^12.0.4
         version: 12.1.2(@nestjs/common@12.1.2(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@12.1.2)(@nestjs/platform-express@12.1.2)
+      '@swc-node/register':
+        specifier: ^1.12.1
+        version: 1.12.1(@swc/core@1.15.41)(@swc/types@0.1.26)(supports-color@8.1.1)(typescript@5.9.3)
       '@swc/core':
         specifier: ^1.15.40
         version: 1.15.41
@@ -2182,9 +2179,6 @@ importers:
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
-      ts-node:
-        specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.15.41)(@types/node@24.13.3)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2245,9 +2239,6 @@ importers:
       '@tiptap/starter-kit':
         specifier: ^3.22.3
         version: 3.22.3
-      base64url:
-        specifier: ^3.0.1
-        version: 3.0.1
       content-disposition:
         specifier: ^3.0.0
         version: 3.0.0
@@ -2378,6 +2369,9 @@ importers:
       '@smithy/types':
         specifier: ^4.14.3
         version: 4.15.1
+      '@swc-node/register':
+        specifier: ^1.12.1
+        version: 1.12.1(@swc/core@1.15.41)(@swc/types@0.1.26)(supports-color@8.1.1)(typescript@5.9.3)
       '@swc/core':
         specifier: ^1.15.40
         version: 1.15.41
@@ -2453,9 +2447,6 @@ importers:
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
-      ts-node:
-        specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.15.41)(@types/node@24.13.3)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -10161,10 +10152,6 @@ packages:
 
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
-
-  base64url@3.0.1:
-    resolution: {integrity: sha512-ir1UPr3dkwexU7FdV8qBBbNDRUhMmIekYMFZfi+C/sLNnRESKPl23nB9b2pltqfOQNnGzsDdId90AEtG5tCx4A==}
-    engines: {node: '>=6.0.0'}
 
   baseline-browser-mapping@2.11.20:
     resolution: {integrity: sha512-H0ulySigv6icDJ1F7SjtdCD6PrhTpdYCmP0CactWy1+ekh0AFd0o1Wn5T8b+hnTmdBx19u9yhL6wvCylXMY7zw==}
@@ -27116,8 +27103,6 @@ snapshots:
     optional: true
 
   base64-js@1.5.1: {}
-
-  base64url@3.0.1: {}
 
   baseline-browser-mapping@2.11.20: {}
 

@@ -7,8 +7,13 @@
         "directory": "packages/api/brevo-api"
     },
     "license": "BSD-2-Clause",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./lib/index.d.ts",
+            "default": "./lib/index.js"
+        }
+    },
     "sideEffects": false,
     "files": [
         "lib/*"
@@ -17,10 +22,10 @@
         "build": "$npm_execpath run clean && tsc -p tsconfig.build.json",
         "clean": "rimraf lib",
         "dev": "tsc --watch --preserveWatchOutput -p tsconfig.build.json",
-        "generate-block-meta": "ts-node generate-block-meta.ts",
-        "generate-block-meta:watch": "chokidar \"src/\" -c \"$npm_execpath generate-block-meta\"",
-        "generate-schema": "ts-node generate-schema.ts",
-        "generate-schema:watch": "chokidar \"src/\" -c \"$npm_execpath generate-schema\"",
+        "generate-block-meta": "node --import @swc-node/register/esm-register generate-block-meta.ts",
+        "generate-block-meta:watch": "chokidar \"lib/\" -c \"$npm_execpath generate-block-meta\"",
+        "generate-schema": "node --import @swc-node/register/esm-register generate-schema.ts",
+        "generate-schema:watch": "chokidar \"lib/\" -c \"$npm_execpath generate-schema\"",
         "lint": "run-p lint:prettier lint:eslint lint:tsc",
         "lint:ci": "pnpm run lint",
         "lint:eslint": "eslint --max-warnings 0 src/ '**/*.json' --no-warn-ignored",
@@ -63,6 +68,7 @@
         "@nestjs/graphql": "^14.0.1",
         "@nestjs/platform-express": "^12.0.4",
         "@nestjs/testing": "^12.0.4",
+        "@swc-node/register": "^1.12.1",
         "@swc/core": "^1.15.40",
         "@types/inquirer": "^8.2.12",
         "@types/lodash.isequal": "^4.5.8",
@@ -74,7 +80,6 @@
         "reflect-metadata": "^0.2.2",
         "rimraf": "^3.0.2",
         "rxjs": "^7.8.2",
-        "ts-node": "^10.9.2",
         "typescript": "^5.9.3",
         "unplugin-swc": "^1.5.9",
         "vitest": "^4.1.8"

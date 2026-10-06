@@ -8,9 +8,13 @@
         "url": "https://github.com/vivid-planet/dextinity"
     },
     "license": "BSD-2-Clause",
-    "type": "commonjs",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./lib/index.d.ts",
+            "default": "./lib/index.js"
+        }
+    },
     "sideEffects": false,
     "files": [
         "bin/**/*.js",
@@ -20,10 +24,10 @@
         "build": "pnpm run clean && tsc -p tsconfig.build.json",
         "clean": "rimraf lib",
         "dev": "tsc --watch --preserveWatchOutput -p tsconfig.build.json",
-        "generate-block-meta": "ts-node generate-block-meta.ts",
-        "generate-block-meta:watch": "chokidar \"src/\" -c \"pnpm generate-block-meta\"",
-        "generate-schema": "ts-node generate-schema.ts",
-        "generate-schema:watch": "chokidar \"src/\" -c \"pnpm generate-schema\"",
+        "generate-block-meta": "node --import @swc-node/register/esm-register generate-block-meta.ts",
+        "generate-block-meta:watch": "chokidar \"lib/\" -c \"pnpm generate-block-meta\"",
+        "generate-schema": "node --import @swc-node/register/esm-register generate-schema.ts",
+        "generate-schema:watch": "chokidar \"lib/\" -c \"pnpm generate-schema\"",
         "lint": "run-p lint:prettier lint:eslint lint:tsc",
         "lint:ci": "pnpm run lint",
         "lint:eslint": "eslint --max-warnings 0 src/ '**/*.json' --no-warn-ignored",
@@ -53,7 +57,6 @@
         "@tiptap/extension-superscript": "^3.22.3",
         "@tiptap/pm": "^3.22.3",
         "@tiptap/starter-kit": "^3.22.3",
-        "base64url": "^3.0.1",
         "content-disposition": "^3.0.0",
         "cron-parser": "^3.5.0",
         "dataloader": "^2.2.3",
@@ -99,6 +102,7 @@
         "@nestjs/testing": "^12.0.4",
         "@sentry/node": "^9.47.1",
         "@smithy/types": "^4.14.3",
+        "@swc-node/register": "^1.12.1",
         "@swc/core": "^1.15.40",
         "@types/draft-js": "^0.11.20",
         "@types/express": "^5.0.6",
@@ -124,7 +128,6 @@
         "prettier": "^3.6.2",
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.2",
-        "ts-node": "^10.9.2",
         "typescript": "^5.9.3",
         "unplugin-swc": "^1.5.9",
         "vitest": "^4.1.8"

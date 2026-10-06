@@ -3,11 +3,11 @@ import type { EntityMetadata } from "@mikro-orm/postgresql";
 import { getMetadataStorage } from "class-validator";
 import { SyntaxKind } from "ts-morph";
 
-import { buildOptions } from "../generateCrud/build-options";
-import { buildNameVariants } from "../utils/build-name-variants";
-import { integerTypes, numberTypes } from "../utils/constants";
-import { isArrayProp, isEnumArrayProp, isJsonProp } from "../utils/entity-property-type";
-import { generateImportsCode, type Imports } from "../utils/generate-imports-code";
+import { buildOptions } from "../generateCrud/build-options.js";
+import { buildNameVariants } from "../utils/build-name-variants.js";
+import { integerTypes, numberTypes } from "../utils/constants.js";
+import { isArrayProp, isEnumArrayProp, isJsonProp } from "../utils/entity-property-type.js";
+import { generateImportsCode, type Imports } from "../utils/generate-imports-code.js";
 import {
     findBlockImportPath,
     findBlockName,
@@ -17,9 +17,10 @@ import {
     findInputClassImportPath,
     findValidatorImportPath,
     getFieldDecoratorClassName,
+    isTypeDeclaration,
     morphTsProperty,
-} from "../utils/ts-morph-helper";
-import type { GeneratedFile } from "../utils/write-generated-files";
+} from "../utils/ts-morph-helper.js";
+import type { GeneratedFile } from "../utils/write-generated-files.js";
 
 function tsCodeRecordToString(object: Record<string, string | undefined>) {
     const filteredEntries = Object.entries(object).filter(([key, value]) => value !== undefined);
@@ -83,7 +84,7 @@ export async function generateCrudInput(
         { name: "RootBlockInputScalar", importPath: "@dextinity/cms-api" },
         { name: "IsNullable", importPath: "@dextinity/cms-api" },
         { name: "PartialType", importPath: "@dextinity/cms-api" },
-        { name: "BlockInputInterface", importPath: "@dextinity/cms-api" },
+        { name: "BlockInputInterface", importPath: "@dextinity/cms-api", isTypeOnly: true },
         { name: "isBlockInputInterface", importPath: "@dextinity/cms-api" },
         { name: "IsString", importPath: "class-validator" },
         { name: "IsNotEmpty", importPath: "class-validator" },
@@ -269,7 +270,7 @@ export async function generateCrudInput(
                     generatedFiles.push(...nestedInputFiles);
                     imports.push({
                         name: inputNameClassName,
-                        importPath: nestedInputFiles[nestedInputFiles.length - 1].name.replace(/^dto/, ".").replace(/\.ts$/, ""),
+                        importPath: nestedInputFiles[nestedInputFiles.length - 1].name.replace(/^dto/, ".").replace(/\.ts$/, ".js"),
                     });
                 }
                 decorators.push(`@Field(() => [${inputNameClassName}], {${prop.nullable ? "nullable: true" : "defaultValue: []"}})`);
@@ -344,7 +345,7 @@ export async function generateCrudInput(
                 generatedFiles.push(...nestedInputFiles);
                 imports.push({
                     name: inputNameClassName,
-                    importPath: nestedInputFiles[nestedInputFiles.length - 1].name.replace(/^dto/, ".").replace(/\.ts$/, ""),
+                    importPath: nestedInputFiles[nestedInputFiles.length - 1].name.replace(/^dto/, ".").replace(/\.ts$/, ".js"),
                 });
             }
             decorators.push(`@Field(() => ${inputNameClassName}${prop.nullable ? ", { nullable: true }" : ""})`);
@@ -395,9 +396,9 @@ export async function generateCrudInput(
                     const elementTypeNode = typeNode.getElementTypeNode();
                     if (elementTypeNode.isKind(SyntaxKind.TypeReference)) {
                         // if the element type is a type reference, we need to find the import path
-                        const { importPath } = findImportPath(elementTypeNode.getText(), `${targetDirectory}/dto`, metadata);
+                        const { importPath, exportedDeclaration } = findImportPath(elementTypeNode.getText(), `${targetDirectory}/dto`, metadata);
                         if (importPath) {
-                            imports.push({ name: elementTypeNode.getText(), importPath });
+                            imports.push({ name: elementTypeNode.getText(), importPath, isTypeOnly: isTypeDeclaration(exportedDeclaration) });
                         }
                     }
                     decorators.push(`@Field(() => [GraphQLJSONObject], ${fieldOptions}) // Warning: this input is not validated properly`);
@@ -413,9 +414,9 @@ export async function generateCrudInput(
                 const typeNode = tsProp.getTypeNodeOrThrow();
                 if (typeNode.isKind(SyntaxKind.TypeReference)) {
                     // if the element type is a type reference, we need to find the import path
-                    const { importPath } = findImportPath(typeNode.getText(), `${targetDirectory}/dto`, metadata);
+                    const { importPath, exportedDeclaration } = findImportPath(typeNode.getText(), `${targetDirectory}/dto`, metadata);
                     if (importPath) {
-                        imports.push({ name: typeNode.getText(), importPath });
+                        imports.push({ name: typeNode.getText(), importPath, isTypeOnly: isTypeDeclaration(exportedDeclaration) });
                     }
                 }
                 decorators.push(

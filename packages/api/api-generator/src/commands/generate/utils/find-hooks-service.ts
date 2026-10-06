@@ -3,8 +3,8 @@ import type { EntityMetadata } from "@mikro-orm/core";
 import * as path from "path";
 import { Node, ts, type Type } from "ts-morph";
 
-import type { Imports } from "./generate-imports-code";
-import { findImportPath, morphTsClass } from "./ts-morph-helper";
+import type { Imports } from "./generate-imports-code.js";
+import { findImportPath, morphTsClass } from "./ts-morph-helper.js";
 
 function findReturnTypeImport(type: Type, serviceSourceFile: Node, targetDirectory: string): { name: string; importPath: string } | null {
     const symbol = type.getSymbol() ?? type.getAliasSymbol();
@@ -29,11 +29,11 @@ function findReturnTypeImport(type: Type, serviceSourceFile: Node, targetDirecto
         if (!exportedDeclarations || exportedDeclarations.length === 0) {
             throw new Error(`Return type "${typeName}" is defined in ${serviceFile.getFilePath()} but is not exported`);
         }
-        const importPath = `./${path.relative(targetDirectory, serviceFile.getFilePath()).replace(/\.ts$/, "")}`;
+        const importPath = `./${path.relative(targetDirectory, serviceFile.getFilePath()).replace(/\.ts$/, ".js")}`;
         return { name: typeName, importPath };
     } else {
         // Return type is imported from another file
-        const importPath = `./${path.relative(targetDirectory, declarationSourceFile.getFilePath()).replace(/\.ts$/, "")}`;
+        const importPath = `./${path.relative(targetDirectory, declarationSourceFile.getFilePath()).replace(/\.ts$/, ".js")}`;
         return { name: typeName, importPath };
     }
 }

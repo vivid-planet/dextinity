@@ -1,4 +1,4 @@
-import { EntityManager, MikroORM, QueryBuilder, raw, Utils } from "@mikro-orm/postgresql";
+import { EntityManager, MikroORM, type QueryBuilder, raw, Utils } from "@mikro-orm/postgresql";
 import { forwardRef, Inject, Injectable, Optional } from "@nestjs/common";
 import { createHmac } from "crypto";
 import exifr from "exifr";
@@ -7,32 +7,33 @@ import { basename, extname } from "path";
 import probe from "probe-image-size";
 import * as rimraf from "rimraf";
 
-import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service";
-import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util";
-import { DextinityEntityNotFoundException } from "../../common/errors/entity-not-found.exception";
-import { DextinityValidationException } from "../../common/errors/validation.exception";
-import { SortDirection } from "../../common/sorting/sort-direction.enum";
-import { FileUploadInput } from "../../file-utils/file-upload.input";
-import { calculateFileHash, slugifyFilename } from "../../file-utils/files.utils";
-import { FocalPoint } from "../../file-utils/focal-point.enum";
-import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
-import { DextinityImageResolutionException } from "../common/errors/image-resolution.exception";
-import { getDamFileCategory } from "../common/mimeTypes/dam-file-category";
-import { DamConfig } from "../dam.config";
-import { DAM_CONFIG, DAM_DOMINANT_COLOR_CALCULATOR } from "../dam.constants";
-import { DominantColorCalculatorInterface } from "../dominant-color-calculator.interface";
-import { ImageCropAreaInput } from "../images/dto/image-crop-area.input";
-import { DamScopeInterface } from "../types";
-import { DamMediaAlternative } from "./dam-media-alternatives/entities/dam-media-alternative.entity";
-import { DamFileListPositionArgs, FileArgsInterface } from "./dto/file.args";
-import { UploadFileBodyInterface } from "./dto/file.body";
-import { CreateFileInput, ImageFileInput, UpdateFileInput } from "./dto/file.input";
-import { FileParams } from "./dto/file.params";
-import { FILE_TABLE_NAME, FileInterface } from "./entities/file.entity";
-import { DamFileImage } from "./entities/file-image.entity";
-import { FolderInterface } from "./entities/folder.entity";
-import { resolveFileEntity } from "./entities/resolve-dam-entity";
-import { FoldersService } from "./folders.service";
+import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service.js";
+import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util.js";
+import { DextinityEntityNotFoundException } from "../../common/errors/entity-not-found.exception.js";
+import { DextinityValidationException } from "../../common/errors/validation.exception.js";
+import type { SortDirection } from "../../common/sorting/sort-direction.enum.js";
+import type { WrapperType } from "../../common/types/wrapper-type.js";
+import type { FileUploadInput } from "../../file-utils/file-upload.input.js";
+import { calculateFileHash, slugifyFilename } from "../../file-utils/files.utils.js";
+import { FocalPoint } from "../../file-utils/focal-point.enum.js";
+import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal.js";
+import { DextinityImageResolutionException } from "../common/errors/image-resolution.exception.js";
+import { getDamFileCategory } from "../common/mimeTypes/dam-file-category.js";
+import type { DamConfig } from "../dam.config.js";
+import { DAM_CONFIG, DAM_DOMINANT_COLOR_CALCULATOR } from "../dam.constants.js";
+import type { DominantColorCalculatorInterface } from "../dominant-color-calculator.interface.js";
+import type { ImageCropAreaInput } from "../images/dto/image-crop-area.input.js";
+import type { DamScopeInterface } from "../types.js";
+import { DamMediaAlternative } from "./dam-media-alternatives/entities/dam-media-alternative.entity.js";
+import type { DamFileListPositionArgs, FileArgsInterface } from "./dto/file.args.js";
+import type { UploadFileBodyInterface } from "./dto/file.body.js";
+import type { CreateFileInput, ImageFileInput, UpdateFileInput } from "./dto/file.input.js";
+import type { FileParams } from "./dto/file.params.js";
+import { FILE_TABLE_NAME, type FileInterface } from "./entities/file.entity.js";
+import { DamFileImage } from "./entities/file-image.entity.js";
+import type { FolderInterface } from "./entities/folder.entity.js";
+import { resolveFileEntity } from "./entities/resolve-dam-entity.js";
+import { FoldersService } from "./folders.service.js";
 
 const exifrSupportedMimetypes = ["image/jpeg", "image/tiff", "image/x-iiq", "image/heif", "image/heic", "image/avif", "image/png"];
 
@@ -122,7 +123,7 @@ const withFilesSelect = <Qb extends FilesQueryBuilder>(
 export class FilesService {
     constructor(
         @Inject(forwardRef(() => BlobStorageBackendService)) private readonly blobStorageBackendService: BlobStorageBackendService,
-        private readonly foldersService: FoldersService,
+        @Inject(forwardRef(() => FoldersService)) private readonly foldersService: WrapperType<FoldersService>,
         @Inject(DAM_CONFIG) private readonly config: DamConfig,
         private readonly orm: MikroORM,
         private readonly entityManager: EntityManager,

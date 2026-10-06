@@ -1,7 +1,7 @@
 import { getBlocksMeta } from "@dextinity/cms-api";
 import { promises as fs } from "fs";
 
-import { NewsletterImageBlock } from "./src";
+import { NewsletterImageBlock } from "./lib/index.js";
 
 async function generateBlockMeta(): Promise<void> {
     console.info("Generating block-meta.json...");

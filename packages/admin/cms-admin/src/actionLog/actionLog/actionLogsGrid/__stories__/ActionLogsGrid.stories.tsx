@@ -18,6 +18,6 @@ export const Default: Story = {};
 
 export const CustomDisplayName: Story = {
     args: {
-        getDisplayName: (snapshot) => `${snapshot.title} (${snapshot.slug})`,
+        getDisplayName: ({ title, slug }) => (title && slug ? `${title} (${slug})` : undefined),
     },
 };

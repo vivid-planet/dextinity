@@ -94,7 +94,7 @@ export const HeadlineBlock = createBlock(HeadlineBlockData, HeadlineBlockInput, 
 ```
 
 Besides the name, the block carries a description of what it is for.
-It is written to `block-meta.json` and appears as a comment above the generated TypeScript interfaces, so that tools working with block data can tell the blocks of an application apart.
+It is written to `block-meta.json`, so that tools working with block data can tell the blocks of an application apart.
 
 ```ts title="page-content.block.ts"
 export const PageContentBlock = createBlocksBlock(

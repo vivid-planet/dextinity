@@ -1,6 +1,5 @@
 export interface BlockMeta {
     name: string;
-    description?: string;
     fields: BlockMetaField[];
     inputFields: BlockMetaField[];
 }

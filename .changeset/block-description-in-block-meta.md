@@ -1,11 +1,10 @@
 ---
 "@dextinity/cms-api": minor
-"@dextinity/cli": minor
 ---
 
-Write a block's description to `block-meta.json` and to the generated block interfaces
+Write a block's description to `block-meta.json`
 
-`generate-block-types` turns the description into a comment above the block's interfaces, so it shows up in the editor and for tools that read the generated file.
+Tools that read `block-meta.json` can use the description to tell the blocks of an application apart.
 
 **Example**
 
@@ -16,11 +15,11 @@ export const HeadlineBlock = createBlock(HeadlineBlockData, HeadlineBlockInput, 
 });
 ```
 
-```ts title="blocks.generated.ts"
-/**
- * A headline with an optional eyebrow text above it. Use it to introduce a section.
- */
-export interface HeadlineBlockData {
-    eyebrow?: string;
+```json title="block-meta.json"
+{
+    "name": "Headline",
+    "description": "A headline with an optional eyebrow text above it. Use it to introduce a section.",
+    "fields": [{ "name": "eyebrow", "kind": "String", "nullable": true }],
+    "inputFields": [{ "name": "eyebrow", "kind": "String", "nullable": true }]
 }
 ```

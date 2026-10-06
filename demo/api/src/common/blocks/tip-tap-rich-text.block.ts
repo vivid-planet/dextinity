@@ -5,6 +5,8 @@ import { ProductTeaserBlock } from "@src/products/blocks/product-teaser.block";
 import { LinkBlock } from "./link.block";
 import { Heading1ToHeading2Migration } from "./tip-tap-rich-text/migrations/1-heading-1-to-heading-2.migration";
 
+const listStyles = [{ name: "list300" }, { name: "list200" }];
+
 export const TipTapRichTextBlock = createTipTapRichTextBlock(
     {
         link: LinkBlock,
@@ -15,7 +17,18 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
         // "Display" and "Heading 1" are both stored as an h1 and told apart by the node's textBlock
         // attribute, which the site reads to pick the typography.
         textBlocks: [
-            { name: "paragraph", tag: "p" },
+            {
+                name: "paragraph",
+                tag: "p",
+                styles: [
+                    { name: "paragraph300" },
+                    { name: "paragraph200" },
+                    { name: "eyebrow600" },
+                    { name: "eyebrow550" },
+                    { name: "eyebrow500" },
+                    { name: "eyebrow450" },
+                ],
+            },
             { name: "display", tag: "h1" },
             { name: "heading-1", tag: "h1" },
             { name: "heading-2", tag: "h2" },
@@ -23,16 +36,8 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
             { name: "heading-4", tag: "h4" },
             { name: "heading-5", tag: "h5" },
         ],
-        textBlockStyles: [
-            { name: "paragraph300", appliesTo: ["paragraph"] },
-            { name: "paragraph200", appliesTo: ["paragraph"] },
-            { name: "eyebrow600", appliesTo: ["paragraph"] },
-            { name: "eyebrow550", appliesTo: ["paragraph"] },
-            { name: "eyebrow500", appliesTo: ["paragraph"] },
-            { name: "eyebrow450", appliesTo: ["paragraph"] },
-            { name: "list300", appliesTo: ["ordered-list", "unordered-list"] },
-            { name: "list200", appliesTo: ["ordered-list", "unordered-list"] },
-        ],
+        orderedList: { styles: listStyles },
+        unorderedList: { styles: listStyles },
         inlineStyles: [{ name: "highlight" }, { name: "tag", appliesTo: ["paragraph"] }],
         migrateFromDraftJs: {
             textBlockMap: {

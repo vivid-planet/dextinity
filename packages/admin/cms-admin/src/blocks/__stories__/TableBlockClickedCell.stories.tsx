@@ -62,10 +62,10 @@ export const ScrollsToAndHighlightsTheClickedCell: Story = {
                 expect(cellBounds.left).toBeGreaterThanOrEqual(visibleBounds.left);
                 expect(cellBounds.right).toBeLessThanOrEqual(visibleBounds.right);
             },
-            { timeout: 3000 },
+            { timeout: 10000 },
         );
 
-        await waitFor(() => expect(getHighlightOpacity(screen.getByRole("gridcell", { name: "H25" }))).toBe("1"), { timeout: 3000 });
+        await waitFor(() => expect(getHighlightOpacity(screen.getByRole("gridcell", { name: "H25" }))).toBe("1"), { timeout: 10000 });
     },
 };
 

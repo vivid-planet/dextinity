@@ -8,4 +8,7 @@ class PageTreeIndexBlockInput extends BlockInput {
     }
 }
 
-export const PageTreeIndexBlock = createBlock(PageTreeIndexBlockData, PageTreeIndexBlockInput, "PageTreeIndex");
+export const PageTreeIndexBlock = createBlock(PageTreeIndexBlockData, PageTreeIndexBlockInput, {
+    name: "PageTreeIndex",
+    description: "A list of the pages below the current page in the page tree.",
+});

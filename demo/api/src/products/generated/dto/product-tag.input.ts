@@ -4,7 +4,7 @@ import { Field, InputType, ID } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { PartialType } from "@dextinity/cms-api";
 import { IsArray, IsNotEmpty, IsString, IsUUID } from "class-validator";
-import { ProductTagNestedProductToTagInput } from "./product-tag-nested-product-to-tag.input";
+import { ProductTagNestedProductToTagInput } from "./product-tag-nested-product-to-tag.input.js";
 @InputType()
 export class ProductTagInput {
     @IsNotEmpty()

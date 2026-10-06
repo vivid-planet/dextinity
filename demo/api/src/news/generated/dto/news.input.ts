@@ -2,10 +2,10 @@
 // You may choose to use this file as scaffold by moving this file out of generated folder and removing this comment.
 import { Field, InputType } from "@nestjs/graphql";
 import { Transform } from "class-transformer";
-import { BlockInputInterface, DamImageBlock, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
+import { type BlockInputInterface, DamImageBlock, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
 import { IsDate, IsEnum, IsNotEmpty, IsString, ValidateNested } from "class-validator";
-import { NewsCategory, NewsStatus } from "../../entities/news.entity";
-import { NewsContentBlock } from "../../blocks/news-content.block";
+import { NewsCategory, NewsStatus } from "../../entities/news.entity.js";
+import { NewsContentBlock } from "../../blocks/news-content.block.js";
 @InputType()
 export class NewsInput {
     @IsNotEmpty()

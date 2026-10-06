@@ -33,14 +33,18 @@ export type ActionLogsGridProps = {
      * Class name of the logged entity, for instance `"News"`.
      */
     entity: string;
+    /**
+     * Returns the name shown for an entry's entity, or `undefined` to show only its ID.
+     * Receives the entry's snapshot, or the previous version's snapshot when the entity was deleted.
+     *
+     * Defaults to the first non-empty of the fields `name`, `title`, `label`, `slug` and `description`.
+     */
+    getDisplayName?: (snapshot: Record<string, unknown>) => string | undefined;
 };
 
 const displayNameFields = ["name", "title", "label", "slug", "description"] as const;
 
-function extractDisplayName(snapshot: Record<string, unknown> | null | undefined): string | undefined {
-    if (!snapshot) {
-        return undefined;
-    }
+function getDefaultDisplayName(snapshot: Record<string, unknown>): string | undefined {
     for (const field of displayNameFields) {
         const value = snapshot[field];
         if (typeof value === "string" && value.length > 0) {
@@ -60,7 +64,7 @@ function ActionLogsGridToolbar() {
     );
 }
 
-export function ActionLogsGrid({ entity }: ActionLogsGridProps) {
+export function ActionLogsGrid({ entity, getDisplayName = getDefaultDisplayName }: ActionLogsGridProps) {
     const intl = useIntl();
     const { scope } = useContentScope();
     const [selectedRow, setSelectedRow] = useState<GQLActionLogsGridFragment | null>(null);
@@ -95,9 +99,10 @@ export function ActionLogsGrid({ entity }: ActionLogsGridProps) {
                 sortable: false,
                 filterable: false,
                 renderCell: ({ row }) => {
+                    const snapshot = row.snapshot as Record<string, unknown> | null | undefined;
+                    const previousSnapshot = row.previousVersion?.snapshot as Record<string, unknown> | null | undefined;
                     const displayName =
-                        extractDisplayName(row.snapshot as Record<string, unknown> | null | undefined) ??
-                        extractDisplayName(row.previousVersion?.snapshot as Record<string, unknown> | null | undefined);
+                        (snapshot ? getDisplayName(snapshot) : undefined) ?? (previousSnapshot ? getDisplayName(previousSnapshot) : undefined);
                     return <GridCellContent primaryText={displayName ?? row.entityId} secondaryText={displayName ? row.entityId : undefined} />;
                 },
             },
@@ -151,7 +156,7 @@ export function ActionLogsGrid({ entity }: ActionLogsGridProps) {
                 ),
             },
         ],
-        [intl],
+        [intl, getDisplayName],
     );
 
     const { filter: gqlFilter } = muiGridFilterToGql(columns, dataGridProps.filterModel);

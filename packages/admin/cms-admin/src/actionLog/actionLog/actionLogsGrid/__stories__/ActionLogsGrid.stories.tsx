@@ -15,3 +15,9 @@ const meta: Meta<ActionLogsGridProps> = {
 export default meta;
 
 export const Default: Story = {};
+
+export const CustomDisplayName: Story = {
+    args: {
+        getDisplayName: ({ title, slug }) => (title && slug ? `${title} (${slug})` : undefined),
+    },
+};

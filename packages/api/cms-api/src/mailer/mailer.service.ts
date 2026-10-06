@@ -4,8 +4,7 @@ import { EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { subDays } from "date-fns";
 import { htmlToText } from "html-to-text";
-import { Transporter } from "nodemailer";
-import Mail, { Address, Options as MailOptions } from "nodemailer/lib/mailer";
+import type { Address, SendMailOptions as MailOptions, SentMessageInfo, Transporter } from "nodemailer";
 
 import { MailerLog } from "./entities/mailer-log.entity";
 import { MailerLogStatus } from "./entities/mailer-log-status.enum";
@@ -57,7 +56,7 @@ export class MailerService {
      * @param originMailOptions `from` defaults to this.config.mailer.defaultFrom, sendAllMailsBcc is always added to `bcc`
      * @param logMail When set to false, the email will not be logged to the database.
      */
-    async sendMail({ mailTypeForLogging, additionalData, logMail = true, ...originMailOptions }: SendMailParams): Promise<Mail> {
+    async sendMail({ mailTypeForLogging, additionalData, logMail = true, ...originMailOptions }: SendMailParams): Promise<SentMessageInfo> {
         const mailOptionsWithDefaults = this.fillMailOptionsDefaults(originMailOptions);
 
         let logEntryId: string | undefined;
@@ -116,11 +115,14 @@ export class MailerService {
         }
     }
 
-    private convertAddressToString(item: string | Mail.Address) {
+    private convertAddressToString(item: string | Address) {
         return typeof item === "string" ? item : `${item.name} <${item.address}>`;
     }
 
-    private normalizeToArray(item: string | Address | Array<string | Address> | undefined): Array<string | Address> {
-        return item ? (Array.isArray(item) ? item : [item]) : [];
+    private normalizeToArray(item: MailOptions["to"]): Array<string | Address> {
+        if (!item) {
+            return [];
+        }
+        return Array.isArray(item) ? item.flatMap((nestedItem) => this.normalizeToArray(nestedItem)) : [item];
     }
 }

@@ -105,7 +105,6 @@
         "@types/mime-db": "^1.43.6",
         "@types/multer": "^2.1.0",
         "@types/node": "^24.13.3",
-        "@types/nodemailer": "^6.4.24",
         "@types/probe-image-size": "^7.2.5",
         "@types/request-ip": "^0.0.41",
         "aws-sdk-client-mock": "^4.1.0",

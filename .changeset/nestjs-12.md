@@ -8,7 +8,7 @@ Upgrade NestJS to v12
 
 See the [migration guide](https://cms-docs.dextinity.com/docs/migration-guide/migration-from-v10-to-v11) for the required steps, and the [NestJS migration guide](https://docs.nestjs.com/migration-guide) for the complete list of upstream changes.
 
-`@golevelup/nestjs-discovery`, which `@dextinity/cms-api` depends on, has no v12 release yet and still asks for NestJS v11 as a peer. It works against v12, but installing fails until the peer range is allowed — the migration guide has the `overrides` entry for npm and the `peerDependencyRules` entry for pnpm.
+`nest-commander` pins `@golevelup/nestjs-discovery` at a version that still asks for NestJS v11 as a peer. npm and yarn install it as a nested copy and need nothing; pnpm with `strictPeerDependencies` needs the override the migration guide gives.
 
 The core packages are ESM-only from v12 on. A CommonJS API keeps working through Node's `require(esm)` support, so switching an application to ESM isn't necessary.
 

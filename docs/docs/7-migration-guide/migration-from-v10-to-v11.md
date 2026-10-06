@@ -336,41 +336,18 @@ npm install
 
 Keep `@nestjs/schematics` on `^11.1.0` unless your project is already on TypeScript 6 — v12 of it requires `typescript >= 6.0.0`. It only backs `nest generate`; `nest build` and `nest start` don't need it, and the CLI brings its own copy.
 
-### Allow the `@golevelup/nestjs-discovery` peer range
+### Override the `@golevelup/nestjs-discovery` version on pnpm
 
-`@dextinity/cms-api` depends on `@golevelup/nestjs-discovery`, which has no NestJS v12 release yet — it still asks for `@nestjs/common` and `@nestjs/core` v11 as peers. It works against v12, but the install fails until the peer range is allowed:
+Skip this section when your project uses npm or yarn — nothing is needed there.
 
-```
-npm error code ERESOLVE
-npm error Could not resolve dependency:
-npm error peer @nestjs/common@"^11.1.21" from @golevelup/nestjs-discovery@7.0.3
-```
-
-Override the range for that package in the root `package.json`:
-
-```json title="package.json"
-{
-    "overrides": {
-        "@golevelup/nestjs-discovery": {
-            "@nestjs/common": "^12.0.4",
-            "@nestjs/core": "^12.0.4"
-        }
-    }
-}
-```
-
-Don't reach for `--legacy-peer-deps` or `--force` instead — both disable peer checking for the whole project, not just this package.
-
-On pnpm, relax the check rather than rewriting the range:
+`nest-commander` pins `@golevelup/nestjs-discovery` at `7.0.3`, which still asks for NestJS v11 as a peer. It works against v12, and npm installs it as a nested copy with a warning. pnpm with `strictPeerDependencies` fails instead, so pin it to a release that accepts v12:
 
 ```yaml title="pnpm-workspace.yaml"
-peerDependencyRules:
-    allowedVersions:
-        "@golevelup/nestjs-discovery>@nestjs/common": "12"
-        "@golevelup/nestjs-discovery>@nestjs/core": "12"
+overrides:
+    "nest-commander>@golevelup/nestjs-discovery": "^7.1.0"
 ```
 
-Remove the entry once the package ships a release that accepts v12.
+Remove the entry once `nest-commander` ships a release that depends on `7.1.0` or newer.
 
 ### Import `repl` from `@nestjs/core`
 

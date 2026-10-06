@@ -72,7 +72,7 @@
         "@types/react-router": "^5.1.20",
         "@types/react-router-dom": "^5.3.3",
         "@vitest/browser": "4.1.8",
-        "@vitest/browser-playwright": "4.1.8",
+        "@vitest/browser-playwright": "4.1.11",
         "draft-js": "^0.11.7",
         "draft-js-export-html": "^1.4.1",
         "draft-js-export-markdown": "^1.4.0",
@@ -94,7 +94,7 @@
         "storybook-addon-tag-badges": "^3.1.0",
         "typescript": "^5.9.3",
         "vite": "^7.3.1",
-        "vitest": "^4.1.8"
+        "vitest": "^4.1.11"
     },
     "msw": {
         "workerDirectory": "public"

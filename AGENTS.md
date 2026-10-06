@@ -199,6 +199,7 @@ Fix description here
 - Default to deleting "Further information". Add it only for something the reviewer needs in order to decide and can't get from the diff: an alternative you rejected, a related pull request, a link to a task or documentation. Adjacent problems you noticed and left out of scope belong in a follow-up task, not in the description.
 - Keep the length proportional to the change. A one-line fix gets a paragraph, not a report.
 - The description becomes the message of the squashed commit. See CONTRIBUTING.md#pull-requests.
+- After opening a pull request, always check its description and rewrite it to follow these rules, also when the pull request was created by a tool or UI that generated the description.
 
 ## Generated demo files
 

@@ -1,9 +1,9 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
 
-import { ContentScope } from "../interfaces/content-scope.interface";
-import { CombinedPermission, Permission } from "../user-permissions.types";
-import { UserPermissionsUser } from "./user";
+import type { ContentScope } from "../interfaces/content-scope.interface.js";
+import { CombinedPermission, type Permission } from "../user-permissions.types.js";
+import { UserPermissionsUser } from "./user.js";
 
 @ObjectType()
 export class CurrentUserPermission {

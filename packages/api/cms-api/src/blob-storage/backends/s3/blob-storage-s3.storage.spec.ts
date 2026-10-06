@@ -13,7 +13,7 @@ import { mockClient } from "aws-sdk-client-mock";
 import { Readable } from "stream";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { BlobStorageS3Storage } from "./blob-storage-s3.storage";
+import { BlobStorageS3Storage } from "./blob-storage-s3.storage.js";
 
 function sdkError(statusCode: number, message = "Error"): Error {
     return Object.assign(new Error(message), { $response: { statusCode } });

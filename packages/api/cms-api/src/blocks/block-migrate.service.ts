@@ -1,10 +1,10 @@
-import { Connection, EntityManager } from "@mikro-orm/postgresql";
+import { type Connection, EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import isEqual from "lodash.isequal";
 
-import { DiscoverService } from "../dependencies/discover.service";
-import { transformToBlockSave } from "./block";
-import { transformToBlockSaveIndex } from "./transformToBlockSaveIndex/transformToBlockSaveIndex";
+import { DiscoverService } from "../dependencies/discover.service.js";
+import { transformToBlockSave } from "./block.js";
+import { transformToBlockSaveIndex } from "./transformToBlockSaveIndex/transformToBlockSaveIndex.js";
 
 @Injectable()
 export class BlockMigrateService {

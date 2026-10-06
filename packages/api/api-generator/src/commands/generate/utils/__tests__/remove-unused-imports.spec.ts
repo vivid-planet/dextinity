@@ -1,7 +1,7 @@
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
 
-import { removeUnusedImports } from "../write-generated-file";
+import { removeUnusedImports } from "../write-generated-file.js";
 
 function runTransform(input: string): string {
     input = input.trim().replace(/^\s+/gm, "");

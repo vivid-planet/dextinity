@@ -1,34 +1,34 @@
-import { Inject, Type } from "@nestjs/common";
-import { Args, ArgsType, createUnionType, ID, Info, Int, Mutation, Parent, Query, ResolveField, Resolver, Union } from "@nestjs/graphql";
-import { GraphQLError, GraphQLResolveInfo } from "graphql";
+import { Inject, type Type } from "@nestjs/common";
+import { Args, ArgsType, createUnionType, ID, Info, Int, Mutation, Parent, Query, ResolveField, Resolver, type Union } from "@nestjs/graphql";
+import { GraphQLError, type GraphQLResolveInfo } from "graphql";
 
-import { DynamicDtoValidationPipe } from "../common/validation/dynamic-dto-validation.pipe";
-import { DocumentInterface } from "../document/dto/document-interface";
-import { AffectedEntity } from "../user-permissions/decorators/affected-entity.decorator";
-import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
-import { AttachedDocumentLoaderService } from "./attached-document-loader.service";
-import { EmptyPageTreeNodeScope } from "./dto/empty-page-tree-node-scope";
+import { DynamicDtoValidationPipe } from "../common/validation/dynamic-dto-validation.pipe.js";
+import { DocumentInterface } from "../document/dto/document-interface.js";
+import { AffectedEntity } from "../user-permissions/decorators/affected-entity.decorator.js";
+import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { AttachedDocumentLoaderService } from "./attached-document-loader.service.js";
+import { EmptyPageTreeNodeScope } from "./dto/empty-page-tree-node-scope.js";
 import {
     DefaultPageTreeNodeCreateInput,
     DefaultPageTreeNodeUpdateInput,
     MovePageTreeNodesByNeighbourInput,
     MovePageTreeNodesByPosInput,
     PageTreeNodeUpdateVisibilityInput,
-} from "./dto/page-tree-node.input";
-import { PaginatedPageTreeNodesArgsFactory } from "./dto/paginated-page-tree-nodes-args.factory";
-import { SlugAvailability } from "./dto/slug-availability.enum";
-import { PAGE_TREE_CONFIG } from "./page-tree.constants";
-import { PageTreeConfig } from "./page-tree.module";
-import { PageTreeService } from "./page-tree.service";
-import { PageTreeReadApiService } from "./page-tree-read-api.service";
+} from "./dto/page-tree-node.input.js";
+import { PaginatedPageTreeNodesArgsFactory } from "./dto/paginated-page-tree-nodes-args.factory.js";
+import { SlugAvailability } from "./dto/slug-availability.enum.js";
+import { PAGE_TREE_CONFIG } from "./page-tree.constants.js";
+import type { PageTreeConfig } from "./page-tree.module.js";
+import { PageTreeService } from "./page-tree.service.js";
+import { PageTreeReadApiService } from "./page-tree-read-api.service.js";
 import {
-    PageTreeNodeCategory,
-    PageTreeNodeCreateInputInterface,
-    PageTreeNodeInterface,
-    PageTreeNodeUpdateInputInterface,
+    type PageTreeNodeCategory,
+    type PageTreeNodeCreateInputInterface,
+    type PageTreeNodeInterface,
+    type PageTreeNodeUpdateInputInterface,
     PageTreeNodeVisibility as Visibility,
-    ScopeInterface,
-} from "./types";
+    type ScopeInterface,
+} from "./types.js";
 
 export function createPageTreeResolver({
     PageTreeNode,

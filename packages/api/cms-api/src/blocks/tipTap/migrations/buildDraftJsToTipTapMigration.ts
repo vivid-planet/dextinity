@@ -3,17 +3,17 @@ import type { Level as HeadingLevel } from "@tiptap/extension-heading";
 import type { Schema } from "@tiptap/pm/model";
 import type { ClassConstructor } from "class-transformer";
 
-import type { Block } from "../../block";
-import { BlockMigration } from "../../migrations/BlockMigration";
-import type { BlockMigrationInterface } from "../../migrations/types";
-import { isValidTipTapContentSync } from "../tipTapValidation";
+import type { Block } from "../../block.js";
+import { BlockMigration } from "../../migrations/BlockMigration.js";
+import type { BlockMigrationInterface } from "../../migrations/types.js";
+import { isValidTipTapContentSync } from "../tipTapValidation.js";
 import {
     buildEmptyTipTapDoc,
     buildStrippedTipTapDoc,
     convertDraftJsToTipTap,
     type ConvertOptions,
     type DraftJsContent,
-} from "./convertDraftJsToTipTap";
+} from "./convertDraftJsToTipTap.js";
 
 interface From {
     draftContent?: DraftJsContent;

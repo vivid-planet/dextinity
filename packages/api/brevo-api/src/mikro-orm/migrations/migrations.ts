@@ -1,23 +1,23 @@
 import type { MigrationObject } from "@mikro-orm/postgresql";
 
-import { Migration20240115095733 } from "./Migration20240115095733";
-import { Migration20240118144808 } from "./Migration20240118144808";
-import { Migration20240123145606 } from "./Migration20240123145606";
-import { Migration20240527112204 } from "./Migration20240527112204";
-import { Migration20240619092554 } from "./Migration20240619092554";
-import { Migration20240619145217 } from "./Migration20240619145217";
-import { Migration20240621102349 } from "./Migration20240621102349";
-import { Migration20240819214939 } from "./Migration20240819214939";
-import { Migration20240830112400 } from "./Migration20240830112400";
-import { Migration20241016123307 } from "./Migration20241016123307";
-import { Migration20241018110515 } from "./Migration20241018110515";
-import { Migration20241022144400 } from "./Migration20241022144400";
-import { Migration20241024071748 } from "./Migration20241024071748";
-import { Migration20241119101706 } from "./Migration20241119101706";
-import { Migration20250221073825 } from "./Migration20250221073825";
-import { Migration20250317131301 } from "./Migration20250317131301";
-import { Migration20250321132034 } from "./Migration20250321132034";
-import { Migration20250703155205 } from "./Migration20250703155205";
+import { Migration20240115095733 } from "./Migration20240115095733.js";
+import { Migration20240118144808 } from "./Migration20240118144808.js";
+import { Migration20240123145606 } from "./Migration20240123145606.js";
+import { Migration20240527112204 } from "./Migration20240527112204.js";
+import { Migration20240619092554 } from "./Migration20240619092554.js";
+import { Migration20240619145217 } from "./Migration20240619145217.js";
+import { Migration20240621102349 } from "./Migration20240621102349.js";
+import { Migration20240819214939 } from "./Migration20240819214939.js";
+import { Migration20240830112400 } from "./Migration20240830112400.js";
+import { Migration20241016123307 } from "./Migration20241016123307.js";
+import { Migration20241018110515 } from "./Migration20241018110515.js";
+import { Migration20241022144400 } from "./Migration20241022144400.js";
+import { Migration20241024071748 } from "./Migration20241024071748.js";
+import { Migration20241119101706 } from "./Migration20241119101706.js";
+import { Migration20250221073825 } from "./Migration20250221073825.js";
+import { Migration20250317131301 } from "./Migration20250317131301.js";
+import { Migration20250321132034 } from "./Migration20250321132034.js";
+import { Migration20250703155205 } from "./Migration20250703155205.js";
 
 export const migrationsList: MigrationObject[] = [
     { name: "Migration20240115095733", class: Migration20240115095733 },

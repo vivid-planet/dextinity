@@ -1,17 +1,17 @@
 import { AffectedEntity, PaginatedResponseFactory, RequiredPermission, resolveEntityClass, validateNotModified } from "@dextinity/cms-api";
-import { EntityManager, FindOptions, wrap } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import { EntityManager, type FindOptions, wrap } from "@mikro-orm/postgresql";
+import type { Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Int, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
-import { EmailCampaignScopeInterface } from "src/types";
 
-import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
-import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe";
-import { AddBrevoContactsInput } from "./dto/add-brevo-contacts.input";
-import { RemoveBrevoContactInput } from "./dto/remove-brevo-contact.input";
-import { TargetGroupArgsFactory } from "./dto/target-group-args.factory";
-import { TargetGroupInputInterface } from "./dto/target-group-input.factory";
-import { TargetGroupInterface } from "./entity/target-group-entity.factory";
-import { TargetGroupsService } from "./target-groups.service";
+import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service.js";
+import type { EmailCampaignScopeInterface } from "../types.js";
+import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe.js";
+import { AddBrevoContactsInput } from "./dto/add-brevo-contacts.input.js";
+import { RemoveBrevoContactInput } from "./dto/remove-brevo-contact.input.js";
+import { TargetGroupArgsFactory } from "./dto/target-group-args.factory.js";
+import type { TargetGroupInputInterface } from "./dto/target-group-input.factory.js";
+import type { TargetGroupInterface } from "./entity/target-group-entity.factory.js";
+import { TargetGroupsService } from "./target-groups.service.js";
 
 export function createTargetGroupsResolver({
     BrevoTargetGroup,

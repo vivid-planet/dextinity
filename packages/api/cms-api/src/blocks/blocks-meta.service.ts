@@ -1,8 +1,8 @@
 import { Injectable, Logger, type OnModuleInit } from "@nestjs/common";
 import { promises as fs } from "fs";
 
-import { DiscoverService } from "../dependencies/discover.service";
-import { getBlocksMeta } from "./blocks-meta";
+import { DiscoverService } from "../dependencies/discover.service.js";
+import { getBlocksMeta } from "./blocks-meta.js";
 
 @Injectable()
 export class BlocksMetaService implements OnModuleInit {

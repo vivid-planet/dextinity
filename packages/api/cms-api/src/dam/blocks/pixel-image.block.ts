@@ -2,24 +2,24 @@ import { Type } from "class-transformer";
 import { IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
 
 import {
-    BlockContext,
+    type BlockContext,
     BlockData,
-    BlockIndexData,
+    type BlockIndexData,
     BlockInput,
     blockInputToData,
-    BlockMetaField,
+    type BlockMetaField,
     BlockMetaFieldKind,
     createBlock,
-} from "../../blocks/block";
-import { AnnotationBlockMeta } from "../../blocks/decorators/field";
-import { FocalPoint } from "../../file-utils/focal-point.enum";
-import { DamFileAiContentType } from "../files/entities/ai-content-type.enum";
-import { FILE_ENTITY } from "../files/entities/file.entity";
-import { FilesService } from "../files/files.service";
-import { ImageCropAreaInput } from "../images/dto/image-crop-area.input";
-import { ImageCropArea } from "../images/entities/image-crop-area.entity";
-import { ImagesService } from "../images/images.service";
-import { PixelImageBlockTransformerService } from "./pixel-image-block-transformer.service";
+} from "../../blocks/block.js";
+import { AnnotationBlockMeta } from "../../blocks/decorators/field.js";
+import { FocalPoint } from "../../file-utils/focal-point.enum.js";
+import { DamFileAiContentType } from "../files/entities/ai-content-type.enum.js";
+import { FILE_ENTITY } from "../files/entities/file.entity.js";
+import type { FilesService } from "../files/files.service.js";
+import { ImageCropAreaInput } from "../images/dto/image-crop-area.input.js";
+import { ImageCropArea } from "../images/entities/image-crop-area.entity.js";
+import type { ImagesService } from "../images/images.service.js";
+import { PixelImageBlockTransformerService } from "./pixel-image-block-transformer.service.js";
 
 // @TODO: make factory to support flexible validation
 class PixelImageBlockData extends BlockData {

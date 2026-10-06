@@ -2,7 +2,7 @@ import { IsNullable, IsUndefinable } from "@dextinity/cms-api";
 import { Field, InputType } from "@nestjs/graphql";
 import { IsEnum } from "class-validator";
 
-import { PredefinedPageType } from "../entities/predefined-page.entity";
+import { PredefinedPageType } from "../entities/predefined-page.entity.js";
 
 @InputType()
 export class PredefinedPageInput {

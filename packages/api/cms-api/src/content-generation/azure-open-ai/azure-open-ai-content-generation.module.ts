@@ -1,7 +1,7 @@
-import { DynamicModule, Global, Module } from "@nestjs/common";
+import { type DynamicModule, Global, Module } from "@nestjs/common";
 
-import { AZURE_OPEN_AI_CONTENT_GENERATION_SERVICE_CONFIG } from "./azure-open-ai.constants";
-import { AzureOpenAiContentGenerationService, AzureOpenAiContentGenerationServiceConfig } from "./azure-open-ai-content-generation.service";
+import { AZURE_OPEN_AI_CONTENT_GENERATION_SERVICE_CONFIG } from "./azure-open-ai.constants.js";
+import { AzureOpenAiContentGenerationService, type AzureOpenAiContentGenerationServiceConfig } from "./azure-open-ai-content-generation.service.js";
 
 @Global()
 @Module({})

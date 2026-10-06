@@ -1,11 +1,11 @@
 import { Entity, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
-import { BaseEntity, Collection, defineConfig, MikroORM, Ref } from "@mikro-orm/postgresql";
+import { BaseEntity, Collection, defineConfig, MikroORM, type Ref } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
 
-import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
-import { generateCrud } from "../generate-crud";
+import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper.js";
+import { generateCrud } from "../generate-crud.js";
 
 @Entity()
 class ProductVariant extends BaseEntity {
@@ -107,7 +107,7 @@ describe("generate-crud relations two levels", () => {
                     imports[namedImport.getNameNode().getText()] = tsImport.getModuleSpecifierValue();
                 }
             }
-            expect(imports["ProductNestedProductDataInput"]).toBe("./product-nested-product-data.input");
+            expect(imports["ProductNestedProductDataInput"]).toBe("./product-nested-product-data.input.js");
         }
 
         {

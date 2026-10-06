@@ -1,7 +1,7 @@
 import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
-import type { LinkBlock } from "@src/common/blocks/link.block";
-import { faker } from "@src/db/fixtures/faker";
-import type { LinkBlockFixtureService } from "@src/db/fixtures/generators/blocks/navigation/link-block-fixture.service";
+import type { LinkBlock } from "@src/common/blocks/link.block.js";
+import { faker } from "@src/db/fixtures/faker.js";
+import type { LinkBlockFixtureService } from "@src/db/fixtures/generators/blocks/navigation/link-block-fixture.service.js";
 
 type LinkInput = ExtractBlockInputFactoryProps<typeof LinkBlock>;
 

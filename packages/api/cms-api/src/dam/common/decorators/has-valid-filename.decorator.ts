@@ -1,12 +1,12 @@
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
-import { registerDecorator, ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
+import { registerDecorator, type ValidationArguments, ValidatorConstraint, type ValidatorConstraintInterface } from "class-validator";
 import { basename, extname } from "path";
 
-import { slugifyFilename } from "../../../file-utils/files.utils";
-import { UpdateFileInput } from "../../files/dto/file.input";
-import { UpdateDamFileArgs } from "../../files/dto/update-dam-file.args";
-import { resolveFileEntity } from "../../files/entities/resolve-dam-entity";
+import { slugifyFilename } from "../../../file-utils/files.utils.js";
+import type { UpdateFileInput } from "../../files/dto/file.input.js";
+import type { UpdateDamFileArgs } from "../../files/dto/update-dam-file.args.js";
+import { resolveFileEntity } from "../../files/entities/resolve-dam-entity.js";
 
 export const HasValidFilename = () => {
     // eslint-disable-next-line @typescript-eslint/no-wrapper-object-types

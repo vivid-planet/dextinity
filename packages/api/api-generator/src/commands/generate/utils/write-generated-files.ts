@@ -1,4 +1,4 @@
-import { writeGeneratedFile } from "./write-generated-file";
+import { writeGeneratedFile } from "./write-generated-file.js";
 
 export interface GeneratedFile {
     targetDirectory?: string;

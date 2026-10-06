@@ -1,26 +1,26 @@
 import { AffectedEntity, CurrentUser, GetCurrentUser, PaginatedResponseFactory, RequiredPermission, resolveEntityClass } from "@dextinity/cms-api";
-import { EntityManager, FilterQuery } from "@mikro-orm/postgresql";
-import { Inject, Type } from "@nestjs/common";
+import { EntityManager, type FilterQuery } from "@mikro-orm/postgresql";
+import { Inject, type Type } from "@nestjs/common";
 import { Args, ArgsType, Int, Mutation, ObjectType, Query, Resolver } from "@nestjs/graphql";
-import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 
-import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
-import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
-import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
-import { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory";
-import { TargetGroupsService } from "../target-group/target-groups.service";
-import { EmailCampaignScopeInterface } from "../types";
-import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe";
-import { BrevoContactsService } from "./brevo-contacts.service";
-import { BrevoContactInterface } from "./dto/brevo-contact.factory";
-import { BrevoContactInputInterface, BrevoContactUpdateInputInterface } from "./dto/brevo-contact-input.factory";
-import { BrevoContactsArgsFactory } from "./dto/brevo-contacts.args";
-import { BrevoTestContactInputInterface } from "./dto/brevo-test-contact-input.factory";
-import { ManuallyAssignedBrevoContactsArgs } from "./dto/manually-assigned-brevo-contacts.args";
-import { SubscribeInputInterface } from "./dto/subscribe-input.factory";
-import { SubscribeResponse } from "./dto/subscribe-response.enum";
-import { EcgRtrListService } from "./ecg-rtr-list/ecg-rtr-list.service";
+import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service.js";
+import type { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory.js";
+import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory.js";
+import type { BrevoModuleConfig } from "../config/brevo-module.config.js";
+import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants.js";
+import type { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory.js";
+import { TargetGroupsService } from "../target-group/target-groups.service.js";
+import type { EmailCampaignScopeInterface } from "../types.js";
+import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe.js";
+import { BrevoContactsService } from "./brevo-contacts.service.js";
+import type { BrevoContactInterface } from "./dto/brevo-contact.factory.js";
+import type { BrevoContactInputInterface, BrevoContactUpdateInputInterface } from "./dto/brevo-contact-input.factory.js";
+import { BrevoContactsArgsFactory } from "./dto/brevo-contacts.args.js";
+import type { BrevoTestContactInputInterface } from "./dto/brevo-test-contact-input.factory.js";
+import { ManuallyAssignedBrevoContactsArgs } from "./dto/manually-assigned-brevo-contacts.args.js";
+import type { SubscribeInputInterface } from "./dto/subscribe-input.factory.js";
+import { SubscribeResponse } from "./dto/subscribe-response.enum.js";
+import { EcgRtrListService } from "./ecg-rtr-list/ecg-rtr-list.service.js";
 
 export function createBrevoContactResolver({
     BrevoContact,

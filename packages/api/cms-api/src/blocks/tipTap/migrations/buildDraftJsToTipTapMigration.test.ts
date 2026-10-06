@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { ExternalLinkBlock } from "../../externalLink/external-link.block";
-import { createLinkBlock } from "../../factories/createLinkBlock";
-import { createTipTapRichTextBlock } from "../createTipTapRichTextBlock";
-import type { DraftJsContent } from "./convertDraftJsToTipTap";
+import { ExternalLinkBlock } from "../../externalLink/external-link.block.js";
+import { createLinkBlock } from "../../factories/createLinkBlock.js";
+import { createTipTapRichTextBlock } from "../createTipTapRichTextBlock.js";
+import type { DraftJsContent } from "./convertDraftJsToTipTap.js";
 
 type DraftBlock = DraftJsContent["blocks"][number];
 

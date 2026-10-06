@@ -3,8 +3,8 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { Optional } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
-import { PageTreeFullTextService } from "../page-tree/fullText/page-tree-full-text.service";
-import { BlockMigrateService } from "./block-migrate.service";
+import { PageTreeFullTextService } from "../page-tree/fullText/page-tree-full-text.service.js";
+import { BlockMigrateService } from "./block-migrate.service.js";
 
 @Command({
     name: "migrateBlocks",

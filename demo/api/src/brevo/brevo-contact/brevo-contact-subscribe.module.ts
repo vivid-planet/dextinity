@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { BrevoContactSubscribeController } from "./brevo-contact-subscribe.controller";
+import { BrevoContactSubscribeController } from "./brevo-contact-subscribe.controller.js";
 
 @Module({
     controllers: [BrevoContactSubscribeController],

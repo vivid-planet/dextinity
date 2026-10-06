@@ -1,7 +1,11 @@
 import type { EntityMetadata, EntityProperty } from "@mikro-orm/postgresql";
 
-import { isEntityScopeMapping, type ScopedEntityMeta, type SingleEntityScopeMapping } from "../user-permissions/decorators/scoped-entity.decorator";
-import { resolveFieldToSql } from "./resolve-field-to-sql";
+import {
+    isEntityScopeMapping,
+    type ScopedEntityMeta,
+    type SingleEntityScopeMapping,
+} from "../user-permissions/decorators/scoped-entity.decorator.js";
+import { resolveFieldToSql } from "./resolve-field-to-sql.js";
 
 /**
  * Resolves the scope(s) of an entity to a SQL expression returning a `jsonb` array of scopes (or `NULL::jsonb`).

@@ -5,8 +5,8 @@ import slugify from "slugify";
 import { Transform, type TransformCallback } from "stream";
 import { v4 as uuid } from "uuid";
 
-import { ProductCategory } from "./entities/product-category.entity";
-import type { ProductImporterInput } from "./product-importer.input";
+import { ProductCategory } from "./entities/product-category.entity.js";
+import type { ProductImporterInput } from "./product-importer.input.js";
 
 type RawProductData = Omit<ProductImporterInput, "category"> & {
     category: string;

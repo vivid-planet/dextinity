@@ -1,6 +1,6 @@
 import {
-    Block,
-    BlockDataInterface,
+    type Block,
+    type BlockDataInterface,
     DocumentInterface,
     EntityInfo,
     RootBlock,
@@ -10,13 +10,13 @@ import {
 } from "@dextinity/cms-api";
 import { Embedded, Entity, Enum, ManyToMany, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { Collection, OptionalProps } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
-import { TargetGroupInterface } from "../../target-group/entity/target-group-entity.factory";
-import { EmailCampaignScopeInterface } from "../../types";
-import { SendingState } from "../sending-state.enum";
+import type { TargetGroupInterface } from "../../target-group/entity/target-group-entity.factory.js";
+import type { EmailCampaignScopeInterface } from "../../types.js";
+import { SendingState } from "../sending-state.enum.js";
 
 export interface EmailCampaignInterface {
     [OptionalProps]?: "createdAt" | "updatedAt" | "sendingState";

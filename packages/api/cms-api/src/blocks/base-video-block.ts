@@ -1,10 +1,10 @@
 import { IsBoolean, IsOptional } from "class-validator";
 
-import { PixelImageBlock } from "../dam/blocks/pixel-image.block";
-import { BlockData, BlockDataInterface, BlockInput, blockInputToData, ExtractBlockInput } from "./block";
-import { ChildBlock } from "./decorators/child-block";
-import { ChildBlockInput } from "./decorators/child-block-input";
-import { BlockField } from "./decorators/field";
+import { PixelImageBlock } from "../dam/blocks/pixel-image.block.js";
+import { BlockData, type BlockDataInterface, BlockInput, blockInputToData, type ExtractBlockInput } from "./block.js";
+import { ChildBlock } from "./decorators/child-block.js";
+import { ChildBlockInput } from "./decorators/child-block-input.js";
+import { BlockField } from "./decorators/field.js";
 
 export class BaseVideoBlockData extends BlockData {
     @BlockField({ nullable: true })

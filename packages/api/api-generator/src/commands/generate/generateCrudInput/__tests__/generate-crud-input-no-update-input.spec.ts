@@ -3,8 +3,8 @@ import { BaseEntity, defineConfig, MikroORM } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { describe, expect, it } from "vitest";
 
-import { formatSource, testPermission } from "../../utils/test-helper";
-import { generateCrudInput } from "../generate-crud-input";
+import { formatSource, testPermission } from "../../utils/test-helper.js";
+import { generateCrudInput } from "../generate-crud-input.js";
 
 @Entity()
 class TestEntity extends BaseEntity {

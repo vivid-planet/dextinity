@@ -1,7 +1,7 @@
-import { DynamicModule, Global, Module } from "@nestjs/common";
+import { type DynamicModule, Global, Module } from "@nestjs/common";
 
-import { BrevoModuleConfig } from "./brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "./brevo-module.constants";
+import type { BrevoModuleConfig } from "./brevo-module.config.js";
+import { BREVO_MODULE_CONFIG } from "./brevo-module.constants.js";
 
 @Global()
 @Module({})

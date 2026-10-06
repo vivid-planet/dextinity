@@ -4,10 +4,10 @@ import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storage
 import { v4 as uuid } from "uuid";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { formatGeneratedFiles, testPermission } from "../../utils/test-helper";
-import type { GeneratedFile } from "../../utils/write-generated-files";
-import { buildOptions } from "../build-options";
-import { generateCrud } from "../generate-crud";
+import { formatGeneratedFiles, testPermission } from "../../utils/test-helper.js";
+import type { GeneratedFile } from "../../utils/write-generated-files.js";
+import { buildOptions } from "../build-options.js";
+import { generateCrud } from "../generate-crud.js";
 
 @Entity()
 @Filter({ name: "deletedAt", cond: { deletedAt: { $ne: null } }, default: true })

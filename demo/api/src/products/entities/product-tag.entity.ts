@@ -4,8 +4,8 @@ import { BaseEntity, Collection, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
-import { Product } from "./product.entity";
-import { ProductToTag } from "./product-to-tag.entity";
+import { Product } from "./product.entity.js";
+import { ProductToTag } from "./product-to-tag.entity.js";
 
 @ObjectType()
 @Entity()

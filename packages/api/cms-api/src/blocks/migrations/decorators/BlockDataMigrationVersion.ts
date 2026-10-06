@@ -1,4 +1,4 @@
-import type { BlockDataInterface } from "../../block";
+import type { BlockDataInterface } from "../../block.js";
 
 interface BlockDataConstructorInterface {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

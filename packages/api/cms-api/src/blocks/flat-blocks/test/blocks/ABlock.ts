@@ -1,11 +1,11 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-import { BlockData, BlockInput, blockInputToData, createBlock, ExtractBlockData, ExtractBlockInput } from "../../../block";
-import { ChildBlock } from "../../../decorators/child-block";
-import { ChildBlockInput } from "../../../decorators/child-block-input";
-import { BlockField } from "../../../decorators/field";
-import { BBlock } from "./BBlock";
-import { CBlock } from "./CBlock";
+import { BlockData, BlockInput, blockInputToData, createBlock, type ExtractBlockData, type ExtractBlockInput } from "../../../block.js";
+import { ChildBlock } from "../../../decorators/child-block.js";
+import { ChildBlockInput } from "../../../decorators/child-block-input.js";
+import { BlockField } from "../../../decorators/field.js";
+import { BBlock } from "./BBlock.js";
+import { CBlock } from "./CBlock.js";
 
 class ABlockData extends BlockData {
     @BlockField()

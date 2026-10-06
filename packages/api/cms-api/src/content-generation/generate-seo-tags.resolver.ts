@@ -2,9 +2,9 @@ import { Inject } from "@nestjs/common";
 import { Args, ArgsType, Field, Mutation, Resolver } from "@nestjs/graphql";
 import { IsLocale, IsString } from "class-validator";
 
-import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
-import { CONTENT_GENERATION_SERVICE } from "./content-generation.constants";
-import { ContentGenerationServiceInterface, SeoTags } from "./content-generation-service.interface";
+import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { CONTENT_GENERATION_SERVICE } from "./content-generation.constants.js";
+import { type ContentGenerationServiceInterface, SeoTags } from "./content-generation-service.interface.js";
 
 @ArgsType()
 class GenerateSeoTagsArgs {

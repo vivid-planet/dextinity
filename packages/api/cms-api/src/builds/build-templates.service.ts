@@ -1,12 +1,12 @@
-import { V1CronJob } from "@kubernetes/client-node";
+import type { V1CronJob } from "@kubernetes/client-node";
 import { Inject, Injectable } from "@nestjs/common";
 
-import { INSTANCE_LABEL } from "../kubernetes/kubernetes.constants";
-import { KubernetesService } from "../kubernetes/kubernetes.service";
-import { CurrentUser } from "../user-permissions/dto/current-user";
-import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants";
-import { AccessControlServiceInterface } from "../user-permissions/user-permissions.types";
-import { BUILDER_LABEL } from "./builds.constants";
+import { INSTANCE_LABEL } from "../kubernetes/kubernetes.constants.js";
+import { KubernetesService } from "../kubernetes/kubernetes.service.js";
+import type { CurrentUser } from "../user-permissions/dto/current-user.js";
+import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants.js";
+import type { AccessControlServiceInterface } from "../user-permissions/user-permissions.types.js";
+import { BUILDER_LABEL } from "./builds.constants.js";
 
 @Injectable()
 export class BuildTemplatesService {

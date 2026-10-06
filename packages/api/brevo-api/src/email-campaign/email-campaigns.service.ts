@@ -1,18 +1,18 @@
 import { BlocksTransformerService, filtersToMikroOrmQuery, resolveEntityClass, searchToMikroOrmQuery } from "@dextinity/cms-api";
 import { Brevo } from "@getbrevo/brevo";
-import { EntityManager, ObjectQuery, wrap } from "@mikro-orm/postgresql";
+import { EntityManager, type ObjectQuery, wrap } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
-import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
-import { EmailCampaignScopeInterface } from "src/types";
 
-import { BrevoApiCampaignsService } from "../brevo-api/brevo-api-campaigns.service";
-import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
-import { EcgRtrListService } from "../brevo-contact/ecg-rtr-list/ecg-rtr-list.service";
-import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
-import { EmailCampaignFilter } from "./dto/email-campaign.filter";
-import { EmailCampaignInterface } from "./entities/email-campaign-entity.factory";
-import { SendingState } from "./sending-state.enum";
+import { BrevoApiCampaignsService } from "../brevo-api/brevo-api-campaigns.service.js";
+import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service.js";
+import type { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory.js";
+import { EcgRtrListService } from "../brevo-contact/ecg-rtr-list/ecg-rtr-list.service.js";
+import type { BrevoModuleConfig } from "../config/brevo-module.config.js";
+import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants.js";
+import type { EmailCampaignScopeInterface } from "../types.js";
+import type { EmailCampaignFilter } from "./dto/email-campaign.filter.js";
+import type { EmailCampaignInterface } from "./entities/email-campaign-entity.factory.js";
+import { SendingState } from "./sending-state.enum.js";
 
 const CAMPAIGN_CONTENT_REQUEST_TIMEOUT = 5000;
 

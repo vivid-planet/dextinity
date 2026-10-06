@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 
-import { BlockContext, BlockTransformerServiceInterface, TraversableTransformBlockResponse } from "../../../blocks/block";
-import { DamFileAiContentType } from "../../files/entities/ai-content-type.enum";
-import { FilesService } from "../../files/files.service";
-import { DamScopeInterface } from "../../types";
-import { DamVideoBlockData } from "./dam-video.block";
+import type { BlockContext, BlockTransformerServiceInterface, TraversableTransformBlockResponse } from "../../../blocks/block.js";
+import type { DamFileAiContentType } from "../../files/entities/ai-content-type.enum.js";
+import { FilesService } from "../../files/files.service.js";
+import type { DamScopeInterface } from "../../types.js";
+import type { DamVideoBlockData } from "./dam-video.block.js";
 
 type TransformResponse = {
     damFile?: {

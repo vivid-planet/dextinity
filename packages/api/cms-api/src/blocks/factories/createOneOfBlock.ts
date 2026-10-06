@@ -1,29 +1,29 @@
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { plainToInstance, Transform } from "class-transformer";
 import { ArrayMinSize, IsIn, IsOptional, IsString, ValidateNested } from "class-validator";
 
 import {
-    Block,
-    BlockContext,
+    type Block,
+    type BlockContext,
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockInput,
-    BlockInputInterface,
-    BlockMetaField,
+    type BlockInputInterface,
+    type BlockMetaField,
     BlockMetaFieldKind,
-    BlockMetaInterface,
-    ChildBlockInfo,
+    type BlockMetaInterface,
+    type ChildBlockInfo,
     createBlock,
-    ExtractBlockData,
-    ExtractBlockInput,
+    type ExtractBlockData,
+    type ExtractBlockInput,
     isBlockDataInterface,
     isBlockInputInterface,
-    MigrateOptions,
-    SimpleBlockInputInterface,
-    TraversableTransformBlockResponse,
-} from "../block";
-import { AnnotationBlockMeta, BlockField } from "../decorators/field";
-import { BlockFactoryNameOrOptions } from "./types";
+    type MigrateOptions,
+    type SimpleBlockInputInterface,
+    type TraversableTransformBlockResponse,
+} from "../block.js";
+import { AnnotationBlockMeta, BlockField } from "../decorators/field.js";
+import type { BlockFactoryNameOrOptions } from "./types.js";
 
 type BaseBlockMap = Record<string, Block<BlockDataInterface, BlockInputInterface>>;
 

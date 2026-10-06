@@ -1,31 +1,32 @@
 import { EntityManager } from "@mikro-orm/postgresql";
-import { Inject, Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 
-import { DextinityValidationException } from "../common/errors/validation.exception";
-import { RedirectsService } from "../redirects/redirects.service";
-import { AttachedDocumentStrictInput } from "./dto/attached-document.input";
-import { MovePageTreeNodesByPosInput, PageTreeNodeBaseCreateInput } from "./dto/page-tree-node.input";
-import { AttachedDocument } from "./entities/attached-document.entity";
-import { resolvePageTreeNodeEntity } from "./entities/resolve-page-tree-node-entity";
-import { PAGE_TREE_CONFIG } from "./page-tree.constants";
-import { PageTreeConfig } from "./page-tree.module";
-import { createReadApi, PageTreeReadApi } from "./page-tree-read-api";
+import { DextinityValidationException } from "../common/errors/validation.exception.js";
+import type { WrapperType } from "../common/types/wrapper-type.js";
+import { RedirectsService } from "../redirects/redirects.service.js";
+import type { AttachedDocumentStrictInput } from "./dto/attached-document.input.js";
+import type { MovePageTreeNodesByPosInput, PageTreeNodeBaseCreateInput } from "./dto/page-tree-node.input.js";
+import { AttachedDocument } from "./entities/attached-document.entity.js";
+import { resolvePageTreeNodeEntity } from "./entities/resolve-page-tree-node-entity.js";
+import { PAGE_TREE_CONFIG } from "./page-tree.constants.js";
+import type { PageTreeConfig } from "./page-tree.module.js";
+import { createReadApi, type PageTreeReadApi } from "./page-tree-read-api.js";
 import {
-    PageTreeNodeCategory,
-    PageTreeNodeInterface,
-    PageTreeNodeUpdateInputInterface,
+    type PageTreeNodeCategory,
+    type PageTreeNodeInterface,
+    type PageTreeNodeUpdateInputInterface,
     PageTreeNodeVisibility,
     PageTreeNodeVisibility as Visibility,
-    ScopeInterface,
-} from "./types";
+    type ScopeInterface,
+} from "./types.js";
 
-export { PageTreeReadApi } from "./page-tree-read-api";
+export type { PageTreeReadApi } from "./page-tree-read-api.js";
 
 @Injectable()
 export class PageTreeService {
     constructor(
         private readonly entityManager: EntityManager,
-        private readonly redirectsService: RedirectsService,
+        @Inject(forwardRef(() => RedirectsService)) private readonly redirectsService: WrapperType<RedirectsService>,
         @Inject(PAGE_TREE_CONFIG) private readonly config: PageTreeConfig,
     ) {}
 

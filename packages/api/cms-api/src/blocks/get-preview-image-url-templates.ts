@@ -1,5 +1,5 @@
-import type { BlockContext, BlockDataInterface } from "./block";
-import { FlatBlocks } from "./flat-blocks/flat-blocks";
+import type { BlockContext, BlockDataInterface } from "./block.js";
+import { FlatBlocks } from "./flat-blocks/flat-blocks.js";
 
 export async function getPreviewImageUrlTemplatesFromBlock(
     block: BlockDataInterface,

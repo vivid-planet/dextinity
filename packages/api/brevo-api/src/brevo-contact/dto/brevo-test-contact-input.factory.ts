@@ -1,10 +1,10 @@
 import { IsUndefinable } from "@dextinity/cms-api";
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { Field, InputType } from "@nestjs/graphql";
 import { Type as TypeTransformer } from "class-transformer";
 import { IsBoolean, IsNotEmpty, IsString, ValidateNested } from "class-validator";
 
-import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "../../types";
+import type { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "../../types.js";
 
 export interface BrevoTestContactInputInterface {
     email: string;

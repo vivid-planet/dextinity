@@ -3,8 +3,8 @@ import { Entity, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity } from "@mikro-orm/postgresql";
 import { v4 as uuid } from "uuid";
 
-import { testPermission } from "../../test-helper";
-import { TestEntityService } from "./test-entity.service";
+import { testPermission } from "../../test-helper.js";
+import { TestEntityService } from "./test-entity.service.js";
 
 @Entity()
 @CrudGenerator({

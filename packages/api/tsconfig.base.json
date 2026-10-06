@@ -9,6 +9,7 @@
         "experimentalDecorators": true,
         "sourceMap": true,
         "incremental": true,
+        "verbatimModuleSyntax": true,
         "strict": true,
         "strictPropertyInitialization": false,
         "strictNullChecks": true,

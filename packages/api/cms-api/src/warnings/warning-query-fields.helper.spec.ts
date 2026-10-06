@@ -1,11 +1,11 @@
 import type { EntityMetadata } from "@mikro-orm/postgresql";
 import { describe, expect, it } from "vitest";
 
-import { gqlArgsToMikroOrmQuery } from "../common/filter/mikro-orm";
-import { StringFilter } from "../common/filter/string.filter";
-import { SortDirection } from "../common/sorting/sort-direction.enum";
-import { WarningSort } from "./dto/warning.sort";
-import { referencesEntityInfo, remapWarningOrderBy, remapWarningQueryFields } from "./warning-query-fields.helper";
+import { gqlArgsToMikroOrmQuery } from "../common/filter/mikro-orm.js";
+import { StringFilter } from "../common/filter/string.filter.js";
+import { SortDirection } from "../common/sorting/sort-direction.enum.js";
+import { WarningSort } from "./dto/warning.sort.js";
+import { referencesEntityInfo, remapWarningOrderBy, remapWarningQueryFields } from "./warning-query-fields.helper.js";
 
 function stringFilter(values: Partial<StringFilter>): StringFilter {
     return Object.assign(new StringFilter(), values);

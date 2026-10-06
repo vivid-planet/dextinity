@@ -1,4 +1,4 @@
-import { type Block, type BlockMetaField as BlockMetaFieldInterface, BlockMetaFieldKind, type BlockMetaInterface } from "./block";
+import { type Block, type BlockMetaField as BlockMetaFieldInterface, BlockMetaFieldKind, type BlockMetaInterface } from "./block.js";
 
 type BlockMetaField =
     | {

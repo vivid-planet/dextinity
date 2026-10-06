@@ -1,6 +1,7 @@
 export type Imports = Array<{
     name: string;
     importPath: string;
+    isTypeOnly?: boolean;
 }>;
 
 // generate imports code and filter duplicates
@@ -21,17 +22,23 @@ export function generateImportsCode(imports: Imports): string {
         return true;
     });
 
-    const importsPathToName: Record<string, string[]> = {};
+    const importsPathToName: Record<string, Imports> = {};
     for (const imp of filteredImports) {
         if (!importsPathToName[imp.importPath]) {
             importsPathToName[imp.importPath] = [];
         }
-        importsPathToName[imp.importPath].push(imp.name);
+        importsPathToName[imp.importPath].push(imp);
     }
 
     let importsString = "";
-    for (const [importPath, importNames] of Object.entries(importsPathToName)) {
-        importsString += `import { ${importNames.sort().join(", ")} } from "${importPath}";\n`;
+    for (const [importPath, pathImports] of Object.entries(importsPathToName)) {
+        const sortedImports = pathImports.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
+        if (sortedImports.every((imp) => imp.isTypeOnly)) {
+            importsString += `import type { ${sortedImports.map((imp) => imp.name).join(", ")} } from "${importPath}";\n`;
+        } else {
+            const importNames = sortedImports.map((imp) => (imp.isTypeOnly ? `type ${imp.name}` : imp.name));
+            importsString += `import { ${importNames.join(", ")} } from "${importPath}";\n`;
+        }
     }
     return importsString;
 }

@@ -3,9 +3,9 @@ import { dirname } from "node:path";
 import { type CrudGeneratorOptions, getCrudSearchFieldsFromMetadata, hasCrudFieldFeature, SCOPED_ENTITY_METADATA_KEY } from "@dextinity/cms-api";
 import type { EntityMetadata } from "@mikro-orm/core";
 
-import { buildNameVariants } from "../utils/build-name-variants";
-import { integerTypes } from "../utils/constants";
-import { isEnumArrayProp } from "../utils/entity-property-type";
+import { buildNameVariants } from "../utils/build-name-variants.js";
+import { integerTypes } from "../utils/constants.js";
+import { isEnumArrayProp } from "../utils/entity-property-type.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function buildFilterProps(metadata: EntityMetadata<any>) {

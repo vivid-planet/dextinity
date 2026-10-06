@@ -1,24 +1,24 @@
 import { instanceToPlain, plainToInstance } from "class-transformer";
-import { registerDecorator, validate, ValidationArguments, ValidationOptions } from "class-validator";
+import { registerDecorator, validate, type ValidationArguments, type ValidationOptions } from "class-validator";
 import type { DraftBlockType, DraftEntityMutability, DraftInlineStyleType, RawDraftContentState, RawDraftEntityRange } from "draft-js";
 
 import {
-    Block,
+    type Block,
     BlockData,
-    BlockDataFactory,
-    BlockDataInterface,
-    BlockInputFactory,
-    BlockInputInterface,
-    ChildBlockInfo,
-    ExtractBlockInput,
-} from "../block";
-import { AnnotationBlockMeta, BlockField } from "../decorators/field";
-import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFactoryDecorator";
-import { strictBlockInputFactoryDecorator } from "../helpers/strictBlockInputFactoryDecorator";
-import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator";
-import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
-import { SearchText } from "../search/get-search-text";
-import { BlockFactoryNameOrOptions } from "./types";
+    type BlockDataFactory,
+    type BlockDataInterface,
+    type BlockInputFactory,
+    type BlockInputInterface,
+    type ChildBlockInfo,
+    type ExtractBlockInput,
+} from "../block.js";
+import { AnnotationBlockMeta, BlockField } from "../decorators/field.js";
+import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFactoryDecorator.js";
+import { strictBlockInputFactoryDecorator } from "../helpers/strictBlockInputFactoryDecorator.js";
+import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator.js";
+import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion.js";
+import type { SearchText } from "../search/get-search-text.js";
+import type { BlockFactoryNameOrOptions } from "./types.js";
 
 interface CreateRichTextBlockOptions {
     link: Block;

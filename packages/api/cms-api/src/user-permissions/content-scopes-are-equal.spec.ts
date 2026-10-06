@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { contentScopesAreEqual } from "./content-scopes-are-equal";
+import { contentScopesAreEqual } from "./content-scopes-are-equal.js";
 
 class DamScope {
     constructor(public domain: string) {}

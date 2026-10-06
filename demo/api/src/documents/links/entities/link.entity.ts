@@ -1,5 +1,5 @@
 import {
-    BlockDataInterface,
+    type BlockDataInterface,
     DocumentInterface,
     PageTreeNodeDocumentEntityScopeService,
     RootBlock,
@@ -11,7 +11,7 @@ import {
 import { Entity, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { LinkBlock } from "@src/common/blocks/link.block";
+import { LinkBlock } from "@src/common/blocks/link.block.js";
 import { v4 as uuid } from "uuid";
 
 @Entity()

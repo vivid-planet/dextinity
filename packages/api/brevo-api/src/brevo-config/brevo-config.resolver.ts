@@ -1,17 +1,17 @@
 import { AffectedEntity, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
 import { EntityManager, wrap } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 
-import { BrevoApiFoldersService } from "../brevo-api/brevo-api-folders.service";
-import { BrevoApiSenderService } from "../brevo-api/brevo-api-sender.service";
-import { BrevoTransactionalMailsService } from "../brevo-api/brevo-api-transactional-mails.service";
-import { BrevoApiEmailTemplate } from "../brevo-api/dto/brevo-api-email-templates-list";
-import { BrevoApiSender } from "../brevo-api/dto/brevo-api-sender";
-import { EmailCampaignScopeInterface } from "../types";
-import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe";
-import { BrevoConfigInput, BrevoConfigUpdateInput } from "./dto/brevo-config.input";
-import { BrevoConfigInterface } from "./entities/brevo-config-entity.factory";
+import { BrevoApiFoldersService } from "../brevo-api/brevo-api-folders.service.js";
+import { BrevoApiSenderService } from "../brevo-api/brevo-api-sender.service.js";
+import { BrevoTransactionalMailsService } from "../brevo-api/brevo-api-transactional-mails.service.js";
+import { BrevoApiEmailTemplate } from "../brevo-api/dto/brevo-api-email-templates-list.js";
+import { BrevoApiSender } from "../brevo-api/dto/brevo-api-sender.js";
+import type { EmailCampaignScopeInterface } from "../types.js";
+import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe.js";
+import { BrevoConfigInput, BrevoConfigUpdateInput } from "./dto/brevo-config.input.js";
+import type { BrevoConfigInterface } from "./entities/brevo-config-entity.factory.js";
 
 export function createBrevoConfigResolver({
     Scope,

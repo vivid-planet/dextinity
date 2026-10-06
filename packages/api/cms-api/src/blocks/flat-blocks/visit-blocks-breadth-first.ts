@@ -1,5 +1,5 @@
-import type { BlockDataInterface } from "../block";
-import { FlatBlockNode } from "./flat-blocks";
+import type { BlockDataInterface } from "../block.js";
+import { FlatBlockNode } from "./flat-blocks.js";
 
 export interface RootBlockInfo {
     visible: boolean;

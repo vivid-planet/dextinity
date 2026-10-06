@@ -1,4 +1,4 @@
-import type { BlockMigrationTransformFn, From, To, VersionDataInterface } from "./types";
+import type { BlockMigrationTransformFn, From, To, VersionDataInterface } from "./types.js";
 
 // Standard implementation with common boilerplate
 // BlockMigrationInterface is not fully implemented in abstract class

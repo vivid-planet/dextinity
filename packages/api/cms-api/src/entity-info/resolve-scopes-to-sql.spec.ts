@@ -1,11 +1,11 @@
 import { Embeddable, Embedded, Entity, ManyToOne, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
-import { BaseEntity, defineConfig, MikroORM, Ref } from "@mikro-orm/postgresql";
+import { BaseEntity, defineConfig, MikroORM, type Ref } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { EntityScopeServiceInterface } from "../user-permissions/decorators/scoped-entity.decorator";
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { resolveScopesToSql } from "./resolve-scopes-to-sql";
+import type { EntityScopeServiceInterface } from "../user-permissions/decorators/scoped-entity.decorator.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { resolveScopesToSql } from "./resolve-scopes-to-sql.js";
 
 @Embeddable()
 class ContentScopeEmbeddable {

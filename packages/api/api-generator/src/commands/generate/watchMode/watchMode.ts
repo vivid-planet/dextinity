@@ -3,7 +3,7 @@ import console from "node:console";
 import { type ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { watch } from "chokidar";
 
-import { handleChildProcess } from "./handleChildProcess";
+import { handleChildProcess } from "./handleChildProcess.js";
 
 const waitForExit = (proc: ReturnType<typeof spawn>) => {
     return new Promise<{ code: number | null; signal: NodeJS.Signals | null }>((resolve) => {
@@ -51,7 +51,7 @@ export const watchMode = async () => {
             //
             // Triggering the generator with changed files in the same process has problems with
             // reflection and new Classes / Decorator are not recognised correctly.
-            const childProcess = spawn(`node ${__dirname}/../../../../bin/api-generator.js generate -f ${path}`, {
+            const childProcess = spawn(`node ${import.meta.dirname}/../../../../bin/api-generator.js generate -f ${path}`, {
                 shell: true,
             });
             childProcesses[path] = childProcess;

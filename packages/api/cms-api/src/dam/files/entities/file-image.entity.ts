@@ -4,9 +4,9 @@ import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
 import { v4 as uuid } from "uuid";
 
-import { ImageCropArea } from "../../images/entities/image-crop-area.entity";
-import { FileInterface } from "./file.entity";
-import { resolveFileEntity } from "./resolve-dam-entity";
+import { ImageCropArea } from "../../images/entities/image-crop-area.entity.js";
+import type { FileInterface } from "./file.entity.js";
+import { resolveFileEntity } from "./resolve-dam-entity.js";
 
 @Entity({ tableName: "DamFileImage" })
 @ObjectType("DamFileImage")

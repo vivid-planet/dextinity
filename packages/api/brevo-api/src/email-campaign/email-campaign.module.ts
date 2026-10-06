@@ -1,17 +1,17 @@
-import { Block } from "@dextinity/cms-api";
+import type { Block } from "@dextinity/cms-api";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
-import { DynamicModule, Module, Type } from "@nestjs/common";
-import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
-import { TargetGroupInterface } from "src/target-group/entity/target-group-entity.factory";
+import { type DynamicModule, Module, type Type } from "@nestjs/common";
 
-import { BrevoApiModule } from "../brevo-api/brevo-api.module";
-import { EcgRtrListService } from "../brevo-contact/ecg-rtr-list/ecg-rtr-list.service";
-import { ConfigModule } from "../config/config.module";
-import { EmailCampaignScopeInterface } from "../types";
-import { EmailCampaignInputFactory } from "./dto/email-campaign-input.factory";
-import { createEmailCampaignsResolver } from "./email-campaign.resolver";
-import { EmailCampaignsService } from "./email-campaigns.service";
-import { EmailCampaignInterface } from "./entities/email-campaign-entity.factory";
+import { BrevoApiModule } from "../brevo-api/brevo-api.module.js";
+import type { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory.js";
+import { EcgRtrListService } from "../brevo-contact/ecg-rtr-list/ecg-rtr-list.service.js";
+import { ConfigModule } from "../config/config.module.js";
+import type { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory.js";
+import type { EmailCampaignScopeInterface } from "../types.js";
+import { EmailCampaignInputFactory } from "./dto/email-campaign-input.factory.js";
+import { createEmailCampaignsResolver } from "./email-campaign.resolver.js";
+import { EmailCampaignsService } from "./email-campaigns.service.js";
+import type { EmailCampaignInterface } from "./entities/email-campaign-entity.factory.js";
 
 interface EmailCampaignModuleConfig {
     Scope: Type<EmailCampaignScopeInterface>;

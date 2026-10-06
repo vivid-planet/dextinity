@@ -1,4 +1,4 @@
-import type { RichTextBlockData } from "@src/blocks.generated";
+import type { RichTextBlockData } from "@src/blocks.generated.js";
 
 export const exampleSupportInfo: RichTextBlockData = {
     draftContent: {

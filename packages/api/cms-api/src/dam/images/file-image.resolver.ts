@@ -1,10 +1,10 @@
 import { Args, Context, Int, Parent, ResolveField, Resolver } from "@nestjs/graphql";
 import { IncomingMessage } from "http";
 
-import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
-import { DamFileImage } from "../files/entities/file-image.entity";
-import { FilesService } from "../files/files.service";
-import { ImagesService } from "./images.service";
+import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator.js";
+import { DamFileImage } from "../files/entities/file-image.entity.js";
+import { FilesService } from "../files/files.service.js";
+import { ImagesService } from "./images.service.js";
 
 @Resolver(() => DamFileImage)
 @RequiredPermission(["dam"])

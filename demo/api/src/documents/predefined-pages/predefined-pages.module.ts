@@ -1,9 +1,9 @@
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { Module } from "@nestjs/common";
 
-import { PredefinedPage } from "./entities/predefined-page.entity";
-import { PredefinedPagesResolver } from "./predefined-pages.resolver";
-import { PredefinedPagesService } from "./predefined-pages.service";
+import { PredefinedPage } from "./entities/predefined-page.entity.js";
+import { PredefinedPagesResolver } from "./predefined-pages.resolver.js";
+import { PredefinedPagesService } from "./predefined-pages.service.js";
 
 @Module({
     imports: [MikroOrmModule.forFeature([PredefinedPage])],

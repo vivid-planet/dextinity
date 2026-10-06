@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { generatePayloadObjectTypes } from "../generate-payload-object-types";
+import { generatePayloadObjectTypes } from "../generate-payload-object-types.js";
 
 describe("generatePayloadObjectTypes", () => {
     it("should return empty string when hooksService is null", () => {

@@ -4,10 +4,10 @@ import type { LoggerService } from "@nestjs/common";
 import { Transform, type TransformCallback } from "stream";
 import { v4 as uuid } from "uuid";
 
-import { Product } from "./entities/product.entity";
-import type { ProductCategory } from "./entities/product-category.entity";
-import { ProductColor } from "./entities/product-color.entity";
-import type { ProductImporterInput } from "./product-importer.input";
+import { Product } from "./entities/product.entity.js";
+import type { ProductCategory } from "./entities/product-category.entity.js";
+import { ProductColor } from "./entities/product-color.entity.js";
+import type { ProductImporterInput } from "./product-importer.input.js";
 
 type ProductData = Omit<ProductImporterInput, "image"> & {
     id: string;

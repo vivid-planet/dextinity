@@ -1,14 +1,14 @@
-import { DynamicModule, Global, Module } from "@nestjs/common";
+import { type DynamicModule, Global, Module } from "@nestjs/common";
 
-import { DAM_DOMINANT_COLOR_CALCULATOR } from "./dam.constants";
-import { CalculateDominantImageColorCommand } from "./images/calculateDominantImageColor.command";
-import { DamDominantColorService } from "./images/dam-dominant-color.service";
-import { FileImagesResolver } from "./images/file-image.resolver";
-import { createImagesController } from "./images/images.controller";
-import { ImagesService } from "./images/images.service";
-import { IsAllowedImageAspectRatioConstraint } from "./images/validators/is-allowed-aspect-ratio.validator";
-import { IsAllowedImageSizeConstraint } from "./images/validators/is-allowed-image-size.validator";
-import { IsValidImageAspectRatioConstraint } from "./images/validators/is-valid-aspect-ratio.validator";
+import { DAM_DOMINANT_COLOR_CALCULATOR } from "./dam.constants.js";
+import { CalculateDominantImageColorCommand } from "./images/calculateDominantImageColor.command.js";
+import { DamDominantColorService } from "./images/dam-dominant-color.service.js";
+import { FileImagesResolver } from "./images/file-image.resolver.js";
+import { createImagesController } from "./images/images.controller.js";
+import { ImagesService } from "./images/images.service.js";
+import { IsAllowedImageAspectRatioConstraint } from "./images/validators/is-allowed-aspect-ratio.validator.js";
+import { IsAllowedImageSizeConstraint } from "./images/validators/is-allowed-image-size.validator.js";
+import { IsValidImageAspectRatioConstraint } from "./images/validators/is-valid-aspect-ratio.validator.js";
 
 interface DamImagesModuleOptions {
     damBasePath: string;

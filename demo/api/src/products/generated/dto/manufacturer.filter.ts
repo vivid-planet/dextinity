@@ -3,7 +3,7 @@
 import { IsOptional, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 import { Field, InputType } from "@nestjs/graphql";
-import { ProductTypeEnumFilter } from "./product-type.enum-filter";
+import { ProductTypeEnumFilter } from "./product-type.enum-filter.js";
 import { DateTimeFilter, IdFilter, NumberFilter, StringFilter } from "@dextinity/cms-api";
 @InputType()
 export class ManufacturerFilter {

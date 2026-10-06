@@ -1,5 +1,5 @@
 import { createLinkBlock, DamFileDownloadLinkBlock, EmailLinkBlock, ExternalLinkBlock, InternalLinkBlock, PhoneLinkBlock } from "@dextinity/cms-api";
-import { NewsLinkBlock } from "@src/news/blocks/news-link.block";
+import { NewsLinkBlock } from "@src/news/blocks/news-link.block.js";
 
 export const LinkBlock = createLinkBlock({
     supportedBlocks: {

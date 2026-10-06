@@ -1,4 +1,4 @@
-import { registerDecorator, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
+import { registerDecorator, type ValidationOptions, ValidatorConstraint, type ValidatorConstraintInterface } from "class-validator";
 
 export const IsSlug = (validationOptions?: ValidationOptions) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

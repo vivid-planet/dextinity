@@ -3,10 +3,10 @@ import { BaseEntity, FullTextType, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
-import { EntityInfo } from "../../entity-info/entity-info.decorator";
-import { PAGE_TREE_ENTITY } from "../page-tree.constants";
-import { PageTreeNodeCategory, PageTreeNodeInterface, PageTreeNodeVisibility } from "../types";
-import { resolvePageTreeNodeEntity } from "./resolve-page-tree-node-entity";
+import { EntityInfo } from "../../entity-info/entity-info.decorator.js";
+import { PAGE_TREE_ENTITY } from "../page-tree.constants.js";
+import { type PageTreeNodeCategory, type PageTreeNodeInterface, PageTreeNodeVisibility } from "../types.js";
+import { resolvePageTreeNodeEntity } from "./resolve-page-tree-node-entity.js";
 
 @EntityInfo({
     sql: `SELECT "name", "secondaryInformation", "visible", "id", 'PageTreeNode' AS "entityName" FROM "PageTreeNodeEntityInfo"`,

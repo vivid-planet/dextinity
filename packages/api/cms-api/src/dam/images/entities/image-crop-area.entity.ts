@@ -1,7 +1,7 @@
 import { Embeddable, Enum, Property } from "@mikro-orm/decorators/legacy";
 import { Field, Float, ObjectType } from "@nestjs/graphql";
 
-import { FocalPoint } from "../../../file-utils/focal-point.enum";
+import { FocalPoint } from "../../../file-utils/focal-point.enum.js";
 
 @Embeddable()
 @ObjectType()

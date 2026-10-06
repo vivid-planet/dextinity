@@ -1,9 +1,9 @@
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 
-import { BlockWarning, BlockWarningsServiceInterface } from "../../blocks/block";
-import { resolvePageTreeNodeEntity } from "../entities/resolve-page-tree-node-entity";
-import type { InternalLinkBlockData } from "./internal-link.block";
+import type { BlockWarning, BlockWarningsServiceInterface } from "../../blocks/block.js";
+import { resolvePageTreeNodeEntity } from "../entities/resolve-page-tree-node-entity.js";
+import type { InternalLinkBlockData } from "./internal-link.block.js";
 
 @Injectable()
 export class InternalLinkBlockWarningsService implements BlockWarningsServiceInterface<InternalLinkBlockData> {

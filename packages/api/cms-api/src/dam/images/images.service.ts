@@ -3,11 +3,11 @@ import { Inject, Injectable } from "@nestjs/common";
 import { createHmac } from "crypto";
 import { parse } from "path";
 
-import { FocalPoint } from "../../file-utils/focal-point.enum";
-import { DamConfig } from "../dam.config";
-import { DAM_CONFIG } from "../dam.constants";
-import { ImageInterface } from "./dto/image.interface";
-import { ImageParams } from "./dto/image.params";
+import { FocalPoint } from "../../file-utils/focal-point.enum.js";
+import type { DamConfig } from "../dam.config.js";
+import { DAM_CONFIG } from "../dam.constants.js";
+import type { ImageInterface } from "./dto/image.interface.js";
+import type { ImageParams } from "./dto/image.params.js";
 
 @Injectable()
 export class ImagesService {

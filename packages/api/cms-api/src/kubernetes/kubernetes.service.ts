@@ -3,12 +3,12 @@ import { Inject, Injectable, Logger, type OnModuleInit } from "@nestjs/common";
 import { addMinutes, differenceInMinutes } from "date-fns";
 import fs from "fs";
 
-import { CONTENT_SCOPE_ANNOTATION } from "../builds/builds.constants";
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { KubernetesJobStatus } from "./job-status.enum";
-import { KUBERNETES_CONFIG, PARENT_CRON_JOB_LABEL } from "./kubernetes.constants";
-import { KubernetesConfig } from "./kubernetes.module";
-import { getAnnotation, toLegacyLabelSelector } from "./kubernetes-metadata";
+import { CONTENT_SCOPE_ANNOTATION } from "../builds/builds.constants.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { KubernetesJobStatus } from "./job-status.enum.js";
+import { KUBERNETES_CONFIG, PARENT_CRON_JOB_LABEL } from "./kubernetes.constants.js";
+import type { KubernetesConfig } from "./kubernetes.module.js";
+import { getAnnotation, toLegacyLabelSelector } from "./kubernetes-metadata.js";
 
 @Injectable()
 export class KubernetesService implements OnModuleInit {

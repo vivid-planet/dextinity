@@ -1,22 +1,22 @@
 import { Type } from "class-transformer";
 import { IsEnum, IsString } from "class-validator";
 
-import { PixelImageBlock } from "../../dam/blocks/pixel-image.block";
-import { IsAllowedImageAspectRatio } from "../../dam/images/validators/is-allowed-aspect-ratio.validator";
+import { PixelImageBlock } from "../../dam/blocks/pixel-image.block.js";
+import { IsAllowedImageAspectRatio } from "../../dam/images/validators/is-allowed-aspect-ratio.validator.js";
 import {
-    Block,
+    type Block,
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockInput,
-    BlockInputInterface,
+    type BlockInputInterface,
     blockInputToData,
     createBlock,
-    ExtractBlockInput,
-    SimpleBlockInputInterface,
-} from "../block";
-import { ChildBlock } from "../decorators/child-block";
-import { ChildBlockInput } from "../decorators/child-block-input";
-import { BlockField } from "../decorators/field";
+    type ExtractBlockInput,
+    type SimpleBlockInputInterface,
+} from "../block.js";
+import { ChildBlock } from "../decorators/child-block.js";
+import { ChildBlockInput } from "../decorators/child-block-input.js";
+import { BlockField } from "../decorators/field.js";
 
 export enum ImagePosition {
     Left = "left",

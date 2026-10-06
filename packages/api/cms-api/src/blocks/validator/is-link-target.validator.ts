@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { isEmail, isString, isURL, registerDecorator, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
+import { isEmail, isString, isURL, registerDecorator, ValidatorConstraint, type ValidatorConstraintInterface } from "class-validator";
 
-import { isPhoneNumber } from "./is-phone-number.validator";
+import { isPhoneNumber } from "./is-phone-number.validator.js";
 
 export const IsLinkTarget = () => {
     // eslint-disable-next-line @typescript-eslint/no-wrapper-object-types

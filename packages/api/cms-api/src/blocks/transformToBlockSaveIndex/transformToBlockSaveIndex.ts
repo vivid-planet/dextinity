@@ -1,5 +1,5 @@
-import type { Block, BlockDataInterface, BlockIndex, BlockIndexItem } from "../block";
-import { FlatBlocks } from "../flat-blocks/flat-blocks";
+import type { Block, BlockDataInterface, BlockIndex, BlockIndexItem } from "../block.js";
+import { FlatBlocks } from "../flat-blocks/flat-blocks.js";
 
 export function transformToBlockSaveIndex(block: Block, blockData: BlockDataInterface): BlockIndex {
     const flatBlocks = new FlatBlocks(blockData, { name: block.name, visible: true, rootPath: "root" }); // breadthFirst or depthFirst is equally ok for the app, but the tests for original version are written for depth first traversal

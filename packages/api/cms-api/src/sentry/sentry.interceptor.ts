@@ -1,9 +1,9 @@
-import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor, Optional } from "@nestjs/common";
-import { GqlContextType, GqlExecutionContext } from "@nestjs/graphql";
-import { Observable, tap } from "rxjs";
+import { type CallHandler, type ExecutionContext, Inject, Injectable, type NestInterceptor, Optional } from "@nestjs/common";
+import { type GqlContextType, GqlExecutionContext } from "@nestjs/graphql";
+import { type Observable, tap } from "rxjs";
 
-import { SENTRY_CONFIG } from "./sentry.constants";
-import { SentryConfig } from "./sentry.module";
+import { SENTRY_CONFIG } from "./sentry.constants.js";
+import type { SentryConfig } from "./sentry.module.js";
 
 @Injectable()
 export class SentryInterceptor implements NestInterceptor {

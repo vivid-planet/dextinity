@@ -1,8 +1,8 @@
 import type { CrudGeneratorHooksService, CurrentUser, MutationError } from "@dextinity/cms-api";
 import { Field, ObjectType, registerEnumType } from "@nestjs/graphql";
 
-import type { ProductVariant } from "./entities/product-variant.entity";
-import type { ProductVariantInput, ProductVariantUpdateInput } from "./generated/dto/product-variant.input";
+import type { ProductVariant } from "./entities/product-variant.entity.js";
+import type { ProductVariantInput, ProductVariantUpdateInput } from "./generated/dto/product-variant.input.js";
 
 enum ProductVariantMutationErrorCode {
     nameTooShort = "nameTooShort",

@@ -1,11 +1,11 @@
-import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
-import { Readable } from "stream";
+import { Inject, Injectable, type OnModuleInit } from "@nestjs/common";
+import type { Readable } from "stream";
 
-import { BlobStorageConfig } from "../blob-storage.config";
-import { BLOB_STORAGE_CONFIG } from "../blob-storage.constants";
-import { BlobStorageFileUploadInterface } from "../dto/blob-storage-file-upload.interface";
-import { createHashedPath } from "../utils/create-hashed-path.util";
-import { BlobStorageBackendInterface, CreateFileOptions, StorageMetaData } from "./blob-storage-backend.interface";
+import type { BlobStorageConfig } from "../blob-storage.config.js";
+import { BLOB_STORAGE_CONFIG } from "../blob-storage.constants.js";
+import type { BlobStorageFileUploadInterface } from "../dto/blob-storage-file-upload.interface.js";
+import { createHashedPath } from "../utils/create-hashed-path.util.js";
+import type { BlobStorageBackendInterface, CreateFileOptions, StorageMetaData } from "./blob-storage-backend.interface.js";
 
 @Injectable()
 export class BlobStorageBackendService implements BlobStorageBackendInterface, OnModuleInit {

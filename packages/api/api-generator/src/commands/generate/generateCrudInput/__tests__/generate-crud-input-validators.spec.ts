@@ -9,15 +9,15 @@ import {
     IsString,
     Length,
     registerDecorator,
-    ValidationOptions,
+    type ValidationOptions,
     ValidatorConstraint,
-    ValidatorConstraintInterface,
+    type ValidatorConstraintInterface,
 } from "class-validator";
 import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
 
-import { generateCrud } from "../../generateCrud/generate-crud";
-import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
+import { generateCrud } from "../../generateCrud/generate-crud.js";
+import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper.js";
 
 export const IsTrueAsString = (validationOptions?: ValidationOptions) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -350,7 +350,7 @@ describe("GenerateDefinedValidatorDecorators", () => {
                 getImportDeclaration.getNamedImports().some((namedImport) => namedImport.getName() === "IsTrueAsString"),
             );
             expect(isTrueAsStringImport).toBeDefined();
-            expect(isTrueAsStringImport?.getModuleSpecifierValue()).toBe("../../generate-crud-input-validators.spec");
+            expect(isTrueAsStringImport?.getModuleSpecifierValue()).toBe("../../generate-crud-input-validators.spec.js");
 
             await orm.close();
         });

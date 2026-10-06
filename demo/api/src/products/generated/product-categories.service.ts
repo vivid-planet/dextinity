@@ -2,7 +2,7 @@
 // You may choose to use this file as scaffold by moving this file out of generated folder and removing this comment.
 import { EntityManager, raw } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
-import { ProductCategory } from "../entities/product-category.entity";
+import { ProductCategory } from "../entities/product-category.entity.js";
 @Injectable()
 export class ProductCategoriesService {
     constructor(protected readonly entityManager: EntityManager) {}

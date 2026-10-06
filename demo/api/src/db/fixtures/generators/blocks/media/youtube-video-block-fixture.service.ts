@@ -1,8 +1,8 @@
-import { ExtractBlockInputFactoryProps, YouTubeVideoBlock } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps, YouTubeVideoBlock } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { faker } from "@src/db/fixtures/faker";
+import { faker } from "@src/db/fixtures/faker.js";
 
-import { PixelImageBlockFixtureService } from "./pixel-image-block-fixture.service";
+import { PixelImageBlockFixtureService } from "./pixel-image-block-fixture.service.js";
 
 @Injectable()
 export class YouTubeVideoBlockFixtureService {

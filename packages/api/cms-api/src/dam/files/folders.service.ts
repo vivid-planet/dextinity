@@ -1,20 +1,21 @@
-import { EntityManager, MikroORM, QueryBuilder, raw } from "@mikro-orm/postgresql";
+import { EntityManager, MikroORM, type QueryBuilder, raw } from "@mikro-orm/postgresql";
 import { forwardRef, Inject, Injectable, Logger } from "@nestjs/common";
 import JSZip from "jszip";
 
-import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service";
-import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util";
-import { DextinityEntityNotFoundException } from "../../common/errors/entity-not-found.exception";
-import { SortDirection } from "../../common/sorting/sort-direction.enum";
-import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
-import { DamConfig } from "../dam.config";
-import { DAM_CONFIG } from "../dam.constants";
-import { DamScopeInterface } from "../types";
-import { DamFolderListPositionArgs, FolderArgsInterface } from "./dto/folder.args";
-import { UpdateFolderInput } from "./dto/folder.input";
-import { FOLDER_TABLE_NAME, FolderInterface } from "./entities/folder.entity";
-import { resolveFolderEntity } from "./entities/resolve-dam-entity";
-import { FilesService } from "./files.service";
+import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service.js";
+import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util.js";
+import { DextinityEntityNotFoundException } from "../../common/errors/entity-not-found.exception.js";
+import type { SortDirection } from "../../common/sorting/sort-direction.enum.js";
+import type { WrapperType } from "../../common/types/wrapper-type.js";
+import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal.js";
+import type { DamConfig } from "../dam.config.js";
+import { DAM_CONFIG } from "../dam.constants.js";
+import type { DamScopeInterface } from "../types.js";
+import type { DamFolderListPositionArgs, FolderArgsInterface } from "./dto/folder.args.js";
+import type { UpdateFolderInput } from "./dto/folder.input.js";
+import { FOLDER_TABLE_NAME, type FolderInterface } from "./entities/folder.entity.js";
+import { resolveFolderEntity } from "./entities/resolve-dam-entity.js";
+import { FilesService } from "./files.service.js";
 
 // The populate hint stays `never` because the QueryBuilder uses it contravariantly, which makes `any` incompatible
 // with every concrete hint.
@@ -88,7 +89,7 @@ export class FoldersService {
     protected readonly logger = new Logger(FoldersService.name);
 
     constructor(
-        @Inject(forwardRef(() => FilesService)) private readonly filesService: FilesService,
+        @Inject(forwardRef(() => FilesService)) private readonly filesService: WrapperType<FilesService>,
         @Inject(forwardRef(() => BlobStorageBackendService)) private readonly blobStorageBackendService: BlobStorageBackendService,
         @Inject(DAM_CONFIG) private readonly config: DamConfig,
         private readonly orm: MikroORM,

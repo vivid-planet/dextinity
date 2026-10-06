@@ -3,8 +3,8 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { UnauthorizedException } from "@nestjs/common";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 
-import { PredefinedPageInput } from "./dto/predefined-page.input";
-import { PredefinedPage } from "./entities/predefined-page.entity";
+import { PredefinedPageInput } from "./dto/predefined-page.input.js";
+import { PredefinedPage } from "./entities/predefined-page.entity.js";
 
 @Resolver(() => PredefinedPage)
 @RequiredPermission("pageTree")

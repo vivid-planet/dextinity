@@ -1,6 +1,6 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockInput,
     blockInputToData,
     ChildBlock,
@@ -8,10 +8,10 @@ import {
     createBlock,
     createOptionalBlock,
     DamImageBlock,
-    ExtractBlockData,
-    ExtractBlockInput,
+    type ExtractBlockData,
+    type ExtractBlockInput,
 } from "@dextinity/cms-api";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block";
+import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
 import { ValidateNested } from "class-validator";
 
 const FullWidthImageContentBlock = createOptionalBlock(RichTextBlock);

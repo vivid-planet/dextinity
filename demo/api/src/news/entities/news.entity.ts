@@ -1,5 +1,5 @@
 import {
-    BlockDataInterface,
+    type BlockDataInterface,
     CrudField,
     CrudGenerator,
     DamImageBlock,
@@ -17,8 +17,8 @@ import { Field, ID, InputType, ObjectType, registerEnumType } from "@nestjs/grap
 import { IsString } from "class-validator";
 import { v4 as uuid } from "uuid";
 
-import { NewsContentBlock } from "../blocks/news-content.block";
-import { NewsComment } from "./news-comment.entity";
+import { NewsContentBlock } from "../blocks/news-content.block.js";
+import { NewsComment } from "./news-comment.entity.js";
 
 export enum NewsStatus {
     active = "active",

@@ -1,4 +1,4 @@
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 
 export class PaginatedResponseFactory {

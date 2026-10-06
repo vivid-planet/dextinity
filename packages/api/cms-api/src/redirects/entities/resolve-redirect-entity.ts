@@ -1,7 +1,7 @@
 import type { EntityClass } from "@mikro-orm/postgresql";
 
-import { resolveEntityClass } from "../../mikro-orm/helper/resolve-entity-class";
-import type { RedirectInterface } from "./redirect-entity.factory";
+import { resolveEntityClass } from "../../mikro-orm/helper/resolve-entity-class.js";
+import type { RedirectInterface } from "./redirect-entity.factory.js";
 
 const REDIRECT_ENTITY_NAME = "Redirect";
 

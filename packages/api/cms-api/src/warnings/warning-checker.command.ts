@@ -1,20 +1,20 @@
-import { EntityClass, MikroORM } from "@mikro-orm/core";
+import { type EntityClass, MikroORM } from "@mikro-orm/core";
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { ModuleRef, Reflector } from "@nestjs/core";
 import { Command, CommandRunner } from "nest-commander";
 
-import { Block, BlockData, BlockWarning, BlockWarningsServiceInterface } from "../blocks/block";
-import { FlatBlocks } from "../blocks/flat-blocks/flat-blocks";
-import { isInjectableService } from "../common/helper/is-injectable-service.helper";
-import { DiscoverService } from "../dependencies/discover.service";
-import { SCOPED_ENTITY_METADATA_KEY, ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator";
-import { getScopesForScopedEntity } from "../user-permissions/get-scopes-for-scoped-entity";
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { CREATE_WARNINGS_METADATA_KEY, CreateWarningsFunction, CreateWarningsMeta } from "./decorators/create-warnings.decorator";
-import { Warning } from "./entities/warning.entity";
-import { WarningService } from "./warning.service";
+import type { Block, BlockData, BlockWarning, BlockWarningsServiceInterface } from "../blocks/block.js";
+import { FlatBlocks } from "../blocks/flat-blocks/flat-blocks.js";
+import { isInjectableService } from "../common/helper/is-injectable-service.helper.js";
+import { DiscoverService } from "../dependencies/discover.service.js";
+import { SCOPED_ENTITY_METADATA_KEY, type ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator.js";
+import { getScopesForScopedEntity } from "../user-permissions/get-scopes-for-scoped-entity.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { CREATE_WARNINGS_METADATA_KEY, type CreateWarningsFunction, type CreateWarningsMeta } from "./decorators/create-warnings.decorator.js";
+import { Warning } from "./entities/warning.entity.js";
+import { WarningService } from "./warning.service.js";
 
 interface RootBlockEntityData {
     primaryKey: string;

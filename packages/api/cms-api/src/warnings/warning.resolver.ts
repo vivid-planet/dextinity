@@ -2,19 +2,19 @@ import { EntityManager, type QBFilterQuery, type QueryBuilder, raw, type RawQuer
 import { UnauthorizedException } from "@nestjs/common";
 import { Args, ID, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
-import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
-import { gqlArgsToMikroOrmQuery, splitSearchString } from "../common/filter/mikro-orm";
-import { EntityInfoObject } from "../entity-info/entity-info.object";
-import { EntityInfoService } from "../entity-info/entity-info.service";
-import { isScopeWithin } from "../user-permissions/access-control.service";
-import { AffectedEntity } from "../user-permissions/decorators/affected-entity.decorator";
-import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
-import { CurrentUser } from "../user-permissions/dto/current-user";
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { PaginatedWarnings } from "./dto/paginated-warnings";
-import { WarningsArgs } from "./dto/warnings.args";
-import { Warning } from "./entities/warning.entity";
-import { referencesEntityInfo, remapWarningOrderBy, remapWarningQueryFields, type WarningQuery } from "./warning-query-fields.helper";
+import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator.js";
+import { gqlArgsToMikroOrmQuery, splitSearchString } from "../common/filter/mikro-orm.js";
+import { EntityInfoObject } from "../entity-info/entity-info.object.js";
+import { EntityInfoService } from "../entity-info/entity-info.service.js";
+import { isScopeWithin } from "../user-permissions/access-control.service.js";
+import { AffectedEntity } from "../user-permissions/decorators/affected-entity.decorator.js";
+import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { CurrentUser } from "../user-permissions/dto/current-user.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { PaginatedWarnings } from "./dto/paginated-warnings.js";
+import { WarningsArgs } from "./dto/warnings.args.js";
+import { Warning } from "./entities/warning.entity.js";
+import { referencesEntityInfo, remapWarningOrderBy, remapWarningQueryFields, type WarningQuery } from "./warning-query-fields.helper.js";
 
 @Resolver(() => Warning)
 @RequiredPermission(["warnings"], { skipScopeCheck: true })

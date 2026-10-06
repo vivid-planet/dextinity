@@ -2,9 +2,9 @@ import { type ContextId, ContextIdFactory, type ModuleRef } from "@nestjs/core";
 import { REQUEST_CONTEXT_ID } from "@nestjs/core/router/request/request-constants";
 import type { FieldMiddleware, MiddlewareContext, NextFn } from "@nestjs/graphql";
 
-import { getRequestContextHeadersFromRequest } from "../common/decorators/request-context.decorator";
-import { isBlockDataInterface } from "./block";
-import { transformToPlain } from "./blocks-transformer";
+import { getRequestContextHeadersFromRequest } from "../common/decorators/request-context.decorator.js";
+import { isBlockDataInterface } from "./block.js";
+import { transformToPlain } from "./blocks-transformer.js";
 
 export class BlocksTransformerMiddlewareFactory {
     static create(moduleRef: ModuleRef): FieldMiddleware {

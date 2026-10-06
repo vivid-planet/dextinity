@@ -1,9 +1,9 @@
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { Field, InputType } from "@nestjs/graphql";
 import { IsEmail, IsUrl } from "class-validator";
 
-import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "../../types";
-import { IsValidRedirectURL } from "../validator/redirect-url.validator";
+import type { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "../../types.js";
+import { IsValidRedirectURL } from "../validator/redirect-url.validator.js";
 
 export interface SubscribeInputInterface {
     email: string;

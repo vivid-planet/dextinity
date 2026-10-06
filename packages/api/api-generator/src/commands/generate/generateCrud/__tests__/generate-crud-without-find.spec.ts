@@ -5,8 +5,8 @@ import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storage
 import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
 
-import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
-import { generateCrud } from "../generate-crud";
+import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper.js";
+import { generateCrud } from "../generate-crud.js";
 
 @Embeddable()
 export class TestEntityScope {
@@ -49,7 +49,7 @@ describe("GenerateCrud without find condition", () => {
                 source
                     .getImportDeclarations()
                     .filter((imp) => imp.getModuleSpecifierValue() === "@mikro-orm/postgresql")
-                    .map((imp) => imp.getNamedImports().map((namedImp) => namedImp.getText()))
+                    .map((imp) => imp.getNamedImports().map((namedImp) => namedImp.getName()))
                     .flat(),
             ).toContain("ObjectQuery");
 

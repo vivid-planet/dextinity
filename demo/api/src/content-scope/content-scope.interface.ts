@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-imports
-import { ContentScope } from "@dextinity/cms-api";
-import type { ContentScope as BaseContentScope } from "@src/site-configs";
+import type { ContentScope } from "@dextinity/cms-api";
+import type { ContentScope as BaseContentScope } from "@src/site-configs.js";
 
 declare module "@dextinity/cms-api" {
     interface ContentScope extends BaseContentScope {

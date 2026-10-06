@@ -2,9 +2,9 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { CONTEXT } from "@nestjs/graphql";
 
-import { getRequestContextHeadersFromRequest } from "../common/decorators/request-context.decorator";
-import { createReadApi, PageTreeReadApi, PageTreeReadApiOptions } from "./page-tree-read-api";
-import { PageTreeNodeInterface, PageTreeNodeVisibility as Visibility, ScopeInterface } from "./types";
+import { getRequestContextHeadersFromRequest } from "../common/decorators/request-context.decorator.js";
+import { createReadApi, type PageTreeReadApi, type PageTreeReadApiOptions } from "./page-tree-read-api.js";
+import { type PageTreeNodeInterface, PageTreeNodeVisibility as Visibility, type ScopeInterface } from "./types.js";
 
 @Injectable()
 export class PageTreeReadApiService {

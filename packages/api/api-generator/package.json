@@ -8,9 +8,13 @@
         "url": "https://github.com/vivid-planet/dextinity"
     },
     "license": "BSD-2-Clause",
-    "type": "commonjs",
-    "main": "lib/apiGenerator.js",
-    "typings": "lib/apiGenerator.d.ts",
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./lib/apiGenerator.d.ts",
+            "default": "./lib/apiGenerator.js"
+        }
+    },
     "bin": {
         "dextinity-api-generator": "bin/api-generator.js"
     },
@@ -41,7 +45,6 @@
         "commander": "^9.5.0",
         "pluralize": "^8.0.0",
         "ts-morph": "^25.0.1",
-        "ts-node": "^10.9.2",
         "typescript": "^5.9.3"
     },
     "devDependencies": {

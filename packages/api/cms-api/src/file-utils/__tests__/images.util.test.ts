@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { FocalPoint } from "../focal-point.enum";
-import { getCenteredPosition, getMaxDimensionsFromArea, getSupportedMimeType } from "../images.util";
+import { FocalPoint } from "../focal-point.enum.js";
+import { getCenteredPosition, getMaxDimensionsFromArea, getSupportedMimeType } from "../images.util.js";
 
 describe("getMaxDimensionsFromArea", () => {
     it("returns full area for 1:1 aspect ratio in a square area", () => {

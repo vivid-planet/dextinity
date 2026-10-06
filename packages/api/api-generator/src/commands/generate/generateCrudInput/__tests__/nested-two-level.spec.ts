@@ -1,12 +1,12 @@
 import { Entity, ManyToOne, OneToMany, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
-import { BaseEntity, Collection, defineConfig, MikroORM, Ref } from "@mikro-orm/postgresql";
+import { BaseEntity, Collection, defineConfig, MikroORM, type Ref } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { v4 as uuid } from "uuid";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { generateInputHandling } from "../../generateCrud/generate-crud";
-import { testPermission } from "../../utils/test-helper";
-import { generateCrudInput } from "../generate-crud-input";
+import { generateInputHandling } from "../../generateCrud/generate-crud.js";
+import { testPermission } from "../../utils/test-helper.js";
+import { generateCrudInput } from "../generate-crud-input.js";
 
 @Entity()
 export class Foo extends BaseEntity {
@@ -74,7 +74,7 @@ describe("nested two level", () => {
         }
 
         expect(fooInputDto.content).toContain(`bars: FooNestedBarInput[];`);
-        expect(fooInputDto.content).toContain(`import { FooNestedBarInput } from "./foo-nested-bar.input";`);
+        expect(fooInputDto.content).toContain(`import { FooNestedBarInput } from "./foo-nested-bar.input.js";`);
     });
     it("create input handling should work", async () => {
         const { code, imports } = generateInputHandling(

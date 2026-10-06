@@ -1,5 +1,5 @@
-import type { MigrateOptions } from "../block";
+import type { MigrateOptions } from "../block.js";
 
 type BlockFactoryNameOrOptions = string | { name: string; migrate?: MigrateOptions };
 
-export { BlockFactoryNameOrOptions };
+export type { BlockFactoryNameOrOptions };

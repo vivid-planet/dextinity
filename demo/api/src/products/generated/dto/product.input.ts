@@ -3,13 +3,21 @@
 import { Field, InputType, ID } from "@nestjs/graphql";
 import { Transform, Type } from "class-transformer";
 import { GraphQLLocalDate } from "graphql-scalars";
-import { BlockInputInterface, DamImageBlock, IsNullable, IsSlug, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
+import {
+    type BlockInputInterface,
+    DamImageBlock,
+    IsNullable,
+    IsSlug,
+    PartialType,
+    RootBlockInputScalar,
+    isBlockInputInterface,
+} from "@dextinity/cms-api";
 import { IsArray, IsBoolean, IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, ValidateNested } from "class-validator";
-import { ProductDimensions, ProductDiscounts, ProductPriceRange, ProductStatus } from "../../entities/product.entity";
-import { ProductType } from "../../entities/product-type.enum";
-import { ProductNestedProductStatisticsInput } from "./product-nested-product-statistics.input";
-import { ProductNestedProductColorInput } from "./product-nested-product-color.input";
-import { ProductNestedProductToTagInput } from "./product-nested-product-to-tag.input";
+import { ProductDimensions, ProductDiscounts, ProductPriceRange, ProductStatus } from "../../entities/product.entity.js";
+import { ProductType } from "../../entities/product-type.enum.js";
+import { ProductNestedProductStatisticsInput } from "./product-nested-product-statistics.input.js";
+import { ProductNestedProductColorInput } from "./product-nested-product-color.input.js";
+import { ProductNestedProductToTagInput } from "./product-nested-product-to-tag.input.js";
 @InputType()
 export class ProductInput {
     @IsNotEmpty()

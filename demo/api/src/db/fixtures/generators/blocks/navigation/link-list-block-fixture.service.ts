@@ -1,9 +1,9 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { LinkListBlock } from "@src/common/blocks/link-list.block";
-import { faker } from "@src/db/fixtures/faker";
-import { TextLinkBlockFixtureService } from "@src/db/fixtures/generators/blocks/navigation/text-link-block-fixture.service";
-import { UserGroup } from "@src/user-groups/user-group";
+import type { LinkListBlock } from "@src/common/blocks/link-list.block.js";
+import { faker } from "@src/db/fixtures/faker.js";
+import { TextLinkBlockFixtureService } from "@src/db/fixtures/generators/blocks/navigation/text-link-block-fixture.service.js";
+import { UserGroup } from "@src/user-groups/user-group.js";
 
 @Injectable()
 export class LinkListBlockFixtureService {

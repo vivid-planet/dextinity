@@ -1,4 +1,4 @@
-import { type BlockInputFactory, type BlockInputInterface, isBlockInputInterface } from "../block";
+import { type BlockInputFactory, type BlockInputInterface, isBlockInputInterface } from "../block.js";
 
 // Decorates a BlockInputFactory to ensure that it is only applied on raw data
 export function strictBlockInputFactoryDecorator<T extends BlockInputInterface = BlockInputInterface>(

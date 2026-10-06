@@ -7,9 +7,9 @@ import { Min } from "class-validator";
 import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
 
-import { generateCrudInput } from "../../generateCrudInput/generate-crud-input";
-import { formatSource, parseSource, testPermission } from "../../utils/test-helper";
-import { generateCrud } from "../generate-crud";
+import { generateCrudInput } from "../../generateCrudInput/generate-crud-input.js";
+import { formatSource, parseSource, testPermission } from "../../utils/test-helper.js";
+import { generateCrud } from "../generate-crud.js";
 
 @Entity()
 class TestEntityWithPositionField extends BaseEntity {

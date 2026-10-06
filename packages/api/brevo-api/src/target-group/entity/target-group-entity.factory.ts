@@ -1,12 +1,12 @@
 import { DocumentInterface, resolveEntityClass } from "@dextinity/cms-api";
 import { Embedded, Entity, ManyToMany, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { Collection, OptionalProps } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
-import { EmailCampaignInterface } from "../../email-campaign/entities/email-campaign-entity.factory";
-import { BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "../../types";
+import type { EmailCampaignInterface } from "../../email-campaign/entities/email-campaign-entity.factory.js";
+import type { BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "../../types.js";
 
 export interface TargetGroupInterface {
     [OptionalProps]?: "createdAt" | "updatedAt" | "totalSubscribers";

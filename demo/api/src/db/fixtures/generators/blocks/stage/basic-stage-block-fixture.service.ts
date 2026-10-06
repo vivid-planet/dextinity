@@ -1,12 +1,12 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { faker } from "@src/db/fixtures/faker";
-import { Alignment as BasicStageBlockAlignment, BasicStageBlock } from "@src/documents/pages/blocks/basic-stage.block";
+import { faker } from "@src/db/fixtures/faker.js";
+import { Alignment as BasicStageBlockAlignment, type BasicStageBlock } from "@src/documents/pages/blocks/basic-stage.block.js";
 
-import { MediaBlockFixtureService } from "../media/media-block.fixture.service";
-import { CallToActionListBlockFixtureService } from "../navigation/call-to-action-list-block.service";
-import { HeadingBlockFixtureService } from "../text-and-content/heading-block-fixture.service";
-import { RichTextBlockFixtureService } from "../text-and-content/rich-text-block-fixture.service";
+import { MediaBlockFixtureService } from "../media/media-block.fixture.service.js";
+import { CallToActionListBlockFixtureService } from "../navigation/call-to-action-list-block.service.js";
+import { HeadingBlockFixtureService } from "../text-and-content/heading-block-fixture.service.js";
+import { RichTextBlockFixtureService } from "../text-and-content/rich-text-block-fixture.service.js";
 
 @Injectable()
 export class BasicStageBlockFixtureService {

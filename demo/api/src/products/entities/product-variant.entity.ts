@@ -1,12 +1,12 @@
-import { BlockDataInterface, CrudField, CrudGenerator, DamImageBlock, RootBlock, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
+import { type BlockDataInterface, CrudField, CrudGenerator, DamImageBlock, RootBlock, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
 import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
-import { BaseEntity, OptionalProps, Ref } from "@mikro-orm/postgresql";
+import { BaseEntity, OptionalProps, type Ref } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { Min } from "class-validator";
 import { v4 as uuid } from "uuid";
 
-import { ProductVariantService } from "../product-variant.service";
-import { Product } from "./product.entity";
+import { ProductVariantService } from "../product-variant.service.js";
+import { Product } from "./product.entity.js";
 
 @ObjectType()
 @Entity()

@@ -2,8 +2,8 @@ import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { MikroORM } from "@mikro-orm/postgresql";
 import { Command, CommandRunner } from "nest-commander";
 
-import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
-import { TargetGroupsService } from "../target-group/target-groups.service";
+import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service.js";
+import { TargetGroupsService } from "../target-group/target-groups.service.js";
 
 @Command({
     name: "delete-unsubscribed-brevo-contacts",

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { SKIP_AUTH_SERVICE } from "../util/auth-service.interface";
-import { createBasicAuthService } from "./basic.auth-service";
+import { SKIP_AUTH_SERVICE } from "../util/auth-service.interface.js";
+import { createBasicAuthService } from "./basic.auth-service.js";
 
 describe("createBasicAuthService", () => {
     const createService = (username: string, password: string) => createBasicAuthService({ username, password });

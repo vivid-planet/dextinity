@@ -123,7 +123,7 @@ When in doubt, create a migration — it is always the safer choice. See [migrat
 
 ### Apply changes in order
 
-1. **API block** — update `BlockData` and `BlockInput` classes, decorators, validators. Update the `description` if the block's purpose changed.
+1. **API block** — update `BlockData` and `BlockInput` classes, decorators, validators. Update the `description` if the block's purpose changed. See [Description](references/api-patterns.md#description).
 2. **Migration** — create and register if needed. If `createBlock` still takes the name as a string, convert it to the options object. See [migration.md](references/migration.md).
 3. **Admin block** — update the `blocks` object: add/remove entries, labels, options.
 4. **Site block** (if exists) — update destructured fields and rendered output.
@@ -140,7 +140,7 @@ File: `{block-name}.block.ts` (kebab-case). Place in the blocks directory found 
 
 - `BlockData` uses `@BlockField()` for fields, `@ChildBlock(X)` for child blocks.
 - `BlockInput` uses validators + `@ChildBlockInput(X)` for child blocks; implement `transformToBlockData()` with `inputToData`.
-- Export with `createBlock(BlockData, BlockInput, { name: "BlockName", description: "…" })`. Add `description` only where the name and fields don't say what the block is for, such as a block without fields or one that stores an id instead of the content.
+- Export with `createBlock(BlockData, BlockInput, { name: "BlockName", description: "…" })`. Add `description` only where the name and fields don't say what the block is for, such as a block without fields or one that stores an id instead of the content. See [Description](references/api-patterns.md#description).
 - Enums require `@BlockField({ type: "enum", enum: MyEnum })` — never use `type: "enum"` for numeric options.
 - For list blocks: create the item block first, then `createListBlock({ block: ItemBlock }, "MyList")`.
 

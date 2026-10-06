@@ -48,7 +48,7 @@
         "@dextinity/brevo-api": "workspace:*",
         "@dextinity/cms-api": "workspace:*",
         "@dextinity/mail-react": "workspace:*",
-        "@faker-js/faker": "^10.4.0",
+        "@faker-js/faker": "^10.6.0",
         "@kubernetes/client-node": "^1.4.0",
         "@mikro-orm/cli": "^6.6.14",
         "@mikro-orm/core": "^6.6.14",

@@ -1,6 +1,6 @@
 {
     "name": "@comet/site-nextjs",
-    "version": "9.5.1",
+    "version": "9.5.2",
     "description": "Comet Site Next.js package",
     "repository": {
         "type": "git",

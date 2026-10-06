@@ -359,11 +359,121 @@ The core packages are ESM-only from v12 on and expose their subpaths through an 
 + import { NestFactory, repl } from "@nestjs/core";
 ```
 
-A CommonJS API keeps working: Node loads the ESM packages through `require(esm)`, which the Node version MikroORM v7 already requires supports. Switching your API to ESM is optional and not needed for v11.
+### Convert the API to ESM
+
+`@dextinity/cms-api`, `@dextinity/brevo-api` and `@dextinity/api-generator` are ESM-only from v11 on. A CommonJS API could still load them through `require(esm)`, but every dependency that ships separate CommonJS and ESM builds would then be loaded twice — once for your code and once for Dextinity. For `graphql-scalars` this breaks the schema with `Schema must contain uniquely named types but contains multiple types named "LocalDate"`. Convert the API to ESM:
+
+```diff title="api/package.json"
+{
+-   "type": "commonjs",
++   "type": "module",
+}
+```
+
+Add `.js` to every relative and `@src/` import. TypeScript reports the ones that are missing (TS2835 for relative imports, TS2307 for `@src/` imports), and maps `./foo.js` to `./foo.ts`. A directory import becomes `./foo/index.js`:
+
+```diff
+- import { AppModule } from "@src/app.module";
+- import { createConfig } from "./config/config";
++ import { AppModule } from "@src/app.module.js";
++ import { createConfig } from "./config/config.js";
+```
+
+Enable `verbatimModuleSyntax`. The development scripts run the source through `@swc-node/register`, which compiles every file on its own and can't tell whether an import is a type. ES modules fail to link when a named import doesn't exist at runtime, so type-only imports have to say so:
+
+```diff title="api/tsconfig.json"
+{
+    "compilerOptions": {
++       "verbatimModuleSyntax": true,
+    }
+}
+```
+
+Run `npx tsc --noEmit` and mark every import and re-export TypeScript reports (TS1484, TS1205) as `type`. Don't mark class imports as `type`: the emitted decorator metadata needs them for dependency injection.
+
+Replace the CommonJS-only constructs:
+
+```diff
+- path.resolve(__dirname, "migrations")
++ path.resolve(import.meta.dirname, "migrations")
+```
+
+```diff title="api/src/db/ormconfig.cli.ts"
+- export = config;
++ export default config;
+```
+
+JSON imports need an import attribute. `@swc-node/register` doesn't resolve path aliases for imports with attributes, so use a relative path:
+
+```diff title="api/src/config/config.ts"
+- import dextinityConfig from "@src/dextinity-config.json";
++ /* eslint-disable @dextinity/no-other-module-relative-import -- @swc-node/register doesn't resolve path aliases for imports with attributes */
++ import dextinityConfig from "../dextinity-config.json" with { type: "json" };
+```
+
+Run the TypeScript scripts with `@swc-node/register` instead of `ts-node`. Nest CLI rewrites the `@src/` aliases in the build output, so `tsconfig-paths` isn't needed anymore:
+
+```diff title="api/package.json"
+{
+    "scripts": {
+-       "console": "... ts-node --transpile-only -r tsconfig-paths/register src/console.ts",
++       "console": "... node --import @swc-node/register/esm-register src/console.ts",
+    },
+    "devDependencies": {
+-       "ts-node": "^10.9.2",
+-       "tsconfig-paths": "^3.15.0",
+    }
+}
+```
+
+Remove `import "tsconfig-paths/register";` from `src/repl.ts`.
+
+Static imports are evaluated before the module body runs, so `require("./tracing")` at the top of `main.ts` no longer runs before the application is loaded. Move the bootstrap code to `src/bootstrap.ts` and load it dynamically after tracing:
+
+```ts title="api/src/main.ts"
+if (process.env.TRACING == "production") {
+    await import("./tracing.production.js");
+} else if (process.env.TRACING == "dev") {
+    await import("./tracing.dev.js");
+}
+
+// Imported dynamically so that the application's modules are loaded after tracing has been set up and can be instrumented.
+await import("./bootstrap.js");
+```
+
+OpenTelemetry instrumentations only patch ES modules through a loader hook. If you use them, add `@opentelemetry/instrumentation` to the dependencies and register the hook at the top of the tracing file:
+
+```ts title="api/src/tracing.dev.ts"
+import { register } from "node:module";
+
+register("@opentelemetry/instrumentation/hook.mjs", import.meta.url);
+```
+
+Circular imports that worked in CommonJS can now fail on startup with `ReferenceError: Cannot access 'X' before initialization`. TypeScript references the class in the emitted decorator metadata, which ESM evaluates before the class is defined. Wrap the type so that the metadata falls back to `Object`:
+
+- For entity relations, use MikroORM's `Rel<T>`:
+
+    ```diff
+    + import { type Rel } from "@mikro-orm/postgresql";
+
+      @ManyToOne(() => News)
+    - news!: News;
+    + news!: Rel<News>;
+    ```
+
+- For injected services, inject them with `forwardRef()` and wrap the type in a type alias:
+
+    ```ts
+    type WrapperType<T> = T;
+
+    constructor(@Inject(forwardRef(() => FilesService)) private readonly filesService: WrapperType<FilesService>) {}
+    ```
+
+The packages only expose their entry points now. Replace deep imports such as `@dextinity/cms-api/lib/...` with imports from the package root.
 
 ### Regenerate the generated API files
 
-The API Generator reads MikroORM metadata, which changed shape in v7. Regenerate and check that the output is unchanged:
+The API Generator reads MikroORM metadata, which changed shape in v7, and now generates ESM code. Regenerate and check that the only changes are `.js` extensions on relative imports and `type` on type-only imports:
 
 ```sh
 cd api

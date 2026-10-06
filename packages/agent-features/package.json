@@ -1,6 +1,6 @@
 {
     "name": "@comet/agent-features",
-    "version": "9.5.1",
+    "version": "9.5.2",
     "description": "Agent features (skills and rules) for Comet projects",
     "repository": {
         "directory": "packages/agent-features",

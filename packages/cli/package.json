@@ -1,6 +1,6 @@
 {
     "name": "@comet/cli",
-    "version": "9.5.1",
+    "version": "9.5.2",
     "description": "A collection of CLI tools for Comet projects",
     "repository": {
         "directory": "packages/cli",

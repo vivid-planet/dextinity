@@ -1,6 +1,6 @@
 {
     "name": "@comet/admin-date-time",
-    "version": "9.5.1",
+    "version": "9.5.2",
     "description": "Comet Admin Date Time component",
     "repository": {
         "directory": "packages/admin/admin-date-time",

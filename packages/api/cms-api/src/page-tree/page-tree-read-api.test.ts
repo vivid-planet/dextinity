@@ -1,11 +1,11 @@
 import { parseISO } from "date-fns";
 import { describe, expect, it } from "vitest";
 
-import { SortDirection } from "../common/sorting/sort-direction.enum";
-import { getError, NoErrorThrownError } from "../common/test/get-error";
-import { PageTreeNodeSortField } from "./dto/page-tree-node.sort";
-import { createReadApi, paginatePreloadedNodes, sortPreloadedNodes } from "./page-tree-read-api";
-import type { PageTreeNodeInterface } from "./types";
+import { SortDirection } from "../common/sorting/sort-direction.enum.js";
+import { getError, NoErrorThrownError } from "../common/test/get-error.js";
+import { PageTreeNodeSortField } from "./dto/page-tree-node.sort.js";
+import { createReadApi, paginatePreloadedNodes, sortPreloadedNodes } from "./page-tree-read-api.js";
+import type { PageTreeNodeInterface } from "./types.js";
 
 describe("PageTreeReadApi", () => {
     describe("getNodeByPath", () => {

@@ -6,23 +6,23 @@ import {
     resolveEntityClass,
     validateNotModified,
 } from "@dextinity/cms-api";
-import { EntityManager, FindOptions, wrap } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import { EntityManager, type FindOptions, wrap } from "@mikro-orm/postgresql";
+import type { Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Info, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
-import { GraphQLResolveInfo } from "graphql";
-import { TargetGroupInterface } from "src/target-group/entity/target-group-entity.factory";
+import type { GraphQLResolveInfo } from "graphql";
 
-import { BrevoApiCampaignsService } from "../brevo-api/brevo-api-campaigns.service";
-import { BrevoApiCampaignStatistics } from "../brevo-api/dto/brevo-api-campaign-statistics";
-import { EcgRtrListService } from "../brevo-contact/ecg-rtr-list/ecg-rtr-list.service";
-import { EmailCampaignScopeInterface } from "../types";
-import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe";
-import { EmailCampaignArgsFactory } from "./dto/email-campaign-args.factory";
-import { EmailCampaignInputInterface } from "./dto/email-campaign-input.factory";
-import { SendTestEmailCampaignArgs } from "./dto/send-test-email-campaign.args";
-import { EmailCampaignsService } from "./email-campaigns.service";
-import { EmailCampaignInterface } from "./entities/email-campaign-entity.factory";
-import { SendingState } from "./sending-state.enum";
+import { BrevoApiCampaignsService } from "../brevo-api/brevo-api-campaigns.service.js";
+import { BrevoApiCampaignStatistics } from "../brevo-api/dto/brevo-api-campaign-statistics.js";
+import { EcgRtrListService } from "../brevo-contact/ecg-rtr-list/ecg-rtr-list.service.js";
+import type { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory.js";
+import type { EmailCampaignScopeInterface } from "../types.js";
+import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe.js";
+import { EmailCampaignArgsFactory } from "./dto/email-campaign-args.factory.js";
+import type { EmailCampaignInputInterface } from "./dto/email-campaign-input.factory.js";
+import { SendTestEmailCampaignArgs } from "./dto/send-test-email-campaign.args.js";
+import { EmailCampaignsService } from "./email-campaigns.service.js";
+import type { EmailCampaignInterface } from "./entities/email-campaign-entity.factory.js";
+import { SendingState } from "./sending-state.enum.js";
 
 export function createEmailCampaignsResolver({
     BrevoEmailCampaign,

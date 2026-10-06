@@ -1,8 +1,8 @@
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
 import { add, differenceInCalendarDays, isAfter, isBefore } from "date-fns";
 
-import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
-import { License } from "./entities/license.embeddable";
+import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator.js";
+import { License } from "./entities/license.embeddable.js";
 
 @Resolver(() => License)
 @RequiredPermission(["dam"])

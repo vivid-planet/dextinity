@@ -2,10 +2,10 @@ import { HttpStatus } from "@nestjs/common";
 import type { Response } from "express";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { HashFileParams } from "./dto/file.params";
-import type { FileInterface } from "./entities/file.entity";
-import { createFilesController } from "./files.controller";
-import type { FilesService } from "./files.service";
+import type { HashFileParams } from "./dto/file.params.js";
+import type { FileInterface } from "./entities/file.entity.js";
+import { createFilesController } from "./files.controller.js";
+import type { FilesService } from "./files.service.js";
 
 const FILE_ID = "11111111-1111-1111-1111-111111111111";
 const HASH = "signed-hash";

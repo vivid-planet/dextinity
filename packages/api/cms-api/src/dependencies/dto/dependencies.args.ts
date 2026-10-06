@@ -2,10 +2,10 @@ import { ArgsType, Field } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsBoolean, ValidateNested } from "class-validator";
 
-import { OffsetBasedPaginationArgs } from "../../common/pagination/offset-based.args";
-import { IsUndefinable } from "../../common/validators/is-undefinable";
-import { DependencyFilter, DependentFilter } from "./dependencies.filter";
-import { DependencySort } from "./dependency-sort";
+import { OffsetBasedPaginationArgs } from "../../common/pagination/offset-based.args.js";
+import { IsUndefinable } from "../../common/validators/is-undefinable.js";
+import { DependencyFilter, DependentFilter } from "./dependencies.filter.js";
+import { DependencySort } from "./dependency-sort.js";
 
 @ArgsType()
 export class DependenciesArgs extends OffsetBasedPaginationArgs {

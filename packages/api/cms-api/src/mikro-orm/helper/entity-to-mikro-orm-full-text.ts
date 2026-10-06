@@ -1,7 +1,7 @@
 import type { WeightedFullTextValue } from "@mikro-orm/postgresql";
 
-import type { BlockDataInterface } from "../../blocks/block";
-import { blockToMikroOrmFullText } from "../../blocks/search/get-search-text";
+import type { BlockDataInterface } from "../../blocks/block.js";
+import { blockToMikroOrmFullText } from "../../blocks/search/get-search-text.js";
 
 export function entityToMikroOrmFullText(fields: WeightedFullTextValue, ...blocks: BlockDataInterface[]): string | WeightedFullTextValue {
     const result: WeightedFullTextValue = { ...fields };

@@ -2,9 +2,9 @@ import { Field, InputType } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsString, ValidateNested } from "class-validator";
 
-import { BooleanFilter } from "../../common/filter/boolean.filter";
-import { StringFilter } from "../../common/filter/string.filter";
-import { IsUndefinable } from "../../common/validators/is-undefinable";
+import { BooleanFilter } from "../../common/filter/boolean.filter.js";
+import { StringFilter } from "../../common/filter/string.filter.js";
+import { IsUndefinable } from "../../common/validators/is-undefinable.js";
 
 @InputType()
 export class DependencyFilter {

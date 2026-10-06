@@ -1,12 +1,12 @@
-import createClient, { isUnexpected, TextTranslationClient } from "@azure-rest/ai-translation-text";
+import createClient, { isUnexpected, type TextTranslationClient } from "@azure-rest/ai-translation-text";
 import { Inject } from "@nestjs/common";
 import { Args, Query, Resolver } from "@nestjs/graphql";
 
-import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
-import { AzureAiTranslatorConfig } from "./azure-ai-translator.config";
-import { AZURE_AI_TRANSLATOR_CONFIG } from "./azure-ai-translator.constants";
-import { AzureAiTranslationInput } from "./dto/azure-ai-translation.input";
-import { AzureAiTranslationBatchInput } from "./dto/azure-ai-translation-batch.input";
+import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import type { AzureAiTranslatorConfig } from "./azure-ai-translator.config.js";
+import { AZURE_AI_TRANSLATOR_CONFIG } from "./azure-ai-translator.constants.js";
+import { AzureAiTranslationInput } from "./dto/azure-ai-translation.input.js";
+import { AzureAiTranslationBatchInput } from "./dto/azure-ai-translation-batch.input.js";
 
 // Azure Translator API limits: max 25 texts and 50,000 characters per request
 const AZURE_BATCH_SIZE = 25;

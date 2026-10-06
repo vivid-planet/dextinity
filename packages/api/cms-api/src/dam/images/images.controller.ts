@@ -9,32 +9,32 @@ import {
     NotFoundException,
     Param,
     Res,
-    Type,
+    type Type,
 } from "@nestjs/common";
-import { Response } from "express";
-import { OutgoingHttpHeaders } from "http";
+import type { Response } from "express";
+import type { OutgoingHttpHeaders } from "http";
 import mime from "mime";
 import { PassThrough, Readable } from "stream";
 
-import { DisableDextinityGuards } from "../../auth/decorators/disable-dextinity-guards.decorator";
-import { GetCurrentUser } from "../../auth/decorators/get-current-user.decorator";
-import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service";
-import { ScaledImagesCacheService } from "../../blob-storage/cache/scaled-images-cache.service";
-import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util";
-import { FocalPoint } from "../../file-utils/focal-point.enum";
-import { BASIC_TYPES, MODERN_TYPES } from "../../file-utils/images.constants";
-import { getCenteredPosition, getMaxDimensionsFromArea, getSupportedMimeType } from "../../file-utils/images.util";
-import { Extension, Gravity, ResizingType } from "../../imgproxy/imgproxy.enum";
-import { ImgproxyService } from "../../imgproxy/imgproxy.service";
-import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
-import { CurrentUser } from "../../user-permissions/dto/current-user";
-import { DamConfig } from "../dam.config";
-import { DAM_CONFIG } from "../dam.constants";
-import { FileInterface } from "../files/entities/file.entity";
-import { FilesService } from "../files/files.service";
-import { DamScopeAccessControlService } from "../scope-access-control.service";
-import { HashImageParams, ImageParams } from "./dto/image.params";
-import { ImagesService } from "./images.service";
+import { DisableDextinityGuards } from "../../auth/decorators/disable-dextinity-guards.decorator.js";
+import { GetCurrentUser } from "../../auth/decorators/get-current-user.decorator.js";
+import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service.js";
+import { ScaledImagesCacheService } from "../../blob-storage/cache/scaled-images-cache.service.js";
+import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util.js";
+import { FocalPoint } from "../../file-utils/focal-point.enum.js";
+import { BASIC_TYPES, MODERN_TYPES } from "../../file-utils/images.constants.js";
+import { getCenteredPosition, getMaxDimensionsFromArea, getSupportedMimeType } from "../../file-utils/images.util.js";
+import { Extension, Gravity, ResizingType } from "../../imgproxy/imgproxy.enum.js";
+import { ImgproxyService } from "../../imgproxy/imgproxy.service.js";
+import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator.js";
+import { CurrentUser } from "../../user-permissions/dto/current-user.js";
+import type { DamConfig } from "../dam.config.js";
+import { DAM_CONFIG } from "../dam.constants.js";
+import type { FileInterface } from "../files/entities/file.entity.js";
+import { FilesService } from "../files/files.service.js";
+import { DamScopeAccessControlService } from "../scope-access-control.service.js";
+import { HashImageParams, ImageParams } from "./dto/image.params.js";
+import { ImagesService } from "./images.service.js";
 
 const smartImageUrl = `:fileId/crop\\::focalPoint/resize\\::resizeWidth\\::resizeHeight/:filename`;
 const focusImageUrl = `:fileId/crop\\::cropWidth\\::cropHeight\\::focalPoint\\::cropX\\::cropY/resize\\::resizeWidth\\::resizeHeight/:filename`;

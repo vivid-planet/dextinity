@@ -2,8 +2,8 @@ import { ArrayType } from "@mikro-orm/core";
 import { Entity, OneToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { FullTextType } from "@mikro-orm/postgresql";
 
-import { EntityInfoObject } from "../../entity-info/entity-info.object";
-import { ContentScope } from "../../user-permissions/interfaces/content-scope.interface";
+import { EntityInfoObject } from "../../entity-info/entity-info.object.js";
+import type { ContentScope } from "../../user-permissions/interfaces/content-scope.interface.js";
 
 // Note: This file is intentionally not named *.entity.ts to exclude it from MikroORM's CLI migration glob pattern.
 // The "EntityInfoFullText" view is created dynamically at startup by FullTextSearchService, not via migrations.

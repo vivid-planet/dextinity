@@ -1,12 +1,12 @@
-import { AnyEntity, EntityManager } from "@mikro-orm/postgresql";
+import { type AnyEntity, EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, Logger } from "@nestjs/common";
 
-import { DiscoverService } from "../dependencies/discover.service";
-import { REQUIRED_PERMISSION_METADATA_KEY, RequiredPermissionMetadata } from "../user-permissions/decorators/required-permission.decorator";
-import { ENTITY_INFO_METADATA_KEY, EntityInfo } from "./entity-info.decorator";
-import { EntityInfoObject } from "./entity-info.object";
-import { isEntityInfoSql, requiredPermissionToSql } from "./entity-info.utils";
-import { resolveFieldToSql } from "./resolve-field-to-sql";
+import { DiscoverService } from "../dependencies/discover.service.js";
+import { REQUIRED_PERMISSION_METADATA_KEY, type RequiredPermissionMetadata } from "../user-permissions/decorators/required-permission.decorator.js";
+import { ENTITY_INFO_METADATA_KEY, type EntityInfo } from "./entity-info.decorator.js";
+import { EntityInfoObject } from "./entity-info.object.js";
+import { isEntityInfoSql, requiredPermissionToSql } from "./entity-info.utils.js";
+import { resolveFieldToSql } from "./resolve-field-to-sql.js";
 
 @Injectable()
 export class EntityInfoService {

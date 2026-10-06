@@ -2,13 +2,13 @@ import { Field, InputType } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsOptional, ValidateNested } from "class-validator";
 import { GraphQLJSONObject } from "graphql-scalars";
-import { ContentScope } from "src/user-permissions/interfaces/content-scope.interface";
 
-import { DateTimeFilter } from "../../common/filter/date-time.filter";
-import { createEnumFilter } from "../../common/filter/enum.filter.factory";
-import { StringFilter } from "../../common/filter/string.filter";
-import { WarningSeverity } from "../entities/warning-severity.enum";
-import { WarningStatus } from "../entities/warning-status.enum";
+import { DateTimeFilter } from "../../common/filter/date-time.filter.js";
+import { createEnumFilter } from "../../common/filter/enum.filter.factory.js";
+import { StringFilter } from "../../common/filter/string.filter.js";
+import type { ContentScope } from "../../user-permissions/interfaces/content-scope.interface.js";
+import { WarningSeverity } from "../entities/warning-severity.enum.js";
+import { WarningStatus } from "../entities/warning-status.enum.js";
 
 @InputType()
 class WarningSeverityEnumFilter extends createEnumFilter(WarningSeverity) {}

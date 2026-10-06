@@ -1,6 +1,6 @@
 import { Command, CommandRunner } from "nest-commander";
 
-import { DependenciesService } from "../dependencies/dependencies.service";
+import { DependenciesService } from "../dependencies/dependencies.service.js";
 
 @Command({
     name: "createBlockIndexViews",

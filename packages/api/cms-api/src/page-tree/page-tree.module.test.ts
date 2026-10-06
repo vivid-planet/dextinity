@@ -2,9 +2,9 @@ import { Entity } from "@mikro-orm/decorators/legacy";
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { describe, expect, it } from "vitest";
 
-import { DocumentInterface } from "../document/dto/document-interface";
-import { PageTreeNodeBase } from "./entities/page-tree-node-base.entity";
-import { PageTreeModule } from "./page-tree.module";
+import { DocumentInterface } from "../document/dto/document-interface.js";
+import { PageTreeNodeBase } from "./entities/page-tree-node-base.entity.js";
+import { PageTreeModule } from "./page-tree.module.js";
 
 @Entity()
 @ObjectType()

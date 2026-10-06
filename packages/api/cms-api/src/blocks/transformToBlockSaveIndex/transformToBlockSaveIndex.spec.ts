@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import { createBlocksBlock } from "../factories/createBlocksBlock";
-import { createOneOfBlock } from "../factories/createOneOfBlock";
-import { createOptionalBlock } from "../factories/createOptionalBlock";
-import { composeBlocks } from "../helpers/composeBlocks";
-import { ABlock } from "./test/blocks/ABlock";
-import { BBlock } from "./test/blocks/BBlock";
-import { CBlock } from "./test/blocks/CBlock";
-import { ImageBlock } from "./test/blocks/ImageBlock";
-import { transformToBlockSaveIndex } from "./transformToBlockSaveIndex";
+import { createBlocksBlock } from "../factories/createBlocksBlock.js";
+import { createOneOfBlock } from "../factories/createOneOfBlock.js";
+import { createOptionalBlock } from "../factories/createOptionalBlock.js";
+import { composeBlocks } from "../helpers/composeBlocks.js";
+import { ABlock } from "./test/blocks/ABlock.js";
+import { BBlock } from "./test/blocks/BBlock.js";
+import { CBlock } from "./test/blocks/CBlock.js";
+import { ImageBlock } from "./test/blocks/ImageBlock.js";
+import { transformToBlockSaveIndex } from "./transformToBlockSaveIndex.js";
 
 describe("transformToBlockSaveIndex", () => {
     it("build correctly", () => {

@@ -1,12 +1,12 @@
 import { CrudGenerator, EntityInfo, IsNullable, IsUndefinable, RequiredPermission } from "@dextinity/cms-api";
 import { Embeddable, Embedded, Entity, Enum, Index, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
-import { BaseEntity, FullTextType, IType, OptionalProps } from "@mikro-orm/postgresql";
+import { BaseEntity, FullTextType, type IType, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, InputType, ObjectType } from "@nestjs/graphql";
 import { IsNumber, IsObject, IsString } from "class-validator";
 import { v4 as uuid } from "uuid";
 
-import { Coordinates, CoordinatesType } from "../coordinates.type";
-import { ProductType } from "./product-type.enum";
+import { Coordinates, CoordinatesType } from "../coordinates.type.js";
+import { ProductType } from "./product-type.enum.js";
 
 @ObjectType()
 @InputType("AlternativeAddressInput")

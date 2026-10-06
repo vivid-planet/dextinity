@@ -1,9 +1,9 @@
-import { BlockTransformerServiceInterface, resolveEntityClass } from "@dextinity/cms-api";
+import { type BlockTransformerServiceInterface, resolveEntityClass } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 
-import type { News } from "../entities/news.entity";
-import { NewsLinkBlockData } from "./news-link.block";
+import type { News } from "../entities/news.entity.js";
+import type { NewsLinkBlockData } from "./news-link.block.js";
 
 type TransformResponse = {
     news?: {

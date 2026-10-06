@@ -1,19 +1,19 @@
 import * as csv from "@fast-csv/parse";
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
-import { EntityManager, FilterQuery, MikroORM } from "@mikro-orm/postgresql";
+import { EntityManager, type FilterQuery, MikroORM } from "@mikro-orm/postgresql";
 import { forwardRef, Inject } from "@nestjs/common";
 import * as console from "console";
 import * as fs from "fs";
 import { Command, CommandRunner } from "nest-commander";
 
-import { PageTreeService } from "../page-tree/page-tree.service";
-import { PageTreeReadApiOptions } from "../page-tree/page-tree-read-api";
-import { RedirectInterface } from "./entities/redirect-entity.factory";
-import { resolveRedirectEntity } from "./entities/resolve-redirect-entity";
-import { REDIRECTS_LINK_BLOCK } from "./redirects.constants";
-import { RedirectGenerationType, RedirectSourceType } from "./redirects.enum";
-import { RedirectsLinkBlock } from "./redirects.module";
-import { RedirectScopeInterface } from "./types";
+import { PageTreeService } from "../page-tree/page-tree.service.js";
+import type { PageTreeReadApiOptions } from "../page-tree/page-tree-read-api.js";
+import type { RedirectInterface } from "./entities/redirect-entity.factory.js";
+import { resolveRedirectEntity } from "./entities/resolve-redirect-entity.js";
+import { REDIRECTS_LINK_BLOCK } from "./redirects.constants.js";
+import { RedirectGenerationType, RedirectSourceType } from "./redirects.enum.js";
+import type { RedirectsLinkBlock } from "./redirects.module.js";
+import type { RedirectScopeInterface } from "./types.js";
 
 interface Row {
     target: string;

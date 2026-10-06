@@ -1,10 +1,10 @@
 import { Inject, Injectable, type OnModuleInit, Optional } from "@nestjs/common";
 
-import type { CurrentUser } from "../user-permissions/dto/current-user";
-import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants";
-import type { AccessControlServiceInterface } from "../user-permissions/user-permissions.types";
-import { DAM_DISABLE_SCOPE_ACCESS_CONTROL } from "./dam.constants";
-import type { DamScopeInterface } from "./types";
+import type { CurrentUser } from "../user-permissions/dto/current-user.js";
+import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants.js";
+import type { AccessControlServiceInterface } from "../user-permissions/user-permissions.types.js";
+import { DAM_DISABLE_SCOPE_ACCESS_CONTROL } from "./dam.constants.js";
+import type { DamScopeInterface } from "./types.js";
 
 /**
  * The DAM checks scope access through the `AccessControlService` provided by `UserPermissionsModule`. Without that service, its REST

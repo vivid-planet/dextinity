@@ -1,8 +1,8 @@
 import { Entity, PrimaryKey } from "@mikro-orm/decorators/legacy";
 import { describe, expect, it } from "vitest";
 
-import { PageTreeService } from "./page-tree.service";
-import { type PageTreeNodeInterface, PageTreeNodeVisibility } from "./types";
+import { PageTreeService } from "./page-tree.service.js";
+import { type PageTreeNodeInterface, PageTreeNodeVisibility } from "./types.js";
 
 // Decorating a stand-in entity registers "PageTreeNode" in MikroORM's metadata, which is all `resolvePageTreeNodeEntity()` needs.
 @Entity({ tableName: "PageTreeNode" })

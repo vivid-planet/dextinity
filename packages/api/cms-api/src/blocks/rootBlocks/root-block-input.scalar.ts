@@ -1,7 +1,7 @@
 import { GraphQLScalarType } from "graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
 
-import type { Block } from "../block";
+import type { Block } from "../block.js";
 
 const rootBlockInputScalars = new Map<string, GraphQLScalarType>();
 

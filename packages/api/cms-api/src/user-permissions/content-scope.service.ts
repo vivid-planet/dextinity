@@ -1,17 +1,17 @@
-import { EntityName, MikroORM } from "@mikro-orm/postgresql";
-import { ExecutionContext, Injectable, Optional } from "@nestjs/common";
+import { type EntityName, MikroORM } from "@mikro-orm/postgresql";
+import { type ExecutionContext, Injectable, Optional } from "@nestjs/common";
 import { ModuleRef, Reflector } from "@nestjs/core";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { isUUID } from "class-validator";
 
-import { DextinityValidationException } from "../common/errors/validation.exception";
-import { PageTreeService } from "../page-tree/page-tree.service";
-import { SCOPED_ENTITY_METADATA_KEY, ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator";
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { contentScopesAreEqual } from "./content-scopes-are-equal";
-import { AFFECTED_ENTITY_METADATA_KEY, AffectedEntityMeta } from "./decorators/affected-entity.decorator";
-import { AFFECTED_SCOPE_METADATA_KEY, AffectedScopeMeta } from "./decorators/affected-scope.decorator";
-import { getScopesForScopedEntity } from "./get-scopes-for-scoped-entity";
+import { DextinityValidationException } from "../common/errors/validation.exception.js";
+import { PageTreeService } from "../page-tree/page-tree.service.js";
+import { SCOPED_ENTITY_METADATA_KEY, type ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { contentScopesAreEqual } from "./content-scopes-are-equal.js";
+import { AFFECTED_ENTITY_METADATA_KEY, type AffectedEntityMeta } from "./decorators/affected-entity.decorator.js";
+import { AFFECTED_SCOPE_METADATA_KEY, type AffectedScopeMeta } from "./decorators/affected-scope.decorator.js";
+import { getScopesForScopedEntity } from "./get-scopes-for-scoped-entity.js";
 
 // TODO Remove service and move into UserPermissionsGuard once ChangesCheckerInterceptor is removed
 @Injectable()

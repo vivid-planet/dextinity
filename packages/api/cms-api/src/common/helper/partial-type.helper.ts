@@ -8,7 +8,7 @@ import { getFieldsAndDecoratorForType } from "@nestjs/graphql/dist/schema-builde
 import { applyFieldDecorators } from "@nestjs/graphql/dist/type-helpers/type-helpers.utils.js";
 import { inheritPropertyInitializers, inheritTransformationMetadata, inheritValidationMetadata } from "@nestjs/mapped-types";
 
-import { IsUndefinable } from "../validators/is-undefinable";
+import { IsUndefinable } from "../validators/is-undefinable.js";
 
 //Copy from @nestjs/graphql with applyIsOptionalDecorator changed to use IsUndefinable instead of IsOptional and changed defaultValue to undefined
 export function PartialType<T>(classRef: Type<T>, decorator?: ClassDecoratorFactory): Type<Partial<T>> {

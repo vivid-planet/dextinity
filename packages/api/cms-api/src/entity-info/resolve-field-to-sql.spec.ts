@@ -9,10 +9,10 @@ import {
     Property,
     ReflectMetadataProvider,
 } from "@mikro-orm/decorators/legacy";
-import { BaseEntity, Collection, defineConfig, MikroORM, Ref } from "@mikro-orm/postgresql";
+import { BaseEntity, Collection, defineConfig, MikroORM, type Ref } from "@mikro-orm/postgresql";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { resolveFieldToSql } from "./resolve-field-to-sql";
+import { resolveFieldToSql } from "./resolve-field-to-sql.js";
 
 // ProductVariant --m:1--> Product --m:1--> Manufacturer (has @Embedded AddressAsEmbeddable)
 // AddressAsEmbeddable has @Embedded AlternativeAddressAsEmbeddable

@@ -1,9 +1,9 @@
 import { createTipTapRichTextBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
-import { ProductPriceBlock } from "@src/products/blocks/product-price.block";
-import { ProductTeaserBlock } from "@src/products/blocks/product-teaser.block";
+import { ProductPriceBlock } from "@src/products/blocks/product-price.block.js";
+import { ProductTeaserBlock } from "@src/products/blocks/product-teaser.block.js";
 
-import { LinkBlock } from "./link.block";
-import { Heading1ToHeading2Migration } from "./tip-tap-rich-text/migrations/2-heading-1-to-heading-2.migration";
+import { LinkBlock } from "./link.block.js";
+import { Heading1ToHeading2Migration } from "./tip-tap-rich-text/migrations/2-heading-1-to-heading-2.migration.js";
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock(
     {

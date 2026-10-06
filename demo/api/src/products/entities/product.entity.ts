@@ -1,33 +1,33 @@
 import {
-    BlockDataInterface,
+    type BlockDataInterface,
     CrudField,
     CrudGenerator,
     DamImageBlock,
     EntityInfo,
     FileUpload,
-    ImportTargetInterface,
+    type ImportTargetInterface,
     RequiredPermission,
     RootBlock,
     RootBlockEntity,
     RootBlockType,
 } from "@dextinity/cms-api";
 import { Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
-import { BaseEntity, Collection, FullTextType, OptionalProps, Ref, types } from "@mikro-orm/postgresql";
+import { BaseEntity, Collection, FullTextType, OptionalProps, type Ref, types } from "@mikro-orm/postgresql";
 import { Field, ID, InputType, Int, ObjectType, registerEnumType } from "@nestjs/graphql";
-import { DamFile } from "@src/dam/entities/dam-file.entity";
-import { Manufacturer } from "@src/products/entities/manufacturer.entity";
+import { DamFile } from "@src/dam/entities/dam-file.entity.js";
+import { Manufacturer } from "@src/products/entities/manufacturer.entity.js";
 import { IsNumber } from "class-validator";
 import { GraphQLLocalDate } from "graphql-scalars";
 import { v4 as uuid } from "uuid";
 
-import { ProductService } from "../product.service";
-import { ProductCategory } from "./product-category.entity";
-import { ProductColor } from "./product-color.entity";
-import { ProductStatistics } from "./product-statistics.entity";
-import { ProductTag } from "./product-tag.entity";
-import { ProductToTag } from "./product-to-tag.entity";
-import { ProductType } from "./product-type.enum";
-import { ProductVariant } from "./product-variant.entity";
+import { ProductService } from "../product.service.js";
+import { ProductCategory } from "./product-category.entity.js";
+import { ProductColor } from "./product-color.entity.js";
+import { ProductStatistics } from "./product-statistics.entity.js";
+import { ProductTag } from "./product-tag.entity.js";
+import { ProductToTag } from "./product-to-tag.entity.js";
+import { ProductType } from "./product-type.enum.js";
+import { ProductVariant } from "./product-variant.entity.js";
 
 export enum ProductStatus {
     Published = "Published",

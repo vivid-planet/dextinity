@@ -4,12 +4,12 @@ import { addSeconds } from "date-fns";
 import { Readable } from "stream";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { BlobStorageBackendService } from "../blob-storage/backends/blob-storage-backend.service";
-import type { FileUpload } from "./entities/file-upload.entity";
-import { FileUploadExpirationSubscriber } from "./file-upload-expiration.subscriber";
-import type { FileUploadsConfig } from "./file-uploads.config";
-import { FILE_UPLOADS_CONFIG } from "./file-uploads.constants";
-import { FileUploadsService } from "./file-uploads.service";
+import { BlobStorageBackendService } from "../blob-storage/backends/blob-storage-backend.service.js";
+import type { FileUpload } from "./entities/file-upload.entity.js";
+import { FileUploadExpirationSubscriber } from "./file-upload-expiration.subscriber.js";
+import type { FileUploadsConfig } from "./file-uploads.config.js";
+import { FILE_UPLOADS_CONFIG } from "./file-uploads.constants.js";
+import { FileUploadsService } from "./file-uploads.service.js";
 
 const mockBlobStorageBackendService = {
     upload: vi.fn(),

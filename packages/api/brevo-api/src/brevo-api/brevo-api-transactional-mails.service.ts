@@ -1,13 +1,13 @@
 import { resolveEntityClass } from "@dextinity/cms-api";
-import { Brevo } from "@getbrevo/brevo";
+import type { Brevo } from "@getbrevo/brevo";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
-import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
-import { EmailCampaignScopeInterface } from "src/types";
 
-import { handleBrevoError } from "./brevo-api.utils";
-import { BrevoApiClientFactory } from "./brevo-api-client.factory";
-import { BrevoApiEmailTemplateList } from "./dto/brevo-api-email-templates-list";
+import type { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory.js";
+import type { EmailCampaignScopeInterface } from "../types.js";
+import { handleBrevoError } from "./brevo-api.utils.js";
+import { BrevoApiClientFactory } from "./brevo-api-client.factory.js";
+import type { BrevoApiEmailTemplateList } from "./dto/brevo-api-email-templates-list.js";
 
 @Injectable()
 export class BrevoTransactionalMailsService {

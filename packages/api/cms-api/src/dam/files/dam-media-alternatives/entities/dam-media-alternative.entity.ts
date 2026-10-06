@@ -1,11 +1,11 @@
-import { BaseEntity, Ref } from "@mikro-orm/core";
+import { BaseEntity, type Ref } from "@mikro-orm/core";
 import { Entity, Enum, ManyToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
-import { ScopedEntity } from "../../../../user-permissions/decorators/scoped-entity.decorator";
-import { FileInterface } from "../../entities/file.entity";
-import { resolveFileEntity } from "../../entities/resolve-dam-entity";
+import { ScopedEntity } from "../../../../user-permissions/decorators/scoped-entity.decorator.js";
+import type { FileInterface } from "../../entities/file.entity.js";
+import { resolveFileEntity } from "../../entities/resolve-dam-entity.js";
 
 export enum DamMediaAlternativeType {
     captions = "captions",

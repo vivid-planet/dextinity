@@ -2,11 +2,11 @@ import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { createHash } from "crypto";
 import { sep } from "path";
 
-import { BlobStorageBackendService } from "../backends/blob-storage-backend.service";
-import { BlobStorageConfig } from "../blob-storage.config";
-import { BLOB_STORAGE_CONFIG } from "../blob-storage.constants";
-import { createHashedPath } from "../utils/create-hashed-path.util";
-import { FileCache } from "./dto/file-cache.interface";
+import { BlobStorageBackendService } from "../backends/blob-storage-backend.service.js";
+import type { BlobStorageConfig } from "../blob-storage.config.js";
+import { BLOB_STORAGE_CONFIG } from "../blob-storage.constants.js";
+import { createHashedPath } from "../utils/create-hashed-path.util.js";
+import type { FileCache } from "./dto/file-cache.interface.js";
 
 @Injectable()
 export class ScaledImagesCacheService {

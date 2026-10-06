@@ -6,9 +6,9 @@ import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storage
 import { v4 as uuid } from "uuid";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
-import type { GeneratedFile } from "../../utils/write-generated-files";
-import { generateCrud } from "../generate-crud";
+import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper.js";
+import type { GeneratedFile } from "../../utils/write-generated-files.js";
+import { generateCrud } from "../generate-crud.js";
 
 @Embeddable()
 @InputType("TestEmbeddedInput")

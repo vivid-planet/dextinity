@@ -1,5 +1,5 @@
 import { BlockData, BlockField, BlockInput, blockInputToData, createBlock } from "@dextinity/cms-api";
-import { ProductType } from "@src/products/entities/product-type.enum";
+import { ProductType } from "@src/products/entities/product-type.enum.js";
 import { IsEnum } from "class-validator";
 
 class ProductListBlockData extends BlockData {

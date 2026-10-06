@@ -1,17 +1,17 @@
 import {
     BadRequestException,
-    CallHandler,
-    ExecutionContext,
+    type CallHandler,
+    type ExecutionContext,
     HttpException,
     Injectable,
     InternalServerErrorException,
-    NestInterceptor,
+    type NestInterceptor,
 } from "@nestjs/common";
-import { Observable, throwError } from "rxjs";
+import { type Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
 
-import { DextinityException } from "./dextinity.exception";
-import { DextinityValidationException } from "./validation.exception";
+import { DextinityException } from "./dextinity.exception.js";
+import { DextinityValidationException } from "./validation.exception.js";
 
 // Inspired by https://docs.nestjs.com/interceptors#more-operators
 @Injectable()

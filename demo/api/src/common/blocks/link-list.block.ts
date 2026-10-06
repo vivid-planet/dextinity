@@ -1,8 +1,8 @@
 import { BaseListBlockItemData, BaseListBlockItemInput, BlockField, createListBlock } from "@dextinity/cms-api";
-import { UserGroup } from "@src/user-groups/user-group";
+import { UserGroup } from "@src/user-groups/user-group.js";
 import { IsEnum } from "class-validator";
 
-import { TextLinkBlock } from "./text-link.block";
+import { TextLinkBlock } from "./text-link.block.js";
 
 class ListBlockItemData extends BaseListBlockItemData(TextLinkBlock) {
     @BlockField({ type: "enum", enum: UserGroup })

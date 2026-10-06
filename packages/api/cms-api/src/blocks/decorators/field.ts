@@ -10,7 +10,7 @@ import {
     type BlockMetaLiteralFieldKind,
     isBlockDataInterface,
     isBlockInputInterface,
-} from "../block";
+} from "../block.js";
 
 type BlockFieldOptions =
     | {

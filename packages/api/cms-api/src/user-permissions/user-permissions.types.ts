@@ -1,11 +1,11 @@
 import type { ModuleMetadata, Type } from "@nestjs/common";
 
-import { CorePermission } from "../common/enum/core-permission.enum";
-import type { CurrentUser } from "./dto/current-user";
-import type { FindUsersArgs } from "./dto/paginated-user-list";
-import type { UserPermission } from "./entities/user-permission.entity";
-import type { ContentScope } from "./interfaces/content-scope.interface";
-import type { User } from "./interfaces/user";
+import { CorePermission } from "../common/enum/core-permission.enum.js";
+import type { CurrentUser } from "./dto/current-user.js";
+import type { FindUsersArgs } from "./dto/paginated-user-list.js";
+import type { UserPermission } from "./entities/user-permission.entity.js";
+import type { ContentScope } from "./interfaces/content-scope.interface.js";
+import type { User } from "./interfaces/user.js";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface PermissionOverrides {} // This interface can be overwritten to add custom permissions

@@ -2,17 +2,17 @@ import { resolveEntityClass } from "@dextinity/cms-api";
 import { MikroORM } from "@mikro-orm/core";
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { EntityManager } from "@mikro-orm/postgresql";
-import { Inject, Logger, Type } from "@nestjs/common";
+import { Inject, Logger, type Type } from "@nestjs/common";
 import { isUUID, validateSync } from "class-validator";
 import { InvalidOptionArgumentError } from "commander";
 import * as fs from "fs";
 import { Command, CommandRunner, Option } from "nest-commander";
-import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 
-import { BrevoContactImportService } from "../brevo-contact/brevo-contact-import.service";
-import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
-import { EmailCampaignScopeInterface } from "../types";
+import type { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory.js";
+import { BrevoContactImportService } from "../brevo-contact/brevo-contact-import.service.js";
+import type { BrevoModuleConfig } from "../config/brevo-module.config.js";
+import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants.js";
+import type { EmailCampaignScopeInterface } from "../types.js";
 
 interface CommandOptions {
     path: string;

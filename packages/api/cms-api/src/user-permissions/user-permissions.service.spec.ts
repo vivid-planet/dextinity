@@ -3,11 +3,11 @@ import { createMock } from "@golevelup/ts-vitest";
 import type { EntityManager } from "@mikro-orm/postgresql";
 import { describe, expect, it } from "vitest";
 
-import type { UserContentScopes } from "./entities/user-content-scopes.entity";
-import type { ContentScope } from "./interfaces/content-scope.interface";
-import type { User } from "./interfaces/user";
-import { UserPermissionsService } from "./user-permissions.service";
-import { type AccessControlServiceInterface, UserPermissions, type UserPermissionsOptions } from "./user-permissions.types";
+import type { UserContentScopes } from "./entities/user-content-scopes.entity.js";
+import type { ContentScope } from "./interfaces/content-scope.interface.js";
+import type { User } from "./interfaces/user.js";
+import { UserPermissionsService } from "./user-permissions.service.js";
+import { type AccessControlServiceInterface, UserPermissions, type UserPermissionsOptions } from "./user-permissions.types.js";
 
 const user: User = { id: "1", name: "User", email: "user@example.com" };
 

@@ -1,12 +1,12 @@
 import { CrudField, CrudGenerator } from "@dextinity/cms-api";
 import { Entity, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
-import { BaseEntity, Collection, OptionalProps, Ref } from "@mikro-orm/postgresql";
+import { BaseEntity, Collection, OptionalProps, type Ref } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { Min } from "class-validator";
 import { v4 as uuid } from "uuid";
 
-import { Product } from "./product.entity";
-import { ProductCategoryType } from "./product-category-type.entity";
+import { Product } from "./product.entity.js";
+import { ProductCategoryType } from "./product-category-type.entity.js";
 
 @ObjectType()
 @Entity()

@@ -1,8 +1,8 @@
 import { Type } from "@mikro-orm/postgresql";
 import opentelemetry from "@opentelemetry/api";
 
-import { type Block, type BlockDataInterface, isBlockInputInterface, transformToBlockSave, type TraversableTransformBlockResponse } from "./block";
-import { transformToBlockSaveIndex } from "./transformToBlockSaveIndex/transformToBlockSaveIndex";
+import { type Block, type BlockDataInterface, isBlockInputInterface, transformToBlockSave, type TraversableTransformBlockResponse } from "./block.js";
+import { transformToBlockSaveIndex } from "./transformToBlockSaveIndex/transformToBlockSaveIndex.js";
 
 const tracer = opentelemetry.trace.getTracer("@dextinity/cms-api");
 

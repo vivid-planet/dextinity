@@ -2,23 +2,23 @@ import { Transform } from "class-transformer";
 import { IsBoolean, IsOptional, ValidateNested } from "class-validator";
 
 import {
-    Block,
-    BlockContext,
+    type Block,
+    type BlockContext,
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockInput,
-    BlockInputInterface,
+    type BlockInputInterface,
     blockInputToData,
-    ChildBlockInfo,
+    type ChildBlockInfo,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
     isBlockDataInterface,
     isBlockInputInterface,
-    SimpleBlockInputInterface,
-    TraversableTransformBlockResponse,
-} from "../block";
-import { BlockField } from "../decorators/field";
-import { BlockFactoryNameOrOptions } from "./types";
+    type SimpleBlockInputInterface,
+    type TraversableTransformBlockResponse,
+} from "../block.js";
+import { BlockField } from "../decorators/field.js";
+import type { BlockFactoryNameOrOptions } from "./types.js";
 
 export interface OptionalBlockInputInterface<DecoratedBlockInput extends BlockInputInterface> extends SimpleBlockInputInterface {
     block?: DecoratedBlockInput;

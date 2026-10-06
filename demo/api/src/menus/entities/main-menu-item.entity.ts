@@ -1,9 +1,9 @@
-import { BlockDataInterface, RootBlock, RootBlockDataScalar, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
+import { type BlockDataInterface, RootBlock, RootBlockDataScalar, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
 import { Entity, OneToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block";
-import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity";
+import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
+import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
 import { v4 as uuid } from "uuid";
 
 @Entity()

@@ -1,7 +1,7 @@
 import type { ObjectQuery } from "@mikro-orm/postgresql";
 
-import type { WarningSort } from "./dto/warning.sort";
-import type { Warning } from "./entities/warning.entity";
+import type { WarningSort } from "./dto/warning.sort.js";
+import type { Warning } from "./entities/warning.entity.js";
 
 // Remapped warning query: `entityInfo.*` are join aliases from the EntityInfo view, not Warning columns.
 export type WarningQuery = ObjectQuery<Warning & Record<`entityInfo.${"name" | "secondaryInformation"}`, string>>;

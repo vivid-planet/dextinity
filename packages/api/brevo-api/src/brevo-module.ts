@@ -1,16 +1,16 @@
 import { FileUploadsService } from "@dextinity/cms-api";
-import { DynamicModule, Global, Module, OnModuleInit } from "@nestjs/common";
+import { type DynamicModule, Global, Module, type OnModuleInit } from "@nestjs/common";
 
-import { BlacklistedContactsModule } from "./blacklisted-contacts/blacklisted-contacts.module";
-import { BrevoApiModule } from "./brevo-api/brevo-api.module";
-import { BrevoConfigModule } from "./brevo-config/brevo-config.module";
-import { BrevoConfigEntityFactory } from "./brevo-config/entities/brevo-config-entity.factory";
-import { BrevoContactModule } from "./brevo-contact/brevo-contact.module";
-import { BrevoEmailImportLogModule } from "./brevo-email-import-log/brevo-email-import-log.module";
-import { BrevoModuleConfig } from "./config/brevo-module.config";
-import { ConfigModule } from "./config/config.module";
-import { EmailCampaignModule } from "./email-campaign/email-campaign.module";
-import { TargetGroupModule } from "./target-group/target-group.module";
+import { BlacklistedContactsModule } from "./blacklisted-contacts/blacklisted-contacts.module.js";
+import { BrevoApiModule } from "./brevo-api/brevo-api.module.js";
+import { BrevoConfigModule } from "./brevo-config/brevo-config.module.js";
+import { BrevoConfigEntityFactory } from "./brevo-config/entities/brevo-config-entity.factory.js";
+import { BrevoContactModule } from "./brevo-contact/brevo-contact.module.js";
+import { BrevoEmailImportLogModule } from "./brevo-email-import-log/brevo-email-import-log.module.js";
+import type { BrevoModuleConfig } from "./config/brevo-module.config.js";
+import { ConfigModule } from "./config/config.module.js";
+import { EmailCampaignModule } from "./email-campaign/email-campaign.module.js";
+import { TargetGroupModule } from "./target-group/target-group.module.js";
 
 @Global()
 @Module({})

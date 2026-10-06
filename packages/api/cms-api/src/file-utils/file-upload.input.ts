@@ -5,4 +5,4 @@ type FileUploadInput = Omit<Express.Multer.File, "buffer" | "stream">;
  */
 type FileUploadInterface = FileUploadInput;
 
-export { FileUploadInput, FileUploadInterface };
+export type { FileUploadInput, FileUploadInterface };

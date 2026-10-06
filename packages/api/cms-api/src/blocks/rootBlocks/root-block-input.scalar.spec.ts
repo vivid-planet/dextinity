@@ -2,9 +2,9 @@ import { NestFactory } from "@nestjs/core";
 import { Args, GraphQLSchemaBuilderModule, GraphQLSchemaFactory, Mutation, Query } from "@nestjs/graphql";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { PixelImageBlock } from "../../dam/blocks/pixel-image.block";
-import { RootBlockDataScalar } from "./root-block-data.scalar";
-import { RootBlockInputScalar } from "./root-block-input.scalar";
+import { PixelImageBlock } from "../../dam/blocks/pixel-image.block.js";
+import { RootBlockDataScalar } from "./root-block-data.scalar.js";
+import { RootBlockInputScalar } from "./root-block-input.scalar.js";
 
 let gqlSchemaFactory: GraphQLSchemaFactory;
 

@@ -2,8 +2,8 @@ import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Command, CommandRunner } from "nest-commander";
 
-import { resolveFileEntity } from "../files/entities/resolve-dam-entity";
-import { DamDominantColorService } from "./dam-dominant-color.service";
+import { resolveFileEntity } from "../files/entities/resolve-dam-entity.js";
+import { DamDominantColorService } from "./dam-dominant-color.service.js";
 
 @Command({
     name: "cms.dam.calculateDominantImageColor",

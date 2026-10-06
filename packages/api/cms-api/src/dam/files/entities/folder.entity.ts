@@ -1,12 +1,12 @@
 import { Embedded, Entity, Index, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { ArrayType, BaseEntity, Cascade, OptionalProps } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
-import { DamScopeInterface } from "../../types";
-import { FileInterface } from "./file.entity";
-import { resolveFileEntity, resolveFolderEntity } from "./resolve-dam-entity";
+import type { DamScopeInterface } from "../../types.js";
+import type { FileInterface } from "./file.entity.js";
+import { resolveFileEntity, resolveFolderEntity } from "./resolve-dam-entity.js";
 
 export interface FolderInterface extends BaseEntity {
     [OptionalProps]?:

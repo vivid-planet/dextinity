@@ -1,14 +1,14 @@
 import { filtersToMikroOrmQuery, resolveEntityClass, searchToMikroOrmQuery } from "@dextinity/cms-api";
-import { EntityManager, FilterQuery, ObjectQuery, wrap } from "@mikro-orm/postgresql";
+import { EntityManager, type FilterQuery, type ObjectQuery, wrap } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { stringify } from "querystring";
 
-import { handleBrevoError } from "../brevo-api/brevo-api.utils";
-import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
-import { BrevoContactInterface } from "../brevo-contact/dto/brevo-contact.factory";
-import { BrevoContactAttributesInterface, BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "../types";
-import { TargetGroupFilter } from "./dto/target-group.filter";
-import { TargetGroupInterface } from "./entity/target-group-entity.factory";
+import { handleBrevoError } from "../brevo-api/brevo-api.utils.js";
+import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service.js";
+import type { BrevoContactInterface } from "../brevo-contact/dto/brevo-contact.factory.js";
+import type { BrevoContactAttributesInterface, BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "../types.js";
+import type { TargetGroupFilter } from "./dto/target-group.filter.js";
+import type { TargetGroupInterface } from "./entity/target-group-entity.factory.js";
 
 @Injectable()
 export class TargetGroupsService {

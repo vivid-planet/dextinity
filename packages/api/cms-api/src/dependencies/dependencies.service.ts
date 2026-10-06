@@ -1,19 +1,19 @@
-import { AnyEntity, Connection, EntityManager, type FindOptions, type ObjectQuery } from "@mikro-orm/postgresql";
+import { type AnyEntity, type Connection, EntityManager, type FindOptions, type ObjectQuery } from "@mikro-orm/postgresql";
 import { Injectable, Logger, Optional } from "@nestjs/common";
 import { subMinutes } from "date-fns";
 import { v4 as uuid } from "uuid";
 
-import { filtersToMikroOrmQuery, gqlSortToMikroOrmOrderBy } from "../common/filter/mikro-orm";
-import { StringFilter } from "../common/filter/string.filter";
-import { EntityInfoService } from "../entity-info/entity-info.service";
-import { FullTextSearchService } from "../full-text-search/full-text-search.service";
-import { PageTreeFullTextService } from "../page-tree/fullText/page-tree-full-text.service";
-import { DiscoverService } from "./discover.service";
-import { DependencyFilter, DependentFilter } from "./dto/dependencies.filter";
-import { Dependency } from "./dto/dependency";
-import { DependencySort } from "./dto/dependency-sort";
-import { PaginatedDependencies } from "./dto/paginated-dependencies";
-import { BlockIndexDependencyObject } from "./entities/block-index-dependency.object";
+import { filtersToMikroOrmQuery, gqlSortToMikroOrmOrderBy } from "../common/filter/mikro-orm.js";
+import { StringFilter } from "../common/filter/string.filter.js";
+import { EntityInfoService } from "../entity-info/entity-info.service.js";
+import { FullTextSearchService } from "../full-text-search/full-text-search.service.js";
+import { PageTreeFullTextService } from "../page-tree/fullText/page-tree-full-text.service.js";
+import { DiscoverService } from "./discover.service.js";
+import type { DependencyFilter, DependentFilter } from "./dto/dependencies.filter.js";
+import { Dependency } from "./dto/dependency.js";
+import type { DependencySort } from "./dto/dependency-sort.js";
+import { PaginatedDependencies } from "./dto/paginated-dependencies.js";
+import { BlockIndexDependencyObject } from "./entities/block-index-dependency.object.js";
 
 interface PGStatActivity {
     pid: number;

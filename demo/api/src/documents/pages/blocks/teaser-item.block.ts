@@ -1,17 +1,17 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockField,
     BlockInput,
     blockInputToData,
     ChildBlock,
     ChildBlockInput,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
 } from "@dextinity/cms-api";
-import { MediaBlock } from "@src/common/blocks/media.block";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block";
-import { TextLinkBlock } from "@src/common/blocks/text-link.block";
+import { MediaBlock } from "@src/common/blocks/media.block.js";
+import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
+import { TextLinkBlock } from "@src/common/blocks/text-link.block.js";
 import { IsEnum, IsString } from "class-validator";
 
 export enum TeaserItemTitleHtmlTag {

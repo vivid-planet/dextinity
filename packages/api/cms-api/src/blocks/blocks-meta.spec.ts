@@ -1,15 +1,15 @@
 import { IsString } from "class-validator";
 import { describe, expect, it } from "vitest";
 
-import { BlockData, BlockInput, blockInputToData, createBlock } from "./block";
-import { getUsedBlocks } from "./blocks-meta";
-import { ChildBlock } from "./decorators/child-block";
-import { ChildBlockInput } from "./decorators/child-block-input";
-import { BlockField } from "./decorators/field";
-import { createBlocksBlock } from "./factories/createBlocksBlock";
-import { createLinkBlock } from "./factories/createLinkBlock";
-import { createRichTextBlock } from "./factories/createRichTextBlock";
-import { createTipTapRichTextBlock } from "./tipTap/createTipTapRichTextBlock";
+import { BlockData, BlockInput, blockInputToData, createBlock } from "./block.js";
+import { getUsedBlocks } from "./blocks-meta.js";
+import { ChildBlock } from "./decorators/child-block.js";
+import { ChildBlockInput } from "./decorators/child-block-input.js";
+import { BlockField } from "./decorators/field.js";
+import { createBlocksBlock } from "./factories/createBlocksBlock.js";
+import { createLinkBlock } from "./factories/createLinkBlock.js";
+import { createRichTextBlock } from "./factories/createRichTextBlock.js";
+import { createTipTapRichTextBlock } from "./tipTap/createTipTapRichTextBlock.js";
 
 function createTestBlock(name: string) {
     class TestBlockData extends BlockData {

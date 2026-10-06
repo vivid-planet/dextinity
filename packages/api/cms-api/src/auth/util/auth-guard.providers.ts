@@ -1,6 +1,6 @@
 import type { Provider, Type } from "@nestjs/common";
 
-import type { AuthServiceInterface } from "./auth-service.interface";
+import type { AuthServiceInterface } from "./auth-service.interface.js";
 
 export function createAuthGuardProviders(...authServices: Type<AuthServiceInterface>[]): Provider[] {
     const providers: Provider[] = [];

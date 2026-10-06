@@ -1,21 +1,21 @@
 import { Embedded, Entity, Enum, Index, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, BigIntType, Cascade, Collection, OptionalProps } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { GraphQLBigInt } from "graphql-scalars";
 import { v4 as uuid } from "uuid";
 
-import { EntityInfo } from "../../../entity-info/entity-info.decorator";
-import { RequiredPermission } from "../../../user-permissions/decorators/required-permission.decorator";
-import { CreateWarnings } from "../../../warnings/decorators/create-warnings.decorator";
-import { DamScopeInterface } from "../../types";
-import { DamMediaAlternative } from "../dam-media-alternatives/entities/dam-media-alternative.entity";
-import { FileWarningService } from "../file-warning.service";
-import { DamFileAiContentType } from "./ai-content-type.enum";
-import { DamFileImage } from "./file-image.entity";
-import { FolderInterface } from "./folder.entity";
-import { License } from "./license.embeddable";
-import { resolveFileEntity } from "./resolve-dam-entity";
+import { EntityInfo } from "../../../entity-info/entity-info.decorator.js";
+import { RequiredPermission } from "../../../user-permissions/decorators/required-permission.decorator.js";
+import { CreateWarnings } from "../../../warnings/decorators/create-warnings.decorator.js";
+import type { DamScopeInterface } from "../../types.js";
+import { DamMediaAlternative } from "../dam-media-alternatives/entities/dam-media-alternative.entity.js";
+import { FileWarningService } from "../file-warning.service.js";
+import { DamFileAiContentType } from "./ai-content-type.enum.js";
+import { DamFileImage } from "./file-image.entity.js";
+import type { FolderInterface } from "./folder.entity.js";
+import { License } from "./license.embeddable.js";
+import { resolveFileEntity } from "./resolve-dam-entity.js";
 
 export interface FileInterface extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt" | "archived" | "copies" | "alternativesForThisFile" | "thisFileIsAlternativeFor";

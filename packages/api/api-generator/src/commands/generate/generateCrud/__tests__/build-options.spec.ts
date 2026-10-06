@@ -1,12 +1,12 @@
 import { Entity, ManyToOne, OneToOne, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
-import { BaseEntity, defineConfig, MikroORM, Ref } from "@mikro-orm/postgresql";
+import { BaseEntity, defineConfig, MikroORM, type Ref } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
 
-import { testPermission } from "../../utils/test-helper";
-import { buildSortProps } from "../build-options";
-import { generateSortDto } from "../generate-crud";
+import { testPermission } from "../../utils/test-helper.js";
+import { buildSortProps } from "../build-options.js";
+import { generateSortDto } from "../generate-crud.js";
 
 @Entity()
 export class TestEntity1 extends BaseEntity {

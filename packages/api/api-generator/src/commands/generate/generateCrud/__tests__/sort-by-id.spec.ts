@@ -5,9 +5,9 @@ import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storage
 import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
 
-import { formatGeneratedFiles, testPermission } from "../../utils/test-helper";
-import { buildSortProps } from "../build-options";
-import { generateCrud } from "../generate-crud";
+import { formatGeneratedFiles, testPermission } from "../../utils/test-helper.js";
+import { buildSortProps } from "../build-options.js";
+import { generateCrud } from "../generate-crud.js";
 
 @Entity()
 export class TestEntity1 extends BaseEntity {

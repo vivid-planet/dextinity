@@ -7,25 +7,33 @@ import StarterKit from "@tiptap/starter-kit";
 import { plainToInstance } from "class-transformer";
 import { registerDecorator, validate, type ValidationOptions } from "class-validator";
 
-import { Block, BlockData, BlockDataFactory, BlockDataInterface, BlockInputFactory, BlockInputInterface, ChildBlockInfo } from "../block";
-import { AnnotationBlockMeta, BlockField } from "../decorators/field";
-import { BlockFactoryNameOrOptions } from "../factories/types";
-import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFactoryDecorator";
-import { strictBlockInputFactoryDecorator } from "../helpers/strictBlockInputFactoryDecorator";
-import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator";
-import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
-import type { SearchText, WeightedSearchText } from "../search/get-search-text";
-import { CmsBlock, CmsInlineBlock } from "./extensions/CmsBlock";
-import { CmsLink } from "./extensions/CmsLink";
-import { InlineStyleMark } from "./extensions/InlineStyleMark";
-import { NonBreakingSpace } from "./extensions/NonBreakingSpace";
-import { Placeholder } from "./extensions/Placeholder";
-import { SoftHyphen } from "./extensions/SoftHyphen";
-import { TextBlockStyleHeading } from "./extensions/TextBlockStyleHeading";
-import { TextBlockStyleParagraph } from "./extensions/TextBlockStyleParagraph";
-import { buildDraftJsToTipTapMigration } from "./migrations/buildDraftJsToTipTapMigration";
-import type { TextBlockStyleMapping } from "./migrations/convertDraftJsToTipTap";
-import { containsInvalidHeadingLevel, getListNestingDepth } from "./tipTapValidation";
+import {
+    type Block,
+    BlockData,
+    type BlockDataFactory,
+    type BlockDataInterface,
+    type BlockInputFactory,
+    type BlockInputInterface,
+    type ChildBlockInfo,
+} from "../block.js";
+import { AnnotationBlockMeta, BlockField } from "../decorators/field.js";
+import type { BlockFactoryNameOrOptions } from "../factories/types.js";
+import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFactoryDecorator.js";
+import { strictBlockInputFactoryDecorator } from "../helpers/strictBlockInputFactoryDecorator.js";
+import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator.js";
+import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion.js";
+import type { SearchText, WeightedSearchText } from "../search/get-search-text.js";
+import { CmsBlock, CmsInlineBlock } from "./extensions/CmsBlock.js";
+import { CmsLink } from "./extensions/CmsLink.js";
+import { InlineStyleMark } from "./extensions/InlineStyleMark.js";
+import { NonBreakingSpace } from "./extensions/NonBreakingSpace.js";
+import { Placeholder } from "./extensions/Placeholder.js";
+import { SoftHyphen } from "./extensions/SoftHyphen.js";
+import { TextBlockStyleHeading } from "./extensions/TextBlockStyleHeading.js";
+import { TextBlockStyleParagraph } from "./extensions/TextBlockStyleParagraph.js";
+import { buildDraftJsToTipTapMigration } from "./migrations/buildDraftJsToTipTapMigration.js";
+import type { TextBlockStyleMapping } from "./migrations/convertDraftJsToTipTap.js";
+import { containsInvalidHeadingLevel, getListNestingDepth } from "./tipTapValidation.js";
 
 export type { JSONContent as TipTapRichTextBlockContent } from "@tiptap/core";
 

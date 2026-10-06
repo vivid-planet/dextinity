@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { BlockMetaFieldKind } from "../block";
-import { getBlocksMeta } from "../blocks-meta";
-import { ExternalLinkBlock } from "../externalLink/external-link.block";
-import { createLinkBlock } from "./createLinkBlock";
-import { createRichTextBlock } from "./createRichTextBlock";
+import { BlockMetaFieldKind } from "../block.js";
+import { getBlocksMeta } from "../blocks-meta.js";
+import { ExternalLinkBlock } from "../externalLink/external-link.block.js";
+import { createLinkBlock } from "./createLinkBlock.js";
+import { createRichTextBlock } from "./createRichTextBlock.js";
 
 describe("createRichTextBlock", () => {
     const LinkBlock = createLinkBlock({ supportedBlocks: { external: ExternalLinkBlock } }, "RichTextMetaTestLink");

@@ -1,8 +1,8 @@
 import { SignJWT } from "jose";
 import { describe, expect, it, vi } from "vitest";
 
-import { SKIP_AUTH_SERVICE } from "../util/auth-service.interface";
-import { createSitePreviewAuthService, type SitePreviewAuthServiceConfig } from "./site-preview.auth-service";
+import { SKIP_AUTH_SERVICE } from "../util/auth-service.interface.js";
+import { createSitePreviewAuthService, type SitePreviewAuthServiceConfig } from "./site-preview.auth-service.js";
 
 describe("createSitePreviewAuthService", () => {
     const instantianteService = (config: SitePreviewAuthServiceConfig) => new (createSitePreviewAuthService(config))();

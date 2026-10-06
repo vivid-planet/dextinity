@@ -1,26 +1,26 @@
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { plainToInstance, Transform } from "class-transformer";
 import { Allow, IsBoolean, IsString, ValidateNested } from "class-validator";
 
 import {
-    Block,
-    BlockContext,
+    type Block,
+    type BlockContext,
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockInput,
-    BlockInputInterface,
+    type BlockInputInterface,
     blockInputToData,
-    ChildBlockInfo,
+    type ChildBlockInfo,
     createBlock,
-    ExtractBlockInput,
-    ExtractBlockInputFactoryProps,
+    type ExtractBlockInput,
+    type ExtractBlockInputFactoryProps,
     isBlockDataInterface,
     isBlockInputInterface,
-    SimpleBlockInputInterface,
-    TraversableTransformBlockResponse,
-} from "../block";
-import { BlockField } from "../decorators/field";
-import { BlockFactoryNameOrOptions } from "./types";
+    type SimpleBlockInputInterface,
+    type TraversableTransformBlockResponse,
+} from "../block.js";
+import { BlockField } from "../decorators/field.js";
+import type { BlockFactoryNameOrOptions } from "./types.js";
 
 interface BlocksBlockItemDataInterface extends BlockData {
     key: string;

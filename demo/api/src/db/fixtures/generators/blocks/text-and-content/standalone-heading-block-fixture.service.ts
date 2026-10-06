@@ -1,9 +1,9 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { StandaloneHeadingBlock, TextAlignment } from "@src/common/blocks/standalone-heading.block";
-import { faker } from "@src/db/fixtures/faker";
+import { type StandaloneHeadingBlock, TextAlignment } from "@src/common/blocks/standalone-heading.block.js";
+import { faker } from "@src/db/fixtures/faker.js";
 
-import { HeadingBlockFixtureService } from "./heading-block-fixture.service";
+import { HeadingBlockFixtureService } from "./heading-block-fixture.service.js";
 
 @Injectable()
 export class StandaloneHeadingBlockFixtureService {

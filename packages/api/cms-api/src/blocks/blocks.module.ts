@@ -1,11 +1,11 @@
 import { Global, Module } from "@nestjs/common";
 
-import { BlockMigrateService } from "./block-migrate.service";
-import { BlocksMetaService } from "./blocks-meta.service";
-import { BlocksTransformerService } from "./blocks-transformer.service";
-import { CreateBlockIndexViewsCommand } from "./create-block-index-views.command";
-import { MigrateBlocksCommand } from "./migrate-blocks.command";
-import { RefreshBlockIndexViewsCommand } from "./refresh-block-index-views.command";
+import { BlockMigrateService } from "./block-migrate.service.js";
+import { BlocksMetaService } from "./blocks-meta.service.js";
+import { BlocksTransformerService } from "./blocks-transformer.service.js";
+import { CreateBlockIndexViewsCommand } from "./create-block-index-views.command.js";
+import { MigrateBlocksCommand } from "./migrate-blocks.command.js";
+import { RefreshBlockIndexViewsCommand } from "./refresh-block-index-views.command.js";
 
 @Global()
 @Module({

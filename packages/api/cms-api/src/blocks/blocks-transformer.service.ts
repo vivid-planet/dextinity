@@ -2,9 +2,9 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ContextIdFactory, ModuleRef } from "@nestjs/core";
 import { CONTEXT } from "@nestjs/graphql";
 
-import { getRequestContextHeadersFromRequest } from "../common/decorators/request-context.decorator";
-import { BlockContext, BlockDataInterface } from "./block";
-import { transformToPlain } from "./blocks-transformer";
+import { getRequestContextHeadersFromRequest } from "../common/decorators/request-context.decorator.js";
+import type { BlockContext, BlockDataInterface } from "./block.js";
+import { transformToPlain } from "./blocks-transformer.js";
 
 @Injectable()
 export class BlocksTransformerService {

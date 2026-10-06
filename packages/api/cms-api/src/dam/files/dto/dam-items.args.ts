@@ -1,12 +1,12 @@
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { ArgsType, Field, ID, InputType, IntersectionType, registerEnumType } from "@nestjs/graphql";
 import { Type as TransformerType } from "class-transformer";
 import { IsBoolean, IsEnum, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
 
-import { OffsetBasedPaginationArgs } from "../../../common/pagination/offset-based.args";
-import { SortArgs } from "../../../common/sorting/sort.args";
-import { DamScopeInterface } from "../../types";
-import { EmptyDamScope } from "./empty-dam-scope";
+import { OffsetBasedPaginationArgs } from "../../../common/pagination/offset-based.args.js";
+import { SortArgs } from "../../../common/sorting/sort.args.js";
+import type { DamScopeInterface } from "../../types.js";
+import { EmptyDamScope } from "./empty-dam-scope.js";
 
 export enum DamItemType {
     File = "File",

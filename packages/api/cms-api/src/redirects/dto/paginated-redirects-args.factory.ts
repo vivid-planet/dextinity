@@ -1,12 +1,12 @@
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { ArgsType, Field, Int } from "@nestjs/graphql";
 import { Type as TransformerType } from "class-transformer";
 import { IsInt, IsOptional, IsString, Max, Min, ValidateNested } from "class-validator";
 
-import { RedirectScopeInterface } from "../types";
-import { EmptyRedirectScope } from "./empty-redirect-scope";
-import { RedirectSort } from "./redirect.sort";
-import { RedirectFilter } from "./redirects.filter";
+import type { RedirectScopeInterface } from "../types.js";
+import { EmptyRedirectScope } from "./empty-redirect-scope.js";
+import { RedirectSort } from "./redirect.sort.js";
+import { RedirectFilter } from "./redirects.filter.js";
 
 interface PaginatedRedirectsArgsInterface {
     scope: RedirectScopeInterface;

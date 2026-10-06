@@ -1,7 +1,7 @@
 import { registerEnumType } from "@nestjs/graphql";
 
-import type { PageTreeNodeBaseCreateInput, PageTreeNodeBaseUpdateInput } from "./dto/page-tree-node.input";
-import type { PageTreeNodeBase } from "./entities/page-tree-node-base.entity";
+import type { PageTreeNodeBaseCreateInput, PageTreeNodeBaseUpdateInput } from "./dto/page-tree-node.input.js";
+import type { PageTreeNodeBase } from "./entities/page-tree-node-base.entity.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ScopeInterface = Record<string, any>; //@TODO: move to general scope (other modules (redirect, dam) need this too)

@@ -4,7 +4,7 @@ import { BaseEntity, Collection } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
-import { ProductCategory } from "./product-category.entity";
+import { ProductCategory } from "./product-category.entity.js";
 
 @ObjectType()
 @Entity()

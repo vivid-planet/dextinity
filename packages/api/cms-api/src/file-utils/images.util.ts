@@ -1,6 +1,6 @@
 import { mediaType } from "@hapi/accept";
 
-import { FocalPoint } from "./focal-point.enum";
+import { FocalPoint } from "./focal-point.enum.js";
 
 interface ImageDimensions {
     width: number;

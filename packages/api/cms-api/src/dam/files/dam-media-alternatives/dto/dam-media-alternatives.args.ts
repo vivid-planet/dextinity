@@ -2,9 +2,9 @@ import { ArgsType, Field, ID } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsEnum, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
 
-import { OffsetBasedPaginationArgs } from "../../../../common/pagination/offset-based.args";
-import { DamMediaAlternativeType } from "../entities/dam-media-alternative.entity";
-import { DamMediaAlternativeSort } from "./dam-media-alternative.sort";
+import { OffsetBasedPaginationArgs } from "../../../../common/pagination/offset-based.args.js";
+import { DamMediaAlternativeType } from "../entities/dam-media-alternative.entity.js";
+import { DamMediaAlternativeSort } from "./dam-media-alternative.sort.js";
 
 @ArgsType()
 export class DamMediaAlternativesArgs extends OffsetBasedPaginationArgs {

@@ -1,11 +1,11 @@
-import { BlockDataInterface, CrudSingleGenerator, RootBlock, RootBlockDataScalar, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
+import { type BlockDataInterface, CrudSingleGenerator, RootBlock, RootBlockDataScalar, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
 import { Embedded, Entity, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
-import { WelcomeEmailContentBlock } from "../blocks/welcome-email-content.block";
-import { WelcomeEmailScope } from "../dto/welcome-email-scope";
+import { WelcomeEmailContentBlock } from "../blocks/welcome-email-content.block.js";
+import { WelcomeEmailScope } from "../dto/welcome-email-scope.js";
 
 @Entity()
 @ObjectType()

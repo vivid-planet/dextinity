@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { isString, registerDecorator, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
+import { isString, registerDecorator, ValidatorConstraint, type ValidatorConstraintInterface } from "class-validator";
 
 export const IsValidYouTubeIdentifier = () => {
     // eslint-disable-next-line @typescript-eslint/no-wrapper-object-types

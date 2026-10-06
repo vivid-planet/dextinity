@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 
-import { CurrentUser, CurrentUserPermission } from "./dto/current-user";
-import { ContentScope } from "./interfaces/content-scope.interface";
-import { AccessControlServiceInterface, Permission } from "./user-permissions.types";
+import type { CurrentUser, CurrentUserPermission } from "./dto/current-user.js";
+import type { ContentScope } from "./interfaces/content-scope.interface.js";
+import type { AccessControlServiceInterface, Permission } from "./user-permissions.types.js";
 
 // Whether `scope` is within `containingScope`: for every dimension of `scope`, `containingScope` holds the same value
 // or the wildcard "*" (which matches any value); null and undefined are treated the same. `containingScope` may be

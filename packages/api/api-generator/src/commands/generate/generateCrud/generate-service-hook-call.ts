@@ -1,6 +1,6 @@
 import type { EntityProperty } from "@mikro-orm/core";
 
-import type { findHooksService } from "../utils/find-hooks-service";
+import type { findHooksService } from "../utils/find-hooks-service.js";
 
 export function generateServiceHookCall(
     type: "validateCreateInput" | "validateUpdateInput",

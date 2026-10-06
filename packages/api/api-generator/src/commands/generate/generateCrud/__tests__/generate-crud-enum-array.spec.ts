@@ -5,8 +5,8 @@ import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storage
 import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
 
-import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
-import { generateCrud } from "../generate-crud";
+import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper.js";
+import { generateCrud } from "../generate-crud.js";
 
 export enum TestEnum {
     ONE = "ONE",

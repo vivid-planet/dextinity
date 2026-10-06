@@ -1,5 +1,5 @@
 import {
-    BlockDataInterface,
+    type BlockDataInterface,
     blockToMikroOrmFullText,
     DocumentInterface,
     PageTreeNodeDocumentEntityScopeService,
@@ -14,9 +14,9 @@ import { BaseEntity, FullTextType, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
-import { PageContentBlock } from "../blocks/page-content.block";
-import { SeoBlock } from "../blocks/seo.block";
-import { StageBlock } from "../blocks/stage.block";
+import { PageContentBlock } from "../blocks/page-content.block.js";
+import { SeoBlock } from "../blocks/seo.block.js";
+import { StageBlock } from "../blocks/stage.block.js";
 
 @Entity()
 @ObjectType({

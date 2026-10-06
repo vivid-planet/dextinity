@@ -3,7 +3,7 @@ import type { ReadStream } from "node:fs";
 import type { SdkStream } from "@smithy/types";
 import type { IncomingMessage } from "http";
 
-import { ImporterDataStream } from "./data-stream";
+import { ImporterDataStream } from "./data-stream.js";
 
 type FileStream = SdkStream<IncomingMessage> | ReadStream;
 

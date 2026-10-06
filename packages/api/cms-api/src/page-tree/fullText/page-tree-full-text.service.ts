@@ -1,9 +1,9 @@
 import { EntityManager } from "@mikro-orm/postgresql";
-import { Inject, Injectable, Type } from "@nestjs/common";
+import { Inject, Injectable, type Type } from "@nestjs/common";
 
-import { DocumentInterface } from "../../document/dto/document-interface";
-import { resolvePageTreeNodeEntity } from "../entities/resolve-page-tree-node-entity";
-import { PAGE_TREE_DOCUMENTS } from "../page-tree.constants";
+import type { DocumentInterface } from "../../document/dto/document-interface.js";
+import { resolvePageTreeNodeEntity } from "../entities/resolve-page-tree-node-entity.js";
+import { PAGE_TREE_DOCUMENTS } from "../page-tree.constants.js";
 
 @Injectable()
 export class PageTreeFullTextService {

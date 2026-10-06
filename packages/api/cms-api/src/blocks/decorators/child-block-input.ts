@@ -1,8 +1,8 @@
 import { Expose, Transform } from "class-transformer";
 import { ValidateNested } from "class-validator";
 
-import { type Block, isBlockInputInterface } from "../block";
-import { BlockField } from "./field";
+import { type Block, isBlockInputInterface } from "../block.js";
+import { BlockField } from "./field.js";
 
 interface ChildBlockInputOptions {
     /**

@@ -1,13 +1,13 @@
 import { FocalPoint } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, Logger } from "@nestjs/common";
-import { faker } from "@src/db/fixtures/faker";
-import { MailButtonAlignment, MailButtonVariant } from "@src/mail/blocks/mail-button.block";
-import { MailSpacing } from "@src/mail/blocks/mail-spacer.block";
-import { WelcomeEmailContentBlock } from "@src/welcome-email/blocks/welcome-email-content.block";
-import { WelcomeEmail } from "@src/welcome-email/entities/welcome-email.entity";
+import { faker } from "@src/db/fixtures/faker.js";
+import { MailButtonAlignment, MailButtonVariant } from "@src/mail/blocks/mail-button.block.js";
+import { MailSpacing } from "@src/mail/blocks/mail-spacer.block.js";
+import { WelcomeEmailContentBlock } from "@src/welcome-email/blocks/welcome-email-content.block.js";
+import { WelcomeEmail } from "@src/welcome-email/entities/welcome-email.entity.js";
 
-import { PixelImageBlockFixtureService } from "./blocks/media/pixel-image-block-fixture.service";
+import { PixelImageBlockFixtureService } from "./blocks/media/pixel-image-block-fixture.service.js";
 
 interface WelcomeEmailScope {
     domain: string;

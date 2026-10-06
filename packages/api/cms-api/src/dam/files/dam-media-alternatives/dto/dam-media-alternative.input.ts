@@ -1,9 +1,9 @@
 import { Field, ID, InputType } from "@nestjs/graphql";
 import { IsEnum, IsNotEmpty, IsString } from "class-validator";
 
-import { PartialType } from "../../../../common/helper/partial-type.helper";
-import { IsUndefinable } from "../../../../common/validators/is-undefinable";
-import { DamMediaAlternativeType } from "../entities/dam-media-alternative.entity";
+import { PartialType } from "../../../../common/helper/partial-type.helper.js";
+import { IsUndefinable } from "../../../../common/validators/is-undefinable.js";
+import { DamMediaAlternativeType } from "../entities/dam-media-alternative.entity.js";
 
 @InputType()
 export class DamMediaAlternativeInput {

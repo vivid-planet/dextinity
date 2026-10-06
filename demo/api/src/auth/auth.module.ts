@@ -7,15 +7,15 @@ import {
     createStaticUserAuthService,
     DextinityAuthGuard,
 } from "@dextinity/cms-api";
-import { DynamicModule, Module } from "@nestjs/common";
+import { type DynamicModule, Module } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
-import { Config } from "@src/config/config";
+import type { Config } from "@src/config/config.js";
 
-import { AccessControlService } from "./access-control.service";
-import { SYSTEM_USER_NAME } from "./constants";
-import { staticUsers } from "./static-users";
-import { UserService } from "./user.service";
+import { AccessControlService } from "./access-control.service.js";
+import { SYSTEM_USER_NAME } from "./constants.js";
+import { staticUsers } from "./static-users.js";
+import { UserService } from "./user.service.js";
 
 @Module({})
 export class AuthModule {

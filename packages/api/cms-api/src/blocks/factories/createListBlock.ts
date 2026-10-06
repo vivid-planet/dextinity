@@ -1,24 +1,24 @@
-import { ClassConstructor, plainToInstance, Transform, Type } from "class-transformer";
+import { type ClassConstructor, plainToInstance, Transform, Type } from "class-transformer";
 import { Allow, IsBoolean, IsString, ValidateNested } from "class-validator";
 
 import {
-    Block,
-    BlockContext,
+    type Block,
+    type BlockContext,
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockInput,
-    BlockInputInterface,
+    type BlockInputInterface,
     blockInputToData,
-    ChildBlockInfo,
+    type ChildBlockInfo,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
     isBlockDataInterface,
     isBlockInputInterface,
-    SimpleBlockInputInterface,
-    TraversableTransformBlockResponse,
-} from "../block";
-import { BlockField } from "../decorators/field";
-import { BlockFactoryNameOrOptions } from "./types";
+    type SimpleBlockInputInterface,
+    type TraversableTransformBlockResponse,
+} from "../block.js";
+import { BlockField } from "../decorators/field.js";
+import type { BlockFactoryNameOrOptions } from "./types.js";
 
 interface ListBlockItemDataInterface extends BlockData {
     key: string;

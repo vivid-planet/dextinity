@@ -1,11 +1,11 @@
 import { plainToInstance, Type } from "class-transformer";
 import { IsArray, IsBoolean, IsEnum, IsString } from "class-validator";
 
-import { Block, BlockData, BlockDataInterface, BlockInput, BlockInputInterface, blockInputToData, createBlock } from "../block";
-import { ChildBlock } from "../decorators/child-block";
-import { ChildBlockInput } from "../decorators/child-block-input";
-import { BlockField } from "../decorators/field";
-import { BlockFactoryNameOrOptions } from "./types";
+import { type Block, BlockData, type BlockDataInterface, BlockInput, type BlockInputInterface, blockInputToData, createBlock } from "../block.js";
+import { ChildBlock } from "../decorators/child-block.js";
+import { ChildBlockInput } from "../decorators/child-block-input.js";
+import { BlockField } from "../decorators/field.js";
+import type { BlockFactoryNameOrOptions } from "./types.js";
 
 type CreateTableBlockOptions = {
     richText: Block;

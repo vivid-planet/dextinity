@@ -2,9 +2,9 @@ import { Entity, PrimaryKey } from "@mikro-orm/decorators/legacy";
 import type { EntityManager, QueryBuilder } from "@mikro-orm/postgresql";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { FileFilterInput } from "./dto/file.args";
-import type { FileInterface } from "./entities/file.entity";
-import { FilesService } from "./files.service";
+import type { FileFilterInput } from "./dto/file.args.js";
+import type { FileInterface } from "./entities/file.entity.js";
+import { FilesService } from "./files.service.js";
 
 // Decorating a stand-in entity registers "DamFile" in MikroORM's metadata, which is all `resolveFileEntity()` needs.
 @Entity({ tableName: "DamFile" })

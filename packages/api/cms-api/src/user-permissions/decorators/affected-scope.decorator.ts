@@ -1,6 +1,6 @@
 import { SetMetadata } from "@nestjs/common";
 
-import type { ContentScope } from "../../user-permissions/interfaces/content-scope.interface";
+import type { ContentScope } from "../../user-permissions/interfaces/content-scope.interface.js";
 
 export type AffectedScopeMeta = {
     argsToScope: (args: Record<string, unknown>) => ContentScope | ContentScope[];

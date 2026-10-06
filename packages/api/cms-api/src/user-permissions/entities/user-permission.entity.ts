@@ -4,8 +4,8 @@ import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
 import { v4 as uuid } from "uuid";
 
-import { ContentScope } from "../interfaces/content-scope.interface";
-import { CombinedPermission, Permission } from "../user-permissions.types";
+import type { ContentScope } from "../interfaces/content-scope.interface.js";
+import { CombinedPermission, type Permission } from "../user-permissions.types.js";
 
 export enum UserPermissionSource {
     MANUAL = "MANUAL",

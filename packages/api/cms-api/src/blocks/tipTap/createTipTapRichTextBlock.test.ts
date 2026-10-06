@@ -1,10 +1,10 @@
 import { validate } from "class-validator";
 import { describe, expect, it } from "vitest";
 
-import { BlockMetaFieldKind } from "../block";
-import { getBlocksMeta } from "../blocks-meta";
-import { ExternalLinkBlock } from "../externalLink/external-link.block";
-import { createLinkBlock } from "../factories/createLinkBlock";
+import { BlockMetaFieldKind } from "../block.js";
+import { getBlocksMeta } from "../blocks-meta.js";
+import { ExternalLinkBlock } from "../externalLink/external-link.block.js";
+import { createLinkBlock } from "../factories/createLinkBlock.js";
 import {
     createTipTapRichTextBlock,
     type CreateTipTapRichTextBlockOptions,
@@ -12,7 +12,7 @@ import {
     type TipTapRichTextBlockContent,
     type TipTapRichTextBlockDataInterface,
     type TipTapRichTextBlockInputInterface,
-} from "./createTipTapRichTextBlock";
+} from "./createTipTapRichTextBlock.js";
 
 // Disables all features that aren't explicitly enabled, to pin down the schema a test expects.
 const onlyFeatures = (options: CreateTipTapRichTextBlockOptions = {}): CreateTipTapRichTextBlockOptions => ({

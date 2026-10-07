@@ -7,26 +7,27 @@ import { FormattedMessage } from "react-intl";
 export const mailTipTapRichTextBlockOptions = {
     link: MailLinkBlock,
     textBlocks: [
-        { name: "paragraph", label: <FormattedMessage id="mail.tipTapRichText.textBlock.paragraph" defaultMessage="Paragraph" />, tag: "p" },
-    ],
-    textBlockStyles: [
         {
-            name: "title",
-            label: <FormattedMessage id="mail.tipTapRichText.textBlockStyle.title" defaultMessage="Title" />,
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <Typography variant="h1" {...props} />,
-        },
-        {
-            name: "header",
-            label: <FormattedMessage id="mail.tipTapRichText.textBlockStyle.header" defaultMessage="Header" />,
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <Typography variant="h2" {...props} />,
-        },
-        {
-            name: "small",
-            label: <FormattedMessage id="mail.tipTapRichText.textBlockStyle.small" defaultMessage="Small" />,
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <Typography variant="body2" {...props} />,
+            name: "paragraph",
+            label: <FormattedMessage id="mail.tipTapRichText.textBlock.paragraph" defaultMessage="Paragraph" />,
+            tag: "p",
+            styles: [
+                {
+                    name: "title",
+                    label: <FormattedMessage id="mail.tipTapRichText.textBlockStyle.title" defaultMessage="Title" />,
+                    element: (props: HTMLAttributes<HTMLElement>) => <Typography variant="h1" {...props} />,
+                },
+                {
+                    name: "header",
+                    label: <FormattedMessage id="mail.tipTapRichText.textBlockStyle.header" defaultMessage="Header" />,
+                    element: (props: HTMLAttributes<HTMLElement>) => <Typography variant="h2" {...props} />,
+                },
+                {
+                    name: "small",
+                    label: <FormattedMessage id="mail.tipTapRichText.textBlockStyle.small" defaultMessage="Small" />,
+                    element: (props: HTMLAttributes<HTMLElement>) => <Typography variant="body2" {...props} />,
+                },
+            ],
         },
     ],
 } satisfies NonNullable<Parameters<typeof createTipTapRichTextBlock>[0]>;

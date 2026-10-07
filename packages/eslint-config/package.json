@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/eslint-config",
-    "version": "10.7.0",
+    "version": "10.8.0",
     "description": "A set of ESLint configurations for Dextinity projects",
     "repository": {
         "directory": "packages/eslint-config",
@@ -44,9 +44,9 @@
     "dependencies": {
         "@calm/eslint-plugin-react-intl": "^1.4.1",
         "@dextinity/eslint-plugin": "workspace:*",
-        "@eslint/eslintrc": "^3.3.6",
+        "@eslint/eslintrc": "^3.3.7",
         "@eslint/js": "^9.39.5",
-        "@graphql-eslint/eslint-plugin": "^4.4.0",
+        "@graphql-eslint/eslint-plugin": "^4.4.1",
         "@next/eslint-plugin-next": "^16.2.10",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-formatjs": "^5.4.2",
@@ -63,7 +63,7 @@
         "typescript-eslint": "^8.62.1"
     },
     "devDependencies": {
-        "eslint": "^9.39.4",
+        "eslint": "^9.39.5",
         "prettier": "^3.6.2",
         "typescript": "^5.9.3"
     },

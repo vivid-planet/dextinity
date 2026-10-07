@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/cli",
-    "version": "10.7.0",
+    "version": "10.8.0",
     "description": "A collection of CLI tools for Dextinity projects",
     "repository": {
         "directory": "packages/cli",
@@ -37,7 +37,7 @@
     },
     "dependencies": {
         "commander": "^9.5.0",
-        "js-yaml": "^4.1.1",
+        "js-yaml": "^4.3.2",
         "prettier": "^3.6.2",
         "ts-node": "^10.9.2"
     },
@@ -45,11 +45,11 @@
         "@dextinity/eslint-config": "workspace:*",
         "@types/js-yaml": "^4.0.9",
         "@types/node": "^24.13.3",
-        "eslint": "^9.39.4",
+        "eslint": "^9.39.5",
         "npm-run-all2": "^8.0.4",
         "rimraf": "^6.1.2",
         "typescript": "^5.9.3",
-        "vitest": "^4.1.8"
+        "vitest": "^4.1.11"
     },
     "engines": {
         "node": ">=22.0.0"

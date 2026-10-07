@@ -6,6 +6,7 @@ import { Form } from "react-final-form";
 
 export default {
     title: "Docs/Form/Components/Date & Time Pickers/Time Picker",
+    tags: ["deprecated"],
 };
 
 export const Basic = () => {

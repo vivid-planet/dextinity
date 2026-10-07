@@ -1,10 +1,11 @@
+import { isDeepStrictEqual } from "node:util";
+
 import * as csv from "@fast-csv/parse";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 import { IsEmail, IsNotEmpty, validateSync } from "class-validator";
 import { GraphQLJSONObject } from "graphql-scalars";
-import isEqual from "lodash.isequal";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 import { TargetGroupInterface } from "src/target-group/entity/target-group-entity.factory";
 import { Readable } from "stream";
@@ -91,7 +92,7 @@ export class BrevoContactImportService {
                 throw new Error("Main lists are not allowed as target groups for import");
             }
 
-            if (!isEqual(targetGroup.scope, scope)) {
+            if (!isDeepStrictEqual(targetGroup.scope, scope)) {
                 throw new Error("Target group scope does not match the scope of the import file");
             }
         }

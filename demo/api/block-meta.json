@@ -617,6 +617,7 @@
     },
     {
         "name": "ContactForm",
+        "description": "A contact form that visitors can use to get in touch.",
         "fields": [],
         "inputFields": []
     },
@@ -1150,6 +1151,7 @@
     },
     {
         "name": "EmailCampaignSalutation",
+        "description": "The salutation of an email campaign, filled with the name of the recipient.",
         "fields": [],
         "inputFields": []
     },
@@ -1875,6 +1877,18 @@
                 "name": "fullWidth",
                 "kind": "Boolean",
                 "nullable": false
+            },
+            {
+                "name": "aspectRatio",
+                "kind": "Enum",
+                "enum": [
+                    "16x9",
+                    "4x3",
+                    "2x1",
+                    "1x1",
+                    "3x4"
+                ],
+                "nullable": false
             }
         ],
         "inputFields": [
@@ -1887,6 +1901,18 @@
             {
                 "name": "fullWidth",
                 "kind": "Boolean",
+                "nullable": false
+            },
+            {
+                "name": "aspectRatio",
+                "kind": "Enum",
+                "enum": [
+                    "16x9",
+                    "4x3",
+                    "2x1",
+                    "1x1",
+                    "3x4"
+                ],
                 "nullable": false
             }
         ]
@@ -2016,6 +2042,7 @@
     },
     {
         "name": "MailTwoListSizesRichText",
+        "description": "Formatted text, edited in the Draft.js based rich text editor.",
         "fields": [
             {
                 "name": "draftContent",
@@ -2345,6 +2372,7 @@
     },
     {
         "name": "NewsDetail",
+        "description": "The detail view of a single news entry.",
         "fields": [
             {
                 "name": "id",
@@ -2362,6 +2390,7 @@
     },
     {
         "name": "NewsLink",
+        "description": "A link to a news entry.",
         "fields": [
             {
                 "name": "id",
@@ -2542,7 +2571,6 @@
                                 "table": "Table",
                                 "tipTapTable": "TipTapTable",
                                 "tipTapRichText": "TipTapRichText",
-                                "productList": "ProductList",
                                 "pageTreeIndex": "PageTreeIndex",
                                 "contactForm": "ContactForm"
                             },
@@ -2611,7 +2639,6 @@
                                 "table": "Table",
                                 "tipTapTable": "TipTapTable",
                                 "tipTapRichText": "TipTapRichText",
-                                "productList": "ProductList",
                                 "pageTreeIndex": "PageTreeIndex",
                                 "contactForm": "ContactForm"
                             },
@@ -2635,6 +2662,7 @@
     },
     {
         "name": "PageTreeIndex",
+        "description": "A list of the pages below the current page in the page tree.",
         "fields": [],
         "inputFields": []
     },
@@ -2891,60 +2919,8 @@
         ]
     },
     {
-        "name": "ProductList",
-        "fields": [
-            {
-                "name": "types",
-                "kind": "Enum",
-                "enum": [
-                    "cap",
-                    "shirt",
-                    "tie",
-                    "pants",
-                    "jacket",
-                    "shoes",
-                    "socks",
-                    "mug",
-                    "pen",
-                    "calendar",
-                    "notebook",
-                    "bag",
-                    "watch",
-                    "sunglasses",
-                    "wallet"
-                ],
-                "nullable": false,
-                "array": true
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "types",
-                "kind": "Enum",
-                "enum": [
-                    "cap",
-                    "shirt",
-                    "tie",
-                    "pants",
-                    "jacket",
-                    "shoes",
-                    "socks",
-                    "mug",
-                    "pen",
-                    "calendar",
-                    "notebook",
-                    "bag",
-                    "watch",
-                    "sunglasses",
-                    "wallet"
-                ],
-                "nullable": false,
-                "array": true
-            }
-        ]
-    },
-    {
         "name": "ProductPrice",
+        "description": "The current price of a product, loaded from the product itself.",
         "fields": [
             {
                 "name": "productId",
@@ -2986,6 +2962,7 @@
     },
     {
         "name": "ProductTeaser",
+        "description": "A teaser for a single product.",
         "fields": [
             {
                 "name": "productId",
@@ -3003,6 +2980,7 @@
     },
     {
         "name": "RedirectsLink",
+        "description": "The target a redirect points to, for instance a page of the page tree or an external URL.",
         "fields": [
             {
                 "name": "attachedBlocks",
@@ -3092,6 +3070,7 @@
     },
     {
         "name": "RichText",
+        "description": "Formatted text, edited in the Draft.js based rich text editor.",
         "fields": [
             {
                 "name": "draftContent",
@@ -3111,6 +3090,7 @@
     },
     {
         "name": "RichText",
+        "description": "Formatted text, edited in the Draft.js based rich text editor.",
         "fields": [
             {
                 "name": "draftContent",
@@ -3130,6 +3110,7 @@
     },
     {
         "name": "Seo",
+        "description": "The metadata of a page for search engines and social networks: title, description, preview image, sitemap settings and canonical URL.",
         "fields": [
             {
                 "name": "htmlTitle",
@@ -4140,6 +4121,7 @@
     },
     {
         "name": "TipTapRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor.",
         "fields": [
             {
                 "name": "tipTapContent",

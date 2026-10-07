@@ -1,10 +1,21 @@
 import { Box, chipClasses, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type HTMLAttributes, type ReactNode, useState } from "react";
+import { type ReactNode, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
-import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "../createTipTapRichTextBlock";
+import {
+    createTipTapRichTextBlock,
+    type TipTapRichTextBlockState,
+    type TipTapTextBlock,
+    type TipTapTextBlockStyle,
+} from "../createTipTapRichTextBlock";
+
+const defaultHeadingTextBlocks: TipTapTextBlock[] = ([1, 2, 3, 4, 5, 6] as const).map((level) => ({
+    name: `heading-${level}`,
+    label: `Heading ${level}`,
+    tag: `h${level}` as const,
+}));
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
@@ -76,15 +87,14 @@ export const Default: Story = {
     },
 };
 
+const introStyle: TipTapTextBlockStyle = {
+    name: "intro",
+    label: "Intro Text",
+    element: (props) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
+};
+
 const ReadOnlyBlock = createTipTapRichTextBlock({
-    textBlockStyles: [
-        {
-            name: "intro",
-            label: "Intro Text",
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
-        },
-    ],
+    textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [introStyle] }, ...defaultHeadingTextBlocks],
 });
 
 const readOnlyState: TipTapRichTextBlockState = {
@@ -92,12 +102,12 @@ const readOnlyState: TipTapRichTextBlockState = {
         type: "doc",
         content: [
             {
-                type: "heading",
-                attrs: { level: 1 },
+                type: "textBlock",
+                attrs: { textBlock: "heading-1" },
                 content: [{ type: "text", text: "Read-only content" }],
             },
             {
-                type: "paragraph",
+                type: "textBlock",
                 attrs: { textBlockStyle: "intro" },
                 content: [
                     { type: "text", text: "This content is rendered " },
@@ -160,7 +170,7 @@ const BoldOnlyBlock = createTipTapRichTextBlock({
     strike: false,
     sub: false,
     sup: false,
-    heading: false,
+    textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }],
     orderedList: false,
     unorderedList: false,
     nonBreakingSpace: false,
@@ -199,25 +209,24 @@ export const BoldOnly: StoryObj<typeof BoldOnlyStory> = {
     },
 };
 
+const largeHeadingStyle: TipTapTextBlockStyle = {
+    name: "large-heading",
+    label: "Large Heading",
+    element: (props) => <Typography sx={{ fontSize: 48, lineHeight: 1.2 }} variant="h1" {...props} />,
+};
+
+const highlightStyle: TipTapTextBlockStyle = {
+    name: "highlight",
+    label: "Highlight",
+    element: (props) => <div style={{ backgroundColor: "#fff3cd", padding: 8 }} {...props} />,
+};
+
 const TextBlockStylesBlock = createTipTapRichTextBlock({
-    textBlockStyles: [
-        {
-            name: "large-heading",
-            label: "Large Heading",
-            appliesTo: ["heading-1", "heading-2"],
-            element: (p) => <Typography sx={{ fontSize: 48, lineHeight: 1.2 }} variant="h1" {...p} />,
-        },
-        {
-            name: "intro",
-            label: "Intro Text",
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
-        },
-        {
-            name: "highlight",
-            label: "Highlight",
-            element: (props: HTMLAttributes<HTMLElement>) => <div style={{ backgroundColor: "#fff3cd", padding: 8 }} {...props} />,
-        },
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p", styles: [introStyle, highlightStyle] },
+        { name: "heading-1", label: "Heading 1", tag: "h1", styles: [largeHeadingStyle, highlightStyle] },
+        { name: "heading-2", label: "Heading 2", tag: "h2", styles: [largeHeadingStyle, highlightStyle] },
+        { name: "heading-3", label: "Heading 3", tag: "h3", styles: [highlightStyle] },
     ],
 });
 
@@ -363,7 +372,7 @@ const PlaceholdersWithContentBlock = createTipTapRichTextBlock({
     strike: false,
     sub: false,
     sup: false,
-    heading: false,
+    textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }],
     orderedList: false,
     unorderedList: false,
     nonBreakingSpace: false,
@@ -381,7 +390,7 @@ function PlaceholdersWithContentStory() {
             type: "doc",
             content: [
                 {
-                    type: "paragraph",
+                    type: "textBlock",
                     content: [
                         { type: "text", text: "Hello " },
                         { type: "placeholder", attrs: { name: "firstName" } },
@@ -391,7 +400,7 @@ function PlaceholdersWithContentStory() {
                     ],
                 },
                 {
-                    type: "paragraph",
+                    type: "textBlock",
                     content: [
                         { type: "text", text: "Your registered email is: " },
                         { type: "placeholder", attrs: { name: "email" } },
@@ -441,31 +450,18 @@ export const PlaceholdersWithContent: StoryObj<typeof PlaceholdersWithContentSto
     },
 };
 
+const chapterHeadingStyle: TipTapTextBlockStyle = {
+    name: "chapter-heading",
+    label: "Chapter Heading",
+    element: (props) => <h1 style={{ textTransform: "uppercase", letterSpacing: "0.1em" }} {...props} />,
+};
+
 const TextBlockStyleInteractionsBlock = createTipTapRichTextBlock({
-    textBlockStyles: [
-        {
-            name: "chapter-heading",
-            label: "Chapter Heading",
-            appliesTo: ["heading-1"],
-            element: (props: HTMLAttributes<HTMLElement>) => <h1 style={{ textTransform: "uppercase", letterSpacing: "0.1em" }} {...props} />,
-        },
-        {
-            name: "large-heading",
-            label: "Large Heading",
-            appliesTo: ["heading-1", "heading-2"],
-            element: (p) => <Typography sx={{ fontSize: 48, lineHeight: 1.2 }} variant="h1" {...p} />,
-        },
-        {
-            name: "intro",
-            label: "Intro Text",
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
-        },
-        {
-            name: "highlight",
-            label: "Highlight",
-            element: (props: HTMLAttributes<HTMLElement>) => <div style={{ backgroundColor: "#fff3cd", padding: 8 }} {...props} />,
-        },
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p", styles: [introStyle, highlightStyle] },
+        { name: "heading-1", label: "Heading 1", tag: "h1", styles: [chapterHeadingStyle, largeHeadingStyle, highlightStyle] },
+        { name: "heading-2", label: "Heading 2", tag: "h2", styles: [largeHeadingStyle, highlightStyle] },
+        { name: "heading-3", label: "Heading 3", tag: "h3", styles: [highlightStyle] },
     ],
 });
 
@@ -589,6 +585,30 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
     },
 };
 
+const listLargeStyle: TipTapTextBlockStyle = {
+    name: "list-large",
+    label: "List Large",
+    element: (props) => <p style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
+};
+
+const listSmallStyle: TipTapTextBlockStyle = {
+    name: "list-small",
+    label: "List Small",
+    element: (props) => <p style={{ fontSize: 14, lineHeight: "20px" }} {...props} />,
+};
+
+const orderedListOnlyStyle: TipTapTextBlockStyle = {
+    name: "ol-only",
+    label: "Numbered Style",
+    element: (props) => <p style={{ fontSize: 16, fontWeight: 600 }} {...props} />,
+};
+
+const universalStyle: TipTapTextBlockStyle = {
+    name: "universal",
+    label: "Universal",
+    element: (props) => <div style={{ backgroundColor: "#e8f5e9", padding: 4 }} {...props} />,
+};
+
 const ListTextBlockStylesBlock = createTipTapRichTextBlock({
     undoRedoButtons: false,
     italic: false,
@@ -597,37 +617,9 @@ const ListTextBlockStylesBlock = createTipTapRichTextBlock({
     sup: false,
     nonBreakingSpace: false,
     softHyphen: false,
-    textBlockStyles: [
-        {
-            name: "intro",
-            label: "Intro Text",
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 20, fontStyle: "italic" }} {...props} />,
-        },
-        {
-            name: "list-large",
-            label: "List Large",
-            appliesTo: ["ordered-list", "unordered-list"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
-        },
-        {
-            name: "list-small",
-            label: "List Small",
-            appliesTo: ["ordered-list", "unordered-list"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 14, lineHeight: "20px" }} {...props} />,
-        },
-        {
-            name: "ol-only",
-            label: "Numbered Style",
-            appliesTo: ["ordered-list"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p style={{ fontSize: 16, fontWeight: 600 }} {...props} />,
-        },
-        {
-            name: "universal",
-            label: "Universal",
-            element: (props: HTMLAttributes<HTMLElement>) => <div style={{ backgroundColor: "#e8f5e9", padding: 4 }} {...props} />,
-        },
-    ],
+    textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [introStyle, universalStyle] }, ...defaultHeadingTextBlocks],
+    orderedList: { styles: [listLargeStyle, listSmallStyle, orderedListOnlyStyle, universalStyle] },
+    unorderedList: { styles: [listLargeStyle, listSmallStyle, universalStyle] },
 });
 
 function ListTextBlockStylesStory() {
@@ -782,6 +774,39 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
                 { timeout: 3000 },
             );
         });
+
+        await step("Nest a bullet list inside the ordered list", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("{Enter}Nested item{Tab}");
+
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Shift>}8{/Shift}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("ol ul")).toBeTruthy();
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("The innermost list decides: the nested bullet list offers its own styles, not the outer list's", async () => {
+            const textBlockStyleSelect = canvas.getAllByRole("combobox")[1];
+            await userEvent.click(textBlockStyleSelect);
+
+            await waitFor(
+                () => {
+                    const options = within(document.body)
+                        .getAllByRole("option")
+                        .map((option) => option.textContent);
+                    expect(options).toEqual(["Default", "List Large", "List Small", "Universal"]);
+                },
+                { timeout: 3000 },
+            );
+
+            await userEvent.keyboard("{Escape}");
+        });
     },
 };
 
@@ -918,7 +943,14 @@ export const ListLevelMax: StoryObj<typeof ListLevelMaxStory> = {
     },
 };
 
-const HeadingLevelsBlock = createTipTapRichTextBlock({ heading: { levels: [2, 3, 4] } });
+const HeadingLevelsBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p" },
+        { name: "heading-2", label: "Heading 2", tag: "h2" },
+        { name: "heading-3", label: "Heading 3", tag: "h3" },
+        { name: "heading-4", label: "Heading 4", tag: "h4" },
+    ],
+});
 
 function HeadingLevelsStory() {
     const [state, setState] = useState<TipTapRichTextBlockState>(HeadingLevelsBlock.defaultValues());
@@ -971,6 +1003,22 @@ export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
             );
         });
 
+        await step("A keyboard shortcut updates the stored text block along with the level", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Alt>}3{/Alt}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 3 })).toBeInTheDocument();
+                    // A name that doesn't belong to the node's tag is content the API rejects.
+                    expect(canvas.getByText(/"textBlock": "heading-3"/)).toBeInTheDocument();
+                },
+                { timeout: 3000 },
+            );
+        });
+
         await step("Keyboard shortcut for a disallowed level (Mod-Alt-1) does not apply Heading 1", async () => {
             const editor = canvas.getByRole("textbox");
             await userEvent.click(editor);
@@ -997,7 +1045,7 @@ const longTextContent: TipTapRichTextBlockState = {
     tipTapContent: {
         type: "doc",
         content: Array.from({ length: 30 }, (_, index) => ({
-            type: "paragraph",
+            type: "textBlock",
             content: [{ type: "text", text: `Paragraph ${index + 1}: enough text to make the container scroll past the toolbar.` }],
         })),
     },
@@ -1076,9 +1124,15 @@ export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
     },
 };
 
+const headingOnlyTextBlocks: TipTapTextBlock[] = [
+    { name: "heading-2", label: "Heading 2", tag: "h2" },
+    { name: "heading-3", label: "Heading 3", tag: "h3" },
+    { name: "heading-4", label: "Heading 4", tag: "h4" },
+];
+
 const HeadingOnlyBlock = createTipTapRichTextBlock({
-    paragraph: false,
-    heading: { levels: [2, 3, 4], defaultLevel: 3 },
+    textBlocks: headingOnlyTextBlocks,
+    defaultTextBlock: "heading-3",
     nonBreakingSpace: false,
     softHyphen: false,
 });
@@ -1155,17 +1209,19 @@ export const HeadingOnly: StoryObj<typeof HeadingOnlyStory> = {
     },
 };
 
+const headline550Style: TipTapTextBlockStyle = {
+    name: "headline550",
+    label: "Size 550",
+    element: (props, Tag) => <Tag style={{ fontSize: 40, lineHeight: 1.2 }} {...props} />,
+};
+
 const HeadingOnlyWithTextBlockStylesBlock = createTipTapRichTextBlock({
-    paragraph: false,
-    heading: { levels: [2, 3, 4], defaultLevel: 3 },
-    textBlockStyles: [
-        {
-            name: "headline550",
-            label: "Size 550",
-            appliesTo: ["heading-2", "heading-3", "heading-4"],
-            element: (props: HTMLAttributes<HTMLElement>) => <h2 style={{ fontSize: 40, lineHeight: 1.2 }} {...props} />,
-        },
+    textBlocks: [
+        { name: "heading-2", label: "Heading 2", tag: "h2", styles: [headline550Style] },
+        { name: "heading-3", label: "Heading 3", tag: "h3", styles: [headline550Style] },
+        { name: "heading-4", label: "Heading 4", tag: "h4", styles: [headline550Style] },
     ],
+    defaultTextBlock: "heading-3",
 });
 
 function HeadingOnlyWithTextBlockStylesStory() {
@@ -1230,7 +1286,7 @@ export const HeadingOnlyWithTextBlockStyles: StoryObj<typeof HeadingOnlyWithText
 const contentFromOutside: TipTapRichTextBlockState = {
     tipTapContent: {
         type: "doc",
-        content: [{ type: "paragraph", content: [{ type: "text", text: "Text written by the agent" }] }],
+        content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Text written by the agent" }] }],
     },
 };
 
@@ -1339,6 +1395,141 @@ export const LaggingState: StoryObj<typeof LaggingStateStory> = {
                 { timeout: 3000 },
             );
             expect(editor).toHaveTextContent("Text written by the user");
+        });
+    },
+};
+
+const ListTextBlockBlock = createTipTapRichTextBlock({
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p" },
+        { name: "heading-2", label: "Heading 2", tag: "h2" },
+    ],
+});
+
+function ListTextBlockStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(ListTextBlockBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <ListTextBlockBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const ListTextBlock: StoryObj<typeof ListTextBlockStory> = {
+    render: () => <ListTextBlockStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("A heading turned into a list becomes a paragraph", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                },
+                { timeout: 5000 },
+            );
+
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("Heading in a list");
+
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("h2")).toBeTruthy();
+                },
+                { timeout: 3000 },
+            );
+
+            // TipTap binds list shortcuts to Mod-Shift-{7,8}: Meta on Mac, Control elsewhere
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Shift>}8{/Shift}{/${mod}}`);
+
+            // The heading is wrapped into a list item, where only a paragraph text block belongs.
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("li")).toBeTruthy();
+                    expect(editor.querySelector("li h2")).toBeFalsy();
+                    expect(editor.querySelector("li p")).toBeTruthy();
+                },
+                { timeout: 3000 },
+            );
+            expect(editor).toHaveTextContent("Heading in a list");
+        });
+
+        await step("Choosing a heading inside a list takes the content out of the list", async () => {
+            const editor = canvas.getByRole("textbox");
+
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("h2")).toBeTruthy();
+                    expect(editor.querySelector("li")).toBeFalsy();
+                },
+                { timeout: 3000 },
+            );
+            expect(editor).toHaveTextContent("Heading in a list");
+        });
+    },
+};
+
+// "Display" needs no style choice, so it carries its own `element` instead of a single style.
+const TextBlockElementBlock = createTipTapRichTextBlock({
+    undoRedoButtons: false,
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p" },
+        { name: "display", label: "Display", tag: "h1", element: (props, Tag) => <Tag style={{ fontSize: 64, lineHeight: 1.1 }} {...props} /> },
+        { name: "heading-1", label: "Heading 1", tag: "h1", styles: [largeHeadingStyle] },
+    ],
+});
+
+function TextBlockElementStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(TextBlockElementBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <TextBlockElementBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const TextBlockElement: StoryObj<typeof TextBlockElementStory> = {
+    render: () => <TextBlockElementStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("A text block without styles shows no styling select", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")).toHaveLength(1);
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("Display renders through its own element", async () => {
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Display" }));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getByRole("heading", { level: 1 })).toHaveStyle({ fontSize: "64px" });
+                    expect(canvas.getAllByRole("combobox")).toHaveLength(1);
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Heading 1 offers its styles instead", async () => {
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 1" }));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")).toHaveLength(2);
+                },
+                { timeout: 3000 },
+            );
         });
     },
 };

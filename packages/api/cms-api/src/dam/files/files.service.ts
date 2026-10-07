@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 import { EntityManager, MikroORM, QueryBuilder, raw, Utils } from "@mikro-orm/postgresql";
 import { forwardRef, Inject, Injectable, Optional } from "@nestjs/common";
+=======
+import { InjectRepository } from "@mikro-orm/nestjs";
+import { EntityManager, EntityRepository, MikroORM, QueryBuilder, raw, Utils } from "@mikro-orm/postgresql";
+import { forwardRef, Inject, Injectable, Logger, Optional } from "@nestjs/common";
+>>>>>>> main
 import { createHmac } from "crypto";
 import exifr from "exifr";
 import { createReadStream } from "fs";
@@ -114,6 +120,8 @@ const withFilesSelect = (
 
 @Injectable()
 export class FilesService {
+    private readonly logger = new Logger(FilesService.name);
+
     constructor(
         @Inject(forwardRef(() => BlobStorageBackendService)) private readonly blobStorageBackendService: BlobStorageBackendService,
         private readonly foldersService: FoldersService,
@@ -446,18 +454,8 @@ export class FilesService {
             });
 
             if (result.image && this.dominantColorCalculator) {
-                const dominantColorCalculator = this.dominantColorCalculator;
-                // We do not want for our users to await the dominant color calculation. To prevent concurrency issues we must use a separate Unit of
-                // Work. This can be achieved by forking the EntityManager instance.
-                // See https://mikro-orm.io/docs/faq#you-cannot-call-emflush-from-inside-lifecycle-hook-handlers and
-                // https://mikro-orm.io/docs/unit-of-work for more information.
-                const entityManager = this.orm.em.fork();
-                const image = await entityManager.findOneOrFail(DamFileImage, result.image.id);
-
-                dominantColorCalculator.calculateDominantColor(contentHash).then((dominantColor) => {
-                    image.dominantColor = dominantColor;
-                    return entityManager.flush();
-                });
+                // We do not want for our users to await the dominant color calculation.
+                void this.saveDominantColor({ imageId: result.image.id, contentHash, dominantColorCalculator: this.dominantColorCalculator });
             }
             rimraf.sync(file.path);
         } catch (e) {
@@ -603,6 +601,28 @@ export class FilesService {
         }
 
         return name;
+    }
+
+    private async saveDominantColor({
+        imageId,
+        contentHash,
+        dominantColorCalculator,
+    }: {
+        imageId: string;
+        contentHash: string;
+        dominantColorCalculator: DominantColorCalculatorInterface;
+    }): Promise<void> {
+        try {
+            // To prevent concurrency issues we must use a separate Unit of Work. This can be achieved by forking the EntityManager instance.
+            // See https://mikro-orm.io/docs/faq#you-cannot-call-emflush-from-inside-lifecycle-hook-handlers and
+            // https://mikro-orm.io/docs/unit-of-work for more information.
+            const entityManager = this.orm.em.fork();
+            const image = await entityManager.findOneOrFail(DamFileImage, imageId);
+            image.dominantColor = await dominantColorCalculator.calculateDominantColor(contentHash);
+            await entityManager.flush();
+        } catch (error) {
+            this.logger.error(`Failed to save dominant color for image ${imageId}`, error);
+        }
     }
 
     /**

@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 type Story = StoryObj<typeof DateField>;
 const config: Meta<typeof DateField> = {
     component: DateField,
-    title: "@dextinity/admin/form/DateField",
+    title: "@dextinity/admin-date-time/DateField",
     tags: ["deprecated"],
 };
 export default config;

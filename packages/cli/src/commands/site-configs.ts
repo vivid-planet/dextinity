@@ -117,7 +117,7 @@ export const resolveOpReferences = (input: string): string => {
                 opCache.set(opUri, secret);
             }
             console.log(`inject-site-configs: - Resolved ${ref}`);
-            result = result.replace(ref, secret);
+            result = result.replace(ref, () => secret);
         } catch (e) {
             throw new Error(`inject-site-configs: Failed to resolve 1Password reference ${ref}: ${e}`);
         }

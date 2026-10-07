@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const recentlyPastedDurationMs = 5_000;
+const highlightDurationMs = 5_000;
 
-export const useRecentlyPastedIds = () => {
-    const [recentlyPastedIds, setRecentlyPastedIds] = useState<string[]>([]);
+export const useTemporarilyHighlightedIds = () => {
+    const [highlightedIds, setHighlightedIds] = useState<string[]>([]);
     const timeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
 
     useEffect(() => {
@@ -13,19 +13,19 @@ export const useRecentlyPastedIds = () => {
         };
     }, []);
 
-    const addToRecentlyPastedIds = useCallback((id: string) => {
-        setRecentlyPastedIds((prev) => [...prev, id]);
+    const highlightTemporarily = useCallback((id: string) => {
+        setHighlightedIds((prev) => [...prev, id]);
 
         const timeoutId = setTimeout(() => {
-            setRecentlyPastedIds((prev) => prev.filter((prevId) => prevId !== id));
+            setHighlightedIds((prev) => prev.filter((prevId) => prevId !== id));
             timeoutsRef.current.delete(timeoutId);
-        }, recentlyPastedDurationMs);
+        }, highlightDurationMs);
 
         timeoutsRef.current.add(timeoutId);
     }, []);
 
     return {
-        recentlyPastedIds,
-        addToRecentlyPastedIds,
+        highlightedIds,
+        highlightTemporarily,
     };
 };

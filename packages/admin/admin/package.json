@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/admin",
-    "version": "10.7.0",
+    "version": "10.8.0",
     "description": "Dextinity Admin package",
     "repository": {
         "directory": "packages/admin/admin",
@@ -88,9 +88,9 @@
         "@types/react-dom": "^19.2.3",
         "@types/react-router": "^5.1.20",
         "@types/react-router-dom": "^5.3.3",
-        "@vitest/browser": "4.1.8",
-        "@vitest/browser-playwright": "4.1.8",
-        "eslint": "^9.39.4",
+        "@vitest/browser": "4.1.11",
+        "@vitest/browser-playwright": "4.1.11",
+        "eslint": "^9.39.5",
         "eslint-plugin-storybook": "^10.3.5",
         "final-form": "^4.20.10",
         "graphql": "^16.14.2",
@@ -104,16 +104,16 @@
         "react-dnd": "^16.0.1",
         "react-dom": "^19.2.6",
         "react-final-form": "^6.5.9",
-        "react-intl": "^7.1.11",
+        "react-intl": "^7.1.14",
         "react-router": "^5.3.4",
         "react-router-dom": "^5.3.4",
         "rimraf": "^6.1.2",
         "storybook": "^10.3.5",
         "storybook-addon-tag-badges": "^3.1.0",
         "typescript": "^5.9.3",
-        "vite": "^7.3.1",
+        "vite": "^7.3.6",
         "vite-tsconfig-paths": "^6.0.4",
-        "vitest": "^4.1.8"
+        "vitest": "^4.1.11"
     },
     "peerDependencies": {
         "@apollo/client": "^3.7.0",

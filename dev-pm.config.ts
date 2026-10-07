@@ -137,7 +137,7 @@ export default defineConfig({
         {
             name: "mail-react-storybook",
             script: "pnpm --filter @dextinity/mail-react run storybook",
-            group: ["mail-react", "storybook", "docs"],
+            group: ["storybook", "docs"],
         },
 
         //group brevo

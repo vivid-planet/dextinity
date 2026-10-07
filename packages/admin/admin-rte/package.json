@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/admin-rte",
-    "version": "10.7.0",
+    "version": "10.8.0",
     "description": "Dextinity Admin Rich Text Editor component",
     "repository": {
         "directory": "packages/admin/admin-rte",
@@ -49,7 +49,7 @@
         "draft-js-export-html": "^1.4.1",
         "draft-js-import-html": "^1.4.1",
         "draftjs-conductor": "^3.0.0",
-        "immutable": "~3.8.2"
+        "immutable": "~3.8.4"
     },
     "devDependencies": {
         "@babel/cli": "^7.29.7",
@@ -61,7 +61,7 @@
         "@types/react": "^19.2.15",
         "@types/react-dom": "^19.2.3",
         "draft-js": "^0.11.7",
-        "eslint": "^9.39.4",
+        "eslint": "^9.39.5",
         "final-form": "^4.20.10",
         "jsdom": "^28.1.0",
         "npm-run-all2": "^8.0.4",
@@ -69,10 +69,10 @@
         "react": "^19.2.6",
         "react-dom": "^19.2.6",
         "react-final-form": "^6.5.9",
-        "react-intl": "^7.1.11",
+        "react-intl": "^7.1.14",
         "rimraf": "^6.1.2",
         "typescript": "^5.9.3",
-        "vitest": "^4.1.8"
+        "vitest": "^4.1.11"
     },
     "peerDependencies": {
         "@mui/material": "^7.0.0",

@@ -20,6 +20,7 @@ export const StandaloneCallToActionListBlock = createCompositeBlock(
                         { value: "center", label: <FormattedMessage id="standaloneCallToActionList.alignment.center" defaultMessage="center" /> },
                         { value: "right", label: <FormattedMessage id="standaloneCallToActionList.alignment.right" defaultMessage="right" /> },
                     ],
+                    required: true,
                 }),
                 hiddenInSubroute: true,
             },

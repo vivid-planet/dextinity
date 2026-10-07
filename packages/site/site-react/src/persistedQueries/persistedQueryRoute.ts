@@ -1,5 +1,7 @@
 import { readFile } from "fs/promises";
 
+import { convertPreviewDataToHeaders, type PreviewData } from "../graphQLFetch/graphQLFetch";
+
 let queryMap: Record<string, string>;
 let fragmentsMap: Record<string, string>;
 async function loadPersistedQueries(path: string) {
@@ -51,7 +53,17 @@ export async function persistedQueryRoute(
         headers: headersInit,
         persistedQueriesPath = ".persisted-queries.json",
         cacheMaxAge,
-    }: { graphqlTarget: string; headers?: HeadersInit; persistedQueriesPath: string; cacheMaxAge: number | undefined },
+        previewData,
+    }: {
+        graphqlTarget: string;
+        headers?: HeadersInit;
+        persistedQueriesPath: string;
+        cacheMaxAge: number | undefined;
+        /**
+         * Must be obtained from a verified source (e.g. the signed site preview cookie), never from the incoming request.
+         */
+        previewData?: PreviewData;
+    },
 ) {
     if (!queryMap) {
         await loadPersistedQueries(persistedQueriesPath);
@@ -95,11 +107,8 @@ export async function persistedQueryRoute(
     const headers = new Headers(headersInit);
     headers.set("Content-Type", "application/json");
 
-    for (const header of ["x-include-invisible-content", "x-preview-dam-urls"]) {
-        const value = req.headers.get(header);
-        if (value !== null) {
-            headers.set(header, value);
-        }
+    for (const [name, value] of Object.entries(convertPreviewDataToHeaders(previewData))) {
+        headers.set(name, value);
     }
 
     // Forward to actual GraphQL server
@@ -112,7 +121,7 @@ export async function persistedQueryRoute(
     const responseHeaders: Record<string, string> = {
         "Content-Type": "application/json",
     };
-    if (req.method === "GET" && upstreamRes.ok && cacheMaxAge !== undefined) {
+    if (req.method === "GET" && upstreamRes.ok && cacheMaxAge !== undefined && !previewData) {
         responseHeaders["Cache-Control"] = `public, max-age=${cacheMaxAge}`;
     }
 

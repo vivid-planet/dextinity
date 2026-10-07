@@ -1161,6 +1161,7 @@
     },
     {
         "name": "EmailCampaignTipTapRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor.",
         "fields": [
             {
                 "name": "tipTapContent",
@@ -2065,6 +2066,7 @@
     },
     {
         "name": "MailTipTapRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor.",
         "fields": [
             {
                 "name": "tipTapContent",
@@ -2102,6 +2104,7 @@
     },
     {
         "name": "MailTwoListSizesTipTapRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor.",
         "fields": [
             {
                 "name": "tipTapContent",

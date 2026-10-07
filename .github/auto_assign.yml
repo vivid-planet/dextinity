@@ -5,5 +5,4 @@ addReviewers: false
 runOnDraft: true
 
 skipKeywords:
-    - Merge main into next
     - Version Packages

@@ -90,7 +90,7 @@ describe("block input without validation annotations", () => {
                 type: "doc",
                 content: [
                     {
-                        type: "paragraph",
+                        type: "textBlock",
                         content: [{ type: "text", marks: [{ type: "link", attrs: { data: linkData } }], text: "click here" }],
                     },
                 ],

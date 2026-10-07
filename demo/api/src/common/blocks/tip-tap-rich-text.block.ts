@@ -28,6 +28,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
                     { name: "eyebrow500" },
                     { name: "eyebrow450" },
                 ],
+                defaultStyle: "paragraph300",
             },
             { name: "display", tag: "h1" },
             { name: "heading-1", tag: "h1" },
@@ -36,8 +37,8 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
             { name: "heading-4", tag: "h4" },
             { name: "heading-5", tag: "h5" },
         ],
-        orderedList: { styles: listStyles },
-        unorderedList: { styles: listStyles },
+        orderedList: { styles: listStyles, defaultStyle: "list300" },
+        unorderedList: { styles: listStyles, defaultStyle: "list300" },
         inlineStyles: [{ name: "highlight" }, { name: "tag", appliesTo: ["paragraph"] }],
         migrateFromDraftJs: {
             textBlockMap: {

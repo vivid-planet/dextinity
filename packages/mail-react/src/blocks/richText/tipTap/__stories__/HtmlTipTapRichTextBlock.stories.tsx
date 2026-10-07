@@ -90,7 +90,7 @@ export const WithTextBlockStyles: Story = {
     },
 };
 
-/** Lists with a look other than the theme's default variant. `textBlocks` sets the look of a list with no style, and `textBlockStyles` the look of each style the content editor can pick for a list. */
+/** Lists with a look other than the theme's default variant. `textBlocks` sets the look of a list item with no style, and `textBlockStyles` the look of each style the content editor can pick for a list item, also in a nested list. */
 export const WithListVariants: Story = {
     parameters: {
         theme: createTheme({

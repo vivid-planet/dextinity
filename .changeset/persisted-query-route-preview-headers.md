@@ -22,4 +22,4 @@ async function handler(request: Request) {
 }
 ```
 
-Responses for preview requests are no longer marked as publicly cacheable.
+Responses for preview requests are sent with `Cache-Control: private, no-store`.

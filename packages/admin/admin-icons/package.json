@@ -48,7 +48,7 @@
         "@dextinity/eslint-config": "workspace:*",
         "@mui/material": "^7.3.11",
         "@types/cli-progress": "^3.11.6",
-        "@types/node": "^24.13.3",
+        "@types/node": "^24.19.1",
         "@types/react": "^19.2.15",
         "@types/react-dom": "^19.2.3",
         "change-case": "^4.1.2",

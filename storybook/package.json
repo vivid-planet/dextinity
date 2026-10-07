@@ -39,7 +39,7 @@
         "@mui/x-date-pickers": "^8.28.7",
         "@mui/x-date-pickers-pro": "^8.28.7",
         "@mui/x-license": "^8.26.0",
-        "@types/node": "^24.13.3",
+        "@types/node": "^24.19.1",
         "apollo-link-rest": "^0.9.0",
         "date-fns": "^4.4.0",
         "final-form": "^4.20.10",

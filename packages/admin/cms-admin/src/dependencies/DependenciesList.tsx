@@ -29,15 +29,18 @@ import { useDependenciesConfig } from "./dependenciesConfig";
 import { DependencyActions } from "./DependencyActions";
 import { getDisplayNameString } from "./getDisplayNameString";
 
-type DependencyItem = Pick<GQLDependency, "name" | "secondaryInformation" | "visible" | "rootColumnName" | "jsonPath" | "scope"> & {
-    id: string;
-    targetGraphqlObjectType: string;
-};
+type DependencyItem = Pick<GQLDependency, "name" | "secondaryInformation" | "visible" | "rootColumnName" | "jsonPath"> &
+    Partial<Pick<GQLDependency, "scope">> & {
+        id: string;
+        targetGraphqlObjectType: string;
+    };
 
 type Dependency = Pick<
     GQLDependency,
-    "targetGraphqlObjectType" | "targetId" | "rootColumnName" | "jsonPath" | "name" | "secondaryInformation" | "visible" | "scope"
->;
+    "targetGraphqlObjectType" | "targetId" | "rootColumnName" | "jsonPath" | "name" | "secondaryInformation" | "visible"
+> &
+    // Optional so that queries written before the field existed remain valid
+    Partial<Pick<GQLDependency, "scope">>;
 
 interface DependenciesListQuery {
     item: {
@@ -107,7 +110,7 @@ export const DependenciesList = ({ query, variables }: DependenciesListProps) =>
     };
 
     // Scopes are only worth showing when the entries can actually originate from different scopes.
-    const showScopeColumn = contentScope.values.length > 1;
+    const shouldShowScopeColumn = contentScope.values.length > 1;
 
     const columns: GridColDef<DependencyItem>[] = useMemo(
         () => [
@@ -149,7 +152,7 @@ export const DependenciesList = ({ query, variables }: DependenciesListProps) =>
                 visible: false,
                 sortBy: "visible",
             },
-            ...(showScopeColumn
+            ...(shouldShowScopeColumn
                 ? [
                       {
                           field: "scope",
@@ -178,7 +181,7 @@ export const DependenciesList = ({ query, variables }: DependenciesListProps) =>
                 ),
             },
         ],
-        [intl, entityDependencyMap, showScopeColumn, contentScope.values],
+        [intl, entityDependencyMap, shouldShowScopeColumn, contentScope.values],
     );
 
     const { filter: gqlFilter } = muiGridFilterToGql(columns, dataGridProps.filterModel);

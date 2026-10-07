@@ -87,6 +87,7 @@ describe("createTipTapRichTextBlock", () => {
                     inlineStyles: [],
                     placeholders: [],
                     childBlocks: {},
+                    maxTextBlocks: options.maxTextBlocks,
                 }),
             });
         }
@@ -136,6 +137,38 @@ describe("createTipTapRichTextBlock", () => {
             editor.commands.deleteSelection();
 
             expect(editor.getJSON()).toEqual({ type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "heading-2" } }] });
+        });
+
+        const toggleList = (editor: Editor, listType: "orderedList" | "bulletList") =>
+            listType === "orderedList" ? editor.commands.toggleOrderedList() : editor.commands.toggleBulletList();
+
+        const paragraph = (text: string): JSONContent => ({
+            type: "textBlock",
+            attrs: { textBlock: "paragraph" },
+            content: [{ type: "text", text }],
+        });
+
+        it.each(["orderedList", "bulletList"] as const)(
+            "should not add an empty text block after the %s when it would exceed maxTextBlocks",
+            (listType) => {
+                const editor = createEditor({ maxTextBlocks: 2 });
+                editor.commands.setContent({ type: "doc", content: [paragraph("first"), paragraph("second")] });
+                editor.commands.setTextSelection(editor.state.doc.content.size - 1);
+
+                toggleList(editor, listType);
+
+                expect(editor.getJSON().content?.map((node) => node.type)).toEqual(["textBlock", listType]);
+            },
+        );
+
+        it.each(["orderedList", "bulletList"] as const)("should add an empty text block after the %s below maxTextBlocks", (listType) => {
+            const editor = createEditor({ maxTextBlocks: 2 });
+            editor.commands.setContent({ type: "doc", content: [paragraph("first")] });
+            editor.commands.setTextSelection(editor.state.doc.content.size - 1);
+
+            toggleList(editor, listType);
+
+            expect(editor.getJSON().content?.map((node) => node.type)).toEqual([listType, "textBlock"]);
         });
     });
 

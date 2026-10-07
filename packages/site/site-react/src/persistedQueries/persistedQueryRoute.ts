@@ -121,7 +121,9 @@ export async function persistedQueryRoute(
     const responseHeaders: Record<string, string> = {
         "Content-Type": "application/json",
     };
-    if (req.method === "GET" && upstreamRes.ok && cacheMaxAge !== undefined && !previewData) {
+    if (previewData) {
+        responseHeaders["Cache-Control"] = "private, no-store";
+    } else if (req.method === "GET" && upstreamRes.ok && cacheMaxAge !== undefined) {
         responseHeaders["Cache-Control"] = `public, max-age=${cacheMaxAge}`;
     }
 

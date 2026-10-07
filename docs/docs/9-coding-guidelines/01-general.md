@@ -52,7 +52,7 @@ const hasError = true;
 
 :::note
 Prefix with is/has/should (see: [Tips on naming boolean variables - Cleaner Code](https://dev.to/michi/tips-on-naming-boolean-variables-cleaner-code-35ig)).  
-Not necessary for: loading, disabled ...
+Verb-phrase flags (showFoo, hideFoo, canFoo, allowFoo, enableFoo, disableFoo) and well-known adjectives (loading, disabled, open) are fine too.
 :::
 
 ### Affirmative Variables

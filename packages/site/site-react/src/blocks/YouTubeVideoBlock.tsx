@@ -54,6 +54,7 @@ export const YouTubeVideoBlock = withPreview(
         const [iframeElement, setIframeElement] = useState<HTMLIFrameElement | null>(null);
         const iframeRef = setIframeElement;
         const inViewRef = useRef<HTMLDivElement>(null);
+        const isInViewRef = useRef<boolean | null>(null);
 
         const pauseYouTubeVideo = useCallback(() => {
             iframeElement?.contentWindow?.postMessage(`{"event":"command","func":"pauseVideo","args":""}`, "https://www.youtube-nocookie.com");
@@ -65,6 +66,8 @@ export const YouTubeVideoBlock = withPreview(
 
         const handleInView = useCallback(
             (inView: boolean) => {
+                isInViewRef.current = inView;
+
                 if (!isHandledManually) {
                     if (inView && autoplay) {
                         playYouTubeVideo();
@@ -90,8 +93,7 @@ export const YouTubeVideoBlock = withPreview(
         searchParams.append("rel", "0");
         searchParams.append("enablejsapi", "1");
 
-        // start playing the video when the preview image has been hidden
-        if (hasPreviewImage && !showPreviewImage) {
+        if (autoplay || (hasPreviewImage && !showPreviewImage)) {
             searchParams.append("autoplay", "1");
         }
 
@@ -118,6 +120,15 @@ export const YouTubeVideoBlock = withPreview(
             setShowPreviewImage(false);
             setIsPlaying(true);
             setIsHandledManually(true);
+        };
+
+        const handleIframeLoad = () => {
+            // YouTube discards commands sent before the player has initialized, which is always the case for
+            // the viewport report that arrives right after mount. Re-send the pause once the player can receive it.
+            if (!isHandledManually && isInViewRef.current === false) {
+                pauseYouTubeVideo();
+                setIsPlaying(false);
+            }
         };
 
         const handlePlayPauseClick = () => {
@@ -165,8 +176,10 @@ export const YouTubeVideoBlock = withPreview(
                             ref={iframeRef}
                             className={styles.youtubeContainer}
                             allow="autoplay"
+                            loading="lazy"
                             referrerPolicy="strict-origin-when-cross-origin"
                             src={youtubeUrl.toString()}
+                            onLoad={handleIframeLoad}
                         />
                     </div>
                 )}

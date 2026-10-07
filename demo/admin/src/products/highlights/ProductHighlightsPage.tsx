@@ -15,6 +15,7 @@ import {
 import { ContentScopeIndicator } from "@dextinity/cms-admin";
 import { useIntl } from "react-intl";
 
+import { ProductHighlight2Form } from "./ProductHighlight2Form";
 import { ProductHighlightForm } from "./ProductHighlightForm";
 import { ProductHighlightsGrid } from "./ProductHighlightsGrid";
 
@@ -47,6 +48,18 @@ export function ProductHighlightsPage() {
                                 <FormToolbar />
                                 <MainContent>
                                     <ProductHighlightForm id={selectedProductId} />
+                                </MainContent>
+                            </>
+                        </SaveBoundary>
+                    )}
+                </StackPage>
+                <StackPage name="edit2" title={intl.formatMessage({ id: "products.editProductHighlight", defaultMessage: "Edit Product Highlight" })}>
+                    {(selectedProductId) => (
+                        <SaveBoundary>
+                            <>
+                                <FormToolbar />
+                                <MainContent>
+                                    <ProductHighlight2Form id={selectedProductId} />
                                 </MainContent>
                             </>
                         </SaveBoundary>

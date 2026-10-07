@@ -70,7 +70,7 @@
         "mime": "^3.0.0",
         "mime-db": "^1.54.0",
         "multer": "^2.1.1",
-        "nodemailer": "^10.0.0",
+        "nodemailer": "^10.0.14",
         "openai": "^6.32.0",
         "probe-image-size": "^7.2.3",
         "request-ip": "^3.3.0",

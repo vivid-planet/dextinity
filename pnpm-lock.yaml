@@ -728,8 +728,8 @@ importers:
         specifier: ^16.2.10
         version: 16.2.11(@babel/core@7.29.7(supports-color@8.1.1))(@opentelemetry/api@1.9.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.93.0)
       nodemailer:
-        specifier: ^10.0.0
-        version: 10.0.6
+        specifier: ^10.0.14
+        version: 10.0.15
       react:
         specifier: ^19.2.6
         version: 19.2.6
@@ -2275,8 +2275,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       nodemailer:
-        specifier: ^10.0.0
-        version: 10.0.6
+        specifier: ^10.0.14
+        version: 10.0.15
       openai:
         specifier: ^6.32.0
         version: 6.32.0(ws@8.20.0)(zod@4.4.3)
@@ -14383,8 +14383,8 @@ packages:
   node-releases@2.0.36:
     resolution: {integrity: sha512-TdC8FSgHz8Mwtw9g5L4gR/Sh9XhSP/0DEkQxfEFXOpiul5IiHgHan2VhYYb6agDSfp4KuvltmGApc8HMgUrIkA==}
 
-  nodemailer@10.0.6:
-    resolution: {integrity: sha512-2u7OHvEQVVGvPo9Yhw/eN3xMO2Gnj2U2fGDP0BDpnRwJR//65AfGRQDiJqxix28gFRBvMqi2USA13x6RrfWuGg==}
+  nodemailer@10.0.15:
+    resolution: {integrity: sha512-EUqp5PhtcsYXs9Fq/lS7s/8zlTrnBqmzZWzFFROrNikMiz+om/YRKMwqN907t+0A1KKyT8jd39CBUbFZmaZmcA==}
     engines: {node: '>=20.0.0'}
 
   nopt@7.2.1:
@@ -32399,7 +32399,7 @@ snapshots:
 
   node-releases@2.0.36: {}
 
-  nodemailer@10.0.6: {}
+  nodemailer@10.0.15: {}
 
   nopt@7.2.1:
     dependencies:

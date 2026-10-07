@@ -6,12 +6,12 @@ import { createTableBlock } from "../createTableBlock";
 import { createTipTapRichTextBlock } from "../tipTap/createTipTapRichTextBlock";
 
 const TipTapRichTextBlock = createTipTapRichTextBlock({
-    textBlockStyles: [
+    textBlocks: [
         {
-            name: "intro",
-            label: "Intro Text",
-            appliesTo: ["paragraph"],
-            element: (props: HTMLAttributes<HTMLElement>) => <p {...props} />,
+            name: "paragraph",
+            label: "Paragraph",
+            tag: "p",
+            styles: [{ name: "intro", label: "Intro Text", element: (props: HTMLAttributes<HTMLElement>) => <p {...props} /> }],
         },
     ],
 });

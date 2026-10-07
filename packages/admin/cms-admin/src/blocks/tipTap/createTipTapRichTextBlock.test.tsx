@@ -1,6 +1,7 @@
 import { Editor, type JSONContent } from "@tiptap/core";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
+import { render } from "../../testing/test-utils";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "../types";
 import {
@@ -169,6 +170,31 @@ describe("createTipTapRichTextBlock", () => {
             toggleList(editor, listType);
 
             expect(editor.getJSON().content?.map((node) => node.type)).toEqual([listType, "textBlock"]);
+        });
+    });
+
+    describe("maxTextBlocks", () => {
+        const paragraph = (text: string): JSONContent => ({
+            type: "textBlock",
+            attrs: { textBlock: "paragraph" },
+            content: [{ type: "text", text }],
+        });
+
+        it("should cut off text blocks pasted over the limit and keep the state up to date", () => {
+            const block = createTipTapRichTextBlock({ maxTextBlocks: 2 });
+            const updateState = vi.fn();
+            const { container } = render(
+                <block.AdminComponent state={{ tipTapContent: { type: "doc", content: [paragraph("first")] } }} updateState={updateState} />,
+            );
+            const editor = (container.querySelector(".tiptap") as (HTMLElement & { editor?: Editor }) | null)?.editor;
+            if (!editor) {
+                throw new Error("Expected the editor to be rendered");
+            }
+
+            editor.commands.insertContentAt(editor.state.doc.content.size, [paragraph("second"), paragraph("third")]);
+
+            expect(editor.getJSON().content).toEqual([paragraph("first"), paragraph("second")]);
+            expect(updateState).toHaveBeenLastCalledWith({ tipTapContent: { type: "doc", content: [paragraph("first"), paragraph("second")] } });
         });
     });
 

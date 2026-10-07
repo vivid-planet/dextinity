@@ -53,6 +53,18 @@ interface TextBlockMapping {
     textBlockStyle?: string;
 }
 
+interface ListItemMapping {
+    /**
+     * The TipTap list the DraftJS block becomes an item of.
+     */
+    list: "ordered" | "unordered";
+    /**
+     * TipTap `textBlockStyle` attribute value applied to the item's text block. Must be one of the
+     * list's `styles`.
+     */
+    textBlockStyle: string;
+}
+
 interface ConvertOptions {
     resolvedOptions: TipTapResolvedOptions;
     link?: Block;
@@ -63,6 +75,12 @@ interface ConvertOptions {
      * heading level, everything else becomes a paragraph.
      */
     textBlockMap?: Record<string, TextBlockMapping>;
+    /**
+     * Maps custom DraftJS list block types (e.g. `unordered-list-item-small`) to the TipTap list
+     * they become items of, and to the `textBlockStyle` applied to the item's text block. Items of
+     * the same list stay in one list, whatever their style.
+     */
+    listItemMap?: Record<string, ListItemMapping>;
     /**
      * Maps DraftJS custom inline style names (e.g. `highlight` from a DraftJS `customInlineStyles`
      * configuration) to TipTap `inlineStyle` mark type values.
@@ -331,23 +349,39 @@ function makeListItem({
     inlineContent,
     resolvedOptions,
     list,
+    textBlockStyle,
 }: {
     inlineContent: JSONContent[];
     resolvedOptions: TipTapResolvedOptions;
     list: TipTapResolvedStyledNode;
+    textBlockStyle?: string;
 }): JSONContent {
     return {
         type: "listItem",
-        content: [makeTextBlockNode(inlineContent, { styledNode: list, textBlock: resolveTargetTextBlock({ resolvedOptions }) })],
+        content: [makeTextBlockNode(inlineContent, { styledNode: list, textBlock: resolveTargetTextBlock({ resolvedOptions }), textBlockStyle })],
     };
 }
 
 type ListType = "orderedList" | "bulletList";
 
-const LIST_BLOCK_TYPE_TO_LIST: Record<string, { listType: ListType; option: "orderedList" | "unorderedList" }> = {
-    "unordered-list-item": { listType: "bulletList", option: "unorderedList" },
-    "ordered-list-item": { listType: "orderedList", option: "orderedList" },
+interface ListTarget {
+    listType: ListType;
+    option: "orderedList" | "unorderedList";
+}
+
+export const LIST_TARGETS: Record<ListItemMapping["list"], ListTarget> = {
+    unordered: { listType: "bulletList", option: "unorderedList" },
+    ordered: { listType: "orderedList", option: "orderedList" },
 };
+
+const LIST_BLOCK_TYPE_TO_LIST: Record<string, ListTarget> = {
+    "unordered-list-item": LIST_TARGETS.unordered,
+    "ordered-list-item": LIST_TARGETS.ordered,
+};
+
+export function isBuiltInDraftJsListBlockType(draftJsBlockType: string): boolean {
+    return Object.hasOwn(LIST_BLOCK_TYPE_TO_LIST, draftJsBlockType);
+}
 
 interface OpenList {
     type: ListType;
@@ -363,6 +397,7 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
 
     const hasLink = !!options.link;
     const textBlockMap = options.textBlockMap ?? {};
+    const listItemMap = options.listItemMap ?? {};
     const inlineStyleMap = options.inlineStyleMap ?? {};
     const entityMap = draftContent.entityMap ?? {};
     const maxListLevels = options.listLevelMax !== undefined ? Math.max(options.listLevelMax, 1) : undefined;
@@ -401,11 +436,13 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
         depth,
         inlineContent,
         list,
+        textBlockStyle,
     }: {
         listType: ListType;
         depth: number;
         inlineContent: JSONContent[];
         list: TipTapResolvedStyledNode;
+        textBlockStyle?: string;
     }) => {
         // A list item may only be indented one level deeper than its predecessor, no matter how
         // large the gap in Draft.js is. `listLevelMax` limits the nesting further.
@@ -424,16 +461,23 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
             openLists.push({ type: listType, items: [] });
         }
 
-        openLists[openLists.length - 1].items.push(makeListItem({ inlineContent, resolvedOptions, list }));
+        openLists[openLists.length - 1].items.push(makeListItem({ inlineContent, resolvedOptions, list, textBlockStyle }));
     };
 
     for (const block of draftContent.blocks) {
         const inlineContent = buildInlineContent({ block, entityMap, resolvedOptions, hasLink, inlineStyleMap });
 
-        const listMapping = LIST_BLOCK_TYPE_TO_LIST[block.type];
-        const list = listMapping ? resolvedOptions[listMapping.option] : false;
-        if (listMapping && list) {
-            addListItem({ listType: listMapping.listType, depth: block.depth ?? 0, inlineContent, list });
+        const listItemMapping = listItemMap[block.type];
+        const listTarget = LIST_BLOCK_TYPE_TO_LIST[block.type] ?? (listItemMapping ? LIST_TARGETS[listItemMapping.list] : undefined);
+        const list = listTarget ? resolvedOptions[listTarget.option] : false;
+        if (listTarget && list) {
+            addListItem({
+                listType: listTarget.listType,
+                depth: block.depth ?? 0,
+                inlineContent,
+                list,
+                textBlockStyle: listItemMapping?.textBlockStyle,
+            });
             continue;
         }
 
@@ -479,4 +523,4 @@ export function buildStrippedTipTapDoc(draftContent: DraftJsContent | undefined 
     return { type: "doc", content };
 }
 
-export type { ConvertOptions, DraftJsContent, TextBlockMapping };
+export type { ConvertOptions, DraftJsContent, ListItemMapping, TextBlockMapping };

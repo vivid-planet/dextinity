@@ -1,5 +1,5 @@
 ---
-"@comet/cms-admin": patch
+"@dextinity/cms-admin": patch
 ---
 
 Fix block editor keeping the previously selected block's content

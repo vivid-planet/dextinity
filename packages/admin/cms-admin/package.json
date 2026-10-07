@@ -115,7 +115,7 @@
         "@types/lodash.escaperegexp": "^4.1.9",
         "@types/lodash.isequal": "^4.5.8",
         "@types/mime-db": "^1.43.6",
-        "@types/node": "^24.13.3",
+        "@types/node": "^24.19.1",
         "@types/react": "^19.2.15",
         "@types/react-dom": "^19.2.3",
         "@types/react-router": "^5.1.20",

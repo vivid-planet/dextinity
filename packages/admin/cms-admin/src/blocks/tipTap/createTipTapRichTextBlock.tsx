@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 import { Extension, type Extensions } from "@tiptap/core";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
+import { skipTrailingNodeMeta } from "@tiptap/extensions";
 import { EditorContent, type JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import isEqual from "lodash.isequal";
@@ -100,7 +101,7 @@ const defaultTextBlocks: TipTapTextBlock[] = [
     })),
 ];
 
-function resolveTipTapOptions({
+export function resolveTipTapOptions({
     undoRedoButtons = true,
     bold = true,
     italic = true,
@@ -185,7 +186,7 @@ export interface TipTapChildBlock {
     display: "block" | "inline";
 }
 
-interface TipTapRichTextBlockFactoryOptions {
+export interface TipTapRichTextBlockFactoryOptions {
     /**
      * Shows the undo/redo buttons in the toolbar. The keyboard shortcuts work regardless. Defaults to `true`.
      */
@@ -309,6 +310,12 @@ const isCmsBlockNode = (content: JSONContent): boolean => content.type === "cmsB
 const createMaxTextBlocksExtension = (maxTextBlocks: number) =>
     Extension.create({
         name: "maxTextBlocks",
+        dispatchTransaction({ transaction, next }) {
+            if (transaction.doc.childCount >= maxTextBlocks) {
+                transaction.setMeta(skipTrailingNodeMeta, true);
+            }
+            next(transaction);
+        },
         addKeyboardShortcuts() {
             return {
                 Enter: ({ editor }) => {
@@ -448,7 +455,7 @@ function collectLinkMarksData(content: JSONContent): unknown[] {
     return results;
 }
 
-function buildTipTapExtensions({
+export function buildTipTapExtensions({
     resolvedOptions,
     inlineStyles,
     placeholders,

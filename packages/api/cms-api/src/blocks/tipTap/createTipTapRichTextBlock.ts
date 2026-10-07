@@ -248,7 +248,7 @@ export function resolveTipTapOptions({
     };
 }
 
-function buildExtensions({
+export function buildExtensions({
     resolvedOptions,
     inlineStyles,
     placeholders,

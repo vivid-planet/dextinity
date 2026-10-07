@@ -1,10 +1,14 @@
-import type { JSONContent } from "@tiptap/core";
-import { describe, expect, it } from "vitest";
+import { Editor, type JSONContent } from "@tiptap/core";
+import { describe, expect, it, vi } from "vitest";
 
+import { render } from "../../testing/test-utils";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "../types";
 import {
+    buildTipTapExtensions,
     createTipTapRichTextBlock,
+    resolveTipTapOptions,
+    type TipTapRichTextBlockFactoryOptions,
     type TipTapRichTextBlockState,
     type TipTapTextBlock,
     type TipTapTextBlockElementProps,
@@ -92,6 +96,124 @@ describe("createTipTapRichTextBlock", () => {
         });
         expect(block.defaultValues()).toEqual({
             tipTapContent: { type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "heading-3" } }] },
+        });
+    });
+
+    describe("editor", () => {
+        function createEditor(options: TipTapRichTextBlockFactoryOptions = {}) {
+            return new Editor({
+                extensions: buildTipTapExtensions({
+                    resolvedOptions: resolveTipTapOptions(options),
+                    inlineStyles: [],
+                    placeholders: [],
+                    childBlocks: {},
+                    maxTextBlocks: options.maxTextBlocks,
+                }),
+            });
+        }
+
+        const listItem = (text: string): JSONContent => ({
+            type: "listItem",
+            content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text }] }],
+        });
+
+        it("should use the text block as the schema's default block type, not a list", () => {
+            const editor = createEditor();
+            expect(editor.schema.topNodeType.contentMatch.defaultType?.name).toBe("textBlock");
+        });
+
+        it.each(["orderedList", "bulletList"])("should end content ending with an %s with an empty default text block", (listType) => {
+            const editor = createEditor();
+
+            editor.commands.setContent({ type: "doc", content: [{ type: listType, content: [listItem("item")] }] });
+
+            expect(editor.state.doc.lastChild?.toJSON()).toEqual({ type: "textBlock", attrs: { textBlock: "paragraph" } });
+        });
+
+        it("should leave a single empty default text block after deleting all content", () => {
+            const editor = createEditor();
+            editor.commands.setContent({ type: "doc", content: [{ type: "orderedList", content: [listItem("item")] }] });
+
+            editor.commands.selectAll();
+            editor.commands.deleteSelection();
+
+            expect(editor.getJSON()).toEqual({ type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "paragraph" } }] });
+        });
+
+        it("should fill an emptied heading-only block with the default text block", () => {
+            const editor = createEditor({
+                textBlocks: [
+                    { name: "heading-1", label: "Heading 1", tag: "h1" },
+                    { name: "heading-2", label: "Heading 2", tag: "h2" },
+                ],
+                defaultTextBlock: "heading-2",
+            });
+            editor.commands.setContent({
+                type: "doc",
+                content: [{ type: "textBlock", attrs: { textBlock: "heading-1" }, content: [{ type: "text", text: "Title" }] }],
+            });
+
+            editor.commands.selectAll();
+            editor.commands.deleteSelection();
+
+            expect(editor.getJSON()).toEqual({ type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "heading-2" } }] });
+        });
+
+        const toggleList = (editor: Editor, listType: "orderedList" | "bulletList") =>
+            listType === "orderedList" ? editor.commands.toggleOrderedList() : editor.commands.toggleBulletList();
+
+        const paragraph = (text: string): JSONContent => ({
+            type: "textBlock",
+            attrs: { textBlock: "paragraph" },
+            content: [{ type: "text", text }],
+        });
+
+        it.each(["orderedList", "bulletList"] as const)(
+            "should not add an empty text block after the %s when it would exceed maxTextBlocks",
+            (listType) => {
+                const editor = createEditor({ maxTextBlocks: 2 });
+                editor.commands.setContent({ type: "doc", content: [paragraph("first"), paragraph("second")] });
+                editor.commands.setTextSelection(editor.state.doc.content.size - 1);
+
+                toggleList(editor, listType);
+
+                expect(editor.getJSON().content?.map((node) => node.type)).toEqual(["textBlock", listType]);
+            },
+        );
+
+        it.each(["orderedList", "bulletList"] as const)("should add an empty text block after the %s below maxTextBlocks", (listType) => {
+            const editor = createEditor({ maxTextBlocks: 2 });
+            editor.commands.setContent({ type: "doc", content: [paragraph("first")] });
+            editor.commands.setTextSelection(editor.state.doc.content.size - 1);
+
+            toggleList(editor, listType);
+
+            expect(editor.getJSON().content?.map((node) => node.type)).toEqual([listType, "textBlock"]);
+        });
+    });
+
+    describe("maxTextBlocks", () => {
+        const paragraph = (text: string): JSONContent => ({
+            type: "textBlock",
+            attrs: { textBlock: "paragraph" },
+            content: [{ type: "text", text }],
+        });
+
+        it("should cut off text blocks pasted over the limit and keep the state up to date", () => {
+            const block = createTipTapRichTextBlock({ maxTextBlocks: 2 });
+            const updateState = vi.fn();
+            const { container } = render(
+                <block.AdminComponent state={{ tipTapContent: { type: "doc", content: [paragraph("first")] } }} updateState={updateState} />,
+            );
+            const editor = (container.querySelector(".tiptap") as (HTMLElement & { editor?: Editor }) | null)?.editor;
+            if (!editor) {
+                throw new Error("Expected the editor to be rendered");
+            }
+
+            editor.commands.insertContentAt(editor.state.doc.content.size, [paragraph("second"), paragraph("third")]);
+
+            expect(editor.getJSON().content).toEqual([paragraph("first"), paragraph("second")]);
+            expect(updateState).toHaveBeenLastCalledWith({ tipTapContent: { type: "doc", content: [paragraph("first"), paragraph("second")] } });
         });
     });
 

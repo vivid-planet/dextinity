@@ -713,7 +713,7 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
 
         await step("Switch to ordered list via keyboard shortcut", async () => {
             const editor = canvas.getByRole("textbox");
-            await userEvent.click(editor);
+            await userEvent.click(within(editor).getByText("List item text"));
             const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
             await userEvent.keyboard(`{${mod}>}{Shift>}7{/Shift}{/${mod}}`);
 
@@ -777,7 +777,7 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
 
         await step("Nest a bullet list inside the ordered list", async () => {
             const editor = canvas.getByRole("textbox");
-            await userEvent.click(editor);
+            await userEvent.click(within(editor).getByText("List item text"));
             await userEvent.keyboard("{Enter}Nested item{Tab}");
 
             const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";

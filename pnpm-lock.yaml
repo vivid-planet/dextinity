@@ -460,20 +460,20 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(supports-color@8.1.1)
       '@mikro-orm/cli':
-        specifier: ^6.6.14
-        version: 6.6.14(pg@8.20.0)(supports-color@8.1.1)
+        specifier: ^6.6.17
+        version: 6.6.17(pg@8.20.0)(supports-color@8.1.1)
       '@mikro-orm/core':
-        specifier: ^6.6.14
-        version: 6.6.14
+        specifier: ^6.6.17
+        version: 6.6.17
       '@mikro-orm/migrations':
-        specifier: ^6.6.14
-        version: 6.6.14(@mikro-orm/core@6.6.14)(@types/node@24.13.3)(pg@8.20.0)(supports-color@8.1.1)
+        specifier: ^6.6.17
+        version: 6.6.17(@mikro-orm/core@6.6.17)(@types/node@24.13.3)(pg@8.20.0)(supports-color@8.1.1)
       '@mikro-orm/nestjs':
         specifier: ^6.1.2
-        version: 6.1.2(@mikro-orm/core@6.6.14)(@nestjs/common@11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@11.2.7)
+        version: 6.1.2(@mikro-orm/core@6.6.17)(@nestjs/common@11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@11.2.7)
       '@mikro-orm/postgresql':
-        specifier: ^6.6.14
-        version: 6.6.14(@mikro-orm/core@6.6.14)(supports-color@8.1.1)
+        specifier: ^6.6.17
+        version: 6.6.17(@mikro-orm/core@6.6.17)(supports-color@8.1.1)
       '@nestjs/apollo':
         specifier: ^13.4.5
         version: 13.4.5(@apollo/server@5.5.1(graphql@16.14.2)(supports-color@8.1.1))(@as-integrations/express5@1.1.2(@apollo/server@5.5.1(graphql@16.14.2)(supports-color@8.1.1))(express@5.2.1(supports-color@8.1.1)))(@nestjs/common@11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@11.2.7)(@nestjs/graphql@13.4.5(@nestjs/common@11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@11.2.7)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@16.14.2)(reflect-metadata@0.2.2)(ts-morph@25.0.1))(graphql@16.14.2)
@@ -728,8 +728,8 @@ importers:
         specifier: ^16.2.10
         version: 16.2.11(@babel/core@7.29.7(supports-color@8.1.1))(@opentelemetry/api@1.9.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.93.0)
       nodemailer:
-        specifier: ^10.0.0
-        version: 10.0.6
+        specifier: ^10.0.14
+        version: 10.0.15
       react:
         specifier: ^19.2.6
         version: 19.2.6
@@ -849,14 +849,14 @@ importers:
   docs:
     dependencies:
       '@algolia/client-search':
-        specifier: ^5.55.1
-        version: 5.55.1
+        specifier: ^5.59.0
+        version: 5.59.0
       '@docusaurus/core':
         specifier: ^3.10.2
         version: 3.10.2(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)
       '@docusaurus/preset-classic':
         specifier: ^3.10.2
-        version: 3.10.2(@algolia/client-search@5.55.1)(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(@types/react@19.2.15)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(search-insights@2.17.3)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)
+        version: 3.10.2(@algolia/client-search@5.59.0)(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(@types/react@19.2.15)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(search-insights@2.17.3)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)
       '@docusaurus/theme-mermaid':
         specifier: ^3.10.2
         version: 3.10.2(@docusaurus/plugin-content-docs@3.10.2(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3))(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)
@@ -1696,6 +1696,9 @@ importers:
       '@tiptap/extension-superscript':
         specifier: ^3.22.3
         version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)
+      '@tiptap/extensions':
+        specifier: ^3.22.3
+        version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)
       '@tiptap/pm':
         specifier: ^3.22.3
         version: 3.22.3
@@ -2010,14 +2013,14 @@ importers:
         specifier: workspace:*
         version: link:../../eslint-config
       '@mikro-orm/cli':
-        specifier: ^6.6.14
-        version: 6.6.14(pg@8.20.0)(supports-color@8.1.1)
+        specifier: ^6.6.17
+        version: 6.6.17(pg@8.20.0)(supports-color@8.1.1)
       '@mikro-orm/core':
-        specifier: ^6.6.14
-        version: 6.6.14
+        specifier: ^6.6.17
+        version: 6.6.17
       '@mikro-orm/postgresql':
-        specifier: ^6.6.14
-        version: 6.6.14(@mikro-orm/core@6.6.14)(supports-color@8.1.1)
+        specifier: ^6.6.17
+        version: 6.6.17(@mikro-orm/core@6.6.17)(supports-color@8.1.1)
       '@nestjs/graphql':
         specifier: ^13.4.5
         version: 13.4.5(@nestjs/common@11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@11.2.7)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@16.14.2)(reflect-metadata@0.2.2)(ts-morph@25.0.1)
@@ -2101,20 +2104,20 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(supports-color@8.1.1)
       '@mikro-orm/cli':
-        specifier: ^6.6.14
-        version: 6.6.14(pg@8.20.0)(supports-color@8.1.1)
+        specifier: ^6.6.17
+        version: 6.6.17(pg@8.20.0)(supports-color@8.1.1)
       '@mikro-orm/core':
-        specifier: ^6.6.14
-        version: 6.6.14
+        specifier: ^6.6.17
+        version: 6.6.17
       '@mikro-orm/migrations':
-        specifier: ^6.6.14
-        version: 6.6.14(@mikro-orm/core@6.6.14)(@types/node@24.13.3)(pg@8.20.0)(supports-color@8.1.1)
+        specifier: ^6.6.17
+        version: 6.6.17(@mikro-orm/core@6.6.17)(@types/node@24.13.3)(pg@8.20.0)(supports-color@8.1.1)
       '@mikro-orm/nestjs':
         specifier: ^6.1.2
-        version: 6.1.2(@mikro-orm/core@6.6.14)(@nestjs/common@11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@11.2.7)
+        version: 6.1.2(@mikro-orm/core@6.6.17)(@nestjs/common@11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@11.2.7)
       '@mikro-orm/postgresql':
-        specifier: ^6.6.14
-        version: 6.6.14(@mikro-orm/core@6.6.14)(supports-color@8.1.1)
+        specifier: ^6.6.17
+        version: 6.6.17(@mikro-orm/core@6.6.17)(supports-color@8.1.1)
       '@nestjs/common':
         specifier: ^11.2.7
         version: 11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1)
@@ -2272,8 +2275,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       nodemailer:
-        specifier: ^10.0.0
-        version: 10.0.6
+        specifier: ^10.0.14
+        version: 10.0.15
       openai:
         specifier: ^6.32.0
         version: 6.32.0(ws@8.20.0)(zod@4.4.3)
@@ -2309,17 +2312,17 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(supports-color@8.1.1)
       '@mikro-orm/core':
-        specifier: ^6.6.14
-        version: 6.6.14
+        specifier: ^6.6.17
+        version: 6.6.17
       '@mikro-orm/migrations':
-        specifier: ^6.6.14
-        version: 6.6.14(@mikro-orm/core@6.6.14)(@types/node@24.13.3)(pg@8.20.0)(supports-color@8.1.1)
+        specifier: ^6.6.17
+        version: 6.6.17(@mikro-orm/core@6.6.17)(@types/node@24.13.3)(pg@8.20.0)(supports-color@8.1.1)
       '@mikro-orm/nestjs':
         specifier: ^6.1.2
-        version: 6.1.2(@mikro-orm/core@6.6.14)(@nestjs/common@11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@11.2.7)
+        version: 6.1.2(@mikro-orm/core@6.6.17)(@nestjs/common@11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@11.2.7)
       '@mikro-orm/postgresql':
-        specifier: ^6.6.14
-        version: 6.6.14(@mikro-orm/core@6.6.14)(supports-color@8.1.1)
+        specifier: ^6.6.17
+        version: 6.6.17(@mikro-orm/core@6.6.17)(supports-color@8.1.1)
       '@nestjs/common':
         specifier: ^11.2.7
         version: 11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1)
@@ -3121,8 +3124,8 @@ packages:
     resolution: {integrity: sha512-3u6AuZ1Kiss6V5JPuZfVIUYfPi8im06QBCgKqLg82GUBJ3SwhiTdSZFIEgz2mzFuitFdW1PQi3c/65zE/3FgIw==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/client-common@5.55.1':
-    resolution: {integrity: sha512-P5ak7EurwYqgAiDyb95mgA3WRR/Zu8CPMv36lWTISvL2AmlPyqQPy2nX/KEJRTcwaeTWwrk6wJV4/M93GfjOWw==}
+  '@algolia/client-common@5.59.0':
+    resolution: {integrity: sha512-PC8ipLOYFKRTfIUY1J3FJxS6ryzWziaXmIX9/sNMoUR8L+XhF7hX2QAeUI87YVl5zujvlYTSOb+HAIqKXDjyHQ==}
     engines: {node: '>= 14.0.0'}
 
   '@algolia/client-insights@5.46.1':
@@ -3141,8 +3144,8 @@ packages:
     resolution: {integrity: sha512-NL76o/BoEgU4ObY5oBEC3o6KSPpuXsnSta00tAxTm1iKUWOGR34DQEKhUt8xMHhMKleUNPM/rLPFiIVtfsGU8w==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/client-search@5.55.1':
-    resolution: {integrity: sha512-GAqHl9zERhC3bbBfubwUu07G3UXO06gORvOcsiTBZB3et0s3auNUbHlYdYNp4VKa3sUZqH5AcD3OKzU/KDGXjQ==}
+  '@algolia/client-search@5.59.0':
+    resolution: {integrity: sha512-fHnALZfbEnODczGk14Y/1YBRApp6UEpZUTexGcMUPzY7RDc7q4HN2Y6jh0KUG8Jo9B+q+wOoQEc3ziR0ErbuFg==}
     engines: {node: '>= 14.0.0'}
 
   '@algolia/events@4.0.1':
@@ -3164,24 +3167,24 @@ packages:
     resolution: {integrity: sha512-3GfCwudeW6/3caKSdmOP6RXZEL4F3GiemCaXEStkTt2Re8f7NcGYAAZnGlHsCzvhlNEuDzPYdYxh4UweY8l/2w==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/requester-browser-xhr@5.55.1':
-    resolution: {integrity: sha512-N6I3leW0UO8Y9Zv90yo2UHgYGuxZO0mjbvzNxDIJDjO0qECEF7Z9XMvSNeUWXQh/iNDA9lr8MfEy3rmZGIcclw==}
+  '@algolia/requester-browser-xhr@5.59.0':
+    resolution: {integrity: sha512-yb+4afX/zja8QwX0KmV4/ae2kyYkRknsE79CRusYS2U5D8qwn2wq0cn1x12f3tm3F3+5FgmDdbuGdQTuCLSKMQ==}
     engines: {node: '>= 14.0.0'}
 
   '@algolia/requester-fetch@5.46.1':
     resolution: {integrity: sha512-JUAxYfmnLYTVtAOFxVvXJ4GDHIhMuaP7JGyZXa/nCk3P8RrN5FCNTdRyftSnxyzwSIAd8qH3CjdBS9WwxxqcHQ==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/requester-fetch@5.55.1':
-    resolution: {integrity: sha512-ukU5zeeFs44rQkzv+TRdYard+d+3lmPGs8lPZhHtWE8rfz+LlBSF6s9kP3VQ7LeOYL8Dz0u6tZfnyTrqrumbHQ==}
+  '@algolia/requester-fetch@5.59.0':
+    resolution: {integrity: sha512-Lp52TmpA1QtNmdHzs505Xwf4tgII7RAapkDSF9AAtWIBETcGaTIaXci4Rd9nS6SdaWK1BWTSqAPp5wzh6UN3Ag==}
     engines: {node: '>= 14.0.0'}
 
   '@algolia/requester-node-http@5.46.1':
     resolution: {integrity: sha512-VwbhV1xvTGiek3d2pOS6vNBC4dtbNadyRT+i1niZpGhOJWz1XnfhxNboVbXPGAyMJYz7kDrolbDvEzIDT93uUA==}
     engines: {node: '>= 14.0.0'}
 
-  '@algolia/requester-node-http@5.55.1':
-    resolution: {integrity: sha512-lCwXyijwPm3vbYHpBXPRomMcD6mgiptmps27gnMCf4HK+u/AOeFPBnIFh4V3l4A5SnP9VRiKBZqwGBpUH0vaTg==}
+  '@algolia/requester-node-http@5.59.0':
+    resolution: {integrity: sha512-YYHLEs5rC6oRTFwT7bJaKBR9NSFzikeVHGAT1ffATmUQzR8XqyhHXjoieAUoR7fBU6I5cfy1FVeh5GoRgriuzA==}
     engines: {node: '>= 14.0.0'}
 
   '@altano/repository-tools@2.0.1':
@@ -6245,17 +6248,17 @@ packages:
   '@microsoft/tsdoc@0.15.1':
     resolution: {integrity: sha512-4aErSrCR/On/e5G2hDP0wjooqDdauzEbIq8hIkIe5pXV0rtWJZvdCEKL0ykZxex+IxIwBp0eGeV48hQN07dXtw==}
 
-  '@mikro-orm/cli@6.6.14':
-    resolution: {integrity: sha512-pYo6BBWJEaA9rOBJAyu6IK81v8wed8ScJ9Z3/suyHVAdul6h/Y37qU/FGQqnA8qM7801pMkCWr/36ybgAaYjeQ==}
+  '@mikro-orm/cli@6.6.17':
+    resolution: {integrity: sha512-cQ9HXCVe1L+MXvlg3jNPVGkIgA4ngsH48GoGj3SfxJdrdB7W5JOLuu8dGQrc6HDUvuff78lkBpIy/XROm8t/fg==}
     engines: {node: '>= 18.12.0'}
     hasBin: true
 
-  '@mikro-orm/core@6.6.14':
-    resolution: {integrity: sha512-jKdtf1A2wI2D48phOPJzTc3h7Bev64Ype0FHwbUgHEdZ5VxrCNLKOziFnYqMfPmBe0piVExLaPN2qXgbzCiApw==}
+  '@mikro-orm/core@6.6.17':
+    resolution: {integrity: sha512-LFl6s0U6evvhB2iqifGEAzY0Nl1DC4Ge2N6GcPoNEvtg3OC/0GjvIftyzXnpaANjo/IxEaY/ge5BgMLt1B729g==}
     engines: {node: '>= 18.12.0'}
 
-  '@mikro-orm/knex@6.6.14':
-    resolution: {integrity: sha512-xQWq9+7TwE8LLul1RkhjB7/0/iCHMlkSmEToVpz+NNFoPj6M32DfY9mhNnM6qPZ/HF50WjpcVgCgi9ADrEBSFA==}
+  '@mikro-orm/knex@6.6.17':
+    resolution: {integrity: sha512-v65plaUKRuPsmMBXl/0h6ejqhVvS0Np4bGJSxHGOuWPONNEQHvSlt1aIpddhSYtdnzCXKV2hQNVBEaj8/wkA2Q==}
     engines: {node: '>= 18.12.0'}
     peerDependencies:
       '@mikro-orm/core': ^6.0.0
@@ -6270,8 +6273,8 @@ packages:
       mariadb:
         optional: true
 
-  '@mikro-orm/migrations@6.6.14':
-    resolution: {integrity: sha512-rigk6pVUF8499yuR3kJOa9B0hzkacLYeWYmNuH5005ECQNcbT2d4qqTvWjE96/PqxxnMesKg4RmesSIC7sIXvg==}
+  '@mikro-orm/migrations@6.6.17':
+    resolution: {integrity: sha512-wkEiYM1o4v5ym8iQJ6QllvdRZLWRv3SF2GiXob0A8VVD6343ZSxU4bPoo1eSdhzssq0cBttdmL6pObnRlwEGDA==}
     engines: {node: '>= 18.12.0'}
     peerDependencies:
       '@mikro-orm/core': ^6.0.0
@@ -6284,8 +6287,8 @@ packages:
       '@nestjs/common': ^10.0.0 || ^11.0.5
       '@nestjs/core': ^10.0.0 || ^11.0.5
 
-  '@mikro-orm/postgresql@6.6.14':
-    resolution: {integrity: sha512-hgyxpuTaXK0nYhhkmPkz8lx1nzhsqtOQuqQ+oabtyEKuqzPeANRJaV2TczIFYMIczyxKWOylV7g//13qrwqmNQ==}
+  '@mikro-orm/postgresql@6.6.17':
+    resolution: {integrity: sha512-9cFWSVn77uk93SCu822gpYxYUiDi9jMBxSq1x0PGAPLF+froYrRCsTfYoGLV686mdnQS0Ac0GStp0E3dNNTHqg==}
     engines: {node: '>= 18.12.0'}
     peerDependencies:
       '@mikro-orm/core': ^6.0.0
@@ -13989,8 +13992,8 @@ packages:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
     engines: {node: '>=8.6'}
 
-  mikro-orm@6.6.14:
-    resolution: {integrity: sha512-SRVEqIrANwlVwZxJUoSXHgpzGgSpaoOiG7XrnYlh7TYehbJRbxE3xIhJNdNw0t7FIItixFUvLnD6A20bvLnUNw==}
+  mikro-orm@6.6.17:
+    resolution: {integrity: sha512-AL7V8ytnDRpwUMcYwOiGNIOW7WuE8ca2hf+pw9jcpSVWwwJNu/j9K574lf0PALaJnikbzidsxmjCUrhQ0ea+sA==}
     engines: {node: '>= 18.12.0'}
 
   mime-db@1.33.0:
@@ -14380,8 +14383,8 @@ packages:
   node-releases@2.0.36:
     resolution: {integrity: sha512-TdC8FSgHz8Mwtw9g5L4gR/Sh9XhSP/0DEkQxfEFXOpiul5IiHgHan2VhYYb6agDSfp4KuvltmGApc8HMgUrIkA==}
 
-  nodemailer@10.0.6:
-    resolution: {integrity: sha512-2u7OHvEQVVGvPo9Yhw/eN3xMO2Gnj2U2fGDP0BDpnRwJR//65AfGRQDiJqxix28gFRBvMqi2USA13x6RrfWuGg==}
+  nodemailer@10.0.15:
+    resolution: {integrity: sha512-EUqp5PhtcsYXs9Fq/lS7s/8zlTrnBqmzZWzFFROrNikMiz+om/YRKMwqN907t+0A1KKyT8jd39CBUbFZmaZmcA==}
     engines: {node: '>=20.0.0'}
 
   nopt@7.2.1:
@@ -18102,54 +18105,54 @@ snapshots:
       '@algolia/requester-fetch': 5.46.1
       '@algolia/requester-node-http': 5.46.1
 
-  '@algolia/autocomplete-core@1.17.9(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)(search-insights@2.17.3)':
+  '@algolia/autocomplete-core@1.17.9(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)(search-insights@2.17.3)':
     dependencies:
-      '@algolia/autocomplete-plugin-algolia-insights': 1.17.9(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)(search-insights@2.17.3)
-      '@algolia/autocomplete-shared': 1.17.9(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)
+      '@algolia/autocomplete-plugin-algolia-insights': 1.17.9(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)(search-insights@2.17.3)
+      '@algolia/autocomplete-shared': 1.17.9(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)
     transitivePeerDependencies:
       - '@algolia/client-search'
       - algoliasearch
       - search-insights
 
-  '@algolia/autocomplete-core@1.19.8(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)(search-insights@2.17.3)':
+  '@algolia/autocomplete-core@1.19.8(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)(search-insights@2.17.3)':
     dependencies:
-      '@algolia/autocomplete-plugin-algolia-insights': 1.19.8(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)(search-insights@2.17.3)
-      '@algolia/autocomplete-shared': 1.19.8(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)
+      '@algolia/autocomplete-plugin-algolia-insights': 1.19.8(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)(search-insights@2.17.3)
+      '@algolia/autocomplete-shared': 1.19.8(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)
     transitivePeerDependencies:
       - '@algolia/client-search'
       - algoliasearch
       - search-insights
 
-  '@algolia/autocomplete-plugin-algolia-insights@1.17.9(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)(search-insights@2.17.3)':
+  '@algolia/autocomplete-plugin-algolia-insights@1.17.9(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)(search-insights@2.17.3)':
     dependencies:
-      '@algolia/autocomplete-shared': 1.17.9(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)
+      '@algolia/autocomplete-shared': 1.17.9(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)
       search-insights: 2.17.3
     transitivePeerDependencies:
       - '@algolia/client-search'
       - algoliasearch
 
-  '@algolia/autocomplete-plugin-algolia-insights@1.19.8(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)(search-insights@2.17.3)':
+  '@algolia/autocomplete-plugin-algolia-insights@1.19.8(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)(search-insights@2.17.3)':
     dependencies:
-      '@algolia/autocomplete-shared': 1.19.8(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)
+      '@algolia/autocomplete-shared': 1.19.8(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)
       search-insights: 2.17.3
     transitivePeerDependencies:
       - '@algolia/client-search'
       - algoliasearch
 
-  '@algolia/autocomplete-preset-algolia@1.17.9(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)':
+  '@algolia/autocomplete-preset-algolia@1.17.9(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)':
     dependencies:
-      '@algolia/autocomplete-shared': 1.17.9(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)
-      '@algolia/client-search': 5.55.1
+      '@algolia/autocomplete-shared': 1.17.9(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)
+      '@algolia/client-search': 5.59.0
       algoliasearch: 5.46.1
 
-  '@algolia/autocomplete-shared@1.17.9(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)':
+  '@algolia/autocomplete-shared@1.17.9(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)':
     dependencies:
-      '@algolia/client-search': 5.55.1
+      '@algolia/client-search': 5.59.0
       algoliasearch: 5.46.1
 
-  '@algolia/autocomplete-shared@1.19.8(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)':
+  '@algolia/autocomplete-shared@1.19.8(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)':
     dependencies:
-      '@algolia/client-search': 5.55.1
+      '@algolia/client-search': 5.59.0
       algoliasearch: 5.46.1
 
   '@algolia/client-abtesting@5.46.1':
@@ -18168,7 +18171,7 @@ snapshots:
 
   '@algolia/client-common@5.46.1': {}
 
-  '@algolia/client-common@5.55.1': {}
+  '@algolia/client-common@5.59.0': {}
 
   '@algolia/client-insights@5.46.1':
     dependencies:
@@ -18198,12 +18201,12 @@ snapshots:
       '@algolia/requester-fetch': 5.46.1
       '@algolia/requester-node-http': 5.46.1
 
-  '@algolia/client-search@5.55.1':
+  '@algolia/client-search@5.59.0':
     dependencies:
-      '@algolia/client-common': 5.55.1
-      '@algolia/requester-browser-xhr': 5.55.1
-      '@algolia/requester-fetch': 5.55.1
-      '@algolia/requester-node-http': 5.55.1
+      '@algolia/client-common': 5.59.0
+      '@algolia/requester-browser-xhr': 5.59.0
+      '@algolia/requester-fetch': 5.59.0
+      '@algolia/requester-node-http': 5.59.0
 
   '@algolia/events@4.0.1': {}
 
@@ -18232,25 +18235,25 @@ snapshots:
     dependencies:
       '@algolia/client-common': 5.46.1
 
-  '@algolia/requester-browser-xhr@5.55.1':
+  '@algolia/requester-browser-xhr@5.59.0':
     dependencies:
-      '@algolia/client-common': 5.55.1
+      '@algolia/client-common': 5.59.0
 
   '@algolia/requester-fetch@5.46.1':
     dependencies:
       '@algolia/client-common': 5.46.1
 
-  '@algolia/requester-fetch@5.55.1':
+  '@algolia/requester-fetch@5.59.0':
     dependencies:
-      '@algolia/client-common': 5.55.1
+      '@algolia/client-common': 5.59.0
 
   '@algolia/requester-node-http@5.46.1':
     dependencies:
       '@algolia/client-common': 5.46.1
 
-  '@algolia/requester-node-http@5.55.1':
+  '@algolia/requester-node-http@5.59.0':
     dependencies:
-      '@algolia/client-common': 5.55.1
+      '@algolia/client-common': 5.59.0
 
   '@altano/repository-tools@2.0.1': {}
 
@@ -20182,10 +20185,10 @@ snapshots:
 
   '@docsearch/css@3.9.0': {}
 
-  '@docsearch/react@3.9.0(@algolia/client-search@5.55.1)(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(search-insights@2.17.3)':
+  '@docsearch/react@3.9.0(@algolia/client-search@5.59.0)(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(search-insights@2.17.3)':
     dependencies:
-      '@algolia/autocomplete-core': 1.17.9(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)(search-insights@2.17.3)
-      '@algolia/autocomplete-preset-algolia': 1.17.9(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)
+      '@algolia/autocomplete-core': 1.17.9(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)(search-insights@2.17.3)
+      '@algolia/autocomplete-preset-algolia': 1.17.9(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)
       '@docsearch/css': 3.9.0
       algoliasearch: 5.46.1
     optionalDependencies:
@@ -20711,7 +20714,7 @@ snapshots:
       - utf-8-validate
       - webpack-cli
 
-  '@docusaurus/preset-classic@3.10.2(@algolia/client-search@5.55.1)(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(@types/react@19.2.15)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(search-insights@2.17.3)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)':
+  '@docusaurus/preset-classic@3.10.2(@algolia/client-search@5.59.0)(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(@types/react@19.2.15)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(search-insights@2.17.3)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)':
     dependencies:
       '@docusaurus/core': 3.10.2(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)
       '@docusaurus/plugin-content-blog': 3.10.2(@docusaurus/plugin-content-docs@3.10.2(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3))(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)
@@ -20726,7 +20729,7 @@ snapshots:
       '@docusaurus/plugin-svgr': 3.10.2(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)
       '@docusaurus/theme-classic': 3.10.2(@swc/core@1.15.41)(@types/react@19.2.15)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)
       '@docusaurus/theme-common': 3.10.2(@docusaurus/plugin-content-docs@3.10.2(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3))(@swc/core@1.15.41)(acorn@8.16.0)(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(supports-color@8.1.1)(uglify-js@3.19.3)
-      '@docusaurus/theme-search-algolia': 3.10.2(@algolia/client-search@5.55.1)(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(@types/react@19.2.15)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(search-insights@2.17.3)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)
+      '@docusaurus/theme-search-algolia': 3.10.2(@algolia/client-search@5.59.0)(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(@types/react@19.2.15)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(search-insights@2.17.3)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)
       '@docusaurus/types': 3.10.2(@swc/core@1.15.41)(acorn@8.16.0)(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(supports-color@8.1.1)(uglify-js@3.19.3)
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
@@ -20862,10 +20865,10 @@ snapshots:
       - utf-8-validate
       - webpack-cli
 
-  '@docusaurus/theme-search-algolia@3.10.2(@algolia/client-search@5.55.1)(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(@types/react@19.2.15)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(search-insights@2.17.3)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)':
+  '@docusaurus/theme-search-algolia@3.10.2(@algolia/client-search@5.59.0)(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(@types/react@19.2.15)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(search-insights@2.17.3)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)':
     dependencies:
-      '@algolia/autocomplete-core': 1.19.8(@algolia/client-search@5.55.1)(algoliasearch@5.46.1)(search-insights@2.17.3)
-      '@docsearch/react': 3.9.0(@algolia/client-search@5.55.1)(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(search-insights@2.17.3)
+      '@algolia/autocomplete-core': 1.19.8(@algolia/client-search@5.59.0)(algoliasearch@5.46.1)(search-insights@2.17.3)
+      '@docsearch/react': 3.9.0(@algolia/client-search@5.59.0)(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(search-insights@2.17.3)
       '@docusaurus/core': 3.10.2(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)
       '@docusaurus/logger': 3.10.2
       '@docusaurus/plugin-content-docs': 3.10.2(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@swc/core@1.15.41)(acorn@8.16.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(supports-color@8.1.1)(typescript@5.9.3)(uglify-js@3.19.3)
@@ -22682,11 +22685,11 @@ snapshots:
 
   '@microsoft/tsdoc@0.15.1': {}
 
-  '@mikro-orm/cli@6.6.14(pg@8.20.0)(supports-color@8.1.1)':
+  '@mikro-orm/cli@6.6.17(pg@8.20.0)(supports-color@8.1.1)':
     dependencies:
       '@jercle/yargonaut': 1.1.5
-      '@mikro-orm/core': 6.6.14
-      '@mikro-orm/knex': 6.6.14(@mikro-orm/core@6.6.14)(pg@8.20.0)(supports-color@8.1.1)
+      '@mikro-orm/core': 6.6.17
+      '@mikro-orm/knex': 6.6.17(@mikro-orm/core@6.6.17)(pg@8.20.0)(supports-color@8.1.1)
       fs-extra: 11.3.3
       tsconfig-paths: 4.2.0
       yargs: 17.7.2
@@ -22703,19 +22706,19 @@ snapshots:
       - supports-color
       - tedious
 
-  '@mikro-orm/core@6.6.14':
+  '@mikro-orm/core@6.6.17':
     dependencies:
       dataloader: 2.2.3
       dotenv: 17.3.1
       esprima: 4.0.1
       fs-extra: 11.3.3
       globby: 11.1.0
-      mikro-orm: 6.6.14
+      mikro-orm: 6.6.17
       reflect-metadata: 0.2.2
 
-  '@mikro-orm/knex@6.6.14(@mikro-orm/core@6.6.14)(pg@8.20.0)(supports-color@8.1.1)':
+  '@mikro-orm/knex@6.6.17(@mikro-orm/core@6.6.17)(pg@8.20.0)(supports-color@8.1.1)':
     dependencies:
-      '@mikro-orm/core': 6.6.14
+      '@mikro-orm/core': 6.6.17
       fs-extra: 11.3.3
       knex: 3.2.10(pg@8.20.0)(supports-color@8.1.1)
       sqlstring: 2.3.3
@@ -22729,10 +22732,10 @@ snapshots:
       - supports-color
       - tedious
 
-  '@mikro-orm/migrations@6.6.14(@mikro-orm/core@6.6.14)(@types/node@24.13.3)(pg@8.20.0)(supports-color@8.1.1)':
+  '@mikro-orm/migrations@6.6.17(@mikro-orm/core@6.6.17)(@types/node@24.13.3)(pg@8.20.0)(supports-color@8.1.1)':
     dependencies:
-      '@mikro-orm/core': 6.6.14
-      '@mikro-orm/knex': 6.6.14(@mikro-orm/core@6.6.14)(pg@8.20.0)(supports-color@8.1.1)
+      '@mikro-orm/core': 6.6.17
+      '@mikro-orm/knex': 6.6.17(@mikro-orm/core@6.6.17)(pg@8.20.0)(supports-color@8.1.1)
       fs-extra: 11.3.3
       umzug: 3.8.2(@types/node@24.13.3)
     transitivePeerDependencies:
@@ -22749,16 +22752,16 @@ snapshots:
       - supports-color
       - tedious
 
-  '@mikro-orm/nestjs@6.1.2(@mikro-orm/core@6.6.14)(@nestjs/common@11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@11.2.7)':
+  '@mikro-orm/nestjs@6.1.2(@mikro-orm/core@6.6.17)(@nestjs/common@11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@11.2.7)':
     dependencies:
-      '@mikro-orm/core': 6.6.14
+      '@mikro-orm/core': 6.6.17
       '@nestjs/common': 11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1)
       '@nestjs/core': 11.2.7(@nestjs/common@11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/platform-express@11.2.7)(reflect-metadata@0.2.2)(rxjs@7.8.2)
 
-  '@mikro-orm/postgresql@6.6.14(@mikro-orm/core@6.6.14)(supports-color@8.1.1)':
+  '@mikro-orm/postgresql@6.6.17(@mikro-orm/core@6.6.17)(supports-color@8.1.1)':
     dependencies:
-      '@mikro-orm/core': 6.6.14
-      '@mikro-orm/knex': 6.6.14(@mikro-orm/core@6.6.14)(pg@8.20.0)(supports-color@8.1.1)
+      '@mikro-orm/core': 6.6.17
+      '@mikro-orm/knex': 6.6.17(@mikro-orm/core@6.6.17)(pg@8.20.0)(supports-color@8.1.1)
       pg: 8.20.0
       postgres-array: 3.0.4
       postgres-date: 2.1.0
@@ -31830,7 +31833,7 @@ snapshots:
       braces: 3.0.3
       picomatch: 2.3.1
 
-  mikro-orm@6.6.14: {}
+  mikro-orm@6.6.17: {}
 
   mime-db@1.33.0: {}
 
@@ -32396,7 +32399,7 @@ snapshots:
 
   node-releases@2.0.36: {}
 
-  nodemailer@10.0.6: {}
+  nodemailer@10.0.15: {}
 
   nopt@7.2.1:
     dependencies:

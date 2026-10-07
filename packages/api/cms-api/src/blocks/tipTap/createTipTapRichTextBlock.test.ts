@@ -1,9 +1,11 @@
+import { getSchema } from "@tiptap/core";
 import { validate } from "class-validator";
 import { describe, expect, it } from "vitest";
 
 import { ExternalLinkBlock } from "../externalLink/external-link.block";
 import { createLinkBlock } from "../factories/createLinkBlock";
 import {
+    buildExtensions,
     createTipTapRichTextBlock,
     type CreateTipTapRichTextBlockOptions,
     resolveTipTapOptions,
@@ -42,6 +44,25 @@ const onlyFeatures = (options: CreateTipTapRichTextBlockOptions = {}): CreateTip
     nonBreakingSpace: false,
     softHyphen: false,
     ...options,
+});
+
+describe("createTipTapRichTextBlock schema", () => {
+    it.each([
+        ["default text blocks", {}],
+        ["heading-only text blocks", { textBlocks: headingOnly234 }],
+    ])("should use the text block as the default block type with %s, like the Admin's schema", (_name, options) => {
+        const schema = getSchema(
+            buildExtensions({
+                resolvedOptions: resolveTipTapOptions(options),
+                inlineStyles: [],
+                placeholders: [],
+                hasBlockChildBlocks: true,
+                hasInlineChildBlocks: false,
+            }),
+        );
+
+        expect(schema.topNodeType.contentMatch.defaultType?.name).toBe("textBlock");
+    });
 });
 
 describe("createTipTapRichTextBlock validation", () => {

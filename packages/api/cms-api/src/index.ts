@@ -151,7 +151,7 @@ export { StringFilter } from "./common/filter/string.filter";
 export { extractGraphqlFields } from "./common/graphql/extract-graphql-fields";
 export { MutationError } from "./common/graphql/mutation-error";
 export { CdnGuard } from "./common/guards/cdn.guard";
-export { getCrudSearchFieldsFromMetadata, hasCrudFieldFeature } from "./common/helper/crud-generator.helper";
+export { type CrudSearchField, getCrudSearchFieldsFromMetadata, hasCrudFieldFeature } from "./common/helper/crud-generator.helper";
 export { PartialType } from "./common/helper/partial-type.helper";
 export { OffsetBasedPaginationArgs } from "./common/pagination/offset-based.args";
 export { PaginatedResponseFactory } from "./common/pagination/paginated-response.factory";
@@ -299,6 +299,7 @@ export { type ContentScopeDimension, type ContentScopeWithLabel } from "./user-p
 export { registerAdditionalPermissions } from "./user-permissions/user-permissions.types";
 export {
     AccessControlServiceInterface,
+    CombinedPermission,
     ContentScopesForUser,
     Permission,
     PermissionForUser,

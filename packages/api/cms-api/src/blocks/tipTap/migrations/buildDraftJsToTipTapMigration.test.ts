@@ -255,7 +255,7 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             };
         }
 
-        it("converts a mail rich text with all list sizes, mixed and nested, into valid content", () => {
+        it("converts a rich text with all list sizes, mixed and nested, into valid content", () => {
             const data = block.blockDataFactory({
                 draftContent: {
                     blocks: [

@@ -39,19 +39,19 @@ async function fetchDomainRedirects(scope: GQLRedirectScopeInput) {
 
         let allNodes: Redirect[] = [];
         let totalCount = 0;
-        let currentCount = 0;
+        let offset = 0;
         do {
             const data = await graphQLFetch<GQLDomainRedirectsQuery, GQLDomainRedirectsQueryVariables>(domainRedirectsQuery, {
                 scope: { domain: scope.domain },
                 filter: { sourceType: { equal: "domain" } },
-                offset: currentCount,
+                offset,
                 limit,
             });
             const nodes = data?.paginatedRedirects?.nodes || [];
             totalCount = data?.paginatedRedirects?.totalCount || 0;
-            currentCount += nodes.length;
+            offset += limit;
             allNodes = allNodes.concat(nodes);
-        } while (currentCount < totalCount);
+        } while (offset < totalCount);
         return allNodes;
     });
 }

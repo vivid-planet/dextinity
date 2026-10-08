@@ -8,7 +8,7 @@ export type LoadedData = Awaited<ReturnType<typeof loader>>;
 
 export const loader = async ({ graphQLFetch, scope }: BlockLoaderOptions<PageTreeIndexBlockData>) => {
     let totalCount = 0;
-    let currentCount = 0;
+    let offset = 0;
     const pageSize = 100;
     const allNodes: PageTreeNode[] = [];
 
@@ -33,16 +33,16 @@ export const loader = async ({ graphQLFetch, scope }: BlockLoaderOptions<PageTre
             `,
             {
                 scope,
-                offset: currentCount,
+                offset,
                 limit: pageSize,
             },
             { headers: { "x-include-invisible-content": "" } },
         );
 
         totalCount = paginatedPageTreeNodes.totalCount;
-        currentCount += paginatedPageTreeNodes.nodes.length;
+        offset += pageSize;
         allNodes.push(...paginatedPageTreeNodes.nodes);
-    } while (totalCount > currentCount);
+    } while (offset < totalCount);
 
     return allNodes;
 };

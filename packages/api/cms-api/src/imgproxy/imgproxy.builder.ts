@@ -1,5 +1,3 @@
-import base64url from "base64url";
-
 import { type Extension, Gravity, ResizingType } from "./imgproxy.enum";
 
 export class ImgproxyBuilder {
@@ -47,6 +45,6 @@ export class ImgproxyBuilder {
             .map((option) => `${option}:${this.options[option]}`)
             .join("/");
 
-        return `/${[url, base64url(sourceUrl)].join("/")}`;
+        return `/${[url, Buffer.from(sourceUrl).toString("base64url")].join("/")}`;
     }
 }

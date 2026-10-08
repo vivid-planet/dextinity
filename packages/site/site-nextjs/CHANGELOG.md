@@ -1,5 +1,33 @@
 # @comet/site-nextjs
 
+## 8.32.1
+
+### Patch Changes
+
+- bba25f2: Stop forwarding preview headers from the client in `persistedQueryRoute`
+
+    Previously, `persistedQueryRoute` forwarded the `x-include-invisible-content` and `x-preview-dam-urls` headers of the incoming request to the API.
+    Since the route usually authenticates against the API with a system user, any visitor could request unpublished pages and invisible blocks.
+
+    The headers are now only set based on the new `previewData` option, which must come from a verified source such as the site preview cookie:
+
+    ```ts
+    import { persistedQueryRoute, previewParams } from "@comet/site-nextjs";
+
+    async function handler(request: Request) {
+        const preview = await previewParams();
+        return persistedQueryRoute(request, {
+            // ...
+            previewData: preview?.previewData,
+        });
+    }
+    ```
+
+    Responses for preview requests are sent with `Cache-Control: private, no-store`.
+
+- Updated dependencies [bba25f2]
+    - @comet/site-react@8.32.1
+
 ## 8.32.0
 
 ### Patch Changes

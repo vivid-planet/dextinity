@@ -1,5 +1,11 @@
 # @comet/admin
 
+## 8.32.1
+
+### Patch Changes
+
+- @comet/admin-icons@8.32.1
+
 ## 8.32.0
 
 ### Patch Changes

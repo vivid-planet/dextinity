@@ -65,6 +65,27 @@ export function removeUnusedImports(): ts.TransformerFactory<ts.SourceFile> {
                             return undefined;
                         }
 
+                        if (!name && !node.importClause.isTypeOnly && updatedBindings.every((specifier) => specifier.isTypeOnly)) {
+                            // `import { type A }` would remain as a side-effect import, therefore convert to `import type { A }`
+                            return ts.factory.updateImportDeclaration(
+                                node,
+                                node.modifiers,
+                                ts.factory.updateImportClause(
+                                    node.importClause,
+                                    true,
+                                    undefined,
+                                    ts.factory.updateNamedImports(
+                                        namedBindings,
+                                        updatedBindings.map((specifier) =>
+                                            ts.factory.updateImportSpecifier(specifier, false, specifier.propertyName, specifier.name),
+                                        ),
+                                    ),
+                                ),
+                                node.moduleSpecifier,
+                                node.assertClause,
+                            );
+                        }
+
                         return ts.factory.updateImportDeclaration(
                             node,
                             node.modifiers,

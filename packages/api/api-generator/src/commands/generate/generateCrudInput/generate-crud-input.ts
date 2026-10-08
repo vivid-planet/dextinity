@@ -83,7 +83,7 @@ export async function generateCrudInput(
         { name: "RootBlockInputScalar", importPath: "@dextinity/cms-api" },
         { name: "IsNullable", importPath: "@dextinity/cms-api" },
         { name: "PartialType", importPath: "@dextinity/cms-api" },
-        { name: "BlockInputInterface", importPath: "@dextinity/cms-api" },
+        { name: "BlockInputInterface", importPath: "@dextinity/cms-api", isTypeOnly: true },
         { name: "isBlockInputInterface", importPath: "@dextinity/cms-api" },
         { name: "IsString", importPath: "class-validator" },
         { name: "IsNotEmpty", importPath: "class-validator" },

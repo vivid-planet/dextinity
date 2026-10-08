@@ -347,7 +347,7 @@ function generateService({ generatorOptions, metadata }: { generatorOptions: Cru
               .join(",")} }`
         : false;
 
-    const serviceOut = `import { EntityManager, FilterQuery, raw } from "@mikro-orm/postgresql";
+    const serviceOut = `import { EntityManager, type FilterQuery, raw } from "@mikro-orm/postgresql";
     import { Injectable } from "@nestjs/common";
 
     ${generateImportsCode([generateEntityImport(metadata, targetDirectory)])}
@@ -925,7 +925,7 @@ function generateResolver({ generatorOptions, metadata }: { generatorOptions: Cr
     imports.push({ name: "gqlArgsToMikroOrmQuery", importPath: "@dextinity/cms-api" });
     imports.push({ name: "gqlSortToMikroOrmOrderBy", importPath: "@dextinity/cms-api" });
 
-    const resolverOut = `import { EntityManager, FindOptions, ObjectQuery, Reference } from "@mikro-orm/postgresql";
+    const resolverOut = `import { EntityManager, type FindOptions, type ObjectQuery, Reference } from "@mikro-orm/postgresql";
     import { Args, ID, Mutation, Query, Resolver, ResolveField, Parent } from "@nestjs/graphql";
 
     ${hasPositionProp ? `import { ${classNamePlural}Service } from "./${fileNamePlural}.service";` : ``}

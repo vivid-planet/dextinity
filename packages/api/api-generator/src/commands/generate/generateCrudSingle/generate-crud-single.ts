@@ -29,7 +29,7 @@ export async function generateCrudSingle(generatorOptions: CrudSingleGeneratorOp
             return hasCrudFieldFeature(metadata.class, prop.name, "input") && prop.type === "RootBlockType";
         });
 
-        const serviceOut = `import { ObjectQuery } from "@mikro-orm/postgresql";
+        const serviceOut = `import type { ObjectQuery } from "@mikro-orm/postgresql";
     import { Injectable } from "@nestjs/common";
     import { ${metadata.className} } from "${path.relative(targetDirectory, metadata.path).replace(/\.ts$/, "")}";
     
@@ -40,7 +40,7 @@ export async function generateCrudSingle(generatorOptions: CrudSingleGeneratorOp
     `;
         generatedFiles.push({ name: `${fileNamePlural}.service.ts`, content: serviceOut, type: "service" });
 
-        const resolverOut = `import { FindOptions, EntityManager } from "@mikro-orm/postgresql";
+        const resolverOut = `import { type FindOptions, EntityManager } from "@mikro-orm/postgresql";
     import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
     import { ${entityHasRequiredPermission ? "" : "RequiredPermission, "}SortDirection, validateNotModified } from "@dextinity/cms-api";
     

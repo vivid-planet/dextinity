@@ -49,6 +49,10 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
                 // which of them a DraftJS heading becomes.
                 "header-one": { textBlock: "heading-1" },
             },
+            listItemMap: {
+                "unordered-list-item-small": { list: "unordered", textBlockStyle: "list200" },
+                "ordered-list-item-small": { list: "ordered", textBlockStyle: "list200" },
+            },
         },
     },
     {

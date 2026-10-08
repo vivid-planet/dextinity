@@ -1,5 +1,4 @@
 import { Inject, Injectable } from "@nestjs/common";
-import base64url from "base64url";
 import { createHmac } from "crypto";
 
 import { ImgproxyBuilder } from "./imgproxy.builder";
@@ -32,6 +31,6 @@ export class ImgproxyService {
         const hmac = createHmac("sha256", Buffer.from(this.key, "hex"));
         hmac.update(Buffer.from(this.salt, "hex"));
         hmac.update(target);
-        return base64url(hmac.digest());
+        return hmac.digest("base64url");
     }
 }

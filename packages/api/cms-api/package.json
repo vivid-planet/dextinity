@@ -53,7 +53,6 @@
         "@tiptap/extension-superscript": "^3.22.3",
         "@tiptap/pm": "^3.22.3",
         "@tiptap/starter-kit": "^3.22.3",
-        "base64url": "^3.0.1",
         "content-disposition": "^3.0.0",
         "cron-parser": "^3.5.0",
         "dataloader": "^2.2.3",

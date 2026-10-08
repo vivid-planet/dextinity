@@ -6,7 +6,7 @@
         "riskCeiling": "medium",
         "filters": {
             "includeAuthors": ["VPS-Obi", "VPS-thodax", "nsams", "fraxachun"],
-            "excludePaths": ["rules/coding-guidelines/"]
+            "excludePaths": ["rules/coding-guidelines/**"]
         }
     },
     "excludeAuthors": ["vivid-planet-bot", "github-actions[bot]", "renovate[bot]"],

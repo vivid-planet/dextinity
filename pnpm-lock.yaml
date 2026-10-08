@@ -165,6 +165,7 @@ settings:
 overrides:
   '@apollo/server-plugin-landing-page-graphql-playground>@apollo/server': ^5.1.0
   '@types/mjml-core': 4.15.2
+  '@tsconfig/node16': 1.0.3
 
 importers:
 
@@ -9384,8 +9385,8 @@ packages:
   '@tsconfig/node14@1.0.3':
     resolution: {integrity: sha512-ysT8mhdixWK6Hw3i1V2AeRqZ5WfXg1G43mqoYlM2nc6388Fq5jcXyr5mRsqViLx/GJYdoL0bfXD8nmF+Zn/Iow==}
 
-  '@tsconfig/node16@1.0.4':
-    resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
+  '@tsconfig/node16@1.0.3':
+    resolution: {integrity: sha512-yOlFc+7UtL/89t2ZhjPvvB/DeAr3r+Dq58IgzsFkOAvVC6NMJXmCGjbptdXdR9qsX7pKcTL+s87FtYREi2dEEQ==}
 
   '@tybys/wasm-util@0.10.4':
     resolution: {integrity: sha512-W3c4gRigFS0T/Ma4qIYF3GDAc5AQdHb1yL5znJT1Zv1YaD9Kitx656wBjvr19qbiosmZT8lWDM5BEMynUqX65A==}
@@ -27132,7 +27133,7 @@ snapshots:
 
   '@tsconfig/node14@1.0.3': {}
 
-  '@tsconfig/node16@1.0.4': {}
+  '@tsconfig/node16@1.0.3': {}
 
   '@tybys/wasm-util@0.10.4':
     dependencies:
@@ -37669,7 +37670,7 @@ snapshots:
       '@tsconfig/node10': 1.0.13
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
-      '@tsconfig/node16': 1.0.4
+      '@tsconfig/node16': 1.0.3
       '@types/node': 24.19.1
       acorn: 8.19.0
       acorn-walk: 8.3.5

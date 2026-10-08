@@ -2272,8 +2272,8 @@ importers:
         specifier: ^1.54.0
         version: 1.54.0
       multer:
-        specifier: ^2.1.1
-        version: 2.1.1
+        specifier: ^2.4.0
+        version: 2.4.0
       nodemailer:
         specifier: ^10.0.14
         version: 10.0.15
@@ -2369,8 +2369,8 @@ importers:
         specifier: ^1.43.6
         version: 1.43.6
       '@types/multer':
-        specifier: ^2.1.0
-        version: 2.1.0
+        specifier: ^2.3.0
+        version: 2.3.0
       '@types/node':
         specifier: ^24.19.1
         version: 24.19.1
@@ -9017,8 +9017,8 @@ packages:
   '@types/ms@0.7.34':
     resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
 
-  '@types/multer@2.1.0':
-    resolution: {integrity: sha512-zYZb0+nJhOHtPpGDb3vqPjwpdeGlGC157VpkqNQL+UU2qwoacoQ7MpsAmUptI/0Oa127X32JzWDqQVEXp2RcIA==}
+  '@types/multer@2.3.0':
+    resolution: {integrity: sha512-i7STIm9V4K2MPH4ZYMtrZAwNxs3kglk2LgleaTuB9pUXgADBcQYQuYMd7+6xgTIxfoggIkFA/DkkvycdZpIARA==}
 
   '@types/mysql@2.15.26':
     resolution: {integrity: sha512-DSLCOXhkvfS5WNNPbfn2KdICAmk8lLc+/PNvnPnF7gOdMZCxopXduqv0OQ13y/yA/zXTSikZZqVgybUxOEg6YQ==}
@@ -10428,10 +10428,6 @@ packages:
 
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
-
-  concat-stream@2.0.0:
-    resolution: {integrity: sha512-MWufYdFw53ccGjCA+Ol7XJYpAlW6/prSMzuPOTRnJGcGzuhLn4Scrz7qf6o8bROZ514ltazcIFJZevcfbo0x7A==}
-    engines: {'0': node >= 6.0}
 
   conf@11.0.2:
     resolution: {integrity: sha512-jjyhlQ0ew/iwmtwsS2RaB6s8DBifcE2GYBEaw2SJDUY/slJJbNfY4GlDVzOs/ff8cM/Wua5CikqXgbFl5eu85A==}
@@ -14266,10 +14262,6 @@ packages:
   muggle-string@0.4.1:
     resolution: {integrity: sha512-VNTrAak/KhO2i8dqqnqnAHOa3cYBwXEZe9h+D5h/1ZqFSTEFHdM65lR7RoIqq3tBBYavsOXV84NoHXZ0AkPyqQ==}
 
-  multer@2.1.1:
-    resolution: {integrity: sha512-mo+QTzKlx8R7E5ylSXxWzGoXoZbOsRMpyitcht8By2KHvMbf3tjwosZ/Mu/XYU6UuJ3VZnODIrak5ZrPiPyB6A==}
-    engines: {node: '>= 10.16.0'}
-
   multer@2.4.0:
     resolution: {integrity: sha512-7dqa0ZcFfzbefdTuIkzOSMvZWC0J7FLqBOjJUZvDCXShIURWKxAyTT1wHhnE5q19c7jOJf43IYYKjBmZVZmvhg==}
     engines: {node: '>= 10.16.0'}
@@ -17267,9 +17259,6 @@ packages:
 
   typedarray-to-buffer@3.1.5:
     resolution: {integrity: sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==}
-
-  typedarray@0.0.6:
-    resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
 
   typescript-eslint@8.63.0:
     resolution: {integrity: sha512-xgwXyzG4sK9ALkBxbyGkTMMOS+imnW65iPhxCQMK83KhxyoDNW7l+IDqEf9vMdoUidHpOoS967RCq4eMiTexwQ==}
@@ -25784,7 +25773,7 @@ snapshots:
 
   '@types/ms@0.7.34': {}
 
-  '@types/multer@2.1.0':
+  '@types/multer@2.3.0':
     dependencies:
       '@types/express': 5.0.6
 
@@ -27533,13 +27522,6 @@ snapshots:
   compute-scroll-into-view@3.1.0: {}
 
   concat-map@0.0.1: {}
-
-  concat-stream@2.0.0:
-    dependencies:
-      buffer-from: 1.1.2
-      inherits: 2.0.4
-      readable-stream: 3.6.2
-      typedarray: 0.0.6
 
   conf@11.0.2:
     dependencies:
@@ -32335,13 +32317,6 @@ snapshots:
 
   muggle-string@0.4.1: {}
 
-  multer@2.1.1:
-    dependencies:
-      append-field: 1.0.0
-      busboy: 1.6.0
-      concat-stream: 2.0.0
-      type-is: 1.6.18
-
   multer@2.4.0:
     dependencies:
       append-field: 1.0.0
@@ -35805,8 +35780,6 @@ snapshots:
   typedarray-to-buffer@3.1.5:
     dependencies:
       is-typedarray: 1.0.0
-
-  typedarray@0.0.6: {}
 
   typescript-eslint@8.63.0(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3):
     dependencies:

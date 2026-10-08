@@ -1,5 +1,18 @@
 # @comet/cli
 
+## 10.9.0
+
+### Patch Changes
+
+- 43c28ef: Resolve all 1Password references in `inject-site-configs` with a single `op inject` call
+
+    Previously, `inject-site-configs` started one `op read` process per reference and site-config placeholder, which took about 1.2 seconds each.
+    Now each unique reference is read once, which also reduces the reads counted against the 1Password rate limits.
+
+- 4bc8293: Insert 1Password secrets literally in `inject-site-configs`
+
+    Previously, `$&`, `$'` and `` $` `` in a secret were interpreted as replacement patterns, so the injected value differed from the secret stored in 1Password.
+
 ## 10.8.0
 
 ## 10.7.0

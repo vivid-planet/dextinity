@@ -123,6 +123,16 @@ describe("resolveOpReferences", () => {
         );
     });
 
+    it("should remove the references file when op inject fails", () => {
+        const { referencesFiles } = fakeOpCli({});
+
+        expect(() => resolveOpReferences(['{"key":"{{ op://vault/item/password }}"}'])).toThrow(
+            "inject-site-configs: Failed to resolve 1Password references",
+        );
+        expect(referencesFiles).toHaveLength(1);
+        expect(fs.existsSync(referencesFiles[0])).toBe(false);
+    });
+
     it("should not call op CLI when no op:// references are present", () => {
         const result = resolveOpReferences(['{"key":"plain-value"}']);
 

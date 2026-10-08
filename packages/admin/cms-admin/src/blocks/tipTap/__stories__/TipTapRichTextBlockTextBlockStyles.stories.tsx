@@ -69,7 +69,6 @@ export const TextBlockStyles: StoryObj<typeof TextBlockStylesStory> = {
     render: () => <TextBlockStylesStory />,
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready with text block style dropdown", async () => {
-            // Block type select shows "Paragraph", text block style select shows "Default"
             await waitFor(
                 () => {
                     const comboboxes = canvas.getAllByRole("combobox");
@@ -84,7 +83,6 @@ export const TextBlockStyles: StoryObj<typeof TextBlockStylesStory> = {
         });
 
         await step("Select text block style 'Intro Text'", async () => {
-            // Click the second combobox (text block style select)
             const comboboxes = canvas.getAllByRole("combobox");
             await userEvent.click(comboboxes[1]);
 

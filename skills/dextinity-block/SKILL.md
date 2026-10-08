@@ -55,7 +55,7 @@ Extract from the user's request:
     - **Number** — numeric with min/max (`overlay`).
     - **Boolean** — toggle/switch (`showOverlay`).
     - **Numeric select** — fixed numeric options. Use `@IsInt()` + `@BlockField()` in the API (not `type: "enum"`); use `createCompositeBlockSelectField` with number options in Admin. See [select.md](references/select.md).
-    - **Enum/select** — fixed string values (`variant`, `alignment`). See [select.md](references/select.md).
+    - **Enum/select** — fixed string values (`variant`, `alignment`). Decide whether each single select is required or optional. See [select.md](references/select.md#required-or-optional).
     - **RichText** — formatted text. Choose shared `RichTextBlock` or a scoped inline one. See [rich-text.md](references/rich-text.md).
     - **Image** — choose `DamImageBlock`, `PixelImageBlock`, `SvgImageBlock`, or a project-specific `MediaBlock`. See [image.md](references/image.md).
     - **Child block** — any other existing block used as a property.
@@ -91,13 +91,14 @@ Use this instead of Steps 3–5 when modifying an existing block.
 
 ### Classify each change
 
-| Change type                  | Description                                          |
-| ---------------------------- | ---------------------------------------------------- |
-| **Add field/child block**    | A new property on the block.                         |
-| **Remove field/child block** | An existing property is deleted.                     |
-| **Change field type**        | One type replaces another (e.g., string → RichText). |
-| **Change enum values**       | Options added to or removed from a select field.     |
-| **Rename field**             | Property keeps its type but gets a new name.         |
+| Change type                  | Description                                                                       |
+| ---------------------------- | --------------------------------------------------------------------------------- |
+| **Add field/child block**    | A new property on the block.                                                      |
+| **Remove field/child block** | An existing property is deleted.                                                  |
+| **Change field type**        | One type replaces another (e.g., string → RichText).                              |
+| **Change enum values**       | Options added to or removed from a select field.                                  |
+| **Rename field**             | Property keeps its type but gets a new name.                                      |
+| **Change purpose**           | What the block does, which data it loads, or how it differs from a similar block. |
 
 A single request may involve multiple change types — classify each independently.
 
@@ -122,8 +123,8 @@ When in doubt, create a migration — it is always the safer choice. See [migrat
 
 ### Apply changes in order
 
-1. **API block** — update `BlockData` and `BlockInput` classes, decorators, validators.
-2. **Migration** — create and register if needed. Update `createBlock` third argument to the options object. See [migration.md](references/migration.md).
+1. **API block** — update `BlockData` and `BlockInput` classes, decorators, validators. Update the `description` if the block's purpose changed. See [Description](references/api-patterns.md#description).
+2. **Migration** — create and register if needed. If `createBlock` takes the name as a string, convert it to the options object. See [migration.md](references/migration.md).
 3. **Admin block** — update the `blocks` object: add/remove entries, labels, options.
 4. **Site block** (if exists) — update destructured fields and rendered output.
 5. **Block fixture** (if exists) — update `generateBlockInput()` to match changes. See [fixtures.md](references/fixtures.md).
@@ -139,7 +140,7 @@ File: `{block-name}.block.ts` (kebab-case). Place in the blocks directory found 
 
 - `BlockData` uses `@BlockField()` for fields, `@ChildBlock(X)` for child blocks.
 - `BlockInput` uses validators + `@ChildBlockInput(X)` for child blocks; implement `transformToBlockData()` with `inputToData`.
-- Export with `createBlock(BlockData, BlockInput, "BlockName")`.
+- Export with `createBlock(BlockData, BlockInput, "BlockName")`. Where the name and fields don't say what the block is for, such as a block without fields or one that stores an id instead of the content, pass `{ name: "BlockName", description: "…" }` instead. See [Description](references/api-patterns.md#description).
 - Enums require `@BlockField({ type: "enum", enum: MyEnum })` — never use `type: "enum"` for numeric options.
 - For list blocks: create the item block first, then `createListBlock({ block: ItemBlock }, "MyList")`.
 

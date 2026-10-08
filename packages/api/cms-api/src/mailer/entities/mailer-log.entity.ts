@@ -1,8 +1,7 @@
 import { Entity, Enum, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { ArrayType, BaseEntity, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { SentMessageInfo } from "nodemailer";
-import { Options as MailOptions } from "nodemailer/lib/mailer";
+import type { SendMailOptions as MailOptions, SentMessageInfo } from "nodemailer";
 import { v4 as uuid } from "uuid";
 
 import { MailerLogStatus } from "./mailer-log-status.enum";
@@ -35,7 +34,7 @@ export class MailerLog<AdditionalData> extends BaseEntity {
     mailOptions: MailOptions;
 
     @Property({ type: "json", columnType: "jsonb", nullable: true })
-    result: SentMessageInfo;
+    result?: SentMessageInfo;
 
     @Property({ type: "json", columnType: "jsonb", nullable: true })
     additionalData?: AdditionalData;

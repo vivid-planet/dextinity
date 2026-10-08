@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { execSync } from "child_process";
 import { Command } from "commander";
+import { randomUUID } from "crypto";
 import fs from "fs";
 import { resolve } from "path";
 
@@ -54,19 +55,35 @@ export const injectSiteConfigsCommand = new Command("inject-site-configs")
                 })),
         };
         str = str.replace(/"({{ site:\/\/configs\/.*\/.* }})"/g, "'$1'"); // convert to single quotes
-        str = await replaceAsync(str, RegExp(`{{ site://configs/(.*)/(.*) }}`, "g"), async (substr, type, env) => {
+        const siteConfigsPlaceholderPattern = /{{ site:\/\/configs\/(.*)\/(.*) }}/g;
+        const siteConfigsJsonByPlaceholder = new Map<string, string>();
+        for (const [placeholder, type, env] of Array.from(str.matchAll(siteConfigsPlaceholderPattern))) {
+            if (siteConfigsJsonByPlaceholder.has(placeholder)) {
+                continue;
+            }
             const siteConfigs = await getCachedSiteConfigs(env);
-            console.log(`inject-site-configs: - ${substr} (${siteConfigs.length} sites)`);
+            console.log(`inject-site-configs: - ${placeholder} (${siteConfigs.length} sites)`);
             if (replacerFunctions[type] == undefined) {
                 console.error(`inject-site-configs: ERROR: type must be ${Object.keys(replacerFunctions).join("|")} (got ${type})`);
-                return substr;
+                continue;
             }
-            let ret = JSON.stringify(replacerFunctions[type](siteConfigs, env));
-            ret = resolveOpReferences(ret);
+            siteConfigsJsonByPlaceholder.set(placeholder, JSON.stringify(replacerFunctions[type](siteConfigs, env)));
+        }
+
+        // Resolve before the base64 encoding, which would hide the op:// references from a later `op inject` step.
+        const resolvedSiteConfigsJson = resolveOpReferences(Array.from(siteConfigsJsonByPlaceholder.values()));
+        const resolvedSiteConfigsJsonByPlaceholder = new Map(
+            Array.from(siteConfigsJsonByPlaceholder.keys(), (placeholder, index) => [placeholder, resolvedSiteConfigsJson[index]]),
+        );
+        str = str.replace(siteConfigsPlaceholderPattern, (placeholder) => {
+            const siteConfigsJson = resolvedSiteConfigsJsonByPlaceholder.get(placeholder);
+            if (siteConfigsJson === undefined) {
+                return placeholder;
+            }
             if (options.base64) {
-                return Buffer.from(ret).toString("base64");
+                return Buffer.from(siteConfigsJson).toString("base64");
             }
-            return ret.replace(/\\/g, "\\\\");
+            return siteConfigsJson.replace(/\\/g, "\\\\");
         });
 
         str = str.replace(/"({{ site:\/\/domains\/.*\/.* }})"/g, "$1"); // remove quotes in array
@@ -91,10 +108,12 @@ export const injectSiteConfigsCommand = new Command("inject-site-configs")
         fs.writeFileSync(resolve(process.cwd(), options.outFile), str);
     });
 
-export const resolveOpReferences = (input: string): string => {
-    const opRefs = input.match(/\{\{ op:\/\/[^ }]+ \}\}/g);
-    if (!opRefs) {
-        return input;
+const opReferencePattern = /\{\{ op:\/\/[^ }]+ \}\}/g;
+
+export const resolveOpReferences = (inputs: string[]): string[] => {
+    const opRefs = Array.from(new Set(inputs.flatMap((input) => input.match(opReferencePattern) ?? [])));
+    if (opRefs.length === 0) {
+        return inputs;
     }
 
     try {
@@ -106,23 +125,32 @@ export const resolveOpReferences = (input: string): string => {
         );
     }
 
-    const opCache = new Map<string, string>();
-    let result = input;
-    for (const ref of opRefs) {
-        const opUri = ref.replace("{{ ", "").replace(" }}", "");
-        try {
-            let secret = opCache.get(opUri);
-            if (!secret) {
-                secret = execSync(`op read "${opUri}"`, { encoding: "utf-8" }).trim();
-                opCache.set(opUri, secret);
-            }
-            console.log(`inject-site-configs: - Resolved ${ref}`);
-            result = result.replace(ref, secret);
-        } catch (e) {
-            throw new Error(`inject-site-configs: Failed to resolve 1Password reference ${ref}: ${e}`);
-        }
+    const secrets = readSecrets(opRefs);
+    return inputs.map((input) => input.replace(opReferencePattern, (ref) => secrets.get(ref) ?? ref));
+};
+
+// A single `op inject` call is much faster than one `op read` per reference and counts against the
+// 1Password rate limits only once. The random separator keeps multi-line secrets apart.
+const readSecrets = (opRefs: string[]): Map<string, string> => {
+    const separator = `\n${randomUUID()}\n`;
+    let output: string;
+    try {
+        output = execSync("op inject", { input: opRefs.join(separator), encoding: "utf-8" });
+    } catch (e) {
+        throw new Error(`inject-site-configs: Failed to resolve 1Password references: ${e}`);
     }
-    return result;
+
+    const secrets = output.split(separator);
+    if (secrets.length !== opRefs.length) {
+        throw new Error(`inject-site-configs: Failed to resolve 1Password references: expected ${opRefs.length} secrets, got ${secrets.length}`);
+    }
+
+    return new Map(
+        opRefs.map((ref, index) => {
+            console.log(`inject-site-configs: - Resolved ${ref}`);
+            return [ref, secrets[index].trim()];
+        }),
+    );
 };
 
 // https://stackoverflow.com/a/75205316

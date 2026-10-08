@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/admin-color-picker",
-    "version": "10.7.0",
+    "version": "10.9.0",
     "description": "Dextinity Admin Color Picker component",
     "repository": {
         "directory": "packages/admin/admin-color-picker",
@@ -39,9 +39,9 @@
     "dependencies": {
         "@dextinity/admin": "workspace:*",
         "@dextinity/admin-icons": "workspace:*",
-        "react-colorful": "^5.6.1",
+        "react-colorful": "^5.8.1",
         "tinycolor2": "^1.6.0",
-        "use-debounce": "^10.0.6"
+        "use-debounce": "^10.1.1"
     },
     "devDependencies": {
         "@babel/cli": "^7.29.7",
@@ -49,18 +49,18 @@
         "@dextinity/admin-babel-preset": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
         "@mui/material": "^7.3.11",
-        "@types/react": "^19.2.15",
-        "@types/react-dom": "^19.2.3",
+        "@types/react": "^19.3.0",
+        "@types/react-dom": "^19.3.0",
         "@types/tinycolor2": "^1.4.6",
-        "eslint": "^9.39.4",
+        "eslint": "^9.39.5",
         "final-form": "^4.20.10",
         "npm-run-all2": "^8.0.4",
         "prettier": "^3.6.2",
-        "react": "^19.2.6",
-        "react-dom": "^19.2.6",
+        "react": "^19.3.0",
+        "react-dom": "^19.3.0",
         "react-final-form": "^6.5.9",
-        "react-intl": "^7.1.11",
-        "rimraf": "^6.1.2",
+        "react-intl": "^7.1.14",
+        "rimraf": "^6.1.3",
         "typescript": "^5.9.3"
     },
     "peerDependencies": {

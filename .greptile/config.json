@@ -1,12 +1,14 @@
 {
-    "skipReview": "AUTOMATIC",
+    "autoReview": ["open"],
+    "triggerOnDrafts": false,
     "autoApprove": {
         "enabled": true,
+        "riskCeiling": "medium",
         "filters": {
-            "includeAuthors": ["VPS-Obi", "VPS-thodax", "nsams", "fraxachun"]
+            "includeAuthors": ["VPS-Obi", "VPS-thodax", "nsams", "fraxachun", "VPS-Ricky", "vps-manuel-blum"],
+            "excludePaths": ["rules/coding-guidelines/**", "docs/docs/9-coding-guidelines/**"]
         }
     },
     "excludeAuthors": ["vivid-planet-bot", "github-actions[bot]", "renovate[bot]"],
-    "instructions": "The files referenced in .greptile/files.json are this repository's coding guidelines. Treat them as binding and flag violations in review comments. The frontmatter of those files (description, applyTo, paths, globs, alwaysApply) is metadata for other tools, not a rule to review against.",
     "ignorePatterns": "pnpm-lock.yaml\n**/CHANGELOG.md\nCHANGELOG.old.md\n**/__snapshots__/**\n**/generated/**\n**/schema.gql\n**/block-meta.json"
 }

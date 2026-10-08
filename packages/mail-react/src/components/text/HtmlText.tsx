@@ -4,9 +4,10 @@ import type { ComponentPropsWithoutRef, CSSProperties, JSX, ReactNode, TdHTMLAtt
 import { registerStyles } from "../../styles/registerStyles.js";
 import { getDefaultOrUndefined } from "../../theme/responsiveValue.js";
 import { useTheme } from "../../theme/ThemeProvider.js";
-import type { TextVariantStyles, Theme, VariantName } from "../../theme/themeTypes.js";
+import type { Theme, VariantName } from "../../theme/themeTypes.js";
 import { generateResponsiveTextCss } from "./generateResponsiveTextCss.js";
 import { OutlookTextStyleProvider, type OutlookTextStyleValues } from "./OutlookTextStyleContext.js";
+import { getDefaultTextStyle, resolveTextVariant } from "./textVariantStyles.js";
 
 interface HtmlTextOwnProps {
     /**
@@ -79,22 +80,10 @@ export function HtmlText({
 }: HtmlTextImplementationProps): ReactNode {
     const theme = useTheme();
 
-    const { defaultVariant, variants, ...baseStyles } = theme.text;
-    const activeVariant = variantProp ?? defaultVariant;
-    const variantStyles = activeVariant ? variants?.[activeVariant] : undefined;
-
-    const mergedStyles: TextVariantStyles = variantStyles ? { ...baseStyles, ...variantStyles } : baseStyles;
+    const { activeVariant, mergedStyles } = resolveTextVariant(theme.text, variantProp);
 
     const themeStyle: CSSProperties = {
-        fontFamily: getDefaultOrUndefined(mergedStyles.fontFamily),
-        fontSize: getDefaultOrUndefined(mergedStyles.fontSize),
-        fontWeight: getDefaultOrUndefined(mergedStyles.fontWeight),
-        fontStyle: getDefaultOrUndefined(mergedStyles.fontStyle),
-        lineHeight: getDefaultOrUndefined(mergedStyles.lineHeight),
-        letterSpacing: getDefaultOrUndefined(mergedStyles.letterSpacing),
-        textDecoration: getDefaultOrUndefined(mergedStyles.textDecoration),
-        textTransform: getDefaultOrUndefined(mergedStyles.textTransform),
-        color: getDefaultOrUndefined(mergedStyles.color),
+        ...getDefaultTextStyle(mergedStyles),
         ...(getDefaultOrUndefined(mergedStyles.lineHeight) !== undefined && { msoLineHeightRule: "exactly" }),
         ...(bottomSpacing && { paddingBottom: getDefaultOrUndefined(mergedStyles.bottomSpacing) }),
     };

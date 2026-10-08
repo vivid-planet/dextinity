@@ -94,6 +94,10 @@ class NewsLinkBlockInput extends BlockInput {
     }
 }
 
-const NewsLinkBlock = createBlock(NewsLinkBlockData, NewsLinkBlockInput, { name: "NewsLink", blockMeta: new Meta(NewsLinkBlockData) });
+const NewsLinkBlock = createBlock(NewsLinkBlockData, NewsLinkBlockInput, {
+    name: "NewsLink",
+    description: "A link to a news entry.",
+    blockMeta: new Meta(NewsLinkBlockData),
+});
 
 export { NewsLinkBlock, NewsLinkBlockData };

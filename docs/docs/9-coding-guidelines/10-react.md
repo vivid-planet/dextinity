@@ -129,7 +129,7 @@ type BarProps = {
 
 ## Defining boolean props
 
-Boolean props should generally be optional and not have a default value, as they are falsy by default.
+Boolean flag props should generally be optional and not have a default value, as they are falsy by default.
 
 :::warning Bad
 
@@ -162,6 +162,21 @@ const Baz = ({ hidden }: BazProps) => {
         // ...
     }
     // ...
+};
+```
+
+:::
+
+An exception are boolean props that are the controlled value of a component, for instance, `checked` of a switch or `open` of a controlled dialog.
+They should be required.
+Otherwise, omitting the prop would silently put the component into uncontrolled mode.
+
+:::tip Good
+
+```tsx
+type SwitchProps = {
+    checked: boolean;
+    onChange: (checked: boolean) => void;
 };
 ```
 

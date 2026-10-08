@@ -1,5 +1,144 @@
 # @comet/cms-admin
 
+## 10.9.0
+
+### Minor Changes
+
+- 13838dc: Support scopes in `DependentsList` and `DependenciesList`
+
+    Entities can be used across scopes, for instance a DAM that is shared between multiple sites. Until now, the links in both lists always pointed to the currently active scope, leading to a wrong or non-existent page. In addition, the lists didn't show which scope an entry belongs to.
+
+    The `Dependency` type now has a `scope` field, which is resolved from the entity's `scope` property or its `@ScopedEntity()` decorator. Both lists use it to link to the entry in its own scope and show a scope column when more than one scope exists.
+
+    **Example**
+
+    Request the new field in your dependents/dependencies queries:
+
+    ```diff
+        dependents(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
+            nodes {
+                rootGraphqlObjectType
+                rootId
+                rootColumnName
+                jsonPath
+                name
+                secondaryInformation
+                visible
+    +           scope
+            }
+            totalCount
+        }
+    ```
+
+- 1c29104: TipTap Rich Text Block: add `defaultStyle` to a text block
+
+    The styling select always offered a "Default" entry standing for "no style", even where a design has no unstyled variant and every paragraph or heading is meant to carry one of the configured styles.
+
+    A text block (or list) with a `defaultStyle` has no such state: the select drops its "Default" entry, and the style is applied to new content, to a text block the editor converts through the type select, and to any text block the editor creates without one — pressing Enter at the end of a text block, the `Mod-Alt-<level>` shortcuts, or pasting. Switching the type keeps a style the new text block also offers and falls back to its `defaultStyle` otherwise.
+
+    Toggling a list hands a paragraph from its text block to the list or back, so the styles of whichever now holds it apply. The list keyboard shortcuts do this as well as the toolbar's list buttons.
+
+    Because the default sits on the text block rather than on a shared tag, two text blocks with the same tag can have different defaults, and a text block without one keeps the "Default" entry next to text blocks that have one.
+
+    **Example**
+
+    ```tsx
+    createTipTapRichTextBlock({
+        textBlocks: [
+            { name: "heading-1", label: "Heading 1", tag: "h1", styles: headlineStyles, defaultStyle: "headline300" },
+            { name: "heading-2", label: "Heading 2", tag: "h2", styles: headlineStyles, defaultStyle: "headline400" },
+        ],
+    });
+    ```
+
+    `defaultStyle` must be one of the text block's `styles`, otherwise an error is thrown. It only exists next to `styles`, not next to a text block's own `element`.
+
+    Content written before a `defaultStyle` was configured carries no style, and the editor fills it in on the first edit rather than when the document is opened, so opening a document does not mark it as changed.
+
+- e84ba03: TipTap Rich Text Block: define text block styles inside the text blocks
+
+    A text block style had to be configured in two places: globally in `textBlockStyles`, and again through an `appliesTo` listing the text block types it was allowed for. Reading what a text block offers meant scanning every style's `appliesTo`.
+
+    A text block now carries its style definitions directly, and `textBlockStyles` is gone. Text blocks that offer the same style share its definition, which makes the shared set explicit instead of implying it through repeated names.
+
+    **Example**
+
+    ```tsx
+    const headlineStyles: TipTapTextBlockStyle[] = [
+        { name: "headline300", label: "Headline 300", element: (props, Tag) => <Tag {...props} /> },
+        { name: "headline400", label: "Headline 400", element: (props, Tag) => <Tag {...props} /> },
+    ];
+
+    createTipTapRichTextBlock({
+        textBlocks: [
+            {
+                name: "paragraph",
+                label: "Paragraph",
+                tag: "p",
+                styles: [
+                    { name: "copy100", label: "Copy 100", element: (props, Tag) => <Tag {...props} /> },
+                    { name: "copy200", label: "Copy 200", element: (props, Tag) => <Tag {...props} /> },
+                ],
+            },
+            { name: "heading-1", label: "Heading 1", tag: "h1", styles: headlineStyles },
+            { name: "heading-2", label: "Heading 2", tag: "h2", styles: headlineStyles },
+        ],
+    });
+    ```
+
+    In the API the styles are `{ name }` objects, mirroring the Admin configuration without the labels and elements.
+
+    A text block that needs no style choice carries its own `element` instead of `styles`. The two exclude each other, so a text block offers a style choice or renders one way, never both:
+
+    ```tsx
+    createTipTapRichTextBlock({
+        textBlocks: [{ name: "display", label: "Display", tag: "h1", element: (props, Tag) => <Tag style={{ fontSize: 64 }} {...props} /> }],
+    });
+    ```
+
+    **Migrating an existing configuration**
+    - `textBlockStyles` and a style's `appliesTo` → the `styles` of the text blocks that offer the style.
+    - `appliesTo: ["ordered-list", "unordered-list"]` → `orderedList`/`unorderedList` accept `{ styles }` instead of `true`.
+    - An inline style's `appliesTo` now lists text block names (plus `ordered-list`/`unordered-list`) instead of text block types.
+    - In the Admin, a style's `element` receives the tag of the text block it is applied to, so one style can be shared: `element: (props, Tag) => <Tag {...props} />`.
+
+    A style's `name` still identifies it in the content's `textBlockStyle` attribute, so the stored content format is unchanged.
+
+### Patch Changes
+
+- 58aef82: Focus the rich text editor when editing a cell in `TableBlock`
+- f899c6b: Fix block editor keeping the previously selected block's content
+
+    Clicking a block in the block preview opens that block's editor in the block list. When the newly selected block had the same type as the previously selected one, React reused the already mounted admin component instead of remounting it. Editors that build internal state on mount, most notably the TipTap rich text block whose document is created once from the initial content, therefore kept showing the previous block's content.
+
+    The admin component rendered by `createBlocksBlock` and `createListBlock` is now keyed by the selected block, so it remounts whenever the selection changes.
+
+- f486058: Fix the first scroll in the preview sometimes not working
+
+    When the preview loaded while the mouse was outside of it, the preview sometimes ignored the first attempt to scroll, for instance in mail previews.
+
+- fad8ab4: Scroll to and highlight the `TableBlock` cell that was clicked in the block preview
+- 013a03f: Fix scrolling in the cell editor of the `TableBlock`
+
+    The RTE toolbar no longer moves down and leaves a gap above it, and text below the window can now be reached with the mouse wheel.
+
+- be674a9: Fix pasting more text blocks than `maxTextBlocks` allows into the TipTap Rich Text Block
+
+    Instead of cutting the content off at the limit, the editor threw an error. The extra text blocks stayed in the editor, and changes were missing from the saved content until it was back within the limit.
+
+- e9067c3: Fix saving a TipTap rich text that ends with a list
+
+    Since v10.8.0, the editor added an empty list after a list at the end of the content. The API rejects a list without items, so saving failed with "Validation failed". Removing the list didn't fix it: the empty list stayed at the end of the content, where editors couldn't see or remove it.
+
+    ProseMirror fills content with the schema's first block node, for instance after a list at the end of the content or when all content is deleted. When the `textBlock` node replaced the paragraph and heading nodes, it lost the paragraph's priority, so a list became the first block node. The `textBlock` node gets the paragraph's priority again, so the editor adds an empty text block after a list, as it did before v10.8.0.
+
+    With `maxTextBlocks`, the editor only adds this empty text block when the content stays within the limit. Otherwise, a list as the last allowed block was followed by a block over the limit, and the content couldn't be saved.
+
+- Updated dependencies [847b2a0]
+    - @dextinity/admin@10.9.0
+    - @dextinity/admin-rte@10.9.0
+    - @dextinity/admin-icons@10.9.0
+
 ## 10.8.0
 
 ### Minor Changes

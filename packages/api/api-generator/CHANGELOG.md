@@ -1,5 +1,31 @@
 # @comet/api-generator
 
+## 10.9.0
+
+### Patch Changes
+
+- fa3c71f: Allow `class-validator` v0.15 as peer dependency
+
+    The peer dependency range is widened to `^0.14.0 || ^0.15.0`.
+
+    `class-validator` v0.15 changes the signature of `@IsIBAN()`: it now accepts an options argument, which breaks existing calls that pass an argument, e.g. `@IsIBAN({ forbidUnknownValues: false })`. Check your usage of `@IsIBAN()` before upgrading to v0.15.
+
+- 91131d2: Fix import paths in nested entity resolvers when the nested entity is located in a different directory
+
+    The resolver is written to the parent entity's `generated` directory, but the import paths were calculated relative to the nested entity's `generated` directory.
+
+- Updated dependencies [fa3c71f]
+- Updated dependencies [d32c558]
+- Updated dependencies [13838dc]
+- Updated dependencies [d32c558]
+- Updated dependencies [4446a81]
+- Updated dependencies [8c8f1c4]
+- Updated dependencies [e9067c3]
+- Updated dependencies [1c29104]
+- Updated dependencies [070b357]
+- Updated dependencies [e84ba03]
+    - @dextinity/cms-api@10.9.0
+
 ## 10.8.0
 
 ### Patch Changes

@@ -2,6 +2,7 @@ import { EntityManager, FilterQuery } from "@mikro-orm/postgresql";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 
 import { filtersToMikroOrmQuery, searchToMikroOrmQuery } from "../common/filter/mikro-orm";
+import { WrapperType } from "../common/helper/wrapper-type";
 import { PageTreeService } from "../page-tree/page-tree.service";
 import { PageTreeNodeInterface } from "../page-tree/types";
 import { RedirectFilter } from "./dto/redirects.filter";
@@ -15,7 +16,7 @@ import { RedirectScopeInterface } from "./types";
 @Injectable()
 export class RedirectsService {
     constructor(
-        @Inject(forwardRef(() => PageTreeService)) private readonly pageTreeService: PageTreeService,
+        @Inject(forwardRef(() => PageTreeService)) private readonly pageTreeService: WrapperType<PageTreeService>,
         @Inject(REDIRECTS_LINK_BLOCK) private readonly linkBlock: RedirectsLinkBlock,
         private readonly entityManager: EntityManager,
     ) {}

@@ -1,7 +1,8 @@
 import { EntityManager } from "@mikro-orm/postgresql";
-import { Inject, Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 
 import { DextinityValidationException } from "../common/errors/validation.exception";
+import { WrapperType } from "../common/helper/wrapper-type";
 import { RedirectsService } from "../redirects/redirects.service";
 import { AttachedDocumentStrictInput } from "./dto/attached-document.input";
 import { MovePageTreeNodesByPosInput, PageTreeNodeBaseCreateInput } from "./dto/page-tree-node.input";
@@ -25,7 +26,7 @@ export { PageTreeReadApi } from "./page-tree-read-api";
 export class PageTreeService {
     constructor(
         private readonly entityManager: EntityManager,
-        private readonly redirectsService: RedirectsService,
+        @Inject(forwardRef(() => RedirectsService)) private readonly redirectsService: WrapperType<RedirectsService>,
         @Inject(PAGE_TREE_CONFIG) private readonly config: PageTreeConfig,
     ) {}
 

@@ -61,6 +61,7 @@ const pageTreeNodeDependentsQuery = gql`
                     name
                     secondaryInformation
                     visible
+                    scope
                 }
                 totalCount
             }
@@ -88,6 +89,7 @@ const pageTreeNodeDependenciesQuery = gql`
                     name
                     secondaryInformation
                     visible
+                    scope
                 }
                 totalCount
             }

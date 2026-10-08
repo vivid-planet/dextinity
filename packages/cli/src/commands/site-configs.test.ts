@@ -1,4 +1,3 @@
-import type { ExecSyncOptions } from "child_process";
 import fs from "fs";
 import os from "os";
 import { join } from "path";
@@ -6,32 +5,38 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { resolveOpReferences } from "./site-configs";
 
-const { execSyncMock } = vi.hoisted(() => ({ execSyncMock: vi.fn() }));
+const { execSyncMock, execFileSyncMock } = vi.hoisted(() => ({ execSyncMock: vi.fn(), execFileSyncMock: vi.fn() }));
 
 vi.mock("child_process", () => ({
     execSync: execSyncMock,
+    execFileSync: execFileSyncMock,
 }));
 
 const opReferencePattern = /\{\{ (op:\/\/[^ }]+) \}\}/g;
 
 function fakeOpCli(secrets: Record<string, string>) {
     const readUris: string[] = [];
-    execSyncMock.mockImplementation((command: string, options?: ExecSyncOptions) => {
+    const referencesFiles: string[] = [];
+    execSyncMock.mockImplementation((command: string) => {
         if (command === "op --version") {
             return Buffer.from("2.0.0");
         }
-        if (command === "op inject") {
-            return String(options?.input).replace(opReferencePattern, (_ref, uri: string) => {
-                if (!(uri in secrets)) {
-                    throw new Error(`[ERROR] could not resolve ${uri}`);
-                }
-                readUris.push(uri);
-                return secrets[uri];
-            });
-        }
         throw new Error(`Unexpected command: ${command}`);
     });
-    return { readUris };
+    execFileSyncMock.mockImplementation((file: string, args: string[]) => {
+        if (file !== "op" || args[0] !== "inject" || args[1] !== "--in-file") {
+            throw new Error(`Unexpected command: ${file} ${args.join(" ")}`);
+        }
+        referencesFiles.push(args[2]);
+        return fs.readFileSync(args[2], "utf-8").replace(opReferencePattern, (_ref, uri: string) => {
+            if (!(uri in secrets)) {
+                throw new Error(`[ERROR] could not resolve ${uri}`);
+            }
+            readUris.push(uri);
+            return secrets[uri];
+        });
+    });
+    return { readUris, referencesFiles };
 }
 
 afterEach(() => {
@@ -61,7 +66,7 @@ describe("resolveOpReferences", () => {
 
         expect(result).toEqual(['{"apiKey":"resolved-api-key","dbPassword":"resolved-db-password"}', '{"apiKey":"resolved-api-key"}']);
         expect(readUris.sort()).toEqual(["op://vault/database/password", "op://vault/item/api-key"]);
-        expect(execSyncMock.mock.calls.filter(([command]) => command === "op inject")).toHaveLength(1);
+        expect(execFileSyncMock).toHaveBeenCalledTimes(1);
     });
 
     it("should keep multi-line secrets apart", () => {
@@ -76,11 +81,20 @@ describe("resolveOpReferences", () => {
     });
 
     it("should throw an error when op inject returns an unexpected number of secrets", () => {
-        execSyncMock.mockReturnValue("unexpected output");
+        execFileSyncMock.mockReturnValue("unexpected output");
 
         expect(() => resolveOpReferences(['{"apiKey":"{{ op://vault/item/api-key }}","dbPassword":"{{ op://vault/database/password }}"}'])).toThrow(
             "inject-site-configs: Failed to resolve 1Password references: expected 2 secrets, got 1",
         );
+    });
+
+    it("should remove the references file after op inject", () => {
+        const { referencesFiles } = fakeOpCli({ "op://vault/item/password": "resolved-secret" });
+
+        resolveOpReferences(['{"key":"{{ op://vault/item/password }}"}']);
+
+        expect(referencesFiles).toHaveLength(1);
+        expect(fs.existsSync(referencesFiles[0])).toBe(false);
     });
 
     it("should insert secrets containing replacement patterns literally", () => {
@@ -114,6 +128,7 @@ describe("resolveOpReferences", () => {
 
         expect(result).toEqual(['{"key":"plain-value"}']);
         expect(execSyncMock).not.toHaveBeenCalled();
+        expect(execFileSyncMock).not.toHaveBeenCalled();
     });
 });
 
@@ -187,7 +202,7 @@ describe("inject-site-configs", () => {
             },
         ]);
         expect(readUris.sort()).toEqual(["op://vault/maps/api-key", "op://vault/smtp/password"]);
-        expect(execSyncMock.mock.calls.filter(([command]) => command === "op inject")).toHaveLength(1);
+        expect(execFileSyncMock).toHaveBeenCalledTimes(1);
     });
 
     it("should inject resolved site configs as single-quoted JSON without --base64", async () => {

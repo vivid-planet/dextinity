@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
-import { execSync } from "child_process";
+import { execFileSync, execSync } from "child_process";
 import { Command } from "commander";
 import { randomUUID } from "crypto";
 import fs from "fs";
-import { resolve } from "path";
+import os from "os";
+import { join, resolve } from "path";
 
 import type { BaseSiteConfig, ExtractPrivateSiteConfig, ExtractPublicSiteConfig } from "../site-configs.types";
 
@@ -133,11 +134,18 @@ export const resolveOpReferences = (inputs: string[]): string[] => {
 // 1Password rate limits only once. The random separator keeps multi-line secrets apart.
 const readSecrets = (opRefs: string[]): Map<string, string> => {
     const separator = `\n${randomUUID()}\n`;
+    // `op inject` rejects stdin passed via `execSync`'s `input` ("expected data on stdin but none found"),
+    // because Node connects a socket instead of a pipe, so the references go through a file.
+    const referencesDirectory = fs.mkdtempSync(join(os.tmpdir(), "inject-site-configs-"));
+    const referencesFile = join(referencesDirectory, "references");
     let output: string;
     try {
-        output = execSync("op inject", { input: opRefs.join(separator), encoding: "utf-8" });
+        fs.writeFileSync(referencesFile, opRefs.join(separator));
+        output = execFileSync("op", ["inject", "--in-file", referencesFile], { encoding: "utf-8" });
     } catch (e) {
         throw new Error(`inject-site-configs: Failed to resolve 1Password references: ${e}`);
+    } finally {
+        fs.rmSync(referencesDirectory, { recursive: true, force: true });
     }
 
     const secrets = output.split(separator);

@@ -1,5 +1,13 @@
 # @comet/cms-admin
 
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/admin@10.9.1
+- @dextinity/admin-icons@10.9.1
+- @dextinity/admin-rte@10.9.1
+
 ## 10.9.0
 
 ### Minor Changes

@@ -54,7 +54,7 @@
         "change-case": "^4.1.2",
         "cli-progress": "^3.12.0",
         "eslint": "^9.39.5",
-        "fast-xml-parser": "^5.8.0",
+        "fast-xml-parser": "^5.11.2",
         "npm-run-all2": "^8.0.4",
         "prettier": "^3.6.2",
         "react": "^19.2.6",

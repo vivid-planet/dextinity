@@ -526,7 +526,7 @@ describe("convertDraftJsToTipTap", () => {
             "ordered-list-item-large": { list: "ordered", textBlockStyle: "large" },
         } as const;
 
-        function listItem(text: string, textBlockStyle?: string, subList?: object) {
+        function listItem({ text, textBlockStyle, subList }: { text: string; textBlockStyle?: string; subList?: object }) {
             return {
                 type: "listItem",
                 content: [
@@ -545,7 +545,7 @@ describe("convertDraftJsToTipTap", () => {
                 { blocks: [makeBlock({ type: "unordered-list-item-small", text: "a" })], entityMap: {} },
                 { resolvedOptions: sizedLists, listItemMap },
             );
-            expect(result.content).toEqual([{ type: "bulletList", content: [listItem("a", "small")] }]);
+            expect(result.content).toEqual([{ type: "bulletList", content: [listItem({ text: "a", textBlockStyle: "small" })] }]);
         });
 
         it("converts a custom ordered list type to an item of an ordered list", () => {
@@ -553,7 +553,7 @@ describe("convertDraftJsToTipTap", () => {
                 { blocks: [makeBlock({ type: "ordered-list-item-large", text: "1" })], entityMap: {} },
                 { resolvedOptions: sizedLists, listItemMap },
             );
-            expect(result.content).toEqual([{ type: "orderedList", content: [listItem("1", "large")] }]);
+            expect(result.content).toEqual([{ type: "orderedList", content: [listItem({ text: "1", textBlockStyle: "large" })] }]);
         });
 
         it("keeps items of the same list with different styles in one list", () => {
@@ -572,7 +572,12 @@ describe("convertDraftJsToTipTap", () => {
             expect(result.content).toEqual([
                 {
                     type: "bulletList",
-                    content: [listItem("standard"), listItem("small", "small"), listItem("standard again"), listItem("large", "large")],
+                    content: [
+                        listItem({ text: "standard" }),
+                        listItem({ text: "small", textBlockStyle: "small" }),
+                        listItem({ text: "standard again" }),
+                        listItem({ text: "large", textBlockStyle: "large" }),
+                    ],
                 },
             ]);
         });
@@ -590,8 +595,8 @@ describe("convertDraftJsToTipTap", () => {
                 { resolvedOptions: sizedLists, listItemMap },
             );
             expect(result.content).toEqual([
-                { type: "bulletList", content: [listItem("a", "small")] },
-                { type: "orderedList", content: [listItem("1", "small"), listItem("2")] },
+                { type: "bulletList", content: [listItem({ text: "a", textBlockStyle: "small" })] },
+                { type: "orderedList", content: [listItem({ text: "1", textBlockStyle: "small" }), listItem({ text: "2" })] },
             ]);
         });
 
@@ -612,11 +617,21 @@ describe("convertDraftJsToTipTap", () => {
                 {
                     type: "bulletList",
                     content: [
-                        listItem("a", "large", {
-                            type: "bulletList",
-                            content: [listItem("a.1", "small", { type: "orderedList", content: [listItem("a.1.1", "small")] })],
+                        listItem({
+                            text: "a",
+                            textBlockStyle: "large",
+                            subList: {
+                                type: "bulletList",
+                                content: [
+                                    listItem({
+                                        text: "a.1",
+                                        textBlockStyle: "small",
+                                        subList: { type: "orderedList", content: [listItem({ text: "a.1.1", textBlockStyle: "small" })] },
+                                    }),
+                                ],
+                            },
                         }),
-                        listItem("b"),
+                        listItem({ text: "b" }),
                     ],
                 },
             ]);
@@ -633,7 +648,9 @@ describe("convertDraftJsToTipTap", () => {
                 },
                 { resolvedOptions: sizedLists, listItemMap, listLevelMax: 1 },
             );
-            expect(result.content).toEqual([{ type: "bulletList", content: [listItem("a"), listItem("a.1", "small")] }]);
+            expect(result.content).toEqual([
+                { type: "bulletList", content: [listItem({ text: "a" }), listItem({ text: "a.1", textBlockStyle: "small" })] },
+            ]);
         });
 
         it("closes the list when a non-list block follows a mapped item", () => {
@@ -645,7 +662,7 @@ describe("convertDraftJsToTipTap", () => {
                 { resolvedOptions: sizedLists, listItemMap },
             );
             expect(result.content).toEqual([
-                { type: "bulletList", content: [listItem("a", "small")] },
+                { type: "bulletList", content: [listItem({ text: "a", textBlockStyle: "small" })] },
                 { type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "after" }] },
             ]);
         });
@@ -702,8 +719,14 @@ describe("convertDraftJsToTipTap", () => {
                 },
             );
             expect(result.content).toEqual([
-                { type: "bulletList", content: [listItem("standard", "standard"), listItem("small", "small")] },
-                { type: "orderedList", content: [listItem("1", "standard"), listItem("2", "large")] },
+                {
+                    type: "bulletList",
+                    content: [listItem({ text: "standard", textBlockStyle: "standard" }), listItem({ text: "small", textBlockStyle: "small" })],
+                },
+                {
+                    type: "orderedList",
+                    content: [listItem({ text: "1", textBlockStyle: "standard" }), listItem({ text: "2", textBlockStyle: "large" })],
+                },
             ]);
         });
 

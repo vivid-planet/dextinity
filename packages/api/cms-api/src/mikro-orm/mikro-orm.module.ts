@@ -1,3 +1,4 @@
+import { ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
 import { MikroOrmModule as MikroOrmNestjsModule, MikroOrmModuleOptions as MikroOrmNestjsOptions } from "@mikro-orm/nestjs";
 import { EntityCaseNamingStrategy, MigrationObject, PostgreSqlDriver } from "@mikro-orm/postgresql";
 import { DynamicModule, Module } from "@nestjs/common";
@@ -76,6 +77,8 @@ export function createMigrationsList(migrationsDir: string): MigrationObject[] {
 export function createOrmConfig({ migrations, ...defaults }: MikroOrmNestjsOptions<PostgreSqlDriver>): MikroOrmNestjsOptions<PostgreSqlDriver> {
     return {
         ...defaults,
+        // MikroORM v7 no longer defaults to `ReflectMetadataProvider`, but Dextinity entities use legacy decorators with `emitDecoratorMetadata`.
+        metadataProvider: ReflectMetadataProvider,
         namingStrategy: EntityCaseNamingStrategy,
         migrations: {
             ...migrations,

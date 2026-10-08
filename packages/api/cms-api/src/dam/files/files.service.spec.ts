@@ -1,9 +1,17 @@
+import { Entity, PrimaryKey } from "@mikro-orm/decorators/legacy";
 import type { EntityManager, QueryBuilder } from "@mikro-orm/postgresql";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { FileFilterInput } from "./dto/file.args";
 import type { FileInterface } from "./entities/file.entity";
 import { FilesService } from "./files.service";
+
+// Decorating a stand-in entity registers "DamFile" in MikroORM's metadata, which is all `resolveFileEntity()` needs.
+@Entity({ tableName: "DamFile" })
+class DamFile {
+    @PrimaryKey({ columnType: "uuid" })
+    id!: string;
+}
 
 const FOLDER_ID = "11111111-1111-1111-1111-111111111111";
 const FILE_ID_A = "22222222-2222-2222-2222-222222222222";
@@ -29,7 +37,7 @@ function createServiceWithMockQueryBuilder() {
     };
 
     const entityManager = {
-        createQueryBuilder: vi.fn().mockReturnValue(mockQb),
+        createQueryBuilder: vi.fn((entity) => (entity === DamFile ? mockQb : undefined)),
     } as unknown as EntityManager;
 
     const service = new FilesService(
@@ -42,7 +50,7 @@ function createServiceWithMockQueryBuilder() {
     );
 
     const hasFolderConstraint = () =>
-        andWhereArgs.some((arg) => typeof arg === "object" && arg !== null && "folder" in (arg as Record<string, unknown>));
+        andWhereArgs.some((arg) => typeof arg === "object" && arg !== null && "folder" in (arg as unknown as Record<string, unknown>));
 
     return { service, andWhereArgs, hasFolderConstraint };
 }

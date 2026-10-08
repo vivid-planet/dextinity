@@ -1,7 +1,8 @@
-import { CreateRequestContext, EntityManager } from "@mikro-orm/postgresql";
+import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Command, CommandRunner } from "nest-commander";
 
-import { FileInterface } from "../files/entities/file.entity";
+import { resolveFileEntity } from "../files/entities/resolve-dam-entity";
 import { DamDominantColorService } from "./dam-dominant-color.service";
 
 @Command({
@@ -20,7 +21,7 @@ export class CalculateDominantImageColorCommand extends CommandRunner {
     async run(): Promise<void> {
         console.log("Calculate dominant color of images...");
 
-        const files = await this.em.find<FileInterface>("DamFile", { image: { $ne: null } });
+        const files = await this.em.find(resolveFileEntity(), { image: { $ne: null } });
 
         console.log(`...for ${files.length} images ...`);
 

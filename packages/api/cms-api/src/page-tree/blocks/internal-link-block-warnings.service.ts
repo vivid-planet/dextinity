@@ -2,8 +2,7 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 
 import { BlockWarning, BlockWarningsServiceInterface } from "../../blocks/block";
-import { PageTreeNodeBase } from "../entities/page-tree-node-base.entity";
-import { PAGE_TREE_ENTITY } from "../page-tree.constants";
+import { resolvePageTreeNodeEntity } from "../entities/resolve-page-tree-node-entity";
 import type { InternalLinkBlockData } from "./internal-link.block";
 
 @Injectable()
@@ -14,7 +13,7 @@ export class InternalLinkBlockWarningsService implements BlockWarningsServiceInt
         const warnings: BlockWarning[] = [];
 
         if (block.targetPageId) {
-            const linkedPageTreeNode = await this.entityManager.findOne<PageTreeNodeBase>(PAGE_TREE_ENTITY, { id: block.targetPageId });
+            const linkedPageTreeNode = await this.entityManager.findOne(resolvePageTreeNodeEntity(), { id: block.targetPageId });
             if (!linkedPageTreeNode) {
                 warnings.push({
                     message: "invalidTarget",

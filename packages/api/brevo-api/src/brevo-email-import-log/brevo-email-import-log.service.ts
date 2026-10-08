@@ -1,3 +1,4 @@
+import { resolveEntityClass } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { EmailCampaignScopeInterface } from "src/types";
@@ -23,7 +24,7 @@ export class BrevoEmailImportLogService {
         if (!this.config.contactsWithoutDoi?.emailHashKey) {
             throw new Error("There is no `emailHashKey` defined in the environment variables.");
         }
-        const log = this.entityManager.create<BrevoEmailImportLogInterface>("BrevoEmailImportLog", {
+        const log = this.entityManager.create(resolveEntityClass<BrevoEmailImportLogInterface>("BrevoEmailImportLog"), {
             importedEmail: hashEmail(email, this.config.contactsWithoutDoi.emailHashKey),
             responsibleUserId,
             scope,

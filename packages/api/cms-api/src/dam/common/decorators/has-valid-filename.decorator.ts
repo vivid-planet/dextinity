@@ -6,7 +6,7 @@ import { basename, extname } from "path";
 import { slugifyFilename } from "../../../file-utils/files.utils";
 import { UpdateFileInput } from "../../files/dto/file.input";
 import { UpdateDamFileArgs } from "../../files/dto/update-dam-file.args";
-import { FILE_ENTITY, FileInterface } from "../../files/entities/file.entity";
+import { resolveFileEntity } from "../../files/entities/resolve-dam-entity";
 
 export const HasValidFilename = () => {
     // eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
@@ -50,7 +50,7 @@ export class HasValidFilenameConstraint implements ValidatorConstraintInterface 
         }
 
         const id = validationArguments.object.id;
-        const file = await this.entityManager.findOneOrFail<FileInterface>(FILE_ENTITY, { id });
+        const file = await this.entityManager.findOneOrFail(resolveFileEntity(), { id });
 
         const oldExtension = extname(file.name);
 

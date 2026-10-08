@@ -1,5 +1,5 @@
 import { PageTreeNodeBase } from "@dextinity/cms-api";
-import { Embedded, Entity, Enum, Index, ManyToOne } from "@mikro-orm/postgresql";
+import { Embedded, Entity, Enum, Index, ManyToOne } from "@mikro-orm/decorators/legacy";
 import { Field, ObjectType } from "@nestjs/graphql";
 import { UserGroup } from "@src/user-groups/user-group";
 

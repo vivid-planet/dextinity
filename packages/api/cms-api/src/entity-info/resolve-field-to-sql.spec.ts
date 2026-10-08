@@ -1,18 +1,15 @@
 import {
-    BaseEntity,
-    Collection,
-    defineConfig,
     Embeddable,
     Embedded,
     Entity,
     ManyToOne,
-    MikroORM,
     OneToMany,
     OneToOne,
     PrimaryKey,
     Property,
-    Ref,
-} from "@mikro-orm/postgresql";
+    ReflectMetadataProvider,
+} from "@mikro-orm/decorators/legacy";
+import { BaseEntity, Collection, defineConfig, MikroORM, Ref } from "@mikro-orm/postgresql";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { resolveFieldToSql } from "./resolve-field-to-sql";
@@ -114,8 +111,8 @@ describe("resolveFieldToSql", () => {
     beforeAll(async () => {
         orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [ProductVariant, Product, Manufacturer, Category, Tag, AddressAsEmbeddable, AlternativeAddressAsEmbeddable],
             }),
         );
@@ -126,7 +123,7 @@ describe("resolveFieldToSql", () => {
     });
 
     function callResolveFieldToSql(fieldPath: string, entityName: string): string {
-        const metadata = orm.em.getMetadata().get(entityName);
+        const metadata = orm.em.getMetadata().getByClassName(entityName);
         return resolveFieldToSql(fieldPath, metadata, metadata.tableName);
     }
 

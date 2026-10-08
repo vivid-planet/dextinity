@@ -91,8 +91,7 @@ async function resolvePathValue({
     row: AnyEntity;
     entityManager: EntityManager;
 }): Promise<unknown> {
-    const entityName = typeof entity === "string" ? entity : entity.name;
-    let metadata = entityManager.getMetadata().get(entityName);
+    let metadata = entityManager.getMetadata().get(entity);
     let current: unknown = row;
 
     for (const part of path.split(".")) {

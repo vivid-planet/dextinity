@@ -52,11 +52,12 @@
     "devDependencies": {
         "@dextinity/eslint-config": "workspace:*",
         "@kubernetes/client-node": "^1.4.0",
-        "@mikro-orm/cli": "^6.6.14",
-        "@mikro-orm/core": "^6.6.14",
-        "@mikro-orm/migrations": "^6.6.14",
-        "@mikro-orm/nestjs": "^6.1.2",
-        "@mikro-orm/postgresql": "^6.6.14",
+        "@mikro-orm/cli": "^7.2.0",
+        "@mikro-orm/core": "^7.2.0",
+        "@mikro-orm/decorators": "^7.2.0",
+        "@mikro-orm/migrations": "^7.2.0",
+        "@mikro-orm/nestjs": "^7.1.0",
+        "@mikro-orm/postgresql": "^7.2.0",
         "@nestjs/common": "^11.1.21",
         "@nestjs/core": "^11.1.21",
         "@nestjs/graphql": "^13.4.0",
@@ -79,11 +80,12 @@
         "vitest": "^4.1.8"
     },
     "peerDependencies": {
-        "@mikro-orm/cli": "^6.0.0",
-        "@mikro-orm/core": "^6.0.0",
-        "@mikro-orm/migrations": "^6.0.0",
-        "@mikro-orm/nestjs": "^6.0.0",
-        "@mikro-orm/postgresql": "^6.0.0",
+        "@mikro-orm/cli": "^7.1.8",
+        "@mikro-orm/core": "^7.1.8",
+        "@mikro-orm/decorators": "^7.1.8",
+        "@mikro-orm/migrations": "^7.1.8",
+        "@mikro-orm/nestjs": "^7.0.0",
+        "@mikro-orm/postgresql": "^7.1.8",
         "@nestjs/common": "^11.0.0",
         "@nestjs/core": "^11.0.0",
         "@nestjs/graphql": "^13.0.0",
@@ -91,6 +93,9 @@
         "graphql": "^16.6.0",
         "reflect-metadata": "^0.2.0",
         "rxjs": "^7.0.0"
+    },
+    "engines": {
+        "node": ">=22.17.0"
     },
     "publishConfig": {
         "access": "public",

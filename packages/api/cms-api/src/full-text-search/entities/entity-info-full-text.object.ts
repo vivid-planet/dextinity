@@ -1,4 +1,5 @@
-import { ArrayType, Entity, OneToOne, PrimaryKey, Property } from "@mikro-orm/core";
+import { ArrayType } from "@mikro-orm/core";
+import { Entity, OneToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { FullTextType } from "@mikro-orm/postgresql";
 
 import { EntityInfoObject } from "../../entity-info/entity-info.object";

@@ -6,6 +6,7 @@ import { PageTreeService } from "../page-tree/page-tree.service";
 import { PageTreeNodeInterface } from "../page-tree/types";
 import { RedirectFilter } from "./dto/redirects.filter";
 import { RedirectInterface } from "./entities/redirect-entity.factory";
+import { resolveRedirectEntity } from "./entities/resolve-redirect-entity";
 import { REDIRECTS_LINK_BLOCK } from "./redirects.constants";
 import { RedirectGenerationType, RedirectSourceType } from "./redirects.enum";
 import { RedirectsLinkBlock } from "./redirects.module";
@@ -73,7 +74,7 @@ export class RedirectsService {
         const path = await readApi.nodePath(node);
         await this.entityManager
             .persist(
-                this.entityManager.create<RedirectInterface>("Redirect", {
+                this.entityManager.create(resolveRedirectEntity(), {
                     scope: node.scope,
                     sourceType: RedirectSourceType.path,
                     source: path,
@@ -107,7 +108,7 @@ export class RedirectsService {
         if (scope !== undefined) {
             where.scope = scope;
         }
-        const redirect = await this.entityManager.findOne<RedirectInterface>("Redirect", where);
+        const redirect = await this.entityManager.findOne(resolveRedirectEntity(), where);
         return redirect === null;
     }
 }

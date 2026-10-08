@@ -21,6 +21,12 @@ interface PGStatActivity {
     query: string;
 }
 
+interface BlockIndexRefreshRow {
+    id: string;
+    startedAt: Date;
+    finishedAt: Date;
+}
+
 // Advisory lock key for block_index_dependencies refresh deduplication.
 const BLOCK_INDEX_REFRESH_LOCK_KEY = 4201;
 
@@ -209,15 +215,20 @@ export class DependenciesService {
      * @returns `"refreshed"` if a refresh was performed (or triggered in the background), `"skipped"` if the views were fresh enough
      */
     async refreshViews(options?: { force?: boolean; awaitRefresh?: boolean }): Promise<RefreshBlockIndexViewsResult> {
-        const knex = this.entityManager.getKnex("write");
+        const writeConnection = this.entityManager.getConnection("write");
 
         const refresh = async (refreshOptions?: { concurrently: boolean }): Promise<RefreshBlockIndexViewsResult> => {
-            return knex.transaction(async (trx) => {
+            return writeConnection.transactional(async (transaction) => {
                 if (refreshOptions?.concurrently) {
                     // Non-blocking lock: Try to acquire the lock. Only acquire if available.
-                    const lockResult = await trx.raw(`SELECT pg_try_advisory_xact_lock(?) AS locked`, [BLOCK_INDEX_REFRESH_LOCK_KEY]);
+                    const lockResult = await writeConnection.execute<{ locked: boolean }[]>(
+                        `SELECT pg_try_advisory_xact_lock(?) AS locked`,
+                        [BLOCK_INDEX_REFRESH_LOCK_KEY],
+                        "all",
+                        transaction,
+                    );
 
-                    if (!lockResult.rows[0]?.locked) {
+                    if (!lockResult[0]?.locked) {
                         // If another refresh already holds the lock (= a refresh is already in
                         // progress), skip this refresh entirely
                         return "skipped";
@@ -225,11 +236,16 @@ export class DependenciesService {
                 } else {
                     // Blocking lock: Wait until the lock is available (= the currently running
                     // refresh completes). Then acquire the lock.
-                    await trx.raw(`SELECT pg_advisory_xact_lock(?)`, [BLOCK_INDEX_REFRESH_LOCK_KEY]);
+                    await writeConnection.execute(`SELECT pg_advisory_xact_lock(?)`, [BLOCK_INDEX_REFRESH_LOCK_KEY], "all", transaction);
 
                     // After acquiring the lock, check if the previous holder already completed a fresh
                     // refresh. This prevents redundant work when multiple callers were blocked waiting.
-                    const recentRefresh = await trx("BlockIndexRefresh").whereNotNull("finishedAt").orderBy("finishedAt", "desc").first();
+                    const recentRefresh: BlockIndexRefreshRow | undefined = await writeConnection.execute<BlockIndexRefreshRow>(
+                        `SELECT * FROM "BlockIndexRefresh" WHERE "finishedAt" IS NOT NULL ORDER BY "finishedAt" DESC LIMIT 1`,
+                        [],
+                        "get",
+                        transaction,
+                    );
 
                     if (recentRefresh && new Date(recentRefresh.finishedAt) > subMinutes(new Date(), 5)) {
                         // A refresh was completed within the last 5 minutes, which is fresh enough.
@@ -241,11 +257,21 @@ export class DependenciesService {
                 const id = uuid();
                 this.logger.log(`Starting block index refresh ${id}`);
 
-                await trx("BlockIndexRefresh").insert({ id, startedAt: new Date(), finishedAt: null });
+                await writeConnection.execute(
+                    `INSERT INTO "BlockIndexRefresh" ("id", "startedAt", "finishedAt") VALUES (?, ?, NULL)`,
+                    [id, new Date()],
+                    "run",
+                    transaction,
+                );
 
-                await trx.raw(`REFRESH MATERIALIZED VIEW ${refreshOptions?.concurrently ? "CONCURRENTLY" : ""} block_index_dependencies`);
+                await writeConnection.execute(
+                    `REFRESH MATERIALIZED VIEW ${refreshOptions?.concurrently ? "CONCURRENTLY" : ""} block_index_dependencies`,
+                    [],
+                    "run",
+                    transaction,
+                );
 
-                await trx("BlockIndexRefresh").where({ id }).update({ finishedAt: new Date() });
+                await writeConnection.execute(`UPDATE "BlockIndexRefresh" SET "finishedAt" = ? WHERE "id" = ?`, [new Date(), id], "run", transaction);
 
                 this.logger.log(`Completed block index refresh ${id}`);
 
@@ -258,38 +284,41 @@ export class DependenciesService {
             // We look up active backends running the REFRESH MATERIALIZED VIEW statement and
             // send pg_cancel_backend to each. After cancellation, we still need to acquire the
             // advisory lock (blocking) to wait for the cancelled query to actually release it.
-            const activeRefreshes: PGStatActivity[] = await this.entityManager
-                .getKnex("read")
-                .select("pid", "state", "query")
-                .from("pg_stat_activity")
-                .where({ state: "active" })
-                .andWhereILike("query", "REFRESH MATERIALIZED VIEW%")
-                .andWhereILike("query", "%block_index_dependencies%");
+            const activeRefreshes = await this.entityManager.getConnection("read").execute<PGStatActivity[]>(
+                `SELECT "pid", "state", "query" FROM pg_stat_activity
+                 WHERE "state" = ? AND "query" ILIKE ? AND "query" ILIKE ?`,
+                ["active", "REFRESH MATERIALIZED VIEW%", "%block_index_dependencies%"],
+            );
 
             for (const activeRefresh of activeRefreshes) {
-                await knex.raw(`SELECT pg_cancel_backend(?)`, [activeRefresh.pid]);
+                await writeConnection.execute(`SELECT pg_cancel_backend(?)`, [activeRefresh.pid]);
             }
 
             // Acquire the lock (waits for cancelled queries to finish rolling back), then
             // truncate the tracking table and perform a full non-concurrent refresh.
-            await knex.transaction(async (trx) => {
-                await trx.raw(`SELECT pg_advisory_xact_lock(?)`, [BLOCK_INDEX_REFRESH_LOCK_KEY]);
-                await trx("BlockIndexRefresh").truncate();
-                await trx.raw(`REFRESH MATERIALIZED VIEW block_index_dependencies`);
-                await trx("BlockIndexRefresh").insert({ id: uuid(), startedAt: new Date(), finishedAt: new Date() });
+            await writeConnection.transactional(async (transaction) => {
+                await writeConnection.execute(`SELECT pg_advisory_xact_lock(?)`, [BLOCK_INDEX_REFRESH_LOCK_KEY], "all", transaction);
+                await writeConnection.execute(`TRUNCATE TABLE "BlockIndexRefresh"`, [], "run", transaction);
+                await writeConnection.execute(`REFRESH MATERIALIZED VIEW block_index_dependencies`, [], "run", transaction);
+                await writeConnection.execute(
+                    `INSERT INTO "BlockIndexRefresh" ("id", "startedAt", "finishedAt") VALUES (?, ?, ?)`,
+                    [uuid(), new Date(), new Date()],
+                    "run",
+                    transaction,
+                );
             });
 
             return "refreshed";
         }
 
         // Decide refresh strategy based on age of the last completed refresh
-        const lastRefresh = await this.entityManager
-            .getKnex("read")
-            .select("*")
-            .from("BlockIndexRefresh")
-            .whereNotNull("finishedAt")
-            .orderBy("finishedAt", "desc")
-            .first();
+        const lastRefresh: BlockIndexRefreshRow | undefined = await this.entityManager
+            .getConnection("read")
+            .execute<BlockIndexRefreshRow>(
+                `SELECT * FROM "BlockIndexRefresh" WHERE "finishedAt" IS NOT NULL ORDER BY "finishedAt" DESC LIMIT 1`,
+                [],
+                "get",
+            );
 
         const now = new Date();
 

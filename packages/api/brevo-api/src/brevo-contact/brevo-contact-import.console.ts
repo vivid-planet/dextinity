@@ -1,4 +1,6 @@
-import { CreateRequestContext, MikroORM } from "@mikro-orm/core";
+import { resolveEntityClass } from "@dextinity/cms-api";
+import { MikroORM } from "@mikro-orm/core";
+import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Logger, Type } from "@nestjs/common";
 import { isUUID, validateSync } from "class-validator";
@@ -110,7 +112,7 @@ export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCa
         }
 
         async validateRedirectUrl(urlToValidate: string, scope: Type<EmailCampaignScopeInterface>): Promise<boolean> {
-            const configForScope = await this.entityManager.findOneOrFail<BrevoConfigInterface>("BrevoConfig", { scope });
+            const configForScope = await this.entityManager.findOneOrFail(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"), { scope });
 
             if (!configForScope) {
                 throw Error("Scope does not exist");

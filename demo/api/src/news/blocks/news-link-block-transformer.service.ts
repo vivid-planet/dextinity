@@ -1,8 +1,8 @@
-import { BlockTransformerServiceInterface } from "@dextinity/cms-api";
+import { BlockTransformerServiceInterface, resolveEntityClass } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 
-import { News } from "../entities/news.entity";
+import type { News } from "../entities/news.entity";
 import { NewsLinkBlockData } from "./news-link.block";
 
 type TransformResponse = {
@@ -25,7 +25,8 @@ export class NewsLinkBlockTransformerService implements BlockTransformerServiceI
             return {};
         }
 
-        const news = await this.entityManager.findOneOrFail<News>("News", block.id);
+        // Importing News would close a cycle: news entity -> news content block -> rich text block -> link block -> news link block.
+        const news = await this.entityManager.findOneOrFail(resolveEntityClass<News>("News"), block.id);
 
         return {
             news: {

@@ -1,4 +1,4 @@
-import { filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@dextinity/cms-api";
+import { filtersToMikroOrmQuery, resolveEntityClass, searchToMikroOrmQuery } from "@dextinity/cms-api";
 import { EntityManager, FilterQuery, ObjectQuery, wrap } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { stringify } from "querystring";
@@ -69,7 +69,7 @@ export class TargetGroupsService {
         filters?: BrevoContactFilterAttributesInterface,
     ): Promise<true> {
         try {
-            const mainScopeTargetGroupList = await this.entityManager.findOneOrFail<TargetGroupInterface>("BrevoTargetGroup", {
+            const mainScopeTargetGroupList = await this.entityManager.findOneOrFail(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"), {
                 scope,
                 isMainList: true,
             });
@@ -136,17 +136,24 @@ export class TargetGroupsService {
         limit: number;
         where: FilterQuery<TargetGroupInterface>;
     }): Promise<[TargetGroupInterface[], number]> {
-        const [targetGroups, totalContactLists] = await this.entityManager.findAndCount<TargetGroupInterface>("BrevoTargetGroup", where, {
-            offset,
-            limit,
-        });
+        const [targetGroups, totalContactLists] = await this.entityManager.findAndCount(
+            resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"),
+            where,
+            {
+                offset,
+                limit,
+            },
+        );
 
         return [targetGroups, totalContactLists];
     }
 
     public async createIfNotExistMainTargetGroupForScope(scope: EmailCampaignScopeInterface): Promise<TargetGroupInterface> {
         try {
-            const mainList = await this.entityManager.findOne<TargetGroupInterface>("BrevoTargetGroup", { scope, isMainList: true });
+            const mainList = await this.entityManager.findOne(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"), {
+                scope,
+                isMainList: true,
+            });
 
             if (mainList) {
                 return mainList;
@@ -156,7 +163,7 @@ export class TargetGroupsService {
             const brevoId = await this.brevoApiContactsService.createBrevoContactList(title, scope);
 
             if (brevoId) {
-                const mainTargetGroupForScope = this.entityManager.create<TargetGroupInterface>("BrevoTargetGroup", {
+                const mainTargetGroupForScope = this.entityManager.create(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"), {
                     title,
                     brevoId,
                     scope,
@@ -177,7 +184,11 @@ export class TargetGroupsService {
     }
 
     public async createIfNotExistTestTargetGroupForScope(scope: EmailCampaignScopeInterface): Promise<TargetGroupInterface> {
-        const testList = await this.entityManager.findOne<TargetGroupInterface>("BrevoTargetGroup", { scope, isMainList: false, isTestList: true });
+        const testList = await this.entityManager.findOne(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"), {
+            scope,
+            isMainList: false,
+            isTestList: true,
+        });
 
         if (testList) {
             return testList;
@@ -188,7 +199,7 @@ export class TargetGroupsService {
         const brevoId = await this.brevoApiContactsService.createBrevoContactList(title, scope);
 
         if (brevoId) {
-            const testTargetGroupForScope = this.entityManager.create<TargetGroupInterface>("BrevoTargetGroup", {
+            const testTargetGroupForScope = this.entityManager.create(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"), {
                 title,
                 brevoId,
                 scope,

@@ -22,6 +22,7 @@ import { UpdateDamFileArgs } from "./dto/update-dam-file.args";
 import { FileInterface } from "./entities/file.entity";
 import { DamFileImage } from "./entities/file-image.entity";
 import { FolderInterface } from "./entities/folder.entity";
+import { resolveFileEntity, resolveFolderEntity } from "./entities/resolve-dam-entity";
 import { FilesService } from "./files.service";
 
 export function createFilesResolver({
@@ -99,10 +100,10 @@ export function createFilesResolver({
         ): Promise<FileInterface[]> {
             let targetFolder = null;
             if (targetFolderId !== null) {
-                targetFolder = await this.entityManager.findOneOrFail<FolderInterface>("DamFolder", targetFolderId);
+                targetFolder = await this.entityManager.findOneOrFail(resolveFolderEntity(), targetFolderId);
             }
 
-            const files = await this.entityManager.find<FileInterface>("DamFile", { id: { $in: fileIds } });
+            const files = await this.entityManager.find(resolveFileEntity(), { id: { $in: fileIds } });
 
             return this.filesService.moveBatch(files, targetFolder);
         }
@@ -129,7 +130,7 @@ export function createFilesResolver({
         @AffectedEntity(File)
         @SkipBuild()
         async archiveDamFile(@Args("id", { type: () => ID }) id: string): Promise<FileInterface> {
-            const entity = await this.entityManager.findOneOrFail<FileInterface>("DamFile", id);
+            const entity = await this.entityManager.findOneOrFail(resolveFileEntity(), id);
             entity.archived = true;
 
             await this.entityManager.persist(entity).flush();
@@ -140,7 +141,7 @@ export function createFilesResolver({
         @AffectedEntity(File, { idArg: "ids" })
         @SkipBuild()
         async archiveDamFiles(@Args("ids", { type: () => [ID] }) ids: string[]): Promise<FileInterface[]> {
-            const entities = await this.entityManager.find<FileInterface>("DamFile", { id: { $in: ids } });
+            const entities = await this.entityManager.find(resolveFileEntity(), { id: { $in: ids } });
 
             for (const entity of entities) {
                 entity.archived = true;
@@ -154,7 +155,7 @@ export function createFilesResolver({
         @AffectedEntity(File)
         @SkipBuild()
         async restoreDamFile(@Args("id", { type: () => ID }) id: string): Promise<FileInterface> {
-            const entity = await this.entityManager.findOneOrFail<FileInterface>("DamFile", id);
+            const entity = await this.entityManager.findOneOrFail(resolveFileEntity(), id);
             entity.archived = false;
 
             await this.entityManager.persist(entity).flush();
@@ -165,7 +166,7 @@ export function createFilesResolver({
         @AffectedEntity(File, { idArg: "ids" })
         @SkipBuild()
         async restoreDamFiles(@Args("ids", { type: () => [ID] }) ids: string[]): Promise<FileInterface[]> {
-            const entities = await this.entityManager.find<FileInterface>("DamFile", { id: { $in: ids } });
+            const entities = await this.entityManager.find(resolveFileEntity(), { id: { $in: ids } });
 
             for (const entity of entities) {
                 entity.archived = false;

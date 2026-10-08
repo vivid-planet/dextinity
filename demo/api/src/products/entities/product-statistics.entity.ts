@@ -1,4 +1,5 @@
-import { BaseEntity, Entity, OneToOne, OptionalProps, PrimaryKey, Property, Ref } from "@mikro-orm/postgresql";
+import { Entity, OneToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, OptionalProps, Ref } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 

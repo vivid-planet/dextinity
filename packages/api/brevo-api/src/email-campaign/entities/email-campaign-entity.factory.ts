@@ -8,7 +8,8 @@ import {
     RootBlockEntity,
     RootBlockType,
 } from "@dextinity/cms-api";
-import { Collection, Embedded, Entity, Enum, ManyToMany, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Embedded, Entity, Enum, ManyToMany, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { Collection, OptionalProps } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";

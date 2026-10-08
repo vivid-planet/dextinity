@@ -1,4 +1,5 @@
-import { CreateRequestContext, MikroORM } from "@mikro-orm/postgresql";
+import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
+import { MikroORM } from "@mikro-orm/postgresql";
 import { Logger } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 

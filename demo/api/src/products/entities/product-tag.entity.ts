@@ -1,5 +1,6 @@
 import { CrudField, CrudGenerator } from "@dextinity/cms-api";
-import { BaseEntity, Collection, Entity, ManyToMany, OneToMany, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, ManyToMany, OneToMany, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, Collection, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 

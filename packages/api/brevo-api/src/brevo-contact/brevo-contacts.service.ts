@@ -1,3 +1,4 @@
+import { resolveEntityClass } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
@@ -70,9 +71,12 @@ export class BrevoContactsService {
             }
 
             const hashedEmail = hashEmail(email, this.secretKey);
-            const blacklistedContactAvailable = await this.entityManager.findOne<BlacklistedContactsInterface>("BrevoBlacklistedContacts", {
-                hashedEmail: hashedEmail,
-            });
+            const blacklistedContactAvailable = await this.entityManager.findOne(
+                resolveEntityClass<BlacklistedContactsInterface>("BrevoBlacklistedContacts"),
+                {
+                    hashedEmail: hashedEmail,
+                },
+            );
 
             if (blacklistedContactAvailable) {
                 return SubscribeResponse.ERROR_CONTACT_IS_BLACKLISTED;
@@ -157,7 +161,7 @@ export class BrevoContactsService {
             return SubscribeResponse.ERROR_CONTAINED_IN_ECG_RTR_LIST;
         }
 
-        const brevoConfig = await this.entityManager.findOneOrFail<BrevoConfigInterface>("BrevoConfig", { scope });
+        const brevoConfig = await this.entityManager.findOneOrFail(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"), { scope });
 
         const created = await this.createContact({
             ...data,

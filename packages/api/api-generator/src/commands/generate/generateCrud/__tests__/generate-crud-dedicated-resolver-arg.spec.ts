@@ -1,5 +1,6 @@
 import { CrudField, CrudGenerator } from "@dextinity/cms-api";
-import { BaseEntity, Collection, defineConfig, Entity, ManyToOne, MikroORM, OneToMany, PrimaryKey, Property, type Ref } from "@mikro-orm/postgresql";
+import { Entity, ManyToOne, OneToMany, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, Collection, defineConfig, MikroORM, type Ref } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
@@ -40,13 +41,13 @@ describe("GenerateCrud dedicatedResolverArg", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityProduct, TestEntityProductVariant],
                 }),
             );
 
-            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityProductVariant"));
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntityProductVariant"));
             const formattedOut = await formatGeneratedFiles(out);
             const file = formattedOut.find((file) => file.name === "dto/test-entity-product-variant.input.ts");
             if (!file) {
@@ -68,13 +69,13 @@ describe("GenerateCrud dedicatedResolverArg", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityProduct, TestEntityProductVariant],
                 }),
             );
 
-            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityProductVariant"));
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntityProductVariant"));
             const formattedOut = await formatGeneratedFiles(out);
             const file = formattedOut.find((file) => file.name === "dto/test-entity-product-variants.args.ts");
             if (!file) {
@@ -97,13 +98,13 @@ describe("GenerateCrud dedicatedResolverArg", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityProduct, TestEntityProductVariant],
                 }),
             );
 
-            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityProductVariant"));
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntityProductVariant"));
             const formattedOut = await formatGeneratedFiles(out);
             const file = formattedOut.find((file) => file.name === "test-entity-product-variant.resolver.ts");
             if (!file) {

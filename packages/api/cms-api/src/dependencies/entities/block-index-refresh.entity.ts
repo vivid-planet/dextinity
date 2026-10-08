@@ -1,4 +1,5 @@
-import { BaseEntity, Entity, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity } from "@mikro-orm/postgresql";
 import { v4 as uuid } from "uuid";
 
 @Entity()

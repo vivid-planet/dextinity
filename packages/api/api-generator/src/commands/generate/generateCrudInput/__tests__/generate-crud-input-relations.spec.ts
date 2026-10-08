@@ -1,4 +1,5 @@
-import { BaseEntity, Collection, defineConfig, Entity, ManyToOne, MikroORM, OneToMany, PrimaryKey, Ref } from "@mikro-orm/postgresql";
+import { Entity, ManyToOne, OneToMany, PrimaryKey, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, Collection, defineConfig, MikroORM, Ref } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
@@ -29,13 +30,13 @@ describe("GenerateCrudInputRelations", () => {
         LazyMetadataStorage.load();
         const orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [Product, ProductCategory],
             }),
         );
 
-        const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("Product"));
+        const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("Product"));
         const formattedOut = await formatSource(out[0].content);
         const source = parseSource(formattedOut);
 
@@ -63,13 +64,13 @@ describe("GenerateCrudInputRelations", () => {
         LazyMetadataStorage.load();
         const orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [Product, ProductCategory],
             }),
         );
 
-        const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("ProductCategory"));
+        const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("ProductCategory"));
         const formattedOut = await formatSource(out[0].content);
         //console.log(formattedOut);
         const source = parseSource(formattedOut);

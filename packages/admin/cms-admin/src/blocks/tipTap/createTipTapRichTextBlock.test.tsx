@@ -159,6 +159,31 @@ describe("createTipTapRichTextBlock", () => {
             expect(editor.getJSON()).toEqual({ type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "heading-2" } }] });
         });
 
+        it("should drop a style the new text block doesn't offer when no text block has a defaultStyle", () => {
+            const style = { name: "copy100", label: "Copy 100", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
+            const editor = createEditor({
+                textBlocks: [
+                    { name: "paragraph", label: "Paragraph", tag: "p", styles: [style] },
+                    { name: "heading-1", label: "Heading 1", tag: "h1" },
+                ],
+            });
+            editor.commands.setContent({
+                type: "doc",
+                content: [
+                    { type: "textBlock", attrs: { textBlock: "paragraph", textBlockStyle: "copy100" }, content: [{ type: "text", text: "Title" }] },
+                    { type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Copy" }] },
+                ],
+            });
+            editor.commands.setTextSelection(1);
+
+            editor.commands.updateAttributes("textBlock", { textBlock: "heading-1" });
+
+            expect(editor.getJSON().content?.map((node) => node.attrs)).toEqual([
+                { textBlock: "heading-1", textBlockStyle: null },
+                { textBlock: "paragraph", textBlockStyle: null },
+            ]);
+        });
+
         const toggleList = (editor: Editor, listType: "orderedList" | "bulletList") =>
             listType === "orderedList" ? editor.commands.toggleOrderedList() : editor.commands.toggleBulletList();
 

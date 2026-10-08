@@ -515,7 +515,7 @@ export function buildTipTapExtensions({
         }),
         createTextBlock({ ...resolvedOptions, hasTextBlockStyles: hasStyles, styled }),
         ...(hasParagraph ? [TextBlockListItem] : []),
-        ...(styledNodes.some((styledNode) => styledNode.defaultStyle !== null) ? [createDefaultTextBlockStyle(resolvedOptions)] : []),
+        ...(hasStyles ? [createDefaultTextBlockStyle(resolvedOptions)] : []),
         // Only worth replacing the list shortcuts where a list has styles of its own to apply.
         ...([resolvedOptions.orderedList, resolvedOptions.unorderedList].some((list) => list && list.styles.length > 0)
             ? [createTextBlockList(resolvedOptions)]

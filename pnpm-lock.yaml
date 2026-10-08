@@ -176,8 +176,8 @@ importers:
         specifier: workspace:*
         version: link:packages/cli
       '@formatjs/cli':
-        specifier: ^6.7.2
-        version: 6.7.4(@vue/compiler-core@3.5.15)
+        specifier: ^6.16.32
+        version: 6.16.33(@vue/compiler-core@3.5.15)
       '@types/node':
         specifier: ^24.19.1
         version: 24.19.1
@@ -327,8 +327,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/eslint-config
       '@formatjs/cli':
-        specifier: ^6.7.2
-        version: 6.7.4(@vue/compiler-core@3.5.15)
+        specifier: ^6.16.32
+        version: 6.16.33(@vue/compiler-core@3.5.15)
       '@graphql-codegen/add':
         specifier: ^5.0.3
         version: 5.0.3(graphql@16.14.2)
@@ -581,8 +581,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/eslint-config
       '@formatjs/cli':
-        specifier: ^6.7.4
-        version: 6.7.4(@vue/compiler-core@3.5.15)
+        specifier: ^6.16.32
+        version: 6.16.33(@vue/compiler-core@3.5.15)
       '@nestjs/cli':
         specifier: ^11.0.24
         version: 11.0.24(@swc/core@1.15.41)(@types/node@24.19.1)(esbuild@0.27.4)(prettier@3.6.2)(uglify-js@3.19.3)
@@ -680,8 +680,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/site/site-nextjs
       '@formatjs/cli':
-        specifier: ^6.7.2
-        version: 6.7.4(@vue/compiler-core@3.5.15)
+        specifier: ^6.16.32
+        version: 6.16.33(@vue/compiler-core@3.5.15)
       '@google-cloud/recaptcha-enterprise':
         specifier: ^5.13.0
         version: 5.13.0(supports-color@8.1.1)
@@ -5241,19 +5241,52 @@ packages:
   '@fontsource-variable/roboto-flex@5.2.8':
     resolution: {integrity: sha512-Q9zbz+P2VrDeIxBu9YAIG+eYpLmQF5FIJEEwAWn8En9Lao1TOISnoYcywGV+jSv7LGsHEndCR8hveXPnvCBEQQ==}
 
-  '@formatjs/cli@6.7.4':
-    resolution: {integrity: sha512-k6uqdeZDAjDd7iKKQ8yFYizFpbi5Y9H9NkV+hoIhmxaMSGvWRnRusQJaIQ+2rI14MH6knW6fx7tnO15C+ijDiw==}
-    engines: {node: '>= 16'}
+  '@formatjs/cli-native-darwin-arm64@1.1.27':
+    resolution: {integrity: sha512-mi51UphkvTOvs4gQ1j/EtiqZ87cKNJi8/ZGRwPpIKQ6I5G8EqHmArTKrY0mqZJS7zBJgonysrw6sJCt/Arcu2Q==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@formatjs/cli-native-linux-arm64-musl@1.0.25':
+    resolution: {integrity: sha512-Lys8sAs2oxRIVYQLz/0sIDbodgOUjz2Zz0xaJs1GGt0rF3t9uJmIYHyCKL9SnuEgLB/c9LXjcXm5uogWRrEFmg==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@formatjs/cli-native-linux-arm64@1.2.27':
+    resolution: {integrity: sha512-+mOIAjuJU+P6GcjScLJavMIy6+TfmnsihPAewXlqkt+mrsgoQjsK2I3+CSBYK3qnzFQb/ovgyZ5iF9QuwbhPIA==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@formatjs/cli-native-linux-x64-musl@1.0.25':
+    resolution: {integrity: sha512-w5AB4WIgKr6q+nSjRkaFt90m1htP5rDItNS0ZvOv29LRS+R1RNHIFCqBzqCHdJPXcrzi9ZjOfl82ogsP0QYLbg==}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@formatjs/cli-native-linux-x64@1.1.27':
+    resolution: {integrity: sha512-hreNaHpXZkh6avwIA1KGXMBhdfR0IGzxmkT3fYwgEUJbYl2NIMsOYgmEC8KuJpOYu8lNo3U9Rn76D5wooljJAw==}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@formatjs/cli-native-win32-x64@1.1.28':
+    resolution: {integrity: sha512-0rAWY/VKPDB+I5Drks1wNGSxg3y0nSwg2Y2Q5Gkxwgx31oY5fiPMQ1D/jvN6RVLjv/GGNKB2fhXOKxYStOFxDg==}
+    cpu: [x64]
+    os: [win32]
+
+  '@formatjs/cli@6.16.33':
+    resolution: {integrity: sha512-jpTuUo2FvBU/xSKGp3DtHWD6R0A7ePzAn2Z1nEhU1E36ZdtWeW/ipc8KSBrQLyuAwk2vQsyoWFC4dZiXSzYIvQ==}
+    engines: {node: '>= 20.12.0'}
     hasBin: true
     peerDependencies:
       '@glimmer/env': '*'
       '@glimmer/reference': '*'
-      '@glimmer/syntax': ^0.95.0
+      '@glimmer/syntax': ^0.84.3 || ^0.95.0
       '@glimmer/validator': '*'
-      '@vue/compiler-core': ^3.5.12
-      content-tag: ^3.0.0
-      ember-template-recast: ^6.1.5
-      vue: ^3.5.12
+      '@vue/compiler-core': '3'
+      content-tag: '4'
+      vue: '3'
     peerDependenciesMeta:
       '@glimmer/env':
         optional: true
@@ -5266,8 +5299,6 @@ packages:
       '@vue/compiler-core':
         optional: true
       content-tag:
-        optional: true
-      ember-template-recast:
         optional: true
       vue:
         optional: true
@@ -21390,8 +21421,32 @@ snapshots:
 
   '@fontsource-variable/roboto-flex@5.2.8': {}
 
-  '@formatjs/cli@6.7.4(@vue/compiler-core@3.5.15)':
+  '@formatjs/cli-native-darwin-arm64@1.1.27':
+    optional: true
+
+  '@formatjs/cli-native-linux-arm64-musl@1.0.25':
+    optional: true
+
+  '@formatjs/cli-native-linux-arm64@1.2.27':
+    optional: true
+
+  '@formatjs/cli-native-linux-x64-musl@1.0.25':
+    optional: true
+
+  '@formatjs/cli-native-linux-x64@1.1.27':
+    optional: true
+
+  '@formatjs/cli-native-win32-x64@1.1.28':
+    optional: true
+
+  '@formatjs/cli@6.16.33(@vue/compiler-core@3.5.15)':
     optionalDependencies:
+      '@formatjs/cli-native-darwin-arm64': 1.1.27
+      '@formatjs/cli-native-linux-arm64': 1.2.27
+      '@formatjs/cli-native-linux-arm64-musl': 1.0.25
+      '@formatjs/cli-native-linux-x64': 1.1.27
+      '@formatjs/cli-native-linux-x64-musl': 1.0.25
+      '@formatjs/cli-native-win32-x64': 1.1.28
       '@vue/compiler-core': 3.5.15
 
   '@formatjs/ecma402-abstract@2.3.6':

@@ -67,7 +67,7 @@
         "@dextinity/admin-generator": "workspace:*",
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
-        "@formatjs/cli": "^6.7.2",
+        "@formatjs/cli": "^6.16.32",
         "@graphql-codegen/add": "^5.0.3",
         "@graphql-codegen/cli": "^5.0.7",
         "@graphql-codegen/fragment-matcher": "^5.1.0",

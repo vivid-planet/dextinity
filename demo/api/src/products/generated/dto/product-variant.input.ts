@@ -2,7 +2,7 @@
 // You may choose to use this file as scaffold by moving this file out of generated folder and removing this comment.
 import { Field, InputType, Int } from "@nestjs/graphql";
 import { Transform } from "class-transformer";
-import { BlockInputInterface, DamImageBlock, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
+import { type BlockInputInterface, DamImageBlock, PartialType, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
 import { IsInt, IsNotEmpty, IsOptional, IsString, Min, ValidateNested } from "class-validator";
 @InputType()
 export class ProductVariantInput {

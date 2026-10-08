@@ -66,6 +66,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
                     element: (props) => <p style={{ fontSize: 18, lineHeight: "18px" }} {...props} />,
                 },
             ],
+            defaultStyle: "paragraph300",
         },
         { name: "display", tag: "h1", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.display" defaultMessage="Display" /> },
         { name: "heading-1", tag: "h1", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.heading1" defaultMessage="Heading 1" /> },
@@ -74,8 +75,8 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
         { name: "heading-4", tag: "h4", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.heading4" defaultMessage="Heading 4" /> },
         { name: "heading-5", tag: "h5", label: <FormattedMessage id="tipTapRichTextBlock.textBlock.heading5" defaultMessage="Heading 5" /> },
     ],
-    orderedList: { styles: listStyles },
-    unorderedList: { styles: listStyles },
+    orderedList: { styles: listStyles, defaultStyle: "list300" },
+    unorderedList: { styles: listStyles, defaultStyle: "list300" },
     inlineStyles: [
         {
             name: "highlight",

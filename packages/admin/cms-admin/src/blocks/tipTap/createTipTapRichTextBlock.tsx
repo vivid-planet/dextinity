@@ -26,11 +26,13 @@ import { ChildBlocksContext } from "./ChildBlocksContext";
 import { translateTipTapContent } from "./contentTranslation";
 import { CmsBlock, CmsInlineBlock } from "./extensions/CmsBlock";
 import { CmsLink } from "./extensions/CmsLink";
+import { createDefaultTextBlockStyle } from "./extensions/DefaultTextBlockStyle";
 import { InlineStyleMark } from "./extensions/InlineStyleMark";
 import { NonBreakingSpace } from "./extensions/NonBreakingSpace";
 import { Placeholder } from "./extensions/Placeholder";
 import { SoftHyphen } from "./extensions/SoftHyphen";
 import { createTextBlock } from "./extensions/TextBlock";
+import { createTextBlockList } from "./extensions/TextBlockList";
 import { TextBlockListItem } from "./extensions/TextBlockListItem";
 import { InlineStyleContext } from "./InlineStyleContext";
 import { createListLevelMaxExtension, getListNestingDepthFromJson, trimListNesting } from "./listLevelMaxHelpers";
@@ -300,10 +302,14 @@ function getPlainTextFromContent(content: JSONContent): string {
     return text;
 }
 
-const buildEmptyContent = ({ defaultTextBlock }: TipTapResolvedOptions): JSONContent => ({
-    type: "doc",
-    content: [{ type: "textBlock", attrs: { textBlock: defaultTextBlock.name } }],
-});
+const buildEmptyContent = ({ defaultTextBlock }: TipTapResolvedOptions): JSONContent => {
+    const attrs: JSONContent["attrs"] = { textBlock: defaultTextBlock.name };
+    if (defaultTextBlock.defaultStyle !== null) {
+        attrs.textBlockStyle = defaultTextBlock.defaultStyle;
+    }
+
+    return { type: "doc", content: [{ type: "textBlock", attrs }] };
+};
 
 const isCmsBlockNode = (content: JSONContent): boolean => content.type === "cmsBlock" || content.type === "cmsInlineBlock";
 
@@ -509,6 +515,11 @@ export function buildTipTapExtensions({
         }),
         createTextBlock({ ...resolvedOptions, hasTextBlockStyles: hasStyles, styled }),
         ...(hasParagraph ? [TextBlockListItem] : []),
+        ...(styledNodes.some((styledNode) => styledNode.defaultStyle !== null) ? [createDefaultTextBlockStyle(resolvedOptions)] : []),
+        // Only worth replacing the list shortcuts where a list has styles of its own to apply.
+        ...([resolvedOptions.orderedList, resolvedOptions.unorderedList].some((list) => list && list.styles.length > 0)
+            ? [createTextBlockList(resolvedOptions)]
+            : []),
         ...(hasInlineStyles ? [InlineStyleMark] : []),
         ...(resolvedOptions.sup ? [Superscript] : []),
         ...(resolvedOptions.sub ? [Subscript] : []),

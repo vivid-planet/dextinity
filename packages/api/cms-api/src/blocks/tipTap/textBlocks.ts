@@ -27,22 +27,31 @@ export interface TipTapTextBlockBase {
 
 // The API doesn't render, so a text block that needs no style choice - which carries its own
 // `element` in the Admin - is configured here by leaving `styles` out.
-export type TipTapTextBlock = TipTapTextBlockBase & { styles?: TipTapTextBlockStyle[] };
+export type TipTapTextBlock = TipTapTextBlockBase & {
+    styles?: TipTapTextBlockStyle[];
+    /**
+     * Style applied to a newly created or converted text block. Must be one of `styles`, otherwise
+     * an error is thrown. Without it the text block starts out without a style.
+     */
+    defaultStyle?: string;
+};
 
-export interface TipTapResolvedTextBlock extends TipTapTextBlockBase {
+export interface TipTapResolvedStyledNode {
+    name: string;
+    styles: TipTapTextBlockStyle[];
+    defaultStyle: string | null;
+}
+
+export interface TipTapResolvedTextBlock extends TipTapTextBlockBase, TipTapResolvedStyledNode {
     /**
      * Heading level of the text block's tag, `undefined` for a paragraph.
      */
     level?: HeadingLevel;
-    styles: TipTapTextBlockStyle[];
 }
 
-export interface TipTapResolvedList {
-    name: string;
-    styles: TipTapTextBlockStyle[];
-}
+export type TipTapResolvedList = TipTapResolvedStyledNode;
 
-export type TipTapListOptions = { styles: TipTapTextBlockStyle[] };
+export type TipTapListOptions = { styles: TipTapTextBlockStyle[]; defaultStyle?: string };
 
 export const orderedListName = "ordered-list";
 export const unorderedListName = "unordered-list";
@@ -65,21 +74,34 @@ export const defaultTextBlocks: TipTapTextBlock[] = [
  * Checks that the styled node offers no style twice, since a style's name identifies it in the
  * content.
  */
-function resolveStyles<Style extends TipTapTextBlockStyle>({ name, styles = [] }: { name: string; styles?: Style[] }): Style[] {
+function resolveStyles<Style extends TipTapTextBlockStyle>({
+    name,
+    styles = [],
+    defaultStyle,
+}: {
+    name: string;
+    styles?: Style[];
+    defaultStyle?: string;
+}): { styles: Style[]; defaultStyle: string | null } {
     const styleNames = styles.map((style) => style.name);
     const duplicate = styleNames.find((styleName, index) => styleNames.indexOf(styleName) !== index);
     if (duplicate !== undefined) {
         throw new Error(`"${name}" offers the text block style "${duplicate}" twice`);
     }
-    return styles;
+
+    if (defaultStyle !== undefined && !styleNames.includes(defaultStyle)) {
+        throw new Error(`"${name}" has the defaultStyle "${defaultStyle}", which is not one of its styles`);
+    }
+
+    return { styles, defaultStyle: defaultStyle ?? null };
 }
 
 /**
  * Applies the defaults to the configured text blocks and validates them against each other.
  */
-export function resolveTextBlocks<T extends TipTapTextBlockBase & { styles?: TipTapTextBlockStyle[] }>(
+export function resolveTextBlocks<T extends TipTapTextBlockBase & { styles?: TipTapTextBlockStyle[]; defaultStyle?: string }>(
     textBlocks: T[],
-): Array<T & { level?: HeadingLevel; styles: NonNullable<T["styles"]> }> {
+): Array<T & { level?: HeadingLevel; styles: NonNullable<T["styles"]>; defaultStyle: string | null }> {
     if (textBlocks.length === 0) {
         throw new Error("textBlocks must not be empty, otherwise no text block type is left");
     }
@@ -99,7 +121,7 @@ export function resolveTextBlocks<T extends TipTapTextBlockBase & { styles?: Tip
     return textBlocks.map((textBlock) => ({
         ...textBlock,
         level: headingLevelByTag[textBlock.tag],
-        styles: resolveStyles(textBlock) as NonNullable<T["styles"]>,
+        ...(resolveStyles(textBlock) as { styles: NonNullable<T["styles"]>; defaultStyle: string | null }),
     }));
 }
 
@@ -111,13 +133,14 @@ export function resolveList<Style extends TipTapTextBlockStyle>({
     list,
     name,
 }: {
-    list: boolean | { styles: Style[] } | undefined;
+    list: boolean | { styles: Style[]; defaultStyle?: string } | undefined;
     name: string;
-}): { name: string; styles: Style[] } | false {
+}): { name: string; styles: Style[]; defaultStyle: string | null } | false {
     if (!list) {
         return false;
     }
-    return { name, styles: resolveStyles({ name, styles: list === true ? undefined : list.styles }) };
+    const listOptions = list === true ? {} : list;
+    return { name, ...resolveStyles({ name, ...listOptions }) };
 }
 
 /**

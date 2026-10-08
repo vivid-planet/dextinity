@@ -10,8 +10,6 @@ See the [migration guide](https://cms-docs.dextinity.com/docs/migration-guide/mi
 
 `nest-commander` pins `@golevelup/nestjs-discovery` at a version that still asks for NestJS v11 as a peer. npm and yarn install it as a nested copy and need nothing; pnpm with `strictPeerDependencies` needs the override the migration guide gives.
 
-The core packages are ESM-only from v12 on. A CommonJS API keeps working through Node's `require(esm)` support, so switching an application to ESM isn't necessary.
-
 `@nestjs/core` exposes its subpaths through an `exports` map that maps `@nestjs/core/<name>` to `<name>.js`. `@nestjs/core/repl` is a directory, so that specifier no longer resolves — import `repl` from `@nestjs/core` instead:
 
 ```diff

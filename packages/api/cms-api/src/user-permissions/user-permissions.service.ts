@@ -25,6 +25,11 @@ import {
     UserPermissionsUserServiceInterface,
 } from "./user-permissions.types";
 
+function camelCaseToHumanReadable(s: string | number) {
+    const words = s.toString().match(/[A-Za-z0-9][a-z0-9]*/g) || [];
+    return words.map((word) => word.charAt(0).toUpperCase() + word.substring(1)).join(" ");
+}
+
 @Injectable()
 export class UserPermissionsService {
     constructor(
@@ -47,11 +52,6 @@ export class UserPermissionsService {
             } else {
                 contentScopes = this.options.availableContentScopes;
             }
-        }
-
-        function camelCaseToHumanReadable(s: string | number) {
-            const words = s.toString().match(/[A-Za-z0-9][a-z0-9]*/g) || [];
-            return words.map((word) => word.charAt(0).toUpperCase() + word.substring(1)).join(" ");
         }
 
         const contentScopesWithLabel = contentScopes
@@ -84,13 +84,13 @@ export class UserPermissionsService {
                     : this.options.availableContentScopeDimensions;
             return dimensions.map((dimension) => ({
                 name: dimension.name,
-                label: dimension.label ?? dimension.name,
+                label: dimension.label ?? camelCaseToHumanReadable(dimension.name),
             }));
         }
 
         // Derive the dimensions from the keys of the available content scopes when not explicitly configured
         const dimensionNames = new Set((await this.getAvailableContentScopes()).flatMap((contentScope) => Object.keys(contentScope.scope)));
-        return [...dimensionNames].map((name) => ({ name, label: name }));
+        return [...dimensionNames].map((name) => ({ name, label: camelCaseToHumanReadable(name) }));
     }
 
     async getAvailablePermissions(): Promise<Permission[]> {

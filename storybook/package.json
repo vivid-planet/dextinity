@@ -59,7 +59,7 @@
         "@dextinity/admin-babel-preset": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
         "@dextinity/mail-react": "workspace:*",
-        "@faker-js/faker": "^10.4.0",
+        "@faker-js/faker": "^10.6.0",
         "@graphql-mocks/network-msw": "^0.4.4",
         "@storybook/addon-docs": "^10.3.5",
         "@storybook/addon-vitest": "10.3.5",

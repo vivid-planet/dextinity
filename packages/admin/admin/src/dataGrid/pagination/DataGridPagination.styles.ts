@@ -1,4 +1,5 @@
-import { css, Typography } from "@mui/material";
+import { css, FormControl, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { DataGridPaginationClassKey } from "./DataGridPagination";
@@ -18,3 +19,8 @@ export const PageInformation = createComponentSlot(Typography)<DataGridPaginatio
     componentName: "DataGridPagination",
     slotName: "pageInformation",
 })();
+
+// Prevents the page size select from registering with a surrounding `FormControl`, e.g., of a field that opens a dialog containing the data grid
+export const PageSizeFormControl = styled(FormControl)`
+    display: contents;
+`;

@@ -18,11 +18,11 @@ import {
     ExtractBlockInput,
     isBlockDataInterface,
     isBlockInputInterface,
-    MigrateOptions,
     SimpleBlockInputInterface,
     TraversableTransformBlockResponse,
 } from "../block";
 import { AnnotationBlockMeta, BlockField } from "../decorators/field";
+import type { MigrateOptions } from "../migrations/types";
 import { BlockFactoryNameOrOptions } from "./types";
 
 type BaseBlockMap = Record<string, Block<BlockDataInterface, BlockInputInterface>>;
@@ -341,17 +341,20 @@ export function createOneOfBlock<
     }
 
     let name: string;
+    let description: string | undefined;
     let migrate: MigrateOptions | undefined;
 
     if (typeof nameOrOptions === "string") {
         name = nameOrOptions;
     } else {
         name = nameOrOptions.name;
+        description = nameOrOptions.description;
         migrate = nameOrOptions.migrate;
     }
 
     return createBlock(OneOfBlockData, OneOfBlockInput, {
         name,
+        description,
         blockMeta: new Meta(OneOfBlockData),
         blockInputMeta: new InputMeta(OneOfBlockInput),
         migrate,

@@ -79,6 +79,7 @@ export const damFileDependentsQuery = gql`
                     name
                     secondaryInformation
                     visible
+                    scope
                 }
                 totalCount
             }

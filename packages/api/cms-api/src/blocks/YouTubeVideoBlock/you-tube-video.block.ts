@@ -27,8 +27,10 @@ class YouTubeVideoBlockInput extends BaseVideoBlockInput {
 
 export const YouTubeVideoBlock = createBlock(YouTubeVideoBlockData, YouTubeVideoBlockInput, {
     name: "YouTubeVideo",
-    migrate: {
+    migrateVendor: {
         version: 2,
         migrations: typeSafeBlockMigrationPipe([RemoveAspectRatioMigration, AddPreviewImageMigration]),
+        // Both migrations counted in the block's version before they moved into the vendor chain
+        legacyVersions: 2,
     },
 });

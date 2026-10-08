@@ -201,6 +201,8 @@ The built-in components apply stable CSS class names that you can target in your
 | `HtmlText`       | `.htmlText`, `.htmlText--{variant}` (per variant), `.htmlText--bottomSpacing` |
 | `HtmlInlineLink` | `.htmlInlineLink`                                                             |
 
+Use `#body` to target the mail's body: some clients replace the `<body>` tag with a `<div>`, which a `body` selector no longer reaches.
+
 ### Example: Overriding Built-In Components
 
 Use the class names above to add responsive overrides for built-in components. For example, changing the background color of indented sections on mobile:

@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/brevo-api",
-    "version": "10.7.0",
+    "version": "10.9.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity",
@@ -11,7 +11,8 @@
     "types": "lib/index.d.ts",
     "sideEffects": false,
     "files": [
-        "lib/*"
+        "lib/*",
+        "!lib/*.tsbuildinfo"
     ],
     "scripts": {
         "build": "$npm_execpath run clean && tsc -p tsconfig.build.json",
@@ -38,15 +39,14 @@
         "@dextinity/cms-api": "workspace:*",
         "@fast-csv/parse": "^5.0.7",
         "@getbrevo/brevo": "^5.0.4",
-        "@nestjs/cache-manager": "^3.1.2",
+        "@nestjs/cache-manager": "^3.1.3",
         "@nestjs/jwt": "^11.0.2",
-        "cache-manager": "^7.2.5",
+        "cache-manager": "^7.2.9",
         "class-transformer": "^0.5.1",
-        "class-validator": "^0.14.3",
+        "class-validator": "^0.15.1",
         "commander": "^14.0.3",
-        "graphql-scalars": "1.25.0",
-        "lodash.isequal": "^4.5.0",
-        "nest-commander": "^3.20.1",
+        "graphql-scalars": "1.26.0",
+        "nest-commander": "^3.21.0",
         "uuid": "^11.1.1"
     },
     "devDependencies": {
@@ -58,16 +58,15 @@
         "@mikro-orm/migrations": "^7.2.0",
         "@mikro-orm/nestjs": "^7.1.0",
         "@mikro-orm/postgresql": "^7.2.0",
-        "@nestjs/common": "^11.1.21",
-        "@nestjs/core": "^11.1.21",
-        "@nestjs/graphql": "^13.4.0",
-        "@nestjs/platform-express": "^11.1.21",
-        "@nestjs/testing": "^11.1.21",
-        "@swc/core": "^1.15.40",
-        "@types/inquirer": "^8.2.12",
-        "@types/lodash.isequal": "^4.5.8",
+        "@nestjs/common": "^11.2.7",
+        "@nestjs/core": "^11.2.7",
+        "@nestjs/graphql": "^13.4.5",
+        "@nestjs/platform-express": "^11.2.7",
+        "@nestjs/testing": "^11.2.7",
+        "@swc/core": "^1.16.13",
+        "@types/inquirer": "^8.2.13",
         "chokidar-cli": "^2.1.0",
-        "eslint": "^9.39.4",
+        "eslint": "^9.39.5",
         "express": "^5.2.1",
         "graphql": "^16.14.2",
         "prettier": "^3.4.2",
@@ -76,8 +75,8 @@
         "rxjs": "^7.8.2",
         "ts-node": "^10.9.2",
         "typescript": "^5.9.3",
-        "unplugin-swc": "^1.5.9",
-        "vitest": "^4.1.8"
+        "unplugin-swc": "^1.6.0",
+        "vitest": "^4.1.11"
     },
     "peerDependencies": {
         "@mikro-orm/cli": "^7.1.8",

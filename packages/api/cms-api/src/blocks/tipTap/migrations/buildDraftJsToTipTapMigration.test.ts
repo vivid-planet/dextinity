@@ -1,7 +1,11 @@
+import type { JSONContent } from "@tiptap/core";
 import { describe, expect, it } from "vitest";
 
 import { ExternalLinkBlock } from "../../externalLink/external-link.block";
 import { createLinkBlock } from "../../factories/createLinkBlock";
+import { BlockMigration } from "../../migrations/BlockMigration";
+import type { BlockMigrationInterface } from "../../migrations/types";
+import { typeSafeBlockMigrationPipe } from "../../migrations/typeSafeBlockMigrationPipe";
 import { createTipTapRichTextBlock } from "../createTipTapRichTextBlock";
 import type { DraftJsContent } from "./convertDraftJsToTipTap";
 
@@ -32,7 +36,7 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             });
             expect(data.tipTapContent).toEqual({
                 type: "doc",
-                content: [{ type: "paragraph", content: [{ type: "text", text: "Hello" }] }],
+                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Hello" }] }],
             });
         });
 
@@ -51,7 +55,7 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             const input = {
                 tipTapContent: {
                     type: "doc",
-                    content: [{ type: "paragraph", content: [{ type: "text", text: "already migrated" }] }],
+                    content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "already migrated" }] }],
                 },
                 $$version: 1,
             };
@@ -62,7 +66,7 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
         it("preserves TipTap-shaped data when no $$version is present", () => {
             const tipTapContent = {
                 type: "doc",
-                content: [{ type: "paragraph", content: [{ type: "text", text: "pre-existing" }] }],
+                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "pre-existing" }] }],
             };
             const data = block.blockDataFactory({ tipTapContent });
             expect(data.tipTapContent).toEqual(tipTapContent);
@@ -92,7 +96,8 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
                 type: "doc",
                 content: [
                     {
-                        type: "paragraph",
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph" },
                         content: [
                             { type: "text", text: "bold", marks: [{ type: "bold" }] },
                             { type: "text", text: " and " },
@@ -136,7 +141,7 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
                 type: "doc",
                 content: [
                     {
-                        type: "paragraph",
+                        type: "textBlock",
                         content: [{ type: "text", text: "click here", marks: [{ type: "link" }] }],
                     },
                 ],
@@ -167,23 +172,23 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             });
             expect(data.tipTapContent).toEqual({
                 type: "doc",
-                content: [{ type: "paragraph", content: [{ type: "text", text: "click here" }] }],
+                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "click here" }] }],
             });
             expect(data.childBlocksInfo()).toHaveLength(0);
         });
     });
 
-    describe("textBlockStyleMap", () => {
+    describe("textBlockMap", () => {
         const block = createTipTapRichTextBlock(
             {
-                textBlockStyles: [
-                    { name: "headline450", appliesTo: ["heading-2"] },
-                    { name: "paragraph200", appliesTo: ["paragraph"] },
+                textBlocks: [
+                    { name: "paragraph", tag: "p", styles: [{ name: "paragraph200" }] },
+                    { name: "heading-2", tag: "h2", styles: [{ name: "headline450" }] },
                 ],
                 migrateFromDraftJs: {
-                    textBlockStyleMap: {
-                        "paragraph-small": "paragraph200",
-                        "headline-450": { textBlockType: "heading-2", textBlockStyle: "headline450" },
+                    textBlockMap: {
+                        "paragraph-small": { textBlock: "paragraph", textBlockStyle: "paragraph200" },
+                        "headline-450": { textBlock: "heading-2", textBlockStyle: "headline450" },
                     },
                 },
             },
@@ -199,7 +204,13 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             });
             expect(data.tipTapContent).toEqual({
                 type: "doc",
-                content: [{ type: "heading", attrs: { level: 2, textBlockStyle: "headline450" }, content: [{ type: "text", text: "Title" }] }],
+                content: [
+                    {
+                        type: "textBlock",
+                        attrs: { textBlock: "heading-2", textBlockStyle: "headline450" },
+                        content: [{ type: "text", text: "Title" }],
+                    },
+                ],
             });
         });
 
@@ -212,8 +223,148 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             });
             expect(data.tipTapContent).toEqual({
                 type: "doc",
-                content: [{ type: "paragraph", attrs: { textBlockStyle: "paragraph200" }, content: [{ type: "text", text: "small" }] }],
+                content: [
+                    {
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph", textBlockStyle: "paragraph200" },
+                        content: [{ type: "text", text: "small" }],
+                    },
+                ],
             });
+        });
+    });
+
+    describe("listItemMap", () => {
+        const listSizes = { styles: [{ name: "small" }, { name: "large" }] };
+        const listItemMap = {
+            "unordered-list-item-small": { list: "unordered", textBlockStyle: "small" },
+            "unordered-list-item-large": { list: "unordered", textBlockStyle: "large" },
+            "ordered-list-item-small": { list: "ordered", textBlockStyle: "small" },
+            "ordered-list-item-large": { list: "ordered", textBlockStyle: "large" },
+        } as const;
+        const block = createTipTapRichTextBlock(
+            { unorderedList: listSizes, orderedList: listSizes, migrateFromDraftJs: { listItemMap } },
+            "MigratedRichTextListItemMap",
+        );
+
+        function textBlock(text: string, textBlockStyle?: string): JSONContent {
+            return {
+                type: "textBlock",
+                attrs: { textBlock: "paragraph", ...(textBlockStyle !== undefined ? { textBlockStyle } : {}) },
+                content: [{ type: "text", text }],
+            };
+        }
+
+        it("converts a rich text with all list sizes, mixed and nested, into valid content", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [
+                        draftBlock({ type: "unstyled", text: "intro" }),
+                        draftBlock({ type: "unordered-list-item", text: "standard" }),
+                        draftBlock({ type: "unordered-list-item-small", text: "small" }),
+                        draftBlock({ type: "unordered-list-item-small", text: "small nested", depth: 1 }),
+                        draftBlock({ type: "unordered-list-item-large", text: "large" }),
+                        draftBlock({ type: "ordered-list-item-large", text: "large nested", depth: 1 }),
+                        draftBlock({ type: "unstyled", text: "between" }),
+                        draftBlock({ type: "ordered-list-item-small", text: "1" }),
+                        draftBlock({ type: "ordered-list-item", text: "2" }),
+                        draftBlock({ type: "ordered-list-item-large", text: "3" }),
+                    ],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [
+                    textBlock("intro"),
+                    {
+                        type: "bulletList",
+                        content: [
+                            { type: "listItem", content: [textBlock("standard")] },
+                            {
+                                type: "listItem",
+                                content: [
+                                    textBlock("small", "small"),
+                                    { type: "bulletList", content: [{ type: "listItem", content: [textBlock("small nested", "small")] }] },
+                                ],
+                            },
+                            {
+                                type: "listItem",
+                                content: [
+                                    textBlock("large", "large"),
+                                    { type: "orderedList", content: [{ type: "listItem", content: [textBlock("large nested", "large")] }] },
+                                ],
+                            },
+                        ],
+                    },
+                    textBlock("between"),
+                    {
+                        type: "orderedList",
+                        content: [
+                            { type: "listItem", content: [textBlock("1", "small")] },
+                            { type: "listItem", content: [textBlock("2")] },
+                            { type: "listItem", content: [textBlock("3", "large")] },
+                        ],
+                    },
+                ],
+            });
+        });
+
+        it("throws when a mapped list is disabled", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    { orderedList: false, unorderedList: listSizes, migrateFromDraftJs: { listItemMap } },
+                    "MigratedRichTextListItemMapDisabledList",
+                ),
+            ).toThrow('listItemMap maps "ordered-list-item-small" to the ordered list, which is disabled');
+        });
+
+        it("throws when the list doesn't offer the mapped style", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    {
+                        unorderedList: { styles: [{ name: "small" }] },
+                        migrateFromDraftJs: { listItemMap: { custom: { list: "unordered", textBlockStyle: "large" } } },
+                    },
+                    "MigratedRichTextListItemMapUnknownStyle",
+                ),
+            ).toThrow('listItemMap maps "custom" to the style "large", which the unordered list doesn\'t offer');
+        });
+
+        it("throws when the list offers no styles at all", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    { migrateFromDraftJs: { listItemMap: { custom: { list: "unordered", textBlockStyle: "small" } } } },
+                    "MigratedRichTextListItemMapUnstyledList",
+                ),
+            ).toThrow('listItemMap maps "custom" to the style "small", which the unordered list doesn\'t offer');
+        });
+
+        it("throws when a DraftJS type is mapped in both textBlockMap and listItemMap", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    {
+                        unorderedList: listSizes,
+                        migrateFromDraftJs: {
+                            textBlockMap: { "unordered-list-item-small": { textBlock: "paragraph" } },
+                            listItemMap: { "unordered-list-item-small": { list: "unordered", textBlockStyle: "small" } },
+                        },
+                    },
+                    "MigratedRichTextListItemMapDuplicate",
+                ),
+            ).toThrow('"unordered-list-item-small" is mapped in both textBlockMap and listItemMap');
+        });
+
+        it("throws when a built-in list type is mapped", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    {
+                        unorderedList: listSizes,
+                        migrateFromDraftJs: { listItemMap: { "unordered-list-item": { list: "unordered", textBlockStyle: "small" } } },
+                    },
+                    "MigratedRichTextListItemMapBuiltIn",
+                ),
+            ).toThrow('listItemMap maps the built-in list type "unordered-list-item"');
         });
     });
 
@@ -240,14 +391,28 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
                             {
                                 type: "listItem",
                                 content: [
-                                    { type: "paragraph", content: [{ type: "text", text: "a" }] },
+                                    { type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "a" }] },
                                     {
                                         type: "bulletList",
-                                        content: [{ type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "a.1" }] }] }],
+                                        content: [
+                                            {
+                                                type: "listItem",
+                                                content: [
+                                                    {
+                                                        type: "textBlock",
+                                                        attrs: { textBlock: "paragraph" },
+                                                        content: [{ type: "text", text: "a.1" }],
+                                                    },
+                                                ],
+                                            },
+                                        ],
                                     },
                                 ],
                             },
-                            { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "b" }] }] },
+                            {
+                                type: "listItem",
+                                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "b" }] }],
+                            },
                         ],
                     },
                 ],
@@ -274,8 +439,14 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
                     {
                         type: "bulletList",
                         content: [
-                            { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "a" }] }] },
-                            { type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "a.1" }] }] },
+                            {
+                                type: "listItem",
+                                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "a" }] }],
+                            },
+                            {
+                                type: "listItem",
+                                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "a.1" }] }],
+                            },
                         ],
                     },
                 ],
@@ -286,8 +457,12 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
     describe("heading-only target schema", () => {
         const block = createTipTapRichTextBlock(
             {
-                paragraph: false,
-                heading: { levels: [2, 3, 4], defaultLevel: 3 },
+                textBlocks: [
+                    { name: "heading-2", tag: "h2" },
+                    { name: "heading-3", tag: "h3" },
+                    { name: "heading-4", tag: "h4" },
+                ],
+                defaultTextBlock: "heading-3",
                 migrateFromDraftJs: true,
             },
             "MigratedHeadingOnly",
@@ -302,7 +477,7 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             });
             expect(data.tipTapContent).toEqual({
                 type: "doc",
-                content: [{ type: "heading", attrs: { level: 3 }, content: [{ type: "text", text: "Headline" }] }],
+                content: [{ type: "textBlock", attrs: { textBlock: "heading-3" }, content: [{ type: "text", text: "Headline" }] }],
             });
         });
 
@@ -315,7 +490,7 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             });
             expect(data.tipTapContent).toEqual({
                 type: "doc",
-                content: [{ type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "Headline" }] }],
+                content: [{ type: "textBlock", attrs: { textBlock: "heading-2" }, content: [{ type: "text", text: "Headline" }] }],
             });
         });
 
@@ -323,7 +498,7 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             const data = block.blockDataFactory({
                 draftContent: { blocks: [], entityMap: {} },
             });
-            expect(data.tipTapContent).toEqual({ type: "doc", content: [{ type: "heading", attrs: { level: 3 } }] });
+            expect(data.tipTapContent).toEqual({ type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "heading-3" } }] });
         });
 
         it("falls back to headings with the default level when the conversion is invalid", () => {
@@ -336,7 +511,7 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             });
             expect(data.tipTapContent).toEqual({
                 type: "doc",
-                content: [{ type: "heading", attrs: { level: 3 }, content: [{ type: "text", text: "Headline" }] }],
+                content: [{ type: "textBlock", attrs: { textBlock: "heading-3" }, content: [{ type: "text", text: "Headline" }] }],
             });
         });
     });
@@ -357,7 +532,82 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             });
             // Both the converted doc (3 blocks) and the stripped doc (3 blocks) exceed maxTextBlocks,
             // so the migration falls back to the empty doc.
-            expect(data.tipTapContent).toEqual({ type: "doc", content: [{ type: "paragraph" }] });
+            expect(data.tipTapContent).toEqual({ type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "paragraph" } }] });
+        });
+    });
+});
+
+describe("createTipTapRichTextBlock with migrateFromDraftJs and the block's own migrations", () => {
+    interface OwnMigrationData {
+        tipTapContent: JSONContent;
+    }
+
+    const appendedParagraph = { type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "appended" }] };
+
+    class AppendParagraphMigration extends BlockMigration<(from: OwnMigrationData) => OwnMigrationData> implements BlockMigrationInterface {
+        // The DraftJS migration counts in the vendor chain, so the block's own migrations start at 1
+        public readonly toVersion = 1;
+
+        protected migrate({ tipTapContent }: OwnMigrationData): OwnMigrationData {
+            return { tipTapContent: { ...tipTapContent, content: [...(tipTapContent.content ?? []), appendedParagraph] } };
+        }
+    }
+
+    const block = createTipTapRichTextBlock(
+        { migrateFromDraftJs: true },
+        {
+            name: "MigratedRichTextWithOwnMigration",
+            migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([AppendParagraphMigration]) },
+        },
+    );
+
+    function tipTapDoc(text: string, content: JSONContent[] = []): JSONContent {
+        return { type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text }] }, ...content] };
+    }
+
+    it("applies the DraftJS migration before the block's own migration", () => {
+        const data = block.blockDataFactory({
+            draftContent: { blocks: [draftBlock({ type: "unstyled", text: "Hello" })], entityMap: {} },
+        });
+
+        expect(data.tipTapContent).toEqual(tipTapDoc("Hello", [appendedParagraph]));
+    });
+
+    it("applies the block's own migration to data that already ran the DraftJS migration", () => {
+        const data = block.blockDataFactory({ tipTapContent: tipTapDoc("already converted"), $$vendorVersion: 1 });
+
+        expect(data.tipTapContent).toEqual(tipTapDoc("already converted", [appendedParagraph]));
+    });
+
+    it("is a no-op once both chains are up to date", () => {
+        const tipTapContent = tipTapDoc("done", [appendedParagraph]);
+        const data = block.blockDataFactory({ tipTapContent, $$version: 1, $$vendorVersion: 1 });
+
+        expect(data.tipTapContent).toEqual(tipTapContent);
+    });
+
+    describe("data saved before the DraftJS migration moved into the vendor chain", () => {
+        it("doesn't convert content a second time and applies the block's own migration", () => {
+            // `$$version: 1` was the DraftJS migration, the block's own migrations continued from 2
+            const data = block.blockDataFactory({ tipTapContent: tipTapDoc("already converted"), $$version: 1 });
+
+            expect(data.tipTapContent).toEqual(tipTapDoc("already converted", [appendedParagraph]));
+        });
+
+        it("doesn't re-run a migration that ran under the legacy numbering", () => {
+            const tipTapContent = tipTapDoc("already converted", [appendedParagraph]);
+            const data = block.blockDataFactory({ tipTapContent, $$version: 2 });
+
+            expect(data.tipTapContent).toEqual(tipTapContent);
+        });
+
+        it("runs both chains for data that predates the DraftJS migration", () => {
+            const data = block.blockDataFactory({
+                draftContent: { blocks: [draftBlock({ type: "unstyled", text: "Hello" })], entityMap: {} },
+                $$version: 0,
+            });
+
+            expect(data.tipTapContent).toEqual(tipTapDoc("Hello", [appendedParagraph]));
         });
     });
 });

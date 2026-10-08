@@ -19,7 +19,7 @@ This package has two dev-pm scripts (see the `dev-pm` skill for command usage):
 | `mail-react`           | `tsc --watch` — rebuilds `lib/` on change |
 | `mail-react-storybook` | `storybook dev -p 6066 --no-open`         |
 
-The `@mail-react` group starts both.
+The `@mail-react` group starts `mail-react`. Start `mail-react-storybook` on its own, or with the `@storybook` group.
 
 ## Storybook
 

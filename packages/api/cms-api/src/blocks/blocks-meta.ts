@@ -48,6 +48,7 @@ type BlockMetaField =
 
 interface BlockMeta {
     name: string;
+    description?: string;
     fields: BlockMetaField[];
     inputFields: BlockMetaField[];
 }
@@ -132,6 +133,7 @@ export function getBlocksMeta(rootBlocks: Block[]): BlockMeta[] {
         .map((block) => {
             const meta: BlockMeta = {
                 name: block.name,
+                description: block.description,
                 fields: extractFromBlockMeta(block.blockMeta),
                 inputFields: extractFromBlockMeta(block.blockInputMeta),
             };

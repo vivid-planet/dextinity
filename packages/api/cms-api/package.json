@@ -114,7 +114,7 @@
         "eslint": "^9.39.5",
         "express": "^5.2.1",
         "graphql": "^16.14.2",
-        "nest-commander": "^3.20.1",
+        "nest-commander": "^3.21.0",
         "npm-run-all2": "^8.0.4",
         "prettier": "^3.6.2",
         "reflect-metadata": "^0.2.2",

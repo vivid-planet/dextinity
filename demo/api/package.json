@@ -78,7 +78,7 @@
         "graphql": "^16.14.2",
         "graphql-scalars": "^1.26.0",
         "helmet": "^8.1.0",
-        "nest-commander": "^3.20.1",
+        "nest-commander": "^3.21.0",
         "react": "^19.2.6",
         "react-dom": "^19.2.6",
         "react-intl": "^7.1.14",

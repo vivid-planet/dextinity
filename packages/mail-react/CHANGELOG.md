@@ -1,5 +1,7 @@
 # @comet/mail-react
 
+## 10.9.1
+
 ## 10.9.0
 
 ### Minor Changes

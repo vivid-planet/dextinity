@@ -1,9 +1,9 @@
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { DynamicModule, Module, Type } from "@nestjs/common";
-import { EmailCampaignScopeInterface } from "src/types";
 
 import { BrevoApiModule } from "../brevo-api/brevo-api.module";
 import { ConfigModule } from "../config/config.module";
+import { EmailCampaignScopeInterface } from "../types";
 import { BrevoEmailImportLogService } from "./brevo-email-import-log.service";
 import { BrevoEmailImportLogInterface } from "./entity/brevo-email-import-log.entity.factory";
 

@@ -11,6 +11,7 @@ import { BrevoModuleConfig } from "./config/brevo-module.config";
 import { ConfigModule } from "./config/config.module";
 import { EmailCampaignModule } from "./email-campaign/email-campaign.module";
 import { TargetGroupModule } from "./target-group/target-group.module";
+import { EmailCampaignScopeInterface } from "./types";
 
 @Global()
 @Module({})
@@ -23,7 +24,7 @@ export class BrevoModule implements OnModuleInit {
         }
     }
 
-    static register(config: BrevoModuleConfig): DynamicModule {
+    static register<Scope extends EmailCampaignScopeInterface>(config: BrevoModuleConfig<Scope>): DynamicModule {
         const BrevoConfig = BrevoConfigEntityFactory.create({
             Scope: config.emailCampaigns.Scope,
         });

@@ -1,10 +1,10 @@
 import { Brevo } from "@getbrevo/brevo";
 import { Cache, CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Inject, Injectable } from "@nestjs/common";
-import { EmailCampaignScopeInterface } from "src/types";
 
 import { EmailCampaignInterface } from "../email-campaign/entities/email-campaign-entity.factory";
 import { SendingState } from "../email-campaign/sending-state.enum";
+import { EmailCampaignScopeInterface } from "../types";
 import { handleBrevoError } from "./brevo-api.utils";
 import { BrevoApiClientFactory } from "./brevo-api-client.factory";
 import { BrevoApiCampaign } from "./dto/brevo-api-campaign";

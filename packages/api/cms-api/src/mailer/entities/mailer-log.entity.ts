@@ -1,7 +1,7 @@
 import { Entity, Enum, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { ArrayType, BaseEntity, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { SentMessageInfo } from "nodemailer";
+import type { SentMessageInfo } from "nodemailer";
 import { Options as MailOptions } from "nodemailer/lib/mailer";
 import { v4 as uuid } from "uuid";
 

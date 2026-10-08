@@ -2,7 +2,7 @@ import { EntityManager } from "@mikro-orm/core";
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { subDays } from "date-fns";
 import { htmlToText } from "html-to-text";
-import { Transporter } from "nodemailer";
+import type { Transporter } from "nodemailer";
 import Mail, { Address, Options as MailOptions } from "nodemailer/lib/mailer";
 
 import { MailerLog } from "./entities/mailer-log.entity";

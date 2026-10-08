@@ -5,6 +5,7 @@ import JSZip from "jszip";
 import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service";
 import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util";
 import { DextinityEntityNotFoundException } from "../../common/errors/entity-not-found.exception";
+import { WrapperType } from "../../common/helper/wrapper-type";
 import { SortDirection } from "../../common/sorting/sort-direction.enum";
 import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
 import { DamConfig } from "../dam.config";
@@ -88,7 +89,7 @@ export class FoldersService {
     protected readonly logger = new Logger(FoldersService.name);
 
     constructor(
-        @Inject(forwardRef(() => FilesService)) private readonly filesService: FilesService,
+        @Inject(forwardRef(() => FilesService)) private readonly filesService: WrapperType<FilesService>,
         @Inject(forwardRef(() => BlobStorageBackendService)) private readonly blobStorageBackendService: BlobStorageBackendService,
         @Inject(DAM_CONFIG) private readonly config: DamConfig,
         private readonly orm: MikroORM,

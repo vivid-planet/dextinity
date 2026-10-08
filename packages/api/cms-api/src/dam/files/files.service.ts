@@ -11,6 +11,7 @@ import { BlobStorageBackendService } from "../../blob-storage/backends/blob-stor
 import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util";
 import { DextinityEntityNotFoundException } from "../../common/errors/entity-not-found.exception";
 import { DextinityValidationException } from "../../common/errors/validation.exception";
+import { WrapperType } from "../../common/helper/wrapper-type";
 import { SortDirection } from "../../common/sorting/sort-direction.enum";
 import { FileUploadInput } from "../../file-utils/file-upload.input";
 import { calculateFileHash, slugifyFilename } from "../../file-utils/files.utils";
@@ -122,7 +123,7 @@ const withFilesSelect = <Qb extends FilesQueryBuilder>(
 export class FilesService {
     constructor(
         @Inject(forwardRef(() => BlobStorageBackendService)) private readonly blobStorageBackendService: BlobStorageBackendService,
-        private readonly foldersService: FoldersService,
+        @Inject(forwardRef(() => FoldersService)) private readonly foldersService: WrapperType<FoldersService>,
         @Inject(DAM_CONFIG) private readonly config: DamConfig,
         private readonly orm: MikroORM,
         private readonly entityManager: EntityManager,

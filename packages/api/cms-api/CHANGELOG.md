@@ -1,5 +1,7 @@
 # @comet/cms-api
 
+## 8.32.1
+
 ## 8.32.0
 
 ### Minor Changes

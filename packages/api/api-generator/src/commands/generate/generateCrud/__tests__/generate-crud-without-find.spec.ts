@@ -49,7 +49,7 @@ describe("GenerateCrud without find condition", () => {
                 source
                     .getImportDeclarations()
                     .filter((imp) => imp.getModuleSpecifierValue() === "@mikro-orm/postgresql")
-                    .map((imp) => imp.getNamedImports().map((namedImp) => namedImp.getText()))
+                    .map((imp) => imp.getNamedImports().map((namedImp) => namedImp.getName()))
                     .flat(),
             ).toContain("ObjectQuery");
 

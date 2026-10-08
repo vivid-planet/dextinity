@@ -77,7 +77,7 @@
         "@graphql-codegen/typescript": "^4.1.6",
         "@graphql-codegen/typescript-operations": "^4.6.1",
         "@parcel/watcher": "^2.6.0",
-        "@swc/plugin-emotion": "^14.19.0",
+        "@swc/plugin-emotion": "^17.0.0",
         "@types/lodash.isequal": "^4.5.8",
         "@types/node": "^24.19.1",
         "@types/react": "^19.3.0",

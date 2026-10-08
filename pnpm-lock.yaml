@@ -185,8 +185,8 @@ importers:
         specifier: ^2.1.2
         version: 2.1.2(koa@3.2.1)(supports-color@8.1.1)
       dev-process-manager:
-        specifier: ^4.0.0
-        version: 4.0.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
+        specifier: ^4.1.0
+        version: 4.1.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
       dotenv-cli:
         specifier: ^9.0.0
         version: 9.0.0
@@ -11106,8 +11106,8 @@ packages:
     engines: {node: '>=22'}
     hasBin: true
 
-  dev-process-manager@4.0.0:
-    resolution: {integrity: sha512-xwQB6nyh4nfTOPQrYh1wuAfDQRRr/R3yJCqcOs5Fv01qXMwgnWccuIRyvl+zWfvkYgbp129zCn+yUmsCqjdz0Q==}
+  dev-process-manager@4.1.0:
+    resolution: {integrity: sha512-ijapL01oLjjn52LRxKd961D5T/IBuPYRMk+cB2cZiDEoaTgxVTKSsgl7SJRcQEIIpmwrl69ac2ftNCDdwyY8kA==}
     engines: {node: '>=22'}
     hasBin: true
 
@@ -28196,7 +28196,7 @@ snapshots:
       - koa
       - supports-color
 
-  dev-process-manager@4.0.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1):
+  dev-process-manager@4.1.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1):
     dependencies:
       cli-table3: 0.6.5
       colors: 1.4.0

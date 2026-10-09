@@ -127,4 +127,10 @@ describe("getImageOutputExtension", () => {
             Extension.JPG,
         );
     });
+
+    it("returns GIF for a GIF source when negotiation is disabled", () => {
+        expect(getImageOutputExtension({ accept: "image/avif,image/webp,*/*", sourceMimetype: "image/gif", negotiateFormat: false })).toBe(
+            Extension.GIF,
+        );
+    });
 });

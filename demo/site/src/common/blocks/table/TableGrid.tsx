@@ -1,15 +1,24 @@
 import clsx from "clsx";
 
-import { findCellValue, type RenderTableCell, type TableColumn, type TableRow } from "./tableData";
+import { findCellValue, type RenderTableCell, type TableColumn, type TableColumnSize, type TableRow } from "./tableData";
 import styles from "./TableGrid.module.scss";
+
+const minimumWidthClassByColumnSize: Record<TableColumnSize, string> = {
+    extraSmall: styles["cell--minWidthExtraSmall"],
+    small: styles["cell--minWidthSmall"],
+    standard: styles["cell--minWidthStandard"],
+    large: styles["cell--minWidthLarge"],
+    extraLarge: styles["cell--minWidthExtraLarge"],
+};
 
 type TableGridProps<CellValue> = {
     columns: TableColumn[];
     rows: TableRow<CellValue>[];
     renderCell: RenderTableCell<CellValue>;
+    hasMinimumColumnWidths?: boolean;
 };
 
-export function TableGrid<CellValue>({ columns, rows, renderCell }: TableGridProps<CellValue>) {
+export function TableGrid<CellValue>({ columns, rows, renderCell, hasMinimumColumnWidths }: TableGridProps<CellValue>) {
     return (
         <table className={styles.table}>
             <tbody>
@@ -20,7 +29,14 @@ export function TableGrid<CellValue>({ columns, rows, renderCell }: TableGridPro
                             const isCellHighlighted = row.highlighted || column.highlighted;
 
                             return (
-                                <td key={column.id} className={clsx(styles.cell, isCellHighlighted && styles["cell--highlighted"])}>
+                                <td
+                                    key={column.id}
+                                    className={clsx(
+                                        styles.cell,
+                                        isCellHighlighted && styles["cell--highlighted"],
+                                        hasMinimumColumnWidths && minimumWidthClassByColumnSize[column.size],
+                                    )}
+                                >
                                     {cellValue !== undefined && <div className={styles.cell__content}>{renderCell(cellValue)}</div>}
                                 </td>
                             );

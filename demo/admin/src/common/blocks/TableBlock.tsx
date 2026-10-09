@@ -1,5 +1,13 @@
-import { createTableBlock } from "@dextinity/cms-admin";
+import { FormattedMessage } from "react-intl";
 
 import { RichTextBlock } from "./RichTextBlock";
+import { createTableBlockWithResponsiveBehavior } from "./table/createTableBlockWithResponsiveBehavior";
+import { createTableContentBlock } from "./table/createTableContentBlock";
 
-export const TableBlock = createTableBlock({ richText: RichTextBlock });
+const TableContentBlock = createTableContentBlock({ richText: RichTextBlock, name: "TableContent" });
+
+export const TableBlock = createTableBlockWithResponsiveBehavior({
+    name: "Table",
+    displayName: <FormattedMessage id="tableBlock.displayName" defaultMessage="Table" />,
+    tableContentBlock: TableContentBlock,
+});

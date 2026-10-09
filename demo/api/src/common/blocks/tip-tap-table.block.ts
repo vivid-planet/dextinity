@@ -1,5 +1,8 @@
 import { createTableBlock } from "@dextinity/cms-api";
 
+import { createTableBlockWithResponsiveBehavior } from "./table/create-table-block-with-responsive-behavior";
 import { TipTapRichTextBlock } from "./tip-tap-rich-text.block";
 
-export const TipTapTableBlock = createTableBlock({ richText: TipTapRichTextBlock }, "TipTapTable");
+const TipTapTableContentBlock = createTableBlock({ richText: TipTapRichTextBlock }, "TipTapTableContent");
+
+export const TipTapTableBlock = createTableBlockWithResponsiveBehavior({ tableContentBlock: TipTapTableContentBlock, name: "TipTapTable" });

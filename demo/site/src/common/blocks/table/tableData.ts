@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
 
+export type TableColumnSize = "extraSmall" | "small" | "standard" | "large" | "extraLarge";
+
 export type TableColumn = {
     id: string;
+    size: TableColumnSize;
     highlighted: boolean;
 };
 

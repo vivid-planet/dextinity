@@ -1,5 +1,6 @@
 import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import type { LinkBlock } from "@src/common/blocks/link.block";
+import { ResponsiveBehavior } from "@src/common/blocks/table/create-table-block-with-responsive-behavior";
 import { faker } from "@src/db/fixtures/faker";
 import type { LinkBlockFixtureService } from "@src/db/fixtures/generators/blocks/navigation/link-block-fixture.service";
 
@@ -24,9 +25,14 @@ interface TableRowInput<RichTextInput> {
     cellValues: TableCellValueInput<RichTextInput>[];
 }
 
-interface TableBlockInput<RichTextInput> {
+interface TableContentInput<RichTextInput> {
     columns: TableColumnInput[];
     rows: TableRowInput<RichTextInput>[];
+}
+
+interface TableBlockInput<RichTextInput> {
+    table: TableContentInput<RichTextInput>;
+    responsiveBehavior: ResponsiveBehavior;
 }
 
 /** Content of a description cell, to be encoded by the rich text editor of the concrete fixture service. */
@@ -54,6 +60,13 @@ export abstract class TableBlockFixtureBase<RichTextInput> {
     constructor(private readonly linkBlockFixtureService: LinkBlockFixtureService) {}
 
     async generateBlockInput(): Promise<TableBlockInput<RichTextInput>> {
+        return {
+            table: await this.generateTableContentInput(),
+            responsiveBehavior: faker.helpers.arrayElement(Object.values(ResponsiveBehavior)),
+        };
+    }
+
+    private async generateTableContentInput(): Promise<TableContentInput<RichTextInput>> {
         const columns: TableColumnInput[] = [
             { id: columnIds.name, size: "standard", highlighted: false },
             { id: columnIds.email, size: "standard", highlighted: false },

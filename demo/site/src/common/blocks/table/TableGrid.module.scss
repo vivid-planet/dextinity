@@ -29,3 +29,25 @@
         border-right: 1px solid var(--table-border);
     }
 }
+
+// Half of the widths the admin grid uses, which are meant for a table that spans the full page. In rem,
+// so that a larger font size gets more room instead of wrapping again.
+.cell--minWidthExtraSmall {
+    min-width: 3.125rem;
+}
+
+.cell--minWidthSmall {
+    min-width: 6.25rem;
+}
+
+.cell--minWidthStandard {
+    min-width: 9.375rem;
+}
+
+.cell--minWidthLarge {
+    min-width: 12.5rem;
+}
+
+.cell--minWidthExtraLarge {
+    min-width: 15.625rem;
+}

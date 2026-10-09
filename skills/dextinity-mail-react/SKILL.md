@@ -417,6 +417,10 @@ Without `aspectRatio`, the rendered ratio comes from the DAM crop area. Pass `as
 
 When `data.damFile?.image` is absent, both blocks render nothing — no element, no error. Render a placeholder at the call site if you need one.
 
+#### Image format
+
+Both blocks add `negotiateFormat=false` to the image URL, so the API doesn't serve WebP, which classic Outlook for Windows can't display. When you build a DAM image URL for an email yourself, add the same parameter.
+
 ### Rich-text blocks
 
 Two factories render CMS rich text: `createTipTapRichTextBlock` for TipTapRichText block data, and `createRichTextBlock` for RichText block data (draft-js). Each returns an MJML and an HTML component, driven by one configuration. **Call the factory once per configuration — at the top level of a file, never inside a component** — and export the returned pair.

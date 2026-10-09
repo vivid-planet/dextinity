@@ -35,7 +35,7 @@ export function usePixelImageBlockData({
     const aspectRatio = passedAspectRatio !== undefined ? parseAspectRatio(passedAspectRatio) : calculateAspectRatio(damFile.image, usedCropArea);
 
     const optimalWidth = getOptimalAllowedImageWidth(validSizes, defaultRenderWidth, largestPossibleRenderWidth);
-    const resolvedImageUrl = generateImageUrl(urlTemplate, optimalWidth, aspectRatio);
+    const resolvedImageUrl = disableFormatNegotiation(generateImageUrl(urlTemplate, optimalWidth, aspectRatio));
 
     return {
         imageUrl: isAbsoluteUrl(resolvedImageUrl) ? resolvedImageUrl : `${baseUrl}${resolvedImageUrl}`,
@@ -44,6 +44,13 @@ export function usePixelImageBlockData({
         alt: damFile.altText,
         title: damFile.title,
     };
+}
+
+// The DAM serves WebP to clients that accept it, but classic Outlook for Windows can't display WebP.
+// Without negotiation, the image format depends only on the source file.
+function disableFormatNegotiation(url: string): string {
+    const separator = url.includes("?") ? "&" : "?";
+    return `${url}${separator}negotiateFormat=false`;
 }
 
 function isAbsoluteUrl(url: string): boolean {

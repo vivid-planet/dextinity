@@ -8,12 +8,12 @@ import {
     Inject,
     NotFoundException,
     Param,
+    Query,
     Res,
     Type,
 } from "@nestjs/common";
 import { Response } from "express";
 import { OutgoingHttpHeaders } from "http";
-import mime from "mime";
 import { PassThrough, Readable } from "stream";
 
 import { DisableDextinityGuards } from "../../auth/decorators/disable-dextinity-guards.decorator";
@@ -22,9 +22,8 @@ import { BlobStorageBackendService } from "../../blob-storage/backends/blob-stor
 import { ScaledImagesCacheService } from "../../blob-storage/cache/scaled-images-cache.service";
 import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util";
 import { FocalPoint } from "../../file-utils/focal-point.enum";
-import { BASIC_TYPES, MODERN_TYPES } from "../../file-utils/images.constants";
-import { getCenteredPosition, getMaxDimensionsFromArea, getSupportedMimeType } from "../../file-utils/images.util";
-import { Extension, Gravity, ResizingType } from "../../imgproxy/imgproxy.enum";
+import { getCenteredPosition, getImageOutputExtension, getMaxDimensionsFromArea } from "../../file-utils/images.util";
+import { Gravity, ResizingType } from "../../imgproxy/imgproxy.enum";
 import { ImgproxyService } from "../../imgproxy/imgproxy.service";
 import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
 import { CurrentUser } from "../../user-permissions/dto/current-user";
@@ -57,6 +56,7 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
         async previewFocusCroppedImage(
             @Param() params: ImageParams,
             @Headers("Accept") accept: string,
+            @Query("negotiateFormat") negotiateFormat: string | undefined,
             @Res() res: Response,
             @GetCurrentUser() user: CurrentUser,
         ): Promise<void> {
@@ -77,7 +77,7 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
                 throw new ForbiddenException();
             }
 
-            return this.pipeCroppedImage(file, params, accept, res, {
+            return this.pipeCroppedImage(file, params, { accept, negotiateFormat: negotiateFormat !== "false" }, res, {
                 "cache-control": "max-age=31536000, private", // Local caches only (1 year)
             });
         }
@@ -86,6 +86,7 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
         async previewSmartCroppedImage(
             @Param() params: ImageParams,
             @Headers("Accept") accept: string,
+            @Query("negotiateFormat") negotiateFormat: string | undefined,
             @Res() res: Response,
             @GetCurrentUser() user: CurrentUser,
         ): Promise<void> {
@@ -107,14 +108,19 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
                 throw new ForbiddenException();
             }
 
-            return this.pipeCroppedImage(file, params, accept, res, {
+            return this.pipeCroppedImage(file, params, { accept, negotiateFormat: negotiateFormat !== "false" }, res, {
                 "cache-control": "max-age=31536000, private", // Local caches only (1 year)
             });
         }
 
         @DisableDextinityGuards()
         @Get(`/:hash{/:contentHash}/${focusImageUrl}`)
-        async focusCroppedImage(@Param() params: HashImageParams, @Headers("Accept") accept: string, @Res() res: Response): Promise<void> {
+        async focusCroppedImage(
+            @Param() params: HashImageParams,
+            @Headers("Accept") accept: string,
+            @Query("negotiateFormat") negotiateFormat: string | undefined,
+            @Res() res: Response,
+        ): Promise<void> {
             if (!this.isValidHash(params) || params.cropArea.focalPoint === FocalPoint.SMART) {
                 throw new BadRequestException("Invalid hash");
             }
@@ -128,14 +134,19 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
-            return this.pipeCroppedImage(file, params, accept, res, {
+            return this.pipeCroppedImage(file, params, { accept, negotiateFormat: negotiateFormat !== "false" }, res, {
                 "cache-control": "max-age=31536000, s-maxage=86400, public", // Public cache, 1 year for browsers, 1 day for proxies/cdn's
             });
         }
 
         @DisableDextinityGuards()
         @Get(`/:hash{/:contentHash}/${smartImageUrl}`)
-        async smartCroppedImage(@Param() params: HashImageParams, @Headers("Accept") accept: string, @Res() res: Response): Promise<void> {
+        async smartCroppedImage(
+            @Param() params: HashImageParams,
+            @Headers("Accept") accept: string,
+            @Query("negotiateFormat") negotiateFormat: string | undefined,
+            @Res() res: Response,
+        ): Promise<void> {
             if (!this.isValidHash(params) || params.cropArea.focalPoint !== FocalPoint.SMART) {
                 throw new BadRequestException("Invalid hash");
             }
@@ -149,7 +160,7 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
-            return this.pipeCroppedImage(file, params, accept, res, {
+            return this.pipeCroppedImage(file, params, { accept, negotiateFormat: negotiateFormat !== "false" }, res, {
                 "cache-control": "max-age=31536000, s-maxage=86400, public", // Public cache, 1 year for browsers, 1 day for proxies/cdn's
             });
         }
@@ -161,7 +172,7 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
         private async pipeCroppedImage(
             file: FileInterface,
             { cropArea, resizeWidth, resizeHeight, focalPoint }: ImageParams,
-            accept: string,
+            { accept, negotiateFormat }: { accept: string; negotiateFormat: boolean },
             res: Response,
             headers?: OutgoingHttpHeaders,
         ): Promise<void> {
@@ -221,16 +232,14 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
                 .builder()
                 .crop(cropWidth, cropHeight, cropGravity, cropOffsetX, cropOffsetY)
                 .resize(ResizingType.AUTO, resizeWidth)
-                .format(
-                    (mime.getExtension(
-                        getSupportedMimeType(MODERN_TYPES, accept) ?? getSupportedMimeType(BASIC_TYPES, file.mimetype) ?? "",
-                    ) as Extension) || Extension.JPG,
-                )
+                .format(getImageOutputExtension({ accept, sourceMimetype: file.mimetype, negotiateFormat }))
                 .generateUrl(
                     `${this.blobStorageBackendService.getBackendFilePathPrefix()}${this.config.filesDirectory}/${createHashedPath(file.contentHash)}`,
                 );
 
-            res.vary("Accept");
+            if (negotiateFormat) {
+                res.vary("Accept");
+            }
 
             const cache = await this.cacheService.get(file.contentHash, path);
             if (!cache) {

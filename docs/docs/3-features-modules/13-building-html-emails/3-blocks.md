@@ -74,6 +74,10 @@ By default, the rendered aspect ratio comes from the DAM crop area. The `aspectR
 
 On viewports narrower than the default body width, both blocks automatically scale the rendered image to fit its container.
 
+### Image format
+
+Both blocks add `negotiateFormat=false` to the image URL, so the API doesn't serve WebP: JPEG, PNG, and GIF images keep their source format, and all other images are converted to JPEG. Classic Outlook for Windows can't display WebP. Add the same parameter when you build a DAM image URL for an email yourself.
+
 ## Rich-text blocks
 
 Two factories create components that render rich text from the CMS: `createTipTapRichTextBlock` for `TipTapRichTextBlockData`, and `createRichTextBlock` for `RichTextBlockData` (draft-js raw content). Each factory returns one component for the MJML context and one for raw HTML, both driven by the same configuration.

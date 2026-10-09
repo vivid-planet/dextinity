@@ -658,6 +658,7 @@ type EntityInfo {
   id: String!
   name: String!
   secondaryInformation: String
+  visible: Boolean!
 }
 
 input FileFilterInput {
@@ -2367,6 +2368,7 @@ input WarningFilter {
   status: WarningStatusEnumFilter
   type: StringFilter
   updatedAt: DateTimeFilter
+  visible: BooleanFilter
 }
 
 enum WarningSeverity {
@@ -2394,6 +2396,7 @@ enum WarningSortField {
   status
   type
   updatedAt
+  visible
 }
 
 type WarningSourceInfo {

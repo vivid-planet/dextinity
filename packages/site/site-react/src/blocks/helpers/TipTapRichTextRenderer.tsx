@@ -40,21 +40,6 @@ const defaultTextBlockTags: Record<string, "h1" | "h2" | "h3" | "h4" | "h5" | "h
     "heading-6": "h6",
 };
 
-// Content converted from DraftJS before soft line breaks became hardBreak nodes keeps them as
-// newlines within the text.
-function renderTextWithLineBreaks(text: string): ReactNode {
-    if (!text.includes("\n")) {
-        return text;
-    }
-
-    const lines = text.split("\n");
-    const content: ReactNode[] = [lines[0]];
-    for (let index = 1; index < lines.length; index++) {
-        content.push(<br key={index} />, lines[index]);
-    }
-    return content;
-}
-
 const defaultTipTapNodeMapping: Record<string, TipTapNodeHandler> = {
     textBlock: ({ node, children }) => {
         const Tag = defaultTextBlockTags[node.attrs?.textBlock as string] ?? "p";
@@ -97,9 +82,25 @@ export function renderTipTapRichText({ content, nodeMapping, markMapping }: Rend
         return result;
     };
 
+    // Content converted from DraftJS before soft line breaks became hardBreak nodes keeps them as
+    // newlines within the text. They render like a hardBreak node, including a custom handler.
+    const renderTextWithLineBreaks = (text: string, parent: TipTapNode | undefined): ReactNode => {
+        if (!text.includes("\n")) {
+            return text;
+        }
+
+        const lines = text.split("\n");
+        const content: ReactNode[] = [lines[0]];
+        for (let index = 1; index < lines.length; index++) {
+            const lineBreak = renderNode({ type: "hardBreak" }, parent);
+            content.push(isValidElement(lineBreak) ? cloneElement(lineBreak, { key: index }) : lineBreak, lines[index]);
+        }
+        return content;
+    };
+
     const renderNode = (node: TipTapNode, parent: TipTapNode | undefined): ReactNode => {
         if (!node.type || node.type === "text") {
-            return applyMarks(renderTextWithLineBreaks(node.text ?? ""), node);
+            return applyMarks(renderTextWithLineBreaks(node.text ?? "", parent), node);
         }
 
         const renderedChildren = node.content?.map((child, index) => {

@@ -390,11 +390,7 @@ The style is applied to new content, to a text block the editor converts through
 
 `defaultStyle` must be one of the text block's `styles`, otherwise an error is thrown. It only exists next to `styles`, not next to a text block's own `element`.
 
-:::caution Existing content
-
-Content written before a `defaultStyle` was configured carries no style, and the editor fills it in on the first edit rather than when the document is opened, so opening a document does not mark it as changed.
-
-:::
+Content written before a `defaultStyle` was configured carries no style. The API fills in the `defaultStyle` whenever it reads such a text block, inside a list item the list's, so the site always receives the style's name and needs no migration for it.
 
 #### Text blocks without a style choice
 

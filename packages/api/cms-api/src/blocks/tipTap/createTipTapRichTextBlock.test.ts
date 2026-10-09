@@ -1762,3 +1762,94 @@ describe("createTipTapRichTextBlock block typing", () => {
         expect(blockData.tipTapContent.type).toBe("doc");
     });
 });
+
+describe("createTipTapRichTextBlock defaultStyle on read", () => {
+    const listStyles = { styles: [{ name: "list300" }, { name: "list200" }] };
+    const block = createTipTapRichTextBlock(
+        {
+            textBlocks: [
+                { name: "paragraph", tag: "p", styles: [{ name: "copy300" }, { name: "copy200" }], defaultStyle: "copy300" },
+                { name: "heading-2", tag: "h2", styles: [{ name: "headline400" }], defaultStyle: "headline400" },
+                { name: "heading-3", tag: "h3", styles: [{ name: "headline300" }] },
+            ],
+            orderedList: listStyles,
+            unorderedList: { ...listStyles, defaultStyle: "list300" },
+        },
+        "TestDefaultStyleOnRead",
+    );
+
+    function textBlock(attrs: Record<string, unknown>): TipTapRichTextBlockContent {
+        return { type: "textBlock", attrs, content: [{ type: "text", text: "Text" }] };
+    }
+
+    function read(content: TipTapRichTextBlockContent[]): TipTapRichTextBlockContent[] | undefined {
+        return block.blockDataFactory({ tipTapContent: { type: "doc", content } }).tipTapContent.content;
+    }
+
+    it("fills in the text block's defaultStyle where the content carries no style", () => {
+        expect(read([textBlock({ textBlock: "paragraph" }), textBlock({ textBlock: "heading-2", textBlockStyle: null })])).toEqual([
+            textBlock({ textBlock: "paragraph", textBlockStyle: "copy300" }),
+            textBlock({ textBlock: "heading-2", textBlockStyle: "headline400" }),
+        ]);
+    });
+
+    it("keeps a style the content carries", () => {
+        expect(read([textBlock({ textBlock: "paragraph", textBlockStyle: "copy200" })])).toEqual([
+            textBlock({ textBlock: "paragraph", textBlockStyle: "copy200" }),
+        ]);
+    });
+
+    it("leaves a text block without defaultStyle unstyled", () => {
+        expect(read([textBlock({ textBlock: "heading-3" })])).toEqual([textBlock({ textBlock: "heading-3" })]);
+    });
+
+    it("gives a node naming no text block the default text block's defaultStyle", () => {
+        expect(read([{ type: "textBlock", content: [{ type: "text", text: "Text" }] }])).toEqual([textBlock({ textBlockStyle: "copy300" })]);
+    });
+
+    it("takes the innermost list's defaultStyle inside a list item rather than the text block's", () => {
+        expect(
+            read([
+                {
+                    type: "orderedList",
+                    content: [
+                        {
+                            type: "listItem",
+                            content: [
+                                textBlock({ textBlock: "paragraph" }),
+                                { type: "bulletList", content: [{ type: "listItem", content: [textBlock({ textBlock: "paragraph" })] }] },
+                            ],
+                        },
+                    ],
+                },
+            ]),
+        ).toEqual([
+            {
+                type: "orderedList",
+                content: [
+                    {
+                        type: "listItem",
+                        content: [
+                            // The ordered list has no defaultStyle, and inside it the text block's doesn't apply.
+                            textBlock({ textBlock: "paragraph" }),
+                            {
+                                type: "bulletList",
+                                content: [{ type: "listItem", content: [textBlock({ textBlock: "paragraph", textBlockStyle: "list300" })] }],
+                            },
+                        ],
+                    },
+                ],
+            },
+        ]);
+    });
+
+    it("leaves the content untouched where nothing has a defaultStyle", () => {
+        const blockWithoutDefaults = createTipTapRichTextBlock(
+            { textBlocks: [{ name: "paragraph", tag: "p", styles: [{ name: "copy300" }] }] },
+            "TestNoDefaultStyleOnRead",
+        );
+        const content = [textBlock({ textBlock: "paragraph" })];
+
+        expect(blockWithoutDefaults.blockDataFactory({ tipTapContent: { type: "doc", content } }).tipTapContent.content).toEqual(content);
+    });
+});

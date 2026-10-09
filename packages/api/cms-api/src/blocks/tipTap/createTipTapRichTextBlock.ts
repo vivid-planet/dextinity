@@ -25,6 +25,7 @@ import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/
 import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
 import type { MigrateVendorOptions } from "../migrations/types";
 import type { SearchText, WeightedSearchText } from "../search/get-search-text";
+import { applyDefaultTextBlockStyles } from "./applyDefaultTextBlockStyles";
 import { CmsBlock, CmsInlineBlock } from "./extensions/CmsBlock";
 import { CmsLink } from "./extensions/CmsLink";
 import { InlineStyleMark } from "./extensions/InlineStyleMark";
@@ -811,6 +812,8 @@ export function createTipTapRichTextBlock(
         if (hasChildBlocks) {
             tipTapContent = mapCmsBlockNodesData(tipTapContent, (blockType, data) => childBlocks[blockType].blockDataFactory(data));
         }
+        // Runs after the migrations, so content converted from DraftJS gets its default styles here too.
+        tipTapContent = applyDefaultTextBlockStyles(tipTapContent, resolvedOptions);
         return plainToInstance(TipTapRichTextBlockData, { tipTapContent });
     };
     const blockInputFactory: BlockInputFactory<TipTapRichTextBlockInputInterface> = (o) => plainToInstance(TipTapRichTextBlockInput, o);

@@ -1,3 +1,7 @@
 .pageLayoutContent {
     grid-column: 3 / -3;
+
+    // How far the content column is inset from the page, as a share of its own width: 2 of the page
+    // grid's 24 tracks on each side, 20 covered. A scrolling table uses it to reach back out.
+    --table-layout-inset: 10%;
 }

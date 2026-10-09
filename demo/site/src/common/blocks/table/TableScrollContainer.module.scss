@@ -1,0 +1,14 @@
+.scrollContainer {
+    overflow-x: auto;
+
+    // Reaches out to the edge of the page and puts the inset back as padding, so a table that fits keeps
+    // the width of the content column and a table that overflows scrolls through the inset. The padding
+    // of a scroll container is part of the area it scrolls and paints, which a margin is not.
+    margin-inline: calc(-1 * var(--table-layout-inset, 0%));
+    padding-inline: var(--table-layout-inset, 0%);
+
+    // The container ends where the page ends, so the ring has to be inside it to stay on screen.
+    &:focus-visible {
+        outline-offset: -3px;
+    }
+}

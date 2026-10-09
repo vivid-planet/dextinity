@@ -24,6 +24,7 @@ import { SliderBlockFixtureService } from "./blocks/slider-fixture.service";
 import { BillboardTeaserBlockFixtureService } from "./blocks/teaser/billboard-teaser-block-fixture.service";
 import { TeaserBlockFixtureService } from "./blocks/teaser/teaser-block-fixture.service";
 import { KeyFactsBlockFixtureService } from "./blocks/text-and-content/key-facts-block-fixture.service";
+import { ResponsiveTableBlockFixtureService } from "./blocks/text-and-content/responsive-table-block-fixture.service";
 import { StandaloneHeadingBlockFixtureService } from "./blocks/text-and-content/standalone-heading-block-fixture.service";
 import { TableBlockFixtureService } from "./blocks/text-and-content/table-block-fixture.service";
 import { TextImageBlockFixtureService } from "./blocks/text-and-content/text-image-block-fixture.service";
@@ -59,6 +60,7 @@ export class PageContentBlockFixtureService {
         private readonly tableBlockFixtureService: TableBlockFixtureService,
         private readonly tipTapRichTextBlockFixtureService: TipTapRichTextBlockFixtureService,
         private readonly tipTapTableBlockFixtureService: TipTapTableBlockFixtureService,
+        private readonly responsiveTableBlockFixtureService: ResponsiveTableBlockFixtureService,
     ) {}
 
     async generateBlockInput(blockCategory?: BlockCategory): Promise<ExtractBlockInputFactoryProps<typeof PageContentBlock>> {
@@ -91,6 +93,7 @@ export class PageContentBlockFixtureService {
             table: ["textAndContent", this.tableBlockFixtureService],
             tipTapRichText: ["textAndContent", this.tipTapRichTextBlockFixtureService],
             tipTapTable: ["textAndContent", this.tipTapTableBlockFixtureService],
+            responsiveTable: ["textAndContent", this.responsiveTableBlockFixtureService],
         };
 
         const supportedBlocksFixtureGenerators = Object.entries(fixtures)

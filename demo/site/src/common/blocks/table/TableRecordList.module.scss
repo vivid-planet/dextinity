@@ -1,0 +1,22 @@
+@use "./tableCellStyles" as *;
+@include table-cell-styles;
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.row:not(:last-child) > .cell {
+    border-bottom: 1px solid var(--table-border);
+}
+
+// Separates two records. An empty row keeps the gap free of the cell backgrounds and borders, which
+// padding on a cell cannot.
+.spacerCell {
+    height: var(--spacing-s300);
+}
+
+.labelCell {
+    width: 40%;
+    vertical-align: top;
+}

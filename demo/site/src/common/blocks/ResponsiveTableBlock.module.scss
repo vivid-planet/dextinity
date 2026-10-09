@@ -1,0 +1,15 @@
+@use "@src/styles/variables" as *;
+
+.grid {
+    display: none;
+
+    @media (min-width: $breakpoint-md) {
+        display: block;
+    }
+}
+
+.recordList {
+    @media (min-width: $breakpoint-md) {
+        display: none;
+    }
+}

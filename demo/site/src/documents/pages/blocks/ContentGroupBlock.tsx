@@ -3,6 +3,7 @@ import type { ContentGroupBlockData, ContentGroupContentBlockData } from "@src/b
 import { PageContentAccordionBlock } from "@src/common/blocks/AccordionBlock";
 import { AnchorBlock } from "@src/common/blocks/AnchorBlock";
 import { PageContentMediaGalleryBlock } from "@src/common/blocks/MediaGalleryBlock";
+import { ResponsiveTableBlock } from "@src/common/blocks/ResponsiveTableBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
 import { PageContentStandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCallToActionListBlock";
 import { PageContentStandaloneHeadingBlock } from "@src/common/blocks/StandaloneHeadingBlock";
@@ -32,6 +33,7 @@ const supportedBlocks: SupportedBlocks = {
     mediaGallery: (props) => <PageContentMediaGalleryBlock data={props} />,
     table: (props) => <TableBlock data={props} />,
     tipTapTable: (props) => <TipTapTableBlock data={props} />,
+    responsiveTable: (props) => <ResponsiveTableBlock data={props} />,
 };
 
 const ContentGroupContentBlock = withPreview(

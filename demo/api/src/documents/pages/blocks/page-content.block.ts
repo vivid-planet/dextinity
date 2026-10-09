@@ -3,6 +3,7 @@ import { AccordionBlock } from "@src/common/blocks/accordion.block";
 import { ContactFormBlock } from "@src/common/blocks/contact-form.block";
 import { MediaGalleryBlock } from "@src/common/blocks/media-gallery.block";
 import { PageTreeIndexBlock } from "@src/common/blocks/page-tree-index.block";
+import { ResponsiveTableBlock } from "@src/common/blocks/responsive-table.block";
 import { SpaceBlock } from "@src/common/blocks/space.block";
 import { StandaloneCallToActionListBlock } from "@src/common/blocks/standalone-call-to-action-list.block";
 import { StandaloneHeadingBlock } from "@src/common/blocks/standalone-heading.block";
@@ -50,6 +51,7 @@ const supportedBlocks = {
     fullWidthImage: FullWidthImageBlock,
     table: TableBlock,
     tipTapTable: TipTapTableBlock,
+    responsiveTable: ResponsiveTableBlock,
     tipTapRichText: TipTapRichTextBlock,
     pageTreeIndex: PageTreeIndexBlock,
     contactForm: ContactFormBlock,

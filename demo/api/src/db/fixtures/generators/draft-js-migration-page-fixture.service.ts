@@ -170,7 +170,7 @@ export class DraftJsMigrationPageFixtureService {
         private readonly pageTreeService: PageTreeService,
     ) {}
 
-    async execute(): Promise<void> {
+    async execute({ parentId }: { parentId: string }): Promise<void> {
         const documentId = "deadbeef-0000-4000-8000-000000000001";
         const scope: PageTreeNodeScope = { domain: "main", language: "en" };
 
@@ -178,6 +178,7 @@ export class DraftJsMigrationPageFixtureService {
             {
                 name: "DraftJS Migration Demo",
                 slug: "draftjs-migration-demo",
+                parentId,
                 attachedDocument: { id: documentId, type: "Page" },
                 userGroup: UserGroup.all,
             } as PageTreeNodeBaseCreateInput,

@@ -699,7 +699,8 @@
                                 "space": "Space",
                                 "teaser": "Teaser",
                                 "table": "Table",
-                                "tipTapTable": "TipTapTable"
+                                "tipTapTable": "TipTapTable",
+                                "responsiveTable": "ResponsiveTable"
                             },
                             "nullable": false
                         }
@@ -745,7 +746,8 @@
                                 "space": "Space",
                                 "teaser": "Teaser",
                                 "table": "Table",
-                                "tipTapTable": "TipTapTable"
+                                "tipTapTable": "TipTapTable",
+                                "responsiveTable": "ResponsiveTable"
                             },
                             "nullable": false
                         }
@@ -2651,6 +2653,7 @@
                                 "fullWidthImage": "FullWidthImage",
                                 "table": "Table",
                                 "tipTapTable": "TipTapTable",
+                                "responsiveTable": "ResponsiveTable",
                                 "tipTapRichText": "TipTapRichText",
                                 "pageTreeIndex": "PageTreeIndex",
                                 "contactForm": "ContactForm"
@@ -2719,6 +2722,7 @@
                                 "fullWidthImage": "FullWidthImage",
                                 "table": "Table",
                                 "tipTapTable": "TipTapTable",
+                                "responsiveTable": "ResponsiveTable",
                                 "tipTapRichText": "TipTapRichText",
                                 "pageTreeIndex": "PageTreeIndex",
                                 "contactForm": "ContactForm"
@@ -3145,6 +3149,45 @@
             {
                 "name": "activeType",
                 "kind": "String",
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "ResponsiveTable",
+        "fields": [
+            {
+                "name": "table",
+                "kind": "Block",
+                "block": "TipTapTable",
+                "nullable": false
+            },
+            {
+                "name": "responsiveBehavior",
+                "kind": "Enum",
+                "enum": [
+                    "horizontalScrolling",
+                    "headerRow",
+                    "headerColumn"
+                ],
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "table",
+                "kind": "Block",
+                "block": "TipTapTable",
+                "nullable": false
+            },
+            {
+                "name": "responsiveBehavior",
+                "kind": "Enum",
+                "enum": [
+                    "horizontalScrolling",
+                    "headerRow",
+                    "headerColumn"
+                ],
                 "nullable": false
             }
         ]

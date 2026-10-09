@@ -45,6 +45,7 @@ import { BillboardTeaserBlockFixtureService } from "./generators/blocks/teaser/b
 import { TeaserBlockFixtureService } from "./generators/blocks/teaser/teaser-block-fixture.service";
 import { HeadingBlockFixtureService } from "./generators/blocks/text-and-content/heading-block-fixture.service";
 import { KeyFactsBlockFixtureService } from "./generators/blocks/text-and-content/key-facts-block-fixture.service";
+import { ResponsiveTableBlockFixtureService } from "./generators/blocks/text-and-content/responsive-table-block-fixture.service";
 import { RichTextBlockFixtureService } from "./generators/blocks/text-and-content/rich-text-block-fixture.service";
 import { StandaloneHeadingBlockFixtureService } from "./generators/blocks/text-and-content/standalone-heading-block-fixture.service";
 import { TableBlockFixtureService } from "./generators/blocks/text-and-content/table-block-fixture.service";
@@ -61,9 +62,11 @@ import { NewsFixtureService } from "./generators/news-fixture.service";
 import { PageContentBlockFixtureService } from "./generators/page-content-block-fixture.service";
 import { ProductsFixtureService } from "./generators/products-fixture.service";
 import { RedirectsFixtureService } from "./generators/redirects-fixture.service";
+import { ResponsiveTablePageFixtureService } from "./generators/responsive-table-page-fixture.service";
 import { SeoBlockFixtureService } from "./generators/seo-block-fixture.service";
 import { StageBlockFixtureService } from "./generators/stage-block-fixture.service";
 import { SvgImageFileFixtureService } from "./generators/svg-image-file-fixture.service";
+import { TestPagesFixtureService } from "./generators/test-pages-fixture.service";
 import { VideoFixtureService } from "./generators/video-fixture.service";
 import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.service";
 
@@ -130,6 +133,9 @@ import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.s
         TipTapRichTextBlockFixtureService,
         TipTapTableBlockFixtureService,
         WelcomeEmailFixtureService,
+        TestPagesFixtureService,
+        ResponsiveTableBlockFixtureService,
+        ResponsiveTablePageFixtureService,
     ],
 })
 export class FixturesModule {}

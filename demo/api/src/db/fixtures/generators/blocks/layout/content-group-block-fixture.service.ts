@@ -10,6 +10,7 @@ import { AnchorBlockFixtureService } from "../navigation/anchor-block-fixture.se
 import { StandaloneCallToActionListBlockFixtureService } from "../navigation/standalone-call-to-action-list-block-fixture.service";
 import { TeaserBlockFixtureService } from "../teaser/teaser-block-fixture.service";
 import { KeyFactsBlockFixtureService } from "../text-and-content/key-facts-block-fixture.service";
+import { ResponsiveTableBlockFixtureService } from "../text-and-content/responsive-table-block-fixture.service";
 import { StandaloneHeadingBlockFixtureService } from "../text-and-content/standalone-heading-block-fixture.service";
 import { StandaloneRichTextBlockFixtureService } from "../text-and-content/standalone-rich-text-block-fixture.service";
 import { TableBlockFixtureService } from "../text-and-content/table-block-fixture.service";
@@ -34,6 +35,7 @@ export class ContentGroupBlockFixtureService {
         private readonly tableBlockFixtureService: TableBlockFixtureService,
         private readonly teaserBlockFixtureService: TeaserBlockFixtureService,
         private readonly tipTapTableBlockFixtureService: TipTapTableBlockFixtureService,
+        private readonly responsiveTableBlockFixtureService: ResponsiveTableBlockFixtureService,
     ) {}
 
     async generateContentGroupContentBlock(): Promise<ExtractBlockInputFactoryProps<typeof ContentBlock>> {
@@ -53,6 +55,7 @@ export class ContentGroupBlockFixtureService {
             table: this.tableBlockFixtureService,
             teaser: this.teaserBlockFixtureService,
             tipTapTable: this.tipTapTableBlockFixtureService,
+            responsiveTable: this.responsiveTableBlockFixtureService,
         };
 
         for (const block of Object.entries(blockCfg)) {

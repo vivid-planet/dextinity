@@ -8,6 +8,7 @@ import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
 import { LayoutBlock } from "@src/common/blocks/LayoutBlock";
 import { PageContentMediaGalleryBlock } from "@src/common/blocks/MediaGalleryBlock";
 import { PageTreeIndexBlock } from "@src/common/blocks/PageTreeIndexBlock";
+import { ResponsiveTableBlock } from "@src/common/blocks/ResponsiveTableBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
 import { PageContentStandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCallToActionListBlock";
 import { PageContentStandaloneHeadingBlock } from "@src/common/blocks/StandaloneHeadingBlock";
@@ -51,6 +52,7 @@ const supportedBlocks: SupportedBlocks = {
     fullWidthImage: (props) => <FullWidthImageBlock data={props} />,
     table: (props) => <TableBlock data={props} />,
     tipTapTable: (props) => <TipTapTableBlock data={props} />,
+    responsiveTable: (props) => <ResponsiveTableBlock data={props} />,
     tipTapRichText: (props) => <PageContentTipTapRichTextBlock data={props} />,
     pageTreeIndex: (props) => <PageTreeIndexBlock data={props} />,
     contactForm: (props) => <ContactFormBlock data={props} />,

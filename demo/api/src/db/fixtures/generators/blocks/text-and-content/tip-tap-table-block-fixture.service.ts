@@ -5,10 +5,26 @@ import { LinkBlockFixtureService } from "@src/db/fixtures/generators/blocks/navi
 
 import { DescriptionCellContent, TableBlockFixtureBase } from "./table-block-fixture-base";
 
-type TipTapRichTextInput = ExtractBlockInputFactoryProps<typeof TipTapRichTextBlock>;
+export type TipTapRichTextInput = ExtractBlockInputFactoryProps<typeof TipTapRichTextBlock>;
 
 const standardParagraphStyle = "paragraph300";
 const smallParagraphStyle = "paragraph200";
+
+/** Cell content of a TipTap table: a single paragraph of plain text. */
+export function createTipTapCellRichText(text: string, { isBold }: { isBold?: boolean } = {}): TipTapRichTextInput {
+    return {
+        tipTapContent: {
+            type: "doc",
+            content: [
+                {
+                    type: "textBlock",
+                    attrs: { textBlock: "paragraph", textBlockStyle: standardParagraphStyle },
+                    content: [isBold ? { type: "text", marks: [{ type: "bold" }], text } : { type: "text", text }],
+                },
+            ],
+        },
+    };
+}
 
 @Injectable()
 export class TipTapTableBlockFixtureService extends TableBlockFixtureBase<TipTapRichTextInput> {
@@ -17,18 +33,7 @@ export class TipTapTableBlockFixtureService extends TableBlockFixtureBase<TipTap
     }
 
     protected createSimpleCellRichText(text: string): TipTapRichTextInput {
-        return {
-            tipTapContent: {
-                type: "doc",
-                content: [
-                    {
-                        type: "textBlock",
-                        attrs: { textBlock: "paragraph", textBlockStyle: standardParagraphStyle },
-                        content: [{ type: "text", text }],
-                    },
-                ],
-            },
-        };
+        return createTipTapCellRichText(text);
     }
 
     protected createDescriptionCellRichText({

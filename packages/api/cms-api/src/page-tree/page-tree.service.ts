@@ -4,6 +4,7 @@ import { forwardRef, Inject, Injectable } from "@nestjs/common";
 
 import { DextinityValidationException } from "../common/errors/validation.exception";
 import { RedirectsService } from "../redirects/redirects.service";
+import { contentScopesAreEqual } from "../user-permissions/content-scopes-are-equal";
 import { AttachedDocumentStrictInput } from "./dto/attached-document.input";
 import { MovePageTreeNodesByPosInput, PageTreeNodeBaseCreateInput } from "./dto/page-tree-node.input";
 import { AttachedDocument } from "./entities/attached-document.entity";
@@ -52,6 +53,11 @@ export class PageTreeService {
 
         const { attachedDocument: attachedDocumentInput, parentId, ...restInput } = input;
 
+        await this.validateParentScope({ parentId, scope });
+        if (attachedDocumentInput.id) {
+            await this.validateAttachedDocumentScope({ documentId: attachedDocumentInput.id, targetNodeScope: scope });
+        }
+
         const siblingNodeWithHighestPosition = await this.pageTreeRepository
             .createQueryBuilder()
             .where({
@@ -99,6 +105,10 @@ export class PageTreeService {
 
         if (existingNode.slug === "home" && input.slug !== "home") {
             throw new Error(`Slug of page "home" cannot be changed`);
+        }
+
+        if (input.attachedDocument?.id) {
+            await this.validateAttachedDocumentScope({ documentId: input.attachedDocument.id, targetNodeScope: existingNode.scope });
         }
 
         if (input.createAutomaticRedirectsOnSlugChange && existingNode.slug != input.slug) {
@@ -192,6 +202,8 @@ export class PageTreeService {
         if (!existingNode) {
             throw new Error("Can't find page-tree-node with id");
         }
+
+        await this.validateParentScope({ parentId: input.parentId, scope: existingNode.scope });
 
         if (input.parentId) {
             let currentParentId: string | null = input.parentId;
@@ -363,6 +375,12 @@ export class PageTreeService {
     }
 
     async attachDocument(attachedDocumentInput: AttachedDocumentStrictInput, pageTreeId: string): Promise<void> {
+        // A savePage resolver mutates the page before calling this. Read on a forked EntityManager so the default AUTO
+        // flush mode can't persist that change before the scope check rejects it.
+        const forkedEm = this.entityManager.fork();
+        const targetNode = await forkedEm.findOne<PageTreeNodeInterface>(this.pageTreeRepository.getEntityName(), pageTreeId);
+        await this.validateAttachedDocumentScope({ documentId: attachedDocumentInput.id, targetNodeScope: targetNode?.scope }, forkedEm);
+
         const node = await this.pageTreeRepository.findOne(pageTreeId);
         if (!node) {
             throw new Error(`Can't find page-tree-node with id ${pageTreeId}`);
@@ -425,6 +443,52 @@ export class PageTreeService {
         const parentPath = existingNodePath.split("/").slice(0, -1).join("/");
         const newPath = `${parentPath || ""}/${slug}`;
         return newPath;
+    }
+
+    // The scope check on the mutation arguments doesn't cover a parentId nested in the input, so the invariant that a
+    // node lives in the same scope as its parent is enforced here.
+    private async validateParentScope({ parentId, scope }: { parentId?: string | null; scope?: ScopeInterface }): Promise<void> {
+        if (!parentId) {
+            return;
+        }
+        const parent = await this.pageTreeRepository.findOne(parentId);
+        if (parent && !contentScopesAreEqual(parent.scope, scope)) {
+            throw new DextinityValidationException("The parent page tree node is in a different scope");
+        }
+    }
+
+    // movePageTreeNodes* flushes each node's move separately, so a mid-batch rejection would leave earlier moves
+    // persisted. Validating the whole batch up front keeps the move atomic for the scope check.
+    async validateNodesMovableUnderParent({ nodes, parentId }: { nodes: PageTreeNodeInterface[]; parentId?: string | null }): Promise<void> {
+        if (!parentId) {
+            return;
+        }
+        const parent = await this.pageTreeRepository.findOne(parentId);
+        if (!parent) {
+            return;
+        }
+        for (const node of nodes) {
+            if (!contentScopesAreEqual(parent.scope, node.scope)) {
+                throw new DextinityValidationException("The parent page tree node is in a different scope");
+            }
+        }
+    }
+
+    // The scope check on the mutation arguments doesn't cover an attachedDocument id nested in the input, so the
+    // invariant that a document is never attached across scope boundaries is enforced here: attaching it to a node in
+    // a foreign scope would expose and allow editing of content outside the user's scope.
+    private async validateAttachedDocumentScope(
+        { documentId, targetNodeScope }: { documentId: string; targetNodeScope?: ScopeInterface },
+        em: EntityManager = this.entityManager,
+    ): Promise<void> {
+        const nodeEntityName = this.pageTreeRepository.getEntityName();
+        const existingAttachments = await em.find(AttachedDocument, { documentId });
+        for (const attachment of existingAttachments) {
+            const existingNode = await em.findOne<PageTreeNodeInterface>(nodeEntityName, attachment.pageTreeNodeId);
+            if (existingNode && !contentScopesAreEqual(existingNode.scope, targetNodeScope)) {
+                throw new DextinityValidationException("The document is already attached to a page tree node in a different scope");
+            }
+        }
     }
 
     private async findNextAvailableSlug(slug: string, parentId: string | null = null, scope?: ScopeInterface): Promise<string> {

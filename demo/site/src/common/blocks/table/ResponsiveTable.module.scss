@@ -1,3 +1,5 @@
+@use "@src/styles/variables" as *;
+
 .tableContainer {
     padding-inline: calc(100% * 2 / var(--page-grid-column-count));
 
@@ -7,5 +9,19 @@
         &:focus-visible {
             outline-offset: -3px;
         }
+    }
+}
+
+.grid {
+    display: none;
+
+    @media (min-width: $breakpoint-md) {
+        display: block;
+    }
+}
+
+.recordList {
+    @media (min-width: $breakpoint-md) {
+        display: none;
     }
 }

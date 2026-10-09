@@ -18,6 +18,8 @@ import { WrapTableContentMigration } from "./migrations/1-wrap-table-content.mig
 export enum ResponsiveBehavior {
     scrollSideways = "scrollSideways",
     none = "none",
+    listByRow = "listByRow",
+    listByColumn = "listByColumn",
 }
 
 export function createResponsiveTableBlock({ tableContentBlock, name }: { tableContentBlock: Block; name: string }) {

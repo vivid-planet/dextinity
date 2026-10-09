@@ -3856,7 +3856,9 @@
                 "kind": "Enum",
                 "enum": [
                     "scrollSideways",
-                    "none"
+                    "none",
+                    "listByRow",
+                    "listByColumn"
                 ],
                 "nullable": false
             }
@@ -3873,7 +3875,9 @@
                 "kind": "Enum",
                 "enum": [
                     "scrollSideways",
-                    "none"
+                    "none",
+                    "listByRow",
+                    "listByColumn"
                 ],
                 "nullable": false
             }
@@ -4290,7 +4294,9 @@
                 "kind": "Enum",
                 "enum": [
                     "scrollSideways",
-                    "none"
+                    "none",
+                    "listByRow",
+                    "listByColumn"
                 ],
                 "nullable": false
             }
@@ -4307,7 +4313,9 @@
                 "kind": "Enum",
                 "enum": [
                     "scrollSideways",
-                    "none"
+                    "none",
+                    "listByRow",
+                    "listByColumn"
                 ],
                 "nullable": false
             }

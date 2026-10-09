@@ -14,6 +14,14 @@ const responsiveBehaviorOptions: Array<{ value: ResponsiveBehavior; label: React
         value: "none",
         label: <FormattedMessage id="tableBlock.responsiveBehavior.none" defaultMessage="None" />,
     },
+    {
+        value: "listByRow",
+        label: <FormattedMessage id="tableBlock.responsiveBehavior.listByRow" defaultMessage="List by Row (First Row as Headings)" />,
+    },
+    {
+        value: "listByColumn",
+        label: <FormattedMessage id="tableBlock.responsiveBehavior.listByColumn" defaultMessage="List by Column (First Column as Headings)" />,
+    },
 ];
 
 export function createResponsiveTableBlock({

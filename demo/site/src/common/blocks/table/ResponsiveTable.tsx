@@ -3,8 +3,9 @@ import clsx from "clsx";
 
 import styles from "./ResponsiveTable.module.scss";
 import type { RenderTableCell, TableColumn, TableRow } from "./tableData";
-import { TableGrid } from "./TableGrid";
+import { TableGrid, type TableGridProps } from "./TableGrid";
 import { TableLayout } from "./TableLayout";
+import { TableRecordList } from "./TableRecordList";
 
 type ResponsiveTableProps<CellValue> = {
     columns: TableColumn[];
@@ -24,14 +25,35 @@ export function ResponsiveTable<CellValue>({ columns, rows, responsiveBehavior, 
         );
     }
 
+    if (responsiveBehavior === "scrollSideways") {
+        return (
+            <TableLayout>
+                <ScrollableTableGrid columns={columns} rows={rows} renderCell={renderCell} />
+            </TableLayout>
+        );
+    }
+
+    const headerPosition = responsiveBehavior === "listByRow" ? "firstRow" : "firstColumn";
+
     return (
         <TableLayout>
-            <div
-                tabIndex={0} // Lets the keyboard scroll the table
-                className={clsx(styles.tableContainer, styles["tableContainer--scrollable"])}
-            >
-                <TableGrid columns={columns} rows={rows} renderCell={renderCell} hasMinimumColumnWidths />
+            <div className={styles.grid}>
+                <ScrollableTableGrid columns={columns} rows={rows} renderCell={renderCell} headerPosition={headerPosition} />
+            </div>
+            <div className={clsx(styles.tableContainer, styles.recordList)}>
+                <TableRecordList columns={columns} rows={rows} headerPosition={headerPosition} renderCell={renderCell} />
             </div>
         </TableLayout>
+    );
+}
+
+function ScrollableTableGrid<CellValue>(props: TableGridProps<CellValue>) {
+    return (
+        <div
+            tabIndex={0} // Lets the keyboard scroll the table
+            className={clsx(styles.tableContainer, styles["tableContainer--scrollable"])}
+        >
+            <TableGrid {...props} hasMinimumColumnWidths />
+        </div>
     );
 }

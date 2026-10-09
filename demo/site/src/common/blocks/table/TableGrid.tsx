@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-import { findCellValue, type RenderTableCell, type TableColumn, type TableColumnSize, type TableRow } from "./tableData";
+import { findCellValue, type RenderTableCell, type TableColumn, type TableColumnSize, type TableHeaderPosition, type TableRow } from "./tableData";
 import styles from "./TableGrid.module.scss";
 
 const minimumWidthClassByColumnSize: Record<TableColumnSize, string> = {
@@ -11,26 +11,38 @@ const minimumWidthClassByColumnSize: Record<TableColumnSize, string> = {
     extraLarge: styles["cell--minWidthExtraLarge"],
 };
 
-type TableGridProps<CellValue> = {
+const headerCellScopeByHeaderPosition: Record<TableHeaderPosition, "col" | "row"> = {
+    firstRow: "col",
+    firstColumn: "row",
+};
+
+export type TableGridProps<CellValue> = {
     columns: TableColumn[];
     rows: TableRow<CellValue>[];
     renderCell: RenderTableCell<CellValue>;
+    headerPosition?: TableHeaderPosition;
     hasMinimumColumnWidths?: boolean;
 };
 
-export function TableGrid<CellValue>({ columns, rows, renderCell, hasMinimumColumnWidths }: TableGridProps<CellValue>) {
+export function TableGrid<CellValue>({ columns, rows, renderCell, headerPosition, hasMinimumColumnWidths }: TableGridProps<CellValue>) {
+    const headerCellScope = headerPosition === undefined ? undefined : headerCellScopeByHeaderPosition[headerPosition];
+
     return (
-        <table className={styles.table}>
+        <table className={styles.root}>
             <tbody>
-                {rows.map((row) => (
+                {rows.map((row, rowIndex) => (
                     <tr key={row.id} className={styles.row}>
-                        {columns.map((column) => {
+                        {columns.map((column, columnIndex) => {
                             const cellValue = findCellValue(row, column);
                             const isCellHighlighted = row.highlighted || column.highlighted;
+                            const isHeaderCell =
+                                (headerPosition === "firstRow" && rowIndex === 0) || (headerPosition === "firstColumn" && columnIndex === 0);
+                            const CellTag = isHeaderCell ? "th" : "td";
 
                             return (
-                                <td
+                                <CellTag
                                     key={column.id}
+                                    scope={isHeaderCell ? headerCellScope : undefined}
                                     className={clsx(
                                         styles.cell,
                                         isCellHighlighted && styles["cell--highlighted"],
@@ -38,7 +50,7 @@ export function TableGrid<CellValue>({ columns, rows, renderCell, hasMinimumColu
                                     )}
                                 >
                                     {cellValue !== undefined && <div className={styles.cell__content}>{renderCell(cellValue)}</div>}
-                                </td>
+                                </CellTag>
                             );
                         })}
                     </tr>

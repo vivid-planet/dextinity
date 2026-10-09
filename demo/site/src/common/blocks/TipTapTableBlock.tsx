@@ -6,12 +6,12 @@ import { TableLayout } from "./table/TableLayout";
 import { TipTapRichTextBlock } from "./TipTapRichTextBlock";
 
 export const TipTapTableBlock = withPreview(
-    ({ data }: PropsWithData<TipTapTableBlockData>) => {
+    ({ data: { table } }: PropsWithData<TipTapTableBlockData>) => {
         return (
             <TableLayout>
                 <TableGrid
-                    columns={data.columns}
-                    rows={data.rows}
+                    columns={table.columns}
+                    rows={table.rows}
                     renderCell={(value) => <TipTapRichTextBlock data={value} disableLastBottomSpacing />}
                 />
             </TableLayout>

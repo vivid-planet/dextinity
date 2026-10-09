@@ -6,10 +6,10 @@ import { TableGrid } from "./table/TableGrid";
 import { TableLayout } from "./table/TableLayout";
 
 export const TableBlock = withPreview(
-    ({ data }: PropsWithData<TableBlockData>) => {
+    ({ data: { table } }: PropsWithData<TableBlockData>) => {
         return (
             <TableLayout>
-                <TableGrid columns={data.columns} rows={data.rows} renderCell={(value) => <RichTextBlock data={value} disableLastBottomSpacing />} />
+                <TableGrid columns={table.columns} rows={table.rows} renderCell={(value) => <RichTextBlock data={value} disableLastBottomSpacing />} />
             </TableLayout>
         );
     },

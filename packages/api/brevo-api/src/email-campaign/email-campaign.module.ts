@@ -1,6 +1,5 @@
 import { Block } from "@dextinity/cms-api";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
-import { HttpModule } from "@nestjs/axios";
 import { DynamicModule, Module, Type } from "@nestjs/common";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 import { TargetGroupInterface } from "src/target-group/entity/target-group-entity.factory";
@@ -42,14 +41,7 @@ export class EmailCampaignModule {
 
         return {
             module: EmailCampaignModule,
-            imports: [
-                ConfigModule,
-                BrevoApiModule,
-                HttpModule.register({
-                    timeout: 5000,
-                }),
-                MikroOrmModule.forFeature([BrevoEmailCampaign, BrevoTargetGroup, BrevoConfig]),
-            ],
+            imports: [ConfigModule, BrevoApiModule, MikroOrmModule.forFeature([BrevoEmailCampaign, BrevoTargetGroup, BrevoConfig])],
             providers: [EmailCampaignsResolver, EmailCampaignsService, EcgRtrListService],
         };
     }

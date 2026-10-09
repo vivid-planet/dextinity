@@ -547,6 +547,11 @@ type Dependency {
   rootColumnName: String!
   rootGraphqlObjectType: String!
   rootId: String!
+
+  """
+  Scope of the root entity for dependents, of the target entity for dependencies. Entities with multiple scopes return their first.
+  """
+  scope: JSONObject
   secondaryInformation: String
   targetGraphqlObjectType: String!
   targetId: String!
@@ -2310,12 +2315,12 @@ enum UserPermissionSource {
 }
 
 type UserPermissionsUser {
-  contentScopesCount: Int!
+  contentScopesCount: Int! @deprecated(reason: "The Scopes column was removed from the users list. Will be removed in the next version.")
   email: String!
   id: String!
   impersonationAllowed: Boolean!
   name: String!
-  permissionsCount: Int!
+  permissionsCount: Int! @deprecated(reason: "The Permissions column was removed from the users list. Will be removed in the next version.")
 }
 
 input UserPermissionsUserFilter {

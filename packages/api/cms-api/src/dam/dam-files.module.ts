@@ -1,7 +1,7 @@
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { DynamicModule, Global, Module, Type, ValueProvider } from "@nestjs/common";
-import { TypeMetadataStorage } from "@nestjs/graphql";
 
+import { validateScopeTypeNames } from "../common/helper/scope-type-names.helper";
 import { FileValidationService } from "../file-utils/file-validation.service";
 import { HasValidFilenameConstraint } from "./common/decorators/has-valid-filename.decorator";
 import { damDefaultAcceptedMimetypes } from "./common/mimeTypes/dam-default-accepted-mimetypes";
@@ -89,22 +89,7 @@ export class DamFilesModule {
         const DamMediaAlternativeResolver = createDamMediaAlternativeResolver({ File, Scope });
 
         if (Scope) {
-            // Scope validation needs to happen after resolver generation. Otherwise the input type metadata has not been defined yet.
-            const scopeObjectType = TypeMetadataStorage.getObjectTypeMetadataByTarget(Scope);
-
-            if (scopeObjectType?.name !== "DamScope") {
-                throw new Error(
-                    `Invalid object type name for provided DAM scope class. Make sure to decorate the class with @ObjectType("DamScope")`,
-                );
-            }
-
-            const scopeInputType = TypeMetadataStorage.getInputTypeMetadataByTarget(Scope);
-
-            if (scopeInputType?.name !== "DamScopeInput") {
-                throw new Error(
-                    `Invalid input type name for provided DAM scope class. Make sure to decorate the class with @InputType("DamScopeInput")`,
-                );
-            }
+            validateScopeTypeNames(Scope, { label: "DAM", objectTypeName: "DamScope", inputTypeName: "DamScopeInput" });
         }
 
         return {

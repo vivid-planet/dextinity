@@ -101,6 +101,11 @@ export function replaceById({ apiUrl, data, damBasePath }: Omit<UploadFileParams
             signal: controller.signal,
         });
         const dataJson = await response.json();
+
+        if (!response.ok) {
+            throw new Error(typeof dataJson?.message === "string" ? dataJson.message : `Replacing the file failed with status ${response.status}`);
+        }
+
         return { data: dataJson };
     })();
     return promise;

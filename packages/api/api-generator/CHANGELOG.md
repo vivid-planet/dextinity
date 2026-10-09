@@ -1,5 +1,114 @@
 # @comet/api-generator
 
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/cms-api@10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- fa3c71f: Allow `class-validator` v0.15 as peer dependency
+
+    The peer dependency range is widened to `^0.14.0 || ^0.15.0`.
+
+    `class-validator` v0.15 changes the signature of `@IsIBAN()`: it now accepts an options argument, which breaks existing calls that pass an argument, e.g. `@IsIBAN({ forbidUnknownValues: false })`. Check your usage of `@IsIBAN()` before upgrading to v0.15.
+
+- 91131d2: Fix import paths in nested entity resolvers when the nested entity is located in a different directory
+
+    The resolver is written to the parent entity's `generated` directory, but the import paths were calculated relative to the nested entity's `generated` directory.
+
+- Updated dependencies [fa3c71f]
+- Updated dependencies [d32c558]
+- Updated dependencies [13838dc]
+- Updated dependencies [d32c558]
+- Updated dependencies [4446a81]
+- Updated dependencies [8c8f1c4]
+- Updated dependencies [e9067c3]
+- Updated dependencies [1c29104]
+- Updated dependencies [070b357]
+- Updated dependencies [e84ba03]
+    - @dextinity/cms-api@10.9.0
+
+## 10.8.0
+
+### Patch Changes
+
+- 07bf882: Add `tsconfig-paths` as a dependency
+
+    `dextinity-api-generator` registers `tsconfig-paths/register` at runtime, but the package only worked because `tsconfig-paths` happened to be hoisted from another package's dependencies. Declaring it directly ensures the CLI works when installed standalone.
+
+- Updated dependencies [44125b9]
+- Updated dependencies [383e9ed]
+- Updated dependencies [0076f28]
+- Updated dependencies [8538d98]
+- Updated dependencies [5d9bf35]
+- Updated dependencies [4a1da4e]
+- Updated dependencies [dddb222]
+- Updated dependencies [8fbfbce]
+- Updated dependencies [36f7f17]
+- Updated dependencies [9109aa3]
+    - @dextinity/cms-api@10.8.0
+
+## 10.7.0
+
+### Patch Changes
+
+- Updated dependencies [ae93af6]
+    - @dextinity/cms-api@10.7.0
+
+## 10.6.0
+
+### Patch Changes
+
+- Updated dependencies [073dcd7]
+- Updated dependencies [012411c]
+- Updated dependencies [d6a910e]
+    - @dextinity/cms-api@10.6.0
+
+## 10.5.1
+
+### Patch Changes
+
+- Updated dependencies [9d150e6]
+    - @dextinity/cms-api@10.5.1
+
+## 10.5.0
+
+### Patch Changes
+
+- Updated dependencies [f4d091f]
+- Updated dependencies [0be2f59]
+- Updated dependencies [02bba49]
+    - @dextinity/cms-api@10.5.0
+
+## 10.4.0
+
+### Patch Changes
+
+- Updated dependencies [a00f0b2]
+    - @dextinity/cms-api@10.4.0
+
+## 10.3.0
+
+### Patch Changes
+
+- Updated dependencies [0c211e9]
+- Updated dependencies [ddea65d]
+- Updated dependencies [66cb98a]
+- Updated dependencies [3ffe174]
+    - @dextinity/cms-api@10.3.0
+
+## 10.2.0
+
+### Patch Changes
+
+- Updated dependencies [a4ec0fe]
+- Updated dependencies [edf2027]
+    - @dextinity/cms-api@10.2.0
+
 ## 10.1.0
 
 ### Patch Changes

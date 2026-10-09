@@ -2,6 +2,7 @@ import { gql, useApolloClient } from "@apollo/client";
 import { ContentTranslationServiceProvider } from "@dextinity/admin";
 import type { ComponentProps, PropsWithChildren } from "react";
 
+import { useContentLanguage } from "../contentLanguage/useContentLanguage";
 import { useContentScope } from "../contentScope/Provider";
 import { useUserPermissionCheck } from "../userPermissions/hooks/currentUser";
 import type { GQLTranslateQuery, GQLTranslateQueryVariables } from "./AzureAiTranslatorProvider.generated";
@@ -12,6 +13,7 @@ interface AzureAiTranslatorProps extends Omit<ComponentProps<typeof ContentTrans
 
 export const AzureAiTranslatorProvider = ({ children, enabled = false, ...rest }: PropsWithChildren<AzureAiTranslatorProps>) => {
     const { scope } = useContentScope();
+    const language = useContentLanguage({ scope });
     const apolloClient = useApolloClient();
     const isAllowed = useUserPermissionCheck();
 
@@ -23,7 +25,7 @@ export const AzureAiTranslatorProvider = ({ children, enabled = false, ...rest }
                 const { data } = await apolloClient.query<GQLTranslateQuery, GQLTranslateQueryVariables>({
                     query: translationQuery,
                     variables: {
-                        input: { text, targetLanguage: scope.language },
+                        input: { text, targetLanguage: language },
                     },
                 });
                 return data.azureAiTranslate;
@@ -32,7 +34,7 @@ export const AzureAiTranslatorProvider = ({ children, enabled = false, ...rest }
                 const { data } = await apolloClient.query<{ azureAiTranslateBatch: string[] }>({
                     query: batchTranslationQuery,
                     variables: {
-                        input: { texts, targetLanguage: scope.language },
+                        input: { texts, targetLanguage: language },
                     },
                     fetchPolicy: "no-cache",
                 });

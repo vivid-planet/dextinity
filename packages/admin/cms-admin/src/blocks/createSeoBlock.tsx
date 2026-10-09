@@ -67,6 +67,27 @@ export function createSeoBlock(
 
         displayName: <FormattedMessage id="dextinity.blocks.seo" defaultMessage="SEO" />,
 
+        extractTextContents: (state, options) => {
+            const contents: string[] = [];
+
+            if (state.htmlTitle) {
+                contents.push(state.htmlTitle);
+            }
+            if (state.metaDescription) {
+                contents.push(state.metaDescription);
+            }
+            if (state.openGraphTitle) {
+                contents.push(state.openGraphTitle);
+            }
+            if (state.openGraphDescription) {
+                contents.push(state.openGraphDescription);
+            }
+
+            contents.push(...(block.extractTextContents?.(state, options) ?? []));
+
+            return contents;
+        },
+
         AdminComponent: ({ state, updateState }) => {
             const intl = useIntl();
             const { openGraphImage } = composedApi.adminComponents({

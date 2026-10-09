@@ -1,5 +1,90 @@
 # @comet/mail-react
 
+## 10.9.1
+
+## 10.9.0
+
+### Minor Changes
+
+- aca736f: Add `createTipTapRichTextBlock`
+
+    Renders CMS Tip-Tap rich text block data in emails, the successor to the draft-js block that `createRichTextBlock` renders. It goes through the same components and class names, so styling written for one block applies to the other.
+
+    **Example**
+
+    ```tsx
+    export const { MjmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+        textBlockStyles: {
+            title: { variant: "title" },
+            header: { variant: "header" },
+        },
+    });
+    ```
+
+## 10.8.0
+
+### Minor Changes
+
+- a3a66a7: Add `id="body"` to the `<body>` tag of every rendered mail
+
+    Some email clients replace the `<body>` tag with a `<div>`, so a `body` selector no longer reaches it. The id does.
+
+## 10.7.0
+
+## 10.6.0
+
+## 10.5.1
+
+## 10.5.0
+
+### Patch Changes
+
+- 82dfa79: Fix rounded images rendering a pixel too large in classic Outlook
+
+    Two images side by side made their section wider than the body width. Affects `MjmlImage`, `HtmlImage`, `MjmlPixelImageBlock` and `HtmlPixelImageBlock`.
+
+## 10.4.0
+
+### Patch Changes
+
+- 98c1097: Fix head CSS lost after the first `@media` block in Outlook.com and the Outlook apps for iOS and Android
+
+    These clients stop reading a `<style>` tag at the first `}}`, which minified CSS writes at the end of every `@media` block.
+
+- bb5d22a: Apply the Storybook addon's **"Use public image URLs"** toggle to the Outlook VML image source
+- 583dd13: Fix `borderRadius` on images in classic Outlook, which rounded corners twice as much as the value asked for
+
+## 10.3.0
+
+### Patch Changes
+
+- f3f00f2: Fix crash when a rounded pixel-image block has no alt text or link
+- b873623: Minify the registered styles, so Gmail is less likely to drop a mail's CSS
+
+## 10.2.0
+
+### Minor Changes
+
+- bdd62e9: Add a `borderRadius` prop to `MjmlImage`, `HtmlImage`, `MjmlPixelImageBlock` and `HtmlPixelImageBlock`
+
+    **Example**
+
+    ```tsx
+    <MjmlImage src="https://example.com/image.jpg" alt="Example" width={520} borderRadius={16} />
+    ```
+
+    A `style` prop passed by the caller wins over `borderRadius`.
+
+### Patch Changes
+
+- f3e81aa: Round images in classic Outlook
+
+    `borderRadius` on `MjmlImage`, `HtmlImage`, `MjmlPixelImageBlock` and `HtmlPixelImageBlock` now also rounds the image in classic Outlook.
+
+    Classic Outlook rounds the image only when `width` and `height` are given in pixels, and the radius is given in pixels or as `"50%"`. In every other case the image stays square in that client.
+
+- c980b75: Fix the `MjmlButton` background image not reaching clients that drop `<style>` blocks
+
 ## 10.1.0
 
 ### Minor Changes

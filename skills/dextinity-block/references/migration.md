@@ -156,7 +156,7 @@ After writing the migration class, register it in the block's `createBlock` call
 
 ### First Migration on a Block
 
-When a block has **no existing migrations**, the `createBlock` third argument is a plain name string. Convert it to an options object with `name` and `migrate`:
+When a block has **no existing migrations**, the third argument of `createBlock` is usually a plain name string. Convert it to an options object with `name` and `migrate`. If it already is an options object, for instance because it sets a `description`, add `migrate` to it:
 
 ```ts
 // Before (no migrations)
@@ -193,7 +193,7 @@ import { ReplaceTextWithRichTextMigration } from "./migrations/2-replace-text-wi
 export const MyBlock = createBlock(MyBlockData, MyBlockInput, {
     name: "My",
     migrate: {
-        version: 2, // incremented from 1 to 2
+        version: 2,
         migrations: typeSafeBlockMigrationPipe([AddSubtitleMigration, ReplaceTextWithRichTextMigration]),
     },
 });

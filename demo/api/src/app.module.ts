@@ -48,7 +48,8 @@ import { TranslationModule } from "@src/translation/translation.module";
 import { Request } from "express";
 
 import { AccessControlService } from "./auth/access-control.service";
-import { AuthModule, SYSTEM_USER_NAME } from "./auth/auth.module";
+import { AuthModule } from "./auth/auth.module";
+import { SYSTEM_USER_NAME } from "./auth/constants";
 import { UserService } from "./auth/user.service";
 import { DamScope } from "./dam/dto/dam-scope";
 import { DamFile } from "./dam/entities/dam-file.entity";
@@ -126,6 +127,12 @@ export class AppModule {
                                 label: { domain: siteConfig.name },
                             })),
                         ),
+                        availableContentScopeDimensions: [
+                            { name: "domain", label: "Domain (Website)" },
+                            { name: "language", label: "Language" },
+                            // "product" is declared here so it shows up in the admin panel although it is not part of availableContentScopes
+                            { name: "product", label: "Product Category" },
+                        ],
                         userService,
                         accessControlService,
                         systemUsers: [SYSTEM_USER_NAME],

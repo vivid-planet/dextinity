@@ -16,10 +16,14 @@ import { WarningMessage } from "./WarningMessage";
 import { useWarningsConfig } from "./warningsConfig";
 import { WarningSeverity } from "./WarningSeverity";
 
-export const LatestWarningsDashboardWidget = () => {
-    const { values: scopeValues } = useContentScope();
+export interface LatestWarningsDashboardWidgetProps {
+    showAllScopes?: boolean;
+}
+
+export const LatestWarningsDashboardWidget = ({ showAllScopes = false }: LatestWarningsDashboardWidgetProps) => {
     const { messages } = useWarningsConfig();
-    const scopes = scopeValues.map((item) => item.scope);
+    const { scope: currentScope, values: scopeValues } = useContentScope();
+    const scopes = showAllScopes ? scopeValues.map((item) => item.scope) : [currentScope];
 
     const { data, loading, error } = useQuery<GQLLatestWarningsQuery, GQLLatestWarningsQueryVariables>(latestWarningsQuery, {
         variables: { scopes },

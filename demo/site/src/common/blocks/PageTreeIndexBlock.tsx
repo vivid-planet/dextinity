@@ -1,6 +1,7 @@
 import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { PageTreeIndexBlockData } from "@src/blocks.generated";
 import { PageLayout } from "@src/layout/PageLayout";
+import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import { createSitePath } from "@src/util/createSitePath";
 import NextLink from "next/link";
 import type { JSX } from "react";
@@ -43,7 +44,9 @@ export const PageTreeIndexBlock = withPreview(
         const tree = buildTree(allNodes);
         return (
             <PageLayout grid>
-                <div className={styles.root}>{renderTree(tree)}</div>
+                <AnimateBoxInOnScroll direction="bottom" className={styles.root}>
+                    {renderTree(tree)}
+                </AnimateBoxInOnScroll>
             </PageLayout>
         );
     },

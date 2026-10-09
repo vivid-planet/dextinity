@@ -1,5 +1,77 @@
 # @comet/cli
 
+## 10.9.1
+
+### Patch Changes
+
+- 3348875: Fix `inject-site-configs` failing with "expected data on stdin but none found" for configs with 1Password references
+
+    Since 10.9.0, `inject-site-configs` passed the references to `op inject` through stdin, which `op` doesn't accept when Node starts it.
+    The references are now passed in a temporary file.
+
+## 10.9.0
+
+### Patch Changes
+
+- 43c28ef: Resolve all 1Password references in `inject-site-configs` with a single `op inject` call
+
+    Previously, `inject-site-configs` started one `op read` process per reference and site-config placeholder, which took about 1.2 seconds each.
+    Now each unique reference is read once, which also reduces the reads counted against the 1Password rate limits.
+
+- 4bc8293: Insert 1Password secrets literally in `inject-site-configs`
+
+    Previously, `$&`, `$'` and `` $` `` in a secret were interpreted as replacement patterns, so the injected value differed from the secret stored in 1Password.
+
+## 10.8.0
+
+## 10.7.0
+
+## 10.6.0
+
+## 10.5.1
+
+### Patch Changes
+
+- 3a6c451: Make the generated `TipTapNode` type compatible with TipTap's `JSONContent`
+
+    `TipTapNode["type"]` is optional now, matching `JSONContent["type"]`. Both types can be used interchangeably, so no cast is needed when passing a rich text block's content to a TipTap utility or when rendering a `JSONContent` value with `renderTipTapRichText`. `renderTipTapRichText` renders a node without a `type` as a text node.
+
+    **Example**
+
+    ```ts
+    import { generateHTML } from "@tiptap/core";
+    import type { TipTapRichTextBlockData } from "@src/blocks.generated";
+
+    function renderToHtml(data: TipTapRichTextBlockData) {
+        return generateHTML(data.tipTapContent, extensions);
+    }
+    ```
+
+## 10.5.0
+
+## 10.4.0
+
+## 10.3.0
+
+### Minor Changes
+
+- 7e3a30f: Add `TipTapNode` type to `generate-block-types` output and use it for TipTap rich text blocks
+
+    TipTap rich text blocks were typed as `unknown`, forcing consumers to cast the content before rendering it.
+    They are now typed as `TipTapNode`, which is generated into `blocks.generated.ts` (together with `TipTapMark`) whenever a TipTap rich text block is used.
+
+    **Example**
+
+    ```tsx
+    // Before
+    const content = data.tipTapContent as TipTapNode;
+
+    // After
+    const content = data.tipTapContent;
+    ```
+
+## 10.2.0
+
 ## 10.1.0
 
 ## 10.0.1

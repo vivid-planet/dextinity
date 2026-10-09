@@ -255,6 +255,8 @@ function buildInlineContent({
 
 const NBSP_CHAR = "\u00a0";
 const SOFT_HYPHEN_CHAR = "\u00ad";
+// DraftJS stores a soft line break (Shift+Enter) as a newline within the block's text.
+const LINE_BREAK_CHAR = "\n";
 
 function makeTextNode(text: string, marks: NonNullable<JSONContent["marks"]>): JSONContent {
     const node: JSONContent = { type: "text", text };
@@ -264,14 +266,17 @@ function makeTextNode(text: string, marks: NonNullable<JSONContent["marks"]>): J
     return node;
 }
 
-// Splits a text segment so each U+00A0/U+00AD character (the way the DraftJS
-// RTE persists non-breaking-spaces and soft-hyphens) becomes a dedicated TipTap atom node
-// when the corresponding feature is supported. Otherwise the characters are preserved as-is
-// inside the surrounding text node.
+// Splits a text segment so each newline becomes a hardBreak node, and each U+00A0/U+00AD
+// character (the way the DraftJS RTE persists non-breaking-spaces and soft-hyphens) becomes a
+// dedicated TipTap atom node when the corresponding feature is supported. Otherwise the
+// characters are preserved as-is inside the surrounding text node. The hardBreak node comes
+// with the StarterKit and is always part of the schema.
 function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, resolvedOptions: TipTapResolvedOptions): JSONContent[] {
     const { nonBreakingSpace, softHyphen } = resolvedOptions;
 
-    if ((!nonBreakingSpace && !softHyphen) || (!text.includes(NBSP_CHAR) && !text.includes(SOFT_HYPHEN_CHAR))) {
+    const hasAtomChars =
+        text.includes(LINE_BREAK_CHAR) || (nonBreakingSpace && text.includes(NBSP_CHAR)) || (softHyphen && text.includes(SOFT_HYPHEN_CHAR));
+    if (!hasAtomChars) {
         return text.length === 0 ? [] : [makeTextNode(text, marks)];
     }
 
@@ -285,7 +290,10 @@ function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, 
     };
 
     for (const char of text) {
-        if (char === NBSP_CHAR && nonBreakingSpace) {
+        if (char === LINE_BREAK_CHAR) {
+            flushBuffer();
+            nodes.push({ type: "hardBreak" });
+        } else if (char === NBSP_CHAR && nonBreakingSpace) {
             flushBuffer();
             nodes.push({ type: "nonBreakingSpace" });
         } else if (char === SOFT_HYPHEN_CHAR && softHyphen) {

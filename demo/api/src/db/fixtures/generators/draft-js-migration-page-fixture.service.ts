@@ -70,6 +70,16 @@ const legacyDraftJsContent = {
             data: {},
         },
         {
+            // Soft line breaks (Shift+Enter), which DraftJS stores as newlines within the block's text.
+            key: "33333333-3333-3333-3333-3333333333cc",
+            text: "Example Company\nExample Street 1\n1234 Example City",
+            type: "unstyled",
+            depth: 0,
+            inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 15 }],
+            entityRanges: [],
+            data: {},
+        },
+        {
             key: "44444444-4444-4444-4444-444444444444",
             text: "First bullet point",
             type: "unordered-list-item",

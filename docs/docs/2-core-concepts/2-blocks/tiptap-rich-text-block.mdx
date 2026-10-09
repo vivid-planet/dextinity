@@ -258,6 +258,29 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
 
 `textBlock` accepts the `name` of any configured [text block](#text-blocks), and an unknown name throws. `textBlockStyle` is optional — leave it out for a text block that offers no styles. A Draft.js block type that isn't mapped becomes the text block its own type implies: `header-one`–`header-six` keep their heading level, everything else becomes a paragraph.
 
+Custom list block types — for instance a `blocktypeMap` entry with `supportedBy: "unordered-list"` — would otherwise become paragraphs too. Map them in `listItemMap` to the list they become items of and the list style the item carries:
+
+```ts title="tip-tap-rich-text.block.ts"
+const listSizes = { styles: [{ name: "small" }, { name: "large" }] };
+
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    unorderedList: listSizes,
+    orderedList: listSizes,
+    migrateFromDraftJs: {
+        // highlight-start
+        listItemMap: {
+            "unordered-list-item-small": { list: "unordered", textBlockStyle: "small" },
+            "unordered-list-item-large": { list: "unordered", textBlockStyle: "large" },
+            "ordered-list-item-small": { list: "ordered", textBlockStyle: "small" },
+            "ordered-list-item-large": { list: "ordered", textBlockStyle: "large" },
+        },
+        // highlight-end
+    },
+});
+```
+
+Consecutive items of the same list stay one list, whatever their style, and keep their nesting. `textBlockStyle` must be one of the list's `styles`, and the list must be enabled. The built-in `unordered-list-item` and `ordered-list-item` can't be mapped, and neither can a block type that is in `textBlockMap`. Each of these throws. To give the built-in list items a style, set the list's `defaultStyle`.
+
 ## New features
 
 Beyond replacing the old block, the TipTap Rich Text Block adds capabilities the Draft.js block did not have.

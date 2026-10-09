@@ -12,6 +12,8 @@ import {
     convertDraftJsToTipTap,
     type ConvertOptions,
     type DraftJsContent,
+    isBuiltInDraftJsListBlockType,
+    LIST_TARGETS,
 } from "./convertDraftJsToTipTap";
 
 interface From {
@@ -42,7 +44,7 @@ interface BuildOptions extends ConvertOptions {
 }
 
 export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConstructor<BlockMigrationInterface> {
-    const { schema, maxTextBlocks, resolvedOptions, link, textBlockMap, inlineStyleMap, listLevelMax } = options;
+    const { schema, maxTextBlocks, resolvedOptions, link, textBlockMap, listItemMap, inlineStyleMap, listLevelMax } = options;
     const textBlocks = resolvedOptions.textBlocks;
     const emptyDoc = buildEmptyTipTapDoc(resolvedOptions);
 
@@ -51,6 +53,26 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
         // DraftJS block's tag instead - silently, and only once, since the DraftJS content is gone afterwards.
         if (!textBlocks.some((configured) => configured.name === textBlock)) {
             throw new Error(`textBlockMap maps "${draftJsBlockType}" to the text block "${textBlock}", which is not configured`);
+        }
+    }
+
+    for (const [draftJsBlockType, { list, textBlockStyle }] of Object.entries(listItemMap ?? {})) {
+        if (isBuiltInDraftJsListBlockType(draftJsBlockType)) {
+            throw new Error(
+                `listItemMap maps the built-in list type "${draftJsBlockType}", which is converted to its list already. Give the list a defaultStyle instead.`,
+            );
+        }
+        if (textBlockMap?.[draftJsBlockType] !== undefined) {
+            throw new Error(`"${draftJsBlockType}" is mapped in both textBlockMap and listItemMap`);
+        }
+        // Like an unknown text block name, a disabled list or an unknown style would lose the list
+        // item's structure or style silently, and only once.
+        const resolvedList = resolvedOptions[LIST_TARGETS[list].option];
+        if (!resolvedList) {
+            throw new Error(`listItemMap maps "${draftJsBlockType}" to the ${list} list, which is disabled`);
+        }
+        if (!resolvedList.styles.some((style) => style.name === textBlockStyle)) {
+            throw new Error(`listItemMap maps "${draftJsBlockType}" to the style "${textBlockStyle}", which the ${list} list doesn't offer`);
         }
     }
 
@@ -66,7 +88,14 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
                 return { tipTapContent: emptyDoc };
             }
 
-            const converted = convertDraftJsToTipTap(from.draftContent, { resolvedOptions, link, textBlockMap, inlineStyleMap, listLevelMax });
+            const converted = convertDraftJsToTipTap(from.draftContent, {
+                resolvedOptions,
+                link,
+                textBlockMap,
+                listItemMap,
+                inlineStyleMap,
+                listLevelMax,
+            });
             if (
                 isValidTipTapContentSync(converted, schema, {
                     maxTextBlocks,

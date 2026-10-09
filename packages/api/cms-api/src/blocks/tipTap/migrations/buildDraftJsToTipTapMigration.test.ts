@@ -234,6 +234,140 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
         });
     });
 
+    describe("listItemMap", () => {
+        const listSizes = { styles: [{ name: "small" }, { name: "large" }] };
+        const listItemMap = {
+            "unordered-list-item-small": { list: "unordered", textBlockStyle: "small" },
+            "unordered-list-item-large": { list: "unordered", textBlockStyle: "large" },
+            "ordered-list-item-small": { list: "ordered", textBlockStyle: "small" },
+            "ordered-list-item-large": { list: "ordered", textBlockStyle: "large" },
+        } as const;
+        const block = createTipTapRichTextBlock(
+            { unorderedList: listSizes, orderedList: listSizes, migrateFromDraftJs: { listItemMap } },
+            "MigratedRichTextListItemMap",
+        );
+
+        function textBlock(text: string, textBlockStyle?: string): JSONContent {
+            return {
+                type: "textBlock",
+                attrs: { textBlock: "paragraph", ...(textBlockStyle !== undefined ? { textBlockStyle } : {}) },
+                content: [{ type: "text", text }],
+            };
+        }
+
+        it("converts a rich text with all list sizes, mixed and nested, into valid content", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [
+                        draftBlock({ type: "unstyled", text: "intro" }),
+                        draftBlock({ type: "unordered-list-item", text: "standard" }),
+                        draftBlock({ type: "unordered-list-item-small", text: "small" }),
+                        draftBlock({ type: "unordered-list-item-small", text: "small nested", depth: 1 }),
+                        draftBlock({ type: "unordered-list-item-large", text: "large" }),
+                        draftBlock({ type: "ordered-list-item-large", text: "large nested", depth: 1 }),
+                        draftBlock({ type: "unstyled", text: "between" }),
+                        draftBlock({ type: "ordered-list-item-small", text: "1" }),
+                        draftBlock({ type: "ordered-list-item", text: "2" }),
+                        draftBlock({ type: "ordered-list-item-large", text: "3" }),
+                    ],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [
+                    textBlock("intro"),
+                    {
+                        type: "bulletList",
+                        content: [
+                            { type: "listItem", content: [textBlock("standard")] },
+                            {
+                                type: "listItem",
+                                content: [
+                                    textBlock("small", "small"),
+                                    { type: "bulletList", content: [{ type: "listItem", content: [textBlock("small nested", "small")] }] },
+                                ],
+                            },
+                            {
+                                type: "listItem",
+                                content: [
+                                    textBlock("large", "large"),
+                                    { type: "orderedList", content: [{ type: "listItem", content: [textBlock("large nested", "large")] }] },
+                                ],
+                            },
+                        ],
+                    },
+                    textBlock("between"),
+                    {
+                        type: "orderedList",
+                        content: [
+                            { type: "listItem", content: [textBlock("1", "small")] },
+                            { type: "listItem", content: [textBlock("2")] },
+                            { type: "listItem", content: [textBlock("3", "large")] },
+                        ],
+                    },
+                ],
+            });
+        });
+
+        it("throws when a mapped list is disabled", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    { orderedList: false, unorderedList: listSizes, migrateFromDraftJs: { listItemMap } },
+                    "MigratedRichTextListItemMapDisabledList",
+                ),
+            ).toThrow('listItemMap maps "ordered-list-item-small" to the ordered list, which is disabled');
+        });
+
+        it("throws when the list doesn't offer the mapped style", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    {
+                        unorderedList: { styles: [{ name: "small" }] },
+                        migrateFromDraftJs: { listItemMap: { custom: { list: "unordered", textBlockStyle: "large" } } },
+                    },
+                    "MigratedRichTextListItemMapUnknownStyle",
+                ),
+            ).toThrow('listItemMap maps "custom" to the style "large", which the unordered list doesn\'t offer');
+        });
+
+        it("throws when the list offers no styles at all", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    { migrateFromDraftJs: { listItemMap: { custom: { list: "unordered", textBlockStyle: "small" } } } },
+                    "MigratedRichTextListItemMapUnstyledList",
+                ),
+            ).toThrow('listItemMap maps "custom" to the style "small", which the unordered list doesn\'t offer');
+        });
+
+        it("throws when a DraftJS type is mapped in both textBlockMap and listItemMap", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    {
+                        unorderedList: listSizes,
+                        migrateFromDraftJs: {
+                            textBlockMap: { "unordered-list-item-small": { textBlock: "paragraph" } },
+                            listItemMap: { "unordered-list-item-small": { list: "unordered", textBlockStyle: "small" } },
+                        },
+                    },
+                    "MigratedRichTextListItemMapDuplicate",
+                ),
+            ).toThrow('"unordered-list-item-small" is mapped in both textBlockMap and listItemMap');
+        });
+
+        it("throws when a built-in list type is mapped", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    {
+                        unorderedList: listSizes,
+                        migrateFromDraftJs: { listItemMap: { "unordered-list-item": { list: "unordered", textBlockStyle: "small" } } },
+                    },
+                    "MigratedRichTextListItemMapBuiltIn",
+                ),
+            ).toThrow('listItemMap maps the built-in list type "unordered-list-item"');
+        });
+    });
+
     describe("nested lists", () => {
         const block = createTipTapRichTextBlock({ migrateFromDraftJs: true }, "MigratedRichTextNestedLists");
 

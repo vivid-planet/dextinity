@@ -36,7 +36,7 @@ import { TextBlockListItem } from "./extensions/TextBlockListItem";
 import { buildDraftJsToTipTapMigration } from "./migrations/buildDraftJsToTipTapMigration";
 import { buildNoopMigration } from "./migrations/buildNoopMigration";
 import { buildTextBlockNodeMigration } from "./migrations/buildTextBlockNodeMigration";
-import { assertDraftJsHeadingsAreUnambiguous, type TextBlockMapping } from "./migrations/convertDraftJsToTipTap";
+import { assertDraftJsHeadingsAreUnambiguous, type ListItemMapping, type TextBlockMapping } from "./migrations/convertDraftJsToTipTap";
 import {
     defaultTextBlocks,
     findDefaultTextBlock,
@@ -202,10 +202,20 @@ export interface CreateTipTapRichTextBlockOptions {
      * DraftJS `blocktypeMap`) to the text block they become and the `textBlockStyle` applied to it,
      * for instance to convert a DraftJS block type that was rendered as `<h2>` into a heading 2.
      *
+     * Pass an object with `listItemMap` to map custom DraftJS list block types (e.g.
+     * `unordered-list-item-small`) to the list they become items of and the list style applied to
+     * the item.
+     *
      * Pass an object with `inlineStyleMap` to map DraftJS custom inline style names (e.g.
      * `highlight` from a DraftJS `customInlineStyles`) to TipTap `inlineStyle` mark type values.
      */
-    migrateFromDraftJs?: boolean | { textBlockMap?: Record<string, TextBlockMapping>; inlineStyleMap?: Record<string, string> };
+    migrateFromDraftJs?:
+        | boolean
+        | {
+              textBlockMap?: Record<string, TextBlockMapping>;
+              listItemMap?: Record<string, ListItemMapping>;
+              inlineStyleMap?: Record<string, string>;
+          };
 }
 
 export function resolveTipTapOptions({
@@ -668,6 +678,7 @@ export function createTipTapRichTextBlock(
     const schema = getSchema(extensions);
 
     const draftJsTextBlockMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.textBlockMap : undefined;
+    const draftJsListItemMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.listItemMap : undefined;
     const draftJsInlineStyleMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.inlineStyleMap : undefined;
 
     if (migrateFromDraftJs) {
@@ -690,6 +701,7 @@ export function createTipTapRichTextBlock(
                       maxTextBlocks,
                       listLevelMax,
                       textBlockMap: draftJsTextBlockMap,
+                      listItemMap: draftJsListItemMap,
                       inlineStyleMap: draftJsInlineStyleMap,
                   })
                 : buildNoopMigration(1),

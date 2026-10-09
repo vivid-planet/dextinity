@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import { Extension } from "../../imgproxy/imgproxy.enum";
 import { FocalPoint } from "../focal-point.enum";
-import { getCenteredPosition, getMaxDimensionsFromArea, getSupportedMimeType } from "../images.util";
+import { getCenteredPosition, getImageOutputExtension, getMaxDimensionsFromArea, getSupportedMimeType } from "../images.util";
 
 describe("getMaxDimensionsFromArea", () => {
     it("returns full area for 1:1 aspect ratio in a square area", () => {
@@ -105,5 +106,25 @@ describe("getSupportedMimeType", () => {
     it("picks the best match from a comma-separated accept header", () => {
         const result = getSupportedMimeType(["image/webp", "image/jpeg"], "image/jpeg, image/webp");
         expect(["image/jpeg", "image/webp"]).toContain(result);
+    });
+});
+
+describe("getImageOutputExtension", () => {
+    it("returns WebP when the Accept header offers it", () => {
+        expect(getImageOutputExtension({ accept: "image/avif,image/webp,*/*", sourceMimetype: "image/jpeg", negotiateFormat: true })).toBe(
+            Extension.WEBP,
+        );
+    });
+
+    it("returns the source format when negotiation is disabled, even if the Accept header offers WebP", () => {
+        expect(getImageOutputExtension({ accept: "image/avif,image/webp,*/*", sourceMimetype: "image/png", negotiateFormat: false })).toBe(
+            Extension.PNG,
+        );
+    });
+
+    it("returns JPG for a WebP source when negotiation is disabled", () => {
+        expect(getImageOutputExtension({ accept: "image/avif,image/webp,*/*", sourceMimetype: "image/webp", negotiateFormat: false })).toBe(
+            Extension.JPG,
+        );
     });
 });

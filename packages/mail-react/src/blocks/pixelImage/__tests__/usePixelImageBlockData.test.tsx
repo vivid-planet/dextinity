@@ -247,3 +247,19 @@ describe("usePixelImageBlockData — incomplete data", () => {
         expect(result).toBeNull();
     });
 });
+
+describe("usePixelImageBlockData — image format", () => {
+    it("disables format negotiation so the image format does not depend on the email client", () => {
+        const result = expectNonNull(captureUsePixelImageData({ data: smartImageData, defaultRenderWidth: 200, config }));
+        expect(result.imageUrl).toBe(`${baseUrl}/dam/images/abc/resize:640:320/photo.jpg?negotiateFormat=false`);
+    });
+
+    it("appends the negotiation flag to an existing query string", () => {
+        const dataWithQuery: PixelImageBlockData = {
+            ...smartImageData,
+            urlTemplate: "https://cdn.example.com/$resizeWidth/$resizeHeight/photo.jpg?token=abc",
+        };
+        const result = expectNonNull(captureUsePixelImageData({ data: dataWithQuery, defaultRenderWidth: 200, config }));
+        expect(result.imageUrl).toBe("https://cdn.example.com/640/320/photo.jpg?token=abc&negotiateFormat=false");
+    });
+});

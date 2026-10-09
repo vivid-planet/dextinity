@@ -12,7 +12,6 @@ import {
     convertDraftJsToTipTap,
     type ConvertOptions,
     type DraftJsContent,
-    isBuiltInDraftJsListBlockType,
     LIST_TARGETS,
 } from "./convertDraftJsToTipTap";
 
@@ -57,11 +56,6 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
     }
 
     for (const [draftJsBlockType, { list, textBlockStyle }] of Object.entries(listItemMap ?? {})) {
-        if (isBuiltInDraftJsListBlockType(draftJsBlockType)) {
-            throw new Error(
-                `listItemMap maps the built-in list type "${draftJsBlockType}", which is converted to its list already. Give the list a defaultStyle instead.`,
-            );
-        }
         if (textBlockMap?.[draftJsBlockType] !== undefined) {
             throw new Error(`"${draftJsBlockType}" is mapped in both textBlockMap and listItemMap`);
         }

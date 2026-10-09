@@ -355,16 +355,16 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
             ).toThrow('"unordered-list-item-small" is mapped in both textBlockMap and listItemMap');
         });
 
-        it("throws when a built-in list type is mapped", () => {
+        it("throws when a mapped built-in list type gets a style the list doesn't offer", () => {
             expect(() =>
                 createTipTapRichTextBlock(
                     {
                         unorderedList: listSizes,
-                        migrateFromDraftJs: { listItemMap: { "unordered-list-item": { list: "unordered", textBlockStyle: "small" } } },
+                        migrateFromDraftJs: { listItemMap: { "unordered-list-item": { list: "unordered", textBlockStyle: "medium" } } },
                     },
                     "MigratedRichTextListItemMapBuiltIn",
                 ),
-            ).toThrow('listItemMap maps the built-in list type "unordered-list-item"');
+            ).toThrow('listItemMap maps "unordered-list-item" to the style "medium", which the unordered list doesn\'t offer');
         });
     });
 

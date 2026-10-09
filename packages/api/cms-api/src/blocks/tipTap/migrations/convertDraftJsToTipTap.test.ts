@@ -701,8 +701,8 @@ describe("convertDraftJsToTipTap", () => {
             expect(result.content).toEqual([{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "a" }] }]);
         });
 
-        it("applies the list's defaultStyle to items of the built-in type and the mapped style to mapped items", () => {
-            const listSizesWithDefault = { styles: [{ name: "standard" }, { name: "small" }, { name: "large" }], defaultStyle: "standard" };
+        it("gives items of a mapped built-in list type the mapped style", () => {
+            const listSizesWithStandard = { styles: [{ name: "standard" }, { name: "small" }, { name: "large" }] };
             const result = convertDraftJsToTipTap(
                 {
                     blocks: [
@@ -714,8 +714,12 @@ describe("convertDraftJsToTipTap", () => {
                     entityMap: {},
                 },
                 {
-                    resolvedOptions: resolveTipTapOptions({ unorderedList: listSizesWithDefault, orderedList: listSizesWithDefault }),
-                    listItemMap,
+                    resolvedOptions: resolveTipTapOptions({ unorderedList: listSizesWithStandard, orderedList: listSizesWithStandard }),
+                    listItemMap: {
+                        ...listItemMap,
+                        "unordered-list-item": { list: "unordered", textBlockStyle: "standard" },
+                        "ordered-list-item": { list: "ordered", textBlockStyle: "standard" },
+                    },
                 },
             );
             expect(result.content).toEqual([

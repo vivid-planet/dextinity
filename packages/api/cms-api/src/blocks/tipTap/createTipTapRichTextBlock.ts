@@ -202,9 +202,9 @@ export interface CreateTipTapRichTextBlockOptions {
      * DraftJS `blocktypeMap`) to the text block they become and the `textBlockStyle` applied to it,
      * for instance to convert a DraftJS block type that was rendered as `<h2>` into a heading 2.
      *
-     * Pass an object with `listItemMap` to map custom DraftJS list block types (e.g.
-     * `unordered-list-item-small`) to the list they become items of and the list style applied to
-     * the item.
+     * Pass an object with `listItemMap` to map DraftJS list block types (e.g. a custom
+     * `unordered-list-item-small` or the built-in `unordered-list-item`) to the list they become
+     * items of and the list style applied to the item.
      *
      * Pass an object with `inlineStyleMap` to map DraftJS custom inline style names (e.g.
      * `highlight` from a DraftJS `customInlineStyles`) to TipTap `inlineStyle` mark type values.

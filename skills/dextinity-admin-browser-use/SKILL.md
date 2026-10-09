@@ -7,9 +7,13 @@ description: Control the admin UI of a Dextinity (formerly COMET) project with t
 
 Don't use this skill just to add content when another tool, such as an MCP server for the admin, can add it directly.
 
+If the project has its own admin browser-use skill, read it too; it applies where it differs from this one.
+
 Every instruction here is a starting point, not a guarantee. Projects add, rename, restyle and remove admin features freely: the page tree and the DAM exist almost everywhere and behave as described, rich text and image blocks are usually the stock ones but are often extended, and a project may ship neither. Block names, menu entries, page-tree categories and rich text options are project-specific in every case — the demo values below are examples.
 
-So: try the instructions, and when they do not match, discover the real UI once (see [Finding selectors yourself](#finding-selectors-yourself)) and continue.
+So: try the instructions, and when they do not match, discover the real UI once (see [Finding selectors yourself](#finding-selectors-yourself)) and continue. If an instruction fails, tell the user which one, so they can decide whether the skill needs a fix.
+
+When you had to discover selectors for two or more sections of this skill, suggest to the user a project skill that records what you discovered, for example `skills/<project>-admin-browser-use/` in the project, which `dextinity install-agent-features` installs. Create it only when the user agrees. Give it the same triggers as this skill's description, and start its body with "Read `dextinity-admin-browser-use` first."
 
 ## Selector rules
 

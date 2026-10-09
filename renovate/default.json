@@ -3,6 +3,7 @@
     "extends": ["config:recommended", ":semanticCommitsDisabled"],
     "minimumReleaseAge": "3 days",
     "internalChecksFilter": "strict",
+    "recreateWhen": "never",
     "packageRules": [
         {
             "groupName": "babel",

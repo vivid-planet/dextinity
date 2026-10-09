@@ -1,5 +1,549 @@
 # @comet/cms-api
 
+## 10.9.1
+
+## 10.9.0
+
+### Minor Changes
+
+- d32c558: Write a block's description to `block-meta.json`
+
+    Tools that read `block-meta.json` can use the description to tell the blocks of an application apart.
+
+    **Example**
+
+    ```ts
+    export const HeadlineBlock = createBlock(HeadlineBlockData, HeadlineBlockInput, {
+        name: "Headline",
+        description: "A headline with an optional eyebrow text above it. Use it to introduce a section.",
+    });
+    ```
+
+    ```json title="block-meta.json"
+    {
+        "name": "Headline",
+        "description": "A headline with an optional eyebrow text above it. Use it to introduce a section.",
+        "fields": [{ "name": "eyebrow", "kind": "String", "nullable": true }],
+        "inputFields": [{ "name": "eyebrow", "kind": "String", "nullable": true }]
+    }
+    ```
+
+- 13838dc: Support scopes in `DependentsList` and `DependenciesList`
+
+    Entities can be used across scopes, for instance a DAM that is shared between multiple sites. Until now, the links in both lists always pointed to the currently active scope, leading to a wrong or non-existent page. In addition, the lists didn't show which scope an entry belongs to.
+
+    The `Dependency` type now has a `scope` field, which is resolved from the entity's `scope` property or its `@ScopedEntity()` decorator. Both lists use it to link to the entry in its own scope and show a scope column when more than one scope exists.
+
+    **Example**
+
+    Request the new field in your dependents/dependencies queries:
+
+    ```diff
+        dependents(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
+            nodes {
+                rootGraphqlObjectType
+                rootId
+                rootColumnName
+                jsonPath
+                name
+                secondaryInformation
+                visible
+    +           scope
+            }
+            totalCount
+        }
+    ```
+
+- d32c558: Describe blocks whose purpose isn't obvious from their name and fields
+
+    `RichText` and `TipTapRichText` now carry a description that says which rich text editor they use, since an application typically has both and their fields look alike. `Seo` carries a description of the fields it bundles (title, description, social preview, sitemap settings, canonical URL), since "Seo" alone doesn't say which of those it covers.
+
+    The description reaches an application through `block-meta.json`.
+
+- 1c29104: TipTap Rich Text Block: add `defaultStyle` to a text block
+
+    The styling select always offered a "Default" entry standing for "no style", even where a design has no unstyled variant and every paragraph or heading is meant to carry one of the configured styles.
+
+    A text block (or list) with a `defaultStyle` has no such state: the select drops its "Default" entry, and the style is applied to new content, to a text block the editor converts through the type select, and to any text block the editor creates without one — pressing Enter at the end of a text block, the `Mod-Alt-<level>` shortcuts, or pasting. Switching the type keeps a style the new text block also offers and falls back to its `defaultStyle` otherwise.
+
+    Toggling a list hands a paragraph from its text block to the list or back, so the styles of whichever now holds it apply. The list keyboard shortcuts do this as well as the toolbar's list buttons.
+
+    Because the default sits on the text block rather than on a shared tag, two text blocks with the same tag can have different defaults, and a text block without one keeps the "Default" entry next to text blocks that have one.
+
+    **Example**
+
+    ```tsx
+    createTipTapRichTextBlock({
+        textBlocks: [
+            { name: "heading-1", label: "Heading 1", tag: "h1", styles: headlineStyles, defaultStyle: "headline300" },
+            { name: "heading-2", label: "Heading 2", tag: "h2", styles: headlineStyles, defaultStyle: "headline400" },
+        ],
+    });
+    ```
+
+    `defaultStyle` must be one of the text block's `styles`, otherwise an error is thrown. It only exists next to `styles`, not next to a text block's own `element`.
+
+    Content written before a `defaultStyle` was configured carries no style, and the editor fills it in on the first edit rather than when the document is opened, so opening a document does not mark it as changed.
+
+- 070b357: TipTap Rich Text Block: convert custom Draft.js list block types in `migrateFromDraftJs`
+
+    The Draft.js migration knew only the built-in `unordered-list-item` and `ordered-list-item`. A custom list block type, for instance a `blocktypeMap` entry with `supportedBy: "unordered-list"`, became a paragraph, and since the migration runs once, the list structure was lost for good.
+
+    Map such block types in `listItemMap` to the list they become items of and the list style the item carries:
+
+    ```ts
+    const listSizes = { styles: [{ name: "small" }, { name: "large" }] };
+
+    createTipTapRichTextBlock({
+        unorderedList: listSizes,
+        orderedList: listSizes,
+        migrateFromDraftJs: {
+            listItemMap: {
+                "unordered-list-item-small": { list: "unordered", textBlockStyle: "small" },
+                "ordered-list-item-small": { list: "ordered", textBlockStyle: "small" },
+            },
+        },
+    });
+    ```
+
+    Consecutive items of the same list stay one list, whatever their style. An error is thrown at startup when the list is disabled, when `textBlockStyle` isn't one of the list's `styles`, when a block type is also in `textBlockMap`, or when it is one of the built-in list types.
+
+- e84ba03: TipTap Rich Text Block: define text block styles inside the text blocks
+
+    A text block style had to be configured in two places: globally in `textBlockStyles`, and again through an `appliesTo` listing the text block types it was allowed for. Reading what a text block offers meant scanning every style's `appliesTo`.
+
+    A text block now carries its style definitions directly, and `textBlockStyles` is gone. Text blocks that offer the same style share its definition, which makes the shared set explicit instead of implying it through repeated names.
+
+    **Example**
+
+    ```tsx
+    const headlineStyles: TipTapTextBlockStyle[] = [
+        { name: "headline300", label: "Headline 300", element: (props, Tag) => <Tag {...props} /> },
+        { name: "headline400", label: "Headline 400", element: (props, Tag) => <Tag {...props} /> },
+    ];
+
+    createTipTapRichTextBlock({
+        textBlocks: [
+            {
+                name: "paragraph",
+                label: "Paragraph",
+                tag: "p",
+                styles: [
+                    { name: "copy100", label: "Copy 100", element: (props, Tag) => <Tag {...props} /> },
+                    { name: "copy200", label: "Copy 200", element: (props, Tag) => <Tag {...props} /> },
+                ],
+            },
+            { name: "heading-1", label: "Heading 1", tag: "h1", styles: headlineStyles },
+            { name: "heading-2", label: "Heading 2", tag: "h2", styles: headlineStyles },
+        ],
+    });
+    ```
+
+    In the API the styles are `{ name }` objects, mirroring the Admin configuration without the labels and elements.
+
+    A text block that needs no style choice carries its own `element` instead of `styles`. The two exclude each other, so a text block offers a style choice or renders one way, never both:
+
+    ```tsx
+    createTipTapRichTextBlock({
+        textBlocks: [{ name: "display", label: "Display", tag: "h1", element: (props, Tag) => <Tag style={{ fontSize: 64 }} {...props} /> }],
+    });
+    ```
+
+    **Migrating an existing configuration**
+    - `textBlockStyles` and a style's `appliesTo` → the `styles` of the text blocks that offer the style.
+    - `appliesTo: ["ordered-list", "unordered-list"]` → `orderedList`/`unorderedList` accept `{ styles }` instead of `true`.
+    - An inline style's `appliesTo` now lists text block names (plus `ordered-list`/`unordered-list`) instead of text block types.
+    - In the Admin, a style's `element` receives the tag of the text block it is applied to, so one style can be shared: `element: (props, Tag) => <Tag {...props} />`.
+
+    A style's `name` still identifies it in the content's `textBlockStyle` attribute, so the stored content format is unchanged.
+
+### Patch Changes
+
+- fa3c71f: Allow `class-validator` v0.15 as peer dependency
+
+    The peer dependency range is widened to `^0.14.0 || ^0.15.0`.
+
+    `class-validator` v0.15 changes the signature of `@IsIBAN()`: it now accepts an options argument, which breaks existing calls that pass an argument, e.g. `@IsIBAN({ forbidUnknownValues: false })`. Check your usage of `@IsIBAN()` before upgrading to v0.15.
+
+- 4446a81: Fix validation error for block inputs without validation annotations
+
+    Saving a document failed with `an unknown value was passed to the validate function` as soon as it contained a block whose input class has no class-validator annotations at all, for instance a block without fields. class-validator rejects such classes since v0.14, where `forbidUnknownValues` is enabled by default. Affected were, among others, link blocks in rich text blocks (DraftJS and TipTap) as their links are validated with a direct `validate()` call.
+
+    `BlockInput` now provides validation metadata, so block inputs validate as expected no matter which validation path is used.
+
+- 8c8f1c4: Update `nodemailer` to v10
+
+    nodemailer now ships its own type definitions, so `@types/nodemailer` is no longer needed. The return type of `MailerService#sendMail` is now the `SentMessageInfo` returned by the transport instead of the (incorrect) `Mail` type.
+
+    Since v9, nodemailer validates TLS certificates when fetching remote content (e.g., attachments with an `href`). To fetch from a host with a self-signed certificate, add its certificate or CA to the trusted ones (e.g., via `NODE_EXTRA_CA_CERTS` or the `tls.ca` option of the attachment) instead of disabling certificate verification.
+
+- e9067c3: Fix saving a TipTap rich text that ends with a list
+
+    Since v10.8.0, the editor added an empty list after a list at the end of the content. The API rejects a list without items, so saving failed with "Validation failed". Removing the list didn't fix it: the empty list stayed at the end of the content, where editors couldn't see or remove it.
+
+    ProseMirror fills content with the schema's first block node, for instance after a list at the end of the content or when all content is deleted. When the `textBlock` node replaced the paragraph and heading nodes, it lost the paragraph's priority, so a list became the first block node. The `textBlock` node gets the paragraph's priority again, so the editor adds an empty text block after a list, as it did before v10.8.0.
+
+    With `maxTextBlocks`, the editor only adds this empty text block when the content stays within the limit. Otherwise, a list as the last allowed block was followed by a block over the limit, and the content couldn't be saved.
+
+## 10.8.0
+
+### Minor Changes
+
+- 383e9ed: Add a `description` option to `createBlock`
+
+    A block's name alone often doesn't say what the block is meant for. The description holds that information, so that consumers of the block meta, such as editor tooling and AI agents, can tell blocks apart.
+
+    **Example**
+
+    ```ts
+    export const HeadlineBlock = createBlock(HeadlineBlockData, HeadlineBlockInput, {
+        name: "Headline",
+        description: "A headline with an optional eyebrow text above it. Use it to introduce a section.",
+    });
+    ```
+
+    The block factories that take a name, for instance `createBlocksBlock` and `createOneOfBlock`, accept the description in their options as well.
+
+- 0076f28: Add vendor migrations to blocks
+
+    A block's `version` is a single counter, so only one party can advance it. That doesn't work for a block that receives migrations from the library providing it as well as from the application using it: `createTipTapRichTextBlock` with `migrateFromDraftJs` took version 1, so the application had to know that and start its own migrations at 2 — and the numbers collided as soon as the library added a migration of its own.
+
+    The migrations that ship with a block are therefore declared in `migrateVendor`, next to the `migrate` option the application fills. They form a chain of their own, counting from 1 independently of the block's `version`, stored per block instance in `$$vendorVersion`, and they run before the block's own migrations. Both options stay separate, so neither side can overwrite the other's migrations.
+
+    **Example**
+
+    ```ts
+    createBlock(VideoBlockData, VideoBlockInput, {
+        name: "Video",
+        migrate: {
+            version: 1,
+            migrations: typeSafeBlockMigrationPipe([ChangeTitleMigration]),
+        },
+        migrateVendor: {
+            version: 1,
+            migrations: typeSafeBlockMigrationPipe([ChangeAspectRatioMigration]),
+        },
+    });
+    ```
+
+    The migrations of the blocks Dextinity ships — `ExternalLinkBlock`, `YouTubeVideoBlock`, `DamVideoBlock` and the Draft.js migration of `createTipTapRichTextBlock` — moved into their vendor chain. Existing content doesn't need to be touched: the version it was saved with is split into the two counters when it is loaded.
+
+    A block that extends the data of a block with vendor migrations inherits them, so it runs them before its own migrations without declaring them, and its own migrations start at 1.
+
+    Deploy this before content is saved with it: once a block instance has been saved with `$$vendorVersion`, an older Dextinity version reads its vendor chain as unmigrated and migrates it a second time.
+
+    **Migrating existing `migrateFromDraftJs` blocks**
+
+    The Draft.js → TipTap migration is now a vendor migration, so it no longer occupies version 1 of the block. Renumber the migrations of a block that uses `migrateFromDraftJs`, so they start at 1 again:
+
+    ```diff
+     export const TipTapRichTextBlock = createTipTapRichTextBlock(
+         { link: LinkBlock, migrateFromDraftJs: true },
+         {
+             name: "TipTapRichText",
+             migrate: {
+    -            version: 2,
+    +            version: 1,
+                 migrations: typeSafeBlockMigrationPipe([Heading1ToHeading2Migration]),
+             },
+         },
+     );
+    ```
+
+    Lower the `toVersion` of each of those migrations by one as well.
+
+- 9109aa3: TipTap Rich Text Block: replace the `paragraph` and `heading` options with `textBlocks`
+
+    The text block type select could only ever offer a fixed paragraph entry plus every enabled heading level, in a fixed order. `textBlocks` configures the text block types explicitly, which decouples a text block from the tag it is stored as and lets several text blocks share a tag, for instance a display headline next to a regular heading 1.
+
+    **Example**
+
+    ```tsx
+    createTipTapRichTextBlock({
+        textBlocks: [
+            { name: "paragraph", label: "Paragraph", tag: "p" },
+            { name: "display", label: "Display", tag: "h1" },
+            { name: "heading-1", label: "Heading 1", tag: "h1" },
+            { name: "heading-2", label: "Heading 2", tag: "h2" },
+        ],
+        defaultTextBlock: "paragraph",
+    });
+    ```
+
+    The API takes the same option without the labels.
+
+    **Migrating an existing configuration**
+    - `paragraph`/`heading` → one `textBlocks` entry per text block type (`tag: "p"` for the paragraph, `h1`-`h6` for the headings). It defaults to a paragraph plus a heading for every level, so only a restricted set needs to be configured. Leaving the paragraph out replaces `paragraph: false`.
+    - `heading: { levels }` → the `textBlocks` entries for those levels.
+    - `heading: { defaultLevel }` → `defaultTextBlock`, which names the text block new content starts with and defaults to the first one.
+    - `migrateFromDraftJs`' `textBlockStyleMap` → `textBlockMap`, which now takes a `{ textBlock, textBlockStyle }` object for every DraftJS block type: `textBlock` names the text block the block becomes (instead of the tag the previous `textBlockType` named), `textBlockStyle` stays optional. Where two text blocks share a heading tag, `textBlockMap` has to name the one a DraftJS `header-one`…`header-six` becomes, unless it is the `defaultTextBlock` — the block throws otherwise, because the conversion runs once and the DraftJS content is gone afterwards.
+
+    **The stored format changes**
+
+    Every paragraph and heading is now one `textBlock` node that names its text block, instead of a `paragraph`/`heading` node with a `level`:
+
+    ```json
+    { "type": "textBlock", "attrs": { "textBlock": "heading-2" }, "content": [{ "type": "text", "text": "Headline" }] }
+    ```
+
+    The tag lives in the configuration, so changing a text block's `tag` takes effect without a migration, while renaming or removing one invalidates the content that names it.
+
+    Content stored by an earlier version holds `paragraph` and `heading` nodes. A vendor migration converts it when the block is loaded, so a project needs no migration of its own. It resolves the text block from the node's tag, which is unambiguous for that content: two text blocks could not share a tag before `textBlocks` existed.
+
+    A project migration sees the converted nodes, because the vendor migrations run before the block's own. A migration written against `{ type: "heading", attrs: { level } }` has to be changed to match `{ type: "textBlock", attrs: { textBlock } }`.
+
+    On the site, `renderTipTapRichText` renders a `textBlock` by its name: `heading-1` to `heading-6` — the default text blocks — as `<h1>` to `<h6>`, anything else as `<p>`. A block that renames a text block or adds one needs its own handler, which reads the name:
+
+    ```tsx
+    const nodeMapping: Record<string, TipTapNodeHandler> = {
+        textBlock: ({ node, children }) => <Headline variant={node.attrs?.textBlock}>{children}</Headline>,
+    };
+    ```
+
+### Patch Changes
+
+- 44125b9: Wait for the permission to be deleted in the `userPermissionsDeletePermission` mutation
+
+    Previously, the mutation returned `true` before the deletion was flushed, so errors during deletion weren't reported to the client.
+
+- 8538d98: Fix DAM file URLs (both inline "open in new tab" and download links) missing the file extension, which caused browsers to save downloaded files without their extension (e.g. `.pdf`).
+
+    Requests for a DAM file URL whose filename segment no longer matches the file (for instance, a URL generated before this fix) now get a permanent redirect to the current canonical URL instead of being served under the stale filename.
+
+- 5d9bf35: Send `Vary: Accept` in DAM image responses
+
+    The image format depends on the `Accept` header. Without `Vary`, a CDN could send a cached WebP image to a client that does not support WebP. For example, images in emails could fail to load in classic Outlook for Windows.
+
+    Some CDNs ignore `Vary` by default. Check if your CDN needs a setting to cache each image format separately.
+
+- 4a1da4e: Exclude the TypeScript build cache from the published packages
+
+    The published tarballs contained the `.tsbuildinfo` files that TypeScript writes next to the build output for incremental builds — 1.3 MB of build cache in `@dextinity/cms-api` alone, which has no use outside the repository.
+
+- dddb222: Prevent the API from crashing when the dominant color calculation or the cleanup of outdated mail logs fails
+
+    Both run in the background without being awaited. A failure previously caused an unhandled promise rejection, which terminates the process by default. The error is now logged instead.
+
+- 8fbfbce: Replace the `hasha` dependency with Node's built-in `crypto`
+
+    `hasha` isn't needed — Node's `crypto` covers everything we use it for. Hashing now uses `crypto` directly, producing identical hex-encoded MD5 hashes, so existing `contentHash` values and scaled-image cache paths remain valid.
+
+- 36f7f17: Replace the deprecated `lodash.isequal` dependency with Node's built-in `util`
+
+    `lodash.isequal` is deprecated and isn't needed — Node's `isDeepStrictEqual` from `util` covers the deep comparisons we use it for, with the same results for the compared values (plain JSON block data and content scopes). Both packages drop the `lodash.isequal` dependency.
+
+## 10.7.0
+
+### Minor Changes
+
+- ae93af6: Support heading-only TipTap rich text blocks
+
+    `paragraph` is now a feature of `createTipTapRichTextBlock` like the other text block types, enabled by default. Turning it off results in a heading-only block (e.g. a headline): the text block type select only offers headings, the editor starts with a heading instead of a paragraph, and content containing a paragraph is rejected during validation.
+
+    The `heading` options gain a `defaultLevel`, the level a newly created heading gets. It defaults to the lowest allowed level and must be one of them. `migrateFromDraftJs` uses it for Draft.js blocks that don't carry a heading level, so migrated content doesn't fall back to paragraphs the schema doesn't allow.
+
+    **Example**
+
+    A headline block that only offers H2-H4 and starts with an H3:
+
+    ```tsx
+    createTipTapRichTextBlock({
+        paragraph: false,
+        heading: { levels: [2, 3, 4], defaultLevel: 3 },
+        maxTextBlocks: 1,
+    });
+    ```
+
+    Lists are disabled in a heading-only block, because a list item's content starts with a paragraph. Enabling one explicitly throws, as does turning off `paragraph` and `heading` together, which would leave no text block type at all.
+
+## 10.6.0
+
+### Patch Changes
+
+- 073dcd7: Add the file name to the `Content-Disposition` header of DAM file downloads
+
+    The header was previously set to `attachment` without a file name, so browsers derived the name of the downloaded file from the URL, which contains the file name without its extension.
+
+- 012411c: Add a `Content-Disposition: inline` header with the file name to DAM file endpoints
+
+    The endpoints serving a file for display previously sent no `Content-Disposition` header at all, so browsers derived the name from the URL when saving the file. They now send `inline` together with the file name, which keeps the file being displayed instead of downloaded.
+
+- d6a910e: Include `attachedBlocks` in the input fields of the block meta of one-of blocks
+
+    The block meta of blocks created with `createOneOfBlock` (and `createLinkBlock`) was missing the `attachedBlocks` field in `inputFields`, causing the generated block input types to only contain `activeType`.
+
+## 10.5.1
+
+### Patch Changes
+
+- 9d150e6: Fix scope validation in `PageTreeModule.forRoot` and `DamModule.register` rejecting correctly decorated scope classes
+
+    `@InputType()` doesn't register its metadata immediately, it only queues the registration until a GraphQL schema is built. Since the scope is validated while the module is being defined, the queued registration hadn't run yet and a scope class decorated with `@InputType("PageTreeNodeScopeInput")` could be rejected with:
+
+    ```
+    Error: Invalid input type name for provided page tree scope class.
+    Make sure to decorate the class with @InputType("PageTreeNodeScopeInput")
+    ```
+
+    The queued registrations are now executed before the scope is validated.
+
+## 10.5.0
+
+### Minor Changes
+
+- f4d091f: Allow declaring content scope dimensions at runtime
+
+    Add an optional `availableContentScopeDimensions` option to the `UserPermissionsModule` to declare the content scope dimensions (with optional labels). When omitted, the dimensions are derived from the keys of `availableContentScopes`.
+
+    A content scope may hold any value (including the `"*"` wildcard) for a dimension that is not part of `availableContentScopes`. Content scopes are no longer validated against `availableContentScopes`; access is enforced per request by `isAllowed`, which compares the requested scope against the user's granted scopes.
+
+    **Example**
+
+    ```ts
+    UserPermissionsModule.forRootAsync({
+        useFactory: () => ({
+            availableContentScopes: [ ... ],
+            availableContentScopeDimensions: [{ name: "domain", label: "Domain (Website)" }, { name: "language" }, { name: "product" }],
+            // ...
+        }),
+        // ...
+    });
+    ```
+
+- 0be2f59: Replace the TipTap Rich Text Block's `supports` array with one option per feature
+
+    `createTipTapRichTextBlock` now takes a single root options object with one option per editor feature, similar to TipTap's `StarterKit` configuration. Feature-specific options move into a nested options object of the feature they belong to, so `headingLevels` becomes `heading: { levels: [...] }`.
+
+    Every feature is enabled by default (except `underline`) and is disabled by passing `false`, so a configuration only has to state what deviates from the defaults instead of repeating every supported feature. Links stay the exception: they are enabled by passing the link block as `link`.
+
+    **Example**
+
+    ```ts
+    // Before
+    createTipTapRichTextBlock({
+        supports: ["bold", "italic", "strike", "sub", "sup", "heading", "ordered-list", "unordered-list"],
+        headingLevels: [2, 3],
+    });
+
+    // After
+    createTipTapRichTextBlock({
+        nonBreakingSpace: false,
+        softHyphen: false,
+        heading: { levels: [2, 3] },
+    });
+    ```
+
+    The features are named after their option: `bold`, `italic`, `underline`, `strike`, `sub`, `sup`, `heading`, `orderedList`, `unorderedList`, `nonBreakingSpace`, `softHyphen` and `link`. Additionally, `undoRedoButtons` (Admin only) shows or hides the undo/redo buttons in the toolbar; the keyboard shortcuts work regardless. The document-level limits `maxTextBlocks` and `listLevelMax` are unchanged.
+
+### Patch Changes
+
+- 02bba49: Validate the GraphQL type names of a custom `PageTreeNode` scope passed to `PageTreeModule.forRoot()`
+
+    `PageTreeModule.forRoot()` now throws an error at startup if the provided `Scope` class isn't decorated with `@ObjectType("PageTreeNodeScope")` and `@InputType("PageTreeNodeScopeInput")`, mirroring the existing validation for `DamModule`'s `Scope` option. This prevents runtime GraphQL schema errors caused by an accidentally renamed scope type.
+
+## 10.4.0
+
+### Minor Changes
+
+- a00f0b2: Support wildcard values for content scope dimensions in `getContentScopesForUser`
+
+    `getContentScopesForUser` can now use the wildcard value `"*"` as the value of a content scope dimension to grant access to any value for that dimension. The wildcard is matched during the content scope check, so it does not need to be part of `availableContentScopes`.
+
+    **Example**
+
+    ```ts
+    getContentScopesForUser(user: User): ContentScopesForUser {
+        // Grant access to every language within the "main" domain
+        return [{ domain: "main", language: "*" }];
+    }
+    ```
+
+    For users with access to all content scopes, `currentUser.permissions[].contentScopes` now returns a single wildcard scope (e.g. `[{ domain: "*", language: "*" }]`) instead of the enumerated `availableContentScopes`. The default `isAllowed` and `currentUser.allowedContentScopes` handle the wildcard; a custom `isAllowed` must treat `"*"` as matching any value of a dimension.
+
+## 10.3.0
+
+### Minor Changes
+
+- 0c211e9: Stop deduplicating content scopes in the user permissions API
+
+    `UserPermissionsService.getAvailableContentScopes()`, `getContentScopes()` and `getPermissionsAndContentScopes()` no longer deduplicate their content scopes. Deduplication only mattered for how the scopes are displayed, so it now happens in the admin where the lists are rendered. This also removes the `lodash.uniqwith` dependency.
+
+    Projects that consume `UserPermissionsPublicService` or the `currentUser` / `availableContentScopes` GraphQL fields directly and rely on the scopes being unique should deduplicate them on their side.
+
+- ddea65d: Remove the "Permissions" and "Scopes" columns from the user permissions users list
+
+    The users list now shows the name, the email and the row actions. The `permissionsCount` and `contentScopesCount` fields of `UserPermissionsUser` are deprecated and now return `0`. They will be removed in the next major version.
+
+- 66cb98a: DAM: Allow replacing a file with a file of the same category instead of the same mimetype
+
+    Previously, "Replace File" only accepted a file with the exact same mimetype, so a JPEG couldn't be replaced by a WebP even though both are pixel images. Now a file can be replaced by any file of the same category:
+
+    | Category     | Examples             |
+    | ------------ | -------------------- |
+    | `pixelImage` | JPEG, PNG, WebP      |
+    | `svgImage`   | SVG                  |
+    | `audio`      | MP3, OGG, WAV        |
+    | `video`      | MP4, WebM, QuickTime |
+    | `document`   | PDF, DOCX, VTT, ZIP  |
+
+    SVG images and pixel images remain separate categories.
+
+    Files in the `document` category still require the exact same mimetype, since their purposes vary too much: a VTT file is a video's subtitles, whereas a PDF is a download, so replacing one with the other must not be possible.
+
+    The file's usages stay unchanged. Only the extension of the file's name is adjusted to match the new file (for instance, `photo.jpg` becomes `photo.webp`). If a file with that name already exists in the same folder, a counter is appended to keep the name unique (for instance, `photo-2.webp`), and the Admin shows a snackbar informing about the new name.
+
+    The new `getDamFileCategory` helper is exported from both packages:
+
+    ```ts
+    import { getDamFileCategory } from "@dextinity/cms-api"; // or "@dextinity/cms-admin"
+
+    getDamFileCategory("image/webp"); // "pixelImage"
+    getDamFileCategory("image/svg+xml"); // "svgImage"
+    ```
+
+### Patch Changes
+
+- 3ffe174: Throw a validation error for malformed UUID id args in `@AffectedEntity`
+
+    The permission check loads affected entities before input validation (e.g., `@IsUUID()`) runs, because guards execute before pipes. A malformed UUID therefore reached PostgreSQL, which failed with `invalid input syntax for type uuid` and surfaced as an internal server error.
+
+    Now id args for entities with a UUID primary key (and `pageTreeNodeIdArg` values) are validated upfront, and a `DextinityValidationException` is thrown for malformed UUIDs.
+
+## 10.2.0
+
+### Minor Changes
+
+- a4ec0fe: Make the DAM's scope-based access control optional
+
+    The DAM controllers required an `AccessControlService`, so `DamFilesModule` couldn't be registered without `UserPermissionsModule`. The service is optional now. A DAM that has neither the service nor the option below refuses to start, because its GraphQL resolvers would serve requests unguarded.
+
+    Pass `disableScopeAccessControl` to run the DAM behind your own authentication guard, without any scope checks:
+
+    ```ts
+    DamFilesModule.register({
+        damConfig,
+        Scope: DamScope,
+        File: DamFile,
+        Folder: DamFolder,
+        disableScopeAccessControl: true,
+    });
+    ```
+
+    The option is only available on `DamFilesModule`, not on `DamModule`, which always runs with `UserPermissionsModule`.
+
+    Applications using `DamModule` together with `UserPermissionsModule` are unaffected: the endpoints keep using the registered `AccessControlService`.
+
+- edf2027: Allow restricting selectable heading levels in the TipTap rich text block via a new `headingLevels` option
+
+    `createTipTapRichTextBlock` accepts a new `headingLevels?: number[]` option to limit which heading levels (1-6) are allowed, mirroring the same option added to `@dextinity/cms-admin`. Content with a heading level outside this set is rejected during validation. Defaults to `[1, 2, 3, 4, 5, 6]`, so existing usages are unaffected. Must be a non-empty array of unique integers between 1 and 6, otherwise an error is thrown.
+
+    ```tsx
+    createTipTapRichTextBlock({
+        supports: ["heading"],
+        headingLevels: [2, 3, 4],
+    });
+    ```
+
 ## 10.1.0
 
 ## 10.0.1

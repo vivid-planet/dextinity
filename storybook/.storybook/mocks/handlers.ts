@@ -93,8 +93,6 @@ type UserPermissionsUser {
   id: String!
   name: String!
   email: String!
-  permissionsCount: Int!
-  contentScopesCount: Int!
   impersonationAllowed: Boolean!
 }
 

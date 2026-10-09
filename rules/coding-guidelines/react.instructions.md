@@ -30,7 +30,8 @@ alwaysApply: false
 
 - Props are **camelCase**.
 - Do not reuse DOM-attribute names (`className`, `hidden`, …) as custom-semantic props — pick a non-conflicting name (e.g. `variant`).
-- Boolean props are optional (`hidden?: boolean`) with no default — they're falsy by default.
+- Boolean flag props are optional (`hidden?: boolean`) with no default — they're falsy by default.
+- Exception: a boolean that is the **controlled value** of a component (e.g. `checked` of a switch, `open` of a controlled dialog) is required (`checked: boolean`). Making it optional would let the component silently fall back to uncontrolled mode.
 - When setting a boolean prop to `true`, omit the value: `<Foo hidden />`, not `<Foo hidden={true} />`.
 
 ## State

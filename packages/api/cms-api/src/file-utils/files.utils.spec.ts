@@ -1,8 +1,39 @@
-import { describe, expect, it } from "vitest";
+import { writeFileSync } from "fs";
+import { mkdtemp, rm } from "fs/promises";
+import { tmpdir } from "os";
+import { join } from "path";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { isValidSvg } from "./files.utils";
+import { calculateFileHash, isValidSvg } from "./files.utils";
 
 describe("Files Utils", () => {
+    describe("calculateFileHash", () => {
+        let directory: string;
+
+        beforeAll(async () => {
+            directory = await mkdtemp(join(tmpdir(), "files-utils-"));
+        });
+
+        afterAll(async () => {
+            await rm(directory, { recursive: true, force: true });
+        });
+
+        // Persisted as `contentHash` to deduplicate DAM files, so the encoding must not change.
+        it("should return the hex-encoded md5 hash of the file contents", async () => {
+            const filePath = join(directory, "hello.txt");
+            writeFileSync(filePath, "Hello World");
+
+            expect(await calculateFileHash(filePath)).toBe("b10a8db164e0754105b7a99be72e3fe5");
+        });
+
+        it("should hash files that are larger than a single chunk", async () => {
+            const filePath = join(directory, "large.bin");
+            writeFileSync(filePath, Buffer.alloc(1024 * 1024, 7));
+
+            expect(await calculateFileHash(filePath)).toBe("24c8b42e9f4d53ef58987e469baaad49");
+        });
+    });
+
     describe("isValidSvg", () => {
         it("should return true if the svg doesn't contain any forbidden content", async () => {
             const cleanSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">

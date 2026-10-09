@@ -72,7 +72,7 @@ export class UserPermissionResolver {
     @Mutation(() => Boolean)
     @SkipBuild()
     async userPermissionsDeletePermission(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
-        this.entityManager.removeAndFlush(await this.getPermission(id));
+        await this.entityManager.removeAndFlush(await this.getPermission(id));
         return true;
     }
 
@@ -81,7 +81,6 @@ export class UserPermissionResolver {
         @Args("input", { type: () => UserPermissionOverrideContentScopesInput }) input: UserPermissionOverrideContentScopesInput,
     ): Promise<UserPermission> {
         const permission = await this.getPermission(input.permissionId);
-        await this.service.checkContentScopes(input.contentScopes);
         permission.overrideContentScopes = input.overrideContentScopes;
         permission.contentScopes = input.contentScopes;
         await this.entityManager.persistAndFlush(permission);

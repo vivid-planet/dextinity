@@ -1,5 +1,109 @@
 # @comet/site-nextjs
 
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/site-react@10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- 6caa864: Stop forwarding preview headers from the client in `persistedQueryRoute`
+
+    Previously, `persistedQueryRoute` forwarded the `x-include-invisible-content` and `x-preview-dam-urls` headers of the incoming request to the API.
+    Since the route usually authenticates against the API with a system user, any visitor could request unpublished pages and invisible blocks.
+
+    The headers are now only set based on the new `previewData` option, which must come from a verified source such as the site preview cookie:
+
+    ```ts
+    import { persistedQueryRoute, previewParams } from "@dextinity/site-nextjs/server";
+
+    async function handler(request: Request) {
+        const preview = await previewParams();
+        return persistedQueryRoute(request, {
+            // ...
+            previewData: preview?.previewData,
+        });
+    }
+    ```
+
+    Responses for preview requests are sent with `Cache-Control: private, no-store`.
+
+- Updated dependencies [6caa864]
+    - @dextinity/site-react@10.9.0
+
+## 10.8.0
+
+### Patch Changes
+
+- Updated dependencies [ccffc10]
+- Updated dependencies [9109aa3]
+    - @dextinity/site-react@10.8.0
+
+## 10.7.0
+
+### Patch Changes
+
+- Updated dependencies [ae93af6]
+    - @dextinity/site-react@10.7.0
+
+## 10.6.0
+
+### Patch Changes
+
+- Updated dependencies [1059762]
+- Updated dependencies [4028c49]
+    - @dextinity/site-react@10.6.0
+
+## 10.5.1
+
+### Patch Changes
+
+- 3a6c451: Make the generated `TipTapNode` type compatible with TipTap's `JSONContent`
+
+    `TipTapNode["type"]` is optional now, matching `JSONContent["type"]`. Both types can be used interchangeably, so no cast is needed when passing a rich text block's content to a TipTap utility or when rendering a `JSONContent` value with `renderTipTapRichText`. `renderTipTapRichText` renders a node without a `type` as a text node.
+
+    **Example**
+
+    ```ts
+    import { generateHTML } from "@tiptap/core";
+    import type { TipTapRichTextBlockData } from "@src/blocks.generated";
+
+    function renderToHtml(data: TipTapRichTextBlockData) {
+        return generateHTML(data.tipTapContent, extensions);
+    }
+    ```
+
+- Updated dependencies [3a6c451]
+    - @dextinity/site-react@10.5.1
+
+## 10.5.0
+
+### Patch Changes
+
+- @dextinity/site-react@10.5.0
+
+## 10.4.0
+
+### Patch Changes
+
+- Updated dependencies [0e88bab]
+    - @dextinity/site-react@10.4.0
+
+## 10.3.0
+
+### Patch Changes
+
+- @dextinity/site-react@10.3.0
+
+## 10.2.0
+
+### Patch Changes
+
+- @dextinity/site-react@10.2.0
+
 ## 10.1.0
 
 ### Patch Changes

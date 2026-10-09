@@ -22,7 +22,6 @@ import { ColumnsBlock } from "@src/documents/pages/blocks/ColumnsBlock";
 import { ContentGroupBlock } from "@src/documents/pages/blocks/ContentGroupBlock";
 import { FullWidthImageBlock } from "@src/documents/pages/blocks/FullWidthImageBlock";
 import { KeyFactsBlock } from "@src/documents/pages/blocks/KeyFactsBlock";
-import { ProductListBlock } from "@src/documents/pages/blocks/ProductListBlock";
 import { SliderBlock } from "@src/documents/pages/blocks/SliderBlock";
 import { TeaserBlock } from "@src/documents/pages/blocks/TeaserBlock";
 import { NewsDetailBlock } from "@src/news/blocks/NewsDetailBlock";
@@ -53,7 +52,6 @@ const supportedBlocks: SupportedBlocks = {
     table: (props) => <TableBlock data={props} />,
     tipTapTable: (props) => <TipTapTableBlock data={props} />,
     tipTapRichText: (props) => <PageContentTipTapRichTextBlock data={props} />,
-    productList: (props) => <ProductListBlock data={props} />,
     pageTreeIndex: (props) => <PageTreeIndexBlock data={props} />,
     contactForm: (props) => <ContactFormBlock data={props} />,
 };

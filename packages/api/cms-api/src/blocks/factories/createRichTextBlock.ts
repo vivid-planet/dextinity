@@ -20,6 +20,7 @@ import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/
 import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
 import { SearchText } from "../search/get-search-text";
 import { BlockFactoryNameOrOptions } from "./types";
+import { withDefaultDescription } from "./withDefaultDescription";
 
 interface CreateRichTextBlockOptions {
     link: Block;
@@ -76,10 +77,13 @@ export function createRichTextBlock<LinkBlock extends Block>(
         throw new Error("Provided 'link' is undefined. This is most likely due to a circular import");
     }
 
-    const blockName = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
-    const migrate = typeof nameOrOptions !== "string" && nameOrOptions.migrate ? nameOrOptions.migrate : { migrations: [], version: 0 };
+    const { name: blockName, description: blockDescription } = withDefaultDescription(
+        nameOrOptions,
+        "Formatted text, edited in the Draft.js based rich text editor.",
+    );
+    const migrate = typeof nameOrOptions !== "string" ? nameOrOptions.migrate : undefined;
 
-    @BlockDataMigrationVersion(migrate.version)
+    @BlockDataMigrationVersion(migrate?.version)
     class RichTextBlockData extends BlockData {
         @BlockField({ type: "json" })
         draftContent: RawDraftContentState;
@@ -190,8 +194,8 @@ export function createRichTextBlock<LinkBlock extends Block>(
 
     // Decorate BlockDataFactory
     let decorateBlockDataFactory = blockDataFactory;
-    if (migrate.migrations) {
-        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator(migrate.migrations, blockName);
+    if (migrate) {
+        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator({ migrate, blockName });
         decorateBlockDataFactory = blockDataFactoryDecorator1(decorateBlockDataFactory);
     }
     decorateBlockDataFactory = strictBlockDataFactoryDecorator(decorateBlockDataFactory);
@@ -201,6 +205,7 @@ export function createRichTextBlock<LinkBlock extends Block>(
 
     const RichTextBlock: Block<RichTextBlockData, RichTextBlockInputInterface<ExtractBlockInput<LinkBlock>>> = {
         name: blockName,
+        description: blockDescription,
         blockDataFactory: decorateBlockDataFactory,
         blockInputFactory: decorateBlockInputFactory,
         blockMeta: new AnnotationBlockMeta(RichTextBlockData),

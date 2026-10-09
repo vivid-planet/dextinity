@@ -230,6 +230,8 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
                     `${this.blobStorageBackendService.getBackendFilePathPrefix()}${this.config.filesDirectory}/${createHashedPath(file.contentHash)}`,
                 );
 
+            res.vary("Accept");
+
             const cache = await this.cacheService.get(file.contentHash, path);
             if (!cache) {
                 const response = await fetch(this.imgproxyService.getSignedUrl(path));

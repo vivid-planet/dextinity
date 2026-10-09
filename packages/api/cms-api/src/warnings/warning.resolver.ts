@@ -2,12 +2,12 @@ import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, raw } from "@mikro-orm/postgresql";
 import { UnauthorizedException } from "@nestjs/common";
 import { Args, ID, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
-import isEqual from "lodash.isequal";
 
 import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
 import { gqlArgsToMikroOrmQuery, splitSearchString } from "../common/filter/mikro-orm";
 import { EntityInfoObject } from "../entity-info/entity-info.object";
 import { EntityInfoService } from "../entity-info/entity-info.service";
+import { isScopeWithin } from "../user-permissions/access-control.service";
 import { AffectedEntity } from "../user-permissions/decorators/affected-entity.decorator";
 import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
 import { CurrentUser } from "../user-permissions/dto/current-user";
@@ -42,7 +42,7 @@ export class WarningResolver {
         const allowedScopesForUser = user.permissions.find(({ permission }) => permission === "warnings")?.contentScopes;
 
         for (const scope of scopes) {
-            if (!allowedScopesForUser?.find((allowedScope) => isEqual(allowedScope, scope))) {
+            if (!allowedScopesForUser?.some((allowedScope) => isScopeWithin(scope, allowedScope))) {
                 throw new UnauthorizedException("Scopes were passed that the user does not have permission to");
             }
         }

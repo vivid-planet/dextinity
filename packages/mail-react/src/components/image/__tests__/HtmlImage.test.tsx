@@ -37,6 +37,6 @@ describe("HtmlImage", () => {
             <HtmlImage src="image.jpg" alt="A photo" width={100} height={100} borderRadius={50} style={{ borderRadius: 10 }} />,
         );
 
-        expect(html).toContain('arcsize="20%"');
+        expect(html).toContain('arcsize="10%"');
     });
 });

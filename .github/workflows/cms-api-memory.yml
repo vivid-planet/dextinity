@@ -15,6 +15,10 @@ on:
         paths:
             - "packages/api/cms-api/**"
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 permissions:
     contents: read
     pull-requests: write
@@ -43,7 +47,7 @@ jobs:
                   build-packages: "false"
 
             - name: Build cms-api (PR)
-              run: pnpm --filter '@dextinity/cms-api' run build
+              run: pnpm --fail-if-no-match --filter "./packages/api/cms-api" run build
 
             - name: Measure cms-api base memory (PR)
               run: node scripts/measure-cms-api-memory.cjs > pr-memory.json
@@ -62,7 +66,7 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Build cms-api (base)
-              run: pnpm --filter '@dextinity/cms-api' run build
+              run: pnpm --fail-if-no-match --filter "./packages/api/cms-api" run build
 
             - name: Measure cms-api base memory (base)
               run: node "$RUNNER_TEMP/measure-cms-api-memory.cjs" > base-memory.json

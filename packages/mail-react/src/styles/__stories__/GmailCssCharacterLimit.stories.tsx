@@ -86,8 +86,12 @@ const renderedTokens = {
 /** Only what the mail renders, which keeps the head CSS below Gmail's limit. */
 const trimmedTheme = createTheme(renderedTokens);
 
-/** The variants a branded design system defines, which puts the head CSS above Gmail's limit. */
-const brandTheme = createTheme({
+/** The variants that push the theme's head CSS above the limit. */
+const fillerVariants: Record<string, TextVariantStyles> = Object.fromEntries(
+    Array.from({ length: 20 }, (unused, index) => [`filler${index}`, textVariant(16 + index, 15 + index)]),
+);
+
+const aboveLimitTheme = createTheme({
     ...renderedTokens,
     text: {
         ...renderedTokens.text,
@@ -102,6 +106,7 @@ const brandTheme = createTheme({
             bodySmall: textVariant(14, 13),
             legal: textVariant(11, 10, { color: "#999999" }),
             quote: textVariant(22, 18, { fontStyle: "italic" }),
+            ...fillerVariants,
         },
     },
 });
@@ -174,7 +179,7 @@ function CssCharacterLimitMail({ theme, headCssLength }: { theme: Theme; headCss
 }
 
 const trimmedHeadCssLength = measureHeadCssLength(<CssCharacterLimitMail theme={trimmedTheme} headCssLength={0} />);
-const brandHeadCssLength = measureHeadCssLength(<CssCharacterLimitMail theme={brandTheme} headCssLength={0} />);
+const aboveLimitHeadCssLength = measureHeadCssLength(<CssCharacterLimitMail theme={aboveLimitTheme} headCssLength={0} />);
 
 export const BelowCssCharacterLimit: Story = {
     render: () => <CssCharacterLimitMail theme={trimmedTheme} headCssLength={trimmedHeadCssLength} />,
@@ -184,8 +189,8 @@ export const BelowCssCharacterLimit: Story = {
 };
 
 export const AboveCssCharacterLimit: Story = {
-    render: () => <CssCharacterLimitMail theme={brandTheme} headCssLength={brandHeadCssLength} />,
+    render: () => <CssCharacterLimitMail theme={aboveLimitTheme} headCssLength={aboveLimitHeadCssLength} />,
     play: () => {
-        expect(brandHeadCssLength).toBeGreaterThan(gmailCssCharacterLimit);
+        expect(aboveLimitHeadCssLength).toBeGreaterThan(gmailCssCharacterLimit);
     },
 };

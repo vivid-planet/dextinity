@@ -457,6 +457,23 @@ export class PageTreeService {
         }
     }
 
+    // movePageTreeNodes* flushes each node's move separately, so a mid-batch rejection would leave earlier moves
+    // persisted. Validating the whole batch up front keeps the move atomic for the scope check.
+    async validateNodesMovableUnderParent({ nodes, parentId }: { nodes: PageTreeNodeInterface[]; parentId?: string | null }): Promise<void> {
+        if (!parentId) {
+            return;
+        }
+        const parent = await this.pageTreeRepository.findOne(parentId);
+        if (!parent) {
+            return;
+        }
+        for (const node of nodes) {
+            if (!contentScopesAreEqual(parent.scope, node.scope)) {
+                throw new DextinityValidationException("The parent page tree node is in a different scope");
+            }
+        }
+    }
+
     // The scope check on the mutation arguments doesn't cover an attachedDocument id nested in the input, so the
     // invariant that a document is never attached across scope boundaries is enforced here: attaching it to a node in
     // a foreign scope would expose and allow editing of content outside the user's scope.

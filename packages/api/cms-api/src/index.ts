@@ -111,6 +111,7 @@ export {
     type TipTapTextBlockStyle,
     type TipTapTextBlockTag,
 } from "./blocks/tipTap/createTipTapRichTextBlock";
+export { createTipTapDefaultTextBlockStyleMigration } from "./blocks/tipTap/migrations/createTipTapDefaultTextBlockStyleMigration";
 export { transformToBlockSaveIndex } from "./blocks/transformToBlockSaveIndex/transformToBlockSaveIndex";
 export { IsLinkTarget } from "./blocks/validator/is-link-target.validator";
 export { VimeoVideoBlock } from "./blocks/vimeo-video.block";

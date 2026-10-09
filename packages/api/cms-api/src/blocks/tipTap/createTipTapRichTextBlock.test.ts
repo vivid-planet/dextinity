@@ -1468,15 +1468,6 @@ describe("createTipTapRichTextBlock validation", () => {
             ).toThrow();
         });
 
-        it("should throw when the defaultStyle is not one of the text block's styles", () => {
-            expect(() =>
-                createTipTapRichTextBlock(
-                    { textBlocks: [{ name: "paragraph", tag: "p", styles: [{ name: "copy100" }], defaultStyle: "copy200" }] },
-                    "TestInvalidDefaultStyle",
-                ),
-            ).toThrow();
-        });
-
         it("should throw for a duplicate text block name", () => {
             expect(() =>
                 createTipTapRichTextBlock(
@@ -1583,7 +1574,7 @@ describe("createTipTapRichTextBlock validation", () => {
             const resolvedOptions = resolveTipTapOptions({ textBlocks: headingOnly234 });
             expect(resolvedOptions.orderedList).toBe(false);
             expect(resolvedOptions.unorderedList).toBe(false);
-            expect(resolvedOptions.defaultTextBlock).toEqual({ name: "heading-2", tag: "h2", level: 2, styles: [], defaultStyle: null });
+            expect(resolvedOptions.defaultTextBlock).toEqual({ name: "heading-2", tag: "h2", level: 2, styles: [] });
         });
     });
 

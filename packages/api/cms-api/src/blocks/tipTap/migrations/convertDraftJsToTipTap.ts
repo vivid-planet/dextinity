@@ -2,7 +2,7 @@ import type { JSONContent } from "@tiptap/core";
 
 import type { Block } from "../../block";
 import type { TipTapResolvedOptions } from "../createTipTapRichTextBlock";
-import { findTextBlockForTag, type TipTapResolvedStyledNode, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks";
+import { findTextBlockForTag, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks";
 
 interface DraftJsInlineStyleRange {
     style: string;
@@ -76,9 +76,10 @@ interface ConvertOptions {
      */
     textBlockMap?: Record<string, TextBlockMapping>;
     /**
-     * Maps custom DraftJS list block types (e.g. `unordered-list-item-small`) to the TipTap list
-     * they become items of, and to the `textBlockStyle` applied to the item's text block. Items of
-     * the same list stay in one list, whatever their style.
+     * Maps DraftJS list block types - custom ones (e.g. `unordered-list-item-small`) as well as the
+     * built-in `unordered-list-item` and `ordered-list-item` - to the TipTap list they become items
+     * of, and to the `textBlockStyle` applied to the item's text block. Items of the same list stay
+     * in one list, whatever their style.
      */
     listItemMap?: Record<string, ListItemMapping>;
     /**
@@ -330,14 +331,12 @@ function resolveTargetTextBlock({
 
 function makeTextBlockNode(
     inlineContent: JSONContent[],
-    { styledNode, textBlock, textBlockStyle }: { styledNode?: TipTapResolvedStyledNode; textBlock: TipTapResolvedTextBlock; textBlockStyle?: string },
+    { textBlock, textBlockStyle }: { textBlock: TipTapResolvedTextBlock; textBlockStyle?: string },
 ): JSONContent {
     const node: JSONContent = { type: "textBlock", attrs: { textBlock: textBlock.name } };
 
-    // A list item's text block draws its style from the list, not from its own text block.
-    const style = textBlockStyle ?? (styledNode ?? textBlock).defaultStyle ?? undefined;
-    if (style !== undefined) {
-        node.attrs = { ...node.attrs, textBlockStyle: style };
+    if (textBlockStyle !== undefined) {
+        node.attrs = { ...node.attrs, textBlockStyle };
     }
     if (inlineContent.length > 0) {
         node.content = inlineContent;
@@ -348,17 +347,15 @@ function makeTextBlockNode(
 function makeListItem({
     inlineContent,
     resolvedOptions,
-    list,
     textBlockStyle,
 }: {
     inlineContent: JSONContent[];
     resolvedOptions: TipTapResolvedOptions;
-    list: TipTapResolvedStyledNode;
     textBlockStyle?: string;
 }): JSONContent {
     return {
         type: "listItem",
-        content: [makeTextBlockNode(inlineContent, { styledNode: list, textBlock: resolveTargetTextBlock({ resolvedOptions }), textBlockStyle })],
+        content: [makeTextBlockNode(inlineContent, { textBlock: resolveTargetTextBlock({ resolvedOptions }), textBlockStyle })],
     };
 }
 
@@ -378,10 +375,6 @@ const LIST_BLOCK_TYPE_TO_LIST: Record<string, ListTarget> = {
     "unordered-list-item": LIST_TARGETS.unordered,
     "ordered-list-item": LIST_TARGETS.ordered,
 };
-
-export function isBuiltInDraftJsListBlockType(draftJsBlockType: string): boolean {
-    return Object.hasOwn(LIST_BLOCK_TYPE_TO_LIST, draftJsBlockType);
-}
 
 interface OpenList {
     type: ListType;
@@ -435,13 +428,11 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
         listType,
         depth,
         inlineContent,
-        list,
         textBlockStyle,
     }: {
         listType: ListType;
         depth: number;
         inlineContent: JSONContent[];
-        list: TipTapResolvedStyledNode;
         textBlockStyle?: string;
     }) => {
         // A list item may only be indented one level deeper than its predecessor, no matter how
@@ -461,21 +452,19 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
             openLists.push({ type: listType, items: [] });
         }
 
-        openLists[openLists.length - 1].items.push(makeListItem({ inlineContent, resolvedOptions, list, textBlockStyle }));
+        openLists[openLists.length - 1].items.push(makeListItem({ inlineContent, resolvedOptions, textBlockStyle }));
     };
 
     for (const block of draftContent.blocks) {
         const inlineContent = buildInlineContent({ block, entityMap, resolvedOptions, hasLink, inlineStyleMap });
 
         const listItemMapping = listItemMap[block.type];
-        const listTarget = LIST_BLOCK_TYPE_TO_LIST[block.type] ?? (listItemMapping ? LIST_TARGETS[listItemMapping.list] : undefined);
-        const list = listTarget ? resolvedOptions[listTarget.option] : false;
-        if (listTarget && list) {
+        const listTarget = listItemMapping ? LIST_TARGETS[listItemMapping.list] : LIST_BLOCK_TYPE_TO_LIST[block.type];
+        if (listTarget && resolvedOptions[listTarget.option]) {
             addListItem({
                 listType: listTarget.listType,
                 depth: block.depth ?? 0,
                 inlineContent,
-                list,
                 textBlockStyle: listItemMapping?.textBlockStyle,
             });
             continue;

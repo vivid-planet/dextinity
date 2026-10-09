@@ -258,7 +258,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
 
 `textBlock` accepts the `name` of any configured [text block](#text-blocks), and an unknown name throws. `textBlockStyle` is optional — leave it out for a text block that offers no styles. A Draft.js block type that isn't mapped becomes the text block its own type implies: `header-one`–`header-six` keep their heading level, everything else becomes a paragraph.
 
-Custom list block types — for instance a `blocktypeMap` entry with `supportedBy: "unordered-list"` — would otherwise become paragraphs too. Map them in `listItemMap` to the list they become items of and the list style the item carries:
+Custom list block types — for instance a `blocktypeMap` entry with `supportedBy: "unordered-list"` — would otherwise become paragraphs too, and items of the built-in `unordered-list-item` and `ordered-list-item` would carry no style. Map them in `listItemMap` to the list they become items of and the list style the item carries:
 
 ```ts title="tip-tap-rich-text.block.ts"
 const listSizes = { styles: [{ name: "small" }, { name: "large" }] };
@@ -269,6 +269,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
     migrateFromDraftJs: {
         // highlight-start
         listItemMap: {
+            "unordered-list-item": { list: "unordered", textBlockStyle: "large" },
             "unordered-list-item-small": { list: "unordered", textBlockStyle: "small" },
             "unordered-list-item-large": { list: "unordered", textBlockStyle: "large" },
             "ordered-list-item-small": { list: "ordered", textBlockStyle: "small" },
@@ -279,7 +280,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
 });
 ```
 
-Consecutive items of the same list stay one list, whatever their style, and keep their nesting. `textBlockStyle` must be one of the list's `styles`, and the list must be enabled. The built-in `unordered-list-item` and `ordered-list-item` can't be mapped, and neither can a block type that is in `textBlockMap`. Each of these throws. To give the built-in list items a style, set the list's `defaultStyle`.
+Consecutive items of the same list stay one list, whatever their style, and keep their nesting. `textBlockStyle` must be one of the list's `styles`, and the list must be enabled. A block type can't be mapped in both `textBlockMap` and `listItemMap`. Each of these throws.
 
 ## New features
 
@@ -375,13 +376,19 @@ An inline style's `appliesTo` limits it to the named text blocks, plus `"ordered
 
 #### Default styles
 
-A text block (or list) with a `defaultStyle` has no "no style" state: the styling select drops its _Default_ entry, and every text block of that type carries one of the styles. Text blocks without a `defaultStyle` keep the _Default_ entry, so both can sit side by side:
+In the Admin, a text block (or list) with a `defaultStyle` has no "no style" state: the styling select drops its _Default_ entry, and every text block of that type carries one of the styles. Text blocks without a `defaultStyle` keep the _Default_ entry, so both can sit side by side:
 
-```ts title="tip-tap-rich-text.block.ts (API)"
+```tsx title="TipTapRichTextBlock.tsx (Admin)"
 export const TipTapRichTextBlock = createTipTapRichTextBlock({
     textBlocks: [
-        { name: "heading-1", tag: "h1", styles: headlineStyles, defaultStyle: "headline300" },
-        { name: "heading-2", tag: "h2", styles: headlineStyles },
+        {
+            name: "heading-1",
+            label: "Heading 1",
+            tag: "h1",
+            styles: headlineStyles,
+            defaultStyle: "headline300",
+        },
+        { name: "heading-2", label: "Heading 2", tag: "h2", styles: headlineStyles },
     ],
 });
 ```
@@ -392,7 +399,27 @@ The style is applied to new content, to a text block the editor converts through
 
 :::caution Existing content
 
-Content written before a `defaultStyle` was configured carries no style, and the editor fills it in on the first edit rather than when the document is opened, so opening a document does not mark it as changed.
+Content written before a `defaultStyle` was configured carries no style, which the site would have to render like the default. Add a migration that fills in the default styles to the API block's own migrations whenever you add a `defaultStyle`:
+
+```ts title="tip-tap-rich-text.block.ts (API)"
+export const TipTapRichTextBlock = createTipTapRichTextBlock(
+    { textBlocks: [{ name: "heading-1", tag: "h1", styles: headlineStyles }] },
+    {
+        name: "TipTapRichText",
+        migrate: {
+            version: 1,
+            migrations: typeSafeBlockMigrationPipe([
+                createTipTapDefaultTextBlockStyleMigration({
+                    toVersion: 1,
+                    textBlocks: { "heading-1": "headline300" },
+                }),
+            ]),
+        },
+    },
+);
+```
+
+The migration gives every text block without a style the style named for its text block, or inside a list item the one passed as `orderedList` or `unorderedList`. Pass the block's default text block as `defaultTextBlock` if content written through the API may leave out the text block's name. The styles are passed to the migration rather than read from the configuration, so changing a `defaultStyle` later needs a new migration.
 
 :::
 

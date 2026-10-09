@@ -1,4 +1,4 @@
-import { createTipTapRichTextBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
+import { createTipTapDefaultTextBlockStyleMigration, createTipTapRichTextBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
 import { ProductPriceBlock } from "@src/products/blocks/product-price.block";
 import { ProductTeaserBlock } from "@src/products/blocks/product-teaser.block";
 
@@ -28,7 +28,6 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
                     { name: "eyebrow500" },
                     { name: "eyebrow450" },
                 ],
-                defaultStyle: "paragraph300",
             },
             { name: "display", tag: "h1" },
             { name: "heading-1", tag: "h1" },
@@ -37,8 +36,8 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
             { name: "heading-4", tag: "h4" },
             { name: "heading-5", tag: "h5" },
         ],
-        orderedList: { styles: listStyles, defaultStyle: "list300" },
-        unorderedList: { styles: listStyles, defaultStyle: "list300" },
+        orderedList: { styles: listStyles },
+        unorderedList: { styles: listStyles },
         inlineStyles: [{ name: "highlight" }, { name: "tag", appliesTo: ["paragraph"] }],
         migrateFromDraftJs: {
             textBlockMap: {
@@ -58,8 +57,18 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
     {
         name: "TipTapRichText",
         migrate: {
-            migrations: typeSafeBlockMigrationPipe([Heading1ToHeading2Migration]),
-            version: 1,
+            migrations: typeSafeBlockMigrationPipe([
+                Heading1ToHeading2Migration,
+                // The Admin's paragraph and lists got a defaultStyle, which content written before carries no style for.
+                createTipTapDefaultTextBlockStyleMigration({
+                    toVersion: 2,
+                    defaultTextBlock: "paragraph",
+                    textBlocks: { paragraph: "paragraph300" },
+                    orderedList: "list300",
+                    unorderedList: "list300",
+                }),
+            ]),
+            version: 2,
         },
     },
 );

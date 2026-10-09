@@ -47,6 +47,7 @@ const warningsFragment = gql`
         entityInfo {
             name
             secondaryInformation
+            visible
         }
         scope
     }
@@ -84,7 +85,7 @@ export interface WarningsGridProps {
 export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
     const intl = useIntl();
     const dataGridProps = {
-        ...useDataGridRemote({ initialFilter: { items: [{ field: "status", operator: "is", value: "open" }] } }),
+        ...useDataGridRemote({ initialFilter: { items: [{ field: "visible", operator: "is", value: true }] } }),
         ...usePersistentColumnState("WarningsGrid"),
     };
     const { messages: warningMessages } = useWarningsConfig();
@@ -146,6 +147,13 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
             sortable: false,
             visible: false,
             valueGetter: (params, row) => row.entityInfo?.secondaryInformation,
+        },
+        {
+            field: "visible",
+            headerName: intl.formatMessage({ id: "dextinity.warning.visible", defaultMessage: "Visible" }),
+            type: "boolean",
+            visible: false,
+            valueGetter: (params, row) => row.entityInfo?.visible,
         },
         {
             field: "type",

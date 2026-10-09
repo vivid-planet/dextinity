@@ -79,6 +79,7 @@ type EntityInfo {
   entityName: String!
   name: String!
   secondaryInformation: String
+  visible: Boolean!
 }
 
 type Dependency {
@@ -736,6 +737,7 @@ input WarningFilter {
   type: StringFilter
   name: StringFilter
   secondaryInformation: StringFilter
+  visible: BooleanFilter
   severity: WarningSeverityEnumFilter
   status: WarningStatusEnumFilter
   scope: ScopeFilter
@@ -772,6 +774,7 @@ enum WarningSortField {
   message
   type
   name
+  visible
   severity
   status
 }

@@ -215,4 +215,12 @@ describe("createTipTapRichTextBlock", () => {
 
         expect(markup).toContain("{{SALUTATION}}");
     });
+
+    it("renders a newline within a text as a line break", () => {
+        const { HtmlTipTapRichTextBlock } = createTipTapRichTextBlock();
+        const data = createBlockData([createParagraph("First line\nSecond line")]);
+        const markup = renderWithTheme(<HtmlTipTapRichTextBlock data={data} />);
+
+        expect(markup).toContain("First line<br/>Second line");
+    });
 });

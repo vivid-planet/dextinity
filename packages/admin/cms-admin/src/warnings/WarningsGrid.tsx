@@ -152,8 +152,9 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
             field: "visible",
             headerName: intl.formatMessage({ id: "dextinity.warning.visible", defaultMessage: "Visible" }),
             type: "boolean",
-            visible: false,
-            valueGetter: (params, row) => row.entityInfo?.visible,
+            width: 100,
+            // Matches the API: warnings of entities without an EntityInfo count as visible.
+            valueGetter: (params, row) => row.entityInfo?.visible ?? true,
         },
         {
             field: "type",

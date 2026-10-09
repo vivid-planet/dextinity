@@ -1,5 +1,20 @@
 # @comet/admin-rte
 
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/admin@10.9.1
+- @dextinity/admin-icons@10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- Updated dependencies [847b2a0]
+    - @dextinity/admin@10.9.0
+    - @dextinity/admin-icons@10.9.0
+
 ## 10.8.0
 
 ### Patch Changes

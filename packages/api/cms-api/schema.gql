@@ -91,6 +91,11 @@ type Dependency {
   targetId: String!
   name: String
   secondaryInformation: String
+
+  """
+  Scope of the root entity for dependents, of the target entity for dependencies. Entities with multiple scopes return their first.
+  """
+  scope: JSONObject
 }
 
 type PaginatedDependencies {

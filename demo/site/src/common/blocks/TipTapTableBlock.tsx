@@ -1,4 +1,4 @@
-import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import { hasTipTapRichTextContent, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { TipTapTableBlockData } from "@src/blocks.generated";
 
 import { ResponsiveTable } from "./table/ResponsiveTable";
@@ -8,9 +8,17 @@ type CellValue = TipTapTableBlockData["table"]["rows"][number]["cellValues"][num
 
 const renderCell = (value: CellValue) => <TipTapRichTextBlock data={value} disableLastBottomSpacing />;
 
+const hasCellContent = (value: CellValue) => hasTipTapRichTextContent(value.tipTapContent);
+
 export const TipTapTableBlock = withPreview(
     ({ data: { table, responsiveBehavior } }: PropsWithData<TipTapTableBlockData>) => (
-        <ResponsiveTable columns={table.columns} rows={table.rows} responsiveBehavior={responsiveBehavior} renderCell={renderCell} />
+        <ResponsiveTable
+            columns={table.columns}
+            rows={table.rows}
+            responsiveBehavior={responsiveBehavior}
+            renderCell={renderCell}
+            hasCellContent={hasCellContent}
+        />
     ),
     { label: "TipTap Table" },
 );

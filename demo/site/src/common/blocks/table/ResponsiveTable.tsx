@@ -12,9 +12,10 @@ type ResponsiveTableProps<CellValue> = {
     rows: TableRow<CellValue>[];
     responsiveBehavior: TableBlockData["responsiveBehavior"];
     renderCell: RenderTableCell<CellValue>;
+    hasCellContent: (value: CellValue) => boolean;
 };
 
-export function ResponsiveTable<CellValue>({ columns, rows, responsiveBehavior, renderCell }: ResponsiveTableProps<CellValue>) {
+export function ResponsiveTable<CellValue>({ columns, rows, responsiveBehavior, renderCell, hasCellContent }: ResponsiveTableProps<CellValue>) {
     if (responsiveBehavior === "none") {
         return (
             <TableLayout>
@@ -41,7 +42,13 @@ export function ResponsiveTable<CellValue>({ columns, rows, responsiveBehavior, 
                 <ScrollableTableGrid columns={columns} rows={rows} renderCell={renderCell} headerPosition={headerPosition} />
             </div>
             <div className={clsx(styles.tableContainer, styles.recordList)}>
-                <TableRecordList columns={columns} rows={rows} headerPosition={headerPosition} renderCell={renderCell} />
+                <TableRecordList
+                    columns={columns}
+                    rows={rows}
+                    headerPosition={headerPosition}
+                    renderCell={renderCell}
+                    hasCellContent={hasCellContent}
+                />
             </div>
         </TableLayout>
     );

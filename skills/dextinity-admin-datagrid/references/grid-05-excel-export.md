@@ -7,10 +7,10 @@ Adds a "Download as Excel" action to the grid toolbar using `useDataGridExcelExp
 The toolbar receives an `exportApi` prop and renders the export action inside a `CrudMoreActionsMenu`.
 
 ```tsx
-import { CrudMoreActionsMenu, DataGridToolbar, ExportApi, FillSpace, GridFilterButton, messages } from "@dextinity/admin";
+import { CrudMoreActionsMenu, DataGridToolbar, ExportApi, FillSpace, GridFilterButton, GridToolbarQuickFilter, messages } from "@dextinity/admin";
 import { Excel as ExcelIcon } from "@dextinity/admin-icons";
 import { CircularProgress } from "@mui/material";
-import { GridToolbarProps, GridToolbarQuickFilter } from "@mui/x-data-grid-pro";
+import { GridToolbarProps } from "@mui/x-data-grid-pro";
 import { FormattedMessage } from "react-intl";
 
 interface EntitiesGridToolbarProps extends GridToolbarProps {
@@ -73,6 +73,7 @@ return (
         rowCount={rowCount}
         columns={columns}
         loading={loading}
+        showToolbar
         slots={{
             toolbar: EntitiesGridToolbar as GridSlotsComponent["toolbar"],
         }}

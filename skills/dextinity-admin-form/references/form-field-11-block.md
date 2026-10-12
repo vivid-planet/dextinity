@@ -63,7 +63,7 @@ image: rootBlocks.image.state2Output(formValues.image),
 
 ## GQL fragment
 
-Block fields are **not included in the GQL fragment** directly — the block component handles its own sub-query. The fragment type is overridden via `Omit` + `BlockState`.
+Include the block field by name in the fragment (e.g. `image`) — the API returns the block data as JSON, and `input2State` needs it to initialize the form. The form value type replaces it via `Omit` + `BlockState`.
 
 ## Rules
 

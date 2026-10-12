@@ -6,7 +6,7 @@ Start and end adornments can be added to text, number, and date fields to show i
 
 ```tsx
 import { InputAdornment } from "@mui/material";
-import { Euro, Lock } from "@dextinity/admin-icons";
+import { Lock } from "@dextinity/admin-icons";
 
 {
     /* Unit adornment */
@@ -21,7 +21,7 @@ import { Euro, Lock } from "@dextinity/admin-icons";
 />;
 
 {
-    /* Icon adornment */
+    /* Currency adornment */
 }
 <NumberField
     required
@@ -29,11 +29,7 @@ import { Euro, Lock } from "@dextinity/admin-icons";
     fullWidth
     name="price"
     label={<FormattedMessage id="<entityName>.price" defaultMessage="Price" />}
-    startAdornment={
-        <InputAdornment position="start">
-            <Euro />
-        </InputAdornment>
-    }
+    startAdornment={<InputAdornment position="start">€</InputAdornment>}
 />;
 
 {

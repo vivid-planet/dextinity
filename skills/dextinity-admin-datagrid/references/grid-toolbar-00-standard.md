@@ -5,8 +5,7 @@ The default grid toolbar with quick search, column filtering, and an add button.
 ## Template
 
 ```tsx
-import { Button, DataGridToolbar, FillSpace, GridFilterButton, StackLink } from "@dextinity/admin";
-import { GridToolbarQuickFilter } from "@mui/x-data-grid-pro";
+import { Button, DataGridToolbar, FillSpace, GridFilterButton, GridToolbarQuickFilter, StackLink } from "@dextinity/admin";
 import { FormattedMessage } from "react-intl";
 import { Add as AddIcon } from "@dextinity/admin-icons";
 
@@ -32,4 +31,4 @@ export function <EntityName>sGridToolbar() {
 - Include the "New X" `<Button>` only if the entity has an add/create page (`pageName="add"`)
 - Omit the add button if the entity is read-only or creation is handled elsewhere
 - `FormattedMessage` id convention: `<entityName>.<entityName>sGrid.newEntry`
-- Import `GridToolbarQuickFilter` from `@mui/x-data-grid-pro` (not from `@dextinity/admin`)
+- Import `GridToolbarQuickFilter` from `@dextinity/admin`, not from MUI — it keeps the search field expanded, and ESLint rejects the MUI import

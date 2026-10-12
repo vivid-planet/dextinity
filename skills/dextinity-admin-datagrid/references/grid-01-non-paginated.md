@@ -33,6 +33,7 @@ export function EntitiesGrid() {
             rows={rows}
             columns={columns}
             loading={loading}
+            showToolbar
             slots={{ toolbar: EntitiesGridToolbar as GridSlotsComponent["toolbar"] }}
             onRowClick={handleRowClick}
         />

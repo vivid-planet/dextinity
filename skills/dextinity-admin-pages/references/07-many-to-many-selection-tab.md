@@ -19,6 +19,7 @@ import {
     Dialog,
     FillSpace,
     type GridColDef,
+    GridToolbarQuickFilter,
     muiGridFilterToGql,
     muiGridSortToGql,
     useBufferedRowCount,
@@ -28,14 +29,18 @@ import {
 import { Edit as EditIcon, Remove as RemoveIcon, Select as SelectIcon } from "@dextinity/admin-icons";
 import { useContentScope } from "@dextinity/cms-admin";
 import { DialogActions, IconButton } from "@mui/material";
-import { DataGridPro, type GridRowSelectionModel, type GridSlotsComponent, GridToolbarContainer, GridToolbarQuickFilter } from "@mui/x-data-grid-pro";
+import { DataGridPro, type GridRowSelectionModel, type GridSlotsComponent } from "@mui/x-data-grid-pro";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Link as RouterLink } from "react-router-dom";
 
 // --- Selected Items Toolbar ---
 
-function SelectedItemsToolbar({ onSelectItems }: { onSelectItems: () => void }) {
+type SelectedItemsToolbarProps = {
+    onSelectItems: () => void;
+};
+
+function SelectedItemsToolbar({ onSelectItems }: SelectedItemsToolbarProps) {
     return (
         <DataGridToolbar>
             <GridToolbarQuickFilter />
@@ -51,9 +56,9 @@ function SelectedItemsToolbar({ onSelectItems }: { onSelectItems: () => void }) 
 
 function SelectItemsDialogToolbar() {
     return (
-        <GridToolbarContainer>
+        <DataGridToolbar>
             <GridToolbarQuickFilter />
-        </GridToolbarContainer>
+        </DataGridToolbar>
     );
 }
 
@@ -72,11 +77,11 @@ function SelectItemsDialog({
 }) {
     const intl = useIntl();
     const { scope } = useContentScope();
-    const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>(initialSelection);
+    const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>({ type: "include", ids: new Set(initialSelection) });
 
     useEffect(() => {
         if (open) {
-            setSelectionModel(initialSelection);
+            setSelectionModel({ type: "include", ids: new Set(initialSelection) });
         }
     }, [open, initialSelection]);
 
@@ -128,6 +133,8 @@ function SelectItemsDialog({
                 rowSelectionModel={selectionModel}
                 onRowSelectionModelChange={setSelectionModel}
                 keepNonExistentRowsSelected
+                disableRowSelectionExcludeModel
+                showToolbar
                 slots={{
                     toolbar: SelectItemsDialogToolbar as GridSlotsComponent["toolbar"],
                 }}
@@ -136,7 +143,7 @@ function SelectItemsDialog({
                 <Button variant="textDark" onClick={onClose}>
                     <FormattedMessage id="myEntity.selectDialog.cancel" defaultMessage="Cancel" />
                 </Button>
-                <Button onClick={() => onSave(selectionModel.map(String))}>
+                <Button onClick={() => onSave(Array.from(selectionModel.ids, String))}>
                     <FormattedMessage id="myEntity.selectDialog.save" defaultMessage="Save Selection" />
                 </Button>
             </DialogActions>
@@ -174,7 +181,7 @@ export function MyEntityItemsGrid({ entityId }: { entityId: string }) {
                 renderCell: (params) => (
                     <>
                         {/* Cross-entity edit link — uses RouterLink, NOT StackLink */}
-                        <IconButton color="primary" component={RouterLink} to={`${contentScopeMatch.url}/items/edit/${params.row.id}`}>
+                        <IconButton color="primary" component={RouterLink} to={`${contentScopeMatch.url}/items/${params.row.id}/edit`}>
                             <EditIcon />
                         </IconButton>
                         {/* Remove (unlink) — NOT delete */}
@@ -217,8 +224,12 @@ export function MyEntityItemsGrid({ entityId }: { entityId: string }) {
                 columns={columns}
                 loading={loading}
                 disableRowSelectionOnClick
+                showToolbar
                 slots={{
-                    toolbar: (() => <SelectedItemsToolbar onSelectItems={() => setDialogOpen(true)} />) as GridSlotsComponent["toolbar"],
+                    toolbar: SelectedItemsToolbar as GridSlotsComponent["toolbar"],
+                }}
+                slotProps={{
+                    toolbar: { onSelectItems: () => setDialogOpen(true) } as SelectedItemsToolbarProps,
                 }}
             />
             <SelectItemsDialog open={dialogOpen} onClose={() => setDialogOpen(false)} onSave={handleSave} initialSelection={selectedItemIds} />
@@ -233,6 +244,9 @@ export function MyEntityItemsGrid({ entityId }: { entityId: string }) {
 - **Never two primary buttons** in a dialog. Cancel and Save should both use the default Button variant. The page-level save is the primary action.
 - **No `DialogContent` wrapper** when the dialog contains a DataGrid — place the `DataGridPro` directly inside the `Dialog` to avoid unwanted padding/margin. Set `sx={{ height: "70vh" }}` on the DataGrid itself.
 - **`keepNonExistentRowsSelected: true`** — preserves checkbox selections across pages.
+- **Selection model is `{ type, ids: Set }`** (MUI X v8). Set `disableRowSelectionExcludeModel` so "select all" keeps listing the selected IDs instead of switching to an `exclude` model, and read the IDs with `Array.from(selectionModel.ids)`.
+- **`showToolbar`** on every grid with a toolbar slot — MUI X v8 renders the toolbar only when it's set.
+- **Pass toolbar props via `slotProps.toolbar`** — never define the toolbar component inline in `slots`, it would remount on every render.
 - **`skip: !open`** on the dialog query — don't fetch until the dialog opens.
 - **Reset selection on open** — `useEffect` resets `selectionModel` to `initialSelection` when `open` changes.
 - **Cross-entity navigation** — use `RouterLink` from `react-router-dom` with `contentScopeMatch.url` prefix, NOT `StackLink` (which only works within the same stack).

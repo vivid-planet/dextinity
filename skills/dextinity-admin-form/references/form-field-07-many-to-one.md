@@ -40,12 +40,8 @@ export const productCategoryAsyncAutocompleteFieldQuery = gql`
 ```tsx
 import { useApolloClient } from "@apollo/client";
 import { AsyncAutocompleteField, type AsyncAutocompleteFieldProps } from "@dextinity/admin";
-import { type FunctionComponent } from "react";
 
-import {
-    productCategoryAsyncAutocompleteFieldFragment,
-    productCategoryAsyncAutocompleteFieldQuery,
-} from "./ProductCategoryAsyncAutocompleteField.gql";
+import { productCategoryAsyncAutocompleteFieldQuery } from "./ProductCategoryAsyncAutocompleteField.gql";
 import {
     type GQLProductCategoryAsyncAutocompleteFieldProductCategoryFragment,
     type GQLProductCategoryAsyncAutocompleteFieldQuery,
@@ -54,26 +50,22 @@ import {
 
 export type ProductCategoryAsyncAutocompleteFieldOption = GQLProductCategoryAsyncAutocompleteFieldProductCategoryFragment;
 
-type ProductCategoryAsyncAutocompleteFieldProps = Omit<
-    AsyncAutocompleteFieldProps<ProductCategoryAsyncAutocompleteFieldOption, false, true, false>,
+type ProductCategoryAsyncAutocompleteFieldProps<Multiple extends boolean | undefined> = Omit<
+    AsyncAutocompleteFieldProps<ProductCategoryAsyncAutocompleteFieldOption, Multiple, false, false>,
     "loadOptions"
 >;
 
-export const ProductCategoryAsyncAutocompleteField: FunctionComponent<ProductCategoryAsyncAutocompleteFieldProps> = ({
+export function ProductCategoryAsyncAutocompleteField<Multiple extends boolean | undefined = false>({
     name,
-    clearable = true,
-    disabled = false,
     variant = "horizontal",
     fullWidth = true,
     ...restProps
-}) => {
+}: ProductCategoryAsyncAutocompleteFieldProps<Multiple>) {
     const client = useApolloClient();
 
     return (
-        <AsyncAutocompleteField
+        <AsyncAutocompleteField<ProductCategoryAsyncAutocompleteFieldOption, Multiple, false, false>
             name={name}
-            clearable={disabled ? false : clearable}
-            disabled={disabled}
             variant={variant}
             fullWidth={fullWidth}
             getOptionLabel={(option) => option.title}
@@ -91,7 +83,7 @@ export const ProductCategoryAsyncAutocompleteField: FunctionComponent<ProductCat
             }}
         />
     );
-};
+}
 ```
 
 ---
@@ -130,7 +122,6 @@ export const productAsyncAutocompleteFieldQuery = gql`
 import { useApolloClient } from "@apollo/client";
 import { AsyncAutocompleteField, type AsyncAutocompleteFieldProps } from "@dextinity/admin";
 import { useContentScope } from "@dextinity/cms-admin";
-import { type FunctionComponent } from "react";
 
 import { productAsyncAutocompleteFieldQuery } from "./ProductAsyncAutocompleteField.gql";
 import {
@@ -141,30 +132,26 @@ import {
 
 export type ProductAsyncAutocompleteFieldOption = GQLProductAsyncAutocompleteFieldProductFragment;
 
-type ProductAsyncAutocompleteFieldProps = Omit<
-    AsyncAutocompleteFieldProps<ProductAsyncAutocompleteFieldOption, false, true, false>,
+type ProductAsyncAutocompleteFieldProps<Multiple extends boolean | undefined> = Omit<
+    AsyncAutocompleteFieldProps<ProductAsyncAutocompleteFieldOption, Multiple, false, false>,
     "loadOptions"
 > & {
     categoryId?: string;
 };
 
-export const ProductAsyncAutocompleteField: FunctionComponent<ProductAsyncAutocompleteFieldProps> = ({
+export function ProductAsyncAutocompleteField<Multiple extends boolean | undefined = false>({
     name,
     categoryId,
-    clearable = true,
-    disabled = false,
     variant = "horizontal",
     fullWidth = true,
     ...restProps
-}) => {
+}: ProductAsyncAutocompleteFieldProps<Multiple>) {
     const client = useApolloClient();
     const { scope } = useContentScope();
 
     return (
-        <AsyncAutocompleteField
+        <AsyncAutocompleteField<ProductAsyncAutocompleteFieldOption, Multiple, false, false>
             name={name}
-            clearable={disabled ? false : clearable}
-            disabled={disabled}
             variant={variant}
             fullWidth={fullWidth}
             getOptionLabel={(option) => option.title}
@@ -183,7 +170,7 @@ export const ProductAsyncAutocompleteField: FunctionComponent<ProductAsyncAutoco
             }}
         />
     );
-};
+}
 ```
 
 ---
@@ -219,7 +206,8 @@ category: formValues.category ? formValues.category.id : null,
 - The query must accept a `$search: String` parameter — this enables server-side filtering as the user types
 - If the API query requires additional variables (e.g. scope, filter, parent ID), add them as component props and forward to `variables`
 - The relation object (with `id` + label field) is stored in form values, then transformed to just the ID in `handleSubmit`
-- The `multiple` prop is passed through `...restProps` — no special handling needed in the component
+- The component is generic over `Multiple`, so the same component serves ManyToOne and ManyToMany: passing `multiple` makes the value an array of options
+- Don't pass `clearable` — the autocomplete is clearable whenever it isn't `required`, `disabled`, or `readOnly`
 - `<RelatedEntity>AsyncAutocompleteField.gql.generated.ts` is auto-generated by codegen — do not create manually
 - Fragment name convention: `<RelatedEntity>AsyncAutocompleteField<RelatedEntity>` (e.g. `ProductCategoryAsyncAutocompleteFieldProductCategory`)
 - GQL fragment entry in the form query: `category { id title }` (id + label field)

@@ -86,7 +86,7 @@ When using the Dextinity `Dialog` component (from `@dextinity/admin`):
     import { Link as RouterLink } from "react-router-dom";
     const { match: contentScopeMatch } = useContentScope();
     // ...
-    <IconButton component={RouterLink} to={`${contentScopeMatch.url}/other-entity/edit/${id}`}>
+    <IconButton component={RouterLink} to={`${contentScopeMatch.url}/other-entity/${id}/edit`}>
     ```
 
 ## DataGrids

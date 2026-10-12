@@ -75,7 +75,7 @@ export const {EnumName}ChipEditableFor{EntityName}: FunctionComponent<{EnumName}
 
     if (error) {
         return (
-            <Tooltip title={<Box margin={4}><InlineAlert /></Box>} variant="light">
+            <Tooltip title={<Box margin={4}><InlineAlert /></Box>} color="light">
                 <Error color="error" />
             </Tooltip>
         );
@@ -180,7 +180,7 @@ export const LocationStatusChipEditableForLocation: FunctionComponent<LocationSt
                         <InlineAlert />
                     </Box>
                 }
-                variant="light"
+                color="light"
             >
                 <Error color="error" />
             </Tooltip>

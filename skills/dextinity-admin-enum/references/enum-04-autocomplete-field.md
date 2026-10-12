@@ -1,6 +1,8 @@
 # AutocompleteField
 
-Enum selection with search/filter support. Returns `{ value, label: string }`.
+Enum selection with search/filter support. The form value is the enum value (an array of enum values with `multiple`), like in the other enum fields.
+
+`AutocompleteField` itself stores the selected option object, so the component converts between enum value and option with `format` and `parse`. Without them, the mutation receives `{ value, label }` instead of the enum value.
 
 ## Prerequisites
 
@@ -20,21 +22,42 @@ import { AutocompleteField, type AutocompleteFieldProps } from "@dextinity/admin
 import { {camelCaseName}MessageDescriptorMap } from "{enumImportPath}";
 import { useAutocompleteOptions } from "@src/common/components/enums/useAutocompleteOptions";
 import { type GQL{EnumName} } from "@src/graphql.generated";
-import { type FunctionComponent } from "react";
 
 export type {EnumName}FormState = GQL{EnumName};
 
 type {EnumName}AutocompleteFieldOption = { value: GQL{EnumName}; label: string };
 
 type {EnumName}AutocompleteFieldProps = Omit<
-    AutocompleteFieldProps<{EnumName}AutocompleteFieldOption, false, false, false>,
-    "options" | "getOptionLabel"
+    AutocompleteFieldProps<{EnumName}AutocompleteFieldOption, boolean, false, false>,
+    "options" | "getOptionLabel" | "isOptionEqualToValue" | "format" | "parse"
 >;
 
-export const {EnumName}AutocompleteField: FunctionComponent<{EnumName}AutocompleteFieldProps> = ({ name, ...restProps }) => {
+export function {EnumName}AutocompleteField({ name, ...restProps }: {EnumName}AutocompleteFieldProps) {
     const options = useAutocompleteOptions({camelCaseName}MessageDescriptorMap);
-    return <AutocompleteField name={name} {...restProps} options={options} getOptionLabel={(option) => option.label} />;
-};
+    const findOption = (value: GQL{EnumName}) => options.find((option) => option.value === value);
+
+    return (
+        <AutocompleteField
+            name={name}
+            {...restProps}
+            options={options}
+            getOptionLabel={(option) => option.label}
+            isOptionEqualToValue={(option, value) => option.value === value.value}
+            format={(value: GQL{EnumName} | GQL{EnumName}[] | null | undefined) => {
+                if (Array.isArray(value)) {
+                    return value.flatMap((item) => findOption(item) ?? []);
+                }
+                return (value && findOption(value)) ?? null;
+            }}
+            parse={(option: {EnumName}AutocompleteFieldOption | {EnumName}AutocompleteFieldOption[] | null) => {
+                if (Array.isArray(option)) {
+                    return option.map(({ value }) => value);
+                }
+                return option?.value ?? null;
+            }}
+        />
+    );
+}
 ```
 
 ## Concrete Example
@@ -46,7 +69,6 @@ import { AutocompleteField, type AutocompleteFieldProps } from "@dextinity/admin
 import { locationStatusMessageDescriptorMap } from "@src/common/components/enums/locationStatus/locationStatus/LocationStatus";
 import { useAutocompleteOptions } from "@src/common/components/enums/useAutocompleteOptions";
 import { type GQLLocationStatus } from "@src/graphql.generated";
-import { type FunctionComponent } from "react";
 
 export type LocationStatusFormState = GQLLocationStatus;
 
@@ -56,24 +78,36 @@ type LocationStatusAutocompleteFieldOption = {
 };
 
 type LocationStatusAutocompleteFieldProps = Omit<
-    AutocompleteFieldProps<LocationStatusAutocompleteFieldOption, false, false, false>,
-    "options" | "getOptionLabel"
+    AutocompleteFieldProps<LocationStatusAutocompleteFieldOption, boolean, false, false>,
+    "options" | "getOptionLabel" | "isOptionEqualToValue" | "format" | "parse"
 >;
 
-export const LocationStatusAutocompleteField: FunctionComponent<LocationStatusAutocompleteFieldProps> = ({ name, ...restProps }) => {
+export function LocationStatusAutocompleteField({ name, ...restProps }: LocationStatusAutocompleteFieldProps) {
     const options = useAutocompleteOptions(locationStatusMessageDescriptorMap);
+    const findOption = (value: GQLLocationStatus) => options.find((option) => option.value === value);
 
     return (
         <AutocompleteField
             name={name}
             {...restProps}
             options={options}
-            getOptionLabel={(option) => {
-                return option.label;
+            getOptionLabel={(option) => option.label}
+            isOptionEqualToValue={(option, value) => option.value === value.value}
+            format={(value: GQLLocationStatus | GQLLocationStatus[] | null | undefined) => {
+                if (Array.isArray(value)) {
+                    return value.flatMap((item) => findOption(item) ?? []);
+                }
+                return (value && findOption(value)) ?? null;
+            }}
+            parse={(option: LocationStatusAutocompleteFieldOption | LocationStatusAutocompleteFieldOption[] | null) => {
+                if (Array.isArray(option)) {
+                    return option.map(({ value }) => value);
+                }
+                return option?.value ?? null;
             }}
         />
     );
-};
+}
 ```
 
 ## Storybook Story

@@ -96,7 +96,7 @@ The shell template above shows the default **create + edit** mode (`id` prop is 
 | Nested scalar object          | `dimensions { width height depth }`                |
 | FileUpload (with preview)     | `priceList { ...FinalFormFileUploadDownloadable }` |
 | FileUpload (without preview)  | `datasheets { ...FinalFormFileUpload }`            |
-| DAM Image                     | Skip                                               |
+| Block (e.g. DAM image)        | Field name directly (e.g. `image`), block JSON     |
 | Array of scalars              | Skip                                               |
 
 ### GQL Rules

@@ -19,7 +19,7 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { Field, ObjectType, registerEnumType } from "@nestjs/graphql";
 
-import type { ProductVariant } from "./entities/product-variant.entity";
+import { ProductVariant } from "./entities/product-variant.entity";
 import type { ProductVariantInput, ProductVariantUpdateInput } from "./dto/product-variant.input";
 
 enum ProductVariantMutationErrorCode {

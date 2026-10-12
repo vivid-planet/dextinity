@@ -78,6 +78,7 @@ export function EntitiesGrid() {
             rowCount={rowCount}
             columns={columns}
             loading={loading}
+            showToolbar
             slots={{ toolbar: EntitiesGridToolbar as GridSlotsComponent["toolbar"] }}
             rowReordering
             onRowOrderChange={handleRowOrderChange}

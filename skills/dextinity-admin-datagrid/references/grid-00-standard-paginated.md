@@ -148,6 +148,7 @@ export function <EntityName>sGrid() {
             rowCount={rowCount}
             columns={columns}
             loading={loading}
+            showToolbar
             slots={{
                 toolbar: <EntityName>sGridToolbar as GridSlotsComponent["toolbar"],
             }}
@@ -215,6 +216,7 @@ Override row height density on the DataGridPro:
 ## Rules
 
 - **`muiGridSortToGql` can return `undefined`** when no sort model is set. Since the `$sort` variable is non-nullable (`[EntitySort!]!`), always provide a fallback: `muiGridSortToGql(dataGridProps.sortModel, columns) ?? []`
+- Always pass `showToolbar` when the grid has a toolbar slot — MUI X v8 renders the toolbar only when it's set
 - Only import what is actually used — remove unused imports
 - `queryParamsPrefix` = camelCase entity plural (e.g. `"products"`)
 - `usePersistentColumnState` key = PascalCase grid name (e.g. `"ProductsGrid"`)

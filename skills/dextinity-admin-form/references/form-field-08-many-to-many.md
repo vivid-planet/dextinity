@@ -41,5 +41,5 @@ import { Chip } from "@mui/material";
 ## Rules
 
 - Search for an existing `<RelatedEntity>AsyncAutocompleteField.tsx` before generating a new one
-- The `multiple` prop is passed through `...restProps` in the component — no special handling needed
+- Passing `multiple` makes TypeScript infer the component's `Multiple` type parameter as `true`, so the value is typed as an array of options
 - GQL fragment entry: `tags { id title }` (id + label field)

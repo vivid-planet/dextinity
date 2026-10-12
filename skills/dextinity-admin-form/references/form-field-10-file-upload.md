@@ -17,7 +17,7 @@
 - `FormValues` type: `certificate: GQLFinalFormFileUploadDownloadableFragment | null`
 - GQL fragment: `certificate { ...FinalFormFileUploadDownloadable }`
 - Import fragment: `import { finalFormFileUploadDownloadableFragment } from "@dextinity/cms-admin"`
-- `handleSubmit` output: `certificateFileUploadId: formValues.certificate ? formValues.certificate.id : null`
+- `handleSubmit` output: `certificate: formValues.certificate ? formValues.certificate.id : null` (the input field has the same name as the relation)
 
 ## Multiple files
 
@@ -35,7 +35,7 @@
 - `FormValues` type: `photos: GQLFinalFormFileUploadDownloadableFragment[]`
 - GQL fragment: `photos { ...FinalFormFileUploadDownloadable }`
 - Import fragment: `import { finalFormFileUploadDownloadableFragment } from "@dextinity/cms-admin"`
-- `handleSubmit` output: `photoFileUploadIds: formValues.photos?.map(({ id }) => id)`
+- `handleSubmit` output: `photos: formValues.photos.map(({ id }) => id)`
 - Use `layout="grid"` for a visual grid of image thumbnails
 
 ## Fragment choice

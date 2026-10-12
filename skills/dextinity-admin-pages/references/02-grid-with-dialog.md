@@ -3,7 +3,7 @@
 Use `useEditDialog` for simple CRUD where the edit form is small. No page navigation needed.
 
 ```tsx
-const [EditDialog, { id: selectedId, mode }, editDialogApi] = useEditDialog();
+const [EditDialog, { id: selectedId }, editDialogApi] = useEditDialog();
 
 return (
     <>
@@ -14,7 +14,7 @@ return (
         <StackMainContent fullHeight>
             <DataGrid ... />
         </StackMainContent>
-        <EditDialog title={mode === "add" ? <FormattedMessage id="myEntity.addItem" defaultMessage="Add item" /> : <FormattedMessage id="myEntity.editItem" defaultMessage="Edit item" />}>
+        <EditDialog title={{ add: <FormattedMessage id="myEntity.addItem" defaultMessage="Add item" />, edit: <FormattedMessage id="myEntity.editItem" defaultMessage="Edit item" /> }}>
             {/* Dialog content with form */}
         </EditDialog>
     </>

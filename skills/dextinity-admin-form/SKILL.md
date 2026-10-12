@@ -194,7 +194,8 @@ Use your judgement to create sensible groups. A form with only 2-3 fields does n
 Use a styled `Divider` to visually separate sub-groups of fields within a single FieldSet. Dividers need vertical spacing via a styled component:
 
 ```tsx
-import { Divider, styled } from "@mui/material";
+import { Divider } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 const FieldDivider = styled(Divider)(({ theme }) => ({
     marginTop: theme.spacing(4),

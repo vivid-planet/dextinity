@@ -5,10 +5,10 @@ Extends the standard toolbar with an export action via `CrudMoreActionsMenu`. Th
 ## Template
 
 ```tsx
-import { CrudMoreActionsMenu, DataGridToolbar, ExportApi, FillSpace, GridFilterButton, messages } from "@dextinity/admin";
+import { CrudMoreActionsMenu, DataGridToolbar, ExportApi, FillSpace, GridFilterButton, GridToolbarQuickFilter, messages } from "@dextinity/admin";
 import { Excel as ExcelIcon } from "@dextinity/admin-icons";
 import { CircularProgress } from "@mui/material";
-import { GridToolbarProps, GridToolbarQuickFilter } from "@mui/x-data-grid-pro";
+import { GridToolbarProps } from "@mui/x-data-grid-pro";
 import { FormattedMessage } from "react-intl";
 import { ReactNode } from "react";
 
@@ -49,6 +49,7 @@ function <EntityName>sGridToolbar({ toolbarAction, exportApi }: <EntityName>sGri
 ```tsx
 <DataGridPro
     {...dataGridProps}
+    showToolbar
     slots={{
         toolbar: <EntityName>sGridToolbar as GridSlotsComponent["toolbar"],
     }}

@@ -37,6 +37,7 @@ export function SelectEntitiesGrid({ rowSelectionModel, onRowSelectionModelChang
             rowCount={rowCount}
             columns={columns}
             loading={loading}
+            showToolbar
             slots={{ toolbar: SelectEntitiesGridToolbar as GridSlotsComponent["toolbar"] }}
         />
     );

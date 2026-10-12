@@ -5,8 +5,7 @@ Select grids have search and filter but no add button — the toolbar is for fin
 ## Template
 
 ```tsx
-import { DataGridToolbar, FillSpace, GridFilterButton } from "@dextinity/admin";
-import { GridToolbarQuickFilter } from "@mui/x-data-grid-pro";
+import { DataGridToolbar, FillSpace, GridFilterButton, GridToolbarQuickFilter } from "@dextinity/admin";
 
 function Select<EntityName>sGridToolbar() {
     return (

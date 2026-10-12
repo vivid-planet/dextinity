@@ -35,6 +35,15 @@ export function ResponsiveTable<CellValue>({ columns, rows, responsiveBehavior, 
     }
 
     const headerPosition = responsiveBehavior === "listByRow" ? "firstRow" : "firstColumn";
+    const hasRecords = headerPosition === "firstRow" ? rows.length > 1 : columns.length > 1;
+
+    if (!hasRecords) {
+        return (
+            <TableLayout>
+                <ScrollableTableGrid columns={columns} rows={rows} renderCell={renderCell} headerPosition={headerPosition} />
+            </TableLayout>
+        );
+    }
 
     return (
         <TableLayout>

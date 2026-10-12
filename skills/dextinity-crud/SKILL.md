@@ -32,13 +32,13 @@ Before generating anything, present a numbered plan to the user. The plan lists 
 ```
 I'll generate full CRUD for <EntityName>:
 
-| #   | Phase              | What will be generated                                                        | Skill                          |
-|-----|--------------------|-------------------------------------------------------------------------------|--------------------------------|
-| 1   | API Entity         | Entity, resolver, DTOs, paginated response, module, migration                 | dextinity-api-graphql              |
-| 2   | Translatable Enums | Per enum: translatable component, chip, form field                            | dextinity-admin-enum  |
-| 3+4 | DataGrid & Form    | Grid + form components (run in parallel via subagents)                         | dextinity-admin-datagrid + form    |
-| 5   | Admin Page         | Page component wiring grid + form with Stack/StackSwitch navigation           | dextinity-admin-pages              |
-| 6   | Master Menu        | Route entry in MasterMenu, import page component                              | —                              |
+| #   | Phase              | What will be generated                                              | Skill                           |
+|-----|--------------------|---------------------------------------------------------------------|---------------------------------|
+| 1   | API Entity         | Entity, resolver, DTOs, paginated response, module, migration       | dextinity-api-graphql           |
+| 2   | Translatable Enums | Per enum: translatable component, chip, form field                  | dextinity-admin-enum            |
+| 3+4 | DataGrid & Form    | Grid + form components (run in parallel via subagents)              | dextinity-admin-datagrid + form |
+| 5   | Admin Page         | Page component wiring grid + form with Stack/StackSwitch navigation | dextinity-admin-pages           |
+| 6   | Master Menu        | Route entry in MasterMenu, import page component                    | —                               |
 
 Each phase is validated (lint + tsc) and committed separately.
 

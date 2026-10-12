@@ -2,7 +2,7 @@
 title: Agent Skills
 ---
 
-Agent Skills are reusable prompt-based instructions that teach AI coding assistants (like Claude Code) how to generate code following Comet DXP conventions. Each skill encodes project-specific patterns, best practices, and code examples so the AI can produce consistent, high-quality output.
+Agent Skills are reusable prompt-based instructions that teach AI coding assistants (like Claude Code) how to generate code following Dextinity conventions. Each skill encodes project-specific patterns, best practices, and code examples so the AI can produce consistent, high-quality output.
 
 For installation instructions, see the [Installing agent skills](../4-guides/5-installing-agent-features.md) guide.
 
@@ -16,11 +16,11 @@ For existing entities still managed by the CRUD Generator, the generator workflo
 
 ### Available Skills
 
-| Skill                                                          | Description                                                                    |
-| -------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| [comet-crud](2-comet-crud/index.md)                            | Full-stack CRUD orchestrator — chains all skills to scaffold a complete entity |
-| [comet-api-graphql](2-comet-crud/1-comet-api-graphql.md)       | NestJS/GraphQL API: entity, service, resolver, DTOs, module                    |
-| [comet-admin-enum](2-comet-crud/2-comet-admin-enum.md)         | Translatable enum components, chips, and form fields                           |
-| [comet-admin-datagrid](2-comet-crud/3-comet-admin-datagrid.md) | Server-side MUI DataGrid with filtering, sorting, and pagination               |
-| [comet-admin-form](2-comet-crud/4-comet-admin-form.md)         | Final Form components with create/edit modes and save conflict detection       |
-| [comet-admin-pages](2-comet-crud/5-comet-admin-pages.md)       | Page navigation, layouts, toolbars, and routing patterns                       |
+| Skill                                                                      | Description                                                                    |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| [dextinity-crud](2-dextinity-crud/index.md)                                | Full-stack CRUD orchestrator — chains all skills to scaffold a complete entity |
+| [dextinity-api-graphql](2-dextinity-crud/1-dextinity-api-graphql.md)       | NestJS/GraphQL API: entity, service, resolver, DTOs, module                    |
+| [dextinity-admin-enum](2-dextinity-crud/2-dextinity-admin-enum.md)         | Translatable enum components, chips, and form fields                           |
+| [dextinity-admin-datagrid](2-dextinity-crud/3-dextinity-admin-datagrid.md) | Server-side MUI DataGrid with filtering, sorting, and pagination               |
+| [dextinity-admin-form](2-dextinity-crud/4-dextinity-admin-form.md)         | Final Form components with create/edit modes and save conflict detection       |
+| [dextinity-admin-pages](2-dextinity-crud/5-dextinity-admin-pages.md)       | Page navigation, layouts, toolbars, and routing patterns                       |

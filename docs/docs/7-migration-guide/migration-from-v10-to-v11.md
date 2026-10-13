@@ -334,7 +334,39 @@ If your project uses them, `@nestjs/mapped-types` and `@nestjs/cache-manager` ar
 npm install
 ```
 
-Keep `@nestjs/schematics` on `^11.1.0` unless your project is already on TypeScript 6 — v12 of it requires `typescript >= 6.0.0`. It only backs `nest generate`; `nest build` and `nest start` don't need it, and the CLI brings its own copy.
+`@nestjs/schematics` is left out above because v12 of it requires `typescript >= 6.0.0`. Keeping it on `^11.1.0` is fine: it only backs `nest generate`, which `nest build` and `nest start` don't need, and the CLI brings its own copy.
+
+#### Optional: upgrade to TypeScript 6
+
+Upgrade TypeScript along with it to move `@nestjs/schematics` to v12 as well:
+
+```diff title="api/package.json"
+{
+    "devDependencies": {
+-       "@nestjs/schematics": "^11.1.0",
+-       "typescript": "^5.9.3",
++       "@nestjs/schematics": "^12.0.6",
++       "typescript": "^6.0.3",
+    }
+}
+```
+
+TypeScript 6 turns the deprecated `baseUrl` option into an error and requires an explicit `rootDir` next to `outDir`:
+
+```diff title="api/tsconfig.json"
+{
+    "compilerOptions": {
+-       "baseUrl": "./",
+        "paths": {
+-           "@src/*": ["src/*"]
++           "@src/*": ["./src/*"]
+        },
++       "rootDir": ".",
+    }
+}
+```
+
+Without `baseUrl`, `paths` entries resolve relative to the `tsconfig.json`, so they need a leading `./`, and `tsconfig-paths` has to be v4 — v3 doesn't resolve them.
 
 ### Override the `@golevelup/nestjs-discovery` version on pnpm
 

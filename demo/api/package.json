@@ -95,7 +95,7 @@
         "@dextinity/eslint-config": "workspace:*",
         "@formatjs/cli": "^6.16.33",
         "@nestjs/cli": "^12.0.3",
-        "@nestjs/schematics": "^11.1.0",
+        "@nestjs/schematics": "^12.0.6",
         "@nestjs/testing": "^12.0.4",
         "@storybook/addon-docs": "^10.6.1",
         "@storybook/react-vite": "^10.6.1",

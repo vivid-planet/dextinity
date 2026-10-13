@@ -18,13 +18,7 @@ export const BlocksBlock = ({ supportedBlocks, data: { blocks } }: Props) => {
 
                 if (!blockFunction) {
                     if (process.env.NODE_ENV === "development") {
-                        return (
-                            <MjmlText key={block.key}>
-                                {/* eslint-disable-next-line @calm/react-intl/missing-formatted-message,react/jsx-no-literals */}
-                                {/* eslint-disable-next-line react/jsx-no-literals */}
-                                Unknown type ({block.type}): {JSON.stringify(block.props)}
-                            </MjmlText>
-                        );
+                        return <MjmlText key={block.key}>{`Unknown type (${block.type}): ${JSON.stringify(block.props)}`}</MjmlText>;
                     }
 
                     return null;

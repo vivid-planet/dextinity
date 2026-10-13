@@ -67,7 +67,7 @@ export function AboutModal({ open, onClose, logo = <DextinityLogo sx={{ fontSize
                     </Typography>
 
                     <Link href="https://www.vivid-planet.com" target="_blank" underline="hover">
-                        {/* eslint-disable-next-line @calm/react-intl/missing-formatted-message,react/jsx-no-literals */}
+                        {/* eslint-disable-next-line react/jsx-no-literals */}
                         <Typography>www.vivid-planet.com</Typography>
                     </Link>
                 </DialogContent>

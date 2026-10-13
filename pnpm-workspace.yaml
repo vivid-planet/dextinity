@@ -12,6 +12,7 @@ peerDependencyRules:
     allowedVersions:
         react-final-form>react: "19"
         react-final-form-arrays>react: "19"
+        tsconfck>typescript: "6"
 
 overrides:
     "@apollo/server-plugin-landing-page-graphql-playground>@apollo/server": "^5.1.0"

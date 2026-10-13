@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
-        "ignoreDeprecations": "6.0",
+        "baseUrl": null,
         "noUncheckedSideEffectImports": false,
         "strict": false,
         "types": ["*"]

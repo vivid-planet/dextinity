@@ -2,7 +2,7 @@
     "compilerOptions": {
         "esModuleInterop": true,
         "module": "CommonJS",
-        "moduleResolution": "node"
+        "moduleResolution": "bundler"
     },
     "extends": "./tsconfig.json",
     "ts-node": {

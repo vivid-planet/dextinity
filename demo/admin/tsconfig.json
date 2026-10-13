@@ -1,9 +1,7 @@
 {
     "compilerOptions": {
         "allowSyntheticDefaultImports": true,
-        "baseUrl": "./",
         "esModuleInterop": true,
-        "ignoreDeprecations": "6.0",
         "inlineSources": true,
         "jsx": "react-jsx",
         "jsxImportSource": "@emotion/react",
@@ -13,7 +11,7 @@
         "noImplicitAny": true,
         "noUncheckedSideEffectImports": false,
         "paths": {
-            "@src/*": ["src/*"]
+            "@src/*": ["./src/*"]
         },
         "resolveJsonModule": true,
         "skipLibCheck": true,

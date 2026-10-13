@@ -1,9 +1,8 @@
 {
     "compilerOptions": {
-        "baseUrl": "src",
         "outDir": "lib",
         "paths": {
-            "test-utils": ["./utils/test-utils"]
+            "test-utils": ["./src/utils/test-utils"]
         },
         "rootDir": ".",
         "typeRoots": ["node_modules/@types", "node_modules/@testing-library"]

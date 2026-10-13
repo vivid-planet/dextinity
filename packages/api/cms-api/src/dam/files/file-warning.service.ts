@@ -1,8 +1,8 @@
 import { EntityManager, FilterQuery } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
-import { WarningData } from "src/warnings/dto/warning-data";
 
 import { CreateWarningsServiceInterface } from "../../warnings/decorators/create-warnings.decorator";
+import { WarningData } from "../../warnings/dto/warning-data";
 import { DamConfig } from "../dam.config";
 import { DAM_CONFIG } from "../dam.constants";
 import { FileInterface } from "./entities/file.entity";

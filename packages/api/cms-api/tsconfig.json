@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "baseUrl": "./",
         "outDir": "./lib",
         "rootDir": "./src",
         "tsBuildInfoFile": "./lib/tsconfig.tsbuildinfo"

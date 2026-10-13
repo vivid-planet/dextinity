@@ -2,7 +2,7 @@
 import { CRUD_GENERATOR_METADATA_KEY, type CrudGeneratorOptions, hasCrudFieldFeature, REQUIRED_PERMISSION_METADATA_KEY } from "@dextinity/cms-api";
 import { type EntityMetadata, ReferenceKind } from "@mikro-orm/postgresql";
 import * as path from "path";
-import { singular } from "pluralize";
+import pluralize from "pluralize";
 
 import { generateCrudInput } from "../generateCrudInput/generate-crud-input";
 import { buildNameVariants } from "../utils/build-name-variants";
@@ -501,7 +501,7 @@ export function generateInputHandling(
             imports.push(generateEntityImport(targetMeta, targetDirectory, metadata));
             return {
                 name: prop.name,
-                singularName: singular(prop.name),
+                singularName: pluralize.singular(prop.name),
                 nullable: prop.nullable,
                 type: prop.type,
             };
@@ -516,7 +516,7 @@ export function generateInputHandling(
             }
             return {
                 name: prop.name,
-                singularName: singular(prop.name),
+                singularName: pluralize.singular(prop.name),
                 nullable: prop.nullable,
                 type: prop.type,
                 targetMeta,
@@ -531,7 +531,7 @@ export function generateInputHandling(
             }
             return {
                 name: prop.name,
-                singularName: singular(prop.name),
+                singularName: pluralize.singular(prop.name),
                 nullable: prop.nullable,
                 type: prop.type,
                 orphanRemoval: prop.orphanRemoval,

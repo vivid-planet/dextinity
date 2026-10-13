@@ -1,6 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { registerDecorator, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
-import { ValidationArguments } from "class-validator/types/validation/ValidationArguments";
+import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
 
 import { DamConfig } from "../../dam.config";
 import { DAM_CONFIG } from "../../dam.constants";

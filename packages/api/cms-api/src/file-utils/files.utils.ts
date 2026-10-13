@@ -2,7 +2,7 @@ import { createHash } from "crypto";
 import type createDOMPurify from "dompurify";
 import fs from "fs";
 import { unlink } from "fs/promises";
-import * as mimedb from "mime-db";
+import mimedb from "mime-db";
 import os from "os";
 import { basename, extname } from "path";
 import slugify from "slugify";

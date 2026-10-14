@@ -361,7 +361,17 @@ TypeScript 6 turns the deprecated `baseUrl` option into an error and requires an
 -           "@src/*": ["src/*"]
 +           "@src/*": ["./src/*"]
         },
-+       "rootDir": ".",
++       "rootDir": "./src",
+    }
+}
+```
+
+`rootDir` has to stay at `./src`: with `.`, `src/main.ts` compiles to `dist/src/main.js`, and `start:prod` no longer finds the entry point. Widen it again in the configs that type-check files outside `src`:
+
+```diff title="api/tsconfig.lint.json"
+{
+    "compilerOptions": {
++       "rootDir": "./"
     }
 }
 ```
@@ -617,7 +627,9 @@ Moving messages between calls doesn't change their IDs, so the extracted message
 When typed messages are exported from code that emits declaration files (e.g., a shared library), TypeScript reports `TS2742: The inferred type of '…' cannot be named`. Annotate them with `TypedMessageDescriptor`:
 
 ```ts
-const greetingMessages: { greeting: TypedMessageDescriptor<{ name: string }> } = defineMessages<{ greeting: { name: string } }>({
+const greetingMessages: { greeting: TypedMessageDescriptor<{ name: string }> } = defineMessages<{
+    greeting: { name: string };
+}>({
     greeting: { id: "greeting", defaultMessage: "Hello {name}" },
 });
 ```

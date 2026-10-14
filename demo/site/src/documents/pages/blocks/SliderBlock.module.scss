@@ -1,13 +1,6 @@
-.slider {
-    position: relative;
-}
-
-.swiperContainer {
-    overflow: hidden;
-
-    .swiper {
-        overflow: visible;
-    }
+.carousel {
+    --carousel-slide-gap: 20px;
+    --carousel-slide-size: calc((100% - 2 * var(--carousel-slide-gap)) / 3);
 }
 
 .sliderItemBlockRoot {
@@ -19,4 +12,93 @@
 .mediaWrapper {
     position: relative;
     height: 200px;
+}
+
+.navigationButton {
+    position: absolute;
+
+    // Centered on the media, which has a fixed height of 200px.
+    top: calc(100px - 20px);
+    z-index: 1;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    background-color: var(--media-gallery-button-hover-bg);
+
+    &::after {
+        content: "";
+        width: var(--spacing-s200);
+        height: var(--spacing-s200);
+        border-top: 2px solid var(--media-gallery-button-default-contrast);
+        border-right: 2px solid var(--media-gallery-button-default-contrast);
+    }
+
+    &:hover::after {
+        border-color: var(--media-gallery-button-hover-contrast);
+    }
+
+    &:disabled {
+        background-color: var(--media-gallery-button-disabled-bg);
+
+        &::after {
+            border-color: var(--media-gallery-button-disabled-contrast);
+        }
+    }
+
+    &--previous {
+        left: var(--spacing-s200);
+        transform: rotate(225deg);
+    }
+
+    &--next {
+        right: var(--spacing-s200);
+        transform: rotate(45deg);
+    }
+}
+
+// Announces the slides in view to screen readers, which can't see which slides the dots stand for.
+.status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    white-space: nowrap;
+    clip-path: inset(50%);
+}
+
+.dots {
+    margin-top: var(--spacing-s200);
+}
+
+.dot {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &::after {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--media-gallery-dot-navigation-default);
+    }
+
+    &:hover::after {
+        background-color: var(--media-gallery-dot-navigation-hover);
+    }
+
+    &--selected {
+        &::after {
+            background-color: var(--media-gallery-dot-navigation-active);
+        }
+
+        &:hover::after {
+            background-color: var(--media-gallery-dot-navigation-active-hover);
+        }
+    }
 }

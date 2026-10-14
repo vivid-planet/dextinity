@@ -51,7 +51,7 @@
         "@mikro-orm/core": "^7.2.0",
         "@mikro-orm/decorators": "^7.2.0",
         "@mikro-orm/postgresql": "^7.2.0",
-        "@nestjs/graphql": "^13.4.5",
+        "@nestjs/graphql": "^14.0.1",
         "@types/node": "^24.19.1",
         "@types/pluralize": "^0.0.33",
         "class-validator": "^0.15.1",
@@ -69,7 +69,7 @@
         "@mikro-orm/core": "^7.1.8",
         "@mikro-orm/decorators": "^7.1.8",
         "@mikro-orm/postgresql": "^7.1.8",
-        "@nestjs/graphql": "^13.0.0",
+        "@nestjs/graphql": "^14.0.0",
         "class-validator": "^0.14.0 || ^0.15.0"
     },
     "engines": {

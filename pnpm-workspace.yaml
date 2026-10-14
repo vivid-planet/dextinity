@@ -18,6 +18,8 @@ overrides:
     "@apollo/server-plugin-landing-page-graphql-playground>@apollo/server": "^5.1.0"
     "@types/mjml-core": "4.15.2"
     "@tsconfig/node16": "1.0.3"
+    # nest-commander pins 7.0.3, which predates NestJS 12 support.
+    "nest-commander>@golevelup/nestjs-discovery": "^7.1.0"
 
 # None of these dependencies needs its build scripts to run in this repository.
 allowBuilds:

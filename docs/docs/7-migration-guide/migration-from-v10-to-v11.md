@@ -299,6 +299,110 @@ The CLI no longer supports `ts-node`. Install one of the loaders it accepts (`ox
 
 `ts-node` can stay for anything else in your project that uses it.
 
+### Update the NestJS dependencies
+
+v11 upgrades NestJS from v11 to v12. The [NestJS migration guide](https://docs.nestjs.com/migration-guide) lists every upstream change.
+
+```diff title="api/package.json"
+{
+    "dependencies": {
+-       "@nestjs/apollo": "^13.4.0",
+-       "@nestjs/common": "^11.1.21",
+-       "@nestjs/core": "^11.1.21",
+-       "@nestjs/graphql": "^13.4.0",
+-       "@nestjs/jwt": "^11.0.2",
+-       "@nestjs/platform-express": "^11.1.21",
++       "@nestjs/apollo": "^14.0.1",
++       "@nestjs/common": "^12.0.4",
++       "@nestjs/core": "^12.0.4",
++       "@nestjs/graphql": "^14.0.1",
++       "@nestjs/jwt": "^12.0.2",
++       "@nestjs/platform-express": "^12.0.4",
+    },
+    "devDependencies": {
+-       "@nestjs/cli": "^11.0.21",
+-       "@nestjs/testing": "^11.1.21",
++       "@nestjs/cli": "^12.0.3",
++       "@nestjs/testing": "^12.0.4",
+    }
+}
+```
+
+If your project uses them, `@nestjs/mapped-types` and `@nestjs/cache-manager` are versioned along with the core packages from v12 on, so they jump to `^12.0.0` as well.
+
+```sh
+npm install
+```
+
+`@nestjs/schematics` is left out above because v12 of it requires `typescript >= 6.0.0`. Keeping it on `^11.1.0` is fine: it only backs `nest generate`, which `nest build` and `nest start` don't need, and the CLI brings its own copy.
+
+#### Optional: upgrade to TypeScript 6
+
+Upgrade TypeScript along with it to move `@nestjs/schematics` to v12 as well:
+
+```diff title="api/package.json"
+{
+    "devDependencies": {
+-       "@nestjs/schematics": "^11.1.0",
+-       "typescript": "^5.9.3",
++       "@nestjs/schematics": "^12.0.6",
++       "typescript": "^6.0.3",
+    }
+}
+```
+
+TypeScript 6 turns the deprecated `baseUrl` option into an error and requires an explicit `rootDir` next to `outDir`:
+
+```diff title="api/tsconfig.json"
+{
+    "compilerOptions": {
+-       "baseUrl": "./",
+        "paths": {
+-           "@src/*": ["src/*"]
++           "@src/*": ["./src/*"]
+        },
++       "rootDir": "./src",
+    }
+}
+```
+
+`rootDir` has to stay at `./src`: with `.`, `src/main.ts` compiles to `dist/src/main.js`, and `start:prod` no longer finds the entry point. Widen it again in the configs that type-check files outside `src`:
+
+```diff title="api/tsconfig.lint.json"
+{
+    "compilerOptions": {
++       "rootDir": "./"
+    }
+}
+```
+
+Without `baseUrl`, `paths` entries resolve relative to the `tsconfig.json`, so they need a leading `./`, and `tsconfig-paths` has to be v4 — v3 doesn't resolve them.
+
+### Override the `@golevelup/nestjs-discovery` version on pnpm
+
+Skip this section when your project uses npm or yarn — nothing is needed there.
+
+`nest-commander` pins `@golevelup/nestjs-discovery` at `7.0.3`, which still asks for NestJS v11 as a peer. It works against v12, and npm installs it as a nested copy with a warning. pnpm with `strictPeerDependencies` fails instead, so pin it to a release that accepts v12:
+
+```yaml title="pnpm-workspace.yaml"
+overrides:
+    "nest-commander>@golevelup/nestjs-discovery": "^7.1.0"
+```
+
+Remove the entry once `nest-commander` ships a release that depends on `7.1.0` or newer.
+
+### Import `repl` from `@nestjs/core`
+
+The core packages are ESM-only from v12 on and expose their subpaths through an `exports` map that maps `@nestjs/core/<name>` to `<name>.js`. `@nestjs/core/repl` is a directory, not a file, so that specifier no longer resolves. `repl` is re-exported from the package root instead:
+
+```diff title="api/src/repl.ts"
+- import { NestFactory } from "@nestjs/core";
+- import { repl } from "@nestjs/core/repl";
++ import { NestFactory, repl } from "@nestjs/core";
+```
+
+A CommonJS API keeps working: Node loads the ESM packages through `require(esm)`, which the Node version MikroORM v7 already requires supports. Switching your API to ESM is optional and not needed for v11.
+
 ### Regenerate the generated API files
 
 The API Generator reads MikroORM metadata, which changed shape in v7. Regenerate and check that the output is unchanged:
@@ -523,7 +627,9 @@ Moving messages between calls doesn't change their IDs, so the extracted message
 When typed messages are exported from code that emits declaration files (e.g., a shared library), TypeScript reports `TS2742: The inferred type of '…' cannot be named`. Annotate them with `TypedMessageDescriptor`:
 
 ```ts
-const greetingMessages: { greeting: TypedMessageDescriptor<{ name: string }> } = defineMessages<{ greeting: { name: string } }>({
+const greetingMessages: { greeting: TypedMessageDescriptor<{ name: string }> } = defineMessages<{
+    greeting: { name: string };
+}>({
     greeting: { id: "greeting", defaultMessage: "Hello {name}" },
 });
 ```

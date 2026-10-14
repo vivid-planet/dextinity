@@ -103,7 +103,7 @@ function SitePreview({ resolvePath, logo = <DextinityIcon sx={{ fontSize: 32 }} 
         const newShowOnlyVisible = !showOnlyVisible;
         setShowOnlyVisible(String(newShowOnlyVisible));
         setIframePath(sitePath); //reload iframe with new settings
-        refetch();
+        void refetch();
     };
 
     const siteLink = `${siteConfig.url}${sitePath}`;

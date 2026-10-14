@@ -63,26 +63,26 @@ export const Default: Story = {
     play: async ({ canvas, step }) => {
         await step("Editor is ready with toolbar", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
 
             // Block type select shows "Paragraph"
-            expect(canvas.getByRole("combobox")).toBeInTheDocument();
-            expect(canvas.getByText("Paragraph")).toBeInTheDocument();
+            await expect(canvas.getByRole("combobox")).toBeInTheDocument();
+            await expect(canvas.getByText("Paragraph")).toBeInTheDocument();
 
             // Toolbar has buttons (undo, redo, bold, italic, strike, more, ol, ul, indent, dedent, nbsp, shy)
             const buttons = canvas.getAllByRole("button");
-            expect(buttons.length).toBeGreaterThanOrEqual(10);
+            await expect(buttons.length).toBeGreaterThanOrEqual(10);
         });
 
         await step("Undo/redo are disabled initially", async () => {
             const buttons = canvas.getAllByRole("button");
             // First two buttons are undo and redo
-            expect(buttons[0]).toBeDisabled();
-            expect(buttons[1]).toBeDisabled();
+            await expect(buttons[0]).toBeDisabled();
+            await expect(buttons[1]).toBeDisabled();
         });
     },
 };
@@ -128,9 +128,9 @@ export const ReadOnly: Story = {
     play: async ({ canvas, canvasElement, step }) => {
         await step("Saved content renders", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("heading", { level: 1, name: "Read-only content" })).toBeInTheDocument();
-                    expect(canvas.getByText("read-only")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("heading", { level: 1, name: "Read-only content" })).toBeInTheDocument();
+                    await expect(canvas.getByText("read-only")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -140,10 +140,10 @@ export const ReadOnly: Story = {
             "The block's own text block style is applied — this needs the block's textBlockStyles reaching the read-only renderer",
             async () => {
                 await waitFor(
-                    () => {
+                    async () => {
                         const styledElement = canvasElement.querySelector('[data-text-block-style="intro"]');
-                        expect(styledElement).not.toBeNull();
-                        expect(styledElement).toHaveStyle({ fontStyle: "italic" });
+                        await expect(styledElement).not.toBeNull();
+                        await expect(styledElement).toHaveStyle({ fontStyle: "italic" });
                     },
                     { timeout: 3000 },
                 );
@@ -152,14 +152,14 @@ export const ReadOnly: Story = {
 
         await step("No element is editable", async () => {
             for (const element of Array.from(canvasElement.querySelectorAll("[contenteditable]"))) {
-                expect(element).toHaveAttribute("contenteditable", "false");
+                await expect(element).toHaveAttribute("contenteditable", "false");
             }
         });
 
         await step("No editing toolbar is rendered", async () => {
             // The editor keeps its textbox role when read-only, so the toolbar's absence is the tell.
-            expect(canvas.queryByRole("combobox")).not.toBeInTheDocument();
-            expect(canvas.queryAllByRole("button")).toHaveLength(0);
+            await expect(canvas.queryByRole("combobox")).not.toBeInTheDocument();
+            await expect(canvas.queryAllByRole("button")).toHaveLength(0);
         });
     },
 };
@@ -192,19 +192,19 @@ export const BoldOnly: StoryObj<typeof BoldOnlyStory> = {
     play: async ({ canvas, step }) => {
         await step("Editor is ready with minimal toolbar", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
 
             // Only bold button, no heading select
-            expect(canvas.queryByRole("combobox")).not.toBeInTheDocument();
-            expect(canvas.queryByText("Default")).not.toBeInTheDocument();
+            await expect(canvas.queryByRole("combobox")).not.toBeInTheDocument();
+            await expect(canvas.queryByText("Default")).not.toBeInTheDocument();
 
             // Exactly 1 button (bold only — no undo/redo, no lists, no special chars)
             const buttons = canvas.getAllByRole("button");
-            expect(buttons).toHaveLength(1);
+            await expect(buttons).toHaveLength(1);
         });
     },
 };
@@ -246,16 +246,16 @@ export const TextBlockStyles: StoryObj<typeof TextBlockStylesStory> = {
         await step("Editor is ready with text block style dropdown", async () => {
             // Block type select shows "Paragraph", text block style select shows "Default"
             await waitFor(
-                () => {
+                async () => {
                     const comboboxes = canvas.getAllByRole("combobox");
-                    expect(comboboxes).toHaveLength(2);
+                    await expect(comboboxes).toHaveLength(2);
                 },
                 { timeout: 5000 },
             );
 
             const comboboxes = canvas.getAllByRole("combobox");
-            expect(comboboxes[0]).toHaveTextContent("Paragraph");
-            expect(comboboxes[1]).toHaveTextContent("Default");
+            await expect(comboboxes[0]).toHaveTextContent("Paragraph");
+            await expect(comboboxes[1]).toHaveTextContent("Default");
         });
 
         await step("Select text block style 'Intro Text'", async () => {
@@ -264,8 +264,8 @@ export const TextBlockStyles: StoryObj<typeof TextBlockStylesStory> = {
             await userEvent.click(comboboxes[1]);
 
             await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("option", { name: "Intro Text" })).toBeInTheDocument();
+                async () => {
+                    await expect(within(document.body).getByRole("option", { name: "Intro Text" })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -273,8 +273,8 @@ export const TextBlockStyles: StoryObj<typeof TextBlockStylesStory> = {
             await userEvent.click(within(document.body).getByRole("option", { name: "Intro Text" }));
 
             await waitFor(
-                () => {
-                    expect(canvas.getByText("Intro Text")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByText("Intro Text")).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -286,8 +286,8 @@ export const TextBlockStyles: StoryObj<typeof TextBlockStylesStory> = {
             await userEvent.keyboard("hello");
 
             await waitFor(
-                () => {
-                    expect(editor).toHaveTextContent("hello");
+                async () => {
+                    await expect(editor).toHaveTextContent("hello");
                 },
                 { timeout: 3000 },
             );
@@ -319,14 +319,14 @@ export const Placeholders: StoryObj<typeof PlaceholdersStory> = {
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready with placeholder button", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
 
             // The placeholder button is identified by its accessible name, not by index among all toolbar buttons
-            expect(canvas.getByRole("button", { name: "Insert placeholder" })).toBeInTheDocument();
+            await expect(canvas.getByRole("button", { name: "Insert placeholder" })).toBeInTheDocument();
         });
 
         await step("Open the placeholder menu and insert 'First Name'", async () => {
@@ -334,8 +334,8 @@ export const Placeholders: StoryObj<typeof PlaceholdersStory> = {
 
             // The menu is rendered in a portal, so it lives in document.body rather than within the canvas
             await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("menuitem", { name: "First Name" })).toBeInTheDocument();
+                async () => {
+                    await expect(within(document.body).getByRole("menuitem", { name: "First Name" })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -347,8 +347,8 @@ export const Placeholders: StoryObj<typeof PlaceholdersStory> = {
             const editor = canvas.getByRole("textbox");
             // Placeholders render as chips labelled `{{name}}`
             await waitFor(
-                () => {
-                    expect(within(editor).getByText("{{firstName}}")).toBeInTheDocument();
+                async () => {
+                    await expect(within(editor).getByText("{{firstName}}")).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -356,10 +356,10 @@ export const Placeholders: StoryObj<typeof PlaceholdersStory> = {
 
         await step("Block state contains the placeholder node", async () => {
             await waitFor(
-                () => {
+                async () => {
                     const state = JSON.parse(canvas.getByText(/"tipTapContent"/).textContent ?? "{}");
                     const [paragraph] = state.tipTapContent.content;
-                    expect(paragraph.content).toContainEqual({ type: "placeholder", attrs: { name: "firstName" } });
+                    await expect(paragraph.content).toContainEqual({ type: "placeholder", attrs: { name: "firstName" } });
                 },
                 { timeout: 3000 },
             );
@@ -422,8 +422,8 @@ export const PlaceholdersWithContent: StoryObj<typeof PlaceholdersWithContentSto
     play: async ({ canvas, step }) => {
         await step("Editor is ready", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -433,19 +433,19 @@ export const PlaceholdersWithContent: StoryObj<typeof PlaceholdersWithContentSto
             const editor = canvas.getByRole("textbox");
 
             await waitFor(
-                () => {
+                async () => {
                     // Each placeholder is rendered as a chip labelled `{{name}}` (not as plain text)
                     for (const name of ["firstName", "lastName", "email"]) {
                         const chipLabel = within(editor).getByText(`{{${name}}}`);
-                        expect(chipLabel.closest(`.${chipClasses.root}`)).toBeInTheDocument();
+                        await expect(chipLabel.closest(`.${chipClasses.root}`)).toBeInTheDocument();
                     }
                 },
                 { timeout: 3000 },
             );
 
             // Text surrounding the chips is preserved
-            expect(editor).toHaveTextContent("Hello {{firstName}} {{lastName}}, welcome to our platform!");
-            expect(editor).toHaveTextContent("Your registered email is: {{email}}");
+            await expect(editor).toHaveTextContent("Hello {{firstName}} {{lastName}}, welcome to our platform!");
+            await expect(editor).toHaveTextContent("Your registered email is: {{email}}");
         });
     },
 };
@@ -480,8 +480,8 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -492,16 +492,16 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
             await userEvent.click(textBlockTypeSelect);
 
             await waitFor(
-                () => {
-                    expect(within(document.body).getByText("Heading 1")).toBeInTheDocument();
+                async () => {
+                    await expect(within(document.body).getByText("Heading 1")).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
             await userEvent.click(within(document.body).getByText("Heading 1"));
 
             await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox")[0]).toHaveTextContent("Heading 1");
+                async () => {
+                    await expect(canvas.getAllByRole("combobox")[0]).toHaveTextContent("Heading 1");
                 },
                 { timeout: 3000 },
             );
@@ -512,12 +512,12 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
             await userEvent.click(textBlockStyleSelect);
 
             await waitFor(
-                () => {
+                async () => {
                     const body = within(document.body);
-                    expect(body.getByText("Chapter Heading")).toBeInTheDocument();
-                    expect(body.getByText("Large Heading")).toBeInTheDocument();
-                    expect(body.getByText("Highlight")).toBeInTheDocument();
-                    expect(body.queryByText("Intro Text")).not.toBeInTheDocument();
+                    await expect(body.getByText("Chapter Heading")).toBeInTheDocument();
+                    await expect(body.getByText("Large Heading")).toBeInTheDocument();
+                    await expect(body.getByText("Highlight")).toBeInTheDocument();
+                    await expect(body.queryByText("Intro Text")).not.toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -527,8 +527,8 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
             await userEvent.click(within(document.body).getByText("Chapter Heading"));
 
             await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Chapter Heading");
+                async () => {
+                    await expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Chapter Heading");
                 },
                 { timeout: 3000 },
             );
@@ -536,10 +536,10 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
 
         await step("Verify chapter heading styling is applied (uppercase)", async () => {
             await waitFor(
-                () => {
+                async () => {
                     const styledEl = document.querySelector('[data-text-block-style="chapter-heading"]');
-                    expect(styledEl).toBeTruthy();
-                    expect(styledEl).toHaveStyle({ textTransform: "uppercase" });
+                    await expect(styledEl).toBeTruthy();
+                    await expect(styledEl).toHaveStyle({ textTransform: "uppercase" });
                 },
                 { timeout: 3000 },
             );
@@ -550,16 +550,16 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
             await userEvent.click(textBlockTypeSelect);
 
             await waitFor(
-                () => {
-                    expect(within(document.body).getByText("Heading 2")).toBeInTheDocument();
+                async () => {
+                    await expect(within(document.body).getByText("Heading 2")).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
             await userEvent.click(within(document.body).getByText("Heading 2"));
 
             await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox")[0]).toHaveTextContent("Heading 2");
+                async () => {
+                    await expect(canvas.getAllByRole("combobox")[0]).toHaveTextContent("Heading 2");
                 },
                 { timeout: 3000 },
             );
@@ -567,8 +567,8 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
 
         await step("Block style auto-resets to Default (Chapter Heading doesn't apply to heading-2)", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Default");
+                async () => {
+                    await expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Default");
                 },
                 { timeout: 3000 },
             );
@@ -576,8 +576,8 @@ export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteracti
 
         await step("Verify chapter heading styling is removed", async () => {
             await waitFor(
-                () => {
-                    expect(document.querySelector("[data-text-block-style]")).toBeNull();
+                async () => {
+                    await expect(document.querySelector("[data-text-block-style]")).toBeNull();
                 },
                 { timeout: 3000 },
             );
@@ -637,9 +637,9 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready with two comboboxes", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
-                    expect(canvas.getAllByRole("combobox")).toHaveLength(2);
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                    await expect(canvas.getAllByRole("combobox")).toHaveLength(2);
                 },
                 { timeout: 5000 },
             );
@@ -650,13 +650,13 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
             await userEvent.click(textBlockStyleSelect);
 
             await waitFor(
-                () => {
+                async () => {
                     const body = within(document.body);
-                    expect(body.getByText("Intro Text")).toBeInTheDocument();
-                    expect(body.getByText("Universal")).toBeInTheDocument();
-                    expect(body.queryByText("List Large")).not.toBeInTheDocument();
-                    expect(body.queryByText("List Small")).not.toBeInTheDocument();
-                    expect(body.queryByText("Numbered Style")).not.toBeInTheDocument();
+                    await expect(body.getByText("Intro Text")).toBeInTheDocument();
+                    await expect(body.getByText("Universal")).toBeInTheDocument();
+                    await expect(body.queryByText("List Large")).not.toBeInTheDocument();
+                    await expect(body.queryByText("List Small")).not.toBeInTheDocument();
+                    await expect(body.queryByText("Numbered Style")).not.toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -678,8 +678,8 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
             await userEvent.keyboard(`{${mod}>}{Shift>}8{/Shift}{/${mod}}`);
 
             await waitFor(
-                () => {
-                    expect(editor.querySelector("ul")).toBeTruthy();
+                async () => {
+                    await expect(editor.querySelector("ul")).toBeTruthy();
                 },
                 { timeout: 3000 },
             );
@@ -687,8 +687,8 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
 
         await step("Unordered list mode: text block style dropdown shows UL-applicable styles", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox").length).toBeGreaterThanOrEqual(2);
+                async () => {
+                    await expect(canvas.getAllByRole("combobox").length).toBeGreaterThanOrEqual(2);
                 },
                 { timeout: 3000 },
             );
@@ -697,13 +697,13 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
             await userEvent.click(textBlockStyleSelect);
 
             await waitFor(
-                () => {
+                async () => {
                     const body = within(document.body);
-                    expect(body.getByText("List Large")).toBeInTheDocument();
-                    expect(body.getByText("List Small")).toBeInTheDocument();
-                    expect(body.getByText("Universal")).toBeInTheDocument();
-                    expect(body.queryByText("Intro Text")).not.toBeInTheDocument();
-                    expect(body.queryByText("Numbered Style")).not.toBeInTheDocument();
+                    await expect(body.getByText("List Large")).toBeInTheDocument();
+                    await expect(body.getByText("List Small")).toBeInTheDocument();
+                    await expect(body.getByText("Universal")).toBeInTheDocument();
+                    await expect(body.queryByText("Intro Text")).not.toBeInTheDocument();
+                    await expect(body.queryByText("Numbered Style")).not.toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -718,8 +718,8 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
             await userEvent.keyboard(`{${mod}>}{Shift>}7{/Shift}{/${mod}}`);
 
             await waitFor(
-                () => {
-                    expect(editor.querySelector("ol")).toBeTruthy();
+                async () => {
+                    await expect(editor.querySelector("ol")).toBeTruthy();
                 },
                 { timeout: 3000 },
             );
@@ -730,13 +730,13 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
             await userEvent.click(textBlockStyleSelect);
 
             await waitFor(
-                () => {
+                async () => {
                     const body = within(document.body);
-                    expect(body.getByText("List Large")).toBeInTheDocument();
-                    expect(body.getByText("List Small")).toBeInTheDocument();
-                    expect(body.getByText("Universal")).toBeInTheDocument();
-                    expect(body.getByText("Numbered Style")).toBeInTheDocument();
-                    expect(body.queryByText("Intro Text")).not.toBeInTheDocument();
+                    await expect(body.getByText("List Large")).toBeInTheDocument();
+                    await expect(body.getByText("List Small")).toBeInTheDocument();
+                    await expect(body.getByText("Universal")).toBeInTheDocument();
+                    await expect(body.getByText("Numbered Style")).toBeInTheDocument();
+                    await expect(body.queryByText("Intro Text")).not.toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -749,8 +749,8 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
             await userEvent.click(textBlockStyleSelect);
 
             await waitFor(
-                () => {
-                    expect(within(document.body).getByText("List Large")).toBeInTheDocument();
+                async () => {
+                    await expect(within(document.body).getByText("List Large")).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -758,8 +758,8 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
             await userEvent.click(within(document.body).getByText("List Large"));
 
             await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("List Large");
+                async () => {
+                    await expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("List Large");
                 },
                 { timeout: 3000 },
             );
@@ -767,9 +767,9 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
 
         await step("Verify 'list-large' text block style attribute is applied in the editor", async () => {
             await waitFor(
-                () => {
+                async () => {
                     const styledEl = document.querySelector('[data-text-block-style="list-large"]');
-                    expect(styledEl).toBeTruthy();
+                    await expect(styledEl).toBeTruthy();
                 },
                 { timeout: 3000 },
             );
@@ -784,8 +784,8 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
             await userEvent.keyboard(`{${mod}>}{Shift>}8{/Shift}{/${mod}}`);
 
             await waitFor(
-                () => {
-                    expect(editor.querySelector("ol ul")).toBeTruthy();
+                async () => {
+                    await expect(editor.querySelector("ol ul")).toBeTruthy();
                 },
                 { timeout: 3000 },
             );
@@ -796,11 +796,11 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
             await userEvent.click(textBlockStyleSelect);
 
             await waitFor(
-                () => {
+                async () => {
                     const options = within(document.body)
                         .getAllByRole("option")
                         .map((option) => option.textContent);
-                    expect(options).toEqual(["Default", "List Large", "List Small", "Universal"]);
+                    await expect(options).toEqual(["Default", "List Large", "List Small", "Universal"]);
                 },
                 { timeout: 3000 },
             );
@@ -827,8 +827,8 @@ export const MaxTextBlocks: StoryObj<typeof MaxTextBlocksStory> = {
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -842,9 +842,9 @@ export const MaxTextBlocks: StoryObj<typeof MaxTextBlocksStory> = {
             await userEvent.keyboard("Second block");
 
             await waitFor(
-                () => {
-                    expect(editor).toHaveTextContent("First block");
-                    expect(editor).toHaveTextContent("Second block");
+                async () => {
+                    await expect(editor).toHaveTextContent("First block");
+                    await expect(editor).toHaveTextContent("Second block");
                 },
                 { timeout: 3000 },
             );
@@ -857,10 +857,10 @@ export const MaxTextBlocks: StoryObj<typeof MaxTextBlocksStory> = {
 
             // The text "Third block" should be appended to second text block (no new text block created)
             await waitFor(
-                () => {
+                async () => {
                     // Should still only have 2 paragraphs in the output
                     const paragraphs = editor.querySelectorAll("p");
-                    expect(paragraphs.length).toBeLessThanOrEqual(2);
+                    await expect(paragraphs.length).toBeLessThanOrEqual(2);
                 },
                 { timeout: 3000 },
             );
@@ -885,8 +885,8 @@ export const ListLevelMax: StoryObj<typeof ListLevelMaxStory> = {
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -902,8 +902,8 @@ export const ListLevelMax: StoryObj<typeof ListLevelMaxStory> = {
             await userEvent.keyboard(`{${mod}>}{Shift>}8{/Shift}{/${mod}}`);
 
             await waitFor(
-                () => {
-                    expect(editor.querySelector("ul")).toBeTruthy();
+                async () => {
+                    await expect(editor.querySelector("ul")).toBeTruthy();
                 },
                 { timeout: 3000 },
             );
@@ -916,10 +916,10 @@ export const ListLevelMax: StoryObj<typeof ListLevelMaxStory> = {
             await userEvent.keyboard("{Tab}");
 
             await waitFor(
-                () => {
+                async () => {
                     // Should have nested ul (depth 2)
                     const nestedUl = editor.querySelector("ul ul");
-                    expect(nestedUl).toBeTruthy();
+                    await expect(nestedUl).toBeTruthy();
                 },
                 { timeout: 3000 },
             );
@@ -932,10 +932,10 @@ export const ListLevelMax: StoryObj<typeof ListLevelMaxStory> = {
             await userEvent.keyboard("{Tab}");
 
             await waitFor(
-                () => {
+                async () => {
                     // Should NOT have triple-nested ul (depth 3 not allowed)
                     const tripleNestedUl = editor.querySelector("ul ul ul");
-                    expect(tripleNestedUl).toBeNull();
+                    await expect(tripleNestedUl).toBeNull();
                 },
                 { timeout: 3000 },
             );
@@ -967,8 +967,8 @@ export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -979,14 +979,14 @@ export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
             await userEvent.click(textBlockTypeSelect);
 
             await waitFor(
-                () => {
+                async () => {
                     const body = within(document.body);
-                    expect(body.getByText("Heading 2")).toBeInTheDocument();
-                    expect(body.getByText("Heading 3")).toBeInTheDocument();
-                    expect(body.getByText("Heading 4")).toBeInTheDocument();
-                    expect(body.queryByText("Heading 1")).not.toBeInTheDocument();
-                    expect(body.queryByText("Heading 5")).not.toBeInTheDocument();
-                    expect(body.queryByText("Heading 6")).not.toBeInTheDocument();
+                    await expect(body.getByText("Heading 2")).toBeInTheDocument();
+                    await expect(body.getByText("Heading 3")).toBeInTheDocument();
+                    await expect(body.getByText("Heading 4")).toBeInTheDocument();
+                    await expect(body.queryByText("Heading 1")).not.toBeInTheDocument();
+                    await expect(body.queryByText("Heading 5")).not.toBeInTheDocument();
+                    await expect(body.queryByText("Heading 6")).not.toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -996,8 +996,8 @@ export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
 
         await step("Selected heading level is applied", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("heading", { level: 2 })).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("heading", { level: 2 })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -1010,10 +1010,10 @@ export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
             await userEvent.keyboard(`{${mod}>}{Alt>}3{/Alt}{/${mod}}`);
 
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("heading", { level: 3 })).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("heading", { level: 3 })).toBeInTheDocument();
                     // A name that doesn't belong to the node's tag is content the API rejects.
-                    expect(canvas.getByText(/"textBlock": "heading-3"/)).toBeInTheDocument();
+                    await expect(canvas.getByText(/"textBlock": "heading-3"/)).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -1026,8 +1026,8 @@ export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
             await userEvent.keyboard(`{${mod}>}{Alt>}1{/Alt}{/${mod}}`);
 
             await waitFor(
-                () => {
-                    expect(canvas.queryByRole("heading", { level: 1 })).not.toBeInTheDocument();
+                async () => {
+                    await expect(canvas.queryByRole("heading", { level: 1 })).not.toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -1077,17 +1077,17 @@ export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
 
         await step("Editor is ready and the container has more content than fits", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
 
             await waitFor(
-                () => {
+                async () => {
                     const scrollContainer = getScrollContainer();
-                    expect(scrollContainer).not.toBeNull();
-                    expect(scrollContainer!.scrollHeight).toBeGreaterThan(scrollContainer!.clientHeight);
+                    await expect(scrollContainer).not.toBeNull();
+                    await expect(scrollContainer!.scrollHeight).toBeGreaterThan(scrollContainer!.clientHeight);
                 },
                 { timeout: 5000 },
             );
@@ -1105,8 +1105,8 @@ export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
             scrollContainer.scrollTop = 300;
 
             await waitFor(
-                () => {
-                    expect(scrollContainer.scrollTop).toBeGreaterThan(0);
+                async () => {
+                    await expect(scrollContainer.scrollTop).toBeGreaterThan(0);
                 },
                 { timeout: 5000 },
             );
@@ -1114,9 +1114,9 @@ export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
 
         await step("Toolbar stays pinned to the top while the content scrolls behind it", async () => {
             await waitFor(
-                () => {
-                    expect(toolbar.getBoundingClientRect().top).toBe(toolbarTopBeforeScroll);
-                    expect(firstParagraph.getBoundingClientRect().top).toBeLessThan(paragraphTopBeforeScroll);
+                async () => {
+                    await expect(toolbar.getBoundingClientRect().top).toBe(toolbarTopBeforeScroll);
+                    await expect(firstParagraph.getBoundingClientRect().top).toBeLessThan(paragraphTopBeforeScroll);
                 },
                 { timeout: 5000 },
             );
@@ -1152,8 +1152,8 @@ export const HeadingOnly: StoryObj<typeof HeadingOnlyStory> = {
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor starts with a heading of the default level", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("heading", { level: 3 })).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("heading", { level: 3 })).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -1163,9 +1163,9 @@ export const HeadingOnly: StoryObj<typeof HeadingOnlyStory> = {
             await userEvent.click(canvas.getByRole("combobox"));
 
             await waitFor(
-                () => {
+                async () => {
                     const body = within(document.body);
-                    expect(body.getAllByRole("option").map((option) => option.textContent)).toEqual(["Heading 2", "Heading 3", "Heading 4"]);
+                    await expect(body.getAllByRole("option").map((option) => option.textContent)).toEqual(["Heading 2", "Heading 3", "Heading 4"]);
                 },
                 { timeout: 3000 },
             );
@@ -1175,8 +1175,8 @@ export const HeadingOnly: StoryObj<typeof HeadingOnlyStory> = {
 
         await step("Selected heading level is applied", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("heading", { level: 2 })).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("heading", { level: 2 })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -1189,8 +1189,8 @@ export const HeadingOnly: StoryObj<typeof HeadingOnlyStory> = {
             await userEvent.keyboard(`{${mod}>}{Alt>}4{/Alt}{/${mod}}`);
 
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("heading", { level: 4 })).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("heading", { level: 4 })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -1200,8 +1200,8 @@ export const HeadingOnly: StoryObj<typeof HeadingOnlyStory> = {
             await userEvent.keyboard("Headline");
 
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("heading", { level: 4 })).toHaveTextContent("Headline");
+                async () => {
+                    await expect(canvas.getByRole("heading", { level: 4 })).toHaveTextContent("Headline");
                 },
                 { timeout: 3000 },
             );
@@ -1239,8 +1239,8 @@ export const HeadingOnlyWithTextBlockStyles: StoryObj<typeof HeadingOnlyWithText
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor starts with a heading of the default level", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("heading", { level: 3 })).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("heading", { level: 3 })).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -1248,12 +1248,12 @@ export const HeadingOnlyWithTextBlockStyles: StoryObj<typeof HeadingOnlyWithText
 
         await step("Applying a text block style keeps the heading", async () => {
             const comboboxes = canvas.getAllByRole("combobox");
-            expect(comboboxes[0]).toHaveTextContent("Heading 3");
+            await expect(comboboxes[0]).toHaveTextContent("Heading 3");
             await userEvent.click(comboboxes[1]);
 
             await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("option", { name: "Size 550" })).toBeInTheDocument();
+                async () => {
+                    await expect(within(document.body).getByRole("option", { name: "Size 550" })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -1261,8 +1261,8 @@ export const HeadingOnlyWithTextBlockStyles: StoryObj<typeof HeadingOnlyWithText
             await userEvent.click(within(document.body).getByRole("option", { name: "Size 550" }));
 
             await waitFor(
-                () => {
-                    expect(canvas.getByText("Size 550")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByText("Size 550")).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
@@ -1274,8 +1274,8 @@ export const HeadingOnlyWithTextBlockStyles: StoryObj<typeof HeadingOnlyWithText
             await userEvent.keyboard("Headline");
 
             await waitFor(
-                () => {
-                    expect(editor).toHaveTextContent("Headline");
+                async () => {
+                    await expect(editor).toHaveTextContent("Headline");
                 },
                 { timeout: 3000 },
             );
@@ -1308,8 +1308,8 @@ export const ExternalContentUpdate: StoryObj<typeof ExternalContentUpdateStory> 
     play: async ({ canvas, userEvent, step }) => {
         await step("Typing keeps the caret in place", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -1319,8 +1319,8 @@ export const ExternalContentUpdate: StoryObj<typeof ExternalContentUpdateStory> 
             await userEvent.keyboard("Text written by the user");
 
             await waitFor(
-                () => {
-                    expect(editor).toHaveTextContent("Text written by the user");
+                async () => {
+                    await expect(editor).toHaveTextContent("Text written by the user");
                 },
                 { timeout: 3000 },
             );
@@ -1330,10 +1330,10 @@ export const ExternalContentUpdate: StoryObj<typeof ExternalContentUpdateStory> 
             await userEvent.click(canvas.getByRole("button", { name: "Update from outside" }));
 
             await waitFor(
-                () => {
+                async () => {
                     const editor = canvas.getByRole("textbox");
-                    expect(editor).toHaveTextContent("Text written by the agent");
-                    expect(editor).not.toHaveTextContent("Text written by the user");
+                    await expect(editor).toHaveTextContent("Text written by the agent");
+                    await expect(editor).not.toHaveTextContent("Text written by the user");
                 },
                 { timeout: 3000 },
             );
@@ -1345,8 +1345,8 @@ export const ExternalContentUpdate: StoryObj<typeof ExternalContentUpdateStory> 
             await userEvent.keyboard(", extended by the user");
 
             await waitFor(
-                () => {
-                    expect(editor).toHaveTextContent("Text written by the agent, extended by the user");
+                async () => {
+                    await expect(editor).toHaveTextContent("Text written by the agent, extended by the user");
                 },
                 { timeout: 3000 },
             );
@@ -1376,8 +1376,8 @@ export const LaggingState: StoryObj<typeof LaggingStateStory> = {
     play: async ({ canvas, userEvent, step }) => {
         await step("State arriving late does not undo what was typed since", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -1389,12 +1389,12 @@ export const LaggingState: StoryObj<typeof LaggingStateStory> = {
             // The editor shows the text as it is typed, so only the state catching up tells us that
             // the delayed updates have landed — and that none of them reset the editor on arrival.
             await waitFor(
-                () => {
-                    expect(canvas.getByTestId("state-preview")).toHaveTextContent("Text written by the user");
+                async () => {
+                    await expect(canvas.getByTestId("state-preview")).toHaveTextContent("Text written by the user");
                 },
                 { timeout: 3000 },
             );
-            expect(editor).toHaveTextContent("Text written by the user");
+            await expect(editor).toHaveTextContent("Text written by the user");
         });
     },
 };
@@ -1421,8 +1421,8 @@ export const ListTextBlock: StoryObj<typeof ListTextBlockStory> = {
     play: async ({ canvas, userEvent, step }) => {
         await step("A heading turned into a list becomes a paragraph", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("textbox")).toBeInTheDocument();
+                async () => {
+                    await expect(canvas.getByRole("textbox")).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
@@ -1435,8 +1435,8 @@ export const ListTextBlock: StoryObj<typeof ListTextBlockStory> = {
             await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
 
             await waitFor(
-                () => {
-                    expect(editor.querySelector("h2")).toBeTruthy();
+                async () => {
+                    await expect(editor.querySelector("h2")).toBeTruthy();
                 },
                 { timeout: 3000 },
             );
@@ -1447,14 +1447,14 @@ export const ListTextBlock: StoryObj<typeof ListTextBlockStory> = {
 
             // The heading is wrapped into a list item, where only a paragraph text block belongs.
             await waitFor(
-                () => {
-                    expect(editor.querySelector("li")).toBeTruthy();
-                    expect(editor.querySelector("li h2")).toBeFalsy();
-                    expect(editor.querySelector("li p")).toBeTruthy();
+                async () => {
+                    await expect(editor.querySelector("li")).toBeTruthy();
+                    await expect(editor.querySelector("li h2")).toBeFalsy();
+                    await expect(editor.querySelector("li p")).toBeTruthy();
                 },
                 { timeout: 3000 },
             );
-            expect(editor).toHaveTextContent("Heading in a list");
+            await expect(editor).toHaveTextContent("Heading in a list");
         });
 
         await step("Choosing a heading inside a list takes the content out of the list", async () => {
@@ -1464,13 +1464,13 @@ export const ListTextBlock: StoryObj<typeof ListTextBlockStory> = {
             await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
 
             await waitFor(
-                () => {
-                    expect(editor.querySelector("h2")).toBeTruthy();
-                    expect(editor.querySelector("li")).toBeFalsy();
+                async () => {
+                    await expect(editor.querySelector("h2")).toBeTruthy();
+                    await expect(editor.querySelector("li")).toBeFalsy();
                 },
                 { timeout: 3000 },
             );
-            expect(editor).toHaveTextContent("Heading in a list");
+            await expect(editor).toHaveTextContent("Heading in a list");
         });
     },
 };
@@ -1500,8 +1500,8 @@ export const TextBlockElement: StoryObj<typeof TextBlockElementStory> = {
     play: async ({ canvas, userEvent, step }) => {
         await step("A text block without styles shows no styling select", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox")).toHaveLength(1);
+                async () => {
+                    await expect(canvas.getAllByRole("combobox")).toHaveLength(1);
                 },
                 { timeout: 5000 },
             );
@@ -1512,9 +1512,9 @@ export const TextBlockElement: StoryObj<typeof TextBlockElementStory> = {
             await userEvent.click(within(document.body).getByRole("option", { name: "Display" }));
 
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("heading", { level: 1 })).toHaveStyle({ fontSize: "64px" });
-                    expect(canvas.getAllByRole("combobox")).toHaveLength(1);
+                async () => {
+                    await expect(canvas.getByRole("heading", { level: 1 })).toHaveStyle({ fontSize: "64px" });
+                    await expect(canvas.getAllByRole("combobox")).toHaveLength(1);
                 },
                 { timeout: 3000 },
             );
@@ -1525,8 +1525,8 @@ export const TextBlockElement: StoryObj<typeof TextBlockElementStory> = {
             await userEvent.click(within(document.body).getByRole("option", { name: "Heading 1" }));
 
             await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox")).toHaveLength(2);
+                async () => {
+                    await expect(canvas.getAllByRole("combobox")).toHaveLength(2);
                 },
                 { timeout: 3000 },
             );
@@ -1564,8 +1564,8 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
     play: async ({ canvas, userEvent, step }) => {
         await step("New content starts with the default text block's default style", async () => {
             await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Intro Text");
+                async () => {
+                    await expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Intro Text");
                 },
                 { timeout: 5000 },
             );
@@ -1575,9 +1575,9 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
             await userEvent.click(canvas.getAllByRole("combobox")[1]);
 
             await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("option", { name: "Intro Text" })).toBeInTheDocument();
-                    expect(within(document.body).queryByRole("option", { name: "Default" })).toBeNull();
+                async () => {
+                    await expect(within(document.body).getByRole("option", { name: "Intro Text" })).toBeInTheDocument();
+                    await expect(within(document.body).queryByRole("option", { name: "Default" })).toBeNull();
                 },
                 { timeout: 3000 },
             );
@@ -1589,8 +1589,8 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
             await userEvent.click(within(document.body).getByRole("option", { name: "Heading 1" }));
 
             await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Large Heading");
+                async () => {
+                    await expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Large Heading");
                 },
                 { timeout: 3000 },
             );
@@ -1602,24 +1602,24 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
 
             // "Large Heading" is offered by both, so switching keeps it instead of resetting.
             await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Large Heading");
+                async () => {
+                    await expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Large Heading");
                 },
                 { timeout: 3000 },
             );
 
             await userEvent.click(canvas.getAllByRole("combobox")[1]);
             await waitFor(
-                () => {
-                    expect(within(document.body).getByRole("option", { name: "Default" })).toBeInTheDocument();
+                async () => {
+                    await expect(within(document.body).getByRole("option", { name: "Default" })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
             await userEvent.click(within(document.body).getByRole("option", { name: "Default" }));
 
             await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Default");
+                async () => {
+                    await expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Default");
                 },
                 { timeout: 3000 },
             );
@@ -1634,8 +1634,8 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
             await userEvent.keyboard("List item text");
 
             await waitFor(
-                () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Intro Text");
+                async () => {
+                    await expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Intro Text");
                 },
                 { timeout: 3000 },
             );
@@ -1645,9 +1645,9 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
             await userEvent.keyboard(`{${mod}>}{Shift>}8{/Shift}{/${mod}}`);
 
             await waitFor(
-                () => {
-                    expect(editor.querySelector("ul")).toBeTruthy();
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("List Large");
+                async () => {
+                    await expect(editor.querySelector("ul")).toBeTruthy();
+                    await expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("List Large");
                 },
                 { timeout: 3000 },
             );
@@ -1655,9 +1655,9 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
             await userEvent.keyboard(`{${mod}>}{Shift>}8{/Shift}{/${mod}}`);
 
             await waitFor(
-                () => {
-                    expect(editor.querySelector("ul")).toBeFalsy();
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Intro Text");
+                async () => {
+                    await expect(editor.querySelector("ul")).toBeFalsy();
+                    await expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Intro Text");
                 },
                 { timeout: 3000 },
             );
@@ -1672,9 +1672,9 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
             await userEvent.keyboard(`{Alt>}{${mod}>}1{/${mod}}{/Alt}`);
 
             await waitFor(
-                () => {
-                    expect(canvas.getByRole("heading", { level: 1 })).toHaveAttribute("data-text-block-style", "large-heading");
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Large Heading");
+                async () => {
+                    await expect(canvas.getByRole("heading", { level: 1 })).toHaveAttribute("data-text-block-style", "large-heading");
+                    await expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Large Heading");
                 },
                 { timeout: 3000 },
             );

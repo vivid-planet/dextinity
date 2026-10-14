@@ -309,7 +309,7 @@ export const PagesPageActionToolbar = ({
                         } catch {
                             console.error("Error deleting pages");
                         } finally {
-                            client.refetchQueries({ include: ["Pages"] });
+                            void client.refetchQueries({ include: ["Pages"] });
                         }
                     } else {
                         setShowCanNotDeleteDialog(true);

@@ -594,7 +594,7 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                         };
                     });
 
-                updateClipboardContent(blocksToCopy);
+                void updateClipboardContent(blocksToCopy);
             };
 
             const selectedCount = state.blocks.filter((block) => block.selected).length;
@@ -752,7 +752,7 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                                                                         if (!block) {
                                                                             throw new Error(`No Block found for type ${data.type}`);
                                                                         }
-                                                                        updateClipboardContent([
+                                                                        void updateClipboardContent([
                                                                             {
                                                                                 name: block.name,
                                                                                 visible: data.visible,
@@ -765,7 +765,7 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                                                                         ]);
                                                                     }}
                                                                     onPasteClick={() => {
-                                                                        pasteBlock(blockIndex + 1);
+                                                                        void pasteBlock(blockIndex + 1);
                                                                     }}
                                                                     selected={data.selected}
                                                                     onSelectedClick={(selected) => {

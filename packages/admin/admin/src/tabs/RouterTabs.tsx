@@ -104,9 +104,7 @@ export function RouterTabs(inProps: Props) {
     const defaultPathIndex = paths.indexOf("");
 
     if (defaultPathIndex >= 0) {
-        const defaultPathChild = rearrangedChildren[defaultPathIndex];
-
-        rearrangedChildren.splice(defaultPathIndex, 1);
+        const [defaultPathChild] = rearrangedChildren.splice(defaultPathIndex, 1);
         rearrangedChildren.push(defaultPathChild);
     }
 

@@ -48,7 +48,7 @@ export const CopyToClipboardButton = (inProps: CopyToClipboardButtonProps) => {
     };
 
     const copyTextToClipboard = () => {
-        navigator.clipboard.writeText(copyText);
+        void navigator.clipboard.writeText(copyText);
         setShowSuccess(true);
 
         setTimeout(() => {

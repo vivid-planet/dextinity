@@ -254,7 +254,7 @@ export function createUseAdminComponent<T extends BlockInterface>({
                     additionalFields: Object.keys(additionalItemFields).reduce((fields, field) => ({ ...fields, [field]: item[field] }), {}),
                 }));
 
-            updateClipboardContent(blocksToCopy);
+            void updateClipboardContent(blocksToCopy);
         };
 
         const selectedCount = state.blocks.filter((block) => block.selected).length;

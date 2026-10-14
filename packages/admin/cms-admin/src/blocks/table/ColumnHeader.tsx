@@ -110,7 +110,7 @@ export const ColumnHeader = ({ columnSize, highlighted, state, updateState, colu
             return;
         }
 
-        writeClipboardText(JSON.stringify(columnInsertData));
+        void writeClipboardText(JSON.stringify(columnInsertData));
     };
 
     const pasteColumnFromClipboard = async () => {

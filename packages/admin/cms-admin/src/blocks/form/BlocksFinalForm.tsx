@@ -14,8 +14,8 @@ function AutosaveSpy<FormValues>({ onSubmit }: AutoSaveSpyProps<FormValues>) {
                     // works around endless loop when using setState from inside render
                     setTimeout(() => {
                         flushSync(() => {
-                            form.submit(); // to show validation errors, form.submit does not update anything
-                            onSubmit(form.getState().values, form); // call passed onSubmit manually, also when validation errors are present
+                            void form.submit(); // to show validation errors, form.submit does not update anything
+                            void onSubmit(form.getState().values, form); // call passed onSubmit manually, also when validation errors are present
                         });
                     }, 1);
                 }

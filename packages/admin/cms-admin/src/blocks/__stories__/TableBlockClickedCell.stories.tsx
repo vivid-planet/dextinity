@@ -53,14 +53,14 @@ type Story = StoryObj<typeof config>;
 export const ScrollsToAndHighlightsTheClickedCell: Story = {
     play: async () => {
         await waitFor(
-            () => {
+            async () => {
                 const cell = screen.getByRole("gridcell", { name: "H25" });
                 const cellBounds = cell.getBoundingClientRect();
                 const visibleBounds = getVisibleArea(cell).getBoundingClientRect();
-                expect(cellBounds.top).toBeGreaterThanOrEqual(visibleBounds.top);
-                expect(cellBounds.bottom).toBeLessThanOrEqual(visibleBounds.bottom);
-                expect(cellBounds.left).toBeGreaterThanOrEqual(visibleBounds.left);
-                expect(cellBounds.right).toBeLessThanOrEqual(visibleBounds.right);
+                await expect(cellBounds.top).toBeGreaterThanOrEqual(visibleBounds.top);
+                await expect(cellBounds.bottom).toBeLessThanOrEqual(visibleBounds.bottom);
+                await expect(cellBounds.left).toBeGreaterThanOrEqual(visibleBounds.left);
+                await expect(cellBounds.right).toBeLessThanOrEqual(visibleBounds.right);
             },
             { timeout: 10000 },
         );

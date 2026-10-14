@@ -47,7 +47,7 @@ const RedirectActiveness = ({ redirect }: RedirectActivenessProps): JSX.Element 
     };
 
     const handleActivenessClick = (active: boolean) => {
-        updateRedirectActiveness({
+        void updateRedirectActiveness({
             variables: {
                 id: redirect.id,
                 input: { active: active },

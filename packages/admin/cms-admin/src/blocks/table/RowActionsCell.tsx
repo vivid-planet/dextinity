@@ -101,7 +101,7 @@ export const RowActionsCell = ({ row, updateState, state, addToRecentlyPastedIds
             return;
         }
 
-        writeClipboardText(JSON.stringify(rowInsertData));
+        void writeClipboardText(JSON.stringify(rowInsertData));
     };
 
     const pasteRowFromClipboard = async () => {

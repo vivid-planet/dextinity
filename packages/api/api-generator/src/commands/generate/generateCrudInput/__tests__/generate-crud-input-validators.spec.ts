@@ -141,7 +141,7 @@ describe("GenerateDefinedValidatorDecorators", () => {
             expect(isEmailImport).toBeDefined();
             expect(isEmailImport?.getModuleSpecifierValue()).toBe("class-validator");
 
-            orm.close();
+            await orm.close();
         });
 
         describe("case sensitive validator", () => {
@@ -182,7 +182,7 @@ describe("GenerateDefinedValidatorDecorators", () => {
                 expect(isIsoImport).toBeDefined();
                 expect(isIsoImport?.getModuleSpecifierValue()).toBe("class-validator");
 
-                orm.close();
+                await orm.close();
             });
         });
 
@@ -224,7 +224,7 @@ describe("GenerateDefinedValidatorDecorators", () => {
                 expect(lengthImport).toBeDefined();
                 expect(lengthImport?.getModuleSpecifierValue()).toBe("class-validator");
 
-                orm.close();
+                await orm.close();
             });
         });
 
@@ -400,7 +400,7 @@ describe("GenerateDefinedValidatorDecorators", () => {
             const isStringImport = classValidatorImports[0].getNamedImports().filter((namedImport) => namedImport.getName() === "IsString");
             expect(isStringImport.length).toBe(1);
 
-            orm.close();
+            await orm.close();
         });
     });
 });

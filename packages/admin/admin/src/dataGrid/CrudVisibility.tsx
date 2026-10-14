@@ -25,7 +25,7 @@ export const CrudVisibility = ({ visibility, onUpdateVisibility }: CrudVisibilit
     };
 
     const handleVisibilityClick = (visibility: boolean) => {
-        onUpdateVisibility(visibility);
+        void onUpdateVisibility(visibility);
         handleMenuClose();
         snackbarApi.showSnackbar(
             <UndoSnackbar
@@ -39,7 +39,7 @@ export const CrudVisibility = ({ visibility, onUpdateVisibility }: CrudVisibilit
                     />
                 }
                 onUndoClick={() => {
-                    onUpdateVisibility(!visibility);
+                    void onUpdateVisibility(!visibility);
                 }}
             />,
         );

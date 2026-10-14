@@ -1,12 +1,33 @@
+@use "@src/styles/variables" as *;
+
 .carousel {
+    --grid-column-width: calc(min(100vw, 1920px) / 24);
     --carousel-slide-gap: 20px;
-    --carousel-slide-size: calc((100% - 2 * var(--carousel-slide-gap)) / 3);
+    --carousel-slide-size: calc((100% - var(--carousel-slide-gap)) / 1.2);
+
+    @media (min-width: $breakpoint-sm) {
+        --carousel-slide-size: calc((100% - 2 * var(--carousel-slide-gap)) / 2.2);
+    }
+
+    @media (min-width: $breakpoint-md) {
+        --carousel-slide-size: calc((100% - 2 * var(--carousel-slide-gap)) / 3);
+
+        margin-inline: var(--grid-column-width);
+    }
 }
 
 .sliderItemBlockRoot {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.text {
+    padding-inline: var(--grid-column-width);
+
+    @media (min-width: $breakpoint-md) {
+        padding-inline: 0;
+    }
 }
 
 .mediaWrapper {
@@ -51,11 +72,19 @@
     &--previous {
         left: var(--spacing-s200);
         transform: rotate(225deg);
+
+        @media (min-width: $breakpoint-md) {
+            left: var(--spacing-s400);
+        }
     }
 
     &--next {
         right: var(--spacing-s200);
         transform: rotate(45deg);
+
+        @media (min-width: $breakpoint-md) {
+            right: var(--spacing-s400);
+        }
     }
 }
 

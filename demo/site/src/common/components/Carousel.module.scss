@@ -1,0 +1,44 @@
+.root {
+    position: relative;
+}
+
+.viewport {
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    gap: var(--carousel-slide-gap, 0);
+    align-items: flex-start;
+
+    // Keeps vertical page scrolling while swiping.
+    touch-action: pan-y pinch-zoom;
+}
+
+.slide {
+    flex: 0 0 var(--carousel-slide-size, 100%);
+    min-width: 0;
+
+    // Prevents text selection while dragging with the mouse.
+    user-select: none;
+
+    // Draws the focus outline inside, so the viewport doesn't cut it off.
+    :focus-visible {
+        outline-offset: -5px;
+    }
+}
+
+.button {
+    &:disabled {
+        cursor: default;
+    }
+}
+
+.dots {
+    display: flex;
+    justify-content: center;
+}
+
+.dot {
+    cursor: pointer;
+}

@@ -1,8 +1,8 @@
 import type { Type } from "@nestjs/common";
 import { type ClassConstructor, instanceToPlain, plainToInstance } from "class-transformer";
 import { Equals } from "class-validator";
-import type { WarningSeverity as WarningSeverityEnum } from "src/warnings/entities/warning-severity.enum";
 
+import type { WarningSeverity as WarningSeverityEnum } from "../warnings/entities/warning-severity.enum";
 import { AnnotationBlockMeta, getBlockFieldData, getFieldKeys } from "./decorators/field";
 import { strictBlockDataFactoryDecorator } from "./helpers/strictBlockDataFactoryDecorator";
 import { strictBlockInputFactoryDecorator } from "./helpers/strictBlockInputFactoryDecorator";

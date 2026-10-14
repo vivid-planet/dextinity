@@ -90,7 +90,7 @@
         "stylelint": "^16.26.1",
         "stylelint-config-standard-scss": "^16.0.0",
         "typed-scss-modules": "^8.1.1",
-        "typescript": "^5.9.3",
+        "typescript": "^6.0.3",
         "vite-tsconfig-paths": "^6.1.1",
         "vitest": "^4.1.11"
     },

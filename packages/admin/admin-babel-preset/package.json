@@ -29,6 +29,6 @@
         "registry": "https://registry.npmjs.org"
     },
     "engines": {
-        "node": ">=22.0.0"
+        "node": ">=24.15.0"
     }
 }

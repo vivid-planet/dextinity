@@ -47,7 +47,7 @@
         "prettier": ">=3"
     },
     "engines": {
-        "node": ">=22.0.0"
+        "node": ">=24.15.0"
     },
     "publishConfig": {
         "access": "public",

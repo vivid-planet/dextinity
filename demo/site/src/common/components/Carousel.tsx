@@ -25,6 +25,7 @@ type CarouselContextValue = {
     viewportRef: EmblaViewportRefType;
     previousButtonRef: RefObject<HTMLButtonElement | null>;
     nextButtonRef: RefObject<HTMLButtonElement | null>;
+    dotRefs: RefObject<(HTMLButtonElement | null)[]>;
     slideCount: number;
     hasNavigation: boolean;
     snapCount: number;
@@ -66,6 +67,7 @@ export const Carousel = ({ label, slideCount, className, options, children }: Ca
     const rootRef = useRef<HTMLDivElement>(null);
     const previousButtonRef = useRef<HTMLButtonElement>(null);
     const nextButtonRef = useRef<HTMLButtonElement>(null);
+    const dotRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
     const { snapCount, slidesPerView, selectedIndex, slidesInView, canScrollPrev, canScrollNext } = useCarouselState({
         emblaApi,
@@ -73,6 +75,7 @@ export const Carousel = ({ label, slideCount, className, options, children }: Ca
         rootRef,
         previousButtonRef,
         nextButtonRef,
+        dotRefs,
     });
     useResetNativeScroll(emblaApi);
 
@@ -85,6 +88,7 @@ export const Carousel = ({ label, slideCount, className, options, children }: Ca
             viewportRef,
             previousButtonRef,
             nextButtonRef,
+            dotRefs,
             slideCount,
             hasNavigation: snapCount > 1,
             snapCount,
@@ -211,7 +215,7 @@ type CarouselDotsProps = {
 };
 
 export const CarouselDots = ({ className, dotClassName, selectedDotClassName }: CarouselDotsProps) => {
-    const { hasNavigation, snapCount, selectedIndex, scrollTo } = useCarousel();
+    const { dotRefs, hasNavigation, snapCount, selectedIndex, scrollTo } = useCarousel();
     const intl = useIntl();
 
     if (!hasNavigation) {
@@ -226,6 +230,9 @@ export const CarouselDots = ({ className, dotClassName, selectedDotClassName }: 
                 return (
                     <button
                         key={index}
+                        ref={(dot) => {
+                            dotRefs.current[index] = dot;
+                        }}
                         type="button"
                         aria-current={isSelected}
                         aria-label={intl.formatMessage({ id: "carousel.dot.ariaLabel", defaultMessage: "Go to slide {index}" }, { index: index + 1 })}

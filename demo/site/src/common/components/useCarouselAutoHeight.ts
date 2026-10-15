@@ -17,7 +17,9 @@ export const useCarouselAutoHeight = (emblaApi: UseEmblaCarouselType[1], slidesI
         updateHeight();
 
         const resizeObserver = new ResizeObserver(updateHeight);
-        visibleSlides.forEach((slide) => resizeObserver.observe(slide));
+        for (const slide of visibleSlides) {
+            resizeObserver.observe(slide);
+        }
 
         return () => {
             resizeObserver.disconnect();

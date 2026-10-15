@@ -20,9 +20,10 @@ type UseCarouselStateOptions = {
     rootRef: RefObject<HTMLElement | null>;
     previousButtonRef: RefObject<HTMLButtonElement | null>;
     nextButtonRef: RefObject<HTMLButtonElement | null>;
+    dotRefs: RefObject<(HTMLButtonElement | null)[]>;
 };
 
-export const useCarouselState = ({ emblaApi, slideCount, rootRef, previousButtonRef, nextButtonRef }: UseCarouselStateOptions) => {
+export const useCarouselState = ({ emblaApi, slideCount, rootRef, previousButtonRef, nextButtonRef, dotRefs }: UseCarouselStateOptions) => {
     // Number of positions the carousel can stop at: slides minus fully visible slides plus one.
     const [snapCount, setSnapCount] = useState(slideCount);
     const [slidesPerView, setSlidesPerView] = useState<number | null>(null);
@@ -60,7 +61,18 @@ export const useCarouselState = ({ emblaApi, slideCount, rootRef, previousButton
         };
 
         const syncLayout = () => {
-            setSnapCount(emblaApi.scrollSnapList().length);
+            const snapCountAfterLayout = emblaApi.scrollSnapList().length;
+            const isNavigationRemoved = snapCountAfterLayout <= 1;
+            const focusedDotIndex = dotRefs.current.findIndex((dot) => dot !== null && dot === document.activeElement);
+            const isFocusedDotRemoved = focusedDotIndex !== -1 && (isNavigationRemoved || focusedDotIndex >= snapCountAfterLayout);
+            const isFocusedButtonRemoved =
+                isNavigationRemoved && (document.activeElement === previousButtonRef.current || document.activeElement === nextButtonRef.current);
+
+            if (isFocusedDotRemoved || isFocusedButtonRemoved) {
+                rootRef.current?.focus();
+            }
+
+            setSnapCount(snapCountAfterLayout);
             setSlidesPerView(countSlidesPerView(emblaApi));
             syncSelection();
         };
@@ -71,7 +83,7 @@ export const useCarouselState = ({ emblaApi, slideCount, rootRef, previousButton
         return () => {
             emblaApi.off("select", syncSelection).off("reInit", syncLayout);
         };
-    }, [emblaApi, rootRef, previousButtonRef, nextButtonRef]);
+    }, [emblaApi, rootRef, previousButtonRef, nextButtonRef, dotRefs]);
 
     const slidesInView = useMemo(
         () =>

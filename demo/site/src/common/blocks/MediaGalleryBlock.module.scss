@@ -1,9 +1,5 @@
 @use "@src/styles/variables" as *;
 
-.root {
-    position: relative;
-}
-
 .pageLayoutContent {
     grid-column: 2 / -2;
 
@@ -22,28 +18,31 @@
 
 .mediaCaption {
     margin-top: 42px;
-    padding-right: calc(var(--swiper-button-size) * 2 + var(--spacing-s300) + var(--spacing-s500));
     color: var(--text-secondary);
 
     // min-height to show arrows when no caption
     min-height: 20px;
 
+    opacity: 0;
+    transition: opacity 0.3s linear 0s;
+
     @media (min-width: $breakpoint-sm) {
         margin-top: var(--spacing-s300);
         min-height: 22px;
     }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
 }
 
-.swiper {
+.slide--selected {
     .mediaCaption {
-        opacity: 0;
-        transition: opacity 0.3s linear 0s;
-    }
+        opacity: 1;
+        transition: opacity 0.3s linear 0.2s;
 
-    :global(.swiper-slide-active) {
-        .mediaCaption {
-            opacity: 1;
-            transition: opacity 0.3s linear 0.2s;
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
         }
     }
 }
@@ -79,7 +78,8 @@
     &:disabled {
         background-color: var(--media-gallery-button-disabled-bg);
 
-        &::after {
+        &::after,
+        &:hover::after {
             border-top: 2px solid var(--media-gallery-button-disabled-contrast);
             border-right: 2px solid var(--media-gallery-button-disabled-contrast);
         }

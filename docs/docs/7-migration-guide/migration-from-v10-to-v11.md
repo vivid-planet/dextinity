@@ -39,7 +39,7 @@ v11 requires Node 24.15 or newer. Update the Node version wherever your project 
 {
     "engines": {
 -       "node": "22"
-+       "node": "24"
++       "node": ">=24.15.0"
     }
 }
 ```

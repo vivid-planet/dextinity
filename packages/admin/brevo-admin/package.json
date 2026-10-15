@@ -101,6 +101,9 @@
         "react-router": "^5.0.0",
         "react-router-dom": "^5.0.0"
     },
+    "engines": {
+        "node": ">=24.15.0"
+    },
     "publishConfig": {
         "access": "public",
         "registry": "https://registry.npmjs.org"

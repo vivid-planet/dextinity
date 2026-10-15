@@ -17,6 +17,9 @@
         "build": "node build.ts",
         "clean": "node build.ts --clean"
     },
+    "engines": {
+        "node": ">=24.15.0"
+    },
     "publishConfig": {
         "access": "public",
         "registry": "https://registry.npmjs.org"

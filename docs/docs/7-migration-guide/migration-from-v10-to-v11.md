@@ -26,6 +26,35 @@ This guide grows with every breaking change that lands on [`next`](https://githu
 
 ## Root
 
+### Update Node to v24
+
+v11 requires Node 24.15 or newer. Update the Node version wherever your project sets it, for example in `.nvmrc`, the `engines` field of the `package.json` files, Dockerfiles and the CI configuration:
+
+```diff title=".nvmrc"
+- 22
++ 24
+```
+
+```diff title="package.json"
+{
+    "engines": {
+-       "node": "22"
++       "node": ">=24.15.0"
+    }
+}
+```
+
+```diff title="api/Dockerfile"
+- FROM node:22
++ FROM node:24
+```
+
+Check that your local Node version is 24.15 or newer before installing the dependencies:
+
+```sh
+node --version
+```
+
 ### Update the dependencies
 
 Update all `@dextinity/*` dependencies in the root `package.json` to version `11.0.0`:

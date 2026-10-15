@@ -15,6 +15,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { useMediaQuery } from "usehooks-ts";
 
 import styles from "./Carousel.module.scss";
+import { useCarouselAutoHeight } from "./useCarouselAutoHeight";
 import { useCarouselKeyboardNavigation } from "./useCarouselKeyboardNavigation";
 import { useCarouselState } from "./useCarouselState";
 import { useResetNativeScroll } from "./useResetNativeScroll";
@@ -78,6 +79,7 @@ export const Carousel = ({ label, slideCount, className, options, children }: Ca
         dotRefs,
     });
     useResetNativeScroll(emblaApi);
+    useCarouselAutoHeight(emblaApi, slidesInView);
 
     const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
     const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);

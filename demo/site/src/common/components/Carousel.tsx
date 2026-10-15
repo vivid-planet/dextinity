@@ -251,9 +251,9 @@ type CarouselStatusProps<T extends ElementType> = {
     as?: T;
 } & Omit<ComponentProps<T>, "aria-atomic" | "aria-live" | "children" | "role">;
 
-export const CarouselStatus = <T extends ElementType = "p">({ as, ...restProps }: CarouselStatusProps<T>) => {
+export const CarouselStatus = <T extends ElementType = "p">(props: CarouselStatusProps<T>) => {
+    const { as: Component = "p", ...restProps } = props;
     const { hasNavigation, selectedIndex, slidesInView, slideCount } = useCarousel();
-    const Component = as || "p";
 
     if (!hasNavigation) {
         return null;

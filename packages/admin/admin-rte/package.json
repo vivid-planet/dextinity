@@ -63,7 +63,7 @@
         "draft-js": "^0.11.7",
         "eslint": "^9.39.5",
         "final-form": "^4.20.10",
-        "jsdom": "^28.1.0",
+        "jsdom": "^30.1.2",
         "npm-run-all2": "^8.0.4",
         "prettier": "^3.6.2",
         "react": "^19.3.0",

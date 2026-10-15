@@ -47,6 +47,10 @@ describe("GridToolbarQuickFilter", () => {
         render(<Grid />);
 
         await userEvent.type(screen.getByRole("searchbox"), "Vanilla");
+        // Clearing doesn't cancel the debounced filter update from typing, which would filter the rows again afterwards
+        await waitFor(() => {
+            expect(screen.queryByText("Chocolate")).not.toBeInTheDocument();
+        });
         await userEvent.click(await screen.findByRole("button", { name: "Clear" }));
 
         await waitFor(() => {

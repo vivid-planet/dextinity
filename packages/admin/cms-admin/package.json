@@ -129,7 +129,7 @@
         "final-form": "^4.20.10",
         "graphql": "^16.14.2",
         "history": "^4.10.1",
-        "jsdom": "^28.1.0",
+        "jsdom": "^30.1.2",
         "msw": "^2.15.0",
         "npm-run-all2": "^8.0.4",
         "playwright": "^1.63.0",

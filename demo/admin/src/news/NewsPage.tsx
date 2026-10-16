@@ -15,7 +15,6 @@ import {
 } from "@dextinity/admin";
 import { Time } from "@dextinity/admin-icons";
 import { ActionLogsGrid, ContentScopeIndicator, useContentScopeConfig } from "@dextinity/cms-admin";
-import type { GQLQuery } from "@src/graphql.generated";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { NewsForm } from "./generated/NewsForm";
@@ -77,7 +76,7 @@ export function NewsPage() {
                         <ToolbarBackButton />
                         <ToolbarAutomaticTitleItem />
                     </StackToolbar>
-                    <ActionLogsGrid<GQLQuery> queryName="newsActionLogs" />
+                    <ActionLogsGrid entity="News" />
                 </StackPage>
             </StackSwitch>
         </Stack>

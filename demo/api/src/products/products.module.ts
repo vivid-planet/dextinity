@@ -1,4 +1,4 @@
-import { ActionLogsModule, FileUpload } from "@dextinity/cms-api";
+import { FileUpload } from "@dextinity/cms-api";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@src/config/config.module";
@@ -51,7 +51,6 @@ import { ProductPublishedMail } from "./published-mail/product-published.mail";
         ]),
         ConfigModule,
         TranslationModule,
-        ActionLogsModule.forFeature([Product, Manufacturer]),
     ],
     providers: [
         ProductResolver,

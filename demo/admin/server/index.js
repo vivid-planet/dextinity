@@ -8,6 +8,10 @@ const expressStaticGzip = require("express-static-gzip");
 const app = express();
 const port = process.env.ADMIN_PORT ?? 3000;
 const host = process.env.SERVER_HOST ?? "localhost";
+// Only skip the upgrade to https when the admin itself is served over plain http: local development
+// and http preview environments. An unset ADMIN_URL keeps the upgrade, so that a deployment which
+// does not set it is never silently downgraded.
+const servedOverHttp = process.env.ADMIN_URL?.startsWith("http://") ?? false;
 
 let indexFile = fs.readFileSync("./build/index.html", "utf8");
 
@@ -32,7 +36,9 @@ app.use(
                 "img-src": ["'self'", "data:", "blob:"],
                 "media-src": ["'self'", "data:"],
                 "frame-src": [process.env.PREVIEW_URL],
-                upgradeInsecureRequests: process.env.NODE_ENV === "development" ? undefined : [], // Upgrade all requests to HTTPS on production
+                // Upgrade all requests to HTTPS, unless the admin is served over http. The directive
+                // has to be left out entirely, helmet rejects an undefined value.
+                ...(servedOverHttp ? {} : { upgradeInsecureRequests: [] }),
             },
             useDefaults: false, // Avoid default values for not explicitly set directives
         },

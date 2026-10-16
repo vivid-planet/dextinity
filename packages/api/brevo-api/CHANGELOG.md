@@ -1,5 +1,11 @@
 # @comet/brevo-api
 
+## 10.10.1
+
+### Patch Changes
+
+- @dextinity/cms-api@10.10.1
+
 ## 10.10.0
 
 ### Patch Changes

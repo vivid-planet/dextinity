@@ -1,5 +1,16 @@
 # @comet/cms-admin
 
+## 10.10.1
+
+### Patch Changes
+
+- 96bf6f1: Keep the focus in the child block dialog of `createTipTapRichTextBlock`
+
+    Choosing a child block from the toolbar's "Insert block" menu refocused the editor shortly after the dialog had opened, which moved the focus away from the dialog's fields, for instance from a field with `autoFocus`.
+    - @dextinity/admin@10.10.1
+    - @dextinity/admin-icons@10.10.1
+    - @dextinity/admin-rte@10.10.1
+
 ## 10.10.0
 
 ### Minor Changes

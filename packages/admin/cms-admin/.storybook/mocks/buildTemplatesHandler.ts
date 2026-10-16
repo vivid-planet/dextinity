@@ -1,6 +1,8 @@
-import { graphql, HttpResponse } from "msw";
+import { HttpResponse } from "msw";
 
-export const buildTemplatesHandler = graphql.query("BuildTemplates", () => {
+import { graphqlApi } from "./graphqlApi";
+
+export const buildTemplatesHandler = graphqlApi.query("BuildTemplates", () => {
     return HttpResponse.json({
         data: {
             buildTemplates: Array.from({ length: 10 }, (_, i) => ({

@@ -67,7 +67,7 @@
         "lodash.isequal": "^4.5.0",
         "mime-db": "^1.54.0",
         "p-debounce": "^5.1.1",
-        "react-cool-dimensions": "^2.0.7",
+        "react-cool-dimensions": "^3.0.1",
         "react-dropzone": "^14.4.1",
         "react-final-form-arrays": "^3.1.4",
         "react-hotkeys-hook": "^3.4.7",

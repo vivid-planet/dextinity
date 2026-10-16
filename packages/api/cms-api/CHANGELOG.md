@@ -1,5 +1,7 @@
 # @comet/cms-api
 
+## 10.10.1
+
 ## 10.10.0
 
 ### Minor Changes

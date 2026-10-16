@@ -1,5 +1,14 @@
 # @comet/brevo-admin
 
+## 10.10.1
+
+### Patch Changes
+
+- Updated dependencies [96bf6f1]
+    - @dextinity/cms-admin@10.10.1
+    - @dextinity/admin@10.10.1
+    - @dextinity/admin-icons@10.10.1
+
 ## 10.10.0
 
 ### Patch Changes

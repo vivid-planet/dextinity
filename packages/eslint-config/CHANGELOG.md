@@ -1,5 +1,19 @@
 # @comet/eslint-config
 
+## 10.10.1
+
+### Patch Changes
+
+- 35f2b48: Update `globals` to v17
+
+    The browser configs know about newer browser APIs.
+    Audio worklet globals, such as `registerProcessor` and `sampleRate`, are no longer defined in the browser configs.
+
+- 2fb3ecf: Move `npm-run-all2` to `devDependencies`
+
+    It's only used by the package's own lint scripts, so projects using `@dextinity/eslint-config` no longer install it.
+    - @dextinity/eslint-plugin@10.10.1
+
 ## 10.10.0
 
 ### Patch Changes

@@ -1,5 +1,7 @@
 # @comet/site-react
 
+## 10.10.1
+
 ## 10.10.0
 
 ### Patch Changes

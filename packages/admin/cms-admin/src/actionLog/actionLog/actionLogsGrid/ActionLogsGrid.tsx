@@ -102,7 +102,9 @@ export function ActionLogsGrid({ entity, getDisplayName = getDefaultDisplayName 
                     const snapshot = row.snapshot as Record<string, unknown> | null | undefined;
                     const previousSnapshot = row.previousVersion?.snapshot as Record<string, unknown> | null | undefined;
                     const displayName =
-                        (snapshot ? getDisplayName(snapshot) : undefined) ?? (previousSnapshot ? getDisplayName(previousSnapshot) : undefined);
+                        (snapshot ? getDisplayName(snapshot) : undefined) ||
+                        (previousSnapshot ? getDisplayName(previousSnapshot) : undefined) ||
+                        undefined;
                     return <GridCellContent primaryText={displayName ?? row.entityId} secondaryText={displayName ? row.entityId : undefined} />;
                 },
             },

@@ -26,8 +26,7 @@ export class ActionLogsAclService {
     /**
      * Restricts the action log of all entities to the rows the user could also read through the log of each entity.
      * That log asks `isAllowed` for one requested scope and returns the rows of exactly that scope. `isAllowed` cannot
-     * be translated into SQL, so it is asked here for each scope that occurs in the rows of a scoped entity.
-     *
+     * be translated into SQL, so it is asked here for each scope that occurs in the rows of a scoped entity.     *
      * @returns `null` when the user can read no row.
      */
     async getReadableActionLogsFilter(user: CurrentUser | SystemUser): Promise<ObjectQuery<ActionLog> | null> {
@@ -61,22 +60,36 @@ export class ActionLogsAclService {
             scopedEntityPermissions.set(entityClass.name, permissions);
         }
 
-        for (const [entityName, rowScopes] of await this.getRowScopes([...scopedEntityPermissions.keys()])) {
-            const permissions = scopedEntityPermissions.get(entityName) ?? [];
-            const allowedRowScopes = rowScopes.filter((rowScope) =>
-                permissions.some((permission) => this.accessControlService.isAllowed(user, permission, rowScope)),
-            );
+        const rowScopesByEntity = await this.getRowScopes([...scopedEntityPermissions.keys()]);
 
-            // The log of the single entity lists the unscoped rows in every scope it allows, so they are readable only
-            // when the user is allowed in one of the scopes.
-            if (allowedRowScopes.length === 0) {
+        // The log of the single entity lists the unscoped rows in every scope it allows, so they are readable when the user
+        // is allowed in any scope that log can be requested with: one the admin offers, one of the user's grants, or one of
+        // a logged row.
+        const requestableContentScopes = [
+            ...(await this.userPermissionsService.getAvailableContentScopes()).map(({ scope }) => scope),
+            ...user.permissions.flatMap(({ contentScopes }) => contentScopes),
+            ...[...rowScopesByEntity.values()].flat(),
+        ];
+
+        for (const [entityName, permissions] of scopedEntityPermissions) {
+            const isAllowedInScope = (contentScope: ContentScope) =>
+                permissions.some((permission) => this.accessControlService.isAllowed(user, permission, contentScope));
+
+            const allowedRowScopes = (rowScopesByEntity.get(entityName) ?? []).filter(isAllowedInScope);
+            const canReadUnscopedRows = allowedRowScopes.length > 0 || requestableContentScopes.some(isAllowedInScope);
+
+            const scopeConditions: ObjectQuery<ActionLog>[] = [];
+            if (canReadUnscopedRows) {
+                scopeConditions.push({ scope: null });
+            }
+            if (allowedRowScopes.length > 0) {
+                scopeConditions.push(rowScopeEqualToAnyOf(allowedRowScopes));
+            }
+            if (scopeConditions.length === 0) {
                 continue;
             }
 
-            entityFilters.push({
-                entityName,
-                $or: [{ scope: null }, rowScopeEqualToAnyOf(allowedRowScopes)],
-            });
+            entityFilters.push({ entityName, $or: scopeConditions });
         }
 
         return entityFilters.length > 0 ? { $or: entityFilters } : null;

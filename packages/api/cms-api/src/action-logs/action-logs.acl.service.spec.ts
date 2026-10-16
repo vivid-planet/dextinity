@@ -49,13 +49,13 @@ class GermanNewsDeniedAccessControlService extends AbstractAccessControlService 
     }
 }
 
-const newsRowScopes: ContentScope[] = [
+const defaultNewsRowScopes: ContentScope[] = [
     { domain: "main", language: "en" },
     { domain: "main", language: "de" },
     { domain: "secondary", language: "en" },
 ];
 
-const createEntityManager = () =>
+const createEntityManager = (newsRowScopes: ContentScope[] = defaultNewsRowScopes) =>
     createMock<EntityManager>({
         getMetadata: () => ({ tableName: "ActionLog" }) as never,
         getConnection: () =>
@@ -64,7 +64,21 @@ const createEntityManager = () =>
             }) as never,
     });
 
-const createAclService = (accessControlService: AccessControlServiceInterface = new AccessControlService()): ActionLogsAclService => {
+const createUserPermissionsService = (availableContentScopes: ContentScope[] = []) =>
+    createMock<UserPermissionsService>({
+        isSystemUser: (id: string) => id === "system-user",
+        getAvailableContentScopes: async () => availableContentScopes.map((scope) => ({ scope, label: {} })),
+    });
+
+const createAclService = ({
+    accessControlService = new AccessControlService(),
+    newsRowScopes,
+    availableContentScopes,
+}: {
+    accessControlService?: AccessControlServiceInterface;
+    newsRowScopes?: ContentScope[];
+    availableContentScopes?: ContentScope[];
+} = {}): ActionLogsAclService => {
     const actionLogsService = new ActionLogsService(
         createMock(),
         createMock(),
@@ -72,9 +86,9 @@ const createAclService = (accessControlService: AccessControlServiceInterface = 
     );
     actionLogsService.onModuleInit();
     return new ActionLogsAclService(
-        createEntityManager(),
+        createEntityManager(newsRowScopes),
         actionLogsService,
-        createMock<UserPermissionsService>({ isSystemUser: (id: string) => id === "system-user" }),
+        createUserPermissionsService(availableContentScopes),
         accessControlService,
     );
 };
@@ -142,7 +156,7 @@ describe("ActionLogsAclService", () => {
     });
 
     it("honors an access control service that denies a scope the grants cover", async () => {
-        const filter = await createAclService(new GermanNewsDeniedAccessControlService()).getReadableActionLogsFilter(
+        const filter = await createAclService({ accessControlService: new GermanNewsDeniedAccessControlService() }).getReadableActionLogsFilter(
             user(actionLogPermission, { permission: "news" as Permission, contentScopes: [{ domain: "main", language: "*" }] }),
         );
 
@@ -157,11 +171,31 @@ describe("ActionLogsAclService", () => {
         expect(entityFilters.map(({ entityName }) => entityName)).toEqual(["PublicEntity"]);
     });
 
+    it("includes the unscoped rows of a scoped entity that has no scoped rows", async () => {
+        const filter = await createAclService({ newsRowScopes: [] }).getReadableActionLogsFilter(
+            user(actionLogPermission, { permission: "news" as Permission, contentScopes: [{ domain: "main", language: "en" }] }),
+        );
+
+        expect(getNewsFilter(filter)).toEqual({ entityName: "News", $or: [{ scope: null }] });
+    });
+
+    it("includes the unscoped rows of a scoped entity when the user is allowed in another scope but none of its row scopes", async () => {
+        const filter = await createAclService({
+            accessControlService: new GermanNewsDeniedAccessControlService(),
+            newsRowScopes: [{ domain: "main", language: "de" }],
+            availableContentScopes: [{ domain: "main", language: "en" }],
+        }).getReadableActionLogsFilter(
+            user(actionLogPermission, { permission: "news" as Permission, contentScopes: [{ domain: "main", language: "*" }] }),
+        );
+
+        expect(getNewsFilter(filter)).toEqual({ entityName: "News", $or: [{ scope: null }] });
+    });
+
     it("returns null when the user can read no entity besides those that disable the check", async () => {
         const aclServiceWithoutPublicEntity = new ActionLogsAclService(
             createEntityManager(),
             createMock<ActionLogsService>({ getLoggedEntities: () => [News] }),
-            createMock<UserPermissionsService>(),
+            createUserPermissionsService(),
             new AccessControlService(),
         );
 

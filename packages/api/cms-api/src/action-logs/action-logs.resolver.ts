@@ -96,7 +96,7 @@ export class ActionLogsResolver {
         @Args() { filter, offset, limit, sort }: AllActionLogsArgs,
         @GetCurrentUser() user: CurrentUser | SystemUser,
     ): Promise<PaginatedActionLogs> {
-        const readableActionLogsFilter = this.actionLogsAclService.getReadableActionLogsFilter(user);
+        const readableActionLogsFilter = await this.actionLogsAclService.getReadableActionLogsFilter(user);
         if (readableActionLogsFilter === null) {
             return new PaginatedActionLogs([], 0);
         }

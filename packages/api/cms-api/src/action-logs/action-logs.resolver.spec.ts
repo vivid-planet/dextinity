@@ -92,7 +92,7 @@ describe("ActionLogsResolver", () => {
             userPermissionsService,
             createMock<PreviousActionLogLoaderService>(),
             createActionLogsService([LoggedEntity, PublicLoggedEntity, UnscopedLoggedEntity]),
-            new ActionLogsAclService(actionLogsService, userPermissionsService),
+            new ActionLogsAclService(createMock<EntityManager>(), actionLogsService, userPermissionsService, new AccessControlService()),
             new AccessControlService(),
         );
     });

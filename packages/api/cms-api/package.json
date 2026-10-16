@@ -54,7 +54,7 @@
         "@tiptap/starter-kit": "^3.31.4",
         "base64url": "^3.0.1",
         "content-disposition": "^3.0.0",
-        "cron-parser": "^3.5.0",
+        "cron-parser": "^5.10.2",
         "dataloader": "^2.2.3",
         "date-fns": "^4.4.0",
         "dompurify": "^3.4.16",

@@ -1,0 +1,255 @@
+# Deploy preview environment: runs the complete demo (api, admin, site and everything they need) in
+# Docker, using production builds instead of dev servers. Start it with ./start-deploy-preview.sh;
+# `docker compose -f .deploy-preview/docker-compose.yml --project-directory . logs|ps|down` work
+# directly afterwards.
+#
+# --project-directory keeps the repository root the base of everything, although this file lives in
+# .deploy-preview/: the build context and the .env it is interpolated with are relative to the root.
+#
+# Read here (all optional, start-deploy-preview.sh sets them):
+#   DEPLOY_PREVIEW_HOST    public host incl. port (default demo.preview.localhost:8080)
+#   DEPLOY_PREVIEW_PORT    host port the environment is published on (default 8080)
+#   DEPLOY_PREVIEW_SCHEME  http or https (default http), set to https when TLS is terminated upstream
+#
+# The images know nothing about the deploy preview host, everything is injected here: the site
+# configs from demo/.env.site-configs.deploy-preview (rendered for the deploy preview host by
+# start-deploy-preview.sh), everything else (imgproxy keys, database credentials, secrets, ...) from
+# .env, which docker compose loads itself, so the deploy preview environment uses the same non-secret
+# development values as `pnpm run dev`.
+#
+# See .deploy-preview/README.md for details.
+
+name: dextinity-demo-deploy-preview
+
+x-preview-urls:
+    site: &site-url ${DEPLOY_PREVIEW_SCHEME:-http}://${DEPLOY_PREVIEW_HOST:-demo.preview.localhost:8080}
+    admin: &admin-url ${DEPLOY_PREVIEW_SCHEME:-http}://admin--${DEPLOY_PREVIEW_HOST:-demo.preview.localhost:8080}
+    api: &api-url ${DEPLOY_PREVIEW_SCHEME:-http}://admin--${DEPLOY_PREVIEW_HOST:-demo.preview.localhost:8080}/api
+    idp: &idp-url ${DEPLOY_PREVIEW_SCHEME:-http}://idp--${DEPLOY_PREVIEW_HOST:-demo.preview.localhost:8080}
+    post-logout-redirect: &post-logout-redirect-url ${DEPLOY_PREVIEW_SCHEME:-http}://admin--${DEPLOY_PREVIEW_HOST:-demo.preview.localhost:8080}/oauth2/sign_out?rd=%2F
+
+services:
+    # Single entry point for the whole environment, see .deploy-preview/Caddyfile.
+    caddy:
+        image: mirror.gcr.io/library/caddy:2-alpine
+        pull_policy: weekly
+        restart: unless-stopped
+        ports:
+            - "${DEPLOY_PREVIEW_PORT:-8080}:80"
+        volumes:
+            - ./.deploy-preview/Caddyfile:/etc/caddy/Caddyfile:ro
+
+    postgres:
+        image: mirror.gcr.io/library/postgres:16
+        pull_policy: weekly
+        restart: unless-stopped
+        # Deploy preview data is disposable, so durability can be traded for speed.
+        command: ["postgres", "-c", "fsync=off", "-c", "synchronous_commit=off", "-c", "full_page_writes=off"]
+        environment:
+            POSTGRES_USER: ${POSTGRESQL_USER}
+            POSTGRES_PASSWORD: ${POSTGRESQL_PWD_DECODED}
+            POSTGRES_DB: ${POSTGRESQL_DB}
+        volumes:
+            - postgres:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U ${POSTGRESQL_USER} -d ${POSTGRESQL_DB}"]
+            interval: 5s
+            start_interval: 1s
+            start_period: 30s
+            retries: 5
+
+    imgproxy:
+        image: mirror.gcr.io/darthsim/imgproxy:v3
+        pull_policy: weekly
+        restart: unless-stopped
+        environment:
+            IMGPROXY_KEY: ${IMGPROXY_KEY}
+            IMGPROXY_SALT: ${IMGPROXY_SALT}
+            IMGPROXY_MAX_SRC_RESOLUTION: 70
+            IMGPROXY_LOCAL_FILESYSTEM_ROOT: /uploads
+        volumes:
+            - uploads:/uploads:ro
+
+    valkey:
+        image: mirror.gcr.io/valkey/valkey:9
+        pull_policy: weekly
+        restart: unless-stopped
+        command: valkey-server --maxmemory 128M --maxmemory-policy allkeys-lru --loglevel warning --requirepass ${VALKEY_PASSWORD}
+
+    mailpit:
+        image: mirror.gcr.io/axllent/mailpit
+        pull_policy: weekly
+        restart: unless-stopped
+
+    idp:
+        build:
+            context: .
+            dockerfile: .deploy-preview/Idp.Dockerfile
+        restart: unless-stopped
+        init: true
+        environment:
+            IDP_PORT: 8080
+            IDP_SSO_URL: *idp-url
+            IDP_CLIENT_ID: ${IDP_CLIENT_ID}
+            IDP_CLIENT_SECRET: ${IDP_CLIENT_SECRET}
+            AUTHPROXY_URL: *admin-url
+            POST_LOGOUT_REDIRECT_URI: *post-logout-redirect-url
+
+    # Like in local development, the admin and the api are only reachable through oauth2-proxy.
+    oauth2-proxy:
+        image: quay.io/oauth2-proxy/oauth2-proxy:${OAUTH2_PROXY_VERSION}
+        restart: unless-stopped
+        environment:
+            OAUTH2_PROXY_HTTP_ADDRESS: 0.0.0.0:4180
+            OAUTH2_PROXY_REVERSE_PROXY: "true"
+            OAUTH2_PROXY_UPSTREAMS: http://admin:8001,http://api:4000/api/
+            OAUTH2_PROXY_API_ROUTES: /api
+            OAUTH2_PROXY_SKIP_AUTH_PREFLIGHT: "true"
+            OAUTH2_PROXY_PROVIDER: oidc
+            OAUTH2_PROXY_CLIENT_ID: ${IDP_CLIENT_ID}
+            OAUTH2_PROXY_CLIENT_SECRET: ${IDP_CLIENT_SECRET}
+            OAUTH2_PROXY_OIDC_ISSUER_URL: *idp-url
+            # The browser reaches the idp under its public host, oauth2-proxy only inside the network.
+            # Discovery would return the public urls for both, so the endpoints are configured directly.
+            OAUTH2_PROXY_SKIP_OIDC_DISCOVERY: "true"
+            OAUTH2_PROXY_LOGIN_URL: ${DEPLOY_PREVIEW_SCHEME:-http}://idp--${DEPLOY_PREVIEW_HOST:-demo.preview.localhost:8080}/auth
+            OAUTH2_PROXY_REDEEM_URL: http://idp:8080/token
+            OAUTH2_PROXY_OIDC_JWKS_URL: http://idp:8080/jwks
+            OAUTH2_PROXY_REDIRECT_URL: ${DEPLOY_PREVIEW_SCHEME:-http}://admin--${DEPLOY_PREVIEW_HOST:-demo.preview.localhost:8080}/oauth2/callback
+            OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true"
+            OAUTH2_PROXY_EMAIL_DOMAINS: "*"
+            OAUTH2_PROXY_SCOPE: openid offline_access email profile
+            OAUTH2_PROXY_PASS_AUTHORIZATION_HEADER: "true"
+            OAUTH2_PROXY_COOKIE_SECRET: ${OAUTH2_PROXY_COOKIE_SECRET}
+            OAUTH2_PROXY_COOKIE_REFRESH: 55m
+            OAUTH2_PROXY_COOKIE_SECURE: ${DEPLOY_PREVIEW_COOKIE_SECURE:-false}
+        depends_on:
+            - idp
+            - admin
+            - api
+
+    api:
+        build:
+            context: .
+            dockerfile: .deploy-preview/Api.Dockerfile
+        restart: unless-stopped
+        init: true
+        environment:
+            NODE_ENV: production
+            HELM_RELEASE: dextinity-demo-preview
+            SERVER_HOST: 0.0.0.0
+            API_PORT: 4000
+            API_URL: *api-url
+            ADMIN_URL: *admin-url
+            # The admin is served from the same origin as the api, so no browser client calls it cross-origin.
+            CORS_ALLOWED_ORIGIN: ^${DEPLOY_PREVIEW_SCHEME:-http}://admin--${DEPLOY_PREVIEW_HOST:-demo.preview.localhost:8080}$$
+            # Without a CDN in front of the api, a secret would only lock out the site and the admin.
+            CDN_ORIGIN_CHECK_SECRET: ""
+            POSTGRESQL_HOST: postgres
+            POSTGRESQL_PORT: 5432
+            POSTGRESQL_USE_SSL: "false"
+            POSTGRESQL_DB: ${POSTGRESQL_DB}
+            POSTGRESQL_USER: ${POSTGRESQL_USER}
+            POSTGRESQL_PWD: ${POSTGRESQL_PWD}
+            IDP_CLIENT_ID: ${IDP_CLIENT_ID}
+            IDP_JWKS_URI: http://idp:8080/jwks
+            IDP_END_SESSION_ENDPOINT: ${DEPLOY_PREVIEW_SCHEME:-http}://idp--${DEPLOY_PREVIEW_HOST:-demo.preview.localhost:8080}/session/end
+            POST_LOGOUT_REDIRECT_URI: *post-logout-redirect-url
+            BASIC_AUTH_SYSTEM_USER_PASSWORD: ${BASIC_AUTH_SYSTEM_USER_PASSWORD}
+            SITE_PREVIEW_SECRET: ${SITE_PREVIEW_SECRET}
+            DAM_SECRET: ${DAM_SECRET}
+            FILE_UPLOADS_DOWNLOAD_SECRET: ${FILE_UPLOADS_DOWNLOAD_SECRET}
+            IMGPROXY_URL: http://imgproxy:8080
+            IMGPROXY_KEY: ${IMGPROXY_KEY}
+            IMGPROXY_SALT: ${IMGPROXY_SALT}
+            BLOB_STORAGE_DRIVER: file
+            FILE_STORAGE_PATH: /app/demo/uploads
+            BLOB_STORAGE_DIRECTORY_PREFIX: ${BLOB_STORAGE_DIRECTORY_PREFIX}
+            MAILER_HOST: mailpit
+            MAILER_PORT: 1025
+            # Brevo needs real credentials, which only exist in .env.local of a developer. Without them
+            # everything except the Brevo features works.
+            BREVO_API_KEY: ${BREVO_API_KEY:-}
+            BREVO_ECG_RTR_LIST_API_KEY: ${BREVO_ECG_RTR_LIST_API_KEY:-}
+            BREVO_CAMPAIGN_BASIC_AUTH_USERNAME: ${BREVO_CAMPAIGN_BASIC_AUTH_USERNAME:-}
+            BREVO_CAMPAIGN_BASIC_AUTH_PASSWORD: ${BREVO_CAMPAIGN_BASIC_AUTH_PASSWORD:-}
+            BREVO_EMAIL_HASH_KEY: ${BREVO_EMAIL_HASH_KEY}
+            BREVO_ALLOW_ADDING_CONTACTS_WITHOUT_DOI: ${BREVO_ALLOW_ADDING_CONTACTS_WITHOUT_DOI}
+            NODE_OPTIONS: --max-old-space-size=1024
+        env_file:
+            - demo/.env.site-configs.deploy-preview
+        volumes:
+            - uploads:/app/demo/uploads
+        depends_on:
+            postgres:
+                condition: service_healthy
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "node",
+                    "-e",
+                    "fetch('http://127.0.0.1:4000/api/status/readiness').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+                ]
+            interval: 30s
+            start_interval: 2s
+            start_period: 600s
+
+    admin:
+        build:
+            context: .
+            dockerfile: .deploy-preview/Admin.Dockerfile
+        restart: unless-stopped
+        init: true
+        environment:
+            NODE_ENV: production
+            SERVER_HOST: 0.0.0.0
+            ADMIN_PORT: 8001
+            ADMIN_URL: *admin-url
+            PREVIEW_URL: *site-url
+            API_URL_INTERNAL: http://api:4000/api
+            MUI_LICENSE_KEY: ${MUI_LICENSE_KEY:-}
+            BREVO_ALLOW_ADDING_CONTACTS_WITHOUT_DOI: ${BREVO_ALLOW_ADDING_CONTACTS_WITHOUT_DOI}
+            NODE_OPTIONS: --max-old-space-size=256
+        env_file:
+            - demo/.env.site-configs.deploy-preview
+
+    site:
+        build:
+            context: .
+            dockerfile: .deploy-preview/Site.Dockerfile
+        restart: unless-stopped
+        init: true
+        environment:
+            NODE_ENV: production
+            SERVER_HOST: 0.0.0.0
+            SITE_PORT: 3000
+            ADMIN_URL: *admin-url
+            API_URL_INTERNAL: http://api:4000/api
+            API_BASIC_AUTH_SYSTEM_USER_PASSWORD: ${BASIC_AUTH_SYSTEM_USER_PASSWORD}
+            SITE_PREVIEW_SECRET: ${SITE_PREVIEW_SECRET}
+            MAILER_HOST: mailpit
+            MAILER_PORT: 1025
+            # Every mail ends up in Mailpit, so any address works.
+            CONTACT_FORM_FROM_EMAIL: ${CONTACT_FORM_FROM_EMAIL:-contact-form@example.com}
+            CONTACT_FORM_TO_EMAIL: ${CONTACT_FORM_TO_EMAIL:-contact-form@example.com}
+            RECAPTCHA_SERVICE_ACCOUNT: ${RECAPTCHA_SERVICE_ACCOUNT:-}
+            VALKEY_ENABLED: "true"
+            VALKEY_HOST: valkey
+            VALKEY_PORT: 6379
+            VALKEY_PASSWORD: ${VALKEY_PASSWORD}
+            NODE_OPTIONS: --max-old-space-size=768
+        env_file:
+            - demo/.env.site-configs.deploy-preview
+        depends_on:
+            - api
+            - valkey
+        healthcheck:
+            test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/status').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+            interval: 30s
+            start_interval: 2s
+            start_period: 180s
+
+volumes:
+    postgres:
+    uploads:

@@ -1,0 +1,41 @@
+# Reverse proxy for the deploy preview environment, see docker-compose.yml.
+#
+# Everything is served through a single port, so that multiple deploy preview environments can run
+# on the same host without port conflicts. Requests are routed by how the host name starts, so the
+# proxy does not need to know the deploy preview host:
+#
+#   admin--<host>     -> oauth2-proxy, which serves the admin and the api under /api
+#   idp--<host>       -> the dev OpenID Connect provider, i.e. the login page
+#   mail--<host>      -> mailpit, which catches every mail the demo sends
+#   everything else   -> site
+
+{
+	admin off
+	auto_https off
+	persist_config off
+}
+
+:80 {
+	# admin and site send upgrade-insecure-requests, which turns every request of a deploy preview served over
+	# http into https - the site preview in the admin included. Behind https it changes nothing.
+	header >Content-Security-Policy ";?\s*upgrade-insecure-requests" ""
+
+	@admin header_regexp Host ^admin--
+	handle @admin {
+		reverse_proxy oauth2-proxy:4180
+	}
+
+	@idp header_regexp Host ^idp--
+	handle @idp {
+		reverse_proxy idp:8080
+	}
+
+	@mail header_regexp Host ^mail--
+	handle @mail {
+		reverse_proxy mailpit:8025
+	}
+
+	handle {
+		reverse_proxy site:3000
+	}
+}

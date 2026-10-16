@@ -654,6 +654,26 @@ if (process.env.NODE_ENV === "development" && mjmlWarnings.length) {
 
 Outside Storybook, wrap content in `MjmlMailRoot` yourself (the Storybook decorator handles it automatically).
 
+### Block Preview in the Admin
+
+Wrap each mail block in `withPreview` and put the `className` it passes on the component that spans the whole block, usually the outer `MjmlSection`:
+
+```tsx
+export const MailTextBlock = withPreview<PropsWithData<MailTextBlockData>>(
+    ({ data, className }) => (
+        <MjmlSection className={className}>
+            <MjmlColumn>
+                <MjmlText>{data.text}</MjmlText>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+    { label: "Text" },
+);
+```
+
+- Register a block without data of its own with its data anyway, `divider: (data) => <MailDividerBlock data={data} />`, or it gets no route.
+- The block preview page must put the ref from `useRefToRegisterPreviewElementsFromClassNames` (`@dextinity/site-nextjs`) on the element that contains the mail HTML.
+
 ---
 
 ## Storybook Development

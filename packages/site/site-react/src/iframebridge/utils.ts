@@ -7,6 +7,28 @@ export const removePreviewElementFromList = (previewElements: PreviewElement[], 
     return previewElements.filter((previewElement) => previewElement.element !== removedPreviewElement.element);
 };
 
+// Must match the class names that `withPreview` from `@dextinity/mail-react` adds.
+const PREVIEW_ROUTE_CLASS_PREFIX = "dextinity-preview-route:";
+const PREVIEW_LABEL_CLASS_PREFIX = "dextinity-preview-label:";
+
+export const PREVIEW_ROUTE_CLASS_SELECTOR = `[class*="${PREVIEW_ROUTE_CLASS_PREFIX}"]`;
+
+function readClassNameValue(element: Element, prefix: string): string | undefined {
+    const className = Array.from(element.classList).find((name) => name.startsWith(prefix));
+
+    return className === undefined ? undefined : decodeURIComponent(className.slice(prefix.length));
+}
+
+export function readPreviewRouteAndLabelFromClassNames(element: Element): { adminRoute: string; label: string } | undefined {
+    const adminRoute = readClassNameValue(element, PREVIEW_ROUTE_CLASS_PREFIX);
+
+    if (adminRoute === undefined) {
+        return undefined;
+    }
+
+    return { adminRoute, label: readClassNameValue(element, PREVIEW_LABEL_CLASS_PREFIX) ?? "" };
+}
+
 export const getRecursiveChildrenOfPreviewElement = (rootElement: Element): Element[] => {
     const previewElementChildNodes: Element[] = [];
 

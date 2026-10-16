@@ -36,6 +36,7 @@ export { MjmlText } from "./components/text/MjmlText.js";
 export type { MjmlWrapperProps } from "./components/wrapper/MjmlWrapper.js";
 export { MjmlWrapper } from "./components/wrapper/MjmlWrapper.js";
 export { type Config, ConfigProvider, type PixelImageBlockConfig, useConfig } from "./config/ConfigProvider.js";
+export { withPreview } from "./preview/withPreview.js";
 export { registerStyles } from "./styles/registerStyles.js";
 export { createBreakpoint } from "./theme/createBreakpoint.js";
 export { createTheme } from "./theme/createTheme.js";

@@ -1,4 +1,3 @@
-import { v4 as uuid } from "uuid";
 import { z } from "zod";
 
 import type { TableBlockData } from "../../../blocks.generated";
@@ -8,7 +7,7 @@ import { insertRowDataAtIndex, type RowInsertData } from "./row";
 import { rteSchema } from "./rteSchema";
 
 export const getNewColumn = (): TableBlockData["columns"][number] => {
-    return { id: uuid(), highlighted: false, size: "standard" };
+    return { id: crypto.randomUUID(), highlighted: false, size: "standard" };
 };
 
 const columnSizeSchema = z.enum(["extraSmall", "small", "standard", "large", "extraLarge"]);
@@ -68,7 +67,7 @@ export const insertColumnDataAtIndex = (
     columnInsertData: { size: ColumnSize; highlighted: boolean; cellValues: unknown[] },
     index: number,
     RichTextBlock: BlockInterface,
-    newColumnId: string = uuid(),
+    newColumnId: string = crypto.randomUUID(),
 ): TableBlockState => {
     const numberOfRowsToBeAdded = columnInsertData.cellValues.length - state.rows.length;
 

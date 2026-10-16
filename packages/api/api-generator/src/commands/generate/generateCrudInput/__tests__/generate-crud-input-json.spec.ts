@@ -1,7 +1,7 @@
 import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { InputType } from "@nestjs/graphql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 import { describe, expect, it } from "vitest";
 
 import { formatSource, parseSource, testPermission } from "../../utils/test-helper";
@@ -10,7 +10,7 @@ import { generateCrudInput } from "../generate-crud-input";
 @Entity()
 export class TestEntityWithJsonLiteralArray extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ type: "json" })
     foo: string[] = [];
@@ -27,7 +27,7 @@ export class NestedObject {
 @Entity()
 export class TestEntityWithJsonObject extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ type: "json" })
     foo: NestedObject;
@@ -39,7 +39,7 @@ export class TestEntityWithJsonObject extends BaseEntity {
 @Entity()
 export class TestEntityWithRecord extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ type: "json" })
     foo: Record<string, string>;

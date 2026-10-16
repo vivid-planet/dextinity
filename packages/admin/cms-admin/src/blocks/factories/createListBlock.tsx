@@ -4,7 +4,6 @@ import { Box, Checkbox, FormControlLabel, IconButton, Typography } from "@mui/ma
 import { styled } from "@mui/material/styles";
 import { Fragment, type FunctionComponent, type ReactNode } from "react";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
-import { v4 as uuid } from "uuid";
 
 import { AdminComponentStickyFooter } from "../common/AdminComponentStickyFooter";
 import { AdminComponentStickyHeader } from "../common/AdminComponentStickyHeader";
@@ -117,7 +116,7 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
     }
 
     const getDefaultListEntry = () => ({
-        key: uuid(),
+        key: crypto.randomUUID(),
         visible: true,
         props: block.defaultValues(),
         selected: false,

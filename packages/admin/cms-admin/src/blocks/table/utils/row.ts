@@ -1,4 +1,3 @@
-import { v4 as uuid } from "uuid";
 import { z } from "zod";
 
 import type { TableBlockRowState, TableBlockState } from "../../createTableBlock";
@@ -6,7 +5,7 @@ import type { BlockInterface } from "../../types";
 import { getNewColumn } from "./column";
 import { rteSchema } from "./rteSchema";
 
-const getNewRow = (cellValues: TableBlockRowState["cellValues"], newRowId: string = uuid()): TableBlockRowState => {
+const getNewRow = (cellValues: TableBlockRowState["cellValues"], newRowId: string = crypto.randomUUID()): TableBlockRowState => {
     return { id: newRowId, highlighted: false, cellValues };
 };
 
@@ -25,7 +24,7 @@ export const insertRowDataAtIndex = (
     insertData: RowInsertData,
     index: number,
     RichTextBlock: BlockInterface,
-    newRowId: string = uuid(),
+    newRowId: string = crypto.randomUUID(),
 ): TableBlockState => {
     const updatedColumns = [...state.columns];
     const newColumnIds: string[] = [];

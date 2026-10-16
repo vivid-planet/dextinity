@@ -85,8 +85,7 @@
         "reflect-metadata": "^0.2.2",
         "response-time": "^2.3.4",
         "rxjs": "^7.8.2",
-        "slugify": "^1.6.9",
-        "uuid": "^11.1.1"
+        "slugify": "^1.6.9"
     },
     "devDependencies": {
         "@dextinity/api-generator": "workspace:*",

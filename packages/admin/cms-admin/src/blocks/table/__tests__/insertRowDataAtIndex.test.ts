@@ -1,4 +1,3 @@
-import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
 
 import { createRteState, getPlainTextFromState, MockRichTextBlock, mockStates } from "../__mocks__/TableBlockData.mocks";
@@ -33,7 +32,7 @@ const insertDataWithSixValues: RowInsertData = {
 
 describe("insertRowDataAtIndex", () => {
     it("should insert a row with the specified id at index 0", () => {
-        const newRowId = uuid();
+        const newRowId = crypto.randomUUID();
         const targetIndex = 0;
         const newState = insertRowDataAtIndex(mockStates.default, insertDataWithFourValues, targetIndex, MockRichTextBlock, newRowId);
 
@@ -45,7 +44,7 @@ describe("insertRowDataAtIndex", () => {
     });
 
     it("should insert a row with the specified id at index 2", () => {
-        const newRowId = uuid();
+        const newRowId = crypto.randomUUID();
         const targetIndex = 2;
         const newState = insertRowDataAtIndex(mockStates.default, insertDataWithFourValues, targetIndex, MockRichTextBlock, newRowId);
 
@@ -57,7 +56,7 @@ describe("insertRowDataAtIndex", () => {
     });
 
     it("should create empty cell-values for columns that don't have a corresponding value in the row's insert-data", () => {
-        const newRowId = uuid();
+        const newRowId = crypto.randomUUID();
         const targetIndex = 0;
 
         const initialBlockData = mockStates.default;
@@ -75,7 +74,7 @@ describe("insertRowDataAtIndex", () => {
     });
 
     it("should increase the number of columns when inserting a row with more values than the existing number of columns", () => {
-        const newRowId = uuid();
+        const newRowId = crypto.randomUUID();
         const targetIndex = 0;
         const newState = insertRowDataAtIndex(mockStates.default, insertDataWithSixValues, targetIndex, MockRichTextBlock, newRowId);
 
@@ -83,7 +82,7 @@ describe("insertRowDataAtIndex", () => {
     });
 
     it("should add empty cell-values to all existing rows when new columns are created due to the insert-data having more values than the existing number of columns", () => {
-        const newRowId = uuid();
+        const newRowId = crypto.randomUUID();
         const targetIndex = 0;
         const newState = insertRowDataAtIndex(mockStates.default, insertDataWithSixValues, targetIndex, MockRichTextBlock, newRowId);
 

@@ -1,11 +1,11 @@
 import { CallHandler, ExecutionContext, HttpException, Inject, Injectable, mixin, NestInterceptor, Type } from "@nestjs/common";
 import { FileInterceptor as NestFileInterceptor } from "@nestjs/platform-express";
 import { MulterOptions } from "@nestjs/platform-express/multer/interfaces/multer-options.interface";
+import { randomUUID } from "crypto";
 import fs from "fs";
 import * as multer from "multer";
 import os from "os";
 import { Observable, throwError } from "rxjs";
-import { v4 as uuid } from "uuid";
 
 import { DextinityValidationException } from "../common/errors/validation.exception";
 import { FileValidationService } from "../file-utils/file-validation.service";
@@ -36,7 +36,7 @@ export function FileUploadsFileInterceptor(fieldName: string = FILE_UPLOAD_FIELD
                     filename: function (req, file, cb) {
                         // otherwise special characters aren't decoded properly (https://github.com/expressjs/multer/issues/836#issuecomment-1264338996)
                         file.originalname = Buffer.from(file.originalname, "latin1").toString("utf8");
-                        cb(null, uuid());
+                        cb(null, randomUUID());
                     },
                 }),
                 limits: {

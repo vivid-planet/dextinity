@@ -1,7 +1,6 @@
 import { createContext, type PropsWithChildren, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import useConstant from "use-constant";
-import { v4 as uuid } from "uuid";
 
 import { messages } from "../messages";
 import { RouterPrompt } from "../router/Prompt";
@@ -147,7 +146,7 @@ export interface SavableProps {
 }
 
 export const Savable = ({ doSave, doReset, hasChanges, checkForChanges }: SavableProps) => {
-    const id = useConstant<string>(() => uuid());
+    const id = useConstant<string>(() => crypto.randomUUID());
     const saveBoundaryApi = useSaveBoundaryApi();
     if (!saveBoundaryApi) {
         throw new Error("Savable must be inside SaveBoundary");

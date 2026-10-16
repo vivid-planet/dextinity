@@ -19,7 +19,6 @@ import { Edit } from "@dextinity/admin-icons";
 import { DialogContent, IconButton, MenuItem, Typography } from "@mui/material";
 import { type FunctionComponent, useRef, useState } from "react";
 import { useLocation } from "react-router";
-import { v4 as uuid } from "uuid";
 
 import { editDialogDecorator } from "./editDialog.decorator";
 
@@ -178,7 +177,7 @@ export const WithTable = {
             setUsers((users) => [
                 ...users,
                 {
-                    id: uuid(),
+                    id: crypto.randomUUID(),
                     name: name,
                 },
             ]);

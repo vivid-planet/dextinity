@@ -14,7 +14,6 @@ import {
     useState,
 } from "react";
 import { FormattedMessage } from "react-intl";
-import { v4 as uuid } from "uuid";
 
 import type { BlockInterface, BlockState } from "../blocks/types";
 import { resolveNewState } from "../blocks/utils";
@@ -167,7 +166,7 @@ export const createUsePage: CreateUsePage =
         type PS = PageState<GQLEditPageQuery, RootBlocks, PageType>;
         function createEmptyPageDocument(): PS["document"] {
             return {
-                id: uuid(),
+                id: crypto.randomUUID(),
                 __typename: gqlPageType,
                 ...Object.entries(rootBlocks).reduce(
                     (a, [key, value]) => ({

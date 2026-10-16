@@ -311,9 +311,6 @@ importers:
       use-debounce:
         specifier: ^10.1.1
         version: 10.1.1(react@19.3.0)
-      uuid:
-        specifier: ^11.1.1
-        version: 11.1.1
     devDependencies:
       '@babel/core':
         specifier: ^7.29.7
@@ -568,9 +565,6 @@ importers:
       slugify:
         specifier: ^1.6.9
         version: 1.6.9
-      uuid:
-        specifier: ^11.1.1
-        version: 11.1.1
     devDependencies:
       '@dextinity/api-generator':
         specifier: workspace:*
@@ -949,9 +943,6 @@ importers:
       use-constant:
         specifier: ^2.0.0
         version: 2.0.0(react@19.3.0)
-      uuid:
-        specifier: ^11.1.1
-        version: 11.1.1
     devDependencies:
       '@apollo/client':
         specifier: ^3.14.1
@@ -1394,9 +1385,6 @@ importers:
       use-constant:
         specifier: ^2.0.0
         version: 2.0.0(react@19.3.0)
-      uuid:
-        specifier: ^11.1.1
-        version: 11.1.1
     devDependencies:
       '@babel/cli':
         specifier: ^7.29.7
@@ -1766,9 +1754,6 @@ importers:
       use-debounce:
         specifier: ^10.1.1
         version: 10.1.1(react@19.3.0)
-      uuid:
-        specifier: ^11.1.1
-        version: 11.1.1
       zod:
         specifier: ^4.6.6
         version: 4.6.7
@@ -2043,9 +2028,6 @@ importers:
       unplugin-swc:
         specifier: ^2.0.0
         version: 2.0.0(@swc/core@1.16.18(@swc/helpers@0.5.23))(esbuild@0.28.2)(rollup@4.64.6)(vite@7.3.7(@types/node@24.19.2)(jiti@2.7.0)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.1))(webpack@5.111.1(@swc/core@1.16.18(@swc/helpers@0.5.23))(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.29))(csso@5.0.5)(esbuild@0.28.2)(html-minifier-terser@7.2.0)(postcss@8.5.29)(sharp@0.35.5(@types/node@24.19.2))(svgo@3.3.5)(uglify-js@3.19.3))
-      uuid:
-        specifier: ^11.1.1
-        version: 11.1.1
       vitest:
         specifier: ^5.0.4
         version: 5.0.4(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.4)(@vitest/ui@5.0.4)(jsdom@28.1.0(@noble/hashes@1.8.0)(supports-color@8.1.1))(msw@2.15.0(@types/node@24.19.2)(typescript@5.9.3))(vite@7.3.7(@types/node@24.19.2)(jiti@2.7.0)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.1))
@@ -2085,9 +2067,6 @@ importers:
       nest-commander:
         specifier: ^3.21.0
         version: 3.21.0(@nestjs/common@11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@11.2.7)(@types/inquirer@8.2.13)(@types/node@24.19.2)(typescript@5.9.3)
-      uuid:
-        specifier: ^11.1.1
-        version: 11.1.1
     devDependencies:
       '@dextinity/eslint-config':
         specifier: workspace:*
@@ -2929,9 +2908,6 @@ importers:
       use-debounce:
         specifier: ^10.1.1
         version: 10.1.1(react@19.3.0)
-      uuid:
-        specifier: ^11.1.1
-        version: 11.1.1
     devDependencies:
       '@babel/cli':
         specifier: ^7.29.7

@@ -1,5 +1,3 @@
-import { v4 as uuid } from "uuid";
-
 import type { TableBlockState } from "../../createTableBlock";
 import type { BlockInterface } from "../../types";
 
@@ -7,7 +5,7 @@ export const ensureMinimumTableState = (state: TableBlockState, RichTextBlock: B
     let result = state;
 
     if (result.columns.length === 0) {
-        const newColumnId = uuid();
+        const newColumnId = crypto.randomUUID();
         result = {
             ...result,
             columns: [{ id: newColumnId, size: "standard", highlighted: false }],
@@ -23,7 +21,7 @@ export const ensureMinimumTableState = (state: TableBlockState, RichTextBlock: B
             ...result,
             rows: [
                 {
-                    id: uuid(),
+                    id: crypto.randomUUID(),
                     highlighted: false,
                     cellValues: result.columns.map((col) => ({
                         columnId: col.id,

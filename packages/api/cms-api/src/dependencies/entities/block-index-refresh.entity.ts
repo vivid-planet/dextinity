@@ -1,10 +1,10 @@
 import { BaseEntity, Entity, PrimaryKey, Property } from "@mikro-orm/postgresql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 @Entity()
 export class BlockIndexRefresh extends BaseEntity {
     @PrimaryKey({ columnType: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({
         columnType: "timestamp with time zone",

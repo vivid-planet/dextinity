@@ -5,7 +5,6 @@ import { styled } from "@mui/material/styles";
 import type { GridColumnHeaderParams } from "@mui/x-data-grid";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { v4 as uuid } from "uuid";
 
 import type { TableBlockData } from "../../blocks.generated";
 import { useBlockContext } from "../context/useBlockContext";
@@ -91,7 +90,7 @@ export const ColumnHeader = ({ columnSize, highlighted, state, updateState, colu
                 return state;
             }
 
-            const newColumnId = uuid();
+            const newColumnId = crypto.randomUUID();
             addToRecentlyPastedIds(newColumnId);
             return insertColumnDataAtIndex(state, duplicatedColumnInsertData, columnIndex + 1, RichTextBlock, newColumnId);
         });
@@ -130,7 +129,7 @@ export const ColumnHeader = ({ columnSize, highlighted, state, updateState, colu
         }
 
         updateState((state) => {
-            const newColumnId = uuid();
+            const newColumnId = crypto.randomUUID();
             addToRecentlyPastedIds(newColumnId);
             return insertColumnDataAtIndex(state, { ...clipboardData, cellValues: cellValuesToInsert }, columnIndex + 1, RichTextBlock, newColumnId);
         });

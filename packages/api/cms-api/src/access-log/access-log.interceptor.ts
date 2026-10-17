@@ -38,11 +38,15 @@ export class AccessLogInterceptor implements NestInterceptor {
             requestData.push(`ip: ${ipAddress}`);
             this.pushUserToRequestData(graphqlContext.req.user, requestData);
 
-            const gqlArgs = { ...graphqlExecutionContext.getArgs() };
+            let gqlArgs: Record<string, unknown> = { ...graphqlExecutionContext.getArgs() };
 
             if (gqlInfo.operation.operation === "mutation") {
                 delete gqlArgs["input"];
                 delete gqlArgs["data"];
+            }
+
+            if (this.config?.argsToLog) {
+                gqlArgs = this.config.argsToLog({ args: gqlArgs, info: gqlInfo });
             }
 
             requestData.push(`operationType: ${gqlInfo.parentType}`);

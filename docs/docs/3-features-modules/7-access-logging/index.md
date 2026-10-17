@@ -37,6 +37,19 @@ The `shouldLogRequest` callback can be used to prevent logging for specific requ
 
 The optional `userToLog` callback can be used to log additional user info (e.g. session-id). The default format is `user: ${user.id}`
 
+The optional `argsToLog` callback can be used to change the logged GraphQL arguments, for instance, to redact sensitive values. It receives the arguments (for mutations without `input` and `data`) and the `GraphQLResolveInfo`, and returns the arguments to log. Return a new object instead of modifying `args`, because nested objects are shared with the resolver.
+
+```ts
+AccessLogModule.forRoot({
+    argsToLog: ({ args }) => {
+        if (typeof args.input === "object" && args.input !== null && "accessToken" in args.input) {
+            return { ...args, input: { ...args.input, accessToken: "[REDACTED]" } };
+        }
+        return args;
+    },
+}),
+```
+
 There are two ways to integrate logging into an application:
 
 **First option: Use the default implementation**

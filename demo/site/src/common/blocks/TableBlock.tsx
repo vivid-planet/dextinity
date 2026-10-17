@@ -1,4 +1,4 @@
-import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import { hasRichTextBlockContent, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { TableBlockData } from "@src/blocks.generated";
 
 import { RichTextBlock } from "./RichTextBlock";
@@ -10,7 +10,13 @@ const renderCell = (value: CellValue) => <RichTextBlock data={value} disableLast
 
 export const TableBlock = withPreview(
     ({ data: { table, responsiveBehavior } }: PropsWithData<TableBlockData>) => (
-        <ResponsiveTable columns={table.columns} rows={table.rows} responsiveBehavior={responsiveBehavior} renderCell={renderCell} />
+        <ResponsiveTable
+            columns={table.columns}
+            rows={table.rows}
+            responsiveBehavior={responsiveBehavior}
+            renderCell={renderCell}
+            hasCellContent={hasRichTextBlockContent}
+        />
     ),
     { label: "Table" },
 );

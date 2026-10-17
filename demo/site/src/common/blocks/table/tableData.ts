@@ -14,6 +14,8 @@ export type TableRow<CellValue> = {
     cellValues: Array<{ columnId: string; value: CellValue }>;
 };
 
+export type TableHeaderPosition = "firstRow" | "firstColumn";
+
 export type RenderTableCell<CellValue> = (value: CellValue) => ReactNode;
 
 export function findCellValue<CellValue>(row: TableRow<CellValue>, column: TableColumn): CellValue | undefined {

@@ -1,0 +1,11 @@
+.tableContainer {
+    padding-inline: calc(100% * 2 / var(--page-grid-column-count));
+
+    &--scrollable {
+        overflow-x: auto;
+
+        &:focus-visible {
+            outline-offset: -3px;
+        }
+    }
+}

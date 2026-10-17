@@ -729,8 +729,8 @@ importers:
         specifier: ^16.3.8
         version: 16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.105.1)
       nodemailer:
-        specifier: ^10.0.15
-        version: 10.0.15
+        specifier: ^10.1.1
+        version: 10.1.1
       react:
         specifier: ^19.3.0
         version: 19.3.0
@@ -2267,8 +2267,8 @@ importers:
         specifier: ^2.4.0
         version: 2.4.0
       nodemailer:
-        specifier: ^10.0.15
-        version: 10.0.15
+        specifier: ^10.1.1
+        version: 10.1.1
       openai:
         specifier: ^6.49.0
         version: 6.49.0(@aws-sdk/credential-provider-node@3.972.86)(@smithy/signature-v4@5.7.4)(ws@8.22.0)(zod@4.6.7)
@@ -15152,8 +15152,8 @@ packages:
     resolution: {integrity: sha512-kQK9LGGFiHtrWiNhZtA7Qbw17AQz+dmsEKODRIVTXA9+e5MS/2gZEBhYJt13GrAz5/IOZKddH/0Z3TP/Zgo+yw==}
     engines: {node: '>=18'}
 
-  nodemailer@10.0.15:
-    resolution: {integrity: sha512-EUqp5PhtcsYXs9Fq/lS7s/8zlTrnBqmzZWzFFROrNikMiz+om/YRKMwqN907t+0A1KKyT8jd39CBUbFZmaZmcA==}
+  nodemailer@10.1.1:
+    resolution: {integrity: sha512-pbqZRoeYUO+1E8TJ/11WeY4D2EVujj1hsYjz3qff/vUFDtGnmi7p3iqzTFslYOfQ6PnjVcWxx/CIUSHCSrO/QA==}
     engines: {node: '>=20.0.0'}
 
   nopt@7.2.1:
@@ -34035,7 +34035,7 @@ snapshots:
 
   node-releases@2.0.57: {}
 
-  nodemailer@10.0.15: {}
+  nodemailer@10.1.1: {}
 
   nopt@7.2.1:
     dependencies:

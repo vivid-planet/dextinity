@@ -114,9 +114,16 @@ function collectErrors({ error, context, errorsByPath }: { error: ValidationErro
     }
 
     const value = error.value ?? error.children[0].target;
-    const childContext: TargetContext = Array.isArray(value)
-        ? { path, pathInBlock, enclosingBlock: context.enclosingBlock, entry: context.entry, isList: true, listField: field }
-        : createObjectContext({ value, path, pathInBlock, field, parentContext: context });
+    let childContext: TargetContext;
+
+    if (value instanceof Map) {
+        // composeBlocks keeps its child blocks in a map, while the input has them as fields of the block.
+        childContext = context;
+    } else if (Array.isArray(value)) {
+        childContext = { path, pathInBlock, enclosingBlock: context.enclosingBlock, entry: context.entry, isList: true, listField: field };
+    } else {
+        childContext = createObjectContext({ value, path, pathInBlock, field, parentContext: context });
+    }
 
     for (const child of error.children) {
         collectErrors({ error: child, context: childContext, errorsByPath });
@@ -225,6 +232,13 @@ function describeCause({
 
             return `${withoutProperty(message, property)}.`;
         case "nestedValidation":
+            if (
+                (value === undefined || value === null) &&
+                (field?.kind === BlockMetaFieldKind.Block || field?.kind === BlockMetaFieldKind.NestedObject)
+            ) {
+                return `is missing. Expected ${describeExpectedValue(field)}.`;
+            }
+
             return `must be an object or a list, but is ${describeValue(value)}.`;
         default: {
             // Some validators, for instance IsDraftContent before it had a message, return an empty message.

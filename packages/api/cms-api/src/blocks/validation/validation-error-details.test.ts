@@ -8,6 +8,7 @@ import { ChildBlockInput } from "../decorators/child-block-input";
 import { BlockField } from "../decorators/field";
 import { createBlocksBlock } from "../factories/createBlocksBlock";
 import { createOneOfBlock } from "../factories/createOneOfBlock";
+import { composeBlocks } from "../helpers/composeBlocks";
 import { getValidationErrorDetails } from "./validation-error-details";
 
 enum SpaceSize {
@@ -90,6 +91,8 @@ class DoublyValidatedTeaserBlockInput extends TeaserBlockInput {
 
 const DoublyValidatedTeaserBlock = createBlock(TeaserBlockData, DoublyValidatedTeaserBlockInput, "DetailsDoublyValidatedTeaser");
 
+const ComposedBlock = composeBlocks({ blocks: { space: SpaceBlock, teaser: TeaserBlock } }, "DetailsComposed");
+
 const MediaBlock = createOneOfBlock({ supportedBlocks: { space: SpaceBlock, teaser: TeaserBlock }, allowEmpty: false }, "DetailsMedia");
 
 const ContentBlock = createBlocksBlock(
@@ -100,6 +103,7 @@ const ContentBlock = createBlocksBlock(
             checkedTeaser: CheckedTeaserBlock,
             doublyValidatedTeaser: DoublyValidatedTeaserBlock,
             media: MediaBlock,
+            composed: ComposedBlock,
         },
     },
     "DetailsContent",
@@ -175,7 +179,7 @@ describe("getValidationErrorDetails", () => {
                 blockKey: "a1",
                 blockType: "spacer",
                 message:
-                    'Field "blocks[0].type" of block DetailsContent: unknown block type "spacer". Allowed types: space, teaser, checkedTeaser, doublyValidatedTeaser, media.',
+                    'Field "blocks[0].type" of block DetailsContent: unknown block type "spacer". Allowed types: space, teaser, checkedTeaser, doublyValidatedTeaser, media, composed.',
             },
         ]);
     });
@@ -232,6 +236,28 @@ describe("getValidationErrorDetails", () => {
         expect(detail.message).toBe(
             'Field "title" of block DetailsCheckedTeaser (key "a1"): must pass the "failsWithoutMessage" check, but is "Title".',
         );
+    });
+
+    it("should report the child blocks of a composed block as its fields", async () => {
+        const details = await getDetails([item("composed", { space: { ...validSpace, height: "x" } })]);
+
+        expect(details).toEqual([
+            {
+                path: "content.blocks[0].props.space.height",
+                blockName: "DetailsSpace",
+                blockKey: "a1",
+                blockType: "composed",
+                message: 'Field "height" of block DetailsSpace: must be an integer number, but is "x".',
+            },
+            {
+                path: "content.blocks[0].props.teaser",
+                blockName: "DetailsComposed",
+                blockKey: "a1",
+                blockType: "composed",
+                message:
+                    'Field "teaser" of block DetailsComposed (key "a1"): is missing. Expected a DetailsTeaser block with the fields title (a string), space (a DetailsSpace block).',
+            },
+        ]);
     });
 
     it("should report errors in an input without blocks", async () => {

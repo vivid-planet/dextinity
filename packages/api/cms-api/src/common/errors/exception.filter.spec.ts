@@ -27,13 +27,17 @@ describe("ExceptionFilter", () => {
                     message: "Not found",
                     error: "DextinityEntityNotFoundException",
                     validationErrors: [],
+                    validationErrorDetails: [],
                 });
             });
 
             it("returns BadRequestException for DextinityValidationException", () => {
                 const exceptionFilter = new ExceptionFilter(false);
 
-                const returnError = exceptionFilter.catch(new DextinityValidationException("Invalid", [{ property: "prop1" }]), graphQLHost);
+                const returnError = exceptionFilter.catch(
+                    new DextinityValidationException("Invalid", [{ property: "prop1" }], [{ path: "prop1", message: 'Field "prop1": is invalid.' }]),
+                    graphQLHost,
+                );
 
                 expect(returnError).toBeInstanceOf(BadRequestException);
                 expect((returnError as BadRequestException).getResponse()).toEqual({
@@ -45,6 +49,7 @@ describe("ExceptionFilter", () => {
                             property: "prop1",
                         },
                     ],
+                    validationErrorDetails: [{ path: "prop1", message: 'Field "prop1": is invalid.' }],
                 });
             });
 
@@ -111,13 +116,17 @@ describe("ExceptionFilter", () => {
                     message: "Not found",
                     error: "DextinityEntityNotFoundException",
                     validationErrors: [],
+                    validationErrorDetails: [],
                 });
             });
 
             it("response status is 400 and json is correct for DextinityValidationException", () => {
                 const exceptionFilter = new ExceptionFilter(false);
 
-                exceptionFilter.catch(new DextinityValidationException("Invalid", [{ property: "prop1" }]), httpHost);
+                exceptionFilter.catch(
+                    new DextinityValidationException("Invalid", [{ property: "prop1" }], [{ path: "prop1", message: 'Field "prop1": is invalid.' }]),
+                    httpHost,
+                );
 
                 const responseMock = httpHost.switchToHttp().getResponse();
                 expect(responseMock.status).toHaveBeenCalledWith(400);
@@ -130,6 +139,7 @@ describe("ExceptionFilter", () => {
                             property: "prop1",
                         },
                     ],
+                    validationErrorDetails: [{ path: "prop1", message: 'Field "prop1": is invalid.' }],
                 });
             });
 

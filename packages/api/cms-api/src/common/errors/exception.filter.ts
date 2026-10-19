@@ -29,10 +29,12 @@ export class ExceptionFilter implements NestExceptionFilter {
                 message: exception.message,
                 error: exception.constructor.name,
                 validationErrors: [],
+                validationErrorDetails: [],
             };
 
             if (exception instanceof DextinityValidationException) {
                 errorObject.validationErrors = exception.errors;
+                errorObject.validationErrorDetails = exception.errorDetails ?? [];
             }
 
             statusCode = 400;

@@ -35,7 +35,9 @@ describe("ExceptionFilter", () => {
                 const exceptionFilter = new ExceptionFilter(false);
 
                 const returnError = exceptionFilter.catch(
-                    new DextinityValidationException("Invalid", [{ property: "prop1" }], [{ path: "prop1", message: 'Field "prop1": is invalid.' }]),
+                    new DextinityValidationException("Invalid", [
+                        { property: "prop1", value: 1, constraints: { isString: "prop1 must be a string" } },
+                    ]),
                     graphQLHost,
                 );
 
@@ -47,9 +49,11 @@ describe("ExceptionFilter", () => {
                     validationErrors: [
                         {
                             property: "prop1",
+                            value: 1,
+                            constraints: { isString: "prop1 must be a string" },
                         },
                     ],
-                    validationErrorDetails: [{ path: "prop1", message: 'Field "prop1": is invalid.' }],
+                    validationErrorDetails: [{ path: "prop1", message: 'Field "prop1": must be a string, but is 1.' }],
                 });
             });
 
@@ -124,7 +128,9 @@ describe("ExceptionFilter", () => {
                 const exceptionFilter = new ExceptionFilter(false);
 
                 exceptionFilter.catch(
-                    new DextinityValidationException("Invalid", [{ property: "prop1" }], [{ path: "prop1", message: 'Field "prop1": is invalid.' }]),
+                    new DextinityValidationException("Invalid", [
+                        { property: "prop1", value: 1, constraints: { isString: "prop1 must be a string" } },
+                    ]),
                     httpHost,
                 );
 
@@ -137,9 +143,11 @@ describe("ExceptionFilter", () => {
                     validationErrors: [
                         {
                             property: "prop1",
+                            value: 1,
+                            constraints: { isString: "prop1 must be a string" },
                         },
                     ],
-                    validationErrorDetails: [{ path: "prop1", message: 'Field "prop1": is invalid.' }],
+                    validationErrorDetails: [{ path: "prop1", message: 'Field "prop1": must be a string, but is 1.' }],
                 });
             });
 

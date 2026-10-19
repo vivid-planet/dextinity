@@ -1,4 +1,4 @@
-import { plainToInstance, Transform } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import { IsEnum, IsInt, IsString, registerDecorator, validate, ValidateNested } from "class-validator";
 import { describe, expect, it } from "vitest";
 
@@ -231,6 +231,34 @@ describe("getValidationErrorDetails", () => {
 
         expect(detail.message).toBe(
             'Field "title" of block DetailsCheckedTeaser (key "a1"): must pass the "failsWithoutMessage" check, but is "Title".',
+        );
+    });
+
+    it("should report errors in an input without blocks", async () => {
+        class SortInput {
+            @IsString()
+            direction: string;
+        }
+
+        class ListInput {
+            @ValidateNested({ each: true })
+            @Type(() => SortInput)
+            sort: SortInput[];
+
+            @IsString()
+            id: unknown;
+        }
+
+        const input = plainToInstance(ListInput, { sort: [{ direction: 1 }], id: BigInt(1), foo: 1 });
+        const details = getValidationErrorDetails(await validate(input, { whitelist: true, forbidNonWhitelisted: true }));
+
+        expect(details).toHaveLength(3);
+        expect(details).toEqual(
+            expect.arrayContaining([
+                { path: "sort[0].direction", message: 'Field "sort[0].direction": must be a string, but is 1.' },
+                { path: "id", message: 'Field "id": must be a string, but is 1.' },
+                { path: "foo", message: 'Field "foo": unknown field.' },
+            ]),
         );
     });
 

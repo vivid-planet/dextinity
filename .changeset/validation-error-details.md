@@ -15,11 +15,12 @@ The tree of class-validator errors in `validationErrors` doesn't tell an API cli
 ```
 Field "height" of block Space (key "a1b2"): must be an integer number, but is "large".
 Field "foo" of block Accordion (key "c3d4"): unknown field. Allowed fields: headline, list, showAllItems.
-Field "openGraphImage" of block Seo: is missing. Expected an OptionalPixelImage block with the fields block (a PixelImage block or null), visible (a boolean).
+Field "space" of block Teaser (key "e5f6"): is missing. Expected a Space block with the fields height (a number), size (one of: small, large).
 ```
 
-The `ExceptionFilter` adds the list to every validation error created by the `ValidationExceptionFactory`.
+The `ExceptionFilter` adds the list to every `DextinityValidationException`.
 To create the list without the exception, for instance in a mutation that only validates, call `getValidationErrorDetails()` with the errors returned by class-validator.
 
 Blocks are recognized in inputs created by the `blockInputFactory` of a registered block.
-If a root block is missing completely, the list names the field without the block.
+A missing root block is only reported if the input class checks the field, for instance with `@IsDefined()`, and then without the fields of the block.
+GraphQL mutations don't need this check, as the schema already rejects a missing non-null argument field.

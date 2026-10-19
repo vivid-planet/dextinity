@@ -1,4 +1,4 @@
-import type { ValidationError } from "class-validator";
+import type { ValidationError } from "@nestjs/common";
 
 import { type Block, type BlockMetaField, BlockMetaFieldKind, type BlockMetaInterface, getBlockOfBlockInput } from "../block";
 
@@ -43,6 +43,7 @@ interface TargetContext {
     meta?: BlockMetaInterface;
     entry?: Entry;
     isEntry?: boolean;
+    isList?: boolean;
     listField?: BlockMetaField;
 }
 
@@ -82,9 +83,9 @@ export function getValidationErrorDetails(errors: ValidationError[]): Validation
 }
 
 function collectErrors({ error, context, errorsByPath }: { error: ValidationError; context: TargetContext; errorsByPath: Map<string, ErrorAtPath> }) {
-    const isListItem = context.listField !== undefined;
-    const path = joinPath(context.path, error.property, isListItem);
-    const pathInBlock = joinPath(context.pathInBlock, error.property, isListItem);
+    const isListItem = context.isList === true;
+    const path = isListItem ? appendIndex(context.path, error.property) : joinPath(context.path, error.property);
+    const pathInBlock = isListItem ? appendIndex(context.pathInBlock, error.property) : joinPath(context.pathInBlock, error.property);
     const field = isListItem ? context.listField : context.meta?.fields.find((field) => field.name === error.property);
 
     if (error.constraints && Object.keys(error.constraints).length > 0) {
@@ -114,7 +115,7 @@ function collectErrors({ error, context, errorsByPath }: { error: ValidationErro
 
     const value = error.value ?? error.children[0].target;
     const childContext: TargetContext = Array.isArray(value)
-        ? { path, pathInBlock, enclosingBlock: context.enclosingBlock, entry: context.entry, listField: field }
+        ? { path, pathInBlock, enclosingBlock: context.enclosingBlock, entry: context.entry, isList: true, listField: field }
         : createObjectContext({ value, path, pathInBlock, field, parentContext: context });
 
     for (const child of error.children) {
@@ -197,7 +198,7 @@ function describeCause({
 }): string {
     switch (constraint) {
         case "whitelistValidation":
-            return `unknown field. Allowed fields: ${(parentMeta?.fields ?? []).map((field) => field.name).join(", ")}.`;
+            return parentMeta ? `unknown field. Allowed fields: ${parentMeta.fields.map((field) => field.name).join(", ")}.` : "unknown field.";
         case "isDefined":
             return `is missing. Expected ${describeExpectedValue(field)}.`;
         case "isArray":
@@ -254,7 +255,12 @@ function describeValue(value: unknown): string {
         return "an object";
     }
 
-    const json = JSON.stringify(value);
+    // JSON.stringify throws for a BigInt and returns undefined for a function or a symbol.
+    const json = typeof value === "bigint" ? `${value}` : JSON.stringify(value);
+
+    if (json === undefined) {
+        return typeof value;
+    }
 
     return json.length > maxValueLength ? `${json.slice(0, maxValueLength)}…` : json;
 }
@@ -320,10 +326,10 @@ function isOneOfBlockMeta(meta: BlockMetaInterface | undefined): boolean {
     return ["attachedBlocks", "activeType"].every((name) => meta?.fields.some((field) => field.name === name));
 }
 
-function joinPath(path: string, property: string, isListItem: boolean): string {
-    if (isListItem) {
-        return `${path}[${property}]`;
-    }
-
+function joinPath(path: string, property: string): string {
     return path === "" ? property : `${path}.${property}`;
+}
+
+function appendIndex(path: string, index: string): string {
+    return `${path}[${index}]`;
 }

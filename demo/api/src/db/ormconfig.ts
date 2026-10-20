@@ -34,7 +34,7 @@ export const ormConfig = createOrmConfig(
             tableName: "Migrations",
             //  `path` is only used to tell MikroORM where to place newly generated migrations. Available migrations are defined using `migrationsList`.
             path: "./src/db/migrations",
-            migrationsList: [...brevoMigrationsList, ...createMigrationsList(path.resolve(__dirname, "migrations"))],
+            migrationsList: [...brevoMigrationsList, ...createMigrationsList(path.resolve(import.meta.dirname, "migrations"))],
             disableForeignKeys: false,
             dropTables: false,
             snapshot: false,

@@ -19,7 +19,7 @@ import {
     IsUUID,
     ValidateNested,
 } from "class-validator";
-import { NestedObject } from "../../.generate-crud-input-json-import-nested-object";
+import { NestedObject } from "../../.generate-crud-input-json-import-nested-object.js";
 
 @InputType()
 export class TestEntityWithJsonObject1Input {
@@ -54,7 +54,7 @@ import {
     IsUUID,
     ValidateNested,
 } from "class-validator";
-import { NestedType } from "../../.generate-crud-input-json-import-nested-object";
+import { NestedType } from "../../.generate-crud-input-json-import-nested-object.js";
 
 @InputType()
 export class TestEntityWithJsonType2Input {
@@ -88,7 +88,7 @@ import {
     IsUUID,
     ValidateNested,
 } from "class-validator";
-import { NestedObject } from "../../.generate-crud-input-json-import-nested-object";
+import { NestedObject } from "../../.generate-crud-input-json-import-nested-object.js";
 
 @InputType()
 export class TestEntityWithJsonObject1Input {
@@ -123,7 +123,7 @@ import {
     IsUUID,
     ValidateNested,
 } from "class-validator";
-import { NestedType } from "../../.generate-crud-input-json-import-nested-object";
+import { NestedType } from "../../.generate-crud-input-json-import-nested-object.js";
 
 @InputType()
 export class TestEntityWithJsonType1Input {

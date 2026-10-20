@@ -547,6 +547,9 @@ importers:
       helmet:
         specifier: ^8.3.0
         version: 8.3.0
+      import-in-the-middle:
+        specifier: ^3.5.2
+        version: 3.5.2
       nest-commander:
         specifier: ^3.21.0
         version: 3.21.0(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@12.2.0)(@types/inquirer@8.2.13)(@types/node@24.19.2)(typescript@6.0.3)

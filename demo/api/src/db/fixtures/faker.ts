@@ -1,10 +1,13 @@
+import { createRequire } from "node:module";
+
 type Faker = (typeof import("@faker-js/faker"))["faker"];
+
+const require = createRequire(import.meta.url);
 
 let instance: Faker | undefined;
 
 function getFaker(): Faker {
     if (!instance) {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
         instance = (require("@faker-js/faker") as typeof import("@faker-js/faker")).faker;
     }
     return instance;

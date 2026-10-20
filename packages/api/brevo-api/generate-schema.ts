@@ -19,7 +19,7 @@ import { createEmailCampaignEntity } from "./lib/email-campaign/entities/email-c
 import { TargetGroupInputFactory } from "./lib/target-group/dto/target-group-input.factory.js";
 import { createTargetGroupEntity } from "./lib/target-group/entity/target-group-entity.factory.js";
 import { createTargetGroupsResolver } from "./lib/target-group/target-group.resolver.js";
-import { BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "./lib/types.js";
+import type { BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "./lib/types.js";
 import { BrevoPermission } from "./lib/index.js";
 
 @ObjectType("EmailCampaignContentScope")

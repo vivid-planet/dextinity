@@ -44,7 +44,7 @@ function generateFilterDto({
             generatedFiles.push(enumFilter);
             imports.push({
                 name: `${enumName}${isEnumArrayProp(prop) ? "EnumsFilter" : "EnumFilter"}`,
-                importPath: `./${path.relative(`${targetDirectory}/dto`, `${enumFilter.targetDirectory}/${enumFilter.name.replace(/\.ts$/, "")}`)}`,
+                importPath: `./${path.relative(`${targetDirectory}/dto`, `${enumFilter.targetDirectory}/${enumFilter.name.replace(/\.ts$/, ".js")}`)}`,
             });
         }
     });
@@ -215,7 +215,7 @@ function generatePaginatedDto({ generatorOptions, metadata }: { generatorOptions
     const paginatedOut = `import { ObjectType } from "@nestjs/graphql";
     import { PaginatedResponseFactory } from "@dextinity/cms-api";
 
-    import { ${metadata.className} } from "${path.relative(`${targetDirectory}/dto`, metadata.path).replace(/\.ts$/, "")}";
+    import { ${metadata.className} } from "${path.relative(`${targetDirectory}/dto`, metadata.path).replace(/\.ts$/, ".js")}";
 
     @ObjectType()
     export class Paginated${classNamePlural} extends PaginatedResponseFactory.create(${metadata.className}) {}
@@ -257,8 +257,8 @@ function generateArgsDto({ generatorOptions, metadata }: { generatorOptions: Cru
     import { Type } from "class-transformer";
     import { IsOptional, IsString, ValidateNested, IsEnum, IsUUID } from "class-validator";
     ${hasPaging ? `import { OffsetBasedPaginationArgs, SortDirection } from "@dextinity/cms-api";` : ``}
-    ${hasPaging && hasFilterArg ? `import { ${classNameSingular}Filter } from "./${fileNameSingular}.filter";` : ``}
-    ${hasPaging && hasSortArg ? `import { ${classNameSingular}Sort, ${classNameSingular}SortField } from "./${fileNameSingular}.sort";` : ``}
+    ${hasPaging && hasFilterArg ? `import { ${classNameSingular}Filter } from "./${fileNameSingular}.filter.js";` : ``}
+    ${hasPaging && hasSortArg ? `import { ${classNameSingular}Sort, ${classNameSingular}SortField } from "./${fileNameSingular}.sort.js";` : ``}
 
     ${generateImportsCode(imports)}
 
@@ -359,7 +359,7 @@ function generateService({ generatorOptions, metadata }: { generatorOptions: Cru
             return acc;
         }, []),
     )}
-    import { ${classNameSingular}Filter } from "./dto/${fileNameSingular}.filter";
+    import { ${classNameSingular}Filter } from "./dto/${fileNameSingular}.filter.js";
 
     @Injectable()
     export class ${classNamePlural}Service {    
@@ -442,7 +442,7 @@ function generateEntityImport(targetMetadata: EntityMetadata<any>, relativeTo: s
         if (declarationPath) {
             return {
                 name: targetMetadata.className,
-                importPath: path.relative(relativeTo, declarationPath).replace(/\.ts$/, ""),
+                importPath: path.relative(relativeTo, declarationPath).replace(/\.ts$/, ".js"),
             };
         }
 
@@ -454,7 +454,7 @@ function generateEntityImport(targetMetadata: EntityMetadata<any>, relativeTo: s
     }
     return {
         name: targetMetadata.className,
-        importPath: path.relative(relativeTo, targetMetadata.path).replace(/\.ts$/, ""),
+        importPath: path.relative(relativeTo, targetMetadata.path).replace(/\.ts$/, ".js"),
     };
 }
 
@@ -944,10 +944,10 @@ function generateResolver({ generatorOptions, metadata }: { generatorOptions: Cr
     const resolverOut = `import { EntityManager, type FindOptions, type ObjectQuery, Reference } from "@mikro-orm/postgresql";
     import { Args, ID, Mutation, Query, Resolver, ResolveField, Parent } from "@nestjs/graphql";
 
-    ${hasPositionProp ? `import { ${classNamePlural}Service } from "./${fileNamePlural}.service";` : ``}
-    import { ${classNameSingular}Input, ${classNameSingular}UpdateInput } from "./dto/${fileNameSingular}.input";
-    ${hasPaging ? `import { Paginated${classNamePlural} } from "./dto/paginated-${fileNamePlural}";` : ""}
-    ${hasArgsClass ? `import { ${argsClassName} } from "./dto/${argsFileName}";` : ""}
+    ${hasPositionProp ? `import { ${classNamePlural}Service } from "./${fileNamePlural}.service.js";` : ``}
+    import { ${classNameSingular}Input, ${classNameSingular}UpdateInput } from "./dto/${fileNameSingular}.input.js";
+    ${hasPaging ? `import { Paginated${classNamePlural} } from "./dto/paginated-${fileNamePlural}.js";` : ""}
+    ${hasArgsClass ? `import { ${argsClassName} } from "./dto/${argsFileName}.js";` : ""}
     ${generateImportsCode(imports)}
 
     ${payloadObjectTypes.code}

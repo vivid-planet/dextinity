@@ -9,4 +9,4 @@ const config: Options = {
     entitiesTs: ["./src/**/*.entity.ts", PageTreeNodeScope],
 };
 
-export = config;
+export default config;

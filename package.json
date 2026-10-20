@@ -41,7 +41,7 @@
         "lint:root": "pnpm exec prettier --check '{,!(demo|docs|packages|storybook)/**/}*.{ts,mts,cts,js,mjs,cjs,json,md,yml,yaml}'",
         "lint:eslint": "pnpm --recursive run lint:eslint",
         "lint:tsc": "pnpm --recursive run lint:tsc",
-        "lint:knip": "pnpm --recursive run api-generator && pnpm --recursive run gql:types && pnpm --recursive run build-server && knip --exports --files --dependencies --tags=-knipignore --no-gitignore --exclude enumMembers",
+        "lint:knip": "pnpm --recursive run api-generator && pnpm --recursive run gql:types && knip --exports --files --dependencies --tags=-knipignore --no-gitignore --exclude enumMembers",
         "start-oidc-provider": "dotenv -e .env.local -e .env -- dev-oidc-provider",
         "storybook": "dev-pm start @storybook",
         "test": "pnpm run test:unit && pnpm run test:storybook",

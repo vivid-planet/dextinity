@@ -34,7 +34,7 @@ services:
           ./demo/api/intl-update.sh &&
           pnpm --filter dextinity-demo-api run build
       environment_slug: node-js
-      run_command: cd demo/api && node dist/console.js migrate && node dist/main
+      run_command: cd demo/api && node dist/console.js migrate && node --import ./dist/tracing.js dist/main.js
       source_dir: /
       github:
           branch: ${DEPLOY_BRANCH}

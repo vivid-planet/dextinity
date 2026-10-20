@@ -5,7 +5,7 @@ import { printSchema } from "graphql";
 
 import {
     BuildsResolver,
-    CorePermission,
+    type CorePermission,
     createAuthResolver,
     createOneOfBlock,
     createPageTreeResolver,
@@ -18,7 +18,7 @@ import {
     FileUpload,
     InternalLinkBlock,
     PageTreeNodeBase,
-    PageTreeNodeCategory,
+    type PageTreeNodeCategory,
     PaginatedPageTreeNodesFactory,
 } from "./lib/index.js";
 import { BuildTemplatesResolver } from "./lib/builds/build-templates.resolver.js";

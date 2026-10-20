@@ -350,7 +350,7 @@ describe("GenerateDefinedValidatorDecorators", () => {
                 getImportDeclaration.getNamedImports().some((namedImport) => namedImport.getName() === "IsTrueAsString"),
             );
             expect(isTrueAsStringImport).toBeDefined();
-            expect(isTrueAsStringImport?.getModuleSpecifierValue()).toBe("../../generate-crud-input-validators.spec");
+            expect(isTrueAsStringImport?.getModuleSpecifierValue()).toBe("../../generate-crud-input-validators.spec.js");
 
             await orm.close();
         });

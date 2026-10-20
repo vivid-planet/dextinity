@@ -107,7 +107,7 @@ describe("generate-crud relations two levels", () => {
                     imports[namedImport.getNameNode().getText()] = tsImport.getModuleSpecifierValue();
                 }
             }
-            expect(imports["ProductNestedProductDataInput"]).toBe("./product-nested-product-data.input");
+            expect(imports["ProductNestedProductDataInput"]).toBe("./product-nested-product-data.input.js");
         }
 
         {

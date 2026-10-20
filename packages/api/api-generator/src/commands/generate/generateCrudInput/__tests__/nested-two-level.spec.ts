@@ -74,7 +74,7 @@ describe("nested two level", () => {
         }
 
         expect(fooInputDto.content).toContain(`bars: FooNestedBarInput[];`);
-        expect(fooInputDto.content).toContain(`import { FooNestedBarInput } from "./foo-nested-bar.input";`);
+        expect(fooInputDto.content).toContain(`import { FooNestedBarInput } from "./foo-nested-bar.input.js";`);
     });
     it("create input handling should work", async () => {
         const { code, imports } = generateInputHandling(

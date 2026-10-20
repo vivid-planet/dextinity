@@ -1,11 +1,3 @@
-if (process.env.TRACING == "production") {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require("./tracing.production.js");
-} else if (process.env.TRACING == "dev") {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require("./tracing.dev.js");
-}
-
 import { CdnGuard, ExceptionFilter, ValidationExceptionFactory } from "@dextinity/cms-api";
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";

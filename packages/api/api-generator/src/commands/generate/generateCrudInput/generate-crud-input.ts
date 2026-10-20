@@ -269,7 +269,7 @@ export async function generateCrudInput(
                     generatedFiles.push(...nestedInputFiles);
                     imports.push({
                         name: inputNameClassName,
-                        importPath: nestedInputFiles[nestedInputFiles.length - 1].name.replace(/^dto/, ".").replace(/\.ts$/, ""),
+                        importPath: nestedInputFiles[nestedInputFiles.length - 1].name.replace(/^dto/, ".").replace(/\.ts$/, ".js"),
                     });
                 }
                 decorators.push(`@Field(() => [${inputNameClassName}], {${prop.nullable ? "nullable: true" : "defaultValue: []"}})`);
@@ -344,7 +344,7 @@ export async function generateCrudInput(
                 generatedFiles.push(...nestedInputFiles);
                 imports.push({
                     name: inputNameClassName,
-                    importPath: nestedInputFiles[nestedInputFiles.length - 1].name.replace(/^dto/, ".").replace(/\.ts$/, ""),
+                    importPath: nestedInputFiles[nestedInputFiles.length - 1].name.replace(/^dto/, ".").replace(/\.ts$/, ".js"),
                 });
             }
             decorators.push(`@Field(() => ${inputNameClassName}${prop.nullable ? ", { nullable: true }" : ""})`);

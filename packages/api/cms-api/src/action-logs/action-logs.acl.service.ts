@@ -43,8 +43,8 @@ export class ActionLogsAclService {
         for (const entityClass of this.actionLogsService.getLoggedEntities()) {
             const { requiredPermission, options } = Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, entityClass) as RequiredPermissionMetadata;
 
+            // The application checks the access to such an entity itself, so the log of the single entity is denied too.
             if (requiredPermission.includes(DisablePermissionCheck)) {
-                entityFilters.push({ entityName: entityClass.name });
                 continue;
             }
 

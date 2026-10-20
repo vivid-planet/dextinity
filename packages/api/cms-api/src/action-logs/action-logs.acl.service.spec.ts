@@ -119,20 +119,26 @@ describe("ActionLogsAclService", () => {
         await expect(aclService.getReadableActionLogsFilter("other-user")).rejects.toThrow(ForbiddenException);
     });
 
-    it("includes only entities whose permission the user holds and those that disable the check", async () => {
+    it("includes only entities whose permission the user holds, without restricting the scope of those that skip the scope check", async () => {
         const entityFilters = getEntityFilters(
             await aclService.getReadableActionLogsFilter(user(actionLogPermission, { permission: "products" as Permission, contentScopes: [] })),
         );
 
-        expect(entityFilters.map(({ entityName }) => entityName)).toEqual(["Product", "PublicEntity"]);
+        expect(entityFilters).toEqual([{ entityName: "Product" }]);
     });
 
-    it("does not restrict the scope of entities that skip the scope check or disable the permission check", async () => {
+    it("excludes entities that disable the permission check", async () => {
         const entityFilters = getEntityFilters(
-            await aclService.getReadableActionLogsFilter(user(actionLogPermission, { permission: "products" as Permission, contentScopes: [] })),
+            await aclService.getReadableActionLogsFilter(
+                user(
+                    actionLogPermission,
+                    { permission: "news" as Permission, contentScopes: [{ domain: "main", language: "en" }] },
+                    { permission: "products" as Permission, contentScopes: [] },
+                ),
+            ),
         );
 
-        expect(entityFilters).toEqual([{ entityName: "Product" }, { entityName: "PublicEntity" }]);
+        expect(entityFilters.map(({ entityName }) => entityName)).toEqual(["Product", "News"]);
     });
 
     it("restricts scoped entities to unscoped rows and rows of the scopes the user is allowed in", async () => {
@@ -164,11 +170,9 @@ describe("ActionLogsAclService", () => {
     });
 
     it("excludes scoped entities, including their unscoped rows, when the user is allowed in none of their row scopes", async () => {
-        const entityFilters = getEntityFilters(
-            await aclService.getReadableActionLogsFilter(user(actionLogPermission, { permission: "news" as Permission, contentScopes: [] })),
-        );
-
-        expect(entityFilters.map(({ entityName }) => entityName)).toEqual(["PublicEntity"]);
+        await expect(
+            aclService.getReadableActionLogsFilter(user(actionLogPermission, { permission: "news" as Permission, contentScopes: [] })),
+        ).resolves.toBeNull();
     });
 
     it("includes the unscoped rows of a scoped entity that has no scoped rows", async () => {
@@ -191,14 +195,7 @@ describe("ActionLogsAclService", () => {
         expect(getNewsFilter(filter)).toEqual({ entityName: "News", $or: [{ scope: null }] });
     });
 
-    it("returns null when the user can read no entity besides those that disable the check", async () => {
-        const aclServiceWithoutPublicEntity = new ActionLogsAclService(
-            createEntityManager(),
-            createMock<ActionLogsService>({ getLoggedEntities: () => [News] }),
-            createUserPermissionsService(),
-            new AccessControlService(),
-        );
-
-        await expect(aclServiceWithoutPublicEntity.getReadableActionLogsFilter(user(actionLogPermission))).resolves.toBeNull();
+    it("returns null when the user can read no entity", async () => {
+        await expect(aclService.getReadableActionLogsFilter(user(actionLogPermission))).resolves.toBeNull();
     });
 });

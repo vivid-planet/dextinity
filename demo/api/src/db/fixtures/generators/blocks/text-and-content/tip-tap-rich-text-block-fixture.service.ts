@@ -1,6 +1,6 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block";
+import type { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block.js";
 
 @Injectable()
 export class TipTapRichTextBlockFixtureService {

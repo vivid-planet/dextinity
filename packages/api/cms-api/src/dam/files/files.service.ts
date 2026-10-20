@@ -22,7 +22,7 @@ import { getDamFileCategory } from "../common/mimeTypes/dam-file-category.js";
 import type { DamConfig } from "../dam.config.js";
 import { DAM_CONFIG, DAM_DOMINANT_COLOR_CALCULATOR } from "../dam.constants.js";
 import type { DominantColorCalculatorInterface } from "../dominant-color-calculator.interface.js";
-import { ImageInterface } from "../images/dto/image.interface.js";
+import type { ImageInterface } from "../images/dto/image.interface.js";
 import type { ImageCropAreaInput } from "../images/dto/image-crop-area.input.js";
 import { damSettingsByScope } from "../settings/dam-settings-by-scope.js";
 import { DamSettings } from "../settings/entities/dam-settings.entity.js";

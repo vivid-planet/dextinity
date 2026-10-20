@@ -4,9 +4,9 @@ import { ArgsType, Field } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsOptional, IsString, ValidateNested } from "class-validator";
 import { OffsetBasedPaginationArgs, SortDirection } from "@dextinity/cms-api";
-import { NewsFilter } from "./news.filter";
-import { NewsSort, NewsSortField } from "./news.sort";
-import { NewsContentScope } from "../../entities/news.entity";
+import { NewsFilter } from "./news.filter.js";
+import { NewsSort, NewsSortField } from "./news.sort.js";
+import { NewsContentScope } from "../../entities/news.entity.js";
 @ArgsType()
 export class NewsListArgs extends OffsetBasedPaginationArgs {
     @Field(() => NewsContentScope)

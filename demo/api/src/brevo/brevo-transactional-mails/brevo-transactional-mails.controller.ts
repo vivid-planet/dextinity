@@ -2,7 +2,7 @@ import { BrevoTransactionalMailsService } from "@dextinity/brevo-api";
 import { DisableDextinityGuards } from "@dextinity/cms-api";
 import { Body, Controller, Post } from "@nestjs/common";
 
-import { BrevoTransactionalMailsBody } from "./dto/transactional-mails.body";
+import { BrevoTransactionalMailsBody } from "./dto/transactional-mails.body.js";
 
 @Controller("transactional-mails")
 export class BrevoTransactionalMailsController {

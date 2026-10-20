@@ -26,7 +26,7 @@ import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.ut
 import { FocalPoint } from "../../file-utils/focal-point.enum.js";
 import { MODERN_TYPES } from "../../file-utils/images.constants.js";
 import { getBasicImageMimeType, getCenteredPosition, getMaxDimensionsFromArea, getSupportedMimeType } from "../../file-utils/images.util.js";
-import { Extension, Gravity, ResizingType } from "../../imgproxy/imgproxy.enum.js";
+import { type Extension, Gravity, ResizingType } from "../../imgproxy/imgproxy.enum.js";
 import { ImgproxyService } from "../../imgproxy/imgproxy.service.js";
 import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator.js";
 import { CurrentUser } from "../../user-permissions/dto/current-user.js";

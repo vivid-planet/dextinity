@@ -2,8 +2,8 @@ import { MailerService, RequiredPermission } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Mutation, Resolver } from "@nestjs/graphql";
 
-import { Product, ProductStatus } from "./entities/product.entity";
-import { ProductPublishedMail } from "./published-mail/product-published.mail";
+import { Product, ProductStatus } from "./entities/product.entity.js";
+import { ProductPublishedMail } from "./published-mail/product-published.mail.js";
 
 @Resolver(() => Product)
 @RequiredPermission(["products"], { skipScopeCheck: true })

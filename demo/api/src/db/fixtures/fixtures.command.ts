@@ -1,38 +1,38 @@
 import {
     BlobStorageBackendService,
     DependenciesService,
-    PageTreeNodeBaseCreateInput,
-    PageTreeNodeInterface,
+    type PageTreeNodeBaseCreateInput,
+    type PageTreeNodeInterface,
     PageTreeNodeVisibility,
     PageTreeService,
 } from "@dextinity/cms-api";
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { EntityManager, MikroORM } from "@mikro-orm/postgresql";
 import { Inject, Logger } from "@nestjs/common";
-import { Config } from "@src/config/config";
-import { CONFIG } from "@src/config/config.module";
-import { faker } from "@src/db/fixtures/faker";
-import { generateSeoBlock } from "@src/db/fixtures/generators/blocks/seo.generator";
-import { PageContentBlock } from "@src/documents/pages/blocks/page-content.block";
-import { StageBlock } from "@src/documents/pages/blocks/stage.block";
-import { PageInput } from "@src/documents/pages/dto/page.input";
-import { Page } from "@src/documents/pages/entities/page.entity";
-import { PageTreeNodeCategory } from "@src/page-tree/page-tree-node-category";
-import { UserGroup } from "@src/user-groups/user-group";
-import { MultiBar, Options, Presets } from "cli-progress";
+import type { Config } from "@src/config/config.js";
+import { CONFIG } from "@src/config/config.module.js";
+import { faker } from "@src/db/fixtures/faker.js";
+import { generateSeoBlock } from "@src/db/fixtures/generators/blocks/seo.generator.js";
+import { PageContentBlock } from "@src/documents/pages/blocks/page-content.block.js";
+import { StageBlock } from "@src/documents/pages/blocks/stage.block.js";
+import { PageInput } from "@src/documents/pages/dto/page.input.js";
+import { Page } from "@src/documents/pages/entities/page.entity.js";
+import { PageTreeNodeCategory } from "@src/page-tree/page-tree-node-category.js";
+import { UserGroup } from "@src/user-groups/user-group.js";
+import { MultiBar, type Options, Presets } from "cli-progress";
 import { Command, CommandRunner } from "nest-commander";
 import slugify from "slugify";
 
-import { DocumentGeneratorService } from "./generators/document-generator.service";
-import { DraftJsMigrationPageFixtureService } from "./generators/draft-js-migration-page-fixture.service";
-import { FileUploadsFixtureService } from "./generators/file-uploads-fixture.service";
-import { ImageFixtureService } from "./generators/image-fixture.service";
-import { ManyImagesTestPageFixtureService } from "./generators/many-images-test-page-fixture.service";
-import { NewsFixtureService } from "./generators/news-fixture.service";
-import { ProductsFixtureService } from "./generators/products-fixture.service";
-import { RedirectsFixtureService } from "./generators/redirects-fixture.service";
-import { VideoFixtureService } from "./generators/video-fixture.service";
-import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.service";
+import { DocumentGeneratorService } from "./generators/document-generator.service.js";
+import { DraftJsMigrationPageFixtureService } from "./generators/draft-js-migration-page-fixture.service.js";
+import { FileUploadsFixtureService } from "./generators/file-uploads-fixture.service.js";
+import { ImageFixtureService } from "./generators/image-fixture.service.js";
+import { ManyImagesTestPageFixtureService } from "./generators/many-images-test-page-fixture.service.js";
+import { NewsFixtureService } from "./generators/news-fixture.service.js";
+import { ProductsFixtureService } from "./generators/products-fixture.service.js";
+import { RedirectsFixtureService } from "./generators/redirects-fixture.service.js";
+import { VideoFixtureService } from "./generators/video-fixture.service.js";
+import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.service.js";
 
 const getDefaultPageInput = (): PageInput => {
     const pageInput = new PageInput();

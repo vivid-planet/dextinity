@@ -2,7 +2,7 @@ import { migrationsList as brevoMigrationsList } from "@dextinity/brevo-api";
 import { createMigrationsList, createOrmConfig } from "@dextinity/cms-api";
 import { DataloaderType, TextType, Type } from "@mikro-orm/core";
 import { defineConfig, EntityCaseNamingStrategy } from "@mikro-orm/postgresql";
-import { createSqlMetricsLogger } from "@src/open-telemetry/sql-metrics-logger";
+import { createSqlMetricsLogger } from "@src/open-telemetry/sql-metrics-logger.js";
 import path from "path";
 
 export const ormConfig = createOrmConfig(

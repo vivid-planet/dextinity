@@ -1,18 +1,18 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockField,
     BlockInput,
     blockInputToData,
     ChildBlock,
     ChildBlockInput,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
 } from "@dextinity/cms-api";
-import { CallToActionListBlock } from "@src/common/blocks/call-to-action-list.block";
-import { HeadingBlock } from "@src/common/blocks/heading.block";
-import { MediaBlock } from "@src/common/blocks/media.block";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block";
+import { CallToActionListBlock } from "@src/common/blocks/call-to-action-list.block.js";
+import { HeadingBlock } from "@src/common/blocks/heading.block.js";
+import { MediaBlock } from "@src/common/blocks/media.block.js";
+import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
 import { IsEnum, IsInt, Max, Min } from "class-validator";
 
 export enum Alignment {

@@ -3,10 +3,10 @@
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { RequiredPermission } from "@dextinity/cms-api";
-import { Footer } from "../entities/footer.entity";
-import { FooterScope } from "../dto/footer-scope";
-import { FootersService } from "./footers.service";
-import { FooterInput } from "./dto/footer.input";
+import { Footer } from "../entities/footer.entity.js";
+import { FooterScope } from "../dto/footer-scope.js";
+import { FootersService } from "./footers.service.js";
+import { FooterInput } from "./dto/footer.input.js";
 @Resolver(() => Footer)
 @RequiredPermission(["pageTree"])
 export class FooterResolver {

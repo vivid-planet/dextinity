@@ -1,6 +1,6 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockField,
     BlockInput,
     blockInputToData,
@@ -8,16 +8,16 @@ import {
     ChildBlockInput,
     createBlock,
     createBlocksBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
     IsUndefinable,
 } from "@dextinity/cms-api";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block";
-import { SpaceBlock } from "@src/common/blocks/space.block";
-import { StandaloneCallToActionListBlock } from "@src/common/blocks/standalone-call-to-action-list.block";
-import { StandaloneHeadingBlock } from "@src/common/blocks/standalone-heading.block";
+import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
+import { SpaceBlock } from "@src/common/blocks/space.block.js";
+import { StandaloneCallToActionListBlock } from "@src/common/blocks/standalone-call-to-action-list.block.js";
+import { StandaloneHeadingBlock } from "@src/common/blocks/standalone-heading.block.js";
 import { IsBoolean, IsEnum, IsString } from "class-validator";
 
-import { TextImageBlock } from "./text-image.block";
+import { TextImageBlock } from "./text-image.block.js";
 
 export const AccordionContentBlock = createBlocksBlock(
     {

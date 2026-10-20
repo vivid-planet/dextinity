@@ -1,12 +1,12 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { MediaBlock } from "@src/common/blocks/media.block";
-import { faker } from "@src/db/fixtures/faker";
+import type { MediaBlock } from "@src/common/blocks/media.block.js";
+import { faker } from "@src/db/fixtures/faker.js";
 
-import { DamImageBlockFixtureService } from "./dam-image-block-fixture.service";
-import { DamVideoBlockFixtureService } from "./dam-video-block-fixture.service";
-import { VimeoVideoBlockFixtureService } from "./vimeo-video-block-fixture.service";
-import { YouTubeVideoBlockFixtureService } from "./youtube-video-block-fixture.service";
+import { DamImageBlockFixtureService } from "./dam-image-block-fixture.service.js";
+import { DamVideoBlockFixtureService } from "./dam-video-block-fixture.service.js";
+import { VimeoVideoBlockFixtureService } from "./vimeo-video-block-fixture.service.js";
+import { YouTubeVideoBlockFixtureService } from "./youtube-video-block-fixture.service.js";
 
 @Injectable()
 export class MediaBlockFixtureService {

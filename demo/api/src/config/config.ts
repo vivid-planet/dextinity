@@ -2,7 +2,7 @@ import dextinityConfig from "@src/dextinity-config.json";
 import { plainToClass } from "class-transformer";
 import { validateSync } from "class-validator";
 
-import { EnvironmentVariables } from "./environment-variables";
+import { EnvironmentVariables } from "./environment-variables.js";
 
 export function createConfig(processEnv: NodeJS.ProcessEnv) {
     const envVars = plainToClass(EnvironmentVariables, { ...processEnv });

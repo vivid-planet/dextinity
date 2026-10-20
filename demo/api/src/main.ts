@@ -1,9 +1,9 @@
 if (process.env.TRACING == "production") {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require("./tracing.production");
+    require("./tracing.production.js");
 } else if (process.env.TRACING == "dev") {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require("./tracing.dev");
+    require("./tracing.dev.js");
 }
 
 import { CdnGuard, ExceptionFilter, ValidationExceptionFactory } from "@dextinity/cms-api";
@@ -11,14 +11,14 @@ import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import type { NestExpressApplication } from "@nestjs/platform-express";
 import * as Sentry from "@sentry/node";
-import { AppModule } from "@src/app.module";
+import { AppModule } from "@src/app.module.js";
 import { useContainer } from "class-validator";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import { json } from "express";
 import helmet from "helmet";
 
-import { createConfig } from "./config/config";
+import { createConfig } from "./config/config.js";
 
 async function bootstrap(): Promise<void> {
     const config = createConfig(process.env);

@@ -13,7 +13,7 @@ import {
 } from "@dextinity/cms-api";
 import { IsBoolean, IsEnum } from "class-validator";
 
-import { AddAspectRatioMigration } from "./mail-image/migrations/1-add-aspect-ratio.migration";
+import { AddAspectRatioMigration } from "./mail-image/migrations/1-add-aspect-ratio.migration.js";
 
 export enum MailImageAspectRatio {
     "16x9" = "16x9",

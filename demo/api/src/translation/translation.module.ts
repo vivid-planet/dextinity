@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@src/config/config.module";
+import { ConfigModule } from "@src/config/config.module.js";
 
-import { TranslationService } from "./translation.service";
+import { TranslationService } from "./translation.service.js";
 
 @Module({
     imports: [ConfigModule],

@@ -25,5 +25,6 @@
         "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
         "types": ["*"],
         "useDefineForClassFields": false
-    }
+    },
+    "include": ["src"]
 }

@@ -38,7 +38,7 @@ Run the appropriate checks after every change and fix all reported errors.
 
 ### Post-Change Workflow
 
-After making changes to any package (`packages/*`) or the demo project (`demo/*`), run `lint:fix` to auto-fix ESLint and Prettier issues:
+After making changes to any package (`packages/*`) or the demo project (`demo/*`), run `lint:fix` to auto-fix linter and Prettier issues:
 
 ```bash
 # Fix a single package (from the package folder or repo root)
@@ -56,8 +56,9 @@ pnpm run lint:fix
 
 Every package and demo service exposes these scripts:
 
-- `lint:fix` — runs `lint:fix:eslint` and `lint:fix:prettier` in parallel (plus `lint:fix:style` in `demo/site`)
-- `lint:fix:eslint` — runs ESLint with `--fix` (also applies Prettier formatting via `eslint-plugin-prettier`)
+- `lint:fix` — runs the linter's fix script and `lint:fix:prettier` in parallel (plus `lint:fix:style` in `demo/site`)
+- `lint:fix:eslint` — runs ESLint with `--fix` (also applies Prettier formatting via `eslint-plugin-prettier`); packages only
+- `lint:fix:oxlint` — runs oxlint with `--fix`; `demo/*` only (Prettier formatting is covered by `lint:fix:prettier`)
 - `lint:fix:prettier` — runs Prettier with `--write` for any remaining formatting issues
 - `lint:fix:style` — runs Stylelint with `--fix` (`demo/site` only)
 
@@ -157,6 +158,7 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 | `@dextinity/eslint-config` | Shared ESLint configurations                                     |
 | `@dextinity/eslint-plugin` | Custom ESLint rules for Dextinity projects                       |
 | `@dextinity/mail-react`    | Utilities for building HTML emails with React (MJML-based)       |
+| `@dextinity/oxlint-config` | Shared oxlint configurations, an alternative to `eslint-config`  |
 
 ### Docs & Storybook
 

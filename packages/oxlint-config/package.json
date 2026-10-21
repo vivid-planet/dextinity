@@ -1,0 +1,58 @@
+{
+    "name": "@dextinity/oxlint-config",
+    "version": "10.10.0",
+    "description": "A set of oxlint configurations for Dextinity projects",
+    "repository": {
+        "directory": "packages/oxlint-config",
+        "type": "git",
+        "url": "https://github.com/vivid-planet/dextinity"
+    },
+    "license": "BSD-2-Clause",
+    "type": "module",
+    "exports": {
+        "./core.js": {
+            "types": "./core.d.ts",
+            "import": "./core.js"
+        },
+        "./nestjs.js": {
+            "types": "./nestjs.d.ts",
+            "import": "./nestjs.js"
+        },
+        "./nextjs.js": {
+            "types": "./nextjs.d.ts",
+            "import": "./nextjs.js"
+        },
+        "./react.js": {
+            "types": "./react.d.ts",
+            "import": "./react.js"
+        }
+    },
+    "scripts": {
+        "lint": "pnpm exec prettier --check '*.{ts,js,json,md,yml,yaml}'",
+        "lint:ci": "pnpm run lint",
+        "lint:fix": "pnpm run lint --write"
+    },
+    "dependencies": {
+        "@dextinity/eslint-plugin": "workspace:*",
+        "eslint": "^9.39.5",
+        "eslint-plugin-formatjs": "^8.0.5",
+        "eslint-plugin-import": "^2.32.0",
+        "eslint-plugin-simple-import-sort": "^12.1.1"
+    },
+    "devDependencies": {
+        "oxlint": "^1.88.0",
+        "oxlint-tsgolint": "^7.0.2004",
+        "prettier": "^3.9.10"
+    },
+    "peerDependencies": {
+        "oxlint": ">=1.88.0",
+        "oxlint-tsgolint": ">=7.0.2004"
+    },
+    "engines": {
+        "node": ">=24.15.0"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org"
+    }
+}

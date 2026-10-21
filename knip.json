@@ -18,6 +18,11 @@
             "entry": [],
             "project": []
         },
+        "packages/oxlint-config": {
+            "ignore": ["*"],
+            "entry": [],
+            "project": []
+        },
         "codemods": {
             "ignore": ["*"],
             "entry": [],
@@ -104,7 +109,7 @@
                 "./src/tracing.production.ts"
             ],
             "project": ["./src/**/*.{ts,tsx}"],
-            "ignoreDependencies": ["@as-integrations/express5", "@swc-node/register"],
+            "ignoreDependencies": ["@as-integrations/express5", "@swc-node/register", "eslint", "eslint-plugin-storybook"],
             "ignore": ["./src/**/generated/**", "**/*.generated.ts"]
         },
         "demo/site": {

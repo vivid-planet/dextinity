@@ -5,9 +5,10 @@
 Add `@dextinity/oxlint-config`
 
 An opt-in alternative to `@dextinity/eslint-config` for projects that want to lint with [oxlint](https://oxc.rs/docs/guide/usage/linter) instead of ESLint.
-It ships the `core`, `react`, `nestjs` and `nextjs` presets with the same rules as the ESLint presets.
+It ships the `core`, `react`, `nestjs` and `nextjs` presets, which mirror the ESLint presets.
 Rules oxlint doesn't implement natively (e.g., `@dextinity/eslint-plugin`, `simple-import-sort`, `formatjs`) run as oxlint JS plugins.
-Type-aware rules require `oxlint-tsgolint`.
+A few rules have no oxlint equivalent and are missing, e.g., the GraphQL naming convention and JSON linting.
+Type-aware rules require `oxlint-tsgolint` and a tsconfig without `baseUrl` whose `include` stays inside `rootDir`.
 `@dextinity/eslint-config` stays fully supported.
 
 **Example**

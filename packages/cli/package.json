@@ -37,13 +37,12 @@
     },
     "dependencies": {
         "commander": "^15.0.0",
-        "js-yaml": "^4.3.2",
+        "js-yaml": "^5.5.0",
         "prettier": "^3.9.10",
         "ts-node": "^10.9.2"
     },
     "devDependencies": {
         "@dextinity/eslint-config": "workspace:*",
-        "@types/js-yaml": "^4.0.9",
         "@types/node": "^24.19.2",
         "eslint": "^9.39.5",
         "npm-run-all2": "^9.0.3",

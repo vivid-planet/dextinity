@@ -117,8 +117,11 @@ export const DateRangePicker = (inProps: DateRangePickerProps) => {
                 slotProps={{
                     ...slotProps?.root?.slotProps,
                     textField: (ownerState) => {
+                        const externalTextFieldSlotProps = slotProps?.root?.slotProps?.textField;
+                        const externalTextFieldProps =
+                            typeof externalTextFieldSlotProps === "function" ? externalTextFieldSlotProps(ownerState) : externalTextFieldSlotProps;
                         const textFieldProps = {
-                            ...slotProps?.root?.slotProps?.textField,
+                            ...externalTextFieldProps,
                             ownerState,
                         };
 
@@ -128,39 +131,42 @@ export const DateRangePicker = (inProps: DateRangePickerProps) => {
                             onBlur,
                             onFocus,
                             ...textFieldProps,
-                            InputProps: {
-                                startAdornment: (
-                                    <OpenPickerAdornment
-                                        inputIsDisabled={disabled}
-                                        inputIsReadOnly={readOnly}
-                                        onClick={() => setOpen(true)}
-                                        {...slotProps?.openPickerAdornment}
-                                        slotProps={{
-                                            ...slotProps?.openPickerAdornment?.slotProps,
-                                            openPickerButton: {
-                                                "aria-label": intl.formatMessage({
-                                                    id: "dextinity.dateRangePicker.openPicker",
-                                                    defaultMessage: "Open date range picker",
-                                                }),
-                                                ...slotProps?.openPickerAdornment?.slotProps?.openPickerButton,
-                                            },
-                                        }}
-                                    >
-                                        {openPickerIcon}
-                                    </OpenPickerAdornment>
-                                ),
-                                endAdornment: (
-                                    <>
-                                        <ReadOnlyAdornment inputIsReadOnly={Boolean(readOnly)} {...slotProps?.readOnlyAdornment} />
-                                        {hasDateRangeValue && !required && !disabled && !readOnly && (
-                                            <ClearInputAdornment
-                                                position="end"
-                                                onClick={() => onChange?.(undefined)}
-                                                {...slotProps?.clearInputAdornment}
-                                            />
-                                        )}
-                                    </>
-                                ),
+                            slotProps: {
+                                ...externalTextFieldProps?.slotProps,
+                                input: {
+                                    startAdornment: (
+                                        <OpenPickerAdornment
+                                            inputIsDisabled={disabled}
+                                            inputIsReadOnly={readOnly}
+                                            onClick={() => setOpen(true)}
+                                            {...slotProps?.openPickerAdornment}
+                                            slotProps={{
+                                                ...slotProps?.openPickerAdornment?.slotProps,
+                                                openPickerButton: {
+                                                    "aria-label": intl.formatMessage({
+                                                        id: "dextinity.dateRangePicker.openPicker",
+                                                        defaultMessage: "Open date range picker",
+                                                    }),
+                                                    ...slotProps?.openPickerAdornment?.slotProps?.openPickerButton,
+                                                },
+                                            }}
+                                        >
+                                            {openPickerIcon}
+                                        </OpenPickerAdornment>
+                                    ),
+                                    endAdornment: (
+                                        <>
+                                            <ReadOnlyAdornment inputIsReadOnly={Boolean(readOnly)} {...slotProps?.readOnlyAdornment} />
+                                            {hasDateRangeValue && !required && !disabled && !readOnly && (
+                                                <ClearInputAdornment
+                                                    position="end"
+                                                    onClick={() => onChange?.(undefined)}
+                                                    {...slotProps?.clearInputAdornment}
+                                                />
+                                            )}
+                                        </>
+                                    ),
+                                },
                             },
                         };
                     },

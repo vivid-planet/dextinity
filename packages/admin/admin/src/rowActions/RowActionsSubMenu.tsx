@@ -19,7 +19,7 @@ export interface RowActionsSubMenuProps extends Omit<MenuProps, "open" | "onClos
     openMenu: () => void;
     textSecondary?: ReactNode;
     endIcon?: ReactNode;
-    componentsProps?: RowActionsSubMenuComponentsProps & MenuProps["componentsProps"];
+    componentsProps?: RowActionsSubMenuComponentsProps;
 }
 
 export const RowActionsSubMenu = ({
@@ -37,7 +37,7 @@ export const RowActionsSubMenu = ({
     const menuIconItemButtonRef = useRef<HTMLButtonElement>(null);
     const menuListItemButtonRef = useRef<HTMLLIElement>(null);
     const showMenuButtonAsIconButton = level === 2;
-    const { rowActionsIconItem: rowActionsIconItemProps, rowActionsListItem: rowActionsListItemProps, ...menuComponentsProps } = componentsProps;
+    const { rowActionsIconItem: rowActionsIconItemProps, rowActionsListItem: rowActionsListItemProps } = componentsProps;
 
     return (
         <>
@@ -59,7 +59,6 @@ export const RowActionsSubMenu = ({
                 anchorEl={showMenuButtonAsIconButton ? menuIconItemButtonRef.current : menuListItemButtonRef.current}
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 transformOrigin={{ vertical: "center", horizontal: "left" }}
-                {...menuComponentsProps}
                 {...restMenuProps}
                 open={menuIsOpen}
                 onClose={closeMenu}

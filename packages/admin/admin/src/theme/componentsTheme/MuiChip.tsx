@@ -1,7 +1,17 @@
 import { Clear } from "@dextinity/admin-icons";
+import { chipClasses } from "@mui/material";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
 import type { GetMuiComponentTheme } from "./getComponentsTheme";
+
+const getDeleteIconColorStyles = (color: string) => ({
+    [`& .${chipClasses.deleteIcon}`]: {
+        color,
+        ["&:hover"]: {
+            color,
+        },
+    },
+});
 
 export const getMuiChip: GetMuiComponentTheme<"MuiChip"> = (component, { palette, spacing }) => ({
     ...component,
@@ -15,104 +25,79 @@ export const getMuiChip: GetMuiComponentTheme<"MuiChip"> = (component, { palette
         sizeMedium: {
             height: 24,
             padding: "4px 10px",
-        },
-        iconMedium: {
-            margin: 0,
-            fontSize: 16,
-            paddingRight: "6px",
-        },
-        labelMedium: {
-            fontSize: 12,
-            lineHeight: "16px",
-            paddingLeft: 0,
-            paddingRight: 0,
-        },
-        deleteIconMedium: {
-            margin: 0,
-            fontSize: 16,
-            paddingLeft: 6,
+
+            [`& .${chipClasses.icon}`]: {
+                margin: 0,
+                fontSize: 16,
+                paddingRight: "6px",
+            },
+
+            [`& .${chipClasses.label}`]: {
+                fontSize: 12,
+                lineHeight: "16px",
+                paddingLeft: 0,
+                paddingRight: 0,
+            },
+
+            [`& .${chipClasses.deleteIcon}`]: {
+                margin: 0,
+                fontSize: 16,
+                paddingLeft: 6,
+            },
         },
         sizeSmall: {
             height: 20,
             padding: "4px 7px",
-        },
-        iconSmall: {
-            margin: 0,
-            fontSize: 12,
-            paddingRight: "5px",
-        },
-        labelSmall: {
-            fontSize: 10,
-            lineHeight: "10px",
-            paddingLeft: 0,
-            paddingRight: 0,
-        },
-        deleteIconSmall: {
-            margin: 0,
-            fontSize: 12,
-            paddingLeft: 5,
-        },
-        deleteIconColorPrimary: {
-            color: palette.primary.contrastText,
-            ["&:hover"]: {
-                color: palette.primary.contrastText,
+
+            [`& .${chipClasses.icon}`]: {
+                margin: 0,
+                fontSize: 12,
+                paddingRight: "5px",
+            },
+
+            [`& .${chipClasses.label}`]: {
+                fontSize: 10,
+                lineHeight: "10px",
+                paddingLeft: 0,
+                paddingRight: 0,
+            },
+
+            [`& .${chipClasses.deleteIcon}`]: {
+                margin: 0,
+                fontSize: 12,
+                paddingLeft: 5,
             },
         },
-        deleteIconColorSecondary: {
-            color: palette.secondary.contrastText,
-            ["&:hover"]: {
-                color: palette.secondary.contrastText,
+        colorDefault: getDeleteIconColorStyles("black"),
+        colorPrimary: getDeleteIconColorStyles(palette.primary.contrastText),
+        colorSecondary: getDeleteIconColorStyles(palette.secondary.contrastText),
+        colorSuccess: getDeleteIconColorStyles(palette.success.contrastText),
+        colorError: getDeleteIconColorStyles(palette.error.contrastText),
+        colorWarning: getDeleteIconColorStyles(palette.warning.contrastText),
+        colorInfo: getDeleteIconColorStyles(palette.info.contrastText),
+        filled: {
+            [`&.${chipClasses.colorDefault}`]: {
+                backgroundColor: palette.grey["100"],
+                [`&.${chipClasses.clickable}`]: {
+                    "&:hover": {
+                        backgroundColor: palette.grey["200"],
+                    },
+                },
             },
-        },
-        // @ts-expect-error This keys exist but are missing in the types.
-        deleteIconColorDefault: {
-            color: "black",
-            ["&:hover"]: {
-                color: "black",
-            },
-        },
-        deleteIconColorSuccess: {
-            color: palette.success.contrastText,
-            ["&:hover"]: {
-                color: palette.success.contrastText,
-            },
-        },
-        deleteIconColorError: {
-            color: palette.error.contrastText,
-            ["&:hover"]: {
-                color: palette.error.contrastText,
-            },
-        },
-        deleteIconColorWarning: {
-            color: palette.warning.contrastText,
-            ["&:hover"]: {
-                color: palette.warning.contrastText,
-            },
-        },
-        deleteIconColorInfo: {
-            color: palette.info.contrastText,
-            ["&:hover"]: {
-                color: palette.info.contrastText,
-            },
-        },
-        filledDefault: {
-            backgroundColor: palette.grey["100"],
-            "&.MuiChip-clickable": {
-                "&:hover": {
-                    backgroundColor: palette.grey["200"],
+
+            [`&.${chipClasses.colorInfo}`]: {
+                backgroundColor: "#fff",
+                [`&.${chipClasses.clickable}`]: {
+                    "&:hover": {
+                        backgroundColor: palette.grey["50"],
+                    },
                 },
             },
         },
-        filledInfo: {
-            backgroundColor: "#fff",
-            "&.MuiChip-clickable": {
-                "&:hover": {
-                    backgroundColor: palette.grey["50"],
-                },
+        outlined: {
+            [`&.${chipClasses.colorDefault}`]: {
+                borderColor: palette.grey["100"],
             },
-        },
-        outlinedDefault: {
-            borderColor: palette.grey["100"],
         },
     }),
     defaultProps: {

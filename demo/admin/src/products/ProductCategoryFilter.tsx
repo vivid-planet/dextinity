@@ -79,7 +79,9 @@ function ProductCategoryFilter({ item, applyValue, apiRef }: GridFilterInputValu
                     }}
                     label={apiRef.current.getLocaleText("filterPanelInputLabel")}
                     slotProps={{
+                        ...params.slotProps,
                         inputLabel: {
+                            ...params.slotProps.inputLabel,
                             shrink: true,
                         },
                         input: {

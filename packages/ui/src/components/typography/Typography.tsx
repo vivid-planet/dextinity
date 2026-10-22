@@ -9,8 +9,6 @@ type TypographyElement = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span";
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
- *
- * @experimental
  */
 export type TypographyOwnerState = {
     variant: TypographyVariant;
@@ -21,7 +19,6 @@ const variantElement: Record<TypographyVariant, TypographyElement> = {
     body: "p",
 };
 
-/** @experimental */
 export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "className"> {
     /**
      * Visual style. Each variant has a default semantic element.
@@ -53,8 +50,6 @@ export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "clas
 /**
  * Renders a single block of text in one of several visual variants, each
  * mapping to a default semantic element.
- *
- * @experimental
  */
 export function Typography({ variant = "body", element, className, children, ref, render, ...restProps }: TypographyProps) {
     const ownerState: TypographyOwnerState = { variant };

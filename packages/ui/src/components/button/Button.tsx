@@ -9,8 +9,6 @@ type ButtonVariant = "primary" | "secondary";
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
- *
- * @experimental
  */
 export type ButtonOwnerState = {
     variant: ButtonVariant;
@@ -39,7 +37,6 @@ interface ButtonSlotProps<StartIcon extends ElementType, EndIcon extends Element
     endIcon?: SlotPropsValue<ButtonOwnerState, EndIcon>;
 }
 
-/** @experimental */
 export interface ButtonProps<StartIcon extends ElementType = "span", EndIcon extends ElementType = "span">
     extends Omit<BaseButton.Props, "className"> {
     /**
@@ -68,8 +65,6 @@ export interface ButtonProps<StartIcon extends ElementType = "span", EndIcon ext
 
 /**
  * A button for triggering actions.
- *
- * @experimental
  */
 export function Button<StartIcon extends ElementType = "span", EndIcon extends ElementType = "span">({
     disabled = false,

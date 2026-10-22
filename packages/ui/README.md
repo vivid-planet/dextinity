@@ -6,7 +6,7 @@ It builds on an unstyled foundation rather than evolving the MUI-based component
 
 ## Experimental
 
-Any export may change or be removed at any time, without deprecation notice. Every export carries the `@experimental` TSDoc tag. Changesets are not created for changes within this package.
+Any export may change or be removed at any time, without deprecation notice. Changesets are not created for changes within this package.
 
 ## Non-goals
 

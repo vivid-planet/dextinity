@@ -337,22 +337,22 @@ export const StackLinkButton = {
                 <StackSwitch>
                     <StackPage name="page1">
                         <h3>Page 1</h3>
-                        <Button component={StackLink} pageName="page2" payload="test">
+                        <Button component={StackLink} nativeButton={false} pageName="page2" payload="test">
                             StackLink-based Button to page2
                         </Button>
                         <Tooltip title="StackLink-based IconButton to page2">
-                            <IconButton component={StackLink} pageName="page2" payload="test">
+                            <IconButton component={StackLink} nativeButton={false} pageName="page2" payload="test">
                                 <ArrowRight />
                             </IconButton>
                         </Tooltip>
                     </StackPage>
                     <StackPage name="page2">
                         <h3>Page 2</h3>
-                        <Button component={StackLink} pageName="page1" payload="test">
+                        <Button component={StackLink} nativeButton={false} pageName="page1" payload="test">
                             StackLink-based Button to page1
                         </Button>
                         <Tooltip title="StackLink-based IconButton to page1">
-                            <IconButton component={StackLink} pageName="page1" payload="test">
+                            <IconButton component={StackLink} nativeButton={false} pageName="page1" payload="test">
                                 <ArrowLeft />
                             </IconButton>
                         </Tooltip>

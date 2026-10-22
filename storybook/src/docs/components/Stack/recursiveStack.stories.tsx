@@ -76,7 +76,7 @@ const Page = ({ id }: PageProps) => {
             {data?.subfolder.length === 0 && <InlineAlert title="No entries" severity="warning" description="There are no entries in this folder" />}
             {data?.subfolder.map((childId) => {
                 return (
-                    <Button variant="primary" component={StackLink} pageName="id" payload={childId.id}>
+                    <Button variant="primary" component={StackLink} nativeButton={false} pageName="id" payload={childId.id}>
                         {childId.name}
                     </Button>
                 );

@@ -27,7 +27,7 @@ export function AboutModal({ open, onClose, logo = <DextinityLogo sx={{ fontSize
     const buildInformation = useBuildInformation();
 
     return (
-        <Modal open={open} onClose={onClose} closeAfterTransition BackdropComponent={Backdrop}>
+        <Modal open={open} onClose={onClose} closeAfterTransition slots={{ backdrop: Backdrop }}>
             <Dialog open onClose={onClose}>
                 <DialogTitle>
                     <DialogTitleContent>

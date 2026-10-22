@@ -44,7 +44,11 @@ export const _ErrorHandlerProvider = {
 
         return (
             <>
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Card variant="outlined">
                         <CardContent>
                             <Typography variant="h3" gutterBottom>
@@ -67,8 +71,11 @@ export const _ErrorHandlerProvider = {
                         </CardContent>
                     </Card>
                 </Box>
-
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Card variant="outlined">
                         <CardContent>
                             <Typography variant="h5" gutterBottom>
@@ -82,7 +89,6 @@ export const _ErrorHandlerProvider = {
                         </CardContent>
                     </Card>
                 </Box>
-
                 <Card variant="outlined">
                     <CardContent>
                         <Typography variant="h5" gutterBottom>

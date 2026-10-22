@@ -68,8 +68,18 @@ const SingleFileField = ({ buttonText, input, allowedMimetypes, preview, menuAct
         return (
             <>
                 <BlockAdminComponentPaper disablePadding>
-                    <Box padding={3}>
-                        <Grid container alignItems="center" spacing={3}>
+                    <Box
+                        sx={{
+                            padding: 3,
+                        }}
+                    >
+                        <Grid
+                            container
+                            spacing={3}
+                            sx={{
+                                alignItems: "center",
+                            }}
+                        >
                             {preview && <Grid>{preview}</Grid>}
                             <Grid size="grow">
                                 <Typography variant="subtitle1">{damFile.name}</Typography>

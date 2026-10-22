@@ -40,7 +40,11 @@ export const _ErrorBoundary = {
     render: ({ renderViewWithErrors }: Args) => {
         return (
             <>
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Card variant="outlined">
                         <CardContent>
                             <Typography variant="h3" gutterBottom>

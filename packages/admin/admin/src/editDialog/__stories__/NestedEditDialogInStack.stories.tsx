@@ -30,7 +30,12 @@ function ProductDetail({ id: stackSelectionId }: { id: string }) {
     return (
         <>
             <MainContent fullHeight disablePadding>
-                <Typography variant="h6" py={2}>
+                <Typography
+                    variant="h6"
+                    sx={{
+                        py: 2,
+                    }}
+                >
                     Stack selection ID: {stackSelectionId}
                 </Typography>
                 <DataGrid
@@ -58,7 +63,12 @@ function ProductDetail({ id: stackSelectionId }: { id: string }) {
             </MainContent>
             <EditDialog>
                 <DialogContent>
-                    <Typography variant="h6" py={2}>
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            py: 2,
+                        }}
+                    >
                         EditDialog selection ID: {editDialogSelectionId}
                     </Typography>
                     <FinalForm

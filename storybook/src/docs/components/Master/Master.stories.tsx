@@ -56,7 +56,11 @@ export const Master = {
                                     <Typography variant="h6">Drawer</Typography>
                                 </MuiToolbar>
                             </AppBar>
-                            <Box p={4}>
+                            <Box
+                                sx={{
+                                    p: 4,
+                                }}
+                            >
                                 <Typography paragraph>{loremIpsumText}</Typography>
                                 <Typography paragraph>{loremIpsumText}</Typography>
                                 <Typography>{loremIpsumText}</Typography>

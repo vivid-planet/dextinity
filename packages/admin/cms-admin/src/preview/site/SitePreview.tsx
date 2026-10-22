@@ -148,12 +148,24 @@ function SitePreview({ resolvePath, logo = <DextinityIcon sx={{ fontSize: 32 }} 
         <Root>
             <IFrameViewer device={device} initialPageUrl={initialPageUrl} />
             <ActionsContainer>
-                <Grid container justifyContent="space-between" alignItems="center" wrap="nowrap">
+                <Grid
+                    container
+                    wrap="nowrap"
+                    sx={{
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                    }}
+                >
                     <Grid>
                         <SiteInformation>
                             <LogoWrapper>
                                 {logo}
-                                <Typography textTransform="uppercase" color="white">
+                                <Typography
+                                    color="white"
+                                    sx={{
+                                        textTransform: "uppercase",
+                                    }}
+                                >
                                     <FormattedMessage defaultMessage="Preview" id="dextinity.sitePreview.preview" />
                                 </Typography>
                             </LogoWrapper>

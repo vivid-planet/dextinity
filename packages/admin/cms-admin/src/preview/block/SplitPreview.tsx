@@ -47,7 +47,13 @@ function SplitPreview({ url, previewState, children, previewApi }: Props) {
             <Split sizes={[initialPreviewWidth, initialBlockListWidth]} minSize={360} gutterSize={40}>
                 <Column height={columnHeight}>
                     <FirstColumnContainer>
-                        <Box paddingBottom={4}>{firstColumn}</Box>
+                        <Box
+                            sx={{
+                                paddingBottom: 4,
+                            }}
+                        >
+                            {firstColumn}
+                        </Box>
                     </FirstColumnContainer>
                     <PreviewContainer minimized={minimized}>
                         <BlockPreview url={url} previewState={previewState} previewApi={previewApi} />

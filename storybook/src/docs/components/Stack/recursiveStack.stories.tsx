@@ -63,7 +63,15 @@ const Page = ({ id }: PageProps) => {
     }
 
     return (
-        <Box display="flex" flexDirection="column" alignItems="left" gap={2} padding={2}>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "left",
+                gap: 2,
+                padding: 2,
+            }}
+        >
             <div>Current ID: {id}</div>
             {data?.subfolder.length === 0 && <InlineAlert title="No entries" severity="warning" description="There are no entries in this folder" />}
             {data?.subfolder.map((childId) => {

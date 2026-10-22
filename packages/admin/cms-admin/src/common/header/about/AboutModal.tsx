@@ -43,7 +43,11 @@ export function AboutModal({ open, onClose, logo = <DextinityLogo sx={{ fontSize
                 <DialogContent>
                     <LogoContainer>{logo}</LogoContainer>
                     <VersionContainer>
-                        <Typography fontWeight={500}>{`v${version}`}</Typography>
+                        <Typography
+                            sx={{
+                                fontWeight: 500,
+                            }}
+                        >{`v${version}`}</Typography>
                         {buildInformation?.number && buildInformation.commitHash && (
                             <Typography>
                                 <FormattedMessage

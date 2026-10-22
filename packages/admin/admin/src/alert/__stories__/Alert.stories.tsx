@@ -136,9 +136,18 @@ export const WithClose: Story = {
 export const WithCustomContent: Story = {
     args: {
         children: (
-            <Box display="flex" gap={4}>
+            <Box
+                sx={{
+                    display: "flex",
+                    gap: 4,
+                }}
+            >
                 <Box sx={{ width: 150, height: 150 }} component="img" src="https://picsum.photos/id/38/300/300" />
-                <Stack gap={2}>
+                <Stack
+                    sx={{
+                        gap: 2,
+                    }}
+                >
                     <Typography variant="h4" component="span">
                         Custom Title
                     </Typography>

@@ -10,7 +10,11 @@ import { RouterTab, RouterTabs } from "../RouterTabs";
 
 // Make sure the story is not too tall and can be scrolled - setting the story-height in the config only affects the min-height and does not make the content scrollable
 const MaxHeightDecorator: Decorator = (Story) => (
-    <Box maxHeight="400px">
+    <Box
+        sx={{
+            maxHeight: "400px",
+        }}
+    >
         <Story />
     </Box>
 );

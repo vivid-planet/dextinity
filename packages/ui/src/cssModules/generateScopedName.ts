@@ -1,24 +1,24 @@
 import { createHash } from "node:crypto";
 
-const futureUiModulePattern = /src\/components\/[^/]+\/([A-Z][A-Za-z0-9]+)\.module\.scss$/;
-const futureUiClassnamePrefix = "dextinity";
+const componentModulePattern = /src\/components\/[^/]+\/([A-Z][A-Za-z0-9]+)\.module\.scss$/;
+const classNamePrefix = "dextinity";
 
 /**
- * Produces the stable class names defined by the Future UI class-name contract instead of Vite's default hashed names.
+ * Produces the stable class names defined by the class-name contract instead of Vite's default hashed names.
  */
 export function generateScopedName(name: string, filename: string): string {
-    const futureUiMatch = filename.match(futureUiModulePattern);
+    const componentModuleMatch = filename.match(componentModulePattern);
 
-    if (futureUiMatch) {
-        const componentName = futureUiMatch[1];
+    if (componentModuleMatch) {
+        const componentName = componentModuleMatch[1];
 
         if (name === "root") {
-            return `${futureUiClassnamePrefix}${componentName}`;
+            return `${classNamePrefix}${componentName}`;
         }
 
-        return `${futureUiClassnamePrefix}${componentName}__${name}`;
+        return `${classNamePrefix}${componentName}__${name}`;
     }
 
-    // No class-name contract for modules outside future-ui — fall back to a deterministic, file-scoped name.
+    // No class-name contract for modules outside `src/components` — fall back to a deterministic, file-scoped name.
     return `${name}_${createHash("sha1").update(`${filename}::${name}`).digest("hex").slice(0, 5)}`;
 }

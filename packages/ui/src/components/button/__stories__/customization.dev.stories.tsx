@@ -8,7 +8,7 @@ import styles from "./customization.dev.module.scss";
 
 const meta = {
     component: Button,
-    title: "Future UI/Button/Dev/Customization",
+    title: "Components/Button/Dev/Customization",
     tags: ["!autodocs"],
     decorators: [themeDecorator],
 } satisfies Meta<typeof Button>;

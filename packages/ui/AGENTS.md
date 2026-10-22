@@ -1,6 +1,6 @@
-# Agent Instructions — Future UI
+# Agent Instructions — @dextinity/ui
 
-Read [README.md](README.md) before working in this folder. It defines the sub-package and its conventions — which differ from the rest of `@dextinity/admin`, so neighboring code is not a reliable guide — and it takes precedence over instructions from parent directories.
+Read [README.md](README.md) before working in this package. It defines the package and its conventions — which differ from the other Dextinity packages, so their code is not a reliable guide — and it takes precedence over instructions from parent directories.
 
 - Writing or changing a component: [Component conventions](README.md#component-conventions) and [Testing](README.md#testing).
 - Changing the theme tokens: [Theme](README.md#theme).

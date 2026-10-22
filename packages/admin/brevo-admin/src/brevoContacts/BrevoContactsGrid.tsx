@@ -85,7 +85,7 @@ function BrevoContactsGridToolbar({ intl, scope }: BrevoContactsGridToolbarProps
                 />
                 <ToolbarFillSpace />
                 <CrudMoreActionsMenu overallActions={[moreActionsMenuItem]} />
-                <Button startIcon={<Add />} component={StackLink} pageName="add" payload="add" variant="primary">
+                <Button startIcon={<Add />} component={StackLink} nativeButton={false} pageName="add" payload="add" variant="primary">
                     <FormattedMessage id="dextinity.brevoContact.newContact" defaultMessage="New contact" />
                 </Button>
             </DataGridToolbar>
@@ -163,7 +163,7 @@ export function BrevoContactsGrid({
             renderCell: (params) => {
                 return (
                     <>
-                        <IconButton component={StackLink} pageName="edit" payload={params.row.id.toString()}>
+                        <IconButton component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id.toString()}>
                             <Edit color="primary" />
                         </IconButton>
                         <RowActionsMenu>

@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { figmaDesign } from "../../../storybook/figmaDesign";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Typography } from "../Typography";
 
@@ -8,9 +7,6 @@ const meta = {
     component: Typography,
     title: "Future UI/Typography",
     decorators: [themeDecorator],
-    parameters: {
-        design: figmaDesign({ nodeId: "1088-30" }),
-    },
     args: {
         children: "The quick brown fox jumps over the lazy dog",
     },

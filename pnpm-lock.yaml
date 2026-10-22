@@ -1014,9 +1014,6 @@ importers:
       '@mui/x-date-pickers-pro':
         specifier: ^8.29.4
         version: 8.29.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@mui/material@7.3.11(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@mui/system@7.3.11(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0))(@types/react@19.3.0)(date-fns@4.4.0)(dayjs@1.11.23)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@storybook/addon-designs':
-        specifier: ^11.1.3
-        version: 11.1.4(@storybook/addon-docs@10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0)))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0))
       '@storybook/addon-docs':
         specifier: ^10.6.1
         version: 10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0))
@@ -2976,9 +2973,6 @@ importers:
       '@graphql-mocks/network-msw':
         specifier: ^0.4.4
         version: 0.4.4(graphql-mocks@0.12.0(graphql@16.14.2))(msw@2.15.0(@types/node@24.19.1)(typescript@5.9.3))
-      '@storybook/addon-designs':
-        specifier: ^11.1.3
-        version: 11.1.4(@storybook/addon-docs@10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0)))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0))
       '@storybook/addon-docs':
         specifier: ^10.6.1
         version: 10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0))
@@ -5328,14 +5322,6 @@ packages:
     peerDependencies:
       commander: ^11.1.0
 
-  '@figspec/components@2.1.0':
-    resolution: {integrity: sha512-PFKBX2oFz+vhThKTNsu7Mh4ZT3X7YCiM694UkAMT36j/p0tdmXs9Je0Sf88stTEcMgwYvNv9TZtvniYmgaE+bw==}
-
-  '@figspec/react@2.0.1':
-    resolution: {integrity: sha512-xflqJ3XQZVzm8+7dsm8OFxVAmBNNA3Mg65sqwNHiq7VRSMSD7qwH4BPsBy07ZaX+9nHeaacBpFZd3Q0aIsISqw==}
-    peerDependencies:
-      react: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
   '@fingerprintjs/fingerprintjs@3.4.2':
     resolution: {integrity: sha512-3Ncze6JsJpB7BpYhqIgvBpfvEX1jsEKrad5hQBpyRQxtoAp6hx3+R46zqfsuQG4D9egQZ+xftQ0u4LPFMB7Wmg==}
 
@@ -6526,14 +6512,6 @@ packages:
 
   '@leichtgewicht/ip-codec@2.0.5':
     resolution: {integrity: sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==}
-
-  '@lit-labs/react@2.1.3':
-    resolution: {integrity: sha512-OD9h2JynerBQUMNzb563jiVpxfvPF0HjQkKY2mx0lpVYvD7F+rtJpOGz6ek+6ufMidV3i+MPT9SX62OKWHFrQg==}
-
-  '@lit/react@1.0.8':
-    resolution: {integrity: sha512-p2+YcF+JE67SRX3mMlJ1TKCSTsgyOVdAwd/nxp3NuV1+Cb6MWALbN6nT7Ld4tpmYofcE5kcaSY1YBB9erY+6fw==}
-    peerDependencies:
-      '@types/react': 17 || 18 || 19
 
   '@lukeed/csprng@1.1.0':
     resolution: {integrity: sha512-Z7C/xXCiGWsg0KuKsHTKJxbWhpI3Vs5GwLfOean7MGyVFGqdRgBbAjOCh6u4bbjPc/8MJ2pZmK/0DLdCbivLDA==}
@@ -8932,21 +8910,6 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
-
-  '@storybook/addon-designs@11.1.4':
-    resolution: {integrity: sha512-4NWq8iiCbAODyfbMXKlOmMcz+xLcfIKzxC0UMdWq2M4W9SkTwzX7qr/m+2+a0dqddAaZvOZ9zfIrZa5suHC1ow==}
-    peerDependencies:
-      '@storybook/addon-docs': ^0.0.0-0 || ^10.0.0 || ^10.0.0-0 || ^10.1.0-0 || ^10.2.0-0 || ^10.5.0-0 || ^10.6.0-0
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      storybook: ^0.0.0-0 || ^10.0.0 || ^10.0.0-0 || ^10.1.0-0 || ^10.2.0-0 || ^10.5.0-0 || ^10.6.0-0
-    peerDependenciesMeta:
-      '@storybook/addon-docs':
-        optional: true
-      react:
-        optional: true
-      react-dom:
-        optional: true
 
   '@storybook/addon-docs@10.6.1':
     resolution: {integrity: sha512-31PXR+MCWfI5YHKKah6tWnbV1FJWA9qbTHxtvpszPLd8FBekXtPOnmyYOpFF9CfciBF9bkeJFdFanJvUCjWbjA==}
@@ -22670,16 +22633,6 @@ snapshots:
       commander: 11.1.0
       prettier: 3.6.2
 
-  '@figspec/components@2.1.0': {}
-
-  '@figspec/react@2.0.1(@types/react@19.3.0)(react@19.3.0)':
-    dependencies:
-      '@figspec/components': 2.1.0
-      '@lit-labs/react': 2.1.3(@types/react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - '@types/react'
-
   '@fingerprintjs/fingerprintjs@3.4.2':
     dependencies:
       tslib: 2.8.1
@@ -24137,16 +24090,6 @@ snapshots:
       - utf-8-validate
 
   '@leichtgewicht/ip-codec@2.0.5': {}
-
-  '@lit-labs/react@2.1.3(@types/react@19.3.0)':
-    dependencies:
-      '@lit/react': 1.0.8(@types/react@19.3.0)
-    transitivePeerDependencies:
-      - '@types/react'
-
-  '@lit/react@1.0.8(@types/react@19.3.0)':
-    dependencies:
-      '@types/react': 19.3.0
 
   '@lukeed/csprng@1.1.0': {}
 
@@ -26668,17 +26611,6 @@ snapshots:
       tslib: 2.8.1
 
   '@standard-schema/spec@1.1.0': {}
-
-  '@storybook/addon-designs@11.1.4(@storybook/addon-docs@10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0)))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0))':
-    dependencies:
-      '@figspec/react': 2.0.1(@types/react@19.3.0)(react@19.3.0)
-      storybook: 10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0)
-    optionalDependencies:
-      '@storybook/addon-docs': 10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0))
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-    transitivePeerDependencies:
-      - '@types/react'
 
   '@storybook/addon-docs@10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0))':
     dependencies:

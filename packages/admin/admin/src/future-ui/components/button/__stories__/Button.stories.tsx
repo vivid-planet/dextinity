@@ -2,7 +2,6 @@ import { ArrowRight, Favorite } from "@dextinity/admin-icons";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
-import { figmaDesign } from "../../../storybook/figmaDesign";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../Button";
 
@@ -15,9 +14,6 @@ const meta = {
     component: Button,
     title: "Future UI/Button",
     decorators: [themeDecorator],
-    parameters: {
-        design: figmaDesign({ nodeId: "25-2" }),
-    },
     args: {
         children: "Button",
         onClick: fn(),

@@ -116,7 +116,7 @@ The contract has two parts: **structural class names** for a component's element
 
 ### Stories
 
-Stories live under the "Future UI" section. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers (decorators, the Figma-link builder) live in [`storybook/`](storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it.
+Stories live under the "Future UI" section. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`storybook/`](storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it.
 
 #### Main story
 
@@ -150,19 +150,6 @@ Each declared prop is exposed as a control through `argTypes`, by kind:
 #### Dev story
 
 `__stories__/<name>.dev.stories.tsx`, optional, nests its title under a `Dev` segment (`Future UI/<Component>/Dev/<Name>`) and sets `tags: ["!autodocs"]` in its meta, keeping these out of the consumer docs. A dev story serves any development, testing, or debugging need, so add them freely — e.g. reproduce a bug in a dev story and use it to confirm the fix, rather than reaching for the Dextinity demo or a consuming project.
-
-#### Figma
-
-Linking the Figma design is strongly recommended: the main story's `meta` links it through [`@storybook/addon-designs`](https://storybook.js.org/addons/@storybook/addon-designs), so the design panel shows the frame across the component's stories. Every component lives in the same DDS Figma file and differs only by frame, so a story passes only its node id — the `node-id` from the frame's Figma link — to a shared helper:
-
-```tsx
-const meta = {
-    // …
-    parameters: {
-        design: figmaDesign({ nodeId: "25-2" }),
-    },
-} satisfies Meta<typeof Button>;
-```
 
 ## Testing
 

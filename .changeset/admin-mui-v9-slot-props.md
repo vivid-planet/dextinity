@@ -1,5 +1,6 @@
 ---
 "@dextinity/admin": major
+"@dextinity/admin-color-picker": major
 ---
 
 Replace the MUI props removed in MUI v9 in the props of the admin components
@@ -12,6 +13,7 @@ The following props forwarded the MUI props removed in MUI v9 and use their repl
 - `Tabs`: `ScrollButtonComponent` becomes `slots.scrollButtons`
 - `RouterTabs`: `tabsProps.ScrollButtonComponent` becomes `tabsProps.slots.scrollButtons`
 - `InputWithPopper`: `components` only accepts `Transition`, pass the slots of the input with `slots`
+- `ColorPicker`: `components` only accepts `Transition` and the preview components, pass the slots of the input with `slots`
 - `RowActionsSubMenu`: `componentsProps` only accepts `rowActionsIconItem` and `rowActionsListItem`, pass the slot props of the menu with `slotProps`
 
 ```diff

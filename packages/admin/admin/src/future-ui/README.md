@@ -213,23 +213,7 @@ The partials and types are generated from a design-token export, not edited manu
 
 Maintainer scripts, run through `pnpm --filter @dextinity/admin run …`:
 
-- **`future-ui-figma list`** prints the DDS component inventory as JSON — every component or component set a designer has marked for development in Figma (dev status "Ready for development" or "Completed"), skipping non-public `_`-prefixed names. It reads the Figma file over the REST API, so `FIGMA_TOKEN` must be set to a Figma [personal access token](https://developers.figma.com/docs/rest-api/personal-access-tokens/), or `list` fails with an `auth_missing` error. The token needs only the `file_content:read` scope. Behind a proxy, also set `NODE_USE_ENV_PROXY=1`: Node's `fetch` ignores `HTTPS_PROXY` without it.
-- **`future-ui-figma describe-target <component>`** prints the props one component's Figma design says it should have as JSON — each prop's type, an enum's options, and its default value.
-- **`future-ui-figma describe-implemented <component>`** prints the props one component's source implements, in the same shape as `describe-target`, reading the source instead of Figma.
-- **`future-ui-figma diff <component>`** prints how one component's source differs from its Figma design as JSON. The story's `figmaDesign({ nodeId })` links the two. A story without a node id is reported as unlinked when Figma has a component of the same name. **`diff --all`** reports every future-ui component, plus every Figma component that has no code yet.
 - **`generate-future-ui-theme-tokens`** regenerates the theme SCSS partials and types from a design-token export — see [Regenerating the tokens](#regenerating-the-tokens).
-
-## Working from the Figma design
-
-future-ui implements the Dextinity Design System (DDS) Figma file. Compare, implement, and update components and theme tokens against it with the `future-ui-figma` CLI.
-
-- Find a component's Figma name and node id with `future-ui-figma list`.
-- Find where a component's code differs from its Figma design with `future-ui-figma diff`. `future-ui-figma diff --all` does this for every component, and also lists the Figma components that have no code yet.
-- Get a component's props from the Figma design with `future-ui-figma describe-target`, or from the code with `future-ui-figma describe-implemented`.
-
-Figma properties become props by fixed rules: names and enum options are camelCased, a Yes/No variant becomes a boolean prop, and a property whose name starts with `_` is never implemented. Such properties control the design file: the `_State` variants, for example, show browser states such as hover, which the CSS implements. The code is the source of truth: it follows the design by default, and a deliberate deviation stays.
-
-Theme tokens come from Figma only through the token export, which a person runs: when the theme lacks a token, ask for an export, as [Regenerating the tokens](#regenerating-the-tokens) describes. Use the CSS variables from the theme partials, also when Figma shows a different value. The next token export fixes the difference.
 
 ## Known issues
 

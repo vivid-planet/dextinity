@@ -29,7 +29,6 @@
         "build:types": "tsc --project ./tsconfig.build.json --emitDeclarationOnly",
         "build-storybook": "storybook build --disable-telemetry",
         "clean": "rimraf lib",
-        "future-ui-figma": "node --loader ts-node/esm src/future-ui/cli/figma/futureUiFigma.ts",
         "generate-future-ui-theme-tokens": "ts-node ./src/future-ui/cli/generateThemeTokens.ts",
         "lint": "run-p lint:prettier lint:eslint lint:tsc",
         "lint:ci": "pnpm run lint",
@@ -74,7 +73,6 @@
         "@dextinity/eslint-plugin": "workspace:*",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@figma/rest-api-spec": "^0.41.0",
         "@mui/material": "^7.3.11",
         "@mui/system": "^7.3.11",
         "@mui/x-data-grid": "^8.29.3",
@@ -101,7 +99,6 @@
         "@types/react-router-dom": "^5.3.3",
         "@vitest/browser": "4.1.11",
         "@vitest/browser-playwright": "4.1.11",
-        "commander": "^15.0.0",
         "eslint": "^9.39.5",
         "eslint-plugin-storybook": "^10.6.1",
         "final-form": "^4.20.10",
@@ -123,13 +120,11 @@
         "sass": "^1.93.0",
         "storybook": "^10.6.1",
         "storybook-addon-tag-badges": "^3.1.0",
-        "ts-morph": "^28.0.0",
         "ts-node": "^10.9.2",
         "typescript": "^5.9.3",
         "vite": "^7.3.6",
         "vite-tsconfig-paths": "^6.1.1",
-        "vitest": "^4.1.11",
-        "zod": "^4.4.3"
+        "vitest": "^4.1.11"
     },
     "peerDependencies": {
         "@apollo/client": "^3.7.0",

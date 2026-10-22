@@ -116,7 +116,7 @@ The contract has two parts: **structural class names** for a component's element
 
 ### Stories
 
-Stories live under the "Future UI" section. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`storybook/`](storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it.
+Stories live under the "Future UI" section. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it.
 
 #### Main story
 
@@ -166,9 +166,9 @@ Not worth a test:
 
 - **That a component renders** — every story already runs as a browser test, so a rendering story is the coverage.
 - **Appearance** — colors, sizes, spacing — reviewed visually in the stories, never asserted.
-- **Dev-local tooling** — story-only helpers — a failure is loud and local. Exception: code whose regression is silent or reaches consumers, such as the class-name mapping in `cssModules/`.
+- **Dev-local tooling** — story-only helpers — a failure is loud and local. Exception: code whose regression is silent or reaches consumers, such as the class-name mapping in `src/cssModules/`.
 
-Run from `packages/admin/admin`: `pnpm run test:unit`, `pnpm run test:storybook`, and `pnpm run test:watch`.
+Run from `packages/ui`: `pnpm run test:unit`, `pnpm run test:storybook`, and `pnpm run test:watch`.
 
 ## Theme
 
@@ -176,7 +176,7 @@ Components read their colors and metrics from CSS custom properties (`var(--dext
 
 ### Token layers
 
-The tokens are defined in five SCSS partials under [`theme/`](theme), composed into the provider module with `@use` and wrapped in a single `@layer dextinity`: `_primitives.scss` (raw values, internal), `_brand.scss`, `_responsive.scss`, `_semantic.scss`, and `_components.scss`. The prop-value types live in [`theme/types.ts`](theme/types.ts).
+The tokens are defined in five SCSS partials under [`src/theme/`](src/theme), composed into the provider module with `@use` and wrapped in a single `@layer dextinity`: `_primitives.scss` (raw values, internal), `_brand.scss`, `_responsive.scss`, `_semantic.scss`, and `_components.scss`. The prop-value types live in [`src/theme/types.ts`](src/theme/types.ts).
 
 ### Selecting a color scheme
 
@@ -184,4 +184,4 @@ The tokens are defined in five SCSS partials under [`theme/`](theme), composed i
 
 ## Known issues
 
-- Styles are not delivered by the package build yet. The Babel build compiles no CSS Modules, so the class-name mapping applies in Storybook but not in published output.
+- Styles are not delivered by the package build yet. The build compiles no CSS Modules, so the class-name mapping applies in Storybook but not in published output.

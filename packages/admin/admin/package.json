@@ -14,10 +14,6 @@
         ".": {
             "import": "./lib/index.js",
             "types": "./lib/index.d.ts"
-        },
-        "./future-ui": {
-            "import": "./lib/future-ui/index.js",
-            "types": "./lib/future-ui/index.d.ts"
         }
     },
     "files": [
@@ -47,10 +43,8 @@
         "test:watch": "vitest --watch"
     },
     "dependencies": {
-        "@base-ui/react": "^1.5.0",
         "@dextinity/admin-icons": "workspace:*",
         "@mui/utils": "^7.3.11",
-        "clsx": "^2.1.1",
         "date-fns": "^4.4.0",
         "exceljs": "^4.4.0",
         "final-form-set-field-data": "^1.0.2",
@@ -115,7 +109,6 @@
         "react-router": "^5.3.4",
         "react-router-dom": "^5.3.4",
         "rimraf": "^6.1.3",
-        "sass": "^1.93.0",
         "storybook": "^10.6.1",
         "storybook-addon-tag-badges": "^3.1.0",
         "typescript": "^5.9.3",

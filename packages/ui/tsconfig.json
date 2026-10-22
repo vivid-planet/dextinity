@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "module": "preserve",
+        "moduleResolution": "bundler",
+        "outDir": "lib",
+        "rootDir": ".",
+        "strict": true,
+        "target": "esnext",
+        "verbatimModuleSyntax": true
+    },
+    "exclude": ["node_modules", "lib"],
+    "extends": "../../tsconfig.core.json",
+    "include": ["./src", "./.storybook", "./vitest.setup.ts"]
+}

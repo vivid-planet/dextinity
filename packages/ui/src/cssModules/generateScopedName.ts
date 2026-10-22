@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-const futureUiModulePattern = /future-ui\/components\/[^/]+\/([A-Z][A-Za-z0-9]+)\.module\.scss$/;
+const futureUiModulePattern = /src\/components\/[^/]+\/([A-Z][A-Za-z0-9]+)\.module\.scss$/;
 const futureUiClassnamePrefix = "dextinity";
 
 /**

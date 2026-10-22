@@ -61,8 +61,20 @@ export const Master = {
                                     p: 4,
                                 }}
                             >
-                                <Typography paragraph>{loremIpsumText}</Typography>
-                                <Typography paragraph>{loremIpsumText}</Typography>
+                                <Typography
+                                    sx={{
+                                        marginBottom: "16px",
+                                    }}
+                                >
+                                    {loremIpsumText}
+                                </Typography>
+                                <Typography
+                                    sx={{
+                                        marginBottom: "16px",
+                                    }}
+                                >
+                                    {loremIpsumText}
+                                </Typography>
                                 <Typography>{loremIpsumText}</Typography>
                             </Box>
                         </Box>

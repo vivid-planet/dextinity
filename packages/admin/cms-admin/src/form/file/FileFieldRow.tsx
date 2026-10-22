@@ -59,8 +59,10 @@ export const FileFieldRow = ({ file, onRemove, preview, menuActions }: FileField
                 <ListItemText
                     primary={file.name}
                     secondary={<DamPathLazy fileId={file.id} />}
-                    primaryTypographyProps={{ variant: "subtitle1", noWrap: true }}
-                    secondaryTypographyProps={{ variant: "body2", color: "textSecondary", noWrap: true, component: "span" }}
+                    slotProps={{
+                        primary: { variant: "subtitle1", noWrap: true },
+                        secondary: { variant: "body2", color: "textSecondary", noWrap: true, component: "span" },
+                    }}
                 />
             </Stack>
             {showMoreMenu && (

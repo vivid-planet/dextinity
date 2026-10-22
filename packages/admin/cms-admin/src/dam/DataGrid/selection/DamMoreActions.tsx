@@ -39,11 +39,13 @@ export const DamMoreActions = ({ transformOrigin, anchorOrigin, folderId, filter
             <Snackbar
                 anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                 autoHideDuration={5000}
-                TransitionComponent={(props: SlideProps) => <Slide {...props} direction="right" />}
                 message={intl.formatMessage({
                     id: "dextinity.dam.moreActions.folderNotDownloaded",
                     defaultMessage: "Download of files started successfully. Folder downloads are not supported yet.",
                 })}
+                slots={{
+                    transition: (props: SlideProps) => <Slide {...props} direction="right" />,
+                }}
             />
         );
 

@@ -15,5 +15,15 @@ export const FinalFormCheckbox = ({
     meta,
     ...rest
 }: FinalFormCheckboxProps & FinalFormCheckboxInternalProps) => {
-    return <MuiCheckbox {...rest} name={name} inputProps={restInput} onChange={onChange} checked={checked} />;
+    return (
+        <MuiCheckbox
+            {...rest}
+            name={name}
+            onChange={onChange}
+            checked={checked}
+            slotProps={{
+                input: restInput,
+            }}
+        />
+    );
 };

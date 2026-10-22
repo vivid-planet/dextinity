@@ -83,11 +83,11 @@ function ManufacturerFilter({ item, applyValue, apiRef }: GridFilterInputValuePr
                             shrink: true,
                         },
                         input: {
-                            ...params.InputProps,
+                            ...params.slotProps.input,
                             endAdornment: (
                                 <>
                                     {item.value && <ClearInputAdornment position="end" onClick={() => handleApplyValue(undefined)} />}
-                                    {params.InputProps.endAdornment}
+                                    {params.slotProps.input.endAdornment}
                                 </>
                             ),
                         },

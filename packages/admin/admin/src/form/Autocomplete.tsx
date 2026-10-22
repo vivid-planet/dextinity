@@ -157,7 +157,7 @@ export const FinalFormAutocomplete = <
                         {loading && <CircularProgress color="inherit" size={16} />}
                         {clearable && hasValue && <ClearInputAdornment position="end" onClick={() => onChange(multiple ? [] : "")} />}
                         {loadingError && <Error color="error" />}
-                        {params.InputProps.endAdornment}
+                        {params.slotProps.input.endAdornment}
                     </>
                 );
 
@@ -166,7 +166,7 @@ export const FinalFormAutocomplete = <
                         <MultipleInputBase
                             {...restInput}
                             {...params}
-                            {...params.InputProps}
+                            {...params.slotProps.input}
                             // Disable HTML required for multiple select as the input stays empty (values are shown for example as chips) and the input is used for the autocomplete input
                             required={false}
                             endAdornmentWidth={endAdornmentWidth}
@@ -179,7 +179,7 @@ export const FinalFormAutocomplete = <
                     <InputBase
                         {...restInput}
                         {...params}
-                        {...params.InputProps}
+                        {...params.slotProps.input}
                         required={required}
                         endAdornment={<InputAdornment position="end">{endAdornment}</InputAdornment>}
                     />

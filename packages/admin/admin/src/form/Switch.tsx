@@ -14,5 +14,15 @@ export const FinalFormSwitch = ({
     meta,
     ...rest
 }: FinalFormSwitchProps & FinalFormSwitchInternalProps) => {
-    return <MuiSwitch {...rest} name={name} inputProps={restInput} onChange={onChange} checked={checked} />;
+    return (
+        <MuiSwitch
+            {...rest}
+            name={name}
+            onChange={onChange}
+            checked={checked}
+            slotProps={{
+                input: restInput,
+            }}
+        />
+    );
 };

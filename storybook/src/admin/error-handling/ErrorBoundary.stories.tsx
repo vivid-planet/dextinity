@@ -51,15 +51,29 @@ export const _ErrorBoundary = {
                                 Error Boundaries
                             </Typography>
                             <Alert severity="info">
-                                <Typography paragraph>
+                                <Typography
+                                    sx={{
+                                        marginBottom: "16px",
+                                    }}
+                                >
                                     Error boundaries catch errors anywhere in their child component tree, stops the whole application from crashing
                                     and show a UI to the User to the affected area. The rest of the application should still be accessible
                                 </Typography>
-                                <Typography paragraph>
+                                <Typography
+                                    sx={{
+                                        marginBottom: "16px",
+                                    }}
+                                >
                                     More infos to Error Boundaries can be found here:{" "}
                                     <Link href="https://reactjs.org/docs/error-boundaries.html">https://reactjs.org/docs/error-boundaries.html</Link>
                                 </Typography>
-                                <Typography paragraph>Go to knobs and try to render a view with an error</Typography>
+                                <Typography
+                                    sx={{
+                                        marginBottom: "16px",
+                                    }}
+                                >
+                                    Go to knobs and try to render a view with an error
+                                </Typography>
                             </Alert>
                         </CardContent>
                     </Card>

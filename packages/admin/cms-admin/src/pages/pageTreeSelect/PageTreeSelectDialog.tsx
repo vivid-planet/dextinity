@@ -186,19 +186,22 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
 
     return (
         <Dialog
-            PaperProps={{
-                sx: {
-                    minHeight: "80vh",
-                    maxHeight: "80vh",
-                },
-            }}
             open={open}
             onClose={onClose}
             fullWidth
             maxWidth="xl"
-            TransitionProps={{
-                onEnter: handelOnEnterDialog,
-                onEntered: handelOnEnteredDialog,
+            slotProps={{
+                transition: {
+                    onEnter: handelOnEnterDialog,
+                    onEntered: handelOnEnteredDialog,
+                },
+
+                paper: {
+                    sx: {
+                        minHeight: "80vh",
+                        maxHeight: "80vh",
+                    },
+                },
             }}
         >
             <StyledDialogTitle>

@@ -166,7 +166,7 @@ Not worth a test:
 
 - **That a component renders** — every story already runs as a browser test, so a rendering story is the coverage.
 - **Appearance** — colors, sizes, spacing — reviewed visually in the stories, never asserted.
-- **Dev-local tooling** — CLI scripts, story-only helpers — a failure is loud and local. Exception: code whose regression is silent or reaches consumers, such as the class-name mapping in `cssModules/`.
+- **Dev-local tooling** — story-only helpers — a failure is loud and local. Exception: code whose regression is silent or reaches consumers, such as the class-name mapping in `cssModules/`.
 
 Run from `packages/admin/admin`: `pnpm run test:unit`, `pnpm run test:storybook`, and `pnpm run test:watch`.
 
@@ -176,31 +176,11 @@ Components read their colors and metrics from CSS custom properties (`var(--dext
 
 ### Token layers
 
-The tokens are defined in five SCSS partials under [`theme/`](theme), composed into the provider module with `@use` and wrapped in a single `@layer dextinity`: `_primitives.scss` (raw values, internal), `_brand.scss`, `_responsive.scss`, `_semantic.scss`, and `_components.scss`. [`generateThemeTokens.ts`](cli/generateThemeTokens.ts) generates them, along with the prop-value types ([`theme/types.ts`](theme/types.ts)).
-
-### Regenerating the tokens
-
-The partials and types are generated from a design-token export, not edited manually. To update them:
-
-1. Open the [DDS Figma design](https://www.figma.com/design/xAe7acdpccDSRCrfeOdAg3/DDS---Dextinity-Admin-UI---V-0.1).
-2. Install and run the [Design Token Exporter](https://www.figma.com/community/plugin/1590704268871516927) plugin.
-3. In the plugin, click **Export Tokens**, then **Download as ZIP**.
-4. Extract the ZIP outside the repository. It contains a `design-tokens` directory — a `manifest.json` plus one `*.tokens.json` file per collection and mode. The export itself is not committed.
-5. From the repo root, run the generator, pointing it at that directory by absolute path:
-
-    ```bash
-    pnpm --filter @dextinity/admin run generate-future-ui-theme-tokens /absolute/path/to/design-tokens
-    ```
+The tokens are defined in five SCSS partials under [`theme/`](theme), composed into the provider module with `@use` and wrapped in a single `@layer dextinity`: `_primitives.scss` (raw values, internal), `_brand.scss`, `_responsive.scss`, `_semantic.scss`, and `_components.scss`. The prop-value types live in [`theme/types.ts`](theme/types.ts).
 
 ### Selecting a color scheme
 
 `Theme` selects the active color scheme. It stays a pure function of its props — reading no `window`, `localStorage`, or `matchMedia` — so it renders the same on server and client; switching, OS-scheme resolution, and preventing the first-paint flash on SSR stay in consumer code.
-
-## CLI
-
-Maintainer scripts, run through `pnpm --filter @dextinity/admin run …`:
-
-- **`generate-future-ui-theme-tokens`** regenerates the theme SCSS partials and types from a design-token export — see [Regenerating the tokens](#regenerating-the-tokens).
 
 ## Known issues
 

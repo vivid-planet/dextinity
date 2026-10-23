@@ -22,6 +22,7 @@ export const commonSelectStyleOverrides = {
         top: 0,
         bottom: 0,
         right: 26,
+        transform: "none",
     },
 };
 

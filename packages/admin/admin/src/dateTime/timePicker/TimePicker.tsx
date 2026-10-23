@@ -1,5 +1,6 @@
 import { Time } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, css, inputLabelClasses, type Theme, useThemeProps } from "@mui/material";
+import { mergeSlotProps } from "@mui/material/utils";
 import { pickersInputBaseClasses, TimePicker as MuiTimePicker, type TimePickerProps as MuiTimePickerProps } from "@mui/x-date-pickers";
 import { type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
@@ -114,40 +115,43 @@ export const TimePicker = (inProps: TimePickerProps) => {
                         ...textFieldProps,
                         slotProps: {
                             ...externalTextFieldProps?.slotProps,
-                            input: {
-                                startAdornment: (
-                                    <OpenPickerAdornment
-                                        inputIsDisabled={disabled}
-                                        inputIsReadOnly={readOnly}
-                                        onClick={() => setOpen(true)}
-                                        {...slotProps?.openPickerAdornment}
-                                        slotProps={{
-                                            ...slotProps?.openPickerAdornment?.slotProps,
-                                            openPickerButton: {
-                                                "aria-label": intl.formatMessage({
-                                                    id: "dextinity.timePicker.openPicker",
-                                                    defaultMessage: "Open time picker",
-                                                }),
-                                                ...slotProps?.openPickerAdornment?.slotProps?.openPickerButton,
-                                            },
-                                        }}
-                                    >
-                                        {openPickerIcon}
-                                    </OpenPickerAdornment>
-                                ),
-                                endAdornment: (
-                                    <>
-                                        <ReadOnlyAdornment inputIsReadOnly={Boolean(readOnly)} {...slotProps?.readOnlyAdornment} />
-                                        {dateValue !== null && !required && !disabled && !readOnly && (
-                                            <ClearInputAdornment
-                                                position="end"
-                                                onClick={() => onChange?.(undefined)}
-                                                {...slotProps?.clearInputAdornment}
-                                            />
-                                        )}
-                                    </>
-                                ),
-                            },
+                            input: mergeSlotProps(
+                                {
+                                    startAdornment: (
+                                        <OpenPickerAdornment
+                                            inputIsDisabled={disabled}
+                                            inputIsReadOnly={readOnly}
+                                            onClick={() => setOpen(true)}
+                                            {...slotProps?.openPickerAdornment}
+                                            slotProps={{
+                                                ...slotProps?.openPickerAdornment?.slotProps,
+                                                openPickerButton: {
+                                                    "aria-label": intl.formatMessage({
+                                                        id: "dextinity.timePicker.openPicker",
+                                                        defaultMessage: "Open time picker",
+                                                    }),
+                                                    ...slotProps?.openPickerAdornment?.slotProps?.openPickerButton,
+                                                },
+                                            }}
+                                        >
+                                            {openPickerIcon}
+                                        </OpenPickerAdornment>
+                                    ),
+                                    endAdornment: (
+                                        <>
+                                            <ReadOnlyAdornment inputIsReadOnly={Boolean(readOnly)} {...slotProps?.readOnlyAdornment} />
+                                            {dateValue !== null && !required && !disabled && !readOnly && (
+                                                <ClearInputAdornment
+                                                    position="end"
+                                                    onClick={() => onChange?.(undefined)}
+                                                    {...slotProps?.clearInputAdornment}
+                                                />
+                                            )}
+                                        </>
+                                    ),
+                                },
+                                externalTextFieldProps?.slotProps?.input ?? {},
+                            ),
                         },
                     };
                 },

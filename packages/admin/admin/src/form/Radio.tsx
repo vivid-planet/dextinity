@@ -1,4 +1,5 @@
 import MuiRadio, { type RadioProps } from "@mui/material/Radio";
+import { mergeSlotProps } from "@mui/material/utils";
 import type { FieldRenderProps } from "react-final-form";
 
 export type FinalFormRadioProps = RadioProps & FieldRenderProps<string, HTMLInputElement>;
@@ -16,7 +17,8 @@ export const FinalFormRadio = ({ input: { checked, value, name, onChange, ...res
         checked={!!checked}
         value={value}
         slotProps={{
-            input: restInput,
+            ...rest.slotProps,
+            input: mergeSlotProps(rest.slotProps?.input, restInput),
         }}
     />
 );

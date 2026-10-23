@@ -1,4 +1,5 @@
 import MuiSwitch, { type SwitchProps } from "@mui/material/Switch";
+import { mergeSlotProps } from "@mui/material/utils";
 import type { FieldRenderProps } from "react-final-form";
 
 export type FinalFormSwitchProps = SwitchProps;
@@ -21,7 +22,8 @@ export const FinalFormSwitch = ({
             onChange={onChange}
             checked={checked}
             slotProps={{
-                input: restInput,
+                ...rest.slotProps,
+                input: mergeSlotProps(rest.slotProps?.input, restInput),
             }}
         />
     );

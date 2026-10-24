@@ -1,5 +1,5 @@
 import { defineConfig, globalIgnores } from "eslint/config";
-import eslintConfigNextJs from "@dextinity/eslint-config/future/nextjs.js";
+import eslintConfigReact from "@dextinity/eslint-config/future/react.js";
 
 const docsLink = "https://cms-docs.dextinity.com/docs/faqs/environment-variables-in-site";
 
@@ -7,43 +7,29 @@ export default defineConfig([
     globalIgnores([
         "**/**/*.generated.ts",
         "dist/**",
+        "e2e/fixture/dist/**",
+        "test-results/**",
+        "playwright-report/**",
         "lang/**",
         "lang-compiled/**",
         "lang-extracted/**",
-        ".next/**",
         "public/**",
         "block-meta.json",
         "lang/**",
         "lang-compiled/**",
         "lang-extracted/**",
     ]),
-    ...eslintConfigNextJs,
+    ...eslintConfigReact,
     {
         rules: {
+            // Not all texts of the demo site are translated yet
+            "@calm/react-intl/missing-formatted-message": "off",
+            "react/jsx-no-literals": "off",
             "no-restricted-syntax": [
                 "error",
                 {
-                    selector: "MemberExpression[object.type='MemberExpression'][object.object.name='process'][object.property.name='env'][property.name=/^NEXT_PUBLIC_/]",
-                    message: `Usage of process.env.NEXT_PUBLIC_* is not allowed. Use site configs or a custom provider instead. See ${docsLink}`,
-                },
-            ],
-        },
-    },
-    {
-        files: ["next.config.*"],
-        languageOptions: {
-            parserOptions: {
-                projectService: false,
-                project: null,
-                programs: null,
-            },
-        },
-        rules: {
-            "no-restricted-syntax": [
-                "error",
-                {
-                    selector: "MemberExpression[object.type='MemberExpression'][object.object.name='process'][object.property.name='env']",
-                    message: `Usage of process.env in next.config is not allowed. Use site configs or runtime configuration instead. See ${docsLink}`,
+                    selector: "MemberExpression[object.type='MemberExpression'][object.object.type='MetaProperty'][object.property.name='env'][property.name=/^VITE_/]",
+                    message: `Usage of import.meta.env.VITE_* is not allowed. Use site configs or a custom provider instead. See ${docsLink}`,
                 },
             ],
         },

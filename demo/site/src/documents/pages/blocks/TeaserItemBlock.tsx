@@ -1,4 +1,4 @@
-import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import { type PropsWithData, withPreview } from "@dextinity/site-react";
 import type { TeaserItemBlockData } from "@src/blocks.generated";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";

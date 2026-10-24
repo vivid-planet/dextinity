@@ -1,8 +1,8 @@
-import { gql } from "@dextinity/site-nextjs";
+import { gql } from "@dextinity/site-react";
 import type { DamFileDownloadLinkBlockData, ExternalLinkBlockData, InternalLinkBlockData } from "@src/blocks.generated";
+import { notFound, redirect } from "@src/framework/navigation";
 import type { GQLPageTreeNodeScopeInput } from "@src/graphql.generated";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
-import { notFound, redirect } from "next/navigation";
 import type { JSX } from "react";
 
 import type { GQLLinkRedirectQuery, GQLLinkRedirectQueryVariables } from "./Link.generated";

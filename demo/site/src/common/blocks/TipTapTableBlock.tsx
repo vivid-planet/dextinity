@@ -1,4 +1,4 @@
-import { hasTipTapRichTextContent, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import { hasTipTapRichTextContent, type PropsWithData, withPreview } from "@dextinity/site-react";
 import type { TipTapTableBlockData } from "@src/blocks.generated";
 
 import { ResponsiveTable } from "./table/ResponsiveTable";

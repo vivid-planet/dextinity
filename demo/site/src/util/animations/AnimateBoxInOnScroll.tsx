@@ -1,6 +1,6 @@
 "use client";
 
-import { usePreview } from "@dextinity/site-nextjs";
+import { usePreview } from "@dextinity/site-react";
 import { useAnimateGroup } from "@src/util/animations/AnimateGroup";
 import { useGlobalScrollSpeed } from "@src/util/animations/useGlobalScrollSpeed";
 import { useScrolledToPageBottom } from "@src/util/animations/useScrolledToPageBottom";

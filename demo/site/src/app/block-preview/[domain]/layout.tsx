@@ -1,10 +1,8 @@
-export const dynamic = "force-dynamic";
-
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { SiteConfigProvider } from "@src/util/SiteConfigProvider";
+import type { PropsWithChildren } from "react";
 
-export default async function BlockPreviewLayout({ children, params }: LayoutProps<"/block-preview/[domain]">) {
-    const { domain } = await params;
+export default async function BlockPreviewLayout({ children, domain }: PropsWithChildren<{ domain: string }>) {
     const siteConfig = getSiteConfigForDomain(domain);
     return <SiteConfigProvider siteConfig={siteConfig}>{children}</SiteConfigProvider>;
 }

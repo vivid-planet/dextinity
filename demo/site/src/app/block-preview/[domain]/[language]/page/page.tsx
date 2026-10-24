@@ -1,11 +1,11 @@
 "use client";
 
-import { createFetchInMemoryCache, useIFrameBridge } from "@dextinity/site-nextjs";
+import { createFetchInMemoryCache, useIFrameBridge } from "@dextinity/site-react";
 import type { PageContentBlockData } from "@src/blocks.generated";
 import { PageContentBlock } from "@src/documents/pages/blocks/PageContentBlock";
 import type { ContentScope } from "@src/site-configs";
 import { withBlockPreview } from "@src/util/blockPreview";
-import { createGraphQLFetch } from "@src/util/graphQLClient";
+import { createBrowserGraphQLFetch } from "@src/util/browserGraphQLClient";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
 import { useEffect, useState } from "react";
 
@@ -21,7 +21,7 @@ export default withBlockPreview(() => {
                 setBlockData(undefined);
                 return;
             }
-            const graphQLFetch = createGraphQLFetch({ fetch: cachingFetch });
+            const graphQLFetch = createBrowserGraphQLFetch({ fetch: cachingFetch });
             const newData = await recursivelyLoadBlockData({
                 blockType: "PageContent",
                 blockData: iFrameBridge.block,

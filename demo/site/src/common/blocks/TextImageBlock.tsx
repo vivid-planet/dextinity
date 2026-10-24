@@ -1,5 +1,5 @@
 "use client";
-import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import { type PropsWithData, withPreview } from "@dextinity/site-react";
 import type { TextImageBlockData } from "@src/blocks.generated";
 import { PageLayout } from "@src/layout/PageLayout";
 import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";

@@ -1,4 +1,4 @@
-import { hasRichTextBlockContent, type PropsWithData, SvgImageBlock, withPreview } from "@dextinity/site-nextjs";
+import { hasRichTextBlockContent, type PropsWithData, SvgImageBlock, withPreview } from "@dextinity/site-react";
 import type { KeyFactsItemBlockData } from "@src/blocks.generated";
 import { defaultRichTextInlineStyleMap, RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { Typography } from "@src/common/components/Typography";

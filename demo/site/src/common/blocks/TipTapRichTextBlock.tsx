@@ -7,7 +7,7 @@ import {
     type TipTapMarkHandler,
     type TipTapNodeHandler,
     withPreview,
-} from "@dextinity/site-nextjs";
+} from "@dextinity/site-react";
 import type { LinkBlockData, ProductPriceBlockData, ProductTeaserBlockData, TipTapRichTextBlockData } from "@src/blocks.generated";
 import { PageLayout } from "@src/layout/PageLayout";
 import { ProductPriceBlock } from "@src/products/blocks/ProductPriceBlock";

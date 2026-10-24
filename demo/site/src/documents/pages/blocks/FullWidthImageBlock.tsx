@@ -1,5 +1,5 @@
 "use client";
-import { OptionalBlock, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import { OptionalBlock, type PropsWithData, withPreview } from "@dextinity/site-react";
 import type { FullWidthImageBlockData } from "@src/blocks.generated";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";

@@ -253,7 +253,7 @@ export default defineConfig({
             name: "demo-site",
             script: "pnpm --filter dextinity-demo-site run dev",
             group: ["demo-site", "demo"],
-            waitOn: [...waitOnPackages("@dextinity/site-nextjs"), "tcp:$API_PORT"],
+            waitOn: [...waitOnPackages("@dextinity/site-react"), "tcp:$API_PORT"],
         },
         {
             name: "demo-site-codegen",

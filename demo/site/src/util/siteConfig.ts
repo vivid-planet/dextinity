@@ -1,6 +1,7 @@
-import { previewParams } from "@dextinity/site-nextjs/server";
+import { getRequest } from "@src/framework/requestContext";
 import type { PublicSiteConfig } from "@src/site-configs";
-import { headers } from "next/headers";
+
+import { getPreviewParams } from "./sitePreview";
 
 export function getHostByHeaders(headers: Headers) {
     const host = headers.get("x-forwarded-host") ?? headers.get("host");
@@ -19,7 +20,7 @@ export function getSiteConfigForDomain(domain: string) {
 }
 
 export async function getSiteConfigForHost(host: string) {
-    const sitePreviewParams = await previewParams({ skipDraftModeCheck: true });
+    const sitePreviewParams = await getPreviewParams({ checkBlockPreviewHeader: true });
     if (sitePreviewParams?.scope) {
         const siteConfig = getSiteConfigs().find((siteConfig) => siteConfig.scope.domain === sitePreviewParams.scope.domain);
         if (siteConfig) {
@@ -41,9 +42,9 @@ export function getSiteConfigs() {
     return siteConfigs;
 }
 
-// Used for getting SiteConfig in server-components where params is not available (e.g. sitemap, not-found - see https://github.com/vercel/next.js/discussions/43179)
+// Used for getting SiteConfig where the domain param is not available (e.g. robots.txt)
 export async function getSiteConfig() {
-    const host = getHostByHeaders(await headers());
+    const host = getHostByHeaders(getRequest().headers);
     const siteConfig = await getSiteConfigForHost(host);
     if (!siteConfig) {
         throw new Error(`SiteConfig not found for host ${host}`);

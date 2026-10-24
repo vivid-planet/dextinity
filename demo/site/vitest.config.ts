@@ -5,7 +5,7 @@ export default defineConfig({
     plugins: [tsconfigPaths()],
     test: {
         environment: "jsdom",
-        exclude: [".next/**", "dist/**", "node_modules/**"],
+        exclude: ["dist/**", "node_modules/**", "e2e/**"],
         reporters: ["default", "junit"],
         outputFile: { junit: "./junit-unit.xml" },
     },

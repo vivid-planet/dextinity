@@ -93,7 +93,7 @@ Demo admin app (Vite, React, Apollo)
 - Usually Login as "Admin" in the IDP Login Page
 
 **Site:**
-Demo frontend site (Next.js)
+Demo frontend site (Vite, React Server Components via `@vitejs/plugin-rsc`, Hono)
 
 - Start using `pnpm exec dev-pm start @demo-site`
 - access at: http://localhost:3000/

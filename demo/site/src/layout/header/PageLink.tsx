@@ -1,8 +1,7 @@
 "use client";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
+import { usePathname } from "@src/framework/RouterProvider";
 import { createSitePath } from "@src/util/createSitePath";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import type { JSX, PropsWithChildren } from "react";
 
 import type { GQLPageLinkFragment } from "./PageLink.fragment.generated";
@@ -35,7 +34,7 @@ function PageLink({ page, children, className: passedClassName, activeClassName 
         );
     } else if (page.documentType === "Page") {
         return (
-            <Link
+            <a
                 href={createSitePath({
                     path: page.path,
                     scope: page.scope,
@@ -43,11 +42,11 @@ function PageLink({ page, children, className: passedClassName, activeClassName 
                 className={className}
             >
                 {children}
-            </Link>
+            </a>
         );
     } else if (page.documentType === "PredefinedPage") {
         return (
-            <Link
+            <a
                 href={createSitePath({
                     path: page.path,
                     scope: page.scope,
@@ -55,7 +54,7 @@ function PageLink({ page, children, className: passedClassName, activeClassName 
                 className={className}
             >
                 {children}
-            </Link>
+            </a>
         );
     } else {
         if (process.env.NODE_ENV === "development") {

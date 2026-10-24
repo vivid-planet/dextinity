@@ -1,12 +1,12 @@
 "use client";
 
 import type { Config } from "@dextinity/mail-react";
-import { createFetchInMemoryCache, useIFrameBridge } from "@dextinity/site-nextjs";
+import { createFetchInMemoryCache, useIFrameBridge } from "@dextinity/site-react";
 import type { WelcomeEmailContentBlockData } from "@src/blocks.generated";
 import { RenderedMailForBlockPreview } from "@src/mail/components/RenderedMailForBlockPreview";
 import type { ContentScope } from "@src/site-configs";
 import { withBlockPreview } from "@src/util/blockPreview";
-import { createGraphQLFetch } from "@src/util/graphQLClient";
+import { createBrowserGraphQLFetch } from "@src/util/browserGraphQLClient";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
 import { WelcomeEmailMail } from "@src/welcomeEmail/WelcomeEmailMail";
 import { useEffect, useState } from "react";
@@ -36,7 +36,7 @@ function WelcomeEmailPreviewComponent({ language, messages, config }: WelcomeEma
                 setBlockData(undefined);
                 return;
             }
-            const graphQLFetch = createGraphQLFetch({ fetch: cachingFetch });
+            const graphQLFetch = createBrowserGraphQLFetch({ fetch: cachingFetch });
             const newData = await recursivelyLoadBlockData({
                 blockType: "WelcomeEmailContent",
                 blockData: iFrameBridge.block,

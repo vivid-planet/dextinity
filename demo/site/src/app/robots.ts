@@ -1,14 +1,8 @@
 import { getSiteConfig } from "@src/util/siteConfig";
-import type { MetadataRoute } from "next";
+import type { Context } from "hono";
 
-export default async function robots(): Promise<MetadataRoute.Robots> {
+export async function robotsRoute(c: Context) {
     const siteConfig = await getSiteConfig();
 
-    return {
-        rules: {
-            userAgent: "*",
-            allow: "/",
-        },
-        sitemap: `${siteConfig.url}/sitemap.xml`,
-    };
+    return c.text(`User-Agent: *\nAllow: /\n\nSitemap: ${siteConfig.url}/sitemap.xml\n`);
 }

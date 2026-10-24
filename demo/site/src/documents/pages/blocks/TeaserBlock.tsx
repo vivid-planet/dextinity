@@ -1,4 +1,4 @@
-import { ListBlock, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import { ListBlock, type PropsWithData, withPreview } from "@dextinity/site-react";
 import type { TeaserBlockData } from "@src/blocks.generated";
 import { PageLayout } from "@src/layout/PageLayout";
 import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";

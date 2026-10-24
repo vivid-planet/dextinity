@@ -1,4 +1,4 @@
-import { type BlockLoaderOptions, gql } from "@dextinity/site-nextjs";
+import { type BlockLoaderOptions, gql } from "@dextinity/site-react";
 import type { NewsListBlockData } from "@src/blocks.generated";
 
 import type { GQLNewsListBlockQuery, GQLNewsListBlockQueryVariables } from "./NewsListBlock.loader.generated";

@@ -1,10 +1,10 @@
 import { getMailConfig } from "@src/mail/util/getMailConfig";
+import type { ContentScope } from "@src/site-configs";
 import { loadMessages } from "@src/util/loadMessages";
 
 import { BrevoEmailCampaignPreview } from "./BrevoEmailCampaignPreview";
 
-export default async function Page({ params }: PageProps<"/block-preview/[domain]/[language]/brevo-email-campaign">) {
-    const { domain, language } = await params;
+export default async function Page({ domain, language }: ContentScope) {
     const messages = await loadMessages(language);
 
     return <BrevoEmailCampaignPreview language={language} messages={messages} config={getMailConfig({ domain, language })} />;

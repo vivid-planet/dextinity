@@ -1,13 +1,16 @@
 "use client";
-import { hasRichTextBlockContent, PreviewSkeleton, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import { hasRichTextBlockContent, PreviewSkeleton, type PropsWithData, withPreview } from "@dextinity/site-react";
 import type { LinkBlockData, RichTextBlockData } from "@src/blocks.generated";
 import clsx from "clsx";
-import redraft, { type Renderers, type TextBlockRenderFn } from "redraft";
+import redraftModule, { type Renderers, type TextBlockRenderFn } from "redraft";
 
 import { Typography, type TypographyProps } from "../components/Typography";
 import { isValidLink } from "../helpers/HiddenIfInvalidLink";
 import { LinkBlock } from "./LinkBlock";
 import styles from "./RichTextBlock.module.scss";
+
+// redraft is CommonJS: in the SSR environment, the default import is `module.exports` (like in Node.js), in the browser it's the default export
+const redraft = (redraftModule as unknown as { default?: typeof redraftModule }).default ?? redraftModule;
 
 export const createTextBlockRenderFn =
     (props: TypographyProps<keyof HTMLElementTagNameMap>): TextBlockRenderFn =>

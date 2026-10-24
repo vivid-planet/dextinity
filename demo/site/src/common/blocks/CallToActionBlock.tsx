@@ -1,5 +1,5 @@
 "use client";
-import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import { type PropsWithData, withPreview } from "@dextinity/site-react";
 import type { CallToActionBlockData } from "@src/blocks.generated";
 import { filesize } from "filesize";
 

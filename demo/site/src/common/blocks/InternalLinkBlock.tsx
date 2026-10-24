@@ -1,9 +1,8 @@
 "use client";
-import type { PropsWithData } from "@dextinity/site-nextjs";
+import type { PropsWithData } from "@dextinity/site-react";
 import type { InternalLinkBlockData } from "@src/blocks.generated";
 import type { GQLPageTreeNodeScope } from "@src/graphql.generated";
 import { createSitePath } from "@src/util/createSitePath";
-import Link from "next/link";
 import type { AnchorHTMLAttributes, PropsWithChildren } from "react";
 
 interface InternalLinkBlockProps
@@ -21,7 +20,7 @@ export function InternalLinkBlock({ data: { targetPage, targetPageAnchor }, chil
     const pathWithAnchor = targetPageAnchor !== undefined ? `${targetPage.path}#${targetPageAnchor}` : targetPage.path;
 
     return (
-        <Link
+        <a
             {...anchorProps}
             href={createSitePath({
                 scope: targetPage.scope as GQLPageTreeNodeScope,
@@ -29,6 +28,6 @@ export function InternalLinkBlock({ data: { targetPage, targetPageAnchor }, chil
             })}
         >
             {children}
-        </Link>
+        </a>
     );
 }

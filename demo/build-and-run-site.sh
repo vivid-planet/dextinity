@@ -2,7 +2,7 @@
 #
 # Reasons why you want to do this:
 # - Check if it builds without warnings
-# - Check if there are suggestions from next build
+# - Check if there are warnings from vite build
 # - Check if it behaves in the same way like the dev-server
 # - Check caching behaviour, e.g. Cache-Control header (which is always no-cache in dev-server)
 
@@ -11,7 +11,7 @@
 echo "[1/2] Build site..."
 cd site
 rm -f .env .env.local .env.site-configs
-rm -rf .next
+rm -rf dist
 NODE_ENV=production pnpm run build
 ln -sf ../../.env ./
 ln -sf ../../.env.local ./

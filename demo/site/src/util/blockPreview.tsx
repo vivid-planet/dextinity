@@ -1,6 +1,6 @@
 "use client";
 
-import { BlockPreviewProvider, IFrameBridgeProvider } from "@dextinity/site-nextjs";
+import { BlockPreviewProvider, IFrameBridgeProvider } from "@dextinity/site-react";
 import type { FunctionComponent } from "react";
 
 export const withBlockPreview =

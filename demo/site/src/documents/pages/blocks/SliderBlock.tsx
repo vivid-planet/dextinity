@@ -1,4 +1,4 @@
-import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import { type PropsWithData, withPreview } from "@dextinity/site-react";
 import type { SliderBlockData } from "@src/blocks.generated";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";

@@ -1,4 +1,4 @@
-import { gql } from "@dextinity/site-nextjs";
+import { gql } from "@dextinity/site-react";
 
 export const breadcrumbsFragment = gql`
     fragment Breadcrumbs on PageTreeNode {

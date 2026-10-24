@@ -8,7 +8,7 @@ import {
     type PropsWithData,
     type SupportedBlocks,
     withPreview,
-} from "@dextinity/site-nextjs";
+} from "@dextinity/site-react";
 import type { LinkBlockData } from "@src/blocks.generated";
 import { NewsLinkBlock } from "@src/news/blocks/NewsLinkBlock";
 import type { AnchorHTMLAttributes, PropsWithChildren } from "react";

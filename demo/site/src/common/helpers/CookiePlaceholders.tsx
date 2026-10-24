@@ -1,4 +1,4 @@
-import { useCookieApi } from "@dextinity/site-nextjs";
+import { useCookieApi } from "@dextinity/site-react";
 
 import styles from "./CookiePlaceholders.module.scss";
 

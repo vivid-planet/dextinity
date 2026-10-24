@@ -1,15 +1,18 @@
-import { generateMetadata as generateMetadataPage, Page } from "@src/documents/pages/Page";
+import { Page } from "@src/documents/pages/Page";
+import type { GQLPageTreeNodeScopeInput } from "@src/graphql.generated";
+import type { ReactNode } from "react";
 
 import { Link } from "./links/Link";
 
-// TODO fix type for async component
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type DocumentType = any; //{ component: React.ComponentType<{ pageTreeNodeId: string; scope: GQLPageTreeNodeScopeInput }> };
+type DocumentProps = { pageTreeNodeId: string; scope: GQLPageTreeNodeScopeInput };
+
+type DocumentType = {
+    component: (props: DocumentProps) => Promise<ReactNode>;
+};
 
 export const documentTypes: Record<string, DocumentType> = {
     Page: {
         component: Page,
-        generateMetadata: generateMetadataPage,
     },
     Link: {
         component: Link,

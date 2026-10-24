@@ -7,11 +7,9 @@
 
 # testing
 /coverage
-
-# next.js
-/.next/
-/out/
-next-env.d.ts
+/test-results
+/playwright-report
+/e2e/fixture/dist
 
 # production
 /build
@@ -30,9 +28,6 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
-
-# vercel
-.vercel
 
 .env
 schema.gql

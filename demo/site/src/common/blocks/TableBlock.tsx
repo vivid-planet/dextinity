@@ -1,4 +1,4 @@
-import { hasRichTextBlockContent, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import { hasRichTextBlockContent, type PropsWithData, withPreview } from "@dextinity/site-react";
 import type { TableBlockData } from "@src/blocks.generated";
 
 import { RichTextBlock } from "./RichTextBlock";

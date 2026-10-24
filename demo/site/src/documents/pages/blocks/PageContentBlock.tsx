@@ -1,5 +1,5 @@
 "use client";
-import { BlocksBlock, type PropsWithData, type SupportedBlocks } from "@dextinity/site-nextjs";
+import { BlocksBlock, type PropsWithData, type SupportedBlocks } from "@dextinity/site-react";
 import type { PageContentBlockData } from "@src/blocks.generated";
 import { PageContentAccordionBlock } from "@src/common/blocks/AccordionBlock";
 import { AnchorBlock } from "@src/common/blocks/AnchorBlock";

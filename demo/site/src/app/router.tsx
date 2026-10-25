@@ -12,6 +12,8 @@ import NewsIndexPage from "./[language]/news/page";
 import SiteNotFound from "./[language]/not-found";
 import ProductDetailPage from "./[language]/product/[slug]/page";
 import ProductListPage from "./[language]/product/page";
+import { loadMailsEntry } from "./api/loadMailsEntry";
+import { welcomeEmailRoute } from "./api/welcome-email/route";
 import BrevoEmailCampaignBlockPreviewPage from "./block-preview/[domain]/[language]/brevo-email-campaign/page";
 import FooterBlockPreviewPage from "./block-preview/[domain]/[language]/footer/page";
 import BlockPreviewLanguageLayout from "./block-preview/[domain]/[language]/layout";
@@ -101,15 +103,10 @@ export function renderRootNotFoundPage(c: Context) {
     });
 }
 
-async function loadMailsEntry() {
-    return import.meta.viteRsc.loadModule<typeof import("./api/entry.mails")>("ssr", "mails");
-}
-
-// Mails are rendered with react-dom/server, which is only available in the SSR environment
 export const mailRoutes = new Hono();
 
 mailRoutes.post("/render-brevo-email-campaign", async (c) => (await loadMailsEntry()).renderBrevoEmailCampaign(c.req.raw));
-mailRoutes.get("/render-welcome-email", async (c) => (await loadMailsEntry()).renderWelcomeEmail(c.req.raw));
+mailRoutes.get("/render-welcome-email", welcomeEmailRoute);
 
 export const blockPreviewRoutes = new Hono();
 

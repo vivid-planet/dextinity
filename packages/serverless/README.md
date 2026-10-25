@@ -36,6 +36,9 @@ pnpm exec dev-pm start @demo-serverless-postgresql
 
 # Both on http://localhost:8010. Exercises the API through the typed clients:
 pnpm --filter dextinity-demo-serverless smoke-test
+
+# The block preview in the page editor: the demo site (demo/site) on http://localhost:3000, which allows the serverless admin to frame it
+pnpm exec dev-pm start demo-serverless-site
 ```
 
 The Access emulator shows a login page with three users: Admin (group `admins`, all permissions by rule), Editor (group `editors`, the DAM and the page tree of `main` through a group role) and Guest (only the DAM of `secondary`, through a stored grant). The seed adds a home page per domain.
@@ -67,7 +70,7 @@ new Hono<{ Bindings: Bindings }>()
 
 In the admin, each module has its own typed client below the `ApiProvider`'s URL (`hc<DamRoutes<…>>("/api/dam")`), so typechecking stays fast and the admin never imports Worker code.
 
-Documents: the API's page tree config has the root blocks of each document type (zod schemas, `{ Page: { rootBlocks: { content: PageContentBlock, … } } }`), the admin's `PageTreeApiProvider` the admin blocks with the same keys. The admin needs `BlocksProvider` below the `ApiProvider`, for the block framework of `@dextinity/cms-admin`, and react-dnd's `DndProvider`, for reordering blocks.
+Documents: the API's page tree config has the root blocks of each document type (zod schemas, `{ Page: { rootBlocks: { content: PageContentBlock, … } } }`), the admin's `PageTreeApiProvider` the admin blocks with the same keys, and for the block preview the site's preview URL of the scope (`blockPreviewUrl`) and a `previewPath` per root block. The admin needs `BlocksProvider` below the `ApiProvider`, for the block framework of `@dextinity/cms-admin`, and react-dnd's `DndProvider`, for reordering blocks.
 
 ## Writing code for D1 and PostgreSQL
 
@@ -84,7 +87,7 @@ Rules, because the types don't catch everything:
 
 - DAM: files (list, search, get with DAM path and duplicates, update, move, archive, delete), upload and replace, file delivery (hashed public URLs, preview URLs, downloads, ranges), images (focus and smart crops, allowed sizes and aspect ratios, AVIF/WebP negotiation, Cache API), folders (recursive ancestors, move, delete, zip), DAM items, dominant color on upload
 - Page tree: nodes per category with name, slug, path, position, visibility, document type and "hide in menu"; add, edit, move (drag and drop, into another category), archive with subpages, restore with a free slug, delete with subpages, slug availability (duplicate and reserved paths); paths are calculated in memory from one query per scope (`PageTreeSnapshot`)
-- Documents: an editor per node with a tab per root block (the demo's pages have content, stage and SEO, links a link), unsaved changes prompt, conflict detection; one document per node and type
+- Documents: an editor per node with a tab per root block (the demo's pages have content, stage and SEO, links a link), unsaved changes prompt, conflict detection; one document per node and type; the site's block preview next to the blocks
 - Blocks: the blocks of the demo's pages, links and stages except TipTap, news, contact form and user groups, see [11. Blocks and documents](../../DECISIONS-SERVERLESS.md#11-blocks-and-documents). The admin uses the block framework of `@dextinity/cms-admin`, the API validates each block with a strict zod schema.
 - Permissions: grants with validity, roles, roles per identity provider group, rules in project code, content scopes with `*` wildcards, `scopeFilter` on the DAM and page tree lists, `GET /me`, `useCan` in the admin
 - Access: JWT verification against the team's keys with `jose`, groups from the identity endpoint (cached per isolate), service tokens, the emulator for local development

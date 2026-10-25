@@ -329,7 +329,14 @@ Documents:
 - `GET`/`PUT /page-tree/nodes/:id/document`. Saving sends the `updatedAt` it loaded; a conditional update makes the check atomic without a transaction, and a concurrent change answers 409.
 - The document types of the API's config have the root blocks (`{ Page: { rootBlocks: { content, seo, stage } } }`); the admin's config has the admin blocks with the same keys, the editor shows a tab for each.
 
-Not ported yet: the TipTap rich text and table blocks (their validation needs a ProseMirror schema in the Worker), the anchors of the target page in internal links, the block preview of the site, the news, contact form and user group blocks of the demo.
+Block preview:
+
+- The editor shows the site's block preview next to the blocks, with `BlockPreviewWithTabs` of `@dextinity/cms-admin` and the iframe bridge of `@dextinity/site-nextjs`. A root block with a `previewPath` gets a preview at that path below the `blockPreviewUrl` of the scope; the other tabs show the first root block's.
+- The REST blocks create their preview state in the shape the site's blocks expect (`damFile` with `fileUrl` and `image`, `urlTemplate` with the crop area), with absolute URLs of the API, as the site runs on another origin.
+- `BlockPreview` loaded the JWT for the site through GraphQL and only sent the block state once it had it. It now takes the JWT as `contentScopeJwt`. The serverless admin sends an unsecured JWT with the scope: the site reads the scope from it, and only the site's requests to the NestJS API needed the signature. A signed one belongs to the site's read API.
+- The demo uses the block preview of the NestJS demo's site (`demo/site`), which renders the same blocks. Its content security policy allows framing and images from `ADMIN_URL` only, so it runs with the serverless admin's URL as `ADMIN_URL` (`demo-serverless-site` in dev-pm). The site's loader of the page tree index block queries the GraphQL API, which the serverless demo doesn't have, and the site's `media-src` blocks videos from the API.
+
+Not ported yet: the TipTap rich text and table blocks (their validation needs a ProseMirror schema in the Worker), the anchors of the target page in internal links, the news, contact form and user group blocks of the demo.
 
 ## Open questions
 

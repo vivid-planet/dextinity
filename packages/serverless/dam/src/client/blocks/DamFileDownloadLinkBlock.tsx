@@ -3,7 +3,7 @@ import { BlockAdminComponentPaper, BlockCategory, type BlockInterface, BlocksFin
 import { Divider, MenuItem } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 
-import { type DamBlockFile, loadDamBlockFile } from "./damBlockFile.js";
+import { type DamBlockFile, damBlockFilePreview, loadDamBlockFile } from "./damBlockFile.js";
 import { DamFileField } from "./DamFileField.js";
 
 type OpenFileType = "NewTab" | "Download";
@@ -36,6 +36,12 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockOu
         output2State: async ({ fileId, openFileType }, { apiUrl }) => ({
             file: fileId ? await loadDamBlockFile(apiUrl, fileId) : undefined,
             openFileType,
+        }),
+
+        createPreviewState: ({ file, openFileType }, { apiUrl, parentUrl }) => ({
+            file: file && damBlockFilePreview(file, apiUrl),
+            openFileType,
+            adminMeta: { route: parentUrl },
         }),
 
         previewContent: ({ file }) => (file ? [{ type: "text", content: file.name }] : []),

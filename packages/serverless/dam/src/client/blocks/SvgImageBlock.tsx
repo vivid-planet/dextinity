@@ -4,7 +4,7 @@ import { styled } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
 
 import { useDamApi } from "../DamApiProvider.js";
-import { type DamBlockFile, loadDamBlockFile } from "./damBlockFile.js";
+import { type DamBlockFile, damBlockFilePreview, loadDamBlockFile } from "./damBlockFile.js";
 import { DamFileField } from "./DamFileField.js";
 import { svgImageMimetypes } from "./damMimetypes.js";
 
@@ -34,6 +34,11 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockOutput, SvgImageBlockSta
         const damFile = damFileId ? await loadDamBlockFile(apiUrl, damFileId) : undefined;
         return damFile ? { damFile } : {};
     },
+
+    createPreviewState: ({ damFile }, { apiUrl, parentUrl }) => ({
+        damFile: damFile && damBlockFilePreview(damFile, apiUrl),
+        adminMeta: { route: parentUrl },
+    }),
 
     definesOwnPadding: true,
 

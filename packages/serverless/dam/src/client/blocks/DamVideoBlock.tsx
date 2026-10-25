@@ -13,7 +13,7 @@ import { VideoOptionsFields } from "@dextinity/serverless-blocks/client";
 import { Box } from "@mui/material";
 import { defineMessage, FormattedMessage } from "react-intl";
 
-import { type DamBlockFile, loadDamBlockFile } from "./damBlockFile.js";
+import { type DamBlockFile, damBlockFilePreview, loadDamBlockFile } from "./damBlockFile.js";
 import { DamFileField } from "./DamFileField.js";
 import { videoMimetypes } from "./damMimetypes.js";
 import { PixelImageBlock, type PixelImageBlockOutput, type PixelImageBlockState } from "./PixelImageBlock.js";
@@ -58,6 +58,16 @@ export const DamVideoBlock: BlockInterface<DamVideoBlockOutput, DamVideoBlockSta
         ...options,
         damFile: damFileId ? await loadDamBlockFile(context.apiUrl, damFileId) : undefined,
         previewImage: await PixelImageBlock.output2State(previewImage, context),
+    }),
+
+    // Like `createDamVideoBlock` of `@dextinity/cms-admin`: the preview doesn't play the video by itself
+    createPreviewState: ({ damFile, previewImage, ...options }, previewContext) => ({
+        ...options,
+        autoplay: false,
+        loop: false,
+        damFile: damFile && damBlockFilePreview(damFile, previewContext.apiUrl),
+        previewImage: PixelImageBlock.createPreviewState(previewImage, previewContext),
+        adminMeta: { route: previewContext.parentUrl },
     }),
 
     definesOwnPadding: true,

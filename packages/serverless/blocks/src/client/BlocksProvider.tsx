@@ -31,7 +31,8 @@ export function BlocksProvider({ allowedImageAspectRatios, children }: PropsWith
     return (
         <ApolloProvider client={restOnlyApolloClient}>
             <DextinityConfigProvider
-                apiUrl={apiUrl}
+                // Absolute, the blocks put URLs of the API into the state of the block preview, which runs on the site's origin
+                apiUrl={new URL(apiUrl, window.location.origin).href.replace(/\/$/, "")}
                 graphQLApiUrl=""
                 adminUrl={window.location.origin}
                 // Only allowedImageAspectRatios is read by the reused blocks, the uploads of the DAM are validated by the DAM's own admin

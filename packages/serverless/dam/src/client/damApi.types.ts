@@ -26,11 +26,16 @@ function cropSegment(cropArea: DamImageCropArea): string {
 }
 
 /**
- * Uses the aspect ratio of the crop area, which the API accepts for every allowed width.
+ * The URL template of the image with `$resizeWidth` and `$resizeHeight`, like the site's image components expect it.
  *
  * `cropArea` overrides the crop area of the file, e.g. the one of an image block. That only works for preview URLs, which the admin
  * gets (see `createDamApiClient`): the public URLs are signed with the crop area of the file.
  */
+export function createImageUrlTemplate(image: Pick<DamImage, "urlTemplate" | "cropArea">, cropArea = image.cropArea): string {
+    return image.urlTemplate.replace(/\/crop:[^/]+\//, `/${cropSegment(cropArea)}/`);
+}
+
+/** Uses the aspect ratio of the crop area, which the API accepts for every allowed width */
 export function createImageUrl(
     image: Pick<DamImage, "urlTemplate" | "width" | "height" | "cropArea">,
     { width, cropArea = image.cropArea }: { width: number; cropArea?: DamImageCropArea },
@@ -39,8 +44,7 @@ export function createImageUrl(
         cropArea.focalPoint === "SMART" || !cropArea.width || !cropArea.height
             ? image.width / image.height
             : (cropArea.width * image.width) / (cropArea.height * image.height);
-    return image.urlTemplate
-        .replace(/\/crop:[^/]+\//, `/${cropSegment(cropArea)}/`)
+    return createImageUrlTemplate(image, cropArea)
         .replace("$resizeWidth", String(width))
         .replace("$resizeHeight", String(Math.ceil(width / aspectRatio)));
 }

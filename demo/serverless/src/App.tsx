@@ -62,7 +62,13 @@ function AppContent() {
         >
             {scope ? (
                 <DamApiProvider scope={scope}>
-                    <PageTreeApiProvider scope={scope} categories={pageTreeCategories} documentTypes={pageTreeDocumentTypes}>
+                    <PageTreeApiProvider
+                        scope={scope}
+                        categories={pageTreeCategories}
+                        documentTypes={pageTreeDocumentTypes}
+                        // The demo site's routes have a language, the serverless demo's scope has none
+                        blockPreviewUrl={import.meta.env.SITE_URL && `${import.meta.env.SITE_URL}/block-preview/${scope.domain}/en`}
+                    >
                         {/* Remounting on scope change resets the navigation state, folders and pages don't exist in other scopes */}
                         <Switch key={scope.domain}>
                             {canUsePageTree && (

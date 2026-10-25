@@ -36,6 +36,8 @@ export default defineConfig(({ mode }) => ({
     },
     define: {
         "process.env.NODE_ENV": mode === "production" ? "'production'" : "'development'",
+        // The demo site (demo/site), whose block preview renders the blocks; the preview is hidden without it
+        "import.meta.env.SITE_URL": JSON.stringify(process.env.PREVIEW_URL),
     },
     environments: {
         // Draft.js, the editor of the rich text block, uses Node's global

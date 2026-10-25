@@ -287,6 +287,13 @@ export default defineConfig({
             ],
         },
         {
+            // The demo site as the block preview of the serverless admin, which its CSP allows to frame it and load images from it
+            name: "demo-serverless-site",
+            script: "set -a; . ./.env; [ ! -f .env.local ] || . ./.env.local; set +a; ADMIN_URL=http://localhost:$DEMO_SERVERLESS_PORT pnpm --filter dextinity-demo-site run dev",
+            group: ["demo-serverless-site"],
+            waitOn: waitOnPackages("@dextinity/site-nextjs"),
+        },
+        {
             name: "demo-serverless-postgresql",
             script: "pnpm --filter dextinity-demo-serverless run dev:postgresql",
             group: ["demo-serverless-postgresql"],

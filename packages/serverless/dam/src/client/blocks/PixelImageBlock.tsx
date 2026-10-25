@@ -12,9 +12,9 @@ import { styled } from "@mui/material/styles";
 import { type ComponentProps, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
-import { createImageUrl } from "../damApi.types.js";
+import { createImageUrl, createImageUrlTemplate } from "../damApi.types.js";
 import { useDamApi } from "../DamApiProvider.js";
-import { type DamBlockFile, type DamImageCropArea, loadDamBlockFile } from "./damBlockFile.js";
+import { type DamBlockFile, damBlockFilePreview, type DamImageCropArea, loadDamBlockFile } from "./damBlockFile.js";
 import { DamFileField } from "./DamFileField.js";
 import { pixelImageMimetypes } from "./damMimetypes.js";
 
@@ -56,6 +56,13 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockOutput, PixelImageBl
         const damFile = damFileId ? await loadDamBlockFile(apiUrl, damFileId) : undefined;
         return damFile ? { damFile, cropArea } : {};
     },
+
+    createPreviewState: ({ damFile, cropArea }, { apiUrl, parentUrl }) => ({
+        damFile: damFile && damBlockFilePreview(damFile, apiUrl),
+        cropArea,
+        urlTemplate: damFile?.image ? `${apiUrl}${createImageUrlTemplate(damFile.image, cropArea)}` : undefined,
+        adminMeta: { route: parentUrl },
+    }),
 
     definesOwnPadding: true,
 

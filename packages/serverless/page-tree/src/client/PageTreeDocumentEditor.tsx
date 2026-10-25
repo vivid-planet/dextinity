@@ -13,7 +13,15 @@ import {
     ToolbarItem,
     useSnackbarApi,
 } from "@dextinity/admin";
-import { BlockAdminComponentRoot, BlockAdminTabLabel, type BlockContext, resolveNewState, useBlockContext } from "@dextinity/cms-admin";
+import {
+    BlockAdminComponentRoot,
+    BlockAdminTabLabel,
+    type BlockContext,
+    BlockPreviewWithTabs,
+    resolveNewState,
+    useBlockContext,
+    useBlockPreview,
+} from "@dextinity/cms-admin";
 import { getErrorMessage } from "@dextinity/serverless-core/client";
 import { Snackbar, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -43,6 +51,27 @@ async function documentState(rootBlocks: RootBlocks, data: Record<string, unknow
             ]),
         ),
     );
+}
+
+/** The root block whose preview a tab shows: its own, or the first root block's with a preview */
+function previewedRootBlockKey(rootBlocks: RootBlocks, tabKey: string | undefined): string | undefined {
+    if (tabKey && rootBlocks[tabKey]?.previewPath) {
+        return tabKey;
+    }
+    return Object.keys(rootBlocks).find((key) => rootBlocks[key].previewPath);
+}
+
+/**
+ * An unsecured JWT (`alg: none`, RFC 7519) with the scope, which the site's block preview reads the scope from. The NestJS API signs it
+ * for the site's requests to the API in the preview; the serverless API has no read API for the site yet, so nothing verifies it.
+ */
+function createUnsecuredScopeJwt(scope: object): string {
+    const encode = (value: object) =>
+        btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(value))))
+            .replace(/=+$/, "")
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_");
+    return `${encode({ alg: "none", typ: "JWT" })}.${encode({ scope })}.`;
 }
 
 /** Edits the document of a page tree node with the root blocks of its document type, one tab per root block */
@@ -114,7 +143,10 @@ function DocumentForm({ id, title, rootBlocks, initialState, initialUpdatedAt }:
     const intl = useIntl();
     const match = useRouteMatch();
     const snackbarApi = useSnackbarApi();
-    const { client } = usePageTreeApi();
+    const { client, scope, blockPreviewUrl } = usePageTreeApi();
+    const blockContext = useBlockContext();
+    const previewApi = useBlockPreview();
+    const selectedTabKey = useRouteMatch<{ tab: string }>(`${match.path}/:tab`)?.params.tab;
     const [state, setState] = useState(initialState);
     const [savedDocument, setSavedDocument] = useState(() => ({
         output: JSON.stringify(documentOutput(rootBlocks, initialState)),
@@ -176,6 +208,20 @@ function DocumentForm({ id, title, rootBlocks, initialState, initialUpdatedAt }:
         [rootBlocks, state],
     );
 
+    const previewedKey = blockPreviewUrl ? previewedRootBlockKey(rootBlocks, selectedTabKey) : undefined;
+    const previewState = useMemo(
+        () =>
+            previewedKey &&
+            rootBlocks[previewedKey].block.createPreviewState(state[previewedKey], {
+                ...blockContext,
+                // The URL of the root block's tab, the preview selects blocks by their routes below it
+                parentUrl: previewedKey === Object.keys(rootBlocks)[0] ? match.url : `${match.url}/${previewedKey}`,
+                showVisibleOnly: previewApi.showOnlyVisible,
+            }),
+        [rootBlocks, state, previewedKey, blockContext, match.url, previewApi.showOnlyVisible],
+    );
+    const contentScopeJwt = useMemo(() => createUnsecuredScopeJwt(scope), [scope]);
+
     const rootBlockEditors = Object.entries(rootBlocks).map(([key, { label, block }]) => ({
         key,
         label,
@@ -208,7 +254,20 @@ function DocumentForm({ id, title, rootBlocks, initialState, initialUpdatedAt }:
                 </ToolbarActions>
             </StackToolbar>
             <MainContent disablePaddingBottom>
-                {rootBlockEditors.length === 1 ? (
+                {previewedKey ? (
+                    <BlockPreviewWithTabs
+                        previewUrl={`${blockPreviewUrl}${rootBlocks[previewedKey].previewPath}`}
+                        previewState={previewState}
+                        previewApi={previewApi}
+                        contentScopeJwt={contentScopeJwt}
+                    >
+                        {rootBlockEditors.map(({ key, label, isValid, content }) => ({
+                            key,
+                            label: <BlockAdminTabLabel isValid={isValid}>{label}</BlockAdminTabLabel>,
+                            content,
+                        }))}
+                    </BlockPreviewWithTabs>
+                ) : rootBlockEditors.length === 1 ? (
                     rootBlockEditors[0].content
                 ) : (
                     <RouterTabs>

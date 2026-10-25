@@ -11,9 +11,11 @@ interface Props {
     previewApi: BlockPreviewApi;
     previewState: unknown;
     children: ReactNode | [ReactNode, ReactNode];
+    /** See `BlockPreview` */
+    contentScopeJwt?: string;
 }
 
-function SplitPreview({ url, previewState, children, previewApi }: Props) {
+function SplitPreview({ url, previewState, children, previewApi, contentScopeJwt }: Props) {
     const { minimized, setMinimized } = previewApi;
     const rootRef = useRef<HTMLDivElement>(null);
     const [columnHeight, setColumnHeight] = useState<number>(0);
@@ -50,7 +52,7 @@ function SplitPreview({ url, previewState, children, previewApi }: Props) {
                         <Box paddingBottom={4}>{firstColumn}</Box>
                     </FirstColumnContainer>
                     <PreviewContainer minimized={minimized}>
-                        <BlockPreview url={url} previewState={previewState} previewApi={previewApi} />
+                        <BlockPreview url={url} previewState={previewState} previewApi={previewApi} contentScopeJwt={contentScopeJwt} />
                         {minimized && (
                             <MaximizeButton onClick={handleMaximizeClick}>
                                 <MaximizeIcon />

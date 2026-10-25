@@ -17,9 +17,19 @@ interface Props {
     previewApi: BlockPreviewApi;
     url: string;
     previewState: unknown;
+    /**
+     * The JWT with the content scope that the site's preview receives. Without it, the API issues one through the `blockPreviewJwt`
+     * query. Pass it in an admin without the GraphQL API.
+     */
+    contentScopeJwt?: string;
 }
 
-function BlockPreview({ url, previewState, previewApi: { device, setDevice, showOnlyVisible, setShowOnlyVisible, setMinimized } }: Props) {
+function BlockPreview({
+    url,
+    previewState,
+    previewApi: { device, setDevice, showOnlyVisible, setShowOnlyVisible, setMinimized },
+    contentScopeJwt: passedContentScopeJwt,
+}: Props) {
     const iFrameBridge = useIFrameBridge();
     const { scope } = useContentScope();
 
@@ -39,19 +49,21 @@ function BlockPreview({ url, previewState, previewApi: { device, setDevice, show
                 includeInvisible: showOnlyVisible ? false : true,
             },
             pollInterval: 1000 * 60 * 60 * 24, // due to expiration time of jwt
+            skip: passedContentScopeJwt !== undefined,
         },
     );
+    const contentScopeJwt = passedContentScopeJwt ?? data?.blockPreviewJwt;
     if (error) {
         throw new Error(error.message);
     }
 
     useEffect(() => {
-        if (iFrameBridge.iFrameReady && data?.blockPreviewJwt) {
+        if (iFrameBridge.iFrameReady && contentScopeJwt) {
             iFrameBridge.sendBlockState(previewState);
-            iFrameBridge.sendContentScopeJwt(data.blockPreviewJwt);
+            iFrameBridge.sendContentScopeJwt(contentScopeJwt);
             iFrameBridge.sendGraphQLApiUrl(graphQLApiUrl);
         }
-    }, [iFrameBridge, previewState, graphQLApiUrl, data?.blockPreviewJwt]);
+    }, [iFrameBridge, previewState, graphQLApiUrl, contentScopeJwt]);
 
     const handleMinimizeClick = () => {
         setMinimized((minimized) => !minimized);

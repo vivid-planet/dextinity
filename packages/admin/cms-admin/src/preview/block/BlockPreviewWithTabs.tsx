@@ -9,9 +9,11 @@ interface Props {
     children: BlockAdminComponentPart[];
     previewState: unknown;
     previewUrl: string;
+    /** See `BlockPreview` */
+    contentScopeJwt?: string;
 }
 
-function BlockPreviewWithTabs({ children, previewApi, previewState, previewUrl }: Props) {
+function BlockPreviewWithTabs({ children, previewApi, previewState, previewUrl, contentScopeJwt }: Props) {
     let pageContent = null;
 
     if (previewApi.minimized) {
@@ -24,7 +26,7 @@ function BlockPreviewWithTabs({ children, previewApi, previewState, previewUrl }
 
     return (
         <IFrameBridgeProvider key={previewUrl}>
-            <SplitPreview url={previewUrl} previewState={previewState} previewApi={previewApi}>
+            <SplitPreview url={previewUrl} previewState={previewState} previewApi={previewApi} contentScopeJwt={contentScopeJwt}>
                 {pageContent}
             </SplitPreview>
         </IFrameBridgeProvider>

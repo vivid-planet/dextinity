@@ -1,6 +1,7 @@
 /**
  * Prepares the local databases: `node scripts/database.ts <sqlite|postgresql> <migrate|seed>`.
- * D1 is migrated with `wrangler d1 migrations apply`, PostgreSQL with Drizzle's migrator.
+ * D1 is migrated with `wrangler d1 migrations apply` (`db:seed:d1` runs it first), PostgreSQL with Drizzle's migrator. Seeding PostgreSQL
+ * migrates it first, the seed needs the tables.
  */
 import { createD1Database, createPostgresqlDatabase, type Database, type DatabaseDialect, ScopeColumns } from "@dextinity/serverless-core/server";
 import { createPageTreeSchema } from "@dextinity/serverless-page-tree/server";
@@ -75,9 +76,8 @@ if (dialect === "sqlite") {
     await server.end();
 
     const client = postgres({ ...postgresqlOptions, database: postgresqlDatabaseName, onnotice: () => {} });
-    if (command === "migrate") {
-        await migrate(drizzle(client), { migrationsFolder: "migrations/postgresql" });
-    } else {
+    await migrate(drizzle(client), { migrationsFolder: "migrations/postgresql" });
+    if (command === "seed") {
         await seed(createPostgresqlDatabase(drizzle(client)));
     }
     await client.end();

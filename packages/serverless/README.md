@@ -23,15 +23,13 @@ The demo is [`demo/serverless`](../../demo/serverless): one Vite project and one
 Requires the builds of `@dextinity/admin`, `@dextinity/admin-icons` and `@dextinity/cms-admin`.
 
 ```bash
-# On D1 (local SQLite of wrangler), no Docker needed
-pnpm --filter dextinity-demo-serverless db:migrate:d1
+# On D1 (local SQLite of wrangler), no Docker needed. The seed applies the migrations first, `db:migrate:d1` only migrates.
 pnpm --filter dextinity-demo-serverless db:seed:d1
 pnpm exec dev-pm start @demo-serverless
 
 # On PostgreSQL (the container of docker-compose.yml, database main_serverless) via Hyperdrive
 pnpm exec dev-pm start demo-docker
-pnpm --filter dextinity-demo-serverless db:migrate:postgresql
-pnpm --filter dextinity-demo-serverless db:seed:postgresql
+pnpm --filter dextinity-demo-serverless db:seed:postgresql # creates the database and applies the migrations first
 pnpm exec dev-pm start @demo-serverless-postgresql
 
 # Both on http://localhost:8010. Exercises the API through the typed clients:

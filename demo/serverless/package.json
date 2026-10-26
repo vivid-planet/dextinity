@@ -9,7 +9,7 @@
         "db:generate": "drizzle-kit generate --config drizzle.config.d1.ts && drizzle-kit generate --config drizzle.config.postgresql.ts",
         "db:migrate:d1": "wrangler d1 migrations apply DB --local",
         "db:migrate:postgresql": "dotenv -e ../../.env.local -e ../../.env -- node scripts/database.ts postgresql migrate",
-        "db:seed:d1": "node scripts/database.ts sqlite seed",
+        "db:seed:d1": "pnpm run db:migrate:d1 && node scripts/database.ts sqlite seed",
         "db:seed:postgresql": "dotenv -e ../../.env.local -e ../../.env -- node scripts/database.ts postgresql seed",
         "deploy": "vite build && wrangler deploy",
         "dev": "dotenv -e ../../.env.local -e ../../.env -- ./scripts/dev.sh",

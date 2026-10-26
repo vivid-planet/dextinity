@@ -75,7 +75,7 @@
         }
     }
 
-    &:disabled {
+    &[aria-disabled="true"] {
         background-color: var(--media-gallery-button-disabled-bg);
 
         &::after,

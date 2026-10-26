@@ -47,6 +47,8 @@
         "@opentelemetry/sdk-node": "^0.217.0",
         "cache-manager": "^5.7.6",
         "clsx": "^2.1.1",
+        "embla-carousel": "^8.6.0",
+        "embla-carousel-auto-height": "^8.6.0",
         "embla-carousel-react": "^8.6.0",
         "filesize": "^11.0.26",
         "ioredis": "^5.11.1",

@@ -61,7 +61,7 @@
         border-color: var(--media-gallery-button-hover-contrast);
     }
 
-    &:disabled {
+    &[aria-disabled="true"] {
         background-color: var(--media-gallery-button-disabled-bg);
 
         &::after {

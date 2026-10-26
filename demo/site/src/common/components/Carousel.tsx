@@ -1,42 +1,17 @@
+import { CarouselAccessibility, type CarouselState, useCarouselState } from "@dextinity/site-nextjs";
 import clsx from "clsx";
+import type { EmblaOptionsType } from "embla-carousel";
+import AutoHeight from "embla-carousel-auto-height";
 import useEmblaCarousel, { type EmblaViewportRefType } from "embla-carousel-react";
-import {
-    type ComponentProps,
-    createContext,
-    type ElementType,
-    type PropsWithChildren,
-    type RefObject,
-    useCallback,
-    useContext,
-    useMemo,
-    useRef,
-} from "react";
+import { type ComponentProps, createContext, type ElementType, type PropsWithChildren, useContext, useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useMediaQuery } from "usehooks-ts";
 
 import styles from "./Carousel.module.scss";
-import { useCarouselAutoHeight } from "./useCarouselAutoHeight";
-import { useCarouselKeyboardNavigation } from "./useCarouselKeyboardNavigation";
-import { useCarouselState } from "./useCarouselState";
-import { useResetNativeScroll } from "./useResetNativeScroll";
 
-type EmblaOptions = NonNullable<Parameters<typeof useEmblaCarousel>[0]>;
-
-type CarouselContextValue = {
+type CarouselContextValue = CarouselState & {
     viewportRef: EmblaViewportRefType;
-    previousButtonRef: RefObject<HTMLButtonElement | null>;
-    nextButtonRef: RefObject<HTMLButtonElement | null>;
-    dotRefs: RefObject<(HTMLButtonElement | null)[]>;
     slideCount: number;
     hasNavigation: boolean;
-    snapCount: number;
-    selectedIndex: number;
-    slidesInView: number[] | null;
-    canScrollPrev: boolean;
-    canScrollNext: boolean;
-    scrollPrev: () => void;
-    scrollNext: () => void;
-    scrollTo: (index: number) => void;
 };
 
 const CarouselContext = createContext<CarouselContextValue | null>(null);
@@ -51,73 +26,36 @@ const useCarousel = () => {
     return context;
 };
 
+const emblaOptions: EmblaOptionsType = {
+    align: "start",
+    // Slides out of view are inert, so Embla doesn't need to scroll to focused slides.
+    watchFocus: false,
+    breakpoints: {
+        "(prefers-reduced-motion: reduce)": { duration: 0 },
+    },
+};
+
+const getCarouselRoot = (viewport: HTMLElement) => viewport.closest<HTMLElement>('[aria-roledescription="carousel"]');
+
 type CarouselProps = PropsWithChildren<{
     label: string;
     slideCount: number;
     className?: string;
-    options?: Omit<EmblaOptions, "align" | "slidesToScroll" | "watchFocus">;
 }>;
 
-export const Carousel = ({ label, slideCount, className, options, children }: CarouselProps) => {
-    const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
-    const emblaOptions = useMemo<EmblaOptions>(
-        () => ({ ...options, align: "start", slidesToScroll: 1, watchFocus: false, ...(prefersReducedMotion && { duration: 0 }) }),
-        [options, prefersReducedMotion],
-    );
-    const [viewportRef, emblaApi] = useEmblaCarousel(emblaOptions);
-    const rootRef = useRef<HTMLDivElement>(null);
-    const previousButtonRef = useRef<HTMLButtonElement>(null);
-    const nextButtonRef = useRef<HTMLButtonElement>(null);
-    const dotRefs = useRef<(HTMLButtonElement | null)[]>([]);
-
-    const { snapCount, slidesPerView, selectedIndex, slidesInView, canScrollPrev, canScrollNext } = useCarouselState({
-        emblaApi,
-        slideCount,
-        rootRef,
-        previousButtonRef,
-        nextButtonRef,
-        dotRefs,
-    });
-    useResetNativeScroll(emblaApi);
-    useCarouselAutoHeight(emblaApi, slidesInView);
-
-    const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-    const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
-    const scrollTo = useCallback((index: number) => emblaApi?.scrollTo(index), [emblaApi]);
+export const Carousel = ({ label, slideCount, className, children }: CarouselProps) => {
+    const emblaPlugins = useMemo(() => [CarouselAccessibility({ rootNode: getCarouselRoot }), AutoHeight()], []);
+    const [viewportRef, emblaApi] = useEmblaCarousel(emblaOptions, emblaPlugins);
+    const carouselState = useCarouselState({ emblaApi, slideCount });
 
     const contextValue = useMemo<CarouselContextValue>(
-        () => ({
-            viewportRef,
-            previousButtonRef,
-            nextButtonRef,
-            dotRefs,
-            slideCount,
-            hasNavigation: snapCount > 1,
-            snapCount,
-            selectedIndex,
-            slidesInView,
-            canScrollPrev,
-            canScrollNext,
-            scrollPrev,
-            scrollNext,
-            scrollTo,
-        }),
-        [viewportRef, slideCount, snapCount, selectedIndex, slidesInView, canScrollPrev, canScrollNext, scrollPrev, scrollNext, scrollTo],
+        () => ({ ...carouselState, viewportRef, slideCount, hasNavigation: carouselState.snapCount > 1 }),
+        [carouselState, viewportRef, slideCount],
     );
-
-    const handleKeyDown = useCarouselKeyboardNavigation({ emblaApi, selectedIndex, slidesPerView, canScrollPrev, canScrollNext });
 
     return (
         <CarouselContext.Provider value={contextValue}>
-            <div
-                ref={rootRef}
-                role="group"
-                aria-roledescription="carousel"
-                aria-label={label}
-                tabIndex={-1}
-                onKeyDown={handleKeyDown}
-                className={clsx(styles.root, className)}
-            >
+            <div role="group" aria-roledescription="carousel" aria-label={label} tabIndex={-1} className={clsx(styles.root, className)}>
                 {children}
             </div>
         </CarouselContext.Provider>
@@ -146,7 +84,7 @@ type CarouselSlideProps = PropsWithChildren<{
 }>;
 
 export const CarouselSlide = ({ index, className, selectedClassName, children }: CarouselSlideProps) => {
-    const { selectedIndex, slidesInView, slideCount } = useCarousel();
+    const { selectedIndex, slideCount } = useCarousel();
     const intl = useIntl();
     const isSelected = index === selectedIndex;
 
@@ -158,7 +96,6 @@ export const CarouselSlide = ({ index, className, selectedClassName, children }:
                 { id: "carousel.slide.ariaLabel", defaultMessage: "Slide {index} of {total}" },
                 { index: index + 1, total: slideCount },
             )}
-            inert={slidesInView !== null && !slidesInView.includes(index)}
             className={clsx(styles.slide, className, isSelected && selectedClassName)}
         >
             {children}
@@ -166,10 +103,10 @@ export const CarouselSlide = ({ index, className, selectedClassName, children }:
     );
 };
 
-type CarouselButtonProps = Omit<ComponentProps<"button">, "disabled" | "onClick" | "ref" | "type">;
+type CarouselButtonProps = Omit<ComponentProps<"button">, "aria-disabled" | "disabled" | "onClick" | "ref" | "type">;
 
 export const CarouselPreviousButton = ({ className, ...restProps }: CarouselButtonProps) => {
-    const { previousButtonRef, hasNavigation, canScrollPrev, scrollPrev } = useCarousel();
+    const { hasNavigation, canScrollPrev, scrollPrev } = useCarousel();
     const intl = useIntl();
 
     if (!hasNavigation) {
@@ -178,9 +115,8 @@ export const CarouselPreviousButton = ({ className, ...restProps }: CarouselButt
 
     return (
         <button
-            ref={previousButtonRef}
             type="button"
-            disabled={!canScrollPrev}
+            aria-disabled={!canScrollPrev}
             aria-label={intl.formatMessage({ id: "carousel.previousSlide.ariaLabel", defaultMessage: "Previous slide" })}
             onClick={scrollPrev}
             className={clsx(styles.button, className)}
@@ -190,7 +126,7 @@ export const CarouselPreviousButton = ({ className, ...restProps }: CarouselButt
 };
 
 export const CarouselNextButton = ({ className, ...restProps }: CarouselButtonProps) => {
-    const { nextButtonRef, hasNavigation, canScrollNext, scrollNext } = useCarousel();
+    const { hasNavigation, canScrollNext, scrollNext } = useCarousel();
     const intl = useIntl();
 
     if (!hasNavigation) {
@@ -199,9 +135,8 @@ export const CarouselNextButton = ({ className, ...restProps }: CarouselButtonPr
 
     return (
         <button
-            ref={nextButtonRef}
             type="button"
-            disabled={!canScrollNext}
+            aria-disabled={!canScrollNext}
             aria-label={intl.formatMessage({ id: "carousel.nextSlide.ariaLabel", defaultMessage: "Next slide" })}
             onClick={scrollNext}
             className={clsx(styles.button, className)}
@@ -217,7 +152,7 @@ type CarouselDotsProps = {
 };
 
 export const CarouselDots = ({ className, dotClassName, selectedDotClassName }: CarouselDotsProps) => {
-    const { dotRefs, hasNavigation, snapCount, selectedIndex, scrollTo } = useCarousel();
+    const { hasNavigation, snapCount, selectedIndex, scrollTo } = useCarousel();
     const intl = useIntl();
 
     if (!hasNavigation) {
@@ -232,9 +167,6 @@ export const CarouselDots = ({ className, dotClassName, selectedDotClassName }: 
                 return (
                     <button
                         key={index}
-                        ref={(dot) => {
-                            dotRefs.current[index] = dot;
-                        }}
                         type="button"
                         aria-current={isSelected}
                         aria-label={intl.formatMessage({ id: "carousel.dot.ariaLabel", defaultMessage: "Go to slide {index}" }, { index: index + 1 })}

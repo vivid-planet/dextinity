@@ -54,9 +54,9 @@ Skip middlewares and the site context middleware handed requests to separate Hon
 
 The site was resolved from the host in 4 middlewares and the preview JWT verified up to 6 times per request. Now `siteContextMiddleware` runs before `redirectToMainHost`, resolves both once and stores them in the site context (`domain`, `visibility`, `sitePreview`); unknown hosts leave it unset (`hasSiteContext()`), which the preview domain check and the main host redirect use. Everything after reads the site context, `/admin` moved after the main host redirect. Site pages requested with the `x-block-preview` header are no longer cached publicly. Ref: audi6 `requestContext.ts` (`setRequestSite`), `middleware/domain.ts`.
 
-### #10 Bundle all SSR dependencies and pre-scan client components
+### #10 Bundle all SSR dependencies and pre-scan client components (dropped)
 
-Hand-kept `ssr.resolve.noExternal` list (`prop-types`, `redraft`, `swiper`) + `csso` direct dependency in `vite.config.ts`/`package.json`. Use `noExternal: true` and add all `"use client"` files to `optimizeDeps.entries` (avoids "Outdated Optimize Dep" reload in dev). Then remove `csso` and its knip ignore. Ref: audi6 `vite.config.ts` (`findClientComponents`).
+Kept the short `ssr.resolve.noExternal` list (`prop-types`, `swiper`). Tried `noExternal: true` like audi6: `csso` and `css-tree` (via `@dextinity/mail-react`) and `uglify-js` (via mjml → `html-minifier`) load their own files at runtime, which breaks when bundled. Works with the self-contained `csso/dist/csso.esm` build in mail-react plus `external: ["mjml"]`, but in dev the SSR dependency optimizer then re-bundles after dependency changes and the first requests answer 500. Not worth it for removing two list entries. Moving the welcome email's data loading to the RSC environment came out of it (no fetch cache/ioredis in SSR anymore). Revisit with mjml 5 or if the list grows. Ref: audi6 `vite.config.ts` (`findClientComponents`).
 
 ### #11 Move security and cache headers into the Hono app
 
@@ -107,7 +107,7 @@ Bootstrap script and inlined RSC payload are inline scripts, so `src/middleware/
 
 ### #40 Add browser tests against the test app
 
-Playwright with a browser against the same test app (`e2e/fixture/`): client navigation without full reload, title/meta update, back/forward, hydration without console errors, navigation to a 404/redirect (full load, final URL, #1/#4/#38), `GlobalErrorBoundary` fallback and reset (#2). Later abort, pending state, scroll restoration, prefetch (#13, #14) and CSP violations (#16). CI needs `playwright install chromium-headless-shell` like the Storybook job. Optionally also a few smoke tests against the real demo (needs Docker + API, run manually or nightly).
+Playwright with a browser against the same test app (`e2e/fixture/`): client navigation without full reload, title/meta update, back/forward, hydration without console errors, navigation to a 404/redirect (full load, final URL, #1/#4/#38), `GlobalErrorBoundary` fallback and reset (#2). Later abort, pending state, scroll restoration, prefetch (#13, #14) and CSP violations (#16). CI needs `playwright install chromium-headless-shell` like the Storybook job. Optionally also a few smoke tests against the real demo (needs Docker + API, run manually or nightly). With an empty Vite cache (always in CI), dev discovers dependencies of client components late and reloads the page ("Outdated Optimize Dep"); if that makes the tests flaky, add the `"use client"` files to `environments.client.optimizeDeps.entries` (measured during #10: removes the reload).
 
 ### #39 Only allow http(s) and relative redirect targets
 

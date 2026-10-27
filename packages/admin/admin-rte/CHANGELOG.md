@@ -1,5 +1,39 @@
 # @comet/admin-rte
 
+## 10.10.0
+
+### Patch Changes
+
+- fbb437a: Stop passing the control props of the RTE toolbar to DOM elements
+
+    `Toolbar`, `LinkControls` and `BlockTypesControls` passed `editorState`, `setEditorState`, `editorRef` and `options` on to their root element. React logged "React does not recognize the `editorRef` prop on a DOM element", and the props were rendered as `editorstate="[object Object]"` attributes.
+
+- Updated dependencies [c6b573b]
+    - @dextinity/admin@10.10.0
+    - @dextinity/admin-icons@10.10.0
+
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/admin@10.9.1
+- @dextinity/admin-icons@10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- Updated dependencies [847b2a0]
+    - @dextinity/admin@10.9.0
+    - @dextinity/admin-icons@10.9.0
+
+## 10.8.0
+
+### Patch Changes
+
+- @dextinity/admin@10.8.0
+- @dextinity/admin-icons@10.8.0
+
 ## 10.7.0
 
 ### Patch Changes

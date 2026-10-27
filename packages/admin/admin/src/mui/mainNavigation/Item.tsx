@@ -23,7 +23,8 @@ const Tooltip = createComponentSlot(CommonTooltip)<MainNavigationItemClassKey>({
 export type MainNavigationItemLevel = 1 | 2 | 3;
 
 export interface MainNavigationItemProps
-    extends ThemedComponentBaseProps<{
+    extends
+        ThemedComponentBaseProps<{
             root: typeof ListItemButton;
             icon: typeof ListItemIcon;
             text: typeof ListItemText;

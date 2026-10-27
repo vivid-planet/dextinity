@@ -39,7 +39,7 @@ const TranslationBlock = createTipTapRichTextBlock({
     strike: false,
     sub: false,
     sup: false,
-    heading: false,
+    textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }],
     orderedList: false,
     unorderedList: false,
     nonBreakingSpace: false,
@@ -47,7 +47,7 @@ const TranslationBlock = createTipTapRichTextBlock({
 });
 
 const translationInitialState: TipTapRichTextBlockState = {
-    tipTapContent: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "Hello world" }] }] },
+    tipTapContent: { type: "doc", content: [{ type: "textBlock", content: [{ type: "text", text: "Hello world" }] }] },
 };
 
 function TranslationProvider({ children, showApplyTranslationDialog }: PropsWithChildren<{ showApplyTranslationDialog?: boolean }>) {
@@ -144,7 +144,11 @@ const TranslationHeadingLevelsBlock = createTipTapRichTextBlock({
     strike: false,
     sub: false,
     sup: false,
-    heading: { levels: [2, 3] },
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p" },
+        { name: "heading-2", label: "Heading 2", tag: "h2" },
+        { name: "heading-3", label: "Heading 3", tag: "h3" },
+    ],
     orderedList: false,
     unorderedList: false,
     nonBreakingSpace: false,

@@ -1,6 +1,7 @@
 import type { EntityMetadata } from "@mikro-orm/postgresql";
 import { describe, expect, it } from "vitest";
 
+import { BooleanFilter } from "../common/filter/boolean.filter";
 import { gqlArgsToMikroOrmQuery } from "../common/filter/mikro-orm";
 import { StringFilter } from "../common/filter/string.filter";
 import { SortDirection } from "../common/sorting/sort-direction.enum";
@@ -28,6 +29,24 @@ describe("remapWarningQueryFields", () => {
 
     it("remaps type to the sourceInfo JSONB path", () => {
         expect(remapWarningQueryFields({ type: { $eq: "Page" } })).toEqual({ sourceInfo: { rootEntityName: { $eq: "Page" } } });
+    });
+
+    it("remaps visible to the joined entityInfo alias, treating a missing EntityInfo as visible", () => {
+        expect(remapWarningQueryFields({ visible: { $eq: true } })).toEqual({
+            $and: [{ $or: [{ "entityInfo.visible": { $eq: true } }, { "entityInfo.visible": null }] }],
+        });
+    });
+
+    it("remaps visible: false without matching a missing EntityInfo", () => {
+        expect(remapWarningQueryFields({ visible: { $eq: false } })).toEqual({ $and: [{ "entityInfo.visible": { $eq: false } }] });
+    });
+
+    it("keeps existing $and / $or conditions next to a remapped visible", () => {
+        const query = { visible: { $eq: false }, $and: [{ message: { $ilike: "%x%" } }], $or: [{ severity: { $eq: "high" } }] };
+        expect(remapWarningQueryFields(query)).toEqual({
+            $and: [{ message: { $ilike: "%x%" } }, { "entityInfo.visible": { $eq: false } }],
+            $or: [{ severity: { $eq: "high" } }],
+        });
     });
 
     it("leaves warning columns untouched", () => {
@@ -95,6 +114,16 @@ describe("remapWarningQueryFields", () => {
             expect(keys.has("entityInfo.name")).toBe(true);
             expect(referencesEntityInfo(remapped)).toBe(true);
         });
+
+        it("remaps the visible boolean filter away from Warning.visible", () => {
+            const filter = { and: [{ visible: Object.assign(new BooleanFilter(), { equal: true }) }] };
+            const remapped = remapWarningQueryFields(gqlArgsToMikroOrmQuery({ filter }, metadata));
+            const keys = collectKeys(remapped);
+
+            expect(keys.has("visible")).toBe(false);
+            expect(keys.has("entityInfo.visible")).toBe(true);
+            expect(referencesEntityInfo(remapped)).toBe(true);
+        });
     });
 });
 
@@ -112,6 +141,12 @@ describe("remapWarningOrderBy", () => {
     it("sorts name by the joined entityInfo alias", () => {
         expect(remapWarningOrderBy([warningSort("name" as WarningSort["field"], SortDirection.DESC)])).toEqual([
             { "entityInfo.name": SortDirection.DESC },
+        ]);
+    });
+
+    it("sorts visible by the joined entityInfo alias", () => {
+        expect(remapWarningOrderBy([warningSort("visible" as WarningSort["field"], SortDirection.ASC)])).toEqual([
+            { "entityInfo.visible": SortDirection.ASC },
         ]);
     });
 

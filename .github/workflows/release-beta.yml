@@ -5,7 +5,11 @@ on:
         branches:
             - next
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+# Releases publish to npm, so an in-flight run must never be aborted:
+# queue the next run instead of cancelling the running one.
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: false
 
 jobs:
     check-if-prerelease-mode:
@@ -15,7 +19,7 @@ jobs:
             in-prerelease-mode: ${{ steps.check-if-prerelease-mode.outputs.in-prerelease-mode }}
         steps:
             - name: Checkout Repo
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
 
             - id: check-if-prerelease-mode
               name: Check if in Prerelease Mode
@@ -32,7 +36,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout Repo
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
 
             - uses: ./.github/actions/setup
 

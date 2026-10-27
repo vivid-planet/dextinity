@@ -28,8 +28,10 @@ interface CreateTextImageBlockOptions<TextBlock extends Block, ImageBlock extend
     image?: ImageBlock;
 }
 
-interface TextImageBlockInputInterface<TextBlockInput extends BlockInputInterface, ImageBlockInput extends BlockInputInterface>
-    extends SimpleBlockInputInterface {
+interface TextImageBlockInputInterface<
+    TextBlockInput extends BlockInputInterface,
+    ImageBlockInput extends BlockInputInterface,
+> extends SimpleBlockInputInterface {
     text: TextBlockInput;
     image: ImageBlockInput;
     imagePosition: ImagePosition;

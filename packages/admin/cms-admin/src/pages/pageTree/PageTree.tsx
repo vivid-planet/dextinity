@@ -14,7 +14,7 @@ import {
     useRef,
 } from "react";
 import { FormattedMessage } from "react-intl";
-import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
+import { AutoSizer } from "react-virtualized-auto-sizer";
 import { type Align, FixedSizeList as List } from "react-window";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -100,8 +100,7 @@ const PageTree: ForwardRefRenderFunction<PageTreeRefApi, PageTreeProps> = (
 
     const queries = client.getObservableQueries();
     const pagesQuery = Array.from(queries.values()).find((query) => query.queryName === "Pages") as
-        | ObservableQuery<GQLPagesQuery, GQLPagesQueryVariables>
-        | undefined;
+        ObservableQuery<GQLPagesQuery, GQLPagesQueryVariables> | undefined;
 
     useEffect(() => {
         if (pagesQuery) {
@@ -327,8 +326,13 @@ const PageTree: ForwardRefRenderFunction<PageTreeRefApi, PageTreeProps> = (
             <PageTreeDragLayer numberSelectedPages={selectedPages.length} />
             <Root>
                 <Table>
-                    <AutoSizer>
-                        {({ height, width }: Size) => {
+                    <AutoSizer
+                        style={{ height: 0, width: 0, overflow: "visible" }}
+                        renderProp={({ height, width }) => {
+                            if (height === undefined || width === undefined) {
+                                return null;
+                            }
+
                             return (
                                 // @TODO: adjust itemSize for smaller screens
                                 <List
@@ -369,7 +373,7 @@ const PageTree: ForwardRefRenderFunction<PageTreeRefApi, PageTreeProps> = (
                                 </List>
                             );
                         }}
-                    </AutoSizer>
+                    />
                 </Table>
             </Root>
         </>

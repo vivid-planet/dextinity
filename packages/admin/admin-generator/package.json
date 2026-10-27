@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/admin-generator",
-    "version": "10.7.0",
+    "version": "10.10.0",
     "description": "Dextinity Admin Generator CLI tool",
     "repository": {
         "directory": "packages/admin/admin-generator",
@@ -46,10 +46,10 @@
         "@graphql-tools/graphql-file-loader": "^7.5.17",
         "@graphql-tools/load": "^7.8.14",
         "@mui/material": "^7.3.11",
-        "@mui/x-data-grid": "^8.28.7",
-        "change-case": "^4.1.2",
-        "commander": "^9.5.0",
-        "glob": "^11.1.0",
+        "@mui/x-data-grid": "^8.29.5",
+        "change-case": "^5.4.4",
+        "commander": "^15.0.0",
+        "glob": "^13.0.6",
         "graphql": "^16.14.2",
         "jiti": "^2.7.0",
         "object-path": "^0.11.8",
@@ -59,20 +59,20 @@
     "devDependencies": {
         "@apollo/client": "^3.14.1",
         "@dextinity/eslint-config": "workspace:*",
-        "@types/node": "^24.13.3",
+        "@types/node": "^24.19.2",
         "@types/object-path": "^0.11.4",
         "@types/pluralize": "^0.0.33",
-        "@types/react": "^19.2.15",
-        "@types/react-dom": "^19.2.3",
-        "eslint": "^9.39.4",
+        "@types/react": "^19.3.0",
+        "@types/react-dom": "^19.3.0",
+        "eslint": "^9.39.5",
         "final-form": "^4.20.10",
-        "npm-run-all2": "^8.0.4",
-        "prettier": "^3.6.2",
-        "react": "^19.2.6",
-        "react-dom": "^19.2.6",
-        "react-intl": "^7.1.11",
+        "npm-run-all2": "^9.0.3",
+        "prettier": "^3.9.10",
+        "react": "^19.3.0",
+        "react-dom": "^19.3.0",
+        "react-intl": "^7.1.14",
         "tsdown": "0.20.0-beta.4",
-        "vitest": "^4.1.8"
+        "vitest": "^5.0.5"
     },
     "peerDependencies": {
         "@apollo/client": "^3.7.0",
@@ -80,7 +80,7 @@
         "react-intl": "^5.0.0 || ^6.0.0 || ^7.0.0"
     },
     "engines": {
-        "node": ">=22.0.0"
+        "node": ">=22.12.0"
     },
     "publishConfig": {
         "access": "public",

@@ -1,5 +1,312 @@
 # @comet/cms-admin
 
+## 10.10.0
+
+### Minor Changes
+
+- d44bdd0: Add `isTipTapRichTextEmpty`
+
+    The TipTap counterpart of `isRichTextEmpty`: it returns `true` when the `tipTapContent` of a `createTipTapRichTextBlock` block holds neither text nor a child block.
+    It takes the content rather than the block state, so it works with the block's data and its state alike.
+
+    ```ts
+    if (isTipTapRichTextEmpty(notes.tipTapContent)) {
+        // show a placeholder
+    }
+    ```
+
+- 8ca42f5: Add a preview text to the table block
+- 7a121f1: Rework the content scopes management in the user permissions panel
+
+    The user permissions panel now renders a consistent set of content scope columns for every user based on the content scope dimensions declared in the API (`userPermissionsAvailableContentScopeDimensions`). A dimension whose value is the `"*"` wildcard is shown as "All".
+    - Content scopes are assigned through an "Add scope" dialog that builds a scope from one dropdown per enumerable dimension, cascading so that only existing combinations can be selected. Each dropdown also offers an "All" option to grant every value of that dimension (`*` wildcard). Dimensions that are not part of `availableContentScopes` are entered as a free text value (`*` grants all values).
+    - The assigned content scopes and the permission-specific content scopes (override dialog) use the same paginated grid and add dialog, and show manually assigned scopes first.
+    - Removing a content scope asks for confirmation, consistent with removing a permission.
+    - The assignment type is shown in a consistent way across the permissions and content scopes grids.
+
+- ad1ad05: Show only warnings of visible entities by default in the warnings grid
+
+    The grid has a new "Visible" column, and the default filter shows only warnings whose entity is visible (e.g., a published page).
+    Remove the filter to see warnings of unpublished entities as well.
+
+### Patch Changes
+
+- 7f5eefe: Show the correct error message when a DAM file upload is rejected by the API
+
+    Previously, rejected uploads (e.g., an image exceeding the maximum resolution) were treated as successful, resulting in a generic error like "Variable $id of required type ID! was not provided" instead of the specific validation message.
+
+    Replacing a file now also shows the HTTP status instead of a JSON parse error when the API responds with a non-JSON error.
+
+- bfc162a: Don't read files into memory before uploading them to the DAM
+
+    Previously, every file was fully loaded into the browser's memory before the upload started, which could cause high memory usage and a delay before the upload progress was shown for large files.
+
+- c1ac227: Fix hover marking between a block list and the block preview
+
+    Hovering a block in the block list didn't mark it in the block preview, and hovering a block in the block preview neither marked its entry in the block list nor scrolled the list to it. This affected the entries of `BlocksBlock`, `ListBlock` and `ColumnsBlock` and the child blocks of composite blocks.
+
+- 245faa3: Fix the "Each child in a list should have a unique key prop" warning in `createListBlock` and the TipTap block dialog
+
+    `FormattedMessage` returns an array when a value is a React element. The `itemName`, `itemsName` and `displayName` values are usually a `FormattedMessage` and are now wrapped in a keyed `Fragment`.
+
+- 98499dd: Remove the unsupported `rowsMax` prop from the description fields of `createSeoBlock`
+
+    MUI v5 removed `rowsMax`, so the prop had no effect and only caused the React warning "React does not recognize the `rowsMax` prop on a DOM element". The fields keep their height of three rows.
+
+- 43461dd: Show the folder path of search results in the dialogs for choosing DAM files
+
+    Files with the same name in different folders can now be told apart, as in the DAM search.
+
+- 4bd97fa: Make the content column of `SplitPreview` scrollable
+
+    Previously, when using `SplitPreview` without tabs, content taller than the viewport scrolled the whole page, moving the preview out of view.
+
+- 6683f95: Fix the empty line after a list at the end of a TipTap rich text that couldn't be deleted
+
+    The editor no longer adds an empty text block after a list at the end of the content. Deleting this empty line added it again right away. To continue writing after the list, press Enter in its empty last item.
+
+- a607533: Fix the TipTap rich text block keeping a text block style the new text block doesn't offer when no `defaultStyle` is configured
+
+    Changing a styled paragraph to a heading, e.g. with the `Mod-Alt-1` shortcut, kept the paragraph's style, so the API rejected the content and the block couldn't be saved.
+
+- fdce21f: Separate the lines of a `TipTapRichTextBlock` with a space in the block preview
+
+    Previously, the text of all paragraphs and list items was joined without a space, for example "First lineSecond line".
+
+- Updated dependencies [c6b573b]
+- Updated dependencies [fbb437a]
+    - @dextinity/admin@10.10.0
+    - @dextinity/admin-rte@10.10.0
+    - @dextinity/admin-icons@10.10.0
+
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/admin@10.9.1
+- @dextinity/admin-icons@10.9.1
+- @dextinity/admin-rte@10.9.1
+
+## 10.9.0
+
+### Minor Changes
+
+- 13838dc: Support scopes in `DependentsList` and `DependenciesList`
+
+    Entities can be used across scopes, for instance a DAM that is shared between multiple sites. Until now, the links in both lists always pointed to the currently active scope, leading to a wrong or non-existent page. In addition, the lists didn't show which scope an entry belongs to.
+
+    The `Dependency` type now has a `scope` field, which is resolved from the entity's `scope` property or its `@ScopedEntity()` decorator. Both lists use it to link to the entry in its own scope and show a scope column when more than one scope exists.
+
+    **Example**
+
+    Request the new field in your dependents/dependencies queries:
+
+    ```diff
+        dependents(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
+            nodes {
+                rootGraphqlObjectType
+                rootId
+                rootColumnName
+                jsonPath
+                name
+                secondaryInformation
+                visible
+    +           scope
+            }
+            totalCount
+        }
+    ```
+
+- 1c29104: TipTap Rich Text Block: add `defaultStyle` to a text block
+
+    The styling select always offered a "Default" entry standing for "no style", even where a design has no unstyled variant and every paragraph or heading is meant to carry one of the configured styles.
+
+    A text block (or list) with a `defaultStyle` has no such state: the select drops its "Default" entry, and the style is applied to new content, to a text block the editor converts through the type select, and to any text block the editor creates without one — pressing Enter at the end of a text block, the `Mod-Alt-<level>` shortcuts, or pasting. Switching the type keeps a style the new text block also offers and falls back to its `defaultStyle` otherwise.
+
+    Toggling a list hands a paragraph from its text block to the list or back, so the styles of whichever now holds it apply. The list keyboard shortcuts do this as well as the toolbar's list buttons.
+
+    Because the default sits on the text block rather than on a shared tag, two text blocks with the same tag can have different defaults, and a text block without one keeps the "Default" entry next to text blocks that have one.
+
+    **Example**
+
+    ```tsx
+    createTipTapRichTextBlock({
+        textBlocks: [
+            { name: "heading-1", label: "Heading 1", tag: "h1", styles: headlineStyles, defaultStyle: "headline300" },
+            { name: "heading-2", label: "Heading 2", tag: "h2", styles: headlineStyles, defaultStyle: "headline400" },
+        ],
+    });
+    ```
+
+    `defaultStyle` must be one of the text block's `styles`, otherwise an error is thrown. It only exists next to `styles`, not next to a text block's own `element`.
+
+    Content written before a `defaultStyle` was configured carries no style, and the editor fills it in on the first edit rather than when the document is opened, so opening a document does not mark it as changed.
+
+- e84ba03: TipTap Rich Text Block: define text block styles inside the text blocks
+
+    A text block style had to be configured in two places: globally in `textBlockStyles`, and again through an `appliesTo` listing the text block types it was allowed for. Reading what a text block offers meant scanning every style's `appliesTo`.
+
+    A text block now carries its style definitions directly, and `textBlockStyles` is gone. Text blocks that offer the same style share its definition, which makes the shared set explicit instead of implying it through repeated names.
+
+    **Example**
+
+    ```tsx
+    const headlineStyles: TipTapTextBlockStyle[] = [
+        { name: "headline300", label: "Headline 300", element: (props, Tag) => <Tag {...props} /> },
+        { name: "headline400", label: "Headline 400", element: (props, Tag) => <Tag {...props} /> },
+    ];
+
+    createTipTapRichTextBlock({
+        textBlocks: [
+            {
+                name: "paragraph",
+                label: "Paragraph",
+                tag: "p",
+                styles: [
+                    { name: "copy100", label: "Copy 100", element: (props, Tag) => <Tag {...props} /> },
+                    { name: "copy200", label: "Copy 200", element: (props, Tag) => <Tag {...props} /> },
+                ],
+            },
+            { name: "heading-1", label: "Heading 1", tag: "h1", styles: headlineStyles },
+            { name: "heading-2", label: "Heading 2", tag: "h2", styles: headlineStyles },
+        ],
+    });
+    ```
+
+    In the API the styles are `{ name }` objects, mirroring the Admin configuration without the labels and elements.
+
+    A text block that needs no style choice carries its own `element` instead of `styles`. The two exclude each other, so a text block offers a style choice or renders one way, never both:
+
+    ```tsx
+    createTipTapRichTextBlock({
+        textBlocks: [{ name: "display", label: "Display", tag: "h1", element: (props, Tag) => <Tag style={{ fontSize: 64 }} {...props} /> }],
+    });
+    ```
+
+    **Migrating an existing configuration**
+    - `textBlockStyles` and a style's `appliesTo` → the `styles` of the text blocks that offer the style.
+    - `appliesTo: ["ordered-list", "unordered-list"]` → `orderedList`/`unorderedList` accept `{ styles }` instead of `true`.
+    - An inline style's `appliesTo` now lists text block names (plus `ordered-list`/`unordered-list`) instead of text block types.
+    - In the Admin, a style's `element` receives the tag of the text block it is applied to, so one style can be shared: `element: (props, Tag) => <Tag {...props} />`.
+
+    A style's `name` still identifies it in the content's `textBlockStyle` attribute, so the stored content format is unchanged.
+
+### Patch Changes
+
+- 58aef82: Focus the rich text editor when editing a cell in `TableBlock`
+- f899c6b: Fix block editor keeping the previously selected block's content
+
+    Clicking a block in the block preview opens that block's editor in the block list. When the newly selected block had the same type as the previously selected one, React reused the already mounted admin component instead of remounting it. Editors that build internal state on mount, most notably the TipTap rich text block whose document is created once from the initial content, therefore kept showing the previous block's content.
+
+    The admin component rendered by `createBlocksBlock` and `createListBlock` is now keyed by the selected block, so it remounts whenever the selection changes.
+
+- f486058: Fix the first scroll in the preview sometimes not working
+
+    When the preview loaded while the mouse was outside of it, the preview sometimes ignored the first attempt to scroll, for instance in mail previews.
+
+- fad8ab4: Scroll to and highlight the `TableBlock` cell that was clicked in the block preview
+- 013a03f: Fix scrolling in the cell editor of the `TableBlock`
+
+    The RTE toolbar no longer moves down and leaves a gap above it, and text below the window can now be reached with the mouse wheel.
+
+- be674a9: Fix pasting more text blocks than `maxTextBlocks` allows into the TipTap Rich Text Block
+
+    Instead of cutting the content off at the limit, the editor threw an error. The extra text blocks stayed in the editor, and changes were missing from the saved content until it was back within the limit.
+
+- e9067c3: Fix saving a TipTap rich text that ends with a list
+
+    Since v10.8.0, the editor added an empty list after a list at the end of the content. The API rejects a list without items, so saving failed with "Validation failed". Removing the list didn't fix it: the empty list stayed at the end of the content, where editors couldn't see or remove it.
+
+    ProseMirror fills content with the schema's first block node, for instance after a list at the end of the content or when all content is deleted. When the `textBlock` node replaced the paragraph and heading nodes, it lost the paragraph's priority, so a list became the first block node. The `textBlock` node gets the paragraph's priority again, so the editor adds an empty text block after a list, as it did before v10.8.0.
+
+    With `maxTextBlocks`, the editor only adds this empty text block when the content stays within the limit. Otherwise, a list as the last allowed block was followed by a block over the limit, and the content couldn't be saved.
+
+- Updated dependencies [847b2a0]
+    - @dextinity/admin@10.9.0
+    - @dextinity/admin-rte@10.9.0
+    - @dextinity/admin-icons@10.9.0
+
+## 10.8.0
+
+### Minor Changes
+
+- 9109aa3: TipTap Rich Text Block: replace the `paragraph` and `heading` options with `textBlocks`
+
+    The text block type select could only ever offer a fixed paragraph entry plus every enabled heading level, in a fixed order. `textBlocks` configures the text block types explicitly, which decouples a text block from the tag it is stored as and lets several text blocks share a tag, for instance a display headline next to a regular heading 1.
+
+    **Example**
+
+    ```tsx
+    createTipTapRichTextBlock({
+        textBlocks: [
+            { name: "paragraph", label: "Paragraph", tag: "p" },
+            { name: "display", label: "Display", tag: "h1" },
+            { name: "heading-1", label: "Heading 1", tag: "h1" },
+            { name: "heading-2", label: "Heading 2", tag: "h2" },
+        ],
+        defaultTextBlock: "paragraph",
+    });
+    ```
+
+    The API takes the same option without the labels.
+
+    **Migrating an existing configuration**
+    - `paragraph`/`heading` → one `textBlocks` entry per text block type (`tag: "p"` for the paragraph, `h1`-`h6` for the headings). It defaults to a paragraph plus a heading for every level, so only a restricted set needs to be configured. Leaving the paragraph out replaces `paragraph: false`.
+    - `heading: { levels }` → the `textBlocks` entries for those levels.
+    - `heading: { defaultLevel }` → `defaultTextBlock`, which names the text block new content starts with and defaults to the first one.
+    - `migrateFromDraftJs`' `textBlockStyleMap` → `textBlockMap`, which now takes a `{ textBlock, textBlockStyle }` object for every DraftJS block type: `textBlock` names the text block the block becomes (instead of the tag the previous `textBlockType` named), `textBlockStyle` stays optional. Where two text blocks share a heading tag, `textBlockMap` has to name the one a DraftJS `header-one`…`header-six` becomes, unless it is the `defaultTextBlock` — the block throws otherwise, because the conversion runs once and the DraftJS content is gone afterwards.
+
+    **The stored format changes**
+
+    Every paragraph and heading is now one `textBlock` node that names its text block, instead of a `paragraph`/`heading` node with a `level`:
+
+    ```json
+    { "type": "textBlock", "attrs": { "textBlock": "heading-2" }, "content": [{ "type": "text", "text": "Headline" }] }
+    ```
+
+    The tag lives in the configuration, so changing a text block's `tag` takes effect without a migration, while renaming or removing one invalidates the content that names it.
+
+    Content stored by an earlier version holds `paragraph` and `heading` nodes. A vendor migration converts it when the block is loaded, so a project needs no migration of its own. It resolves the text block from the node's tag, which is unambiguous for that content: two text blocks could not share a tag before `textBlocks` existed.
+
+    A project migration sees the converted nodes, because the vendor migrations run before the block's own. A migration written against `{ type: "heading", attrs: { level } }` has to be changed to match `{ type: "textBlock", attrs: { textBlock } }`.
+
+    On the site, `renderTipTapRichText` renders a `textBlock` by its name: `heading-1` to `heading-6` — the default text blocks — as `<h1>` to `<h6>`, anything else as `<p>`. A block that renames a text block or adds one needs its own handler, which reads the name:
+
+    ```tsx
+    const nodeMapping: Record<string, TipTapNodeHandler> = {
+        textBlock: ({ node, children }) => <Headline variant={node.attrs?.textBlock}>{children}</Headline>,
+    };
+    ```
+
+### Patch Changes
+
+- f9ba8df: Resolve the target language of `AzureAiTranslatorProvider` via `useContentLanguage`
+
+    The `targetLanguage` sent to the Azure AI translation queries was read directly from `scope.language`.
+    That only works in projects whose content scope happens to contain a `language` dimension.
+    It is now resolved through the `contentLanguage` config, like the rest of the admin.
+
+- 350294d: Allow typing the DAM licence duration dates
+
+    The licence duration fields used the deprecated `FinalFormDatePicker` from `@dextinity/admin-date-time`, which renders a read-only input, so a date could only be picked from the calendar. They now use `DatePickerField` from `@dextinity/admin`, which accepts keyboard input.
+
+    The fields are labelled "From" and "To" instead of using untranslated `from`/`to` placeholders, and the calendar icon moved from the end to the start of the input.
+
+    `@dextinity/cms-admin` no longer depends on `@dextinity/admin-date-time`.
+
+- 748dd34: Apply content changes from outside to the TipTap rich text block's editor
+
+    `useEditor` only applies its `content` option once, so content set from outside the editor — for instance by an agent rewriting the text — was ignored while the editor was mounted. It is now synced into the editor, keeping the caret where it was. Content the editor emitted itself is skipped, so typing is unaffected.
+
+- f9ba8df: Resolve the language for translated page slugs via `useContentLanguage`
+
+    When translating pages in the page tree, the locale used to slugify the translated page name was read directly from `scope.language`.
+    That only works in projects whose content scope happens to contain a `language` dimension.
+    The language is now resolved through the `contentLanguage` config, consistent with `createEditPageNode`, which already slugifies using `useContentLanguage`.
+    - @dextinity/admin@10.8.0
+    - @dextinity/admin-icons@10.8.0
+    - @dextinity/admin-rte@10.8.0
+
 ## 10.7.0
 
 ### Minor Changes
@@ -1744,9 +2051,7 @@
     const MediaGalleryBlock = createCompositeBlock({
         name: "MediaGallery",
         displayName: "Media Gallery",
-        blocks: {
-            /* ... */
-        },
+        blocks: {/* ... */},
         tags: [defineMessage({ id: "mediaGallery.tag.slider", defaultMessage: "Slider" })],
         /* ... */
     });

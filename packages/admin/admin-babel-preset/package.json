@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/admin-babel-preset",
-    "version": "10.7.0",
+    "version": "10.10.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity",
@@ -29,6 +29,6 @@
         "registry": "https://registry.npmjs.org"
     },
     "engines": {
-        "node": ">=22.0.0"
+        "node": ">=22.12.0"
     }
 }

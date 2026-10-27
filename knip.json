@@ -1,5 +1,6 @@
 {
-    "$schema": "https://unpkg.com/knip@5/schema.json",
+    "$schema": "https://unpkg.com/knip@6/schema.json",
+    "ignore": ["**/lib/**"],
     "workspaces": {
         ".": {
             "entry": ["dev-pm.config.ts"],
@@ -8,7 +9,8 @@
             "ignoreBinaries": ["oauth2-proxy", "peers", "playwright"]
         },
         "packages/cli": {
-            "project": ["./src/**/*.{ts,tsx}"]
+            "project": ["./src/**/*.{ts,tsx}"],
+            "ignoreBinaries": ["op"]
         },
         "packages/eslint-config": {
             "ignore": ["*"],
@@ -21,7 +23,7 @@
             "project": []
         },
         "docs": {
-            "ignore": ["./docs/**/*.mdx", "./src/components/StorybookAdminComponentDocsIframe.tsx", ".docusaurus/**"],
+            "ignore": ["./docs/**/*.mdx", ".docusaurus/**"],
             "ignoreDependencies": ["@algolia/client-search", "search-insights"]
         },
         "packages/admin/admin-babel-preset": {
@@ -64,7 +66,8 @@
         },
         "packages/api/api-generator": {
             "entry": ["./src/**/__tests__/**/*.ts"],
-            "project": ["./src/**/*.{ts,tsx}"]
+            "project": ["./src/**/*.{ts,tsx}"],
+            "ignoreDependencies": ["tsconfig-paths"]
         },
         "packages/api/brevo-api": {
             "project": ["./src/**/*.{ts,tsx}"]

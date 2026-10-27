@@ -2,7 +2,7 @@ import { V1CronJob, V1Job } from "@kubernetes/client-node";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import parser from "cron-parser";
+import { CronExpressionParser } from "cron-parser";
 import { format } from "date-fns";
 
 import { KubernetesJobStatus } from "../kubernetes/job-status.enum";
@@ -121,7 +121,7 @@ export class BuildsService {
         }
         autoBuildStatus.lastCheck = cronJob.status?.lastScheduleTime;
 
-        const interval = parser.parseExpression(cronJob.spec?.schedule as string);
+        const interval = CronExpressionParser.parse(cronJob.spec?.schedule as string);
         autoBuildStatus.nextCheck = interval.next().toDate();
 
         return autoBuildStatus;

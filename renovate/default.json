@@ -1,8 +1,16 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["config:recommended", ":semanticCommitsDisabled"],
-    "minimumReleaseAge": "3 days",
-    "internalChecksFilter": "strict",
+    "extends": [
+        "config:recommended",
+        ":semanticCommitsDisabled",
+        ":configMigration",
+        "abandonments:recommended",
+        "security:minimumReleaseAgeNpm",
+        ":maintainLockFilesWeekly",
+        ":automergeStableNonMajor"
+    ],
+    "automergeStrategy": "squash",
+    "recreateWhen": "never",
     "packageRules": [
         {
             "groupName": "babel",
@@ -13,46 +21,21 @@
             "matchPackageNames": ["/^lodash.*/"]
         },
         {
-            "groupName": "eslint",
-            "matchPackageNames": ["/^eslint/"],
-            "excludePackagePatterns": ["eslint-config-next", "eslint-plugin-storybook"]
-        },
-        {
-            "groupName": "prettier",
-            "matchPackageNames": ["/^prettier/"]
-        },
-        {
-            "groupName": "typescript",
-            "matchPackageNames": ["/typescript/"]
+            "extends": ["packages:eslint"],
+            "groupName": "ESLint packages"
         },
         {
             "groupName": "Storybook",
             "matchPackageNames": ["/^@storybook/", "/^storybook/", "eslint-plugin-storybook"]
         },
         {
-            "groupName": "Mui-X",
-            "matchPackageNames": ["/^@mui/x/"]
-        },
-        {
             "groupName": "Docusaurus",
             "matchPackageNames": ["/^@docusaurus/*/", "/@tsconfig/docusaurus/"]
-        },
-        {
-            "groupName": "Mui",
-            "matchPackageNames": ["/@mui/material/", "/@mui/system/", "/@mui/utils/"]
-        },
-        {
-            "groupName": "emotion",
-            "matchPackageNames": ["/@emotion/*/"]
         },
         {
             "groupName": "Final Form",
             "matchPackageNames": ["/final-form/", "/react-final-form/"],
             "enabled": false
-        },
-        {
-            "matchPackageNames": ["@graphql-codegen/*"],
-            "groupName": "GraphQL Codegen"
         },
         {
             "matchPackageNames": ["@apollo/server"],
@@ -63,24 +46,12 @@
             "groupName": "@apollo/client and related dependencies"
         },
         {
-            "groupName": "Mikro-ORM",
-            "matchPackageNames": ["/^@mikro-orm/*/"]
-        },
-        {
             "groupName": "NestJS",
             "matchPackageNames": ["/^@nestjs/*/"]
         },
         {
-            "groupName": "OpenTelemetry",
-            "matchPackageNames": ["/^@opentelemetry/*/"]
-        },
-        {
             "groupName": "lodash",
             "matchPackageNames": ["/^lodash.*/", "/^@types/lodash.*/"]
-        },
-        {
-            "groupName": "msw",
-            "matchPackageNames": ["msw", "@graphql-mocks/network-msw"]
         },
         {
             "groupName": "node",
@@ -131,7 +102,6 @@
             "versioningTemplate": "semver"
         }
     ],
-    "lockFileMaintenance": { "enabled": true },
     "labels": ["dependencies"],
     "baseBranches": ["main"],
     "nvm": {

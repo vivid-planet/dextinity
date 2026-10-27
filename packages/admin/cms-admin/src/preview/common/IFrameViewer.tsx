@@ -117,15 +117,6 @@ const IFrame = styled("iframe", { shouldForwardProp: (prop) => prop !== "deviceC
     width: 100%;
     height: 100%;
     background-color: ${({ theme }) => theme.palette.common.white};
-
-    ${OuterFrame}:not(:hover):not(:active) & {
-        /**
-        * Remove iFrame pointer-events while not interacting with the parent to fix a chrome-bug that prevents
-        * drag-and-drop from working in a modal over the iFrame when using an external URL as the source.
-        * Source: https://medium.com/@marcmintel/most-weird-bug-or-security-feature-with-iframes-and-native-drag-and-drop-13ffbc26107a
-        */
-        pointer-events: none;
-    }
 `;
 
 export { IFrameViewer };

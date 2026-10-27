@@ -822,6 +822,7 @@
     },
     {
         "name": "RichText",
+        "description": "Formatted text, edited in the Draft.js based rich text editor.",
         "fields": [
             {
                 "name": "draftContent",
@@ -839,6 +840,7 @@
     },
     {
         "name": "Seo",
+        "description": "The metadata of a page for search engines and social networks: title, description, preview image, sitemap settings and canonical URL.",
         "fields": [
             {
                 "name": "htmlTitle",
@@ -1353,6 +1355,7 @@
     },
     {
         "name": "TipTapRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor.",
         "fields": [
             {
                 "name": "tipTapContent",

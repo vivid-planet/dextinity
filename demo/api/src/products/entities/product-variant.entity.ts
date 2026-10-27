@@ -2,7 +2,7 @@ import { BlockDataInterface, CrudField, CrudGenerator, DamImageBlock, RootBlock,
 import { BaseEntity, Entity, ManyToOne, OptionalProps, PrimaryKey, Property, Ref } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { Min } from "class-validator";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { ProductVariantService } from "../product-variant.service";
 import { Product } from "./product.entity";
@@ -20,7 +20,7 @@ export class ProductVariant extends BaseEntity {
 
     @PrimaryKey({ type: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     @Field()

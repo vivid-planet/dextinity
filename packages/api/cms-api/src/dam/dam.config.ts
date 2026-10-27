@@ -11,4 +11,5 @@ export interface DamConfig {
     enableLicenseFeature?: boolean;
     maxSrcResolution: number;
     basePath: string;
+    includeFormatExtensionInImageUrls?: boolean;
 }

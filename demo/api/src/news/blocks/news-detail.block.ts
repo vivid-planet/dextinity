@@ -32,6 +32,9 @@ class NewsDetailBlockInput extends BlockInput {
     }
 }
 
-const NewsDetailBlock = createBlock(NewsDetailBlockData, NewsDetailBlockInput, "NewsDetail");
+const NewsDetailBlock = createBlock(NewsDetailBlockData, NewsDetailBlockInput, {
+    name: "NewsDetail",
+    description: "The detail view of a single news entry.",
+});
 
 export { NewsDetailBlock };

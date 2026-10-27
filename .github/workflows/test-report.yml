@@ -4,9 +4,18 @@ on:
         workflows: ["Test"]
         types:
             - completed
+
+# A report belongs to the commit it reports on. Keying on the branch instead would let an
+# unrelated report cancel it, because group names are matched case-insensitively and a
+# fork's branch can carry the same name as ours.
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_sha }}
+    cancel-in-progress: true
+
 jobs:
     test-report-unit:
         name: "Test Report (unit)"
+        if: github.event.workflow_run.conclusion != 'cancelled'
         runs-on: ubuntu-latest
         steps:
             - uses: dorny/test-reporter@v3
@@ -17,6 +26,7 @@ jobs:
                   reporter: jest-junit
     test-report-storybook:
         name: "Test Report (storybook)"
+        if: github.event.workflow_run.conclusion != 'cancelled'
         runs-on: ubuntu-latest
         steps:
             - uses: dorny/test-reporter@v3

@@ -133,6 +133,8 @@ Where a rule depends on an item's position, set a modifier class while rendering
 
 A flex `gap` does not stand in for this — see [`layout-patterns.md`](layout-patterns.md) → Multi-Column Symmetric Layouts.
 
+Target the mail's body with `#body`. Some clients replace the `<body>` tag with a `<div>`, which a `body` selector no longer reaches.
+
 ---
 
 ## BEM Class Naming Convention

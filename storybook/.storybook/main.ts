@@ -1,5 +1,6 @@
 import type { StorybookConfig } from "@storybook/react-vite";
 import remarkGfm from "remark-gfm";
+import { mergeConfig } from "vite";
 
 const config: StorybookConfig = {
     framework: "@storybook/react-vite",
@@ -16,6 +17,7 @@ const config: StorybookConfig = {
             },
         },
         "@storybook/addon-vitest",
+        "storybook-addon-tag-badges",
         { name: "@dextinity/mail-react/storybook", options: { disablePreviewAnnotations: true } },
     ],
 
@@ -24,6 +26,13 @@ const config: StorybookConfig = {
         MUI_LICENSE_KEY: process.env.MUI_LICENSE_KEY || "",
     }),
     staticDirs: ["../public"],
+    viteFinal: (viteConfig) =>
+        mergeConfig(viteConfig, {
+            build: {
+                // Dependencies such as MUI mark their modules with "use client", which has no meaning in the client-only Storybook bundle
+                rolldownOptions: { checks: { moduleLevelDirective: false } },
+            },
+        }),
     refs: (config, { configType }) => {
         return {
             "@dextinity/admin": {

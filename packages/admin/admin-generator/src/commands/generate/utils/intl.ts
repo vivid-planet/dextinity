@@ -4,8 +4,7 @@ import { FormattedMessage } from "react-intl";
 import type { FormattedMessageElement } from "../generate-command";
 
 type GenerateFormattedMessageOptions = (
-    | { config: string | FormattedMessageElement | undefined; defaultMessage: string }
-    | { config: string | FormattedMessageElement }
+    { config: string | FormattedMessageElement | undefined; defaultMessage: string } | { config: string | FormattedMessageElement }
 ) & { id: string; type: "jsx" | "intlCall" };
 
 export function isFormattedMessageElement(node: unknown): node is ReactElement<ComponentProps<typeof FormattedMessage>, typeof FormattedMessage> {

@@ -46,6 +46,4 @@ export type GridBaseColDef<R extends GridValidRowModel = any, V = any, F = V> = 
 export type GridActionsColDef<R extends GridValidRowModel = any, V = any, F = V> = MuiGridActionsColDef<R, V, F> & GridColDefExtension<R>;
 export type GridSingleSelectColDef<R extends GridValidRowModel = any, V = any, F = V> = MuiGridSingleSelectColDef<R, V, F> & GridColDefExtension<R>;
 export type GridColDef<R extends GridValidRowModel = any, V = any, F = V> =
-    | GridBaseColDef<R, V, F>
-    | GridActionsColDef<R, V, F>
-    | GridSingleSelectColDef<R, V, F>;
+    GridBaseColDef<R, V, F> | GridActionsColDef<R, V, F> | GridSingleSelectColDef<R, V, F>;

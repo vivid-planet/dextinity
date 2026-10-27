@@ -661,9 +661,17 @@ ${
     return { code, imports };
 }
 
-function generateNestedEntityResolver({ generatorOptions, metadata }: { generatorOptions: CrudGeneratorOptions; metadata: EntityMetadata<any> }) {
+function generateNestedEntityResolver({
+    generatorOptions,
+    metadata,
+    targetDirectory,
+}: {
+    generatorOptions: CrudGeneratorOptions;
+    metadata: EntityMetadata<any>;
+    targetDirectory: string;
+}) {
     const { classNameSingular } = buildNameVariants(metadata);
-    const { skipScopeCheck, targetDirectory } = buildOptions(metadata, generatorOptions);
+    const { skipScopeCheck } = buildOptions(metadata, generatorOptions);
 
     const entityHasRequiredPermission = !!Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, metadata.class);
 
@@ -674,7 +682,7 @@ function generateNestedEntityResolver({ generatorOptions, metadata }: { generato
         code,
         hasOutputRelations,
         needsBlocksTransformer,
-    } = generateRelationsFieldResolver({ generatorOptions, metadata });
+    } = generateRelationsFieldResolver({ generatorOptions, metadata, targetDirectory });
     if (!hasOutputRelations) {
         return null;
     }
@@ -696,9 +704,16 @@ function generateNestedEntityResolver({ generatorOptions, metadata }: { generato
     `;
 }
 
-function generateRelationsFieldResolver({ generatorOptions, metadata }: { generatorOptions: CrudGeneratorOptions; metadata: EntityMetadata<any> }) {
+function generateRelationsFieldResolver({
+    generatorOptions,
+    metadata,
+    targetDirectory,
+}: {
+    generatorOptions: CrudGeneratorOptions;
+    metadata: EntityMetadata<any>;
+    targetDirectory: string;
+}) {
     const { instanceNameSingular } = buildNameVariants(metadata);
-    const { targetDirectory } = buildOptions(metadata, generatorOptions);
 
     const relationManyToOneProps = metadata.props.filter((prop) => prop.kind === "m:1");
     const relationOneToManyProps = metadata.props.filter((prop) => prop.kind === "1:m");
@@ -863,6 +878,7 @@ function generateResolver({ generatorOptions, metadata }: { generatorOptions: Cr
     } = generateRelationsFieldResolver({
         generatorOptions,
         metadata,
+        targetDirectory,
     });
     imports.push(...relationsFieldResolverImports);
 
@@ -1229,7 +1245,10 @@ export async function generateCrud(generatorOptionsParam: CrudGeneratorOptions, 
     const generatedFiles: GeneratedFile[] = [];
 
     const { fileNameSingular, fileNamePlural } = buildNameVariants(metadata);
-    const { hasFilterArg, hasSortArg, argsFileName, hasPositionProp, hasPaging, hasArgsClass } = buildOptions(metadata, generatorOptions);
+    const { hasFilterArg, hasSortArg, argsFileName, hasPositionProp, hasPaging, hasArgsClass, targetDirectory } = buildOptions(
+        metadata,
+        generatorOptions,
+    );
 
     async function generateCrudResolver(): Promise<GeneratedFile[]> {
         if (hasPaging && hasFilterArg) {
@@ -1287,7 +1306,7 @@ export async function generateCrud(generatorOptionsParam: CrudGeneratorOptions, 
                     throw new Error(`Target metadata not set`);
                 }
                 const { fileNameSingular } = buildNameVariants(prop.targetMeta);
-                const content = generateNestedEntityResolver({ generatorOptions, metadata: prop.targetMeta });
+                const content = generateNestedEntityResolver({ generatorOptions, metadata: prop.targetMeta, targetDirectory });
 
                 //can be null if no relations exist
                 if (content) {

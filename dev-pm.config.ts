@@ -135,9 +135,9 @@ export default defineConfig({
             group: ["mail-react"],
         },
         {
-            name: "mail-react-storybook",
+            name: "storybook-dextinity-mail-react",
             script: "pnpm --filter @dextinity/mail-react run storybook",
-            group: ["mail-react", "storybook", "docs"],
+            group: ["storybook", "docs"],
         },
 
         //group brevo
@@ -221,7 +221,9 @@ export default defineConfig({
         //group demo api
         {
             name: "demo-docker",
-            script: "set -a; . .env; . .env.local; set +a; docker compose up",
+            // Export the env files so Docker Compose binds the ports from `.env.local` (written by `pnpm run assign-ports`).
+            // dev-pm doesn't pass them to scripts, and Compose prefers real env vars over its own `.env` lookup.
+            script: "set -a; . ./.env; [ ! -f .env.local ] || . ./.env.local; set +a; docker compose up",
             group: ["demo-api", "demo"],
         },
         {
@@ -282,13 +284,12 @@ export default defineConfig({
             name: "storybook",
             script: "pnpm --filter dextinity-storybook run storybook",
             group: ["storybook", "docs"],
-            waitOn: ["tcp:26646", "tcp:26647", "tcp:6066"], // storybook-dextinity-admin, storybook-dextinity-cms-admin, mail-react-storybook
+            waitOn: ["tcp:26646", "tcp:26647", "tcp:6066"], // storybook-dextinity-admin, storybook-dextinity-cms-admin, storybook-dextinity-mail-react
         },
         {
             name: "docs",
             script: "pnpm --filter dextinity-docs start",
             group: ["docs"],
-            waitOn: ["tcp:26638"], // storybook
         },
         {
             name: "storybook-dextinity-admin",

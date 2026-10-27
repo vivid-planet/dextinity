@@ -3,11 +3,11 @@ import main from "./main";
 import secondary from "./secondary";
 
 // Types for files in site-configs/
-export type Environment = "local";
+export type Environment = "local" | "digitalocean";
 export type GetSiteConfig = (env: Environment) => SiteConfig;
 
 const isValidEnvironment = (env: string): env is Environment => {
-    return ["local", "dev", "test", "staging", "prod"].includes(env);
+    return ["local", "digitalocean"].includes(env);
 };
 
 // Called by `pnpm exec dextinity inject-site-configs`

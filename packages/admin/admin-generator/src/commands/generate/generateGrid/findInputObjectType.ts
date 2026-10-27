@@ -10,7 +10,6 @@ export function findInputObjectType(input: IntrospectionInputValue, schema: Intr
     }
     const typeName = type.name;
     const filterType = schema.__schema.types.find((type) => type.kind === "INPUT_OBJECT" && type.name === typeName) as
-        | IntrospectionInputObjectType
-        | undefined;
+        IntrospectionInputObjectType | undefined;
     return filterType;
 }

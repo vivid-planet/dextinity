@@ -35,7 +35,10 @@ export class RedirectsModule {
                 supportedBlocks: { internal: InternalLinkBlock, external: ExternalLinkBlock, ...customTargets },
                 allowEmpty: false,
             },
-            "RedirectsLink",
+            {
+                name: "RedirectsLink",
+                description: "The target a redirect points to, for instance a page of the page tree or an external URL.",
+            },
         );
 
         const Redirect = RedirectEntityFactory.create({ linkBlock, Scope });

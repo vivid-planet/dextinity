@@ -156,7 +156,7 @@ After writing the migration class, register it in the block's `createBlock` call
 
 ### First Migration on a Block
 
-When a block has **no existing migrations**, the `createBlock` third argument is a plain name string. Convert it to an options object with `name` and `migrate`:
+When a block has **no existing migrations**, the third argument of `createBlock` is usually a plain name string. Convert it to an options object with `name` and `migrate`. If it already is an options object, for instance because it sets a `description`, add `migrate` to it:
 
 ```ts
 // Before (no migrations)
@@ -224,18 +224,11 @@ Blocks created with factory helpers (e.g., `ColumnsBlockFactory.create`) accept 
 
 ```ts
 // Before
-export const ColumnsBlock = ColumnsBlockFactory.create(
-    {
-        /* ... */
-    },
-    "Columns",
-);
+export const ColumnsBlock = ColumnsBlockFactory.create({/* ... */}, "Columns");
 
 // After
 export const ColumnsBlock = ColumnsBlockFactory.create(
-    {
-        /* ... */
-    },
+    {/* ... */},
     {
         name: "Columns",
         migrate: {

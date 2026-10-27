@@ -180,12 +180,14 @@ export const FileSelectListItem = (inProps: FileSelectListItemProps) => {
 };
 
 const getCommonItemSpacingStyles = (ownerState: OwnerState) => css`
-    ${!ownerState.hasFilePreview &&
-    css`
-        &:not(:last-child) {
-            margin-bottom: 2px;
-        }
-    `}
+    ${
+        !ownerState.hasFilePreview &&
+        css`
+            &:not(:last-child) {
+                margin-bottom: 2px;
+            }
+        `
+    }
 `;
 
 const Root = createComponentSlot("div")<FileSelectListItemClassKey, OwnerState>({
@@ -221,16 +223,20 @@ const Root = createComponentSlot("div")<FileSelectListItemClassKey, OwnerState>(
             }
         }
 
-        ${(ownerState.hasErrorWithDetails || ownerState.hasErrorWithoutDetails) &&
-        css`
-            outline: 1px dashed ${theme.palette.error.main};
-            outline-offset: -1px;
-        `}
+        ${
+            (ownerState.hasErrorWithDetails || ownerState.hasErrorWithoutDetails) &&
+            css`
+                outline: 1px dashed ${theme.palette.error.main};
+                outline-offset: -1px;
+            `
+        }
 
-        ${ownerState.disabled &&
-        css`
-            pointer-events: none;
-        `}
+        ${
+            ownerState.disabled &&
+            css`
+                pointer-events: none;
+            `
+        }
     `,
 );
 const Skeleton = createComponentSlot(MuiSkeleton)<FileSelectListItemClassKey, OwnerState>({
@@ -246,13 +252,15 @@ const Skeleton = createComponentSlot(MuiSkeleton)<FileSelectListItemClassKey, Ow
         box-sizing: border-box;
         ${getCommonItemSpacingStyles(ownerState)};
 
-        ${ownerState.hasFilePreview &&
-        css`
-            aspect-ratio: 1;
-            height: auto;
-            padding-bottom: 34px;
-            box-sizing: content-box;
-        `}
+        ${
+            ownerState.hasFilePreview &&
+            css`
+                aspect-ratio: 1;
+                height: auto;
+                padding-bottom: 34px;
+                box-sizing: content-box;
+            `
+        }
     `,
 );
 
@@ -273,10 +281,12 @@ const Preview = createComponentSlot("div")<FileSelectListItemClassKey, OwnerStat
         font-size: 30px;
         color: white;
 
-        ${ownerState.hasErrorWithDetails &&
-        css`
-            margin-bottom: 0;
-        `}
+        ${
+            ownerState.hasErrorWithDetails &&
+            css`
+                margin-bottom: 0;
+            `
+        }
     `,
 );
 
@@ -299,11 +309,13 @@ const Content = createComponentSlot("div")<FileSelectListItemClassKey, OwnerStat
         justify-content: space-between;
         gap: ${theme.spacing(1)};
 
-        ${ownerState.hasFilePreview &&
-        !ownerState.hasErrorWithDetails &&
-        css`
-            margin-bottom: 7px;
-        `}
+        ${
+            ownerState.hasFilePreview &&
+            !ownerState.hasErrorWithDetails &&
+            css`
+                margin-bottom: 7px;
+            `
+        }
     `,
 );
 
@@ -317,17 +329,21 @@ const FileListItemInfos = createComponentSlot("div")<FileSelectListItemClassKey,
         justify-content: end;
         margin-left: auto;
 
-        ${ownerState.hasErrorWithDetails &&
-        css`
-            padding-top: 3.5px;
-            margin-bottom: -3.5px;
-
-            ${ownerState.hasFilePreview &&
+        ${
+            ownerState.hasErrorWithDetails &&
             css`
-                padding-top: 0;
-                margin-bottom: 0;
-            `}
-        `};
+                padding-top: 3.5px;
+                margin-bottom: -3.5px;
+
+                ${
+                    ownerState.hasFilePreview &&
+                    css`
+                        padding-top: 0;
+                        margin-bottom: 0;
+                    `
+                }
+            `
+        };
     `,
 );
 
@@ -344,32 +360,42 @@ const FileName = createComponentSlot(Typography)<FileSelectListItemClassKey, Own
         padding-top: 9px;
         padding-bottom: 9px;
 
-        ${ownerState.hasFilePreview &&
-        css`
-            padding-top: ${theme.spacing(2)};
-            padding-bottom: ${theme.spacing(2)};
-        `}
-
-        ${ownerState.hasErrorWithoutDetails &&
-        css`
-            color: ${theme.palette.error.main};
-        `}
-
-        ${ownerState.hasErrorWithDetails &&
-        css`
-            padding-top: 7px;
-            padding-bottom: 4px;
-
-            ${ownerState.hasFilePreview &&
+        ${
+            ownerState.hasFilePreview &&
             css`
-                padding-top: 4px;
-            `}
-        `}
+                padding-top: ${theme.spacing(2)};
+                padding-bottom: ${theme.spacing(2)};
+            `
+        }
 
-        ${ownerState.disabled &&
-        css`
-            color: ${theme.palette.text.disabled};
-        `}
+        ${
+            ownerState.hasErrorWithoutDetails &&
+            css`
+                color: ${theme.palette.error.main};
+            `
+        }
+
+        ${
+            ownerState.hasErrorWithDetails &&
+            css`
+                padding-top: 7px;
+                padding-bottom: 4px;
+
+                ${
+                    ownerState.hasFilePreview &&
+                    css`
+                        padding-top: 4px;
+                    `
+                }
+            `
+        }
+
+        ${
+            ownerState.disabled &&
+            css`
+                color: ${theme.palette.text.disabled};
+            `
+        }
     `,
 );
 
@@ -439,14 +465,16 @@ const IconButton = createComponentSlot(MuiIconButton)<FileSelectListItemClassKey
             margin-right: ${theme.spacing(-1)};
         }
 
-        ${ownerState.hasFilePreview &&
-        css`
-            padding: 4px;
+        ${
+            ownerState.hasFilePreview &&
+            css`
+                padding: 4px;
 
-            &:last-child {
-                margin-right: -4px;
-            }
-        `}
+                &:last-child {
+                    margin-right: -4px;
+                }
+            `
+        }
     `,
 );
 

@@ -1,3 +1,5 @@
+import { useRefToRegisterMailBlocksForPreview } from "@dextinity/mail-react";
+import { useIFrameBridge } from "@dextinity/site-nextjs";
 import { type FC, type ReactElement, useEffect, useState } from "react";
 
 interface Props {
@@ -8,6 +10,7 @@ interface Props {
 
 export const RenderedMailForBlockPreview: FC<Props> = ({ mail, transformHtml }) => {
     const [mailHtml, setMailHtml] = useState<string>("");
+    const mailContainerRef = useRefToRegisterMailBlocksForPreview<HTMLSpanElement>(useIFrameBridge());
 
     useEffect(() => {
         (async () => {
@@ -22,5 +25,5 @@ export const RenderedMailForBlockPreview: FC<Props> = ({ mail, transformHtml }) 
         })();
     }, [mail, transformHtml]);
 
-    return <span dangerouslySetInnerHTML={{ __html: mailHtml }} />;
+    return <span ref={mailContainerRef} dangerouslySetInnerHTML={{ __html: mailHtml }} />;
 };

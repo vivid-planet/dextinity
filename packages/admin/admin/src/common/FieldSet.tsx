@@ -9,17 +9,16 @@ import { type PropsWithChildren, type ReactNode, type SyntheticEvent, useState }
 import { createComponentSlot } from "../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
-export interface FieldSetProps
-    extends ThemedComponentBaseProps<{
-        root: typeof MuiAccordion;
-        summary: typeof MuiAccordionSummary;
-        headerColumn: "div";
-        title: "div";
-        supportText: "div";
-        placeholder: "div";
-        endAdornment: "div";
-        children: typeof MuiAccordionDetails;
-    }> {
+export interface FieldSetProps extends ThemedComponentBaseProps<{
+    root: typeof MuiAccordion;
+    summary: typeof MuiAccordionSummary;
+    headerColumn: "div";
+    title: "div";
+    supportText: "div";
+    placeholder: "div";
+    endAdornment: "div";
+    children: typeof MuiAccordionDetails;
+}> {
     title?: ReactNode;
     supportText?: ReactNode;
     endAdornment?: ReactNode;
@@ -29,16 +28,7 @@ export interface FieldSetProps
 }
 
 export type FieldSetClassKey =
-    | "root"
-    | "hiddenSummary"
-    | "summary"
-    | "headerColumn"
-    | "title"
-    | "supportText"
-    | "endAdornment"
-    | "placeholder"
-    | "children"
-    | "disablePadding";
+    "root" | "hiddenSummary" | "summary" | "headerColumn" | "title" | "supportText" | "endAdornment" | "placeholder" | "children" | "disablePadding";
 
 type OwnerState = {
     disablePadding: boolean;
@@ -157,11 +147,13 @@ const Title = createComponentSlot("div")<FieldSetClassKey, OwnerState>({
         text-transform: uppercase;
         color: ${theme.palette.text.primary};
 
-        ${!ownerState.collapsible &&
-        css`
-            // MUIAccordionSummary inherits from ButtonBase. Overriding the styling of a disabled button is necessary to align with the design.
-            opacity: 1;
-        `}
+        ${
+            !ownerState.collapsible &&
+            css`
+                // MUIAccordionSummary inherits from ButtonBase. Overriding the styling of a disabled button is necessary to align with the design.
+                opacity: 1;
+            `
+        }
     `,
 );
 
@@ -203,23 +195,27 @@ const Children = createComponentSlot(MuiAccordionDetails)<FieldSetClassKey, Owne
     ({ theme, ownerState }) => css`
         padding: 20px;
 
-        ${!ownerState.hiddenSummary &&
-        css`
-            border-top: 1px solid ${theme.palette.divider};
-        `}
+        ${
+            !ownerState.hiddenSummary &&
+            css`
+                border-top: 1px solid ${theme.palette.divider};
+            `
+        }
 
         ${theme.breakpoints.up("sm")} {
             padding: 40px;
         }
 
-        ${ownerState.disablePadding &&
-        css`
-            padding: 0;
-
-            ${theme.breakpoints.up("sm")} {
+        ${
+            ownerState.disablePadding &&
+            css`
                 padding: 0;
-            }
-        `}
+
+                ${theme.breakpoints.up("sm")} {
+                    padding: 0;
+                }
+            `
+        }
     `,
 );
 

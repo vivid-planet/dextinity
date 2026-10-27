@@ -1,5 +1,36 @@
 # @comet/admin
 
+## 10.10.0
+
+### Patch Changes
+
+- c6b573b: Prevent `GridToolbarQuickFilter` and `DataGridPagination` from interfering with a surrounding form field
+
+    Previously, when a data grid was rendered inside a form field, for instance in a dialog opened from a field, the quick filter's search input and the pagination's page size select registered with the field's `FormControl`.
+    This caused a console error about multiple inputs inside a `FormControl`, and the field and the data grid shared their focused, filled, disabled, and error state.
+    - @dextinity/admin-icons@10.10.0
+
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- 847b2a0: Restore the search field's `searchbox` role in `GridToolbarQuickFilter`
+
+    The role and id that MUI's `QuickFilterControl` supplies for the input element were dropped, leaving the placeholder as the only way to address the field — for assistive technology as well as for end-to-end tests.
+    - @dextinity/admin-icons@10.9.0
+
+## 10.8.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.8.0
+
 ## 10.7.0
 
 ### Patch Changes

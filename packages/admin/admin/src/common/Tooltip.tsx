@@ -78,10 +78,12 @@ const TooltipPopper = createComponentSlot(MuiPopper)<TooltipClassKey, OwnerState
     };
 
     return css`
-        ${!ownerState.hasTitleOnly &&
-        css`
-            min-width: 200px;
-        `}
+        ${
+            !ownerState.hasTitleOnly &&
+            css`
+                min-width: 200px;
+            `
+        }
 
         .${tooltipClasses.tooltip} {
             box-shadow: ${theme.shadows[3]};
@@ -91,10 +93,12 @@ const TooltipPopper = createComponentSlot(MuiPopper)<TooltipClassKey, OwnerState
             background-color: ${colorPropToBackgroundColor[ownerState.color]};
             line-height: 0; // Custom content may include space-caracters, due to code indentation. Removing the line-height prevents these from adding unintended whitespace.
 
-            ${!ownerState.hasTitleOnly &&
-            css`
-                padding: 10px;
-            `}
+            ${
+                !ownerState.hasTitleOnly &&
+                css`
+                    padding: 10px;
+                `
+            }
         }
 
         .${tooltipClasses.arrow} {
@@ -104,59 +108,67 @@ const TooltipPopper = createComponentSlot(MuiPopper)<TooltipClassKey, OwnerState
         // Copied the following from MUIs default TooltipPopper: https://github.com/mui/material-ui/blob/a13c0c026692aafc303756998a78f1d6c2dd707d/packages/mui-material/src/Tooltip/Tooltip.js#L55
         z-index: ${theme.zIndex.tooltip};
         pointer-events: none;
-        ${!ownerState.disableInteractive &&
-        css`
-            pointer-events: auto;
-        `};
-        ${ownerState.arrow &&
-        css`
-            &[data-popper-placement*="bottom"] .${tooltipClasses.arrow} {
-                top: 0;
-                margin-top: -0.71em;
-                &::before {
-                    transform-origin: 0 100%;
+        ${
+            !ownerState.disableInteractive &&
+            css`
+                pointer-events: auto;
+            `
+        };
+        ${
+            ownerState.arrow &&
+            css`
+                &[data-popper-placement*="bottom"] .${tooltipClasses.arrow} {
+                    top: 0;
+                    margin-top: -0.71em;
+                    &::before {
+                        transform-origin: 0 100%;
+                    }
                 }
-            }
-            &[data-popper-placement*="top"] .${tooltipClasses.arrow} {
-                bottom: 0;
-                margin-bottom: -0.71em;
-                &::before {
-                    transform-origin: 100% 0;
+                &[data-popper-placement*="top"] .${tooltipClasses.arrow} {
+                    bottom: 0;
+                    margin-bottom: -0.71em;
+                    &::before {
+                        transform-origin: 100% 0;
+                    }
                 }
-            }
-            &[data-popper-placement*="right"] .${tooltipClasses.arrow} {
-                ${!ownerState.isRtl
-                    ? css`
-                          left: 0;
-                          margin-left: -0.71em;
-                      `
-                    : css`
-                          right: 0;
-                          margin-right: -0.71em;
-                      `}
-                height: 1em;
-                width: 0.71em;
-                &::before {
-                    transform-origin: 100% 100%;
+                &[data-popper-placement*="right"] .${tooltipClasses.arrow} {
+                    ${
+                        !ownerState.isRtl
+                            ? css`
+                                  left: 0;
+                                  margin-left: -0.71em;
+                              `
+                            : css`
+                                  right: 0;
+                                  margin-right: -0.71em;
+                              `
+                    }
+                    height: 1em;
+                    width: 0.71em;
+                    &::before {
+                        transform-origin: 100% 100%;
+                    }
                 }
-            }
-            &[data-popper-placement*="left"] .${tooltipClasses.arrow} {
-                ${!ownerState.isRtl
-                    ? css`
-                          right: 0;
-                          margin-right: -0.71em;
-                      `
-                    : css`
-                          left: 0;
-                          margin-left: -0.71em;
-                      `}
-                height: 1em;
-                width: 0.71em;
-                &::before {
-                    transform-origin: 0 0;
+                &[data-popper-placement*="left"] .${tooltipClasses.arrow} {
+                    ${
+                        !ownerState.isRtl
+                            ? css`
+                                  right: 0;
+                                  margin-right: -0.71em;
+                              `
+                            : css`
+                                  left: 0;
+                                  margin-left: -0.71em;
+                              `
+                    }
+                    height: 1em;
+                    width: 0.71em;
+                    &::before {
+                        transform-origin: 0 0;
+                    }
                 }
-            }
-        `};
+            `
+        };
     `;
 });
 

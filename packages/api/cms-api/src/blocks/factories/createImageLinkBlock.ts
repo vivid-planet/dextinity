@@ -19,8 +19,10 @@ interface CreateImageLinkBlockOptions<LinkBlock extends Block, ImageBlock extend
     link: LinkBlock;
 }
 
-interface ImageLinkBlockInputInterface<LinkBlockInput extends BlockInputInterface, ImageBlockInput extends BlockInputInterface>
-    extends SimpleBlockInputInterface {
+interface ImageLinkBlockInputInterface<
+    LinkBlockInput extends BlockInputInterface,
+    ImageBlockInput extends BlockInputInterface,
+> extends SimpleBlockInputInterface {
     link: LinkBlockInput;
     image: ImageBlockInput;
 }

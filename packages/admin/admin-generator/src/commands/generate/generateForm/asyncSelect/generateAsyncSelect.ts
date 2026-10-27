@@ -71,8 +71,7 @@ export function findIntrospectionObjectType({
     const name = String(config.name);
 
     const introspectionObject = gqlIntrospection.__schema.types.find((type) => type.kind === "OBJECT" && type.name === gqlType) as
-        | IntrospectionObjectType
-        | undefined;
+        IntrospectionObjectType | undefined;
     if (!introspectionObject) {
         throw new Error(`didn't find object ${gqlType} in gql introspection`);
     }
@@ -94,8 +93,7 @@ export function findIntrospectionObjectType({
             throw new Error(`asyncSelect only supports OBJECT types`);
         }
         const objectType = gqlIntrospection.__schema.types.find((t) => t.kind === "OBJECT" && t.name === introspectionFieldType.name) as
-            | IntrospectionObjectType
-            | undefined;
+            IntrospectionObjectType | undefined;
         if (!objectType) {
             throw new Error(`Object type ${introspectionFieldType.name} not found for field ${name}`);
         }

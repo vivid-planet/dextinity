@@ -12,7 +12,8 @@ import { UserGroup } from "@src/user-groups/user-group";
 import { generateSeoBlock } from "./blocks/seo.generator";
 
 // Hardcoded legacy DraftJS-shaped content. Exercises the createTipTapRichTextBlock
-// `migrateFromDraftJs` migration path: blocks, headings, lists, inline styles, and a LINK entity.
+// `migrateFromDraftJs` migration path: blocks, headings, lists (including custom list block types),
+// inline styles, and a LINK entity.
 const legacyDraftJsContent = {
     blocks: [
         {
@@ -69,6 +70,16 @@ const legacyDraftJsContent = {
             data: {},
         },
         {
+            // Soft line breaks (Shift+Enter), which DraftJS stores as newlines within the block's text.
+            key: "33333333-3333-3333-3333-3333333333cc",
+            text: "Example Company\nExample Street 1\n1234 Example City",
+            type: "unstyled",
+            depth: 0,
+            inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 15 }],
+            entityRanges: [],
+            data: {},
+        },
+        {
             key: "44444444-4444-4444-4444-444444444444",
             text: "First bullet point",
             type: "unordered-list-item",
@@ -78,9 +89,27 @@ const legacyDraftJsContent = {
             data: {},
         },
         {
+            key: "44444444-4444-4444-4444-4444444444aa",
+            text: "Small bullet point from a custom list block type",
+            type: "unordered-list-item-small",
+            depth: 0,
+            inlineStyleRanges: [],
+            entityRanges: [],
+            data: {},
+        },
+        {
             key: "55555555-5555-5555-5555-555555555555",
             text: "Nested bullet point",
             type: "unordered-list-item",
+            depth: 1,
+            inlineStyleRanges: [],
+            entityRanges: [],
+            data: {},
+        },
+        {
+            key: "55555555-5555-5555-5555-5555555555bb",
+            text: "Nested small bullet point",
+            type: "unordered-list-item-small",
             depth: 1,
             inlineStyleRanges: [],
             entityRanges: [],
@@ -109,6 +138,15 @@ const legacyDraftJsContent = {
             text: "Nested ordered item",
             type: "ordered-list-item",
             depth: 1,
+            inlineStyleRanges: [],
+            entityRanges: [],
+            data: {},
+        },
+        {
+            key: "66666666-6666-6666-6666-6666666666bb",
+            text: "Small ordered item from a custom list block type",
+            type: "ordered-list-item-small",
+            depth: 0,
             inlineStyleRanges: [],
             entityRanges: [],
             data: {},

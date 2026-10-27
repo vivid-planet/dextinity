@@ -32,8 +32,8 @@ import { Field, ID, InputType, Int, ObjectType, registerEnumType } from "@nestjs
 import { DamFile } from "@src/dam/entities/dam-file.entity";
 import { Manufacturer } from "@src/products/entities/manufacturer.entity";
 import { IsNumber } from "class-validator";
+import { randomUUID } from "crypto";
 import { GraphQLLocalDate } from "graphql-scalars";
-import { v4 as uuid } from "uuid";
 
 import { ProductService } from "../product.service";
 import { ProductCategory } from "./product-category.entity";
@@ -107,7 +107,7 @@ export class Product extends BaseEntity implements ImportTargetInterface {
 
     @PrimaryKey({ type: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     @Field()

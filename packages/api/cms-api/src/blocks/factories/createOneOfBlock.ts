@@ -1,6 +1,6 @@
 import { Type } from "@nestjs/common";
 import { plainToInstance, Transform } from "class-transformer";
-import { ArrayMinSize, IsIn, IsOptional, IsString, ValidateNested } from "class-validator";
+import { ArrayMinSize, IsArray, IsIn, IsObject, IsOptional, ValidateIf, ValidateNested } from "class-validator";
 
 import {
     Block,
@@ -18,11 +18,11 @@ import {
     ExtractBlockInput,
     isBlockDataInterface,
     isBlockInputInterface,
-    MigrateOptions,
     SimpleBlockInputInterface,
     TraversableTransformBlockResponse,
 } from "../block";
 import { AnnotationBlockMeta, BlockField } from "../decorators/field";
+import type { MigrateOptions } from "../migrations/types";
 import { BlockFactoryNameOrOptions } from "./types";
 
 type BaseBlockMap = Record<string, Block<BlockDataInterface, BlockInputInterface>>;
@@ -164,22 +164,21 @@ export function BaseOneOfBlockItemInput<BlockMap extends BaseBlockMap>({
     OneOfBlockItemData: Type<OneOfBlockItemDataInterface>;
 }): Type<OneOfBlockItemInputInterface> {
     class OneOfBlockItemInput extends BlockInput {
-        @IsString()
+        @IsIn(Object.keys(supportedBlocks))
         type: string;
 
         @Transform(
             ({ value, obj }) => {
-                const blockType = obj.type as string;
-                const block = supportedBlocks[blockType];
-
-                if (!block) {
-                    throw new Error(`unknown type ${blockType}`);
+                // Runs before validation, so an unknown type must pass through for @IsIn to report it
+                if (!Object.hasOwn(supportedBlocks, obj.type)) {
+                    return value;
                 }
 
-                return isBlockInputInterface(value) ? value : block.blockInputFactory(value);
+                return isBlockInputInterface(value) ? value : supportedBlocks[obj.type].blockInputFactory(value);
             },
             { toClassOnly: true },
         )
+        @ValidateIf((item: OneOfBlockItemInput) => Object.hasOwn(supportedBlocks, item.type))
         @ValidateNested()
         props: BlockInputInterface;
 
@@ -225,18 +224,9 @@ export function BaseOneOfBlockInput<
     const supportedBlockTypes: Array<keyof BlockMap | null> = Object.keys(supportedBlocks);
 
     class OneOfBlockInput extends BlockInput<Data> {
-        @Transform(({ value }: { value: OneOfBlockItemInputInterface[] }) =>
-            value
-                .filter((item) => {
-                    if (!supportedBlocks[item.type]) {
-                        console.warn(`Unknown block type "${item.type}"`);
-                        return false;
-                    }
-
-                    return true;
-                })
-                .map((item) => plainToInstance(OneOfBlockItemInput, item)),
-        )
+        @Transform(({ value }) => (Array.isArray(value) ? value.map((item) => plainToInstance(OneOfBlockItemInput, item)) : value))
+        @IsArray()
+        @IsObject({ each: true })
         @ArrayMinSize(allowEmpty ? 0 : 1)
         @ValidateNested({ each: true })
         attachedBlocks: OneOfBlockInputInterface<BlockMap, Data, Input>["attachedBlocks"];
@@ -341,17 +331,20 @@ export function createOneOfBlock<
     }
 
     let name: string;
+    let description: string | undefined;
     let migrate: MigrateOptions | undefined;
 
     if (typeof nameOrOptions === "string") {
         name = nameOrOptions;
     } else {
         name = nameOrOptions.name;
+        description = nameOrOptions.description;
         migrate = nameOrOptions.migrate;
     }
 
     return createBlock(OneOfBlockData, OneOfBlockInput, {
         name,
+        description,
         blockMeta: new Meta(OneOfBlockData),
         blockInputMeta: new InputMeta(OneOfBlockInput),
         migrate,

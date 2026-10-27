@@ -1,10 +1,10 @@
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, MikroORM, QueryBuilder, raw, Utils } from "@mikro-orm/postgresql";
-import { forwardRef, Inject, Injectable, Optional } from "@nestjs/common";
+import { forwardRef, Inject, Injectable, Logger, Optional } from "@nestjs/common";
 import { createHmac } from "crypto";
 import exifr from "exifr";
 import { createReadStream } from "fs";
-import { basename, extname, parse } from "path";
+import { basename, extname } from "path";
 import probe from "probe-image-size";
 import * as rimraf from "rimraf";
 
@@ -115,6 +115,8 @@ const withFilesSelect = (
 
 @Injectable()
 export class FilesService {
+    private readonly logger = new Logger(FilesService.name);
+
     constructor(
         @InjectRepository("DamFile") private readonly filesRepository: EntityRepository<FileInterface>,
         @InjectRepository(DamMediaAlternative) private readonly damMediaAlternativesRepository: EntityRepository<DamMediaAlternative>,
@@ -442,18 +444,8 @@ export class FilesService {
             });
 
             if (result.image && this.dominantColorCalculator) {
-                const dominantColorCalculator = this.dominantColorCalculator;
-                // We do not want for our users to await the dominant color calculation. To prevent concurrency issues we must use a separate Unit of
-                // Work. This can be achieved by forking the EntityManager instance.
-                // See https://mikro-orm.io/docs/faq#you-cannot-call-emflush-from-inside-lifecycle-hook-handlers and
-                // https://mikro-orm.io/docs/unit-of-work for more information.
-                const entityManager = this.orm.em.fork();
-                const image = await entityManager.findOneOrFail(DamFileImage, result.image.id);
-
-                dominantColorCalculator.calculateDominantColor(contentHash).then((dominantColor) => {
-                    image.dominantColor = dominantColor;
-                    return entityManager.flush();
-                });
+                // We do not want for our users to await the dominant color calculation.
+                void this.saveDominantColor({ imageId: result.image.id, contentHash, dominantColorCalculator: this.dominantColorCalculator });
             }
             rimraf.sync(file.path);
         } catch (e) {
@@ -601,6 +593,28 @@ export class FilesService {
         return name;
     }
 
+    private async saveDominantColor({
+        imageId,
+        contentHash,
+        dominantColorCalculator,
+    }: {
+        imageId: string;
+        contentHash: string;
+        dominantColorCalculator: DominantColorCalculatorInterface;
+    }): Promise<void> {
+        try {
+            // To prevent concurrency issues we must use a separate Unit of Work. This can be achieved by forking the EntityManager instance.
+            // See https://mikro-orm.io/docs/faq#you-cannot-call-emflush-from-inside-lifecycle-hook-handlers and
+            // https://mikro-orm.io/docs/unit-of-work for more information.
+            const entityManager = this.orm.em.fork();
+            const image = await entityManager.findOneOrFail(DamFileImage, imageId);
+            image.dominantColor = await dominantColorCalculator.calculateDominantColor(contentHash);
+            await entityManager.flush();
+        } catch (error) {
+            this.logger.error(`Failed to save dominant color for image ${imageId}`, error);
+        }
+    }
+
     /**
      * @deprecated Use `DamDominantColorService.calculateDominantColor` instead. Returns `undefined` when `DamImagesModule`,
      * which provides the imgproxy-backed calculator, is not registered.
@@ -610,7 +624,7 @@ export class FilesService {
     }
 
     async createFileUrl(file: FileInterface, { previewDamUrls = false }: { previewDamUrls?: boolean }): Promise<string> {
-        const filename = parse(file.name).name;
+        const filename = file.name;
 
         const baseUrl = [`/${this.config.basePath}/files`];
 
@@ -641,7 +655,7 @@ export class FilesService {
     }
 
     async createFileDownloadUrl(file: FileInterface, { previewDamUrls = false }: { previewDamUrls?: boolean }): Promise<string> {
-        const filename = parse(file.name).name;
+        const filename = file.name;
 
         const baseUrl = [`/dam/files/download`];
 

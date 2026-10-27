@@ -3,7 +3,7 @@ import { ListItem, type SvgIconProps } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { type CSSProperties, type ForwardRefExoticComponent, type ReactNode, type RefAttributes, useEffect, useRef } from "react";
 import { FormattedMessage } from "react-intl";
-import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
+import { AutoSizer } from "react-virtualized-auto-sizer";
 import { FixedSizeList as List } from "react-window";
 
 import { MarkedMatches } from "../../common/MarkedMatches";
@@ -48,8 +48,13 @@ export const ChooseFolder = ({
     const refList = useRef<List>(null);
 
     return (
-        <AutoSizer>
-            {({ height, width }: Size) => {
+        <AutoSizer
+            style={{ height: 0, width: 0, overflow: "visible" }}
+            renderProp={({ height, width }) => {
+                if (height === undefined || width === undefined) {
+                    return null;
+                }
+
                 return (
                     <List
                         ref={refList}
@@ -109,7 +114,7 @@ export const ChooseFolder = ({
                     </List>
                 );
             }}
-        </AutoSizer>
+        />
     );
 };
 

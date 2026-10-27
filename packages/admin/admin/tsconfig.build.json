@@ -11,7 +11,8 @@
         "**/__stories__/**",
         "**/*.stories.js",
         "**/*.stories.tsx",
-        "**/*.stories.ts"
+        "**/*.stories.ts",
+        "vitest.setup.ts"
     ],
     "extends": "./tsconfig.json"
 }

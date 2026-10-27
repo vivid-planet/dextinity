@@ -23,6 +23,7 @@ export class EntityInfoObject {
     @Property({ type: "text", nullable: true })
     secondaryInformation?: string;
 
+    @Field()
     @Property({ type: "boolean" })
     visible: boolean;
 

@@ -4,6 +4,7 @@ import { IsOptional, ValidateNested } from "class-validator";
 import { GraphQLJSONObject } from "graphql-scalars";
 import { ContentScope } from "src/user-permissions/interfaces/content-scope.interface";
 
+import { BooleanFilter } from "../../common/filter/boolean.filter";
 import { DateTimeFilter } from "../../common/filter/date-time.filter";
 import { createEnumFilter } from "../../common/filter/enum.filter.factory";
 import { StringFilter } from "../../common/filter/string.filter";
@@ -67,6 +68,12 @@ export class WarningFilter {
     @IsOptional()
     @Type(() => StringFilter)
     secondaryInformation?: StringFilter;
+
+    @Field(() => BooleanFilter, { nullable: true })
+    @ValidateNested()
+    @IsOptional()
+    @Type(() => BooleanFilter)
+    visible?: BooleanFilter;
 
     @Field(() => WarningSeverityEnumFilter, { nullable: true })
     @ValidateNested()

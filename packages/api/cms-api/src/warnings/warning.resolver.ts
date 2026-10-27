@@ -112,7 +112,7 @@ export class WarningResolver {
 
         const queryBuilder = this.entityManager.createQueryBuilder(Warning, "warning").select("warning.*");
 
-        // Join the EntityInfo view only when name / secondary information is used: it's a union over all
+        // Join the EntityInfo view only when name / secondary information / visible is used: it's a union over all
         // entity tables, so an unconditional join would slow the common case (and the count query). It's
         // keyed by entity name + id from the warning's `sourceInfo`.
         if (referencesEntityInfo(where) || referencesEntityInfo(orderBy)) {

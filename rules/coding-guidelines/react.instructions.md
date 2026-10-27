@@ -15,7 +15,6 @@ alwaysApply: false
 - Function components only — no class components.
 - Always write JSX. `React.createElement` is only for app initialization.
 - Children are typed via `PropsWithChildren`, not an explicit `children: ReactNode` field.
-- Inject services / API clients via **Context**, not module-level singletons.
 - Folder structure: group by **feature/module**, not by type. Move things until it feels right; avoid top-level `components/`, `hooks/`, `utils/` dumping grounds.
 - One "logical component" per file. Multiple sub-components in the same file are fine for structure/styling when they support the main export.
 
@@ -30,7 +29,8 @@ alwaysApply: false
 
 - Props are **camelCase**.
 - Do not reuse DOM-attribute names (`className`, `hidden`, …) as custom-semantic props — pick a non-conflicting name (e.g. `variant`).
-- Boolean props are optional (`hidden?: boolean`) with no default — they're falsy by default.
+- Boolean flag props are optional (`hidden?: boolean`) with no default — they're falsy by default.
+- Exception: a boolean that is the **controlled value** of a component (e.g. `checked` of a switch, `open` of a controlled dialog) is required (`checked: boolean`). Making it optional would let the component silently fall back to uncontrolled mode.
 - When setting a boolean prop to `true`, omit the value: `<Foo hidden />`, not `<Foo hidden={true} />`.
 
 ## State

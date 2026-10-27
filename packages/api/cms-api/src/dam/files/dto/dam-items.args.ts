@@ -17,7 +17,7 @@ registerEnumType(DamItemType, {
 });
 
 @InputType()
-export class DamItemFilterInput {
+class DamItemFilterInput {
     @Field({ nullable: true })
     @IsOptional()
     @IsString()

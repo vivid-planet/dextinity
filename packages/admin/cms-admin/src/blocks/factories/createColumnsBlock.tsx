@@ -328,7 +328,7 @@ export function createColumnsBlock<T extends BlockInterface>(
                                                     <div>
                                                         {state.columns.map((column, columnIndex) => {
                                                             return (
-                                                                <HoverPreviewComponent key={column.key} componentSlug={`${column.key}/content`}>
+                                                                <HoverPreviewComponent key={column.key} componentSlug={`${column.key}/edit`}>
                                                                     <BlockRow
                                                                         id={column.key}
                                                                         renderPreviewContent={() => (

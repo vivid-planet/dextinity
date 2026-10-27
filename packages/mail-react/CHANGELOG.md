@@ -1,5 +1,43 @@
 # @comet/mail-react
 
+## 10.10.0
+
+### Patch Changes
+
+- dd4f424: Disable `mj-include` in the server `renderMailHtml` by default
+
+    Security fix for [CVE-2025-67898](https://github.com/advisories/GHSA-45h5-66jx-r2wf): in `mjml` 4, an `<mj-include>` in the MJML can read files on the server into the rendered mail.
+    Projects that use `mj-include` must pass `ignoreIncludes: false`. Otherwise, the include is removed without a warning.
+
+## 10.9.1
+
+## 10.9.0
+
+### Minor Changes
+
+- aca736f: Add `createTipTapRichTextBlock`
+
+    Renders CMS Tip-Tap rich text block data in emails, the successor to the draft-js block that `createRichTextBlock` renders. It goes through the same components and class names, so styling written for one block applies to the other.
+
+    **Example**
+
+    ```tsx
+    export const { MjmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+        textBlockStyles: {
+            title: { variant: "title" },
+            header: { variant: "header" },
+        },
+    });
+    ```
+
+## 10.8.0
+
+### Minor Changes
+
+- a3a66a7: Add `id="body"` to the `<body>` tag of every rendered mail
+
+    Some email clients replace the `<body>` tag with a `<div>`, so a `body` selector no longer reaches it. The id does.
+
 ## 10.7.0
 
 ## 10.6.0

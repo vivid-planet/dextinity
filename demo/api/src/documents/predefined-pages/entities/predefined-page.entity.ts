@@ -1,7 +1,7 @@
 import { DocumentInterface, PageTreeNodeDocumentEntityScopeService, ScopedEntity } from "@dextinity/cms-api";
 import { BaseEntity, Entity, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 export enum PredefinedPageType {
     news = "news",
@@ -21,7 +21,7 @@ export class PredefinedPage extends BaseEntity implements DocumentInterface {
 
     @PrimaryKey({ columnType: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({
         columnType: "timestamp with time zone",

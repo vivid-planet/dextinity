@@ -293,8 +293,11 @@ describe("createTipTapRichTextBlock", () => {
             content: [{ type: "text", text: "Aligned" }],
         });
 
-        function renderEditor(textAlign: string | null) {
-            const block = createTipTapRichTextBlock({ textAlign: true });
+        function renderEditor(
+            textAlign: string | null,
+            enabledTextAlign: NonNullable<Parameters<typeof createTipTapRichTextBlock>[0]>["textAlign"] = true,
+        ) {
+            const block = createTipTapRichTextBlock({ textAlign: enabledTextAlign });
             const updateState = vi.fn();
             const result = render(
                 <block.AdminComponent state={{ tipTapContent: { type: "doc", content: [alignedParagraph(textAlign)] } }} updateState={updateState} />,
@@ -345,6 +348,27 @@ describe("createTipTapRichTextBlock", () => {
             editor.commands.setContent(`<p style="text-align: ${pastedTextAlign}">Aligned</p>`);
 
             expect(editor.getJSON().content).toEqual([alignedParagraph(textAlign)]);
+        });
+
+        describe("enabled for some alignments", () => {
+            const someTextAlign = { left: true, center: true, right: false };
+
+            it("should only offer the enabled alignment buttons", () => {
+                const { queryByLabelText } = renderEditor(null, someTextAlign);
+
+                expect(queryByLabelText("Align left")).not.toBeNull();
+                expect(queryByLabelText("Align center")).not.toBeNull();
+                expect(queryByLabelText("Align right")).toBeNull();
+                expect(queryByLabelText("Justify")).toBeNull();
+            });
+
+            it("should parse a pasted alignment that isn't enabled as null", () => {
+                const { editor } = renderEditor(null, someTextAlign);
+
+                editor.commands.setContent(`<p style="text-align: right">Aligned</p>`);
+
+                expect(editor.getJSON().content).toEqual([alignedParagraph(null)]);
+            });
         });
     });
 

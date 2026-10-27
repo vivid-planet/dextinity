@@ -1,5 +1,6 @@
 import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
 
+import type { TipTapTextAlign } from "./extensions/TextBlock";
 import type { TipTapResolvedList, TipTapResolvedTextBlock } from "./textBlocks";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,9 +34,9 @@ function containsUnknownMarks(json: any, schema: Schema): boolean {
 /**
  * Whether the content names a text block that isn't configured, holds one inside a list item that
  * isn't stored as a `p`, applies a `textBlockStyle` neither the text block nor - inside a list
- * item - its containing list offers, or sets a `textAlign` while text alignment is disabled. The name is all a node carries, so an unknown one would leave
- * the API without a tag to render it as, and a node that names none takes the schema's default text
- * block.
+ * item - its containing list offers, or sets a `textAlign` that isn't enabled. The name is all a
+ * node carries, so an unknown one would leave the API without a tag to render it as, and a node that
+ * names none takes the schema's default text block.
  *
  * A list item's content expression matches node types, and every text block is the same node, so it
  * can't keep a heading out - only this check can.
@@ -53,7 +54,7 @@ export function containsInvalidTextBlock({
     defaultTextBlock: TipTapResolvedTextBlock;
     orderedList: false | TipTapResolvedList;
     unorderedList: false | TipTapResolvedList;
-    textAlign: boolean;
+    textAlign: TipTapTextAlign[];
 }): boolean {
     // `list` is the list the walk is currently inside, which decides the styles a list item's content
     // may use; `insideListItem` keeps headings out of list items.
@@ -76,7 +77,8 @@ export function containsInvalidTextBlock({
                 return true;
             }
             // ProseMirror drops attributes the schema doesn't know instead of rejecting them.
-            if (!textAlign && content.attrs?.textAlign != null) {
+            const alignment = content.attrs?.textAlign;
+            if (alignment != null && !(textAlign as unknown[]).includes(alignment)) {
                 return true;
             }
 
@@ -141,7 +143,7 @@ export function isValidTipTapContentSync(
         defaultTextBlock: TipTapResolvedTextBlock;
         orderedList: false | TipTapResolvedList;
         unorderedList: false | TipTapResolvedList;
-        textAlign: boolean;
+        textAlign: TipTapTextAlign[];
     },
 ): boolean {
     if (typeof value !== "object" || value === null) {

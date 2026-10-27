@@ -506,6 +506,20 @@ describe("createTipTapRichTextBlock validation", () => {
                 expect(errors).toHaveLength(1);
             });
         });
+
+        describe("enabled for some alignments", () => {
+            const block = createTipTapRichTextBlock(onlyFeatures({ textAlign: { left: true, center: true, right: false } }), "TestTextAlignSome");
+
+            it.each(["left", "center", null])("should accept textAlign %s", async (textAlign) => {
+                const errors = await validate(block.blockInputFactory({ tipTapContent: contentAligned(textAlign) }));
+                expect(errors).toHaveLength(0);
+            });
+
+            it.each(["right", "justify"])("should reject textAlign %s", async (textAlign) => {
+                const errors = await validate(block.blockInputFactory({ tipTapContent: contentAligned(textAlign) }));
+                expect(errors).toHaveLength(1);
+            });
+        });
     });
 
     describe("schema with text block styles", () => {

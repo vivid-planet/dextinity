@@ -158,15 +158,12 @@ const textAlignMessages = defineMessages({
     justify: { id: "dextinity.blocks.tipTapRichText.alignJustify.tooltip", defaultMessage: "Justify" },
 });
 
-const textAlignButtons: {
-    textAlign: TipTapTextAlign;
-    icon: ForwardRefExoticComponent<Omit<SvgIconProps, "ref"> & RefAttributes<SVGSVGElement>>;
-}[] = [
-    { textAlign: "left", icon: RteAlignLeft },
-    { textAlign: "center", icon: RteAlignCenter },
-    { textAlign: "right", icon: RteAlignRight },
-    { textAlign: "justify", icon: RteAlignJustify },
-];
+const textAlignIcons: Record<TipTapTextAlign, ForwardRefExoticComponent<Omit<SvgIconProps, "ref"> & RefAttributes<SVGSVGElement>>> = {
+    left: RteAlignLeft,
+    center: RteAlignCenter,
+    right: RteAlignRight,
+    justify: RteAlignJustify,
+};
 
 const selectFormControlSx = {
     [`& .${inputBaseClasses.root}`]: {
@@ -602,13 +599,13 @@ export const TipTapToolbar = ({
                         ))}
                 </ToolbarGroup>
             )}
-            {resolvedOptions.textAlign && (
+            {resolvedOptions.textAlign.length > 0 && (
                 <ToolbarGroup>
-                    {textAlignButtons.map(({ textAlign, icon }) => (
+                    {resolvedOptions.textAlign.map((textAlign) => (
                         <ToolbarButton
                             key={textAlign}
                             editor={editor}
-                            icon={icon}
+                            icon={textAlignIcons[textAlign]}
                             tooltip={<FormattedMessage {...textAlignMessages[textAlign]} />}
                             ariaLabel={intl.formatMessage(textAlignMessages[textAlign])}
                             isActive={editorState.activeTextAlign === textAlign}

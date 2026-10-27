@@ -33,7 +33,7 @@ export function createTextBlock({
     defaultTextBlock: TipTapResolvedTextBlock;
     hasTextBlockStyles: boolean;
     styled: boolean;
-    textAlign: boolean;
+    textAlign: TipTapTextAlign[];
 }) {
     const tagOf = (name: unknown): TipTapTextBlockTag => (textBlocks.find((textBlock) => textBlock.name === name) ?? defaultTextBlock).tag;
 
@@ -48,7 +48,7 @@ export function createTextBlock({
             return {
                 ...textBlockAttribute(defaultTextBlock.name),
                 ...(hasTextBlockStyles ? textBlockStyleAttribute : {}),
-                ...(textAlign ? textAlignAttribute : {}),
+                ...(textAlign.length > 0 ? textAlignAttribute(textAlign) : {}),
             };
         },
 
@@ -77,14 +77,12 @@ export function createTextBlock({
                 },
             });
 
-            const textAlignShortcuts = textAlign
-                ? Object.fromEntries(
-                      Object.entries(textAlignShortcutKeys).map(([alignment, key]) => [
-                          `Mod-Shift-${key}`,
-                          () => this.editor.commands.updateAttributes(this.name, { textAlign: alignment }),
-                      ]),
-                  )
-                : {};
+            const textAlignShortcuts = Object.fromEntries(
+                textAlign.map((alignment) => [
+                    `Mod-Shift-${textAlignShortcutKeys[alignment]}`,
+                    () => this.editor.commands.updateAttributes(this.name, { textAlign: alignment }),
+                ]),
+            );
 
             return Object.assign(textAlignShortcuts, ...findTextBlockPerTag(textBlocks).map(shortcut));
         },

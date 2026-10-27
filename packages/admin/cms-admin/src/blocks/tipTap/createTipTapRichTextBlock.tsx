@@ -32,6 +32,7 @@ import { NonBreakingSpace } from "./extensions/NonBreakingSpace";
 import { Placeholder } from "./extensions/Placeholder";
 import { SoftHyphen } from "./extensions/SoftHyphen";
 import { createTextBlock } from "./extensions/TextBlock";
+import { resolveTextAlign, type TipTapTextAlign } from "./extensions/textBlockAttributes";
 import { createTextBlockList } from "./extensions/TextBlockList";
 import { TextBlockListItem } from "./extensions/TextBlockListItem";
 import { InlineStyleContext } from "./InlineStyleContext";
@@ -84,7 +85,7 @@ export interface TipTapResolvedOptions {
     defaultTextBlock: TipTapResolvedTextBlock;
     orderedList: false | TipTapResolvedList;
     unorderedList: false | TipTapResolvedList;
-    textAlign: boolean;
+    textAlign: TipTapTextAlign[];
     nonBreakingSpace: boolean;
     softHyphen: boolean;
     link: boolean;
@@ -142,7 +143,7 @@ export function resolveTipTapOptions({
         // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
         orderedList: resolveList({ list: orderedList ?? hasParagraph, name: orderedListName, tag: "ol" }),
         unorderedList: resolveList({ list: unorderedList ?? hasParagraph, name: unorderedListName, tag: "ul" }),
-        textAlign,
+        textAlign: resolveTextAlign(textAlign),
         nonBreakingSpace,
         softHyphen,
         link: !!link,
@@ -248,11 +249,12 @@ export interface TipTapRichTextBlockFactoryOptions {
      */
     unorderedList?: boolean | TipTapListOptions;
     /**
-     * Enables aligning text blocks left, center, right or justified. Defaults to `false`.
+     * Enables aligning text blocks left, center, right or justified. Defaults to `false`. Pass an
+     * object such as `{ left: true, center: true }` to enable only some of the alignments.
      *
      * Must match the API's `textAlign`, otherwise the API rejects content the editor produces.
      */
-    textAlign?: boolean;
+    textAlign?: boolean | Partial<Record<TipTapTextAlign, boolean>>;
     /**
      * Enables non-breaking spaces. Defaults to `true`.
      */

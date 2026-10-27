@@ -711,8 +711,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       filesize:
-        specifier: ^11.0.26
-        version: 11.0.26
+        specifier: ^11.0.28
+        version: 11.0.29
       ioredis:
         specifier: ^5.11.1
         version: 5.11.1(supports-color@8.1.1)
@@ -12831,8 +12831,8 @@ packages:
   filelist@1.0.6:
     resolution: {integrity: sha512-5giy2PkLYY1cP39p17Ech+2xlpTRL9HLspOfEgm0L6CwBXBTgsK5ou0JtzYuepxkaQ/tvhCFIJ5uXo0OrM2DxA==}
 
-  filesize@11.0.26:
-    resolution: {integrity: sha512-CgbdcjFLDJzMUnxQxHZ5uVxREmTVkjoXnppVB0AH8X0N8Uz4CZarWZLFALLv/Ymyf6EEu1AgaLPS6laXiqBEWA==}
+  filesize@11.0.29:
+    resolution: {integrity: sha512-+Mkmp8keoklLzAnvP/RQGDUEWEpjGmhvm4d4U739C1ZnkqxqoSqdLHnjv9/4QX6lltKSRk6qzQI7+94JVDtuCA==}
     engines: {node: '>= 10.8.0'}
 
   fill-range@7.1.1:
@@ -31282,7 +31282,7 @@ snapshots:
     dependencies:
       minimatch: 5.1.9
 
-  filesize@11.0.26: {}
+  filesize@11.0.29: {}
 
   fill-range@7.1.1:
     dependencies:

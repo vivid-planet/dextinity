@@ -325,12 +325,24 @@ describe("createTipTapRichTextBlock", () => {
             expect(updateState).toHaveBeenLastCalledWith({ tipTapContent: { type: "doc", content: [alignedParagraph("center")] } });
         });
 
-        it("should reset the alignment when clicking the active alignment again", () => {
-            const { getByLabelText, updateState } = renderEditor("right");
+        it("should switch from another alignment to left", () => {
+            const { getByLabelText, updateState } = renderEditor("center");
 
-            fireEvent.mouseDown(getByLabelText("Align right"));
+            fireEvent.mouseDown(getByLabelText("Align left"));
 
-            expect(updateState).toHaveBeenLastCalledWith({ tipTapContent: { type: "doc", content: [alignedParagraph(null)] } });
+            expect(updateState).toHaveBeenLastCalledWith({ tipTapContent: { type: "doc", content: [alignedParagraph("left")] } });
+        });
+
+        it.each([
+            ["right", "Align right"],
+            [null, "Align left"],
+        ])("should keep the alignment %s when clicking the active button %s", (textAlign, buttonLabel) => {
+            const { getByLabelText, updateState } = renderEditor(textAlign);
+            updateState.mockClear();
+
+            fireEvent.mouseDown(getByLabelText(buttonLabel));
+
+            expect(updateState).not.toHaveBeenCalled();
         });
 
         it("should render the alignment as the text block's text-align", () => {

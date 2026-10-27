@@ -262,7 +262,7 @@ export const TipTapToolbar = ({
                 activeTextBlock: activeTextBlock.name,
                 activeStyledNode,
                 activeTextBlockStyle: (attrs.textBlockStyle as string) ?? "",
-                activeTextAlign: (attrs.textAlign as TipTapTextAlign | null) ?? null,
+                activeTextAlign: (attrs.textAlign as TipTapTextAlign | null) ?? "left",
                 canUndo: e.can().undo(),
                 canRedo: e.can().redo(),
                 canIndent,
@@ -609,13 +609,11 @@ export const TipTapToolbar = ({
                             tooltip={<FormattedMessage {...textAlignMessages[textAlign]} />}
                             ariaLabel={intl.formatMessage(textAlignMessages[textAlign])}
                             isActive={editorState.activeTextAlign === textAlign}
-                            onToggle={() =>
-                                editor
-                                    .chain()
-                                    .focus()
-                                    .updateAttributes("textBlock", { textAlign: editorState.activeTextAlign === textAlign ? null : textAlign })
-                                    .run()
-                            }
+                            onToggle={() => {
+                                if (editorState.activeTextAlign !== textAlign) {
+                                    editor.chain().focus().updateAttributes("textBlock", { textAlign }).run();
+                                }
+                            }}
                         />
                     ))}
                 </ToolbarGroup>

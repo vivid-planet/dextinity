@@ -10,6 +10,22 @@ export const textBlockAttribute = (defaultTextBlock: string) => ({
     },
 });
 
+export type TipTapTextAlign = "left" | "center" | "right" | "justify";
+
+export const textAlignments: TipTapTextAlign[] = ["left", "center", "right", "justify"];
+
+const isTextAlign = (value: string): value is TipTapTextAlign => (textAlignments as string[]).includes(value);
+
+export const textAlignAttribute = {
+    textAlign: {
+        default: null,
+        // Pasted HTML may carry alignments the API rejects, e.g. `start`.
+        parseHTML: (element: HTMLElement) => (isTextAlign(element.style.textAlign) ? element.style.textAlign : null),
+        renderHTML: (attributes: { textAlign: TipTapTextAlign | null }) =>
+            attributes.textAlign ? { style: `text-align: ${attributes.textAlign}` } : {},
+    },
+};
+
 export const textBlockStyleAttribute = {
     textBlockStyle: {
         default: null,

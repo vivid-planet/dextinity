@@ -20,7 +20,8 @@
         "**/*.css"
     ],
     "files": [
-        "lib/*"
+        "lib/*",
+        "svg/*"
     ],
     "scripts": {
         "build": "pnpm run clean && run-p build:vite build:types",

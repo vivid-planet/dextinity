@@ -181,7 +181,7 @@ Run from `packages/ui`: `pnpm run test:unit`, `pnpm run test:storybook`, and `pn
 
 ## Theme
 
-Components read their colors, metrics, and font family from CSS custom properties (`var(--dextinity-button-…)`, `var(--dextinity-color-…)`, `var(--dextinity-typography-…)`, `var(--dextinity-brand-font-family-sans)`) with **no fallback** — an unthemed component renders visibly unstyled rather than silently drifting to a default. There is no runtime JS theme object.
+Components read their colors, metrics, and font family from CSS custom properties (`var(--dextinity-button-…)`, `var(--dextinity-color-…)`, `var(--dextinity-typography-…)`, `var(--dextinity-brand-font-family-sans)`) with **no fallback** — an unthemed component renders visibly unstyled rather than silently drifting to a default. There is no runtime JS theme object; the only runtime value is the icon set, which `Theme` passes to `Icon` (see [Icons](#icons)).
 
 ### Token layers
 
@@ -190,3 +190,13 @@ The tokens are defined in five SCSS partials under [`src/theme/`](src/theme), co
 ### Selecting a color scheme
 
 `Theme` selects the active color scheme. It stays a pure function of its props — reading no `window`, `localStorage`, or `matchMedia` — so it renders the same on server and client; switching, OS-scheme resolution, and preventing the first-paint flash on SSR stay in consumer code.
+
+## Icons
+
+`Icon` shows an SVG file from [`svg/`](svg) through `<use href="…#icon">`. `Theme` supplies the URL of every icon, which ends in `#icon`: Vite doesn't turn a URL with a fragment into a `data:` URL, which `<use>` can't load. A nested `Theme` without `icons` keeps the icons of the surrounding one.
+
+### Adding an icon
+
+1. Prepare the SVG file. Its root element is `<svg id="icon" viewBox="0 0 16 16" fill="none" …>`; for any other size, ask for a 16×16 version instead of scaling it. An icon drawn in one color uses `currentColor` for that color, so it takes the text color, and contains no masks or gradients: Safari ignores both in a file that `<use>` loads.
+2. Save it as `svg/<name>.svg`, with the name in kebab case, for example `arrow-right.svg`.
+3. Add the name to `DefaultIconRegistry` and its URL, with `#icon`, to `defaultIcons`.

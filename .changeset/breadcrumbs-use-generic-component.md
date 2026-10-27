@@ -22,8 +22,26 @@ Both components now look and behave like the `Breadcrumbs` component, which is e
 Most slots and class keys of `StackBreadcrumbs` and `ToolbarBreadcrumbs` are removed.
 Use the slots of `Breadcrumbs` (through `slotProps.root` or the `DextinityAdminBreadcrumbs` theme key) to customize the items, the separator, the overflow menu and the mobile menu.
 
-- `StackBreadcrumbsClassKey` is reduced to `"root" | "backButton" | "backButtonSeparator"`.
-- `ToolbarBreadcrumbsClassKey` is reduced to `"root"`.
+- Removed from `StackBreadcrumbsClassKey`, with the `Breadcrumbs` slot that replaces each:
+    - `breadcrumbs` → `toolbarContainer`
+    - `listItem` → `menuContainer`
+    - `link` → `item`
+    - `disabledLink` → `activeItem`
+    - `overflowLink` → `overflowButton`
+    - `separator` → `separator`
+- Removed from `ToolbarBreadcrumbsClassKey`, with the `Breadcrumbs` slot that replaces each:
+    - `breadcrumbsList` → `toolbarContainer`
+    - `breadcrumbsItem` → `item`
+    - `currentBreadcrumbsItem` → `activeItem`
+    - `breadcrumbsItemSeparator` → `separator`
+    - `breadcrumbsEllipsisItem` → `ellipsis`
+    - `mobileBreadcrumbsButton` → `mobileRootButton`
+    - `mobileStandaloneCurrentBreadcrumbItem` → `mobileRootButton`
+    - `mobileMenuIcon` → `mobileMenuIcon`
+    - `mobileMenu` → `expandedMenu`
+    - `mobileMenuItem` → `expandedMenuSubitemWrapper` and `expandedMenuActiveItemWrapper`
+    - `mobileMenuItemText` → `expandedMenuItem` and `expandedMenuActiveItem`
+    - `mobileMenuItemNestingIndicator` → `pageTreeVerticalLine`
 - The `separator` prop of `StackBreadcrumbs` is replaced by `iconMapping.separator`, matching `Breadcrumbs`. The back button icon can be replaced through `iconMapping.backButton`.
 - The `overflowLinkText` prop of `StackBreadcrumbs` is removed. The overflow button is labeled by the `ellipsis` slot of `Breadcrumbs`.
 - The `iconMapping` keys of `ToolbarBreadcrumbs` are renamed from `itemSeparator`, `openMobileMenu` and `closeMobileMenu` to `separator`, `openMenu` and `closeMenu`.

@@ -1,0 +1,58 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import * as CustomizeIconSetStories from "./__stories__/CustomizeIconSet.stories";
+
+<Meta title="Theme/Customize icon set" />
+
+# Customize icon set
+
+`Theme` supplies the icon set, and you customize it through its `icons` prop. Without `icons`, a top-level `Theme` uses `defaultIcons`, and a nested `Theme`, for example one that only sets `colorScheme`, keeps the icons of the surrounding one.
+
+## Replace some icons
+
+Pass the URLs of your SVG files to `Theme`. Spread `defaultIcons` first, so every icon you don't replace stays the one of `@dextinity/ui`:
+
+<Canvas of={CustomizeIconSetStories.ReplaceSomeIcons} />
+
+## Replace all icons
+
+Leave the spread out. `icons` must then list every icon, so a missing one is a type error. Use this only when your project has its own icon style, so that no icon of `@dextinity/ui` shows up in a different style.
+
+There is a risk: `@dextinity/ui` may add new icons in a minor version. Every new icon is then a type error in your project until you add your own version of it.
+
+```tsx
+<Theme
+    icons={{
+        "arrow-right": arrowRightUrl,
+        favorite: favoriteUrl,
+        // … every other icon
+    }}
+>
+```
+
+## Add icons
+
+Add the name to `IconRegistry` through module augmentation, then pass its URL to `Theme`:
+
+```ts
+declare module "@dextinity/ui" {
+    interface IconRegistry {
+        "my-icon": true;
+    }
+}
+```
+
+```tsx
+<Theme icons={{ ...defaultIcons, "my-icon": myIconUrl }}>
+    <Icon icon="my-icon" />
+</Theme>
+```
+
+Every `Theme` that sets `icons` must then include `"my-icon"`, or it's a type error.
+
+## Prepare an SVG file
+
+- The root element is `<svg id="icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">`. `Icon` shows the element with the id `icon`, and only a 16×16 `viewBox` fits.
+- An icon drawn in one color uses `currentColor` for that color, so it takes the text color.
+- An icon drawn in one color uses no masks and no gradients. Safari ignores both in a file that `<use>` loads: a gradient isn't drawn, and a mask isn't applied. Redraw the shape without them.
+- Get its URL from your bundler with `new URL("./icons/my-icon.svg#icon", import.meta.url).href`, which works in Vite and Next.js. Keep `#icon` at the end: without it, Vite puts a small SVG file into the JS bundle as a `data:` URL, which `<use>` can't load.

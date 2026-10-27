@@ -8,6 +8,11 @@ const preview: Preview = {
     tags: ["autodocs"],
     decorators: [colorSchemeBackgroundDecorator],
     parameters: {
+        options: {
+            storySort: {
+                order: ["Intro", "Theme"],
+            },
+        },
         docs: {
             codePanel: true,
         },

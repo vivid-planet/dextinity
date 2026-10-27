@@ -1,0 +1,31 @@
+import { Canvas, Controls, Description, Meta, Title } from "@storybook/addon-docs/blocks";
+
+import * as IconStories from "./Icon.stories";
+
+<Meta of={IconStories} />
+
+<Title />
+
+<Description of={IconStories} />
+
+See all icons of `@dextinity/ui` on [All icons](?path=/docs/theme-all-icons--docs). To customize the icon set, see [Customize icon set](?path=/docs/theme-customize-icon-set--docs).
+
+<Canvas of={IconStories.Default} />
+
+<Controls />
+
+## Label
+
+Give an icon an `aria-label` when nothing else, such as a text or the label of its button, gives its meaning:
+
+```tsx
+<Icon icon="favorite" aria-label="Favorite" />
+```
+
+## Size
+
+<Canvas of={IconStories.Size} />
+
+## Color
+
+<Canvas of={IconStories.Color} />

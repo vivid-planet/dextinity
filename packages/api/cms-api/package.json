@@ -38,8 +38,8 @@
         "test:watch": "vitest --watch"
     },
     "dependencies": {
-        "@aws-sdk/client-s3": "^3.1149.0",
-        "@aws-sdk/lib-storage": "^3.1149.0",
+        "@aws-sdk/client-s3": "^3.1156.0",
+        "@aws-sdk/lib-storage": "^3.1156.0",
         "@azure-rest/ai-translation-text": "^1.0.2",
         "@azure/storage-blob": "^12.34.0",
         "@fast-csv/parse": "^5.0.8",
@@ -80,7 +80,7 @@
         "uuid-by-string": "^4.0.0"
     },
     "devDependencies": {
-        "@aws-sdk/types": "^3.974.6",
+        "@aws-sdk/types": "^3.975.0",
         "@dextinity/eslint-config": "workspace:*",
         "@golevelup/ts-vitest": "^4.0.0",
         "@kubernetes/client-node": "^1.4.0",

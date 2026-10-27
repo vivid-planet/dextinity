@@ -63,7 +63,6 @@
         "uuid": "^14.0.3"
     },
     "devDependencies": {
-        "@babel/core": "^7.29.7",
         "@dextinity/admin-generator": "workspace:*",
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
@@ -77,14 +76,13 @@
         "@graphql-codegen/typescript": "^4.1.6",
         "@graphql-codegen/typescript-operations": "^4.6.1",
         "@parcel/watcher": "^2.6.0",
-        "@swc/plugin-emotion": "^19.0.0",
         "@types/lodash.isequal": "^4.5.8",
         "@types/node": "^24.19.2",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@types/react-router": "^5.1.20",
         "@types/react-router-dom": "^5.3.3",
-        "@vitejs/plugin-react-swc": "^4.3.3",
+        "@vitejs/plugin-react": "^6.1.2",
         "check-node-version": "^4.2.1",
         "chokidar-cli": "^3.0.0",
         "cosmiconfig-toml-loader": "^1.0.0",

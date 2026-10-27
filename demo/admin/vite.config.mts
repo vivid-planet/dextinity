@@ -1,4 +1,4 @@
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 import { resolve } from "path";
 import { defineConfig, type Plugin } from "vite";
 import { compression } from "vite-plugin-compression2";
@@ -30,27 +30,6 @@ export default defineConfig(({ mode }) => {
         plugins: [
             react({
                 jsxImportSource: "@emotion/react",
-                plugins: [
-                    [
-                        "@swc/plugin-emotion",
-                        {
-                            importMap: {
-                                "@mui/system": {
-                                    styled: {
-                                        canonicalImport: ["@emotion/styled", "default"],
-                                        styledBaseImport: ["@mui/system", "styled"],
-                                    },
-                                },
-                                "@mui/material/styles": {
-                                    styled: {
-                                        canonicalImport: ["@emotion/styled", "default"],
-                                        styledBaseImport: ["@mui/material/styles", "styled"],
-                                    },
-                                },
-                            },
-                        },
-                    ],
-                ],
             }),
             compression(),
             injectEnvironmentValues({ mode }),

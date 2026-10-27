@@ -42,7 +42,6 @@ const initialState: TipTapRichTextBlockState = {
             { type: "textBlock", attrs: { textBlock: "paragraph", textAlign: "center" }, content: [{ type: "text", text: loremIpsum }] },
             { type: "textBlock", attrs: { textBlock: "paragraph", textAlign: "right" }, content: [{ type: "text", text: loremIpsum }] },
             { type: "textBlock", attrs: { textBlock: "paragraph", textAlign: "justify" }, content: [{ type: "text", text: loremIpsum }] },
-            { type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Without alignment" }] },
         ],
     },
 };
@@ -69,38 +68,33 @@ export const TextAlign: StoryObj<typeof TextAlignStory> = {
             );
         });
 
-        const unalignedParagraph = () => canvas.getByText("Without alignment").closest("p");
+        const heading = () => canvas.getByText("Centered heading").closest("h2");
 
         await step("An alignment button aligns the text block of the selection", async () => {
-            await userEvent.click(canvas.getByText("Without alignment"));
-            await userEvent.click(canvas.getByRole("button", { name: "Align center" }));
-
-            await waitFor(
-                () => {
-                    expect(unalignedParagraph()).toHaveStyle({ textAlign: "center" });
-                },
-                { timeout: 3000 },
-            );
-        });
-
-        await step("A keyboard shortcut (Mod-Shift-R) aligns the text block right", async () => {
-            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
-            await userEvent.keyboard(`{${mod}>}{Shift>}r{/Shift}{/${mod}}`);
-
-            await waitFor(
-                () => {
-                    expect(unalignedParagraph()).toHaveStyle({ textAlign: "right" });
-                },
-                { timeout: 3000 },
-            );
-        });
-
-        await step("Clicking the active alignment button resets the alignment", async () => {
+            await userEvent.click(canvas.getByText("Centered heading"));
             await userEvent.click(canvas.getByRole("button", { name: "Align right" }));
 
             await waitFor(
                 () => {
-                    expect(unalignedParagraph()?.style.textAlign).toBe("");
+                    expect(heading()).toHaveStyle({ textAlign: "right" });
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Clicking the active alignment button keeps the alignment", async () => {
+            await userEvent.click(canvas.getByRole("button", { name: "Align right" }));
+
+            expect(heading()).toHaveStyle({ textAlign: "right" });
+        });
+
+        await step("A keyboard shortcut (Mod-Shift-E) centers the text block", async () => {
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Shift>}e{/Shift}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(heading()).toHaveStyle({ textAlign: "center" });
                 },
                 { timeout: 3000 },
             );

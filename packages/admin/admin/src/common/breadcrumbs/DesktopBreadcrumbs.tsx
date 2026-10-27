@@ -26,12 +26,10 @@ interface DesktopBreadcrumbsProps extends Omit<BreadcrumbsProps, "iconMapping"> 
 }
 
 // Items are truncated once they run out of space, and the current item is never listed in the overflow menu, so its full text is only reachable on hover.
-const tooltipFor = ({ title }: Breadcrumb) => (typeof title === "string" ? title : undefined);
-
 const BreadcrumbItemLink = ({ item, separatorIcon, slotProps }: { item: Breadcrumb; separatorIcon: ReactNode; slotProps?: BreadcrumbsSlotProps }) => (
     <MenuContainer ownerState={{ isCurrentItem: false }} {...slotProps?.menuContainer}>
         {/* @ts-expect-error The component prop does not work properly with MUIs `styled()`, see: https://mui.com/material-ui/guides/typescript/#complications-with-the-component-prop */}
-        <Item component={RouterLink} to={item.url} title={tooltipFor(item)} {...slotProps?.item}>
+        <Item component={RouterLink} to={item.url} title={typeof item.title === "string" ? item.title : undefined} {...slotProps?.item}>
             {item.title}
         </Item>
         <Separator {...slotProps?.separator}>{separatorIcon}</Separator>
@@ -40,7 +38,7 @@ const BreadcrumbItemLink = ({ item, separatorIcon, slotProps }: { item: Breadcru
 
 const CurrentBreadcrumbItem = ({ item, slotProps }: { item: Breadcrumb; slotProps?: BreadcrumbsSlotProps }) => (
     <MenuContainer ownerState={{ isCurrentItem: true }} {...slotProps?.menuContainer}>
-        <ActiveItem title={tooltipFor(item)} {...slotProps?.activeItem}>
+        <ActiveItem title={typeof item.title === "string" ? item.title : undefined} {...slotProps?.activeItem}>
             {item.title}
         </ActiveItem>
     </MenuContainer>

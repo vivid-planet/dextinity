@@ -1,0 +1,42 @@
+.searchField {
+    width: 100%;
+    margin-bottom: 24px;
+    padding: 8px 12px;
+    font-family: var(--dextinity-brand-font-family-sans);
+    font-size: var(--dextinity-typography-body-md-size);
+    line-height: var(--dextinity-typography-body-md-line-height);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-auto-rows: 1fr;
+    gap: 16px;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--dextinity-color-border-default);
+    border-radius: 4px;
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+}
+
+.label {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.name,
+.searchTerms {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

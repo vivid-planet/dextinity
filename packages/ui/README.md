@@ -160,6 +160,10 @@ Each declared prop is exposed as a control through `argTypes`, by kind:
 
 `__stories__/<name>.dev.stories.tsx`, optional, nests its title under a `Dev` segment (`Components/<Component>/Dev/<Name>`) and sets `tags: ["!autodocs", "!manifest"]` in its meta, keeping these out of the consumer docs and out of what the MCP server serves. A dev story serves any development, testing, or debugging need, so add them freely — e.g. reproduce a bug in a dev story and use it to confirm the fix, rather than reaching for the Dextinity demo or a consuming project.
 
+#### Docs pages
+
+A page that isn't about one component, such as a guide, is an MDX file in [`src/docs/`](src/docs). Its live examples are stories in `__stories__/` next to it, with `tags: ["!dev", "!autodocs", "!manifest"]`, so they show only on the page: not in the sidebar, and not in the MCP server.
+
 ## Testing
 
 Test the behavior and contracts a consumer depends on, not the implementation. Each test protects one such behavior; anything written only for coverage, or that just restates the type checker or the implementation, is left out.
@@ -200,3 +204,4 @@ The tokens are defined in five SCSS partials under [`src/theme/`](src/theme), co
 1. Prepare the SVG file. Its root element is `<svg id="icon" viewBox="0 0 16 16" fill="none" …>`; for any other size, ask for a 16×16 version instead of scaling it. An icon drawn in one color uses `currentColor` for that color, so it takes the text color, and contains no masks or gradients: Safari ignores both in a file that `<use>` loads.
 2. Save it as `svg/<name>.svg`, with the name in kebab case, for example `arrow-right.svg`.
 3. Add the name to `DefaultIconRegistry` and its URL, with `#icon`, to `defaultIcons`.
+4. Add its search terms to `iconSearchTerms` in [`src/docs/theme/__stories__/iconSearchTerms.ts`](src/docs/theme/__stories__/iconSearchTerms.ts), an empty array if it has none. The "All icons" page searches them.

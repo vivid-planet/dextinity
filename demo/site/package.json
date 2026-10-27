@@ -36,7 +36,7 @@
         "@base-ui/react": "^1.9.0",
         "@dextinity/mail-react": "workspace:*",
         "@dextinity/site-nextjs": "workspace:*",
-        "@formatjs/cli": "^6.16.34",
+        "@formatjs/cli": "^6.16.35",
         "@google-cloud/recaptcha-enterprise": "^5.13.0",
         "@next/bundle-analyzer": "^16.3.8",
         "@opentelemetry/api": "^1.9.1",
@@ -52,7 +52,7 @@
         "lru-cache": "^11.5.3",
         "mjml": "^4.18.0",
         "next": "^16.3.8",
-        "nodemailer": "^10.0.15",
+        "nodemailer": "^10.1.7",
         "react": "^19.3.0",
         "react-dom": "^19.3.0",
         "react-focus-lock": "^2.13.7",
@@ -61,7 +61,7 @@
         "redraft": "^0.10.2",
         "swiper": "^14.3.0",
         "usehooks-ts": "^3.1.1",
-        "zod": "^4.6.6"
+        "zod": "^4.6.7"
     },
     "devDependencies": {
         "@babel/core": "^7.29.7",
@@ -92,7 +92,7 @@
         "typed-scss-modules": "^8.1.1",
         "typescript": "^5.9.3",
         "vite-tsconfig-paths": "^6.1.1",
-        "vitest": "^5.0.4"
+        "vitest": "^5.0.5"
     },
     "engines": {
         "node": "24"

@@ -112,6 +112,12 @@ Common commands:
 - view status `pnpm exec -- dev-pm status`
 - view logs `pnpm exec -- dev-pm logs --lines 100 scriptName`
 
+### Running multiple instances in parallel
+
+To run several checkouts at once without host port collisions, run `pnpm run assign-ports` before starting the demo. It finds a free +100..+900 offset for all `*_PORT` entries in `.env` and writes the offset ports to `.env.local`. The access URLs above shift by that offset.
+
+Every process loads `.env.local` itself: the demo packages and `dev:*` scripts run through `dotenv -e .env.local -e .env`, and the `demo-docker` script sources `.env` and `.env.local` before `docker compose up`. Docker needs this because dev-pm doesn't pass the env files to its scripts, and Compose prefers real env vars over its `.env` file.
+
 ## Packages
 
 ### Admin (`packages/admin/`)
@@ -200,6 +206,12 @@ Fix description here
 - Keep the length proportional to the change. A one-line fix gets a paragraph, not a report.
 - The description becomes the message of the squashed commit. See CONTRIBUTING.md#pull-requests.
 - After opening a pull request, always check its description and rewrite it to follow these rules, also when the pull request was created by a tool or UI that generated the description.
+
+## Pull request comments
+
+- When watching or driving a pull request, reply on GitHub only to comments and reviews from bots (e.g. Greptile, Claude Code Review, lint bots). Bot accounts end in `[bot]` or are review/CI tools.
+- Never reply to comments or reviews from humans on GitHub. Report what you did, your proposals, and your questions to the user in the session instead of on the pull request.
+- Only act on a human's feedback when it is a small, concrete change (e.g. a nit, a rename, a missing test). For conceptual feedback (design questions, alternative approaches, questions about why something was done), don't change any code: summarize it for the user and wait for their decision.
 
 ## Generated demo files
 

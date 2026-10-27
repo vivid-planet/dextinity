@@ -221,7 +221,9 @@ export default defineConfig({
         //group demo api
         {
             name: "demo-docker",
-            script: "set -a; . .env; . .env.local; set +a; docker compose up",
+            // Export the env files so Docker Compose binds the ports from `.env.local` (written by `pnpm run assign-ports`).
+            // dev-pm doesn't pass them to scripts, and Compose prefers real env vars over its own `.env` lookup.
+            script: "set -a; . ./.env; [ ! -f .env.local ] || . ./.env.local; set +a; docker compose up",
             group: ["demo-api", "demo"],
         },
         {

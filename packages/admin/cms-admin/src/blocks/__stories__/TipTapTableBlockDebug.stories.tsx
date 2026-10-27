@@ -1,3 +1,5 @@
+// eslint-disable-next-line no-restricted-imports
+import { DataGridPro } from "@mui/x-data-grid-pro";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type HTMLAttributes, useState } from "react";
 import { expect, screen, waitFor, within } from "storybook/test";
@@ -44,6 +46,9 @@ const config: Meta<typeof TipTapTableBlockStory> = {
     component: TipTapTableBlockStory,
     title: "Debug/blocks/TipTapTableBlock",
     tags: ["!autodocs"],
+    parameters: {
+        dataGrid: { component: DataGridPro },
+    },
 };
 
 export default config;

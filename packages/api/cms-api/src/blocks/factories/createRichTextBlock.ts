@@ -229,6 +229,9 @@ function IsDraftContent(link: Block, validationOptions?: ValidationOptions) {
             constraints: [link],
             options: validationOptions,
             validator: {
+                defaultMessage(args: ValidationArguments) {
+                    return `${args.property} must be a Draft.js content object with blocks and entityMap, where each entity is a LINK with valid ${(args.constraints[0] as Block).name} data`;
+                },
                 async validate(value: unknown, args: ValidationArguments) {
                     const LinkBlock = args.constraints[0] as Block;
 

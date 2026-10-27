@@ -1,6 +1,6 @@
 import "./smallListStyles";
 
-import { createRichTextBlock, MjmlColumn, MjmlSection, type PropsWithData } from "@dextinity/mail-react";
+import { createRichTextBlock, MjmlColumn, MjmlSection, type PropsWithData, withPreview } from "@dextinity/mail-react";
 import type { MailTwoListSizesRichTextBlockData, PhoneLinkBlockData } from "@src/blocks.generated";
 
 const { MjmlRichTextBlock } = createRichTextBlock({
@@ -17,12 +17,15 @@ const { MjmlRichTextBlock } = createRichTextBlock({
     },
 });
 
-export const MailTwoListSizesRichTextBlock = ({ data }: PropsWithData<MailTwoListSizesRichTextBlockData>) => {
-    return (
-        <MjmlSection indent>
-            <MjmlColumn>
-                <MjmlRichTextBlock data={data} />
-            </MjmlColumn>
-        </MjmlSection>
-    );
-};
+export const MailTwoListSizesRichTextBlock = withPreview<PropsWithData<MailTwoListSizesRichTextBlockData>>(
+    ({ data, className }) => {
+        return (
+            <MjmlSection indent className={className}>
+                <MjmlColumn>
+                    <MjmlRichTextBlock data={data} />
+                </MjmlColumn>
+            </MjmlSection>
+        );
+    },
+    { label: "Text" },
+);

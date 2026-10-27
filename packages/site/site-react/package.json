@@ -47,7 +47,7 @@
     },
     "dependencies": {
         "clsx": "^2.1.1",
-        "fast-equals": "^5.4.3",
+        "fast-equals": "^5.4.5",
         "jose": "^5.10.0",
         "scroll-into-view-if-needed": "^3.1.0",
         "usehooks-ts": "^3.1.1"
@@ -58,7 +58,7 @@
         "@types/draft-js": "^0.11.20",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
-        "@vitejs/plugin-react": "^4.7.0",
+        "@vitejs/plugin-react": "^6.1.2",
         "chokidar-cli": "^3.0.0",
         "eslint": "^9.39.5",
         "jsdom": "^28.1.0",
@@ -72,9 +72,9 @@
         "sass": "^1.105.1",
         "schema-dts": "^2.1.0",
         "typescript": "^5.9.3",
-        "vite": "^7.3.7",
-        "vite-plugin-dts": "^4.5.4",
-        "vitest": "^5.0.4",
+        "unplugin-dts": "^1.1.2",
+        "vite": "^8.3.5",
+        "vitest": "^5.0.5",
         "webpack": "^5.111.1"
     },
     "peerDependencies": {

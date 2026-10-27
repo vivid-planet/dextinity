@@ -1,0 +1,53 @@
+alerts:
+    - rule: DEPLOYMENT_FAILED
+    - rule: DOMAIN_FAILED
+features:
+    - buildpack-stack=ubuntu-22
+domains:
+    - domain: imgproxy.demo.digitalocean.dextinity.com
+      type: PRIMARY
+ingress:
+    rules:
+        - component:
+              name: darthsim-imgproxy
+          match:
+              path:
+                  prefix: /
+name: dextinity-demo-imgproxy
+region: fra
+services:
+    - envs:
+          - key: IMGPROXY_KEY
+            scope: RUN_TIME
+            type: SECRET
+            value: ${IMGPROXY_KEY}
+          - key: IMGPROXY_SALT
+            scope: RUN_TIME
+            type: SECRET
+            value: ${IMGPROXY_SALT}
+          - key: IMGPROXY_USE_S3
+            scope: RUN_TIME
+            value: "true"
+          - key: IMGPROXY_S3_REGION
+            scope: RUN_TIME
+            value: fra1
+          - key: IMGPROXY_S3_ENDPOINT
+            scope: RUN_TIME
+            value: https://dextinity-demo.fra1.digitaloceanspaces.com
+          - key: AWS_ACCESS_KEY_ID
+            scope: RUN_TIME
+            type: SECRET
+            value: ${S3_ACCESS_KEY_ID}
+          - key: AWS_SECRET_ACCESS_KEY
+            scope: RUN_TIME
+            type: SECRET
+            value: ${S3_SECRET_ACCESS_KEY}
+      http_port: 8080
+      image:
+          registry: darthsim
+          registry_type: DOCKER_HUB
+          repository: imgproxy
+          tag: v3
+      instance_count: 1
+      instance_size_slug: apps-s-1vcpu-0.5gb
+      name: darthsim-imgproxy

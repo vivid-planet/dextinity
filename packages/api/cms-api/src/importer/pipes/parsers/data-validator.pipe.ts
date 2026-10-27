@@ -13,7 +13,6 @@ export class DataValidatorPipe implements ImporterPipe {
 class DataValidator extends StreamTransform {
     constructor(private readonly logger: LoggerService) {
         super({ writableObjectMode: true, objectMode: true });
-        this.logger = logger;
     }
 
     async _transform(inputDataAndMetadata: { data: PipeData; metadata: PipeMetadata }, encoding: BufferEncoding, callback: TransformCallback) {

@@ -1,4 +1,7 @@
-.table {
+@use "./tableCellStyles" as *;
+@include table-cell-styles;
+
+.root {
     width: 100%;
     border-collapse: collapse;
 }
@@ -8,24 +11,23 @@
 }
 
 .cell {
-    background-color: var(--table-default-bg);
-    text-align: start;
-    padding: 0;
-
-    &__content {
-        display: flex;
-        min-height: 48px;
-        align-items: center;
-        padding: var(--spacing-s200);
-        box-sizing: border-box;
-        color: var(--table-default-text);
+    &--minWidthExtraSmall {
+        min-width: 50px;
     }
 
-    &--highlighted {
-        background-color: var(--table-highlight-bg);
+    &--minWidthSmall {
+        min-width: 100px;
     }
 
-    &:not(:last-child) {
-        border-right: 1px solid var(--table-border);
+    &--minWidthStandard {
+        min-width: 150px;
+    }
+
+    &--minWidthLarge {
+        min-width: 200px;
+    }
+
+    &--minWidthExtraLarge {
+        min-width: 250px;
     }
 }

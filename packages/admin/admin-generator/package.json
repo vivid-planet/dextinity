@@ -46,9 +46,9 @@
         "@graphql-tools/graphql-file-loader": "^7.5.17",
         "@graphql-tools/load": "^7.8.14",
         "@mui/material": "^7.3.11",
-        "@mui/x-data-grid": "^8.29.3",
+        "@mui/x-data-grid": "^8.29.5",
         "change-case": "^5.4.4",
-        "commander": "^14.0.3",
+        "commander": "^15.0.0",
         "glob": "^13.0.6",
         "graphql": "^16.14.2",
         "jiti": "^2.7.0",
@@ -72,7 +72,7 @@
         "react-dom": "^19.3.0",
         "react-intl": "^7.1.14",
         "tsdown": "0.20.0-beta.4",
-        "vitest": "^5.0.4"
+        "vitest": "^5.0.5"
     },
     "peerDependencies": {
         "@apollo/client": "^3.7.0",

@@ -7,7 +7,7 @@ import { useProgressDialog } from "../../common/useProgressDialog";
 import { type ContentScope, useContentScope } from "../../contentScope/Provider";
 import { useDamScopeFromContentScope } from "../../dam/config/useDamScope";
 import { copyDamFilesToScope, type DamFileToCopy } from "../../dam/copyFilesToScope/copyDamFilesToScope";
-import { damFilesFromDependencies, isDamFileDependency } from "../../dam/copyFilesToScope/damFileDependencies";
+import { damFileFromDependency, isDamFileDependency } from "../../dam/copyFilesToScope/damFileDependencies";
 import { useBlockContext } from "../context/useBlockContext";
 import { createUndefinedReplacementsForDependencies } from "../helpers/createUndefinedReplacementsForDependencies";
 import type { BlockDependency, BlockInterface, BlockOutputApi, BlockState, ReplaceDependencyObject } from "../types";
@@ -21,13 +21,14 @@ interface ClipboardBlock {
 
 type ClipboardContent = ClipboardBlock[];
 
+type ClipboardDependency = Pick<BlockDependency, "targetGraphqlObjectType" | "id"> & Omit<DamFileToCopy, "id">;
+
 interface TransformedClipboardBlock {
     name: string;
     visible: boolean;
     output: BlockOutputApi<BlockInterface>;
     additionalFields?: Record<string, unknown>;
-    damFiles?: DamFileToCopy[];
-    dependencies?: Array<Pick<BlockDependency, "targetGraphqlObjectType" | "id">>;
+    dependencies?: ClipboardDependency[];
 }
 
 interface TransformedClipboardContent {
@@ -76,23 +77,20 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
                 throw new Error(`Block clipboard doesn't support block "${block.name}"`);
             }
 
-            const blockDependencies = blockInterface.dependencies?.(block.state) ?? [];
+            const dependencies = (blockInterface.dependencies?.(block.state) ?? []).map<ClipboardDependency>((dependency) => {
+                if (isDamFileDependency(dependency)) {
+                    const damFile = damFileFromDependency(dependency);
+                    return { targetGraphqlObjectType: dependency.targetGraphqlObjectType, ...damFile, scope: damFile.scope ?? damScope };
+                }
 
-            const damFiles = damFilesFromDependencies(blockDependencies).map((damFile) => ({
-                ...damFile,
-                scope: damFile.scope ?? damScope,
-            }));
-
-            const dependencies = blockDependencies
-                .filter((dependency) => !isDamFileDependency(dependency))
-                .map(({ targetGraphqlObjectType, id }) => ({ targetGraphqlObjectType, id }));
+                return { targetGraphqlObjectType: dependency.targetGraphqlObjectType, id: dependency.id };
+            });
 
             return {
                 name: block.name,
                 visible: block.visible,
                 output: blockInterface.state2Output(block.state),
                 additionalFields: block.additionalFields,
-                damFiles: damFiles.length > 0 ? damFiles : undefined,
                 dependencies: dependencies.length > 0 ? dependencies : undefined,
             };
         });
@@ -105,7 +103,9 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
             return [];
         }
 
-        const files = blocks.flatMap((block) => block.damFiles ?? []).filter((file) => !isEqual(file.scope, damScope));
+        const files = blocks
+            .flatMap((block) => block.dependencies ?? [])
+            .filter((dependency) => dependency.targetGraphqlObjectType === "DamFile" && !isEqual(dependency.scope, damScope));
 
         if (files.length === 0) {
             return [];
@@ -221,6 +221,7 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
                 if (isPastingIntoOtherContentScope) {
                     const unhandledDependencies = (clipboardBlock.dependencies ?? []).filter(
                         (dependency) =>
+                            dependency.targetGraphqlObjectType !== "DamFile" &&
                             !replacements.some(
                                 (replacement) => replacement.originalId === dependency.id && replacement.type === dependency.targetGraphqlObjectType,
                             ),

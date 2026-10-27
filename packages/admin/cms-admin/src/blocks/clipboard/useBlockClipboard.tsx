@@ -219,15 +219,11 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
                 const replacements = [...dependencyReplacements];
 
                 if (isPastingIntoOtherContentScope) {
-                    const unhandledDependencies = (clipboardBlock.dependencies ?? []).filter(
-                        (dependency) =>
-                            dependency.targetGraphqlObjectType !== "DamFile" &&
-                            !replacements.some(
-                                (replacement) => replacement.originalId === dependency.id && replacement.type === dependency.targetGraphqlObjectType,
-                            ),
+                    const dependenciesToRemove = (clipboardBlock.dependencies ?? []).filter(
+                        (dependency) => dependency.targetGraphqlObjectType !== "DamFile",
                     );
 
-                    replacements.push(...createUndefinedReplacementsForDependencies(unhandledDependencies));
+                    replacements.push(...createUndefinedReplacementsForDependencies(dependenciesToRemove));
                 }
 
                 const output =

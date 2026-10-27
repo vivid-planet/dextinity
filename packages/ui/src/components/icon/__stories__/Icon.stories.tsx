@@ -61,3 +61,12 @@ export const Color: Story = {
         </>
     ),
 };
+
+/**
+ * An icon with its own colors, such as a brand logo, keeps them instead of taking the text color.
+ */
+export const OwnColors: Story = {
+    args: {
+        icon: "youtube-filled-color",
+    },
+};

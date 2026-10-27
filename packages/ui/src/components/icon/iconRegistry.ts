@@ -3,7 +3,11 @@
  */
 export interface DefaultIconRegistry {
     "arrow-right": true;
+    "confluence-color": true;
     favorite: true;
+    "jira-color": true;
+    "vimeo-filled-color": true;
+    "youtube-filled-color": true;
 }
 
 /**

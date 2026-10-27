@@ -1,14 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent } from "storybook/test";
 
-import { ArrowRightIcon } from "../../../icons/ArrowRightIcon";
-import { FavoriteIcon } from "../../../icons/FavoriteIcon";
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Icon } from "../../icon/Icon";
 import { Button } from "../Button";
 
 const iconOptions = {
-    Favorite: <FavoriteIcon />,
-    ArrowRight: <ArrowRightIcon />,
+    Favorite: <Icon icon="favorite" />,
+    ArrowRight: <Icon icon="arrow-right" />,
 };
 
 const meta = {
@@ -112,9 +111,9 @@ export const Loading: Story = {
 export const WithIcons: Story = {
     render: () => (
         <div style={{ display: "flex", gap: "1rem" }}>
-            <Button startIcon={<FavoriteIcon />}>Start only</Button>
-            <Button endIcon={<ArrowRightIcon />}>End only</Button>
-            <Button startIcon={<FavoriteIcon />} endIcon={<ArrowRightIcon />}>
+            <Button startIcon={<Icon icon="favorite" />}>Start only</Button>
+            <Button endIcon={<Icon icon="arrow-right" />}>End only</Button>
+            <Button startIcon={<Icon icon="favorite" />} endIcon={<Icon icon="arrow-right" />}>
                 Both
             </Button>
         </div>

@@ -197,11 +197,11 @@ The tokens are defined in five SCSS partials under [`src/theme/`](src/theme), co
 
 ## Icons
 
-`Icon` shows an SVG file from [`svg/`](svg) through `<use href="…#icon">`. `Theme` supplies the URL of every icon, which ends in `#icon`: Vite doesn't turn a URL with a fragment into a `data:` URL, which `<use>` can't load. A nested `Theme` without `icons` keeps the icons of the surrounding one.
+`Icon` shows an SVG file from [`svg/`](svg) through `<use href="…#icon">`, or through `<image>` for an icon with its own colors. `Theme` supplies the source of every icon, and every URL ends in `#icon`: Vite doesn't turn a URL with a fragment into a `data:` URL, which `<use>` can't load. A nested `Theme` without `icons` keeps the icons of the surrounding one.
 
 ### Adding an icon
 
 1. Prepare the SVG file. Its root element is `<svg id="icon" viewBox="0 0 16 16" fill="none" …>`; for any other size, ask for a 16×16 version instead of scaling it. An icon drawn in one color uses `currentColor` for that color, so it takes the text color, and contains no masks or gradients: Safari ignores both in a file that `<use>` loads.
 2. Save it as `svg/<name>.svg`, with the name in kebab case, for example `arrow-right.svg`.
-3. Add the name to `DefaultIconRegistry` and its URL, with `#icon`, to `defaultIcons`.
+3. Add the name to `DefaultIconRegistry` and its URL, with `#icon`, to `defaultIcons`. An icon with its own colors gets `{ url, hasOwnColors: true }` instead, so `Icon` shows it as an image.
 4. Add its search terms to `iconSearchTerms` in [`src/docs/theme/__stories__/iconSearchTerms.ts`](src/docs/theme/__stories__/iconSearchTerms.ts), an empty array if it has none. The "All icons" page searches them.

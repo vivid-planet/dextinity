@@ -3,8 +3,8 @@ import { type ComponentPropsWithoutRef, forwardRef } from "react";
 
 import type { ThemeColorScheme } from "../../theme/types";
 import { defaultIcons } from "../icon/defaultIcons";
-import type { IconUrls } from "../icon/iconRegistry";
-import { IconUrlsContext, useIconUrls } from "../icon/iconUrlsContext";
+import type { IconSources } from "../icon/iconRegistry";
+import { IconSourcesContext, useIconSources } from "../icon/iconSourcesContext";
 import styles from "./Theme.module.scss";
 
 export interface ThemeProps extends ComponentPropsWithoutRef<"div"> {
@@ -15,11 +15,11 @@ export interface ThemeProps extends ComponentPropsWithoutRef<"div"> {
      */
     colorScheme?: ThemeColorScheme | (string & {});
     /**
-     * The URL of every icon that `Icon` can show: its SVG file, followed by `#icon`. Spread `defaultIcons` into it to replace only some icons; leave the spread out to replace all of them.
+     * The source of every icon that `Icon` can show. Spread `defaultIcons` into it to replace only some icons; leave the spread out to replace all of them.
      *
      * @defaultValue `defaultIcons`, or the icons of the surrounding `Theme` in a nested one
      */
-    icons?: IconUrls;
+    icons?: IconSources;
     /** Added alongside the component's own classes. */
     className?: string;
 }
@@ -28,13 +28,13 @@ export interface ThemeProps extends ComponentPropsWithoutRef<"div"> {
  * Scopes the active color scheme and the icon set to its subtree. Wrap an application, or a section of one.
  */
 export const Theme = forwardRef<HTMLDivElement, ThemeProps>(function Theme({ colorScheme = "light", icons, className, children, ...restProps }, ref) {
-    const surroundingIcons = useIconUrls();
+    const surroundingIcons = useIconSources();
 
     return (
-        <IconUrlsContext.Provider value={icons ?? surroundingIcons ?? defaultIcons}>
+        <IconSourcesContext.Provider value={icons ?? surroundingIcons ?? defaultIcons}>
             <div {...restProps} ref={ref} data-dextinity-color-scheme={colorScheme} className={clsx(styles.root, className)}>
                 {children}
             </div>
-        </IconUrlsContext.Provider>
+        </IconSourcesContext.Provider>
     );
 });

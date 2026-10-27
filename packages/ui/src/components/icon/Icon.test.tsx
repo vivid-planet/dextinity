@@ -71,4 +71,14 @@ describe("Icon", () => {
 
         expect(container.querySelector("svg")?.getAttribute("class")).toBe("dextinityIcon consumer-class");
     });
+
+    it("shows an icon with its own colors as an image of its file", () => {
+        const { container } = render(
+            <Theme icons={{ ...defaultIcons, favorite: { url: "/project/favorite.svg#icon", hasOwnColors: true } }}>
+                <Icon icon="favorite" />
+            </Theme>,
+        );
+
+        expect(container.querySelector("image")?.getAttribute("href")).toBe("/project/favorite.svg#icon");
+    });
 });

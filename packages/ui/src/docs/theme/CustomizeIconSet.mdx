@@ -54,5 +54,13 @@ Every `Theme` that sets `icons` must then include `"my-icon"`, or it's a type er
 
 - The root element is `<svg id="icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">`. `Icon` shows the element with the id `icon`, and only a 16×16 `viewBox` fits.
 - An icon drawn in one color uses `currentColor` for that color, so it takes the text color.
-- An icon drawn in one color uses no masks and no gradients. Safari ignores both in a file that `<use>` loads: a gradient isn't drawn, and a mask isn't applied. Redraw the shape without them.
+- An icon drawn in one color uses no masks and no gradients. Safari ignores both in a file that `<use>` loads: a gradient isn't drawn, and a mask isn't applied. Redraw the shape without them, or give it fixed colors instead of `currentColor` and mark it with `hasOwnColors` (see "Icons with their own colors"). It then no longer takes the text color.
 - Get its URL from your bundler with `new URL("./icons/my-icon.svg#icon", import.meta.url).href`, which works in Vite and Next.js. Keep `#icon` at the end: without it, Vite puts a small SVG file into the JS bundle as a `data:` URL, which `<use>` can't load.
+
+## Icons with their own colors
+
+An icon with its own colors, such as a brand logo, is marked with `hasOwnColors`. `Icon` shows it as an image, which keeps its colors and gradients in every browser:
+
+```tsx
+<Theme icons={{ ...defaultIcons, "my-logo": { url: myLogoUrl, hasOwnColors: true } }}>
+```

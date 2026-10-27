@@ -25,6 +25,20 @@ export type DefaultIconName = keyof DefaultIconRegistry;
 export type IconName = keyof IconRegistry;
 
 /**
- * The URL of every icon: its SVG file, followed by `#icon`.
+ * An icon with its own colors, which it keeps instead of taking the text color.
  */
-export type IconUrls = Record<IconName, string>;
+export interface IconSourceWithOwnColors {
+    /** The URL of the SVG file, followed by `#icon`. */
+    url: string;
+    hasOwnColors: true;
+}
+
+/**
+ * The URL of an icon's SVG file, followed by `#icon`, or an icon with its own colors.
+ */
+export type IconSource = string | IconSourceWithOwnColors;
+
+/**
+ * The source of every icon.
+ */
+export type IconSources = Record<IconName, IconSource>;

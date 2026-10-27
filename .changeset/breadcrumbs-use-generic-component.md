@@ -19,7 +19,7 @@ Both components now look and behave like the `Breadcrumbs` component, which is e
 
 **Breaking changes**
 
-The slots and class keys of `StackBreadcrumbs` and `ToolbarBreadcrumbs` are gone.
+Most slots and class keys of `StackBreadcrumbs` and `ToolbarBreadcrumbs` are removed.
 Use the slots of `Breadcrumbs` (through `slotProps.root` or the `DextinityAdminBreadcrumbs` theme key) to customize the items, the separator, the overflow menu and the mobile menu.
 
 - `StackBreadcrumbsClassKey` is reduced to `"root" | "backButton" | "backButtonSeparator"`.

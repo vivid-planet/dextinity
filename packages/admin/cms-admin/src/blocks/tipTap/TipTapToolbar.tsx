@@ -165,6 +165,19 @@ const textAlignIcons: Record<TipTapTextAlign, ForwardRefExoticComponent<Omit<Svg
     justify: RteAlignJustify,
 };
 
+const textAlignOf = (attrs: Record<string, unknown>): TipTapTextAlign => (attrs.textAlign as TipTapTextAlign | null) ?? "left";
+
+function isSelectionAligned(editor: Editor, textAlign: TipTapTextAlign) {
+    const { from, to } = editor.state.selection;
+    let isAligned = true;
+    editor.state.doc.nodesBetween(from, to, (node) => {
+        if (node.type.name === "textBlock" && textAlignOf(node.attrs) !== textAlign) {
+            isAligned = false;
+        }
+    });
+    return isAligned;
+}
+
 const selectFormControlSx = {
     [`& .${inputBaseClasses.root}`]: {
         backgroundColor: "transparent",
@@ -262,7 +275,7 @@ export const TipTapToolbar = ({
                 activeTextBlock: activeTextBlock.name,
                 activeStyledNode,
                 activeTextBlockStyle: (attrs.textBlockStyle as string) ?? "",
-                activeTextAlign: (attrs.textAlign as TipTapTextAlign | null) ?? "left",
+                activeTextAlign: textAlignOf(attrs),
                 canUndo: e.can().undo(),
                 canRedo: e.can().redo(),
                 canIndent,
@@ -610,7 +623,7 @@ export const TipTapToolbar = ({
                             ariaLabel={intl.formatMessage(textAlignMessages[textAlign])}
                             isActive={editorState.activeTextAlign === textAlign}
                             onToggle={() => {
-                                if (editorState.activeTextAlign !== textAlign) {
+                                if (!isSelectionAligned(editor, textAlign)) {
                                     editor.chain().focus().updateAttributes("textBlock", { textAlign }).run();
                                 }
                             }}

@@ -1,7 +1,7 @@
 import { Editor, type JSONContent } from "@tiptap/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { cleanup, fireEvent, render } from "../../testing/test-utils";
+import { act, cleanup, fireEvent, render } from "../../testing/test-utils";
 import type { BlockContext } from "../context/BlockContext";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "../types";
@@ -294,14 +294,13 @@ describe("createTipTapRichTextBlock", () => {
         });
 
         function renderEditor(
-            textAlign: string | null,
+            textAlign: string | null | (string | null)[],
             enabledTextAlign: NonNullable<Parameters<typeof createTipTapRichTextBlock>[0]>["textAlign"] = true,
         ) {
             const block = createTipTapRichTextBlock({ textAlign: enabledTextAlign });
             const updateState = vi.fn();
-            const result = render(
-                <block.AdminComponent state={{ tipTapContent: { type: "doc", content: [alignedParagraph(textAlign)] } }} updateState={updateState} />,
-            );
+            const content = [textAlign].flat().map(alignedParagraph);
+            const result = render(<block.AdminComponent state={{ tipTapContent: { type: "doc", content } }} updateState={updateState} />);
             const editor = (result.container.querySelector(".tiptap") as (HTMLElement & { editor?: Editor }) | null)?.editor;
             if (!editor) {
                 throw new Error("Expected the editor to be rendered");
@@ -343,6 +342,19 @@ describe("createTipTapRichTextBlock", () => {
             fireEvent.mouseDown(getByLabelText(buttonLabel));
 
             expect(updateState).not.toHaveBeenCalled();
+        });
+
+        it("should align every text block of a selection with mixed alignments", () => {
+            const { editor, getByLabelText, updateState } = renderEditor(["center", "right"]);
+            act(() => {
+                editor.commands.setTextSelection({ from: 1, to: editor.state.doc.content.size - 1 });
+            });
+
+            fireEvent.mouseDown(getByLabelText("Align right"));
+
+            expect(updateState).toHaveBeenLastCalledWith({
+                tipTapContent: { type: "doc", content: [alignedParagraph("right"), alignedParagraph("right")] },
+            });
         });
 
         it("should render the alignment as the text block's text-align", () => {

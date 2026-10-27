@@ -156,16 +156,6 @@ describe("useBlockClipboard", () => {
         expect(response.canPaste && response.content[0].state.targetPage?.id).toBe("page-1");
     });
 
-    it("keeps the dependencies of content copied by an earlier version", async () => {
-        (readClipboardText as Mock).mockResolvedValue(JSON.stringify([{ name: "InternalLink", visible: true, output: { targetPageId: "page-1" } }]));
-        const result = renderUseBlockClipboard({ domain: "secondary" });
-
-        const response = await getClipboardContent(result);
-
-        expect(response.canPaste).toBe(true);
-        expect(response.canPaste && response.content[0].state.targetPage?.id).toBe("page-1");
-    });
-
     it("writes a file that a block references by its id only as a DAM file, not as a dependency", async () => {
         const idOnlyDamFileBlock = {
             ...PixelImageBlock,
@@ -221,17 +211,6 @@ describe("useBlockClipboard", () => {
     it("doesn't copy the referenced DAM files when the DAM isn't scoped", async () => {
         (readClipboardText as Mock).mockResolvedValue(clipboardContentForScope({}));
         const result = renderUseBlockClipboard({ domain: "main", scopeParts: [] });
-
-        const response = await getClipboardContent(result);
-
-        expect(response.canPaste).toBe(true);
-        expect(response.canPaste && response.content[0].state.damFile?.id).toBe("file-1");
-        expect(mutate).not.toHaveBeenCalled();
-    });
-
-    it("supports content copied by an earlier version", async () => {
-        (readClipboardText as Mock).mockResolvedValue(JSON.stringify([{ name: "Image", visible: true, output: { damFileId: "file-1" } }]));
-        const result = renderUseBlockClipboard({ domain: "secondary" });
 
         const response = await getClipboardContent(result);
 

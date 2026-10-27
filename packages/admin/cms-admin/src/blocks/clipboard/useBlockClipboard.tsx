@@ -27,7 +27,7 @@ interface TransformedClipboardBlock {
     output: BlockOutputApi<BlockInterface>;
     additionalFields?: Record<string, unknown>;
     damFiles?: DamFileToCopy[];
-    contentScope?: ContentScope;
+    contentScope: ContentScope;
     dependencies?: Array<Pick<BlockDependency, "targetGraphqlObjectType" | "id">>;
 }
 
@@ -216,7 +216,7 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
             try {
                 const replacements = [...dependencyReplacements];
 
-                if (clipboardBlock.contentScope && !isEqual(clipboardBlock.contentScope, contentScope)) {
+                if (!isEqual(clipboardBlock.contentScope, contentScope)) {
                     const unhandledDependencies = (clipboardBlock.dependencies ?? []).filter(
                         (dependency) =>
                             !replacements.some(

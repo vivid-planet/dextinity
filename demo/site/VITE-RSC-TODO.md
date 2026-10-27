@@ -58,9 +58,9 @@ The site was resolved from the host in 4 middlewares and the preview JWT verifie
 
 Kept the short `ssr.resolve.noExternal` list (`prop-types`, `swiper`). Tried `noExternal: true` like audi6: `csso` and `css-tree` (via `@dextinity/mail-react`) and `uglify-js` (via mjml → `html-minifier`) load their own files at runtime, which breaks when bundled. Works with the self-contained `csso/dist/csso.esm` build in mail-react plus `external: ["mjml"]`, but in dev the SSR dependency optimizer then re-bundles after dependency changes and the first requests answer 500. Not worth it for removing two list entries. Moving the welcome email's data loading to the RSC environment came out of it (no fetch cache/ioredis in SSR anymore). Revisit with mjml 5 or if the list grows. Ref: audi6 `vite.config.ts` (`findClientComponents`).
 
-### #11 Move security and cache headers into the Hono app
+### #11 Move security and cache headers into the Hono app (done)
 
-Security headers are set on Node level in `server.ts`; static files, cache headers and compression only exist in the production Hono app there. Move into Hono middlewares so dev and production behave the same. Ref: audi6 `middleware/securityHeaders.ts`, `middleware/cacheControl.ts`.
+Security headers were set on Node level in `server.ts`, static files, their cache headers and `no-store` for error responses only existed in the production server, and `robots.txt`/`sitemap.xml` got their `Cache-Control` from a path list there. Now `src/handler.ts` starts with `securityHeadersMiddleware` (only sets headers the response doesn't have, the proxied DAM files keep the API's), `errorResponseCacheControlMiddleware` and, in production, `staticFilesMiddleware`; the two routes set their own `Cache-Control`. `server.ts` only keeps the transport (origin check, metrics, compression). Verified by comparing 61 requests in dev and production before/after: production identical except the spelling of `text/plain;charset=UTF-8`; dev now matches production for error responses and robots/sitemap, files served by Vite in dev have no security headers anymore. Ref: audi6 `middleware/securityHeaders.ts`, `middleware/cacheControl.ts`.
 
 ### #12 Memoize fetches per request
 

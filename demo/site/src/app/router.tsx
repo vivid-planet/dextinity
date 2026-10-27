@@ -1,5 +1,6 @@
+import { noStoreCacheControl } from "@src/framework/cacheControl";
 import { handleError } from "@src/framework/handleError";
-import { noStoreCacheControl, renderPage } from "@src/framework/render";
+import { renderPage } from "@src/framework/render";
 import { getSiteContext } from "@src/framework/requestContext";
 import type { ContentScope } from "@src/site-configs";
 import { type Context, Hono } from "hono";

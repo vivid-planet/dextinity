@@ -9,13 +9,21 @@ import { trailingSlashRedirectMiddleware } from "@src/framework/trailingSlashRed
 import { Hono } from "hono";
 
 import { contentSecurityPolicyHeadersMiddleware } from "./middleware/contentSecurityPolicyHeaders";
+import { errorResponseCacheControlMiddleware } from "./middleware/errorResponseCacheControl";
 import { predefinedPagesMiddleware } from "./middleware/predefinedPages";
 import { previewDomainMiddleware } from "./middleware/preview";
 import { redirectToMainHostMiddleware } from "./middleware/redirectToMainHost";
+import { securityHeadersMiddleware } from "./middleware/securityHeaders";
 import { siteContextMiddleware } from "./middleware/siteContext";
+import { staticFilesMiddleware } from "./middleware/staticFiles";
 
 // Middlewares only apply to the routes registered after them, a route that responds skips the rest
 export const app = new Hono();
+
+app.use(securityHeadersMiddleware, errorResponseCacheControlMiddleware);
+if (import.meta.env.PROD) {
+    app.use(staticFilesMiddleware);
+}
 
 app.use(trailingSlashRedirectMiddleware);
 

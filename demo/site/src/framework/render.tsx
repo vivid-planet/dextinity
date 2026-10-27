@@ -2,6 +2,7 @@ import { renderToReadableStream } from "@vitejs/plugin-rsc/rsc/server";
 import type { Context } from "hono";
 import type { ReactNode } from "react";
 
+import { noStoreCacheControl } from "./cacheControl";
 import { getNavigationErrorDigest, isNotFoundDigest, parseRedirectDigest } from "./navigation";
 import { reportError } from "./reportError";
 import { getRequest, isRscRequest } from "./requestContext";
@@ -10,8 +11,6 @@ import { RouterProvider } from "./RouterProvider";
 export type RscPayload = {
     root: ReactNode;
 };
-
-export const noStoreCacheControl = "private, no-cache, no-store, max-age=0, must-revalidate";
 
 type RenderPageOptions = {
     root: ReactNode;

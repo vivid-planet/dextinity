@@ -76,7 +76,7 @@ export async function sitemapRoute(c: Context) {
         } while (totalCount > currentCount);
     }
 
-    return c.body(renderSitemapXml(sitemap), 200, { "Content-Type": "application/xml" });
+    return c.body(renderSitemapXml(sitemap), 200, { "Content-Type": "application/xml", "Cache-Control": "public, max-age=900" });
 }
 
 const pageDataListQuery = gql`

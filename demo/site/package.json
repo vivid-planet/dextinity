@@ -47,7 +47,7 @@
         "@opentelemetry/sdk-node": "^0.217.0",
         "cache-manager": "^5.7.6",
         "clsx": "^2.1.1",
-        "filesize": "^11.0.26",
+        "filesize": "^11.0.28",
         "ioredis": "^5.11.1",
         "lru-cache": "^11.5.3",
         "mjml": "^4.18.0",

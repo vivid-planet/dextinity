@@ -4,8 +4,7 @@
 
 Build `StackBreadcrumbs` and `ToolbarBreadcrumbs` on top of the generic `Breadcrumbs` component
 
-Both components maintained their own breadcrumb rendering, overflow handling and mobile menu, which meant three implementations of the same UI that had already drifted apart visually.
-They are now thin wrappers around the `Breadcrumbs` component, which is exported from `@dextinity/admin` as well.
+Both components now look and behave like the `Breadcrumbs` component, which is exported from `@dextinity/admin` as well.
 
 `Breadcrumbs` has a new `startAdornment` prop for content that belongs in front of the items.
 `StackBreadcrumbs` uses it for its back button and `Toolbar` passes its `scopeIndicator` through it, so the scope indicator is now part of the breadcrumbs instead of a sibling in the top bar.
@@ -20,7 +19,7 @@ They are now thin wrappers around the `Breadcrumbs` component, which is exported
 
 **Breaking changes**
 
-`StackBreadcrumbs` and `ToolbarBreadcrumbs` no longer render their own markup, so their slots and class keys are gone.
+The slots and class keys of `StackBreadcrumbs` and `ToolbarBreadcrumbs` are gone.
 Use the slots of `Breadcrumbs` (through `slotProps.root` or the `DextinityAdminBreadcrumbs` theme key) to customize the items, the separator, the overflow menu and the mobile menu.
 
 - `StackBreadcrumbsClassKey` is reduced to `"root" | "backButton" | "backButtonSeparator"`.

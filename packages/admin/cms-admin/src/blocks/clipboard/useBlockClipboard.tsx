@@ -27,11 +27,13 @@ interface TransformedClipboardBlock {
     output: BlockOutputApi<BlockInterface>;
     additionalFields?: Record<string, unknown>;
     damFiles?: DamFileToCopy[];
-    contentScope: ContentScope;
     dependencies?: Array<Pick<BlockDependency, "targetGraphqlObjectType" | "id">>;
 }
 
-type TransformedClipboardContent = TransformedClipboardBlock[];
+interface TransformedClipboardContent {
+    contentScope: ContentScope;
+    blocks: TransformedClipboardBlock[];
+}
 
 type GetClipboardContentResponse = { canPaste: true; content: ClipboardContent } | { canPaste: false; error: ReactNode };
 
@@ -91,15 +93,14 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
                 output: blockInterface.state2Output(block.state),
                 additionalFields: block.additionalFields,
                 damFiles: damFiles.length > 0 ? damFiles : undefined,
-                contentScope,
                 dependencies: dependencies.length > 0 ? dependencies : undefined,
             };
         });
 
-        return writeClipboardText(JSON.stringify(blocks satisfies TransformedClipboardContent));
+        return writeClipboardText(JSON.stringify({ contentScope, blocks } satisfies TransformedClipboardContent));
     };
 
-    const copyReferencedDamFilesToScope = async (blocks: TransformedClipboardContent) => {
+    const copyReferencedDamFilesToScope = async (blocks: TransformedClipboardBlock[]) => {
         if (Object.keys(damScope).length === 0) {
             return [];
         }
@@ -168,13 +169,13 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
             return failedToParseClipboardResponse;
         }
 
-        if (!Array.isArray(transformedContent)) {
+        if (!Array.isArray(transformedContent?.blocks)) {
             return failedToParseClipboardResponse;
         }
 
         const clipboardBlocks: Array<{ clipboardBlock: TransformedClipboardBlock; blockInterface: BlockInterface }> = [];
 
-        for (const clipboardBlock of transformedContent) {
+        for (const clipboardBlock of transformedContent.blocks) {
             const blockInterface = findBlockInterfaceForClipboardBlock(clipboardBlock);
 
             if (!blockInterface) {
@@ -195,7 +196,7 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
         let dependencyReplacements: ReplaceDependencyObject[];
 
         try {
-            dependencyReplacements = await copyReferencedDamFilesToScope(transformedContent);
+            dependencyReplacements = await copyReferencedDamFilesToScope(transformedContent.blocks);
         } catch {
             return {
                 canPaste: false,
@@ -208,6 +209,7 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
             };
         }
 
+        const isPastingIntoOtherContentScope = !isEqual(transformedContent.contentScope, contentScope);
         const blocks: ClipboardBlock[] = [];
 
         for (const { clipboardBlock, blockInterface } of clipboardBlocks) {
@@ -216,7 +218,7 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
             try {
                 const replacements = [...dependencyReplacements];
 
-                if (!isEqual(clipboardBlock.contentScope, contentScope)) {
+                if (isPastingIntoOtherContentScope) {
                     const unhandledDependencies = (clipboardBlock.dependencies ?? []).filter(
                         (dependency) =>
                             !replacements.some(

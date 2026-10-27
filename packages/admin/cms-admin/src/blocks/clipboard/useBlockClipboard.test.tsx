@@ -56,18 +56,23 @@ const mutate = vi.fn(async ({ mutation, variables }: { mutation: DocumentNode; v
 });
 
 const internalLinkClipboardContentForScope = (contentScope: Record<string, unknown>) =>
-    JSON.stringify([
-        {
-            name: "InternalLink",
-            visible: true,
-            output: { targetPageId: "page-1" },
-            contentScope,
-            dependencies: [{ targetGraphqlObjectType: "PageTreeNode", id: "page-1" }],
-        },
-    ]);
+    JSON.stringify({
+        contentScope,
+        blocks: [
+            {
+                name: "InternalLink",
+                visible: true,
+                output: { targetPageId: "page-1" },
+                dependencies: [{ targetGraphqlObjectType: "PageTreeNode", id: "page-1" }],
+            },
+        ],
+    });
 
 const clipboardContentForScope = (scope: Record<string, unknown>) =>
-    JSON.stringify([{ name: "Image", visible: true, output: { damFileId: "file-1" }, damFiles: [{ id: "file-1", scope }] }]);
+    JSON.stringify({
+        contentScope: { ...scope, language: "en" },
+        blocks: [{ name: "Image", visible: true, output: { damFileId: "file-1" }, damFiles: [{ id: "file-1", scope }] }],
+    });
 
 function renderUseBlockClipboard({ domain, scopeParts = ["domain"] }: { domain: string; scopeParts?: string[] }) {
     (useDextinityConfig as Mock).mockReturnValue({ apiUrl: "https://example.com", dam: { scopeParts } });
@@ -104,15 +109,17 @@ describe("useBlockClipboard", () => {
             await result.current.updateClipboardContent([{ name: "Image", visible: true, state: { damFile: damFile("file-1") } }]);
         });
 
-        expect(JSON.parse((writeClipboardText as Mock).mock.calls[0][0])).toEqual([
-            {
-                name: "Image",
-                visible: true,
-                output: { damFileId: "file-1" },
-                damFiles: [{ id: "file-1", scope: { domain: "main" }, imageCropArea: { focalPoint: "SMART" } }],
-                contentScope: { domain: "main", language: "en" },
-            },
-        ]);
+        expect(JSON.parse((writeClipboardText as Mock).mock.calls[0][0])).toEqual({
+            contentScope: { domain: "main", language: "en" },
+            blocks: [
+                {
+                    name: "Image",
+                    visible: true,
+                    output: { damFileId: "file-1" },
+                    damFiles: [{ id: "file-1", scope: { domain: "main" }, imageCropArea: { focalPoint: "SMART" } }],
+                },
+            ],
+        });
     });
 
     it("writes the dependencies that aren't DAM files to the clipboard", async () => {
@@ -124,15 +131,17 @@ describe("useBlockClipboard", () => {
             ]);
         });
 
-        expect(JSON.parse((writeClipboardText as Mock).mock.calls[0][0])).toEqual([
-            {
-                name: "InternalLink",
-                visible: true,
-                output: { targetPageId: "page-1" },
-                contentScope: { domain: "main", language: "en" },
-                dependencies: [{ targetGraphqlObjectType: "PageTreeNode", id: "page-1" }],
-            },
-        ]);
+        expect(JSON.parse((writeClipboardText as Mock).mock.calls[0][0])).toEqual({
+            contentScope: { domain: "main", language: "en" },
+            blocks: [
+                {
+                    name: "InternalLink",
+                    visible: true,
+                    output: { targetPageId: "page-1" },
+                    dependencies: [{ targetGraphqlObjectType: "PageTreeNode", id: "page-1" }],
+                },
+            ],
+        });
     });
 
     it("removes unhandled dependencies when pasting into another scope", async () => {
@@ -170,7 +179,7 @@ describe("useBlockClipboard", () => {
             await result.current.updateClipboardContent([{ name: "Image", visible: true, state: { damFile: damFile("file-1") } }]);
         });
 
-        const [block] = JSON.parse((writeClipboardText as Mock).mock.calls[0][0]);
+        const [block] = JSON.parse((writeClipboardText as Mock).mock.calls[0][0]).blocks;
         expect(block.damFiles).toEqual([{ id: "file-1", scope: { domain: "main" } }]);
         expect(block.dependencies).toBeUndefined();
     });
@@ -182,7 +191,7 @@ describe("useBlockClipboard", () => {
             await result.current.updateClipboardContent([{ name: "Image", visible: true, state: { damFile: damFile("file-1") } }]);
         });
 
-        expect(JSON.parse((writeClipboardText as Mock).mock.calls[0][0])[0].damFiles[0].scope).toEqual({ domain: "main" });
+        expect(JSON.parse((writeClipboardText as Mock).mock.calls[0][0]).blocks[0].damFiles[0].scope).toEqual({ domain: "main" });
     });
 
     it("copies the referenced DAM files when pasting into another scope", async () => {

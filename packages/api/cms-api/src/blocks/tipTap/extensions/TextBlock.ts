@@ -2,18 +2,27 @@ import { mergeAttributes, Node } from "@tiptap/core";
 
 import type { TipTapResolvedTextBlock } from "../textBlocks";
 
-const textAlignments: unknown[] = ["left", "center", "right", "justify"];
+export type TipTapTextAlign = "left" | "center" | "right" | "justify";
 
-const textAlignAttribute = {
+const textAlignments: TipTapTextAlign[] = ["left", "center", "right", "justify"];
+
+export function resolveTextAlign(textAlign: boolean | Partial<Record<TipTapTextAlign, boolean>>): TipTapTextAlign[] {
+    if (typeof textAlign === "boolean") {
+        return textAlign ? textAlignments : [];
+    }
+    return textAlignments.filter((alignment) => textAlign[alignment]);
+}
+
+const textAlignAttribute = (textAlign: TipTapTextAlign[]) => ({
     textAlign: {
         default: null,
         validate: (value: unknown) => {
-            if (value !== null && !textAlignments.includes(value)) {
+            if (value !== null && !(textAlign as unknown[]).includes(value)) {
                 throw new RangeError(`Unsupported textAlign ${String(value)}`);
             }
         },
     },
-};
+});
 
 /**
  * The single node every paragraph and heading is stored as, mirroring the Admin's. Which of the
@@ -29,7 +38,7 @@ export function createTextBlock({
     textBlocks: TipTapResolvedTextBlock[];
     defaultTextBlock: TipTapResolvedTextBlock;
     hasTextBlockStyles: boolean;
-    textAlign: boolean;
+    textAlign: TipTapTextAlign[];
 }) {
     return Node.create({
         name: "textBlock",
@@ -42,7 +51,7 @@ export function createTextBlock({
             return {
                 textBlock: { default: defaultTextBlock.name },
                 ...(hasTextBlockStyles ? { textBlockStyle: { default: null } } : {}),
-                ...(textAlign ? textAlignAttribute : {}),
+                ...(textAlign.length > 0 ? textAlignAttribute(textAlign) : {}),
             };
         },
 

@@ -14,5 +14,11 @@ The option is disabled by default and must be enabled in both the API and the Ad
 createTipTapRichTextBlock({ textAlign: true });
 ```
 
+To enable only some of the alignments, pass an object:
+
+```ts
+createTipTapRichTextBlock({ textAlign: { left: true, center: true } });
+```
+
 `renderTipTapRichText` renders the alignment as the text block's `text-align` style.
 A custom `textBlock` handler has to apply `node.attrs.textAlign` itself.

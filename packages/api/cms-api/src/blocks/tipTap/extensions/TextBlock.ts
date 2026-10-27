@@ -2,6 +2,19 @@ import { mergeAttributes, Node } from "@tiptap/core";
 
 import type { TipTapResolvedTextBlock } from "../textBlocks";
 
+const textAlignments: unknown[] = ["left", "center", "right", "justify"];
+
+const textAlignAttribute = {
+    textAlign: {
+        default: null,
+        validate: (value: unknown) => {
+            if (value !== null && !textAlignments.includes(value)) {
+                throw new RangeError(`Unsupported textAlign ${String(value)}`);
+            }
+        },
+    },
+};
+
 /**
  * The single node every paragraph and heading is stored as, mirroring the Admin's. Which of the
  * configured text blocks it is decides the tag it renders as, so the content carries the text
@@ -11,10 +24,12 @@ export function createTextBlock({
     textBlocks,
     defaultTextBlock,
     hasTextBlockStyles,
+    textAlign,
 }: {
     textBlocks: TipTapResolvedTextBlock[];
     defaultTextBlock: TipTapResolvedTextBlock;
     hasTextBlockStyles: boolean;
+    textAlign: boolean;
 }) {
     return Node.create({
         name: "textBlock",
@@ -27,6 +42,7 @@ export function createTextBlock({
             return {
                 textBlock: { default: defaultTextBlock.name },
                 ...(hasTextBlockStyles ? { textBlockStyle: { default: null } } : {}),
+                ...(textAlign ? textAlignAttribute : {}),
             };
         },
 

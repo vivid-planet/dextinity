@@ -481,6 +481,33 @@ describe("createTipTapRichTextBlock validation", () => {
         });
     });
 
+    describe("textAlign", () => {
+        const contentAligned = (textAlign: unknown) => ({
+            type: "doc",
+            content: [{ type: "textBlock", attrs: { textAlign }, content: [{ type: "text", text: "Aligned" }] }],
+        });
+
+        it("should reject a textAlign attribute when textAlign is disabled", async () => {
+            const block = createTipTapRichTextBlock(onlyFeatures(), "TestTextAlignDisabled");
+            const errors = await validate(block.blockInputFactory({ tipTapContent: contentAligned("center") }));
+            expect(errors).toHaveLength(1);
+        });
+
+        describe("enabled", () => {
+            const block = createTipTapRichTextBlock(onlyFeatures({ textAlign: true }), "TestTextAlign");
+
+            it.each(["left", "center", "right", "justify", null])("should accept textAlign %s", async (textAlign) => {
+                const errors = await validate(block.blockInputFactory({ tipTapContent: contentAligned(textAlign) }));
+                expect(errors).toHaveLength(0);
+            });
+
+            it.each(["start", "middle", 1])("should reject textAlign %s", async (textAlign) => {
+                const errors = await validate(block.blockInputFactory({ tipTapContent: contentAligned(textAlign) }));
+                expect(errors).toHaveLength(1);
+            });
+        });
+    });
+
     describe("schema with text block styles", () => {
         const block = createTipTapRichTextBlock(
             onlyFeatures({

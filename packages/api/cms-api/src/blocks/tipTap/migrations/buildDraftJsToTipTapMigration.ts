@@ -104,6 +104,7 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
                     defaultTextBlock: resolvedOptions.defaultTextBlock,
                     orderedList: resolvedOptions.orderedList,
                     unorderedList: resolvedOptions.unorderedList,
+                    textAlign: resolvedOptions.textAlign,
                 })
             ) {
                 return { tipTapContent: converted };
@@ -121,6 +122,7 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
                     defaultTextBlock: resolvedOptions.defaultTextBlock,
                     orderedList: resolvedOptions.orderedList,
                     unorderedList: resolvedOptions.unorderedList,
+                    textAlign: resolvedOptions.textAlign,
                 })
             ) {
                 console.warn("DraftJS->TipTap migration failed, using stripped content");

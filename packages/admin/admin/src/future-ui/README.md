@@ -116,7 +116,7 @@ The contract has two parts: **structural class names** for a component's element
 
 ### Stories
 
-Stories live under the "Future UI" section. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers (decorators, the Figma-link builder) live in [`storybook/`](storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it.
+Stories live under the "Future UI" section. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`storybook/`](storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it.
 
 #### Main story
 
@@ -151,19 +151,6 @@ Each declared prop is exposed as a control through `argTypes`, by kind:
 
 `__stories__/<name>.dev.stories.tsx`, optional, nests its title under a `Dev` segment (`Future UI/<Component>/Dev/<Name>`) and sets `tags: ["!autodocs"]` in its meta, keeping these out of the consumer docs. A dev story serves any development, testing, or debugging need, so add them freely — e.g. reproduce a bug in a dev story and use it to confirm the fix, rather than reaching for the Dextinity demo or a consuming project.
 
-#### Figma
-
-Linking the Figma design is strongly recommended: the main story's `meta` links it through [`@storybook/addon-designs`](https://storybook.js.org/addons/@storybook/addon-designs), so the design panel shows the frame across the component's stories. Every component lives in the same DDS Figma file and differs only by frame, so a story passes only its node id — the `node-id` from the frame's Figma link — to a shared helper:
-
-```tsx
-const meta = {
-    // …
-    parameters: {
-        design: figmaDesign({ nodeId: "25-2" }),
-    },
-} satisfies Meta<typeof Button>;
-```
-
 ## Testing
 
 Test the behavior and contracts a consumer depends on, not the implementation. Each test protects one such behavior; anything written only for coverage, or that just restates the type checker or the implementation, is left out.
@@ -179,7 +166,7 @@ Not worth a test:
 
 - **That a component renders** — every story already runs as a browser test, so a rendering story is the coverage.
 - **Appearance** — colors, sizes, spacing — reviewed visually in the stories, never asserted.
-- **Dev-local tooling** — CLI scripts, story-only helpers — a failure is loud and local. Exception: code whose regression is silent or reaches consumers, such as the class-name mapping in `cssModules/`.
+- **Dev-local tooling** — story-only helpers — a failure is loud and local. Exception: code whose regression is silent or reaches consumers, such as the class-name mapping in `cssModules/`.
 
 Run from `packages/admin/admin`: `pnpm run test:unit`, `pnpm run test:storybook`, and `pnpm run test:watch`.
 
@@ -189,47 +176,11 @@ Components read their colors and metrics from CSS custom properties (`var(--dext
 
 ### Token layers
 
-The tokens are defined in five SCSS partials under [`theme/`](theme), composed into the provider module with `@use` and wrapped in a single `@layer dextinity`: `_primitives.scss` (raw values, internal), `_brand.scss`, `_responsive.scss`, `_semantic.scss`, and `_components.scss`. [`generateThemeTokens.ts`](cli/generateThemeTokens.ts) generates them, along with the prop-value types ([`theme/types.ts`](theme/types.ts)).
-
-### Regenerating the tokens
-
-The partials and types are generated from a design-token export, not edited manually. To update them:
-
-1. Open the [DDS Figma design](https://www.figma.com/design/xAe7acdpccDSRCrfeOdAg3/DDS---Dextinity-Admin-UI---V-0.1).
-2. Install and run the [Design Token Exporter](https://www.figma.com/community/plugin/1590704268871516927) plugin.
-3. In the plugin, click **Export Tokens**, then **Download as ZIP**.
-4. Extract the ZIP outside the repository. It contains a `design-tokens` directory — a `manifest.json` plus one `*.tokens.json` file per collection and mode. The export itself is not committed.
-5. From the repo root, run the generator, pointing it at that directory by absolute path:
-
-    ```bash
-    pnpm --filter @dextinity/admin run generate-future-ui-theme-tokens /absolute/path/to/design-tokens
-    ```
+The tokens are defined in five SCSS partials under [`theme/`](theme), composed into the provider module with `@use` and wrapped in a single `@layer dextinity`: `_primitives.scss` (raw values, internal), `_brand.scss`, `_responsive.scss`, `_semantic.scss`, and `_components.scss`. The prop-value types live in [`theme/types.ts`](theme/types.ts).
 
 ### Selecting a color scheme
 
 `Theme` selects the active color scheme. It stays a pure function of its props — reading no `window`, `localStorage`, or `matchMedia` — so it renders the same on server and client; switching, OS-scheme resolution, and preventing the first-paint flash on SSR stay in consumer code.
-
-## CLI
-
-Maintainer scripts, run through `pnpm --filter @dextinity/admin run …`:
-
-- **`future-ui-figma list`** prints the DDS component inventory as JSON — every component or component set a designer has marked for development in Figma (dev status "Ready for development" or "Completed"), skipping non-public `_`-prefixed names. It reads the Figma file over the REST API, so `FIGMA_TOKEN` must be set to a Figma [personal access token](https://developers.figma.com/docs/rest-api/personal-access-tokens/), or `list` fails with an `auth_missing` error. The token needs only the `file_content:read` scope. Behind a proxy, also set `NODE_USE_ENV_PROXY=1`: Node's `fetch` ignores `HTTPS_PROXY` without it.
-- **`future-ui-figma describe-target <component>`** prints the props one component's Figma design says it should have as JSON — each prop's type, an enum's options, and its default value.
-- **`future-ui-figma describe-implemented <component>`** prints the props one component's source implements, in the same shape as `describe-target`, reading the source instead of Figma.
-- **`future-ui-figma diff <component>`** prints how one component's source differs from its Figma design as JSON. The story's `figmaDesign({ nodeId })` links the two. A story without a node id is reported as unlinked when Figma has a component of the same name. **`diff --all`** reports every future-ui component, plus every Figma component that has no code yet.
-- **`generate-future-ui-theme-tokens`** regenerates the theme SCSS partials and types from a design-token export — see [Regenerating the tokens](#regenerating-the-tokens).
-
-## Working from the Figma design
-
-future-ui implements the Dextinity Design System (DDS) Figma file. Compare, implement, and update components and theme tokens against it with the `future-ui-figma` CLI.
-
-- Find a component's Figma name and node id with `future-ui-figma list`.
-- Find where a component's code differs from its Figma design with `future-ui-figma diff`. `future-ui-figma diff --all` does this for every component, and also lists the Figma components that have no code yet.
-- Get a component's props from the Figma design with `future-ui-figma describe-target`, or from the code with `future-ui-figma describe-implemented`.
-
-Figma properties become props by fixed rules: names and enum options are camelCased, a Yes/No variant becomes a boolean prop, and a property whose name starts with `_` is never implemented. Such properties control the design file: the `_State` variants, for example, show browser states such as hover, which the CSS implements. The code is the source of truth: it follows the design by default, and a deliberate deviation stays.
-
-Theme tokens come from Figma only through the token export, which a person runs: when the theme lacks a token, ask for an export, as [Regenerating the tokens](#regenerating-the-tokens) describes. Use the CSS variables from the theme partials, also when Figma shows a different value. The next token export fixes the difference.
 
 ## Known issues
 

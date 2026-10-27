@@ -34,7 +34,7 @@
             "project": ["./src/**/*.{ts,tsx}"]
         },
         "packages/admin/admin": {
-            "entry": ["./src/index.ts", "./src/future-ui/index.ts", "./src/**/__fixtures__/**"],
+            "entry": ["./src/index.ts", "./src/future-ui/index.ts"],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": [".storybook/public/mockServiceWorker.js"],
             "ignoreDependencies": ["@mui/x-data-grid-premium", "sass"]

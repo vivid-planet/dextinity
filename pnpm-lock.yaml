@@ -656,7 +656,7 @@ importers:
         version: 10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0)
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.16.13(@swc/helpers@0.5.23))(@types/node@24.19.1)(typescript@5.9.3)
+        version: 10.9.2(@swc/core@1.16.13)(@types/node@24.19.1)(typescript@5.9.3)
       tsconfig-paths:
         specifier: ^3.15.0
         version: 3.15.0
@@ -993,9 +993,6 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.1
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
-      '@figma/rest-api-spec':
-        specifier: ^0.41.0
-        version: 0.41.0
       '@mui/material':
         specifier: ^7.3.11
         version: 7.3.11(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -1017,9 +1014,6 @@ importers:
       '@mui/x-date-pickers-pro':
         specifier: ^8.29.4
         version: 8.29.4(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@mui/material@7.3.11(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@mui/system@7.3.11(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0))(@types/react@19.3.0)(date-fns@4.4.0)(dayjs@1.11.23)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@storybook/addon-designs':
-        specifier: ^11.1.3
-        version: 11.1.4(@storybook/addon-docs@10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0)))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0))
       '@storybook/addon-docs':
         specifier: ^10.6.1
         version: 10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0))
@@ -1074,9 +1068,6 @@ importers:
       '@vitest/browser-playwright':
         specifier: 4.1.11
         version: 4.1.11(msw@2.15.0(@types/node@24.19.1)(typescript@5.9.3))(playwright@1.63.0)(vite@7.3.7(@types/node@24.19.1)(jiti@2.7.0)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.1))(vitest@4.1.11)
-      commander:
-        specifier: ^15.0.0
-        version: 15.0.0
       eslint:
         specifier: ^9.39.5
         version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
@@ -1140,12 +1131,6 @@ importers:
       storybook-addon-tag-badges:
         specifier: ^3.1.0
         version: 3.1.0(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0))
-      ts-morph:
-        specifier: ^28.0.0
-        version: 28.0.0
-      ts-node:
-        specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.16.13)(@types/node@24.19.1)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1158,9 +1143,6 @@ importers:
       vitest:
         specifier: ^4.1.11
         version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.19.1)(@vitest/browser-playwright@4.1.11)(jiti@2.7.0)(jsdom@28.1.0(@noble/hashes@1.8.0)(supports-color@8.1.1))(msw@2.15.0(@types/node@24.19.1)(typescript@5.9.3))(sass@1.105.1)(terser@5.51.2)(yaml@2.9.1)
-      zod:
-        specifier: ^4.4.3
-        version: 4.6.5
 
   packages/admin/admin-babel-preset:
     dependencies:
@@ -2030,7 +2012,7 @@ importers:
         version: 25.0.1
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.16.13(@swc/helpers@0.5.23))(@types/node@24.19.1)(typescript@5.9.3)
+        version: 10.9.2(@swc/core@1.16.13)(@types/node@24.19.1)(typescript@5.9.3)
       tsconfig-paths:
         specifier: ^3.15.0
         version: 3.15.0
@@ -2194,7 +2176,7 @@ importers:
         version: 7.8.2
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.16.13(@swc/helpers@0.5.23))(@types/node@24.19.1)(typescript@5.9.3)
+        version: 10.9.2(@swc/core@1.16.13)(@types/node@24.19.1)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2447,7 +2429,7 @@ importers:
         version: 7.8.2
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.16.13(@swc/helpers@0.5.23))(@types/node@24.19.1)(typescript@5.9.3)
+        version: 10.9.2(@swc/core@1.16.13)(@types/node@24.19.1)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2988,9 +2970,6 @@ importers:
       '@graphql-mocks/network-msw':
         specifier: ^0.4.4
         version: 0.4.4(graphql-mocks@0.12.0(graphql@16.14.2))(msw@2.15.0(@types/node@24.19.1)(typescript@5.9.3))
-      '@storybook/addon-designs':
-        specifier: ^11.1.3
-        version: 11.1.4(@storybook/addon-docs@10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0)))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0))
       '@storybook/addon-docs':
         specifier: ^10.6.1
         version: 10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0))
@@ -5340,17 +5319,6 @@ packages:
     peerDependencies:
       commander: ^11.1.0
 
-  '@figma/rest-api-spec@0.41.0':
-    resolution: {integrity: sha512-v43HkJE+ZRB0G1MXwN85LKhOE65WG1205kSCjGihdzNN2U9DyOz4Hnb7swjv+9dWyhJ+aYSQt76lFKIFqrLGNQ==}
-
-  '@figspec/components@2.1.0':
-    resolution: {integrity: sha512-PFKBX2oFz+vhThKTNsu7Mh4ZT3X7YCiM694UkAMT36j/p0tdmXs9Je0Sf88stTEcMgwYvNv9TZtvniYmgaE+bw==}
-
-  '@figspec/react@2.0.1':
-    resolution: {integrity: sha512-xflqJ3XQZVzm8+7dsm8OFxVAmBNNA3Mg65sqwNHiq7VRSMSD7qwH4BPsBy07ZaX+9nHeaacBpFZd3Q0aIsISqw==}
-    peerDependencies:
-      react: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
   '@fingerprintjs/fingerprintjs@3.4.2':
     resolution: {integrity: sha512-3Ncze6JsJpB7BpYhqIgvBpfvEX1jsEKrad5hQBpyRQxtoAp6hx3+R46zqfsuQG4D9egQZ+xftQ0u4LPFMB7Wmg==}
 
@@ -6541,14 +6509,6 @@ packages:
 
   '@leichtgewicht/ip-codec@2.0.5':
     resolution: {integrity: sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==}
-
-  '@lit-labs/react@2.1.3':
-    resolution: {integrity: sha512-OD9h2JynerBQUMNzb563jiVpxfvPF0HjQkKY2mx0lpVYvD7F+rtJpOGz6ek+6ufMidV3i+MPT9SX62OKWHFrQg==}
-
-  '@lit/react@1.0.8':
-    resolution: {integrity: sha512-p2+YcF+JE67SRX3mMlJ1TKCSTsgyOVdAwd/nxp3NuV1+Cb6MWALbN6nT7Ld4tpmYofcE5kcaSY1YBB9erY+6fw==}
-    peerDependencies:
-      '@types/react': 17 || 18 || 19
 
   '@lukeed/csprng@1.1.0':
     resolution: {integrity: sha512-Z7C/xXCiGWsg0KuKsHTKJxbWhpI3Vs5GwLfOean7MGyVFGqdRgBbAjOCh6u4bbjPc/8MJ2pZmK/0DLdCbivLDA==}
@@ -8948,21 +8908,6 @@ packages:
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
-  '@storybook/addon-designs@11.1.4':
-    resolution: {integrity: sha512-4NWq8iiCbAODyfbMXKlOmMcz+xLcfIKzxC0UMdWq2M4W9SkTwzX7qr/m+2+a0dqddAaZvOZ9zfIrZa5suHC1ow==}
-    peerDependencies:
-      '@storybook/addon-docs': ^0.0.0-0 || ^10.0.0 || ^10.0.0-0 || ^10.1.0-0 || ^10.2.0-0 || ^10.5.0-0 || ^10.6.0-0
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      storybook: ^0.0.0-0 || ^10.0.0 || ^10.0.0-0 || ^10.1.0-0 || ^10.2.0-0 || ^10.5.0-0 || ^10.6.0-0
-    peerDependenciesMeta:
-      '@storybook/addon-docs':
-        optional: true
-      react:
-        optional: true
-      react-dom:
-        optional: true
-
   '@storybook/addon-docs@10.6.1':
     resolution: {integrity: sha512-31PXR+MCWfI5YHKKah6tWnbV1FJWA9qbTHxtvpszPLd8FBekXtPOnmyYOpFF9CfciBF9bkeJFdFanJvUCjWbjA==}
     peerDependencies:
@@ -9439,9 +9384,6 @@ packages:
 
   '@ts-morph/common@0.26.1':
     resolution: {integrity: sha512-Sn28TGl/4cFpcM+jwsH1wLncYq3FtN/BIpem+HOygfBWPT5pAeS5dB4VFVzV8FbnOKHpDLZmvAl4AjPEev5idA==}
-
-  '@ts-morph/common@0.29.0':
-    resolution: {integrity: sha512-35oUmphHbJvQ/+UTwFNme/t2p3FoKiGJ5auTjjpNTop2dyREspirjMy82PLSC1pnDJ8ah1GU98hwpVt64YXQsg==}
 
   '@tsconfig/node10@1.0.13':
     resolution: {integrity: sha512-gcLdvR9HO1ZJBypsOGqaP6TFEzb6vIta0KSTLt9NAQ6pXQO3cRgSVyCN6pzYqI9DlJgY71XKO0dpDhCf08b3pg==}
@@ -18085,9 +18027,6 @@ packages:
   ts-morph@25.0.1:
     resolution: {integrity: sha512-QJEiTdnz1YjrB3JFhd626gX4rKHDLSjSVMvGGG4v7ONc3RBwa0Eei98G9AT9uNFDMtV54JyuXsFeC+OH0n6bXQ==}
 
-  ts-morph@28.0.0:
-    resolution: {integrity: sha512-Wp3tnZ2bzwxyTZMtgWVzXDfm7lB1Drz+y9DmmYH/L702PQhPyVrp3pkou3yIz4qjS14GY9kcpmLiOOMvl8oG1g==}
-
   ts-node@10.9.2:
     resolution: {integrity: sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==}
     hasBin: true
@@ -22691,18 +22630,6 @@ snapshots:
       commander: 11.1.0
       prettier: 3.6.2
 
-  '@figma/rest-api-spec@0.41.0': {}
-
-  '@figspec/components@2.1.0': {}
-
-  '@figspec/react@2.0.1(@types/react@19.3.0)(react@19.3.0)':
-    dependencies:
-      '@figspec/components': 2.1.0
-      '@lit-labs/react': 2.1.3(@types/react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - '@types/react'
-
   '@fingerprintjs/fingerprintjs@3.4.2':
     dependencies:
       tslib: 2.8.1
@@ -24160,16 +24087,6 @@ snapshots:
       - utf-8-validate
 
   '@leichtgewicht/ip-codec@2.0.5': {}
-
-  '@lit-labs/react@2.1.3(@types/react@19.3.0)':
-    dependencies:
-      '@lit/react': 1.0.8(@types/react@19.3.0)
-    transitivePeerDependencies:
-      - '@types/react'
-
-  '@lit/react@1.0.8(@types/react@19.3.0)':
-    dependencies:
-      '@types/react': 19.3.0
 
   '@lukeed/csprng@1.1.0': {}
 
@@ -26692,17 +26609,6 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@storybook/addon-designs@11.1.4(@storybook/addon-docs@10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0)))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0))':
-    dependencies:
-      '@figspec/react': 2.0.1(@types/react@19.3.0)(react@19.3.0)
-      storybook: 10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0)
-    optionalDependencies:
-      '@storybook/addon-docs': 10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0))
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-    transitivePeerDependencies:
-      - '@types/react'
-
   '@storybook/addon-docs@10.6.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(storybook@10.6.1(@types/react@19.3.0)(prettier@3.6.2)(react@19.3.0))':
     dependencies:
       '@mdx-js/react': 3.1.1(@types/react@19.3.0)(react@19.3.0)
@@ -27242,12 +27148,6 @@ snapshots:
       fast-glob: 3.3.3
       minimatch: 9.0.9
       path-browserify: 1.0.1
-
-  '@ts-morph/common@0.29.0':
-    dependencies:
-      minimatch: 10.2.6
-      path-browserify: 1.0.1
-      tinyglobby: 0.2.17
 
   '@tsconfig/node10@1.0.13': {}
 
@@ -37782,31 +37682,6 @@ snapshots:
     dependencies:
       '@ts-morph/common': 0.26.1
       code-block-writer: 13.0.3
-
-  ts-morph@28.0.0:
-    dependencies:
-      '@ts-morph/common': 0.29.0
-      code-block-writer: 13.0.3
-
-  ts-node@10.9.2(@swc/core@1.16.13(@swc/helpers@0.5.23))(@types/node@24.19.1)(typescript@5.9.3):
-    dependencies:
-      '@cspotcode/source-map-support': 0.8.1
-      '@tsconfig/node10': 1.0.13
-      '@tsconfig/node12': 1.0.11
-      '@tsconfig/node14': 1.0.3
-      '@tsconfig/node16': 1.0.3
-      '@types/node': 24.19.1
-      acorn: 8.19.0
-      acorn-walk: 8.3.5
-      arg: 4.1.3
-      create-require: 1.1.1
-      diff: 4.0.4
-      make-error: 1.3.6
-      typescript: 5.9.3
-      v8-compile-cache-lib: 3.0.1
-      yn: 3.1.1
-    optionalDependencies:
-      '@swc/core': 1.16.13(@swc/helpers@0.5.23)
 
   ts-node@10.9.2(@swc/core@1.16.13)(@types/node@24.19.1)(typescript@5.9.3):
     dependencies:

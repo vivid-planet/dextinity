@@ -54,6 +54,7 @@ const config = defineConfig({
         "nextjs/no-img-element": "off",
 
         "@dextinity/no-private-sibling-import": ["error", ["gql", "sc", "gql.generated"]],
+        "@dextinity/no-next-public-env": "error",
         "no-restricted-globals": ["error", "React"],
         "no-restricted-imports": [
             "error",

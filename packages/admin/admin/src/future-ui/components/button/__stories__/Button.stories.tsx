@@ -1,13 +1,14 @@
-import { ArrowRight, Favorite } from "@dextinity/admin-icons";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
+import { ArrowRightIcon } from "../../../icons/ArrowRightIcon";
+import { FavoriteIcon } from "../../../icons/FavoriteIcon";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../Button";
 
 const iconOptions = {
-    Favorite: <Favorite />,
-    ArrowRight: <ArrowRight />,
+    Favorite: <FavoriteIcon />,
+    ArrowRight: <ArrowRightIcon />,
 };
 
 const meta = {
@@ -63,9 +64,9 @@ export const Disabled: Story = {
 export const WithIcons: Story = {
     render: () => (
         <div style={{ display: "flex", gap: "1rem" }}>
-            <Button startIcon={<Favorite />}>Start only</Button>
-            <Button endIcon={<ArrowRight />}>End only</Button>
-            <Button startIcon={<Favorite />} endIcon={<ArrowRight />}>
+            <Button startIcon={<FavoriteIcon />}>Start only</Button>
+            <Button endIcon={<ArrowRightIcon />}>End only</Button>
+            <Button startIcon={<FavoriteIcon />} endIcon={<ArrowRightIcon />}>
                 Both
             </Button>
         </div>

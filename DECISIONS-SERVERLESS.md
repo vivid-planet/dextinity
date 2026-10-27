@@ -2,7 +2,7 @@
 
 Status: decided in principle, 2026-10-24. Applies to the API and the admin. The site is out of scope.
 
-The decisions are based on prototypes and experiments run in the Workers runtime (workerd, locally). Nothing was deployed to Cloudflare yet. The prototype implements them for the DAM and the page tree with its documents: the packages are in [`packages/serverless`](packages/serverless) (`@dextinity/serverless-core`, `@dextinity/serverless-permissions`, `@dextinity/serverless-dam`, `@dextinity/serverless-page-tree`, `@dextinity/serverless-blocks`, see its README), the demo in [`demo/serverless`](demo/serverless).
+The decisions are based on prototypes and experiments run in the Workers runtime (workerd, locally). Nothing was deployed to Cloudflare yet. The prototype implements them for the DAM and the page tree with its documents: the package `@dextinity/serverless` is in [`packages/serverless`](packages/serverless) (see its README), the demo in [`demo/serverless`](demo/serverless).
 
 ## Goals
 
@@ -23,19 +23,19 @@ Future direction:
 
 ## Summary
 
-| Area             | Decision                                                                                         |
-| ---------------- | ------------------------------------------------------------------------------------------------ |
-| Runtime          | Cloudflare Workers, one Worker per project: admin as static assets, API at `/api`                |
-| HTTP / API       | Hono, REST, zod validation, typed client (`hc`) per module                                       |
-| Database         | Drizzle; D1 or PostgreSQL (via Hyperdrive) per project; no interactive transactions              |
-| Admin app        | Vite single-page app, no server rendering; `@dextinity/admin` unchanged; TanStack Query for data |
-| Routing          | React Router (client-only); for now v5 as used by `@dextinity/admin`                             |
-| Feature packages | `@dextinity/serverless-<feature>` with `./server` and `./client`                                 |
-| Authentication   | Cloudflare Access; dev-only Access emulator for local dev                                        |
-| Authorization    | Dextinity's permission model, ported as its own module                                           |
-| Files            | R2                                                                                               |
-| Images           | Cloudflare Images via the Workers Images binding, replacing imgproxy                             |
-| Blocks           | Admin: the block framework of `@dextinity/cms-admin`; API: zod schemas; documents stored as JSON |
+| Area           | Decision                                                                                           |
+| -------------- | -------------------------------------------------------------------------------------------------- |
+| Runtime        | Cloudflare Workers, one Worker per project: admin as static assets, API at `/api`                  |
+| HTTP / API     | Hono, REST, zod validation, typed client (`hc`) per module                                         |
+| Database       | Drizzle; D1 or PostgreSQL (via Hyperdrive) per project; no interactive transactions                |
+| Admin app      | Vite single-page app, no server rendering; `@dextinity/admin` unchanged; TanStack Query for data   |
+| Routing        | React Router (client-only); for now v5 as used by `@dextinity/admin`                               |
+| Package        | One package `@dextinity/serverless` with `./server`, `./client` and `./vite`; a folder per feature |
+| Authentication | Cloudflare Access; dev-only Access emulator for local dev                                          |
+| Authorization  | Dextinity's permission model, ported as its own module                                             |
+| Files          | R2                                                                                                 |
+| Images         | Cloudflare Images via the Workers Images binding, replacing imgproxy                               |
+| Blocks         | Admin: the block framework of `@dextinity/cms-admin`; API: zod schemas; documents stored as JSON   |
 
 ## 1. Runtime and HTTP framework: Hono on Cloudflare Workers
 
@@ -125,7 +125,7 @@ Reasons for Drizzle over Kysely:
 Consequences:
 
 - Library code supports both databases with one definition (implemented in the prototype):
-    - tables are defined once with `portableColumns(dialect)` (`@dextinity/serverless-core/server`), which returns SQLite or PostgreSQL column builders, both typed as SQLite;
+    - tables are defined once with `portableColumns(dialect)` (`@dextinity/serverless/server`), which returns SQLite or PostgreSQL column builders, both typed as SQLite;
     - services are written once against `database.drizzle`, typed as a SQLite database. Only what both dialects support may be used (no `.get()`/`.all()`/`.run()`), which the types don't enforce; the smoke test runs on both;
     - drizzle-kit generates the migrations per dialect from the same definition. Feature packages ship schema factories, the app generates the migrations, because the scope columns are the app's.
 - D1 has no interactive transactions (only batches):
@@ -187,23 +187,24 @@ Consequences:
     - legacy table components, `useDataGridExcelExport`, generated GraphQL grids and forms.
 - `FinalForm` works without Apollo (it reads it only if present).
 - Shared admin glue goes into new small packages, not into `@dextinity/admin`:
-    - the API client provider and the query error handler: `@dextinity/serverless-core/client` (`ApiProvider`, `QueryErrorHandler`);
-    - `useCan`: `@dextinity/serverless-permissions/client`;
+    - the API client provider and the query error handler: `ApiProvider` and `QueryErrorHandler` in `@dextinity/serverless/client`;
+    - `useCan`, also in `@dextinity/serverless/client`;
     - a REST variant of `CrudContextMenu` if needed.
 - `@dextinity/cms-admin` (GraphQL) is replaced module by module and stays for existing projects meanwhile. Its block framework is reused, see [11. Blocks and documents](#11-blocks-and-documents).
 - The admin generator needs new templates (TanStack Query + REST) targeting the same components.
 - The theme, components and the `dextinity-admin-ui` skill stay the same.
 
-## 7. Feature packages
+## 7. Package
 
-**Decision:** Each feature ships as `@dextinity/serverless-<feature>` with two entry points. The prefix keeps them apart from the packages of the NestJS stack (e.g. `@dextinity/cms-api`) while both exist.
+**Decision:** All features ship in one package, `@dextinity/serverless`, with a folder per feature (`core`, `permissions`, `blocks`, `dam`, `page-tree`). The name keeps it apart from the packages of the NestJS stack (e.g. `@dextinity/cms-api`) while both exist.
 
 - `./server`: Hono routes, services, Drizzle schema, migrations
 - `./client`: React components and hooks on `@dextinity/admin`, using the typed client
+- `./vite`: the local development services (Access emulator, image transformer)
 
-The app mounts the routes and renders the components. This is the module pattern of the DAM prototype (`createDamModule` and `DamPage`). The route types are exported (`DamRoutes`), so clients get typed requests and responses through package boundaries.
+The features depend on each other (the DAM and the page tree on the permissions and the blocks, the page tree's documents on the DAM's blocks), so separate packages only added versions, builds and watchers to keep in step. The entry points keep the boundary that matters: the Worker imports `./server` only, the admin `./client` and the types of `./server`. Everything is exported with unique names, so a name clash between features fails the build.
 
-Shared building blocks are in `@dextinity/serverless-core` (`./server`, `./client`, and `./vite` for the local development services). Both entry points of a package are built with `tsc`, so the client part works without Babel.
+The app mounts the routes and renders the components, e.g. `createDamModule` and `DamPage`. The route types are exported (`DamRoutes`), so clients get typed requests and responses. Both entry points are built with `tsc`, so the client part works without Babel.
 
 ## 8. Authentication: Cloudflare Access
 
@@ -233,7 +234,7 @@ Today's features and how they are covered:
 
 Local dev:
 
-- **Access emulator** (daily dev): part of the Vite dev server (`dextinityDevServer()` of `@dextinity/serverless-core/vite`). It shows a user picker (the `dev-oidc-provider` users, with groups), signs an Access-format JWT with a local key, sets the `CF_Authorization` cookie, adds the `Cf-Access-Jwt-Assertion` header and serves the certificates and the identity endpoint. The production verification code runs, with a local key instead of Cloudflare's.
+- **Access emulator** (daily dev): part of the Vite dev server (`dextinityDevServer()` of `@dextinity/serverless/vite`). It shows a user picker (the `dev-oidc-provider` users, with groups), signs an Access-format JWT with a local key, sets the `CF_Authorization` cookie, adds the `Cf-Access-Jwt-Assertion` header and serves the certificates and the identity endpoint. The production verification code runs, with a local key instead of Cloudflare's.
     - Fail-safe: the emulator is a Vite plugin applied only to `vite dev`, and the Worker selects its configuration (`devAccessConfig`) behind `import.meta.env.DEV`, so neither is in the production build (checked).
     - Production accepts only team domains of `cloudflareaccess.com`; requests without a valid Access JWT have no identity and get a 401 from the permission checks. The public DAM URLs need a bypass policy in Access.
 - **Cloudflare Tunnel** (occasional tests): exposes local dev under a hostname protected by a real Access application, for testing logout, IdP groups and policies.
@@ -245,7 +246,7 @@ Consequences:
 
 ## 9. Authorization: Dextinity's permission model as its own module
 
-**Decision:** Port Dextinity's permission model as `@dextinity/serverless-permissions` (`./server`, `./client`). Access policies only gate who may reach the admin.
+**Decision:** Port Dextinity's permission model as a module of `@dextinity/serverless` (`permissions`). Access policies only gate who may reach the admin.
 
 Today's model:
 
@@ -311,14 +312,14 @@ Design:
 Admin:
 
 - The factories and most blocks of `@dextinity/cms-admin` don't use GraphQL: `createBlocksBlock`, `createListBlock`, `createOneOfBlock`, `createOptionalBlock`, `createCompositeBlock`, `createColumnsBlock`, `createRichTextBlock`, `createSeoBlock`, `createTableBlock`, `createTextImageBlock`, the link blocks without internal links, space and anchor. Reusing them keeps the editing UI and the blocks of existing projects; rewriting them would be the largest part of the port.
-- They read their config from `DextinityConfigProvider` and the Apollo client from the context, even when they don't use it. `BlocksProvider` (`@dextinity/serverless-blocks/client`) provides both, with an Apollo client that fails every operation, so a block that still sends one shows up immediately.
-- The blocks that load data through GraphQL get REST variants in their feature packages: `PixelImageBlock`, `SvgImageBlock`, `DamImageBlock`, `DamVideoBlock`, `DamFileDownloadLinkBlock` (with a DAM file chooser) in `@dextinity/serverless-dam/client`, `InternalLinkBlock` (with a page chooser) in `@dextinity/serverless-page-tree/client`. YouTube and Vimeo become factories taking the preview image block (`createYouTubeVideoBlock({ previewImage })`).
+- They read their config from `DextinityConfigProvider` and the Apollo client from the context, even when they don't use it. `BlocksProvider` (`@dextinity/serverless/client`) provides both, with an Apollo client that fails every operation, so a block that still sends one shows up immediately.
+- The blocks that load data through GraphQL get REST variants in their features: `PixelImageBlock`, `SvgImageBlock`, `DamImageBlock`, `DamVideoBlock`, `DamFileDownloadLinkBlock` (with a DAM file chooser) in the DAM, `InternalLinkBlock` (with a page chooser) in the page tree. YouTube and Vimeo become factories taking the preview image block (`createYouTubeVideoBlock({ previewImage })`).
 - Documents are loaded with `output2State` from the stored input; the REST blocks load their files and pages there. GraphQL returned the data shape (files resolved by the API) and used `input2State`. `createOneOfBlock`'s `output2State` dropped the link title, which only clipboard paste used until now; fixed in `@dextinity/cms-admin`.
 - The admin bundle grows to 3.9 MB (955 KB gzipped) with `@dextinity/cms-admin` and Draft.js. Draft.js needs `global`, which Vite defines as `globalThis` for the client.
 
 API:
 
-- `@dextinity/serverless-blocks/server` defines a block as a name and a zod schema of its input, which is exactly what the admin's `state2Output` sends. The factories mirror those of `@dextinity/cms-api`.
+- The blocks of `@dextinity/serverless/server` define a block as a name and a zod schema of its input, which is exactly what the admin's `state2Output` sends. The factories mirror those of `@dextinity/cms-api`.
 - Strict objects: a field the admin sends but the schema doesn't know is rejected (422), not silently dropped.
 - The validated input is stored as it is, there's no data side yet (`transformToPlain`, dependencies, search texts): the site reads documents later, out of scope for now.
 - Referenced files and pages aren't checked. A deleted file leaves an empty image, a deleted page an empty link; the routes that load them check the scope.

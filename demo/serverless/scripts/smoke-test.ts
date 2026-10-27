@@ -6,9 +6,7 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { isDeepStrictEqual } from "node:util";
 
-import type { DamRoutes } from "@dextinity/serverless-dam/server";
-import type { PageTreeRoutes } from "@dextinity/serverless-page-tree/server";
-import type { PermissionsRoutes } from "@dextinity/serverless-permissions/server";
+import type { DamRoutes, PageTreeRoutes, PermissionsRoutes } from "@dextinity/serverless/server";
 import { hc } from "hono/client";
 import sharp, { type Sharp } from "sharp";
 
@@ -446,7 +444,7 @@ await step("save and load the document of a page", async () => {
 });
 
 await step("reject an invalid document instead of dropping what the schema doesn't know", async () => {
-    const save = (data: object) => documentRoute.$put({ param: { id: aboutPage.id }, json: { data } });
+    const save = (data: Record<string, unknown>) => documentRoute.$put({ param: { id: aboutPage.id }, json: { data } });
     const valid = pageDocument("Hello");
     const unknownBlock = { ...valid, content: { blocks: [{ key: "x", visible: true, type: "newsList", props: {} }] } };
     const unknownField = { ...valid, seo: { ...valid.seo, keywords: "smoke" } };

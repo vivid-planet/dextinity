@@ -1,4 +1,4 @@
-import { createBlock, createListBlock } from "@dextinity/serverless-blocks/server";
+import { createBlock, createListBlock } from "@dextinity/serverless/server";
 import { z } from "zod";
 
 import { CallToActionListBlock } from "../../../common/blocks/call-to-action.block";

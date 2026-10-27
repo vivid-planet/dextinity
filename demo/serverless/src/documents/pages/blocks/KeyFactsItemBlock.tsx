@@ -1,5 +1,5 @@
 import { BlockCategory, createCompositeBlock, createCompositeBlockTextField, createRichTextBlock } from "@dextinity/cms-admin";
-import { SvgImageBlock } from "@dextinity/serverless-dam/client";
+import { SvgImageBlock } from "@dextinity/serverless/client";
 import { FormattedMessage } from "react-intl";
 
 import { LinkBlock } from "../../../common/blocks/LinkBlock";

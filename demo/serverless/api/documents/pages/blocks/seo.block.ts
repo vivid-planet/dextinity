@@ -1,4 +1,3 @@
-import { createSeoBlock } from "@dextinity/serverless-blocks/server";
-import { PixelImageBlock } from "@dextinity/serverless-dam/server";
+import { createSeoBlock, PixelImageBlock } from "@dextinity/serverless/server";
 
 export const SeoBlock = createSeoBlock({ image: PixelImageBlock });

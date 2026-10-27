@@ -1,4 +1,4 @@
-import { AnchorBlock, createBlocksBlock, createColumnsBlock } from "@dextinity/serverless-blocks/server";
+import { AnchorBlock, createBlocksBlock, createColumnsBlock } from "@dextinity/serverless/server";
 
 import { columnsLayouts } from "../../../../shared/blocks";
 import { AccordionBlock } from "../../../common/blocks/accordion.block";

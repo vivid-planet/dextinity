@@ -1,6 +1,11 @@
-import { createLinkBlock, EmailLinkBlock, ExternalLinkBlock, PhoneLinkBlock } from "@dextinity/serverless-blocks/server";
-import { DamFileDownloadLinkBlock } from "@dextinity/serverless-dam/server";
-import { InternalLinkBlock } from "@dextinity/serverless-page-tree/server";
+import {
+    createLinkBlock,
+    DamFileDownloadLinkBlock,
+    EmailLinkBlock,
+    ExternalLinkBlock,
+    InternalLinkBlock,
+    PhoneLinkBlock,
+} from "@dextinity/serverless/server";
 
 export const LinkBlock = createLinkBlock({
     supportedBlocks: {

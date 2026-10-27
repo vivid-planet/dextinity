@@ -1,4 +1,4 @@
-import { AnchorBlock, createBlock, createBlocksBlock } from "@dextinity/serverless-blocks/server";
+import { AnchorBlock, createBlock, createBlocksBlock } from "@dextinity/serverless/server";
 import { z } from "zod";
 
 import { AccordionBlock } from "../../../common/blocks/accordion.block";

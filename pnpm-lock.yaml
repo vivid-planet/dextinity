@@ -680,21 +680,9 @@ importers:
       '@dextinity/cms-admin':
         specifier: workspace:*
         version: link:../../packages/admin/cms-admin
-      '@dextinity/serverless-blocks':
+      '@dextinity/serverless':
         specifier: workspace:*
-        version: link:../../packages/serverless/blocks
-      '@dextinity/serverless-core':
-        specifier: workspace:*
-        version: link:../../packages/serverless/core
-      '@dextinity/serverless-dam':
-        specifier: workspace:*
-        version: link:../../packages/serverless/dam
-      '@dextinity/serverless-page-tree':
-        specifier: workspace:*
-        version: link:../../packages/serverless/page-tree
-      '@dextinity/serverless-permissions':
-        specifier: workspace:*
-        version: link:../../packages/serverless/permissions
+        version: link:../../packages/serverless
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
@@ -2821,169 +2809,23 @@ importers:
         specifier: ^5.0.5
         version: 5.0.5(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.5)(@vitest/ui@5.0.5)(jsdom@28.1.0(@noble/hashes@1.8.0)(supports-color@8.1.1))(msw@2.15.0(@types/node@24.19.2)(typescript@5.9.3))(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.105.1)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
 
-  packages/serverless/blocks:
-    dependencies:
-      '@dextinity/serverless-core':
-        specifier: workspace:*
-        version: link:../core
-    devDependencies:
-      '@apollo/client':
-        specifier: ^3.14.1
-        version: 3.14.1(@types/react@19.3.0)(graphql-ws@6.3.0(graphql@16.14.2)(ws@8.22.0))(graphql@16.14.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(subscriptions-transport-ws@0.11.0(graphql@16.14.2))
-      '@dextinity/admin':
-        specifier: workspace:*
-        version: link:../../admin/admin
-      '@dextinity/cms-admin':
-        specifier: workspace:*
-        version: link:../../admin/cms-admin
-      '@dextinity/eslint-config':
-        specifier: workspace:*
-        version: link:../../eslint-config
-      '@emotion/react':
-        specifier: ^11.14.0
-        version: 11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
-      '@emotion/styled':
-        specifier: ^11.14.1
-        version: 11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
-      '@mui/material':
-        specifier: ^7.3.11
-        version: 7.3.11(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@types/node':
-        specifier: ^24.19.2
-        version: 24.19.2
-      '@types/react':
-        specifier: ^19.3.0
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: ^19.3.0
-        version: 19.3.0(@types/react@19.3.0)
-      eslint:
-        specifier: ^9.39.5
-        version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
-      final-form:
-        specifier: ^4.20.10
-        version: 4.20.10
-      graphql:
-        specifier: ^16.14.2
-        version: 16.14.2
-      npm-run-all2:
-        specifier: ^9.0.3
-        version: 9.0.3
-      prettier:
-        specifier: ^3.9.10
-        version: 3.9.10
-      react:
-        specifier: ^19.3.0
-        version: 19.3.0
-      react-dom:
-        specifier: ^19.3.0
-        version: 19.3.0(react@19.3.0)
-      react-final-form:
-        specifier: ^6.5.9
-        version: 6.5.9(final-form@4.20.10)(react@19.3.0)
-      react-intl:
-        specifier: ^7.1.14
-        version: 7.1.14(react@19.3.0)(typescript@5.9.3)
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
-      typescript:
-        specifier: 5.9.3
-        version: 5.9.3
-      vitest:
-        specifier: ^5.0.5
-        version: 5.0.5(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.5)(@vitest/ui@5.0.5)(jsdom@28.1.0(@noble/hashes@1.8.0)(supports-color@8.1.1))(msw@2.15.0(@types/node@24.19.2)(typescript@5.9.3))(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.105.1)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
-      zod:
-        specifier: ^4.6.7
-        version: 4.6.7
-
-  packages/serverless/core:
-    dependencies:
-      '@hono/zod-validator':
-        specifier: ^0.9.1
-        version: 0.9.1(hono@4.13.13)(zod@4.6.7)
-      jose:
-        specifier: ^6.2.12
-        version: 6.2.12
-    devDependencies:
-      '@dextinity/admin':
-        specifier: workspace:*
-        version: link:../../admin/admin
-      '@dextinity/eslint-config':
-        specifier: workspace:*
-        version: link:../../eslint-config
-      '@emotion/react':
-        specifier: ^11.14.0
-        version: 11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
-      '@emotion/styled':
-        specifier: ^11.14.1
-        version: 11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
-      '@mui/material':
-        specifier: ^7.3.11
-        version: 7.3.11(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tanstack/react-query':
-        specifier: ^5.104.5
-        version: 5.104.5(@types/react@19.3.0)(react@19.3.0)
-      '@types/node':
-        specifier: ^24.19.2
-        version: 24.19.2
-      '@types/react':
-        specifier: ^19.3.0
-        version: 19.3.0
-      drizzle-orm:
-        specifier: ^0.45.4
-        version: 0.45.4(@cloudflare/workers-types@5.20261023.1)(@opentelemetry/api@1.9.1)(@types/pg@8.15.6)(knex@3.2.10(pg@8.20.0)(supports-color@8.1.1))(pg@8.20.0)(postgres@3.4.9)
-      eslint:
-        specifier: ^9.39.5
-        version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
-      hono:
-        specifier: ^4.13.13
-        version: 4.13.13
-      npm-run-all2:
-        specifier: ^9.0.3
-        version: 9.0.3
-      prettier:
-        specifier: ^3.9.10
-        version: 3.9.10
-      react:
-        specifier: ^19.3.0
-        version: 19.3.0
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
-      sharp:
-        specifier: ^0.35.5
-        version: 0.35.5(@types/node@24.19.2)
-      typescript:
-        specifier: 5.9.3
-        version: 5.9.3
-      vite:
-        specifier: ^8.3.5
-        version: 8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.105.1)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
-      zod:
-        specifier: ^4.6.7
-        version: 4.6.7
-
-  packages/serverless/dam:
+  packages/serverless:
     dependencies:
       '@dextinity/admin-icons':
         specifier: workspace:*
-        version: link:../../admin/admin-icons
-      '@dextinity/serverless-blocks':
-        specifier: workspace:*
-        version: link:../blocks
-      '@dextinity/serverless-core':
-        specifier: workspace:*
-        version: link:../core
-      '@dextinity/serverless-permissions':
-        specifier: workspace:*
-        version: link:../permissions
+        version: link:../admin/admin-icons
       '@hapi/accept':
         specifier: ^6.0.3
         version: 6.0.3
+      '@hono/zod-validator':
+        specifier: ^0.9.1
+        version: 0.9.1(hono@4.13.13)(zod@4.6.7)
       exifr:
         specifier: ^7.1.3
         version: 7.1.3
+      jose:
+        specifier: ^6.2.12
+        version: 6.2.12
       jszip:
         specifier: ^3.10.2
         version: 3.10.2
@@ -2999,13 +2841,13 @@ importers:
         version: 3.14.1(@types/react@19.3.0)(graphql-ws@6.3.0(graphql@16.14.2)(ws@8.22.0))(graphql@16.14.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(subscriptions-transport-ws@0.11.0(graphql@16.14.2))
       '@dextinity/admin':
         specifier: workspace:*
-        version: link:../../admin/admin
+        version: link:../admin/admin
       '@dextinity/cms-admin':
         specifier: workspace:*
-        version: link:../../admin/cms-admin
+        version: link:../admin/cms-admin
       '@dextinity/eslint-config':
         specifier: workspace:*
-        version: link:../../eslint-config
+        version: link:../eslint-config
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
@@ -3024,103 +2866,6 @@ importers:
       '@types/mime-db':
         specifier: ^1.43.6
         version: 1.43.6
-      '@types/node':
-        specifier: ^24.19.2
-        version: 24.19.2
-      '@types/react':
-        specifier: ^19.3.0
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: ^19.3.0
-        version: 19.3.0(@types/react@19.3.0)
-      drizzle-orm:
-        specifier: ^0.45.4
-        version: 0.45.4(@cloudflare/workers-types@5.20261023.1)(@opentelemetry/api@1.9.1)(@types/pg@8.15.6)(knex@3.2.10(pg@8.20.0)(supports-color@8.1.1))(pg@8.20.0)(postgres@3.4.9)
-      eslint:
-        specifier: ^9.39.5
-        version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
-      final-form:
-        specifier: ^4.20.10
-        version: 4.20.10
-      graphql:
-        specifier: ^16.14.2
-        version: 16.14.2
-      hono:
-        specifier: ^4.13.13
-        version: 4.13.13
-      npm-run-all2:
-        specifier: ^9.0.3
-        version: 9.0.3
-      prettier:
-        specifier: ^3.9.10
-        version: 3.9.10
-      react:
-        specifier: ^19.3.0
-        version: 19.3.0
-      react-dom:
-        specifier: ^19.3.0
-        version: 19.3.0(react@19.3.0)
-      react-final-form:
-        specifier: ^6.5.9
-        version: 6.5.9(final-form@4.20.10)(react@19.3.0)
-      react-intl:
-        specifier: ^7.1.14
-        version: 7.1.14(react@19.3.0)(typescript@5.9.3)
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
-      typescript:
-        specifier: 5.9.3
-        version: 5.9.3
-      zod:
-        specifier: ^4.6.7
-        version: 4.6.7
-
-  packages/serverless/page-tree:
-    dependencies:
-      '@dextinity/admin-icons':
-        specifier: workspace:*
-        version: link:../../admin/admin-icons
-      '@dextinity/serverless-blocks':
-        specifier: workspace:*
-        version: link:../blocks
-      '@dextinity/serverless-core':
-        specifier: workspace:*
-        version: link:../core
-      '@dextinity/serverless-permissions':
-        specifier: workspace:*
-        version: link:../permissions
-      slugify:
-        specifier: ^1.6.9
-        version: 1.6.9
-    devDependencies:
-      '@apollo/client':
-        specifier: ^3.14.1
-        version: 3.14.1(@types/react@19.3.0)(graphql-ws@6.3.0(graphql@16.14.2)(ws@8.22.0))(graphql@16.14.2)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(subscriptions-transport-ws@0.11.0(graphql@16.14.2))
-      '@dextinity/admin':
-        specifier: workspace:*
-        version: link:../../admin/admin
-      '@dextinity/cms-admin':
-        specifier: workspace:*
-        version: link:../../admin/cms-admin
-      '@dextinity/eslint-config':
-        specifier: workspace:*
-        version: link:../../eslint-config
-      '@emotion/react':
-        specifier: ^11.14.0
-        version: 11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
-      '@emotion/styled':
-        specifier: ^11.14.1
-        version: 11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
-      '@mui/material':
-        specifier: ^7.3.11
-        version: 7.3.11(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@mui/x-data-grid':
-        specifier: ^8.29.5
-        version: 8.29.5(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@mui/material@7.3.11(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@mui/system@7.3.11(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tanstack/react-query':
-        specifier: ^5.104.5
-        version: 5.104.5(@types/react@19.3.0)(react@19.3.0)
       '@types/node':
         specifier: ^24.19.2
         version: 24.19.2
@@ -3172,70 +2917,18 @@ importers:
       rimraf:
         specifier: ^6.1.3
         version: 6.1.3
+      sharp:
+        specifier: ^0.35.5
+        version: 0.35.5(@types/node@24.19.2)
       typescript:
         specifier: 5.9.3
         version: 5.9.3
+      vite:
+        specifier: ^8.3.5
+        version: 8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.105.1)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
       vitest:
         specifier: ^5.0.5
         version: 5.0.5(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.5)(@vitest/ui@5.0.5)(jsdom@28.1.0(@noble/hashes@1.8.0)(supports-color@8.1.1))(msw@2.15.0(@types/node@24.19.2)(typescript@5.9.3))(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.105.1)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
-      zod:
-        specifier: ^4.6.7
-        version: 4.6.7
-
-  packages/serverless/permissions:
-    dependencies:
-      '@dextinity/serverless-core':
-        specifier: workspace:*
-        version: link:../core
-    devDependencies:
-      '@dextinity/admin':
-        specifier: workspace:*
-        version: link:../../admin/admin
-      '@dextinity/eslint-config':
-        specifier: workspace:*
-        version: link:../../eslint-config
-      '@emotion/react':
-        specifier: ^11.14.0
-        version: 11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
-      '@emotion/styled':
-        specifier: ^11.14.1
-        version: 11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
-      '@mui/material':
-        specifier: ^7.3.11
-        version: 7.3.11(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tanstack/react-query':
-        specifier: ^5.104.5
-        version: 5.104.5(@types/react@19.3.0)(react@19.3.0)
-      '@types/node':
-        specifier: ^24.19.2
-        version: 24.19.2
-      '@types/react':
-        specifier: ^19.3.0
-        version: 19.3.0
-      drizzle-orm:
-        specifier: ^0.45.4
-        version: 0.45.4(@cloudflare/workers-types@5.20261023.1)(@opentelemetry/api@1.9.1)(@types/pg@8.15.6)(knex@3.2.10(pg@8.20.0)(supports-color@8.1.1))(pg@8.20.0)(postgres@3.4.9)
-      eslint:
-        specifier: ^9.39.5
-        version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
-      hono:
-        specifier: ^4.13.13
-        version: 4.13.13
-      npm-run-all2:
-        specifier: ^9.0.3
-        version: 9.0.3
-      prettier:
-        specifier: ^3.9.10
-        version: 3.9.10
-      react:
-        specifier: ^19.3.0
-        version: 19.3.0
-      rimraf:
-        specifier: ^6.1.3
-        version: 6.1.3
-      typescript:
-        specifier: 5.9.3
-        version: 5.9.3
       zod:
         specifier: ^4.6.7
         version: 4.6.7

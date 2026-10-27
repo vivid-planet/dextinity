@@ -1,4 +1,4 @@
-import { createBlock } from "@dextinity/serverless-blocks/server";
+import { createBlock } from "@dextinity/serverless/server";
 import { z } from "zod";
 
 import { mediaAspectRatios } from "../../../shared/blocks";

@@ -1,5 +1,5 @@
 import { File, FileNotMenu, Link, LinkNotMenu } from "@dextinity/admin-icons";
-import type { PageTreeCategory, PageTreeDocumentType } from "@dextinity/serverless-page-tree/client";
+import type { PageTreeCategory, PageTreeDocumentType } from "@dextinity/serverless/client";
 import { FormattedMessage } from "react-intl";
 
 import {

@@ -1,11 +1,18 @@
 import "@fontsource-variable/roboto-flex/full.css";
 
 import { createDextinityTheme, MasterLayout, MuiThemeProvider, RouterBrowserRouter, SnackbarProvider } from "@dextinity/admin";
-import { BlocksProvider } from "@dextinity/serverless-blocks/client";
-import { ApiProvider, QueryErrorHandler } from "@dextinity/serverless-core/client";
-import { DamApiProvider, DamPage } from "@dextinity/serverless-dam/client";
-import { PageTreeApiProvider, PageTreePage } from "@dextinity/serverless-page-tree/client";
-import { CurrentUserProvider, useCan, useCurrentUser } from "@dextinity/serverless-permissions/client";
+import {
+    ApiProvider,
+    BlocksProvider,
+    CurrentUserProvider,
+    DamApiProvider,
+    DamPage,
+    PageTreeApiProvider,
+    PageTreePage,
+    QueryErrorHandler,
+    useCan,
+    useCurrentUser,
+} from "@dextinity/serverless/client";
 import { css, Global } from "@emotion/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";

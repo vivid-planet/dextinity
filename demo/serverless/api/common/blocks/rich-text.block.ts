@@ -1,4 +1,4 @@
-import { createRichTextBlock } from "@dextinity/serverless-blocks/server";
+import { createRichTextBlock } from "@dextinity/serverless/server";
 
 import { LinkBlock } from "./link.block";
 

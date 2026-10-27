@@ -1,6 +1,6 @@
 import { messages } from "@dextinity/admin";
 import { createCompositeBlock, createOptionalBlock } from "@dextinity/cms-admin";
-import { DamImageBlock } from "@dextinity/serverless-dam/client";
+import { DamImageBlock } from "@dextinity/serverless/client";
 import { FormattedMessage } from "react-intl";
 
 import { customBlockCategory } from "../../../common/blocks/customBlockCategories";

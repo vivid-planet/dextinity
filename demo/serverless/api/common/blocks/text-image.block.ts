@@ -1,5 +1,4 @@
-import { createTextImageBlock } from "@dextinity/serverless-blocks/server";
-import { DamImageBlock } from "@dextinity/serverless-dam/server";
+import { createTextImageBlock, DamImageBlock } from "@dextinity/serverless/server";
 
 import { imageAspectRatios } from "../../../shared/blocks";
 import { RichTextBlock } from "./rich-text.block";

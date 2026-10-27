@@ -1,5 +1,11 @@
-import { createOneOfBlock, createVimeoVideoBlock, createYouTubeVideoBlock } from "@dextinity/serverless-blocks/server";
-import { DamImageBlock, DamVideoBlock, PixelImageBlock } from "@dextinity/serverless-dam/server";
+import {
+    createOneOfBlock,
+    createVimeoVideoBlock,
+    createYouTubeVideoBlock,
+    DamImageBlock,
+    DamVideoBlock,
+    PixelImageBlock,
+} from "@dextinity/serverless/server";
 
 export const MediaBlock = createOneOfBlock({
     name: "Media",

@@ -1,5 +1,5 @@
 import { AnchorBlock, createBlocksBlock } from "@dextinity/cms-admin";
-import { DamImageBlock } from "@dextinity/serverless-dam/client";
+import { DamImageBlock } from "@dextinity/serverless/client";
 
 import { AccordionBlock } from "../../../common/blocks/AccordionBlock";
 import { LayoutBlock } from "../../../common/blocks/LayoutBlock";

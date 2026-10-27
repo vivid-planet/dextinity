@@ -1,5 +1,5 @@
 import { cloudflare } from "@cloudflare/vite-plugin";
-import { dextinityDevServer, type DevAccessUser } from "@dextinity/serverless-core/vite";
+import { dextinityDevServer, type DevAccessUser } from "@dextinity/serverless/vite";
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
 

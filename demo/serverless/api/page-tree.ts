@@ -1,4 +1,4 @@
-import type { PageTreeConfig } from "@dextinity/serverless-page-tree/server";
+import type { PageTreeConfig } from "@dextinity/serverless/server";
 
 import { pageTreeCategories, type pageTreeDocumentTypes } from "../shared/page-tree";
 import { LinkBlock } from "./common/blocks/link.block";

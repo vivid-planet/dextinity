@@ -1,6 +1,5 @@
 import { BlockCategory, type BlockInterface, createOneOfBlock } from "@dextinity/cms-admin";
-import { createVimeoVideoBlock, createYouTubeVideoBlock } from "@dextinity/serverless-blocks/client";
-import { DamImageBlock, DamVideoBlock, PixelImageBlock } from "@dextinity/serverless-dam/client";
+import { createVimeoVideoBlock, createYouTubeVideoBlock, DamImageBlock, DamVideoBlock, PixelImageBlock } from "@dextinity/serverless/client";
 import { FormattedMessage } from "react-intl";
 
 export const MediaBlock: BlockInterface = createOneOfBlock({

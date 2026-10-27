@@ -3,9 +3,15 @@
  * D1 is migrated with `wrangler d1 migrations apply` (`db:seed:d1` runs it first), PostgreSQL with Drizzle's migrator. Seeding PostgreSQL
  * migrates it first, the seed needs the tables.
  */
-import { createD1Database, createPostgresqlDatabase, type Database, type DatabaseDialect, ScopeColumns } from "@dextinity/serverless-core/server";
-import { createPageTreeSchema } from "@dextinity/serverless-page-tree/server";
-import { createPermissionsSchema } from "@dextinity/serverless-permissions/server";
+import {
+    createD1Database,
+    createPageTreeSchema,
+    createPermissionsSchema,
+    createPostgresqlDatabase,
+    type Database,
+    type DatabaseDialect,
+    ScopeColumns,
+} from "@dextinity/serverless/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";

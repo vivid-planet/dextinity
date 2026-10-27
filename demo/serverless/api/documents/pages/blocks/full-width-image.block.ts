@@ -1,5 +1,4 @@
-import { createBlock, createOptionalBlock } from "@dextinity/serverless-blocks/server";
-import { DamImageBlock } from "@dextinity/serverless-dam/server";
+import { createBlock, createOptionalBlock, DamImageBlock } from "@dextinity/serverless/server";
 import { z } from "zod";
 
 import { RichTextBlock } from "../../../common/blocks/rich-text.block";

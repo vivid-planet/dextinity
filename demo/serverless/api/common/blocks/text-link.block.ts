@@ -1,4 +1,4 @@
-import { createTextLinkBlock } from "@dextinity/serverless-blocks/server";
+import { createTextLinkBlock } from "@dextinity/serverless/server";
 
 import { LinkBlock } from "./link.block";
 

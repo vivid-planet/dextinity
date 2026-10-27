@@ -2,15 +2,17 @@
 
 A prototype of Dextinity on Cloudflare Workers, built along [DECISIONS-SERVERLESS.md](../../DECISIONS-SERVERLESS.md): Hono with REST and typed clients, Drizzle on D1 **or** PostgreSQL, the admin as a Vite single-page app on `@dextinity/admin`, Cloudflare Access for login, Dextinity's permission model and the Images binding for images. It starts with the DAM.
 
-| Package                                            | `./server`                                                                                                                       | `./client`                                        |
-| -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| [`@dextinity/serverless-core`](core)               | `provide`/`inject`, errors, `zValidator`, portable Drizzle (`portableColumns`, `Database`), R2, image transformer, Access, cache | `ApiProvider`, `QueryErrorHandler`                |
-| [`@dextinity/serverless-permissions`](permissions) | Grants, roles, group roles; `requirePermission`, `assertCan`, `scopeFilter`; `GET /me`                                           | `CurrentUserProvider`, `useCan`, `useCurrentUser` |
-| [`@dextinity/serverless-blocks`](blocks)           | Block definitions (name and zod schema of the input) and factories like those of `@dextinity/cms-api`                            | `BlocksProvider`, YouTube and Vimeo factories     |
-| [`@dextinity/serverless-dam`](dam)                 | Schema, services and routes of the DAM; image, video and file download blocks                                                    | `DamApiProvider`, `DamPage`, the same blocks      |
-| [`@dextinity/serverless-page-tree`](page-tree)     | Schema, service and routes of the page tree and its documents; internal link block                                               | `PageTreeApiProvider`, `PageTreePage`, the block  |
+One package, `@dextinity/serverless`, with a folder per feature in `src/`. The Worker imports `@dextinity/serverless/server`, the admin `@dextinity/serverless/client` (and types of `./server`).
 
-`@dextinity/serverless-core/vite` contains `dextinityDevServer()`, the local development services: an emulator of Cloudflare Access and an image transformer with sharp.
+| Feature                          | `./server`                                                                                                                       | `./client`                                        |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| [`core`](src/core)               | `provide`/`inject`, errors, `zValidator`, portable Drizzle (`portableColumns`, `Database`), R2, image transformer, Access, cache | `ApiProvider`, `QueryErrorHandler`                |
+| [`permissions`](src/permissions) | Grants, roles, group roles; `requirePermission`, `assertCan`, `scopeFilter`; `GET /me`                                           | `CurrentUserProvider`, `useCan`, `useCurrentUser` |
+| [`blocks`](src/blocks)           | Block definitions (name and zod schema of the input) and factories like those of `@dextinity/cms-api`                            | `BlocksProvider`, YouTube and Vimeo factories     |
+| [`dam`](src/dam)                 | Schema, services and routes of the DAM; image, video and file download blocks                                                    | `DamApiProvider`, `DamPage`, the same blocks      |
+| [`page-tree`](src/page-tree)     | Schema, service and routes of the page tree and its documents; internal link block                                               | `PageTreeApiProvider`, `PageTreePage`, the block  |
+
+`@dextinity/serverless/vite` contains `dextinityDevServer()`, the local development services: an emulator of Cloudflare Access and an image transformer with sharp.
 
 The demo is [`demo/serverless`](../../demo/serverless): one Vite project and one Worker, which serves the admin as static assets and the API at `/api`. It follows the layout of Cloudflare's React template (`create-cloudflare`), with `api/` instead of `worker/`:
 

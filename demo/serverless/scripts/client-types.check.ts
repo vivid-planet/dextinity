@@ -1,7 +1,7 @@
 /**
  * Type-level checks of the typed client, verified by `tsc` (lint:tsc). Never executed.
  */
-import type { DamRoutes } from "@dextinity/serverless-dam/server";
+import type { DamRoutes } from "@dextinity/serverless/server";
 import { hc } from "hono/client";
 
 import type { ContentScope } from "../shared/content-scope.ts";

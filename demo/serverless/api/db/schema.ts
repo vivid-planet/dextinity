@@ -1,7 +1,4 @@
-import { type DatabaseDialect, ScopeColumns } from "@dextinity/serverless-core/server";
-import { createDamSchema } from "@dextinity/serverless-dam/server";
-import { createPageTreeSchema } from "@dextinity/serverless-page-tree/server";
-import { createPermissionsSchema } from "@dextinity/serverless-permissions/server";
+import { createDamSchema, createPageTreeSchema, createPermissionsSchema, type DatabaseDialect, ScopeColumns } from "@dextinity/serverless/server";
 
 import { ContentScope } from "../../shared/content-scope";
 

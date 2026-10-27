@@ -1,5 +1,4 @@
-import type { AccessIdentity } from "@dextinity/serverless-core/server";
-import type { ContentScope, PermissionGrant } from "@dextinity/serverless-permissions/server";
+import type { AccessIdentity, ContentScope, PermissionGrant } from "@dextinity/serverless/server";
 
 const availablePermissions = ["dam", "pageTree"];
 

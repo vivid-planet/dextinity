@@ -3,6 +3,9 @@ import {
     cloudflareAccess,
     CloudflareImagesTransformer,
     createD1Database,
+    createDamModule,
+    createPageTreeModule,
+    createPermissionsModule,
     createPostgresqlDatabase,
     type Database,
     type DatabaseDialect,
@@ -12,10 +15,7 @@ import {
     type ImageTransformer,
     provide,
     R2BlobStorage,
-} from "@dextinity/serverless-core/server";
-import { createDamModule } from "@dextinity/serverless-dam/server";
-import { createPageTreeModule } from "@dextinity/serverless-page-tree/server";
-import { createPermissionsModule } from "@dextinity/serverless-permissions/server";
+} from "@dextinity/serverless/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { Hono } from "hono";
 import postgres from "postgres";

@@ -1,4 +1,4 @@
-import { createSpaceBlock } from "@dextinity/serverless-blocks/server";
+import { createSpaceBlock } from "@dextinity/serverless/server";
 
 import { spacings } from "../../../shared/blocks";
 

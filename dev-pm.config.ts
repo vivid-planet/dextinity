@@ -240,41 +240,9 @@ export default defineConfig({
         },
         // group demo-serverless (prototype)
         {
-            name: "dextinity-serverless-core",
-            script: "pnpm --filter @dextinity/serverless-core run dev",
+            name: "dextinity-serverless",
+            script: "pnpm --filter @dextinity/serverless run dev",
             group: ["demo-serverless", "demo-serverless-postgresql"],
-        },
-        {
-            name: "dextinity-serverless-blocks",
-            script: "pnpm --filter @dextinity/serverless-blocks run dev",
-            group: ["demo-serverless", "demo-serverless-postgresql"],
-            waitOn: ["packages/serverless/core/lib/server/index.d.ts"],
-        },
-        {
-            name: "dextinity-serverless-permissions",
-            script: "pnpm --filter @dextinity/serverless-permissions run dev",
-            group: ["demo-serverless", "demo-serverless-postgresql"],
-            waitOn: ["packages/serverless/core/lib/server/index.d.ts"],
-        },
-        {
-            name: "dextinity-serverless-dam",
-            script: "pnpm --filter @dextinity/serverless-dam run dev",
-            group: ["demo-serverless", "demo-serverless-postgresql"],
-            waitOn: [
-                "packages/serverless/core/lib/server/index.d.ts",
-                "packages/serverless/blocks/lib/server/index.d.ts",
-                "packages/serverless/permissions/lib/server/index.d.ts",
-            ],
-        },
-        {
-            name: "dextinity-serverless-page-tree",
-            script: "pnpm --filter @dextinity/serverless-page-tree run dev",
-            group: ["demo-serverless", "demo-serverless-postgresql"],
-            waitOn: [
-                "packages/serverless/core/lib/server/index.d.ts",
-                "packages/serverless/blocks/lib/server/index.d.ts",
-                "packages/serverless/permissions/lib/server/index.d.ts",
-            ],
         },
         {
             name: "demo-serverless",
@@ -282,8 +250,8 @@ export default defineConfig({
             group: ["demo-serverless"],
             waitOn: [
                 ...waitOnPackages("@dextinity/admin", "@dextinity/admin-icons", "@dextinity/cms-admin"),
-                "packages/serverless/dam/lib/server/index.d.ts",
-                "packages/serverless/page-tree/lib/server/index.d.ts",
+                "packages/serverless/lib/server.d.ts",
+                "packages/serverless/lib/client.d.ts",
             ],
         },
         {
@@ -299,8 +267,8 @@ export default defineConfig({
             group: ["demo-serverless-postgresql"],
             waitOn: [
                 ...waitOnPackages("@dextinity/admin", "@dextinity/admin-icons", "@dextinity/cms-admin"),
-                "packages/serverless/dam/lib/server/index.d.ts",
-                "packages/serverless/page-tree/lib/server/index.d.ts",
+                "packages/serverless/lib/server.d.ts",
+                "packages/serverless/lib/client.d.ts",
                 "tcp:$POSTGRESQL_PORT",
             ],
         },

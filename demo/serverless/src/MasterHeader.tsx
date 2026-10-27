@@ -1,6 +1,6 @@
 import { AppHeader, AppHeaderDropdown, AppHeaderMenuButton, Button, FillSpace } from "@dextinity/admin";
 import { Account, DextinityLogo, Domain, Logout } from "@dextinity/admin-icons";
-import { type ContentScope, useCurrentUser } from "@dextinity/serverless-permissions/client";
+import { type ContentScope, useCurrentUser } from "@dextinity/serverless/client";
 import { List, ListItemButton, ListItemText, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";

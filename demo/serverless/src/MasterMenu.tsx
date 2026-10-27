@@ -1,6 +1,6 @@
 import { MainNavigation, MainNavigationCollapsibleItem, MainNavigationItemRouterLink } from "@dextinity/admin";
 import { Assets, PageTree } from "@dextinity/admin-icons";
-import { useCan } from "@dextinity/serverless-permissions/client";
+import { useCan } from "@dextinity/serverless/client";
 import { FormattedMessage } from "react-intl";
 
 import { pageTreeCategories } from "./pageTreeConfig";

@@ -1,6 +1,5 @@
 import { createLinkBlock, EmailLinkBlock, ExternalLinkBlock, PhoneLinkBlock } from "@dextinity/cms-admin";
-import { DamFileDownloadLinkBlock } from "@dextinity/serverless-dam/client";
-import { InternalLinkBlock } from "@dextinity/serverless-page-tree/client";
+import { DamFileDownloadLinkBlock, InternalLinkBlock } from "@dextinity/serverless/client";
 import { defineMessage } from "react-intl";
 
 export const LinkBlock = createLinkBlock({

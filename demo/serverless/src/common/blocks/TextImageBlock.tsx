@@ -1,5 +1,5 @@
 import { createTextImageBlock } from "@dextinity/cms-admin";
-import { DamImageBlock } from "@dextinity/serverless-dam/client";
+import { DamImageBlock } from "@dextinity/serverless/client";
 
 import { RichTextBlock } from "./RichTextBlock";
 

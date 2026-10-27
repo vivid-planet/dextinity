@@ -1,5 +1,4 @@
-import type { CloudflareAccessConfig } from "@dextinity/serverless-core/server";
-import type { DamConfig } from "@dextinity/serverless-dam/server";
+import type { CloudflareAccessConfig, DamConfig } from "@dextinity/serverless/server";
 import { z } from "zod";
 
 import { imageAspectRatios } from "../shared/blocks";

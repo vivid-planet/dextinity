@@ -1,4 +1,4 @@
-import { createBlock, createListBlock } from "@dextinity/serverless-blocks/server";
+import { createBlock, createListBlock } from "@dextinity/serverless/server";
 import { z } from "zod";
 
 import { headingTags } from "../../../../shared/blocks";

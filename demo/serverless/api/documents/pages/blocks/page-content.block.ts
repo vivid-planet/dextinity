@@ -1,5 +1,4 @@
-import { AnchorBlock, createBlocksBlock } from "@dextinity/serverless-blocks/server";
-import { DamImageBlock } from "@dextinity/serverless-dam/server";
+import { AnchorBlock, createBlocksBlock, DamImageBlock } from "@dextinity/serverless/server";
 
 import { AccordionBlock } from "../../../common/blocks/accordion.block";
 import { LayoutBlock } from "../../../common/blocks/layout.block";

@@ -1,4 +1,4 @@
-import { createBlock, createTableBlock } from "@dextinity/serverless-blocks/server";
+import { createBlock, createTableBlock } from "@dextinity/serverless/server";
 import { z } from "zod";
 
 import { RichTextBlock } from "./rich-text.block";

@@ -32,7 +32,7 @@ export const MediaGalleryBlock = withPreview(
                 <AnimateBoxInOnScroll direction="bottom">
                     <CarouselViewport>
                         {data.items.blocks.map((block, index) => (
-                            <CarouselSlide key={block.key} index={index} selectedClassName={styles["slide--selected"]}>
+                            <CarouselSlide key={block.key} index={index} inViewClassName={styles["slide--inView"]}>
                                 <MediaBlock data={block.props.media} aspectRatio={data.aspectRatio} />
                                 <Typography variant="paragraph200" className={styles.mediaCaption}>
                                     {block.props.caption}

@@ -80,13 +80,14 @@ export const CarouselViewport = ({ className, containerClassName, children }: Ca
 type CarouselSlideProps = PropsWithChildren<{
     index: number;
     className?: string;
-    selectedClassName?: string;
+    inViewClassName?: string;
 }>;
 
-export const CarouselSlide = ({ index, className, selectedClassName, children }: CarouselSlideProps) => {
-    const { selectedIndex, slideCount } = useCarousel();
+export const CarouselSlide = ({ index, className, inViewClassName, children }: CarouselSlideProps) => {
+    const { slidesInView, slideCount } = useCarousel();
     const intl = useIntl();
-    const isSelected = index === selectedIndex;
+    // Until Embla has measured the slides, the first slide is assumed to be in view.
+    const isInView = slidesInView?.includes(index) ?? index === 0;
 
     return (
         <div
@@ -96,7 +97,7 @@ export const CarouselSlide = ({ index, className, selectedClassName, children }:
                 { id: "carousel.slide.ariaLabel", defaultMessage: "Slide {index} of {total}" },
                 { index: index + 1, total: slideCount },
             )}
-            className={clsx(styles.slide, className, isSelected && selectedClassName)}
+            className={clsx(styles.slide, className, isInView && inViewClassName)}
         >
             {children}
         </div>
@@ -152,7 +153,7 @@ type CarouselDotsProps = {
 };
 
 export const CarouselDots = ({ className, dotClassName, selectedDotClassName }: CarouselDotsProps) => {
-    const { hasNavigation, snapCount, selectedIndex, scrollTo } = useCarousel();
+    const { hasNavigation, snapCount, selectedSnapIndex, scrollTo } = useCarousel();
     const intl = useIntl();
 
     if (!hasNavigation) {
@@ -162,7 +163,7 @@ export const CarouselDots = ({ className, dotClassName, selectedDotClassName }: 
     return (
         <div className={clsx(styles.dots, className)}>
             {Array.from({ length: snapCount }, (_, index) => {
-                const isSelected = index === selectedIndex;
+                const isSelected = index === selectedSnapIndex;
 
                 return (
                     <button
@@ -185,14 +186,14 @@ type CarouselStatusProps<T extends ElementType> = {
 
 export const CarouselStatus = <T extends ElementType = "p">(props: CarouselStatusProps<T>) => {
     const { as: Component = "p", ...restProps } = props;
-    const { hasNavigation, selectedIndex, slidesInView, slideCount } = useCarousel();
+    const { hasNavigation, selectedSnapIndex, slidesInView, slideCount } = useCarousel();
 
     if (!hasNavigation) {
         return null;
     }
 
-    const first = slidesInView?.length ? Math.min(...slidesInView) : selectedIndex;
-    const last = slidesInView?.length ? Math.max(...slidesInView) : selectedIndex;
+    const first = slidesInView?.length ? Math.min(...slidesInView) : selectedSnapIndex;
+    const last = slidesInView?.length ? Math.max(...slidesInView) : selectedSnapIndex;
 
     return (
         <Component role="status" aria-live="polite" aria-atomic="true" {...restProps}>

@@ -261,6 +261,16 @@ Clients turn plain-text mail addresses, URLs and phone numbers into links of the
     }
     ```
 
+### Dark Mode Repaints Colors, Not Most Images
+
+In dark mode, Gmail iOS, Yahoo Mail on the web, classic Outlook, Outlook on the web, Outlook iOS and Outlook Mac change the colors of the mail but leave most images alone. So a color that must stay is safest inside an image. Gmail Android is the exception: it inverts images with few colors that it shows at about `64px` or less.
+
+- Keep a background color: set `background-color` and a `background-image` of a `100×100` px solid PNG in the same color. Do not use this technique behind dark text on a light background: Outlook iOS keeps the background but still turns the text light.
+- Keep a logo readable: put a light background into the image file of the logo, not behind it. Some Gmail Android phones invert only the logo or only a separate background; in one image, both change together. On a dark section, put a background image in the section color behind the logo only, not behind the whole section (Gmail iOS, Outlook on the web).
+- Classic Outlook ignores CSS background images; use a VML shape with `fillcolor` there.
+
+→ For per-client behavior, placement rules and size limits, read [`references/dark-mode.md`](references/dark-mode.md).
+
 ---
 
 ## Theme Setup & Type-Safety

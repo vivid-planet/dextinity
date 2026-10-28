@@ -13,20 +13,24 @@
         ".": {
             "types": "./lib/index.d.ts",
             "import": "./lib/index.js"
-        }
+        },
+        "./css": "./lib/style.css"
     },
     "sideEffects": [
-        "*.css",
-        "*.scss"
+        "**/*.css"
     ],
     "files": [
         "lib/*"
     ],
     "scripts": {
-        "build": "pnpm run clean && tsc -p tsconfig.build.json",
+        "build": "pnpm run clean && run-p build:vite build:types",
+        "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
+        "build:vite": "vite build",
         "build-storybook": "storybook build",
         "clean": "rimraf lib",
-        "dev": "pnpm run clean && tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+        "dev": "pnpm run clean && run-p dev:vite dev:types",
+        "dev:types": "tsc -p tsconfig.build.json --emitDeclarationOnly --watch --preserveWatchOutput",
+        "dev:vite": "vite build --watch",
         "lint": "run-p lint:prettier lint:eslint lint:tsc",
         "lint:ci": "pnpm run lint",
         "lint:eslint": "eslint --max-warnings 0 src/ '**/*.json' --no-warn-ignored",

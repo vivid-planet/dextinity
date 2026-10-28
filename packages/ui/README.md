@@ -4,6 +4,14 @@ An **experimental**, UI-only React component library. It contains no routing, fo
 
 It builds on an unstyled foundation rather than evolving the MUI-based components of `@dextinity/admin`; `@base-ui/react` is the chosen foundation.
 
+## Usage
+
+Import the styles once, in the application's entry file:
+
+```ts
+import "@dextinity/ui/css";
+```
+
 ## Experimental
 
 Any export may change or be removed at any time, without deprecation notice. Changesets are not created for changes within this package.
@@ -181,7 +189,3 @@ The tokens are defined in five SCSS partials under [`src/theme/`](src/theme), co
 ### Selecting a color scheme
 
 `Theme` selects the active color scheme. It stays a pure function of its props — reading no `window`, `localStorage`, or `matchMedia` — so it renders the same on server and client; switching, OS-scheme resolution, and preventing the first-paint flash on SSR stay in consumer code.
-
-## Known issues
-
-- Styles are not delivered by the package build yet. The build compiles no CSS Modules, so the class-name mapping applies in Storybook but not in published output.

@@ -11,10 +11,10 @@ Components and utilities are documented in TSDoc on the export (see [TSDoc](READ
 
 This package has two dev-pm scripts (see the `dev-pm` skill for command usage):
 
-| Name                     | What it does                              |
-| ------------------------ | ----------------------------------------- |
-| `dextinity-ui`           | `tsc --watch` — rebuilds `lib/` on change |
-| `storybook-dextinity-ui` | `storybook dev -p 26648 --no-open`        |
+| Name                     | What it does                                                      |
+| ------------------------ | ----------------------------------------------------------------- |
+| `dextinity-ui`           | `vite build --watch` and `tsc --watch` — rebuild `lib/` on change |
+| `storybook-dextinity-ui` | `storybook dev -p 26648 --no-open`                                |
 
 The `@dextinity-ui` group starts `dextinity-ui`. Start `storybook-dextinity-ui` on its own, or with the `@storybook` group.
 

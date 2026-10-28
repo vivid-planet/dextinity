@@ -1,8 +1,14 @@
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { playwright } from "@vitest/browser-playwright";
-import { defineConfig } from "vitest/config";
+import { defineConfig, type ViteUserConfig } from "vitest/config";
 
-import { generateScopedName } from "./src/cssModules/generateScopedName";
+const contractClassNames: NonNullable<ViteUserConfig["test"]>["css"] = {
+    include: [/\.module\.scss$/],
+    modules: {
+        // "stable" (the default) would override the generateScopedName from `vite.config.mts`.
+        classNameStrategy: "scoped",
+    },
+};
 
 export default defineConfig({
     test: {
@@ -10,32 +16,24 @@ export default defineConfig({
         outputFile: { junit: "./junit-unit.xml" },
         projects: [
             {
-                css: {
-                    modules: {
-                        generateScopedName,
-                    },
-                },
+                extends: "./vite.config.mts",
                 test: {
                     name: "unit",
                     environment: "jsdom",
                     setupFiles: "./vitest.setup.ts",
                     exclude: ["lib/**", "node_modules/**"],
-                    css: {
-                        include: [/\.module\.scss$/],
-                        modules: {
-                            // "stable" (the default) would override the vite-level generateScopedName above.
-                            classNameStrategy: "scoped",
-                        },
-                    },
+                    css: contractClassNames,
                 },
             },
             {
+                extends: "./vite.config.mts",
                 plugins: [storybookTest({ configDir: ".storybook" })],
                 optimizeDeps: {
                     include: ["storybook/internal/csf", "@storybook/react-vite"],
                 },
                 test: {
                     name: "storybook",
+                    css: contractClassNames,
                     browser: {
                         enabled: true,
                         headless: true,

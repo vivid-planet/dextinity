@@ -49,7 +49,7 @@
         "exceljs": "^4.4.0",
         "final-form-set-field-data": "^1.0.2",
         "http-status-codes": "^2.3.0",
-        "is-mobile": "^4.0.0",
+        "is-mobile": "^5.0.0",
         "lodash.debounce": "^4.0.8",
         "lodash.isequal": "^4.5.0",
         "query-string": "^9.5.1",

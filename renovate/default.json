@@ -63,11 +63,6 @@
             "labels": ["major", "dependencies"]
         },
         {
-            "matchDepTypes": ["peerDependencies"],
-            "matchUpdateTypes": ["major"],
-            "baseBranches": ["next"]
-        },
-        {
             "groupName": "SWC",
             "matchPackageNames": ["@swc/plugin-emotion", "@vitejs/plugin-react-swc"]
         },

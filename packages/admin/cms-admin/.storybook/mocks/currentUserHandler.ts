@@ -1,6 +1,8 @@
-import { graphql, HttpResponse } from "msw";
+import { HttpResponse } from "msw";
 
-export const currentUserHandler = graphql.query("CurrentUser", () => {
+import { graphqlApi } from "./graphqlApi";
+
+export const currentUserHandler = graphqlApi.query("CurrentUser", () => {
     return HttpResponse.json({
         data: {
             currentUser: {

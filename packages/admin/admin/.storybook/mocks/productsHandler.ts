@@ -1,5 +1,6 @@
-import { graphql, HttpResponse } from "msw";
+import { HttpResponse } from "msw";
 
+import { graphqlApi } from "./graphqlApi";
 import { type Manufacturer, manufacturers } from "./manufacturersHandler";
 
 export type Product = { id: string; name: string; manufacturer: Manufacturer };
@@ -17,7 +18,7 @@ const products: Product[] = [
     { id: "10", name: "Apex Beta", manufacturer: manufacturers[4] },
 ];
 
-export const productsQueryHandler = graphql.query<{ products: Product[] }, { manufacturer?: string }>("Products", ({ variables }) => {
+export const productsQueryHandler = graphqlApi.query<{ products: Product[] }, { manufacturer?: string }>("Products", ({ variables }) => {
     const manufacturerId = variables.manufacturer;
     return HttpResponse.json({
         data: {

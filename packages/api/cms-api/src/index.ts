@@ -91,6 +91,7 @@ export type { BlockFactoryNameOrOptions } from "./blocks/factories/types";
 export { FlatBlocks } from "./blocks/flat-blocks/flat-blocks";
 export { getMostSignificantPreviewImageUrlTemplateFromBlock, getPreviewImageUrlTemplatesFromBlock } from "./blocks/get-preview-image-url-templates";
 export { composeBlocks } from "./blocks/helpers/composeBlocks";
+export { describeBlockInput } from "./blocks/helpers/describeBlockInput";
 export { strictBlockDataFactoryDecorator } from "./blocks/helpers/strictBlockDataFactoryDecorator";
 export { strictBlockInputFactoryDecorator } from "./blocks/helpers/strictBlockInputFactoryDecorator";
 export { BlockMigration } from "./blocks/migrations/BlockMigration";

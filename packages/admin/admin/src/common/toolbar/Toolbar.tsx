@@ -5,7 +5,6 @@ import { type ReactNode, useContext } from "react";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 import { MasterLayoutContext } from "../../mui/MasterLayoutContext";
-import { FillSpace } from "../FillSpace";
 import { ToolbarBreadcrumbs } from "./ToolbarBreadcrumbs";
 
 export type ToolbarClassKey = "root" | "topBar" | "bottomBar" | "mainContentContainer" | "breadcrumbs" | "scopeIndicator" | "topBarActions";
@@ -77,7 +76,10 @@ const TopBar = createComponentSlot("div")<ToolbarClassKey>({
 const TopBarActions = createComponentSlot("div")<ToolbarClassKey>({
     componentName: "Toolbar",
     slotName: "topBarActions",
-})();
+})(css`
+    // The breadcrumbs usually push the actions to the end of the top bar, but they render nothing without a trail and a scope indicator.
+    margin-left: auto;
+`);
 
 const ScopeIndicator = createComponentSlot("div")<ToolbarClassKey>({
     componentName: "Toolbar",
@@ -127,7 +129,13 @@ const MainContentContainer = createComponentSlot("div")<ToolbarClassKey>({
 const Breadcrumbs = createComponentSlot(ToolbarBreadcrumbs)<ToolbarClassKey>({
     componentName: "Toolbar",
     slotName: "breadcrumbs",
-})();
+})(css`
+    // The breadcrumbs measure the space they have to decide how many items to collapse. A content-based width would make
+    // that measurement depend on the result it produces: once collapsed, the breadcrumbs would be narrow enough to stay
+    // collapsed forever. Growing from a zero basis keeps the available width independent of the items currently rendered.
+    flex: 1;
+    min-width: 0;
+`);
 
 export const Toolbar = (inProps: ToolbarProps) => {
     const {
@@ -148,9 +156,10 @@ export const Toolbar = (inProps: ToolbarProps) => {
         <Root elevation={elevation} ownerState={ownerState} {...slotProps?.root} {...restProps}>
             {!hideTopBar && (
                 <TopBar {...slotProps?.topBar}>
-                    {Boolean(scopeIndicator) && <ScopeIndicator {...slotProps?.scopeIndicator}>{scopeIndicator}</ScopeIndicator>}
-                    <Breadcrumbs {...slotProps?.breadcrumbs} />
-                    <FillSpace />
+                    <Breadcrumbs
+                        startAdornment={Boolean(scopeIndicator) && <ScopeIndicator {...slotProps?.scopeIndicator}>{scopeIndicator}</ScopeIndicator>}
+                        {...slotProps?.breadcrumbs}
+                    />
                     {Boolean(topBarActions) && <TopBarActions {...slotProps?.topBarActions}>{topBarActions}</TopBarActions>}
                 </TopBar>
             )}

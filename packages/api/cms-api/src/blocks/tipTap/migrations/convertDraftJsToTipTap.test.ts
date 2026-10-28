@@ -1017,7 +1017,7 @@ describe("convertDraftJsToTipTap", () => {
                     blocks: [
                         makeBlock({
                             type: "unstyled",
-                            text: "Winter­räder",
+                            text: "hyphen­ation",
                             inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 12 }],
                             entityRanges: [{ key: 0, offset: 0, length: 12 }],
                         }),
@@ -1028,9 +1028,9 @@ describe("convertDraftJsToTipTap", () => {
             );
             const marks = [{ type: "bold" }, { type: "link", attrs: { data: { href: "https://example.com" } } }];
             expect(result.content?.[0].content).toEqual([
-                { type: "text", text: "Winter", marks },
+                { type: "text", text: "hyphen", marks },
                 { type: "softHyphen", marks },
-                { type: "text", text: "räder", marks },
+                { type: "text", text: "ation", marks },
             ]);
         });
 

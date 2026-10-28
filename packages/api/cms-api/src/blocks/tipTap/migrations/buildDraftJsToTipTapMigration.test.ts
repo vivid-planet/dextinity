@@ -114,7 +114,7 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
                     blocks: [
                         draftBlock({
                             type: "unstyled",
-                            text: "Winter­räder SEAT",
+                            text: "hyphen­ation text",
                             inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 17 }],
                         }),
                     ],
@@ -128,11 +128,11 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
                         type: "textBlock",
                         attrs: { textBlock: "paragraph" },
                         content: [
-                            { type: "text", text: "Winter", marks: [{ type: "bold" }] },
+                            { type: "text", text: "hyphen", marks: [{ type: "bold" }] },
                             { type: "softHyphen", marks: [{ type: "bold" }] },
-                            { type: "text", text: "räder", marks: [{ type: "bold" }] },
+                            { type: "text", text: "ation", marks: [{ type: "bold" }] },
                             { type: "nonBreakingSpace", marks: [{ type: "bold" }] },
-                            { type: "text", text: "SEAT", marks: [{ type: "bold" }] },
+                            { type: "text", text: "text", marks: [{ type: "bold" }] },
                         ],
                     },
                 ],

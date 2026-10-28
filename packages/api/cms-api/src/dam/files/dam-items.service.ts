@@ -2,12 +2,9 @@ import { Injectable } from "@nestjs/common";
 
 import { DamScopeInterface } from "../types";
 import { DamItemInterface } from "./dam-items.resolver";
-import { DamItemPositionArgsInterface, DamItemsArgsInterface, DamItemType } from "./dto/dam-items.args";
+import { DamItemPositionArgsInterface, DamItemsArgsInterface, DamItemType, defaultDamItemSortColumnName } from "./dto/dam-items.args";
 import { FilesService } from "./files.service";
 import { FoldersService } from "./folders.service";
-
-// The position queries need a sort column, and the list must use the same one so that the position matches the list
-const defaultSortColumnName = "name";
 
 @Injectable()
 export class DamItemsService {
@@ -20,7 +17,7 @@ export class DamItemsService {
         { folderId, includeArchived, filter, sortDirection, offset, limit, ...args }: Omit<DamItemsArgsInterface, "scope">,
         scope?: DamScopeInterface,
     ): Promise<[DamItemInterface[], number]> {
-        const sortColumnName = args.sortColumnName ?? defaultSortColumnName;
+        const sortColumnName = args.sortColumnName ?? defaultDamItemSortColumnName;
 
         const [folders, foldersTotalCount] = await this.foldersService.findAndCount(
             {
@@ -61,7 +58,7 @@ export class DamItemsService {
     }
 
     async getDamItemPosition({ type, id, ...args }: Omit<DamItemPositionArgsInterface, "scope">, scope?: DamScopeInterface): Promise<number> {
-        const sortColumnName = args.sortColumnName ?? defaultSortColumnName;
+        const sortColumnName = args.sortColumnName ?? defaultDamItemSortColumnName;
 
         if (type === DamItemType.Folder) {
             const folderPosition = await this.foldersService.getFolderPosition(

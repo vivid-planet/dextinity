@@ -1994,8 +1994,8 @@ type Query {
   damFoldersFlat(scope: DamScopeInput!): [DamFolder!]!
   damFoldersList(filter: FolderFilterInput, includeArchived: Boolean, limit: Int! = 25, offset: Int! = 0, parentId: ID, scope: DamScopeInput!, sortColumnName: String, sortDirection: SortDirection! = ASC): PaginatedDamFolders!
   damIsFilenameOccupied(filename: String!, folderId: String, scope: DamScopeInput!): Boolean!
-  damItemListPosition(filter: DamItemFilterInput, folderId: ID, id: ID!, includeArchived: Boolean, scope: DamScopeInput!, sortColumnName: String, sortDirection: SortDirection! = ASC, type: DamItemType!): Int!
-  damItemsList(filter: DamItemFilterInput, folderId: ID, includeArchived: Boolean, limit: Int! = 25, offset: Int! = 0, scope: DamScopeInput!, sortColumnName: String, sortDirection: SortDirection! = ASC): PaginatedDamItems!
+  damItemListPosition(filter: DamItemFilterInput, folderId: ID, id: ID!, includeArchived: Boolean, scope: DamScopeInput!, sortColumnName: String = "name", sortDirection: SortDirection! = ASC, type: DamItemType!): Int!
+  damItemsList(filter: DamItemFilterInput, folderId: ID, includeArchived: Boolean, limit: Int! = 25, offset: Int! = 0, scope: DamScopeInput!, sortColumnName: String = "name", sortDirection: SortDirection! = ASC): PaginatedDamItems!
   damMediaAlternative(id: ID!): DamMediaAlternative!
   damMediaAlternatives(alternative: ID, for: ID, limit: Int! = 25, offset: Int! = 0, search: String, sort: [DamMediaAlternativeSort!], type: DamMediaAlternativeType): PaginatedDamMediaAlternatives!
   findCopiesOfFileInScope(id: ID!, imageCropArea: ImageCropAreaInput, scope: DamScopeInput!): [DamFile!]!

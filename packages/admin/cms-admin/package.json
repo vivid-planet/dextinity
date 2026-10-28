@@ -60,6 +60,7 @@
         "change-case": "^5.4.4",
         "class-validator": "^0.15.1",
         "date-fns": "^4.4.0",
+        "file-selector": "^5.0.1",
         "final-form-arrays": "^3.1.0",
         "final-form-set-field-touched": "^1.0.1",
         "js-cookie": "^3.0.8",

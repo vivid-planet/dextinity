@@ -759,6 +759,151 @@ cd admin
 npm run intl:extract
 ```
 
+### Update the breadcrumbs customizations
+
+`StackBreadcrumbs` and `ToolbarBreadcrumbs` are now built on top of the generic `Breadcrumbs` component, so they look and behave like it.
+Most of their own slots, class keys and props are removed in favor of the ones of `Breadcrumbs`.
+
+Skip this section if your project uses `StackBreadcrumbs`, `ToolbarBreadcrumbs` and `Toolbar` without customizing their breadcrumbs.
+Find the customizations:
+
+```sh
+cd admin
+grep -rn -E "StackBreadcrumbs|ToolbarBreadcrumbs|breadcrumbs:" src
+```
+
+#### Replace the `separator` and `overflowLinkText` props of `StackBreadcrumbs`
+
+The `separator` prop is replaced by `iconMapping.separator`:
+
+```diff
+- <StackBreadcrumbs separator={<MySeparatorIcon />} />
++ <StackBreadcrumbs iconMapping={{ separator: <MySeparatorIcon /> }} />
+```
+
+The `overflowLinkText` prop is removed without replacement.
+The overflow button is rendered by the `ellipsis` slot of `Breadcrumbs`.
+
+The icon of the back button can now be replaced through `iconMapping.backButton`.
+
+#### Rename the `iconMapping` keys of `ToolbarBreadcrumbs`
+
+The `iconMapping` keys of `ToolbarBreadcrumbs` match the ones of `Breadcrumbs` now:
+
+| v10               | v11         |
+| ----------------- | ----------- |
+| `itemSeparator`   | `separator` |
+| `openMobileMenu`  | `openMenu`  |
+| `closeMobileMenu` | `closeMenu` |
+
+This also applies when the icons are set through the `breadcrumbs` slot of `Toolbar`:
+
+```diff
+  <Toolbar
+      slotProps={{
+          breadcrumbs: {
+-             iconMapping: { itemSeparator: <MySeparatorIcon /> },
++             iconMapping: { separator: <MySeparatorIcon /> },
+          },
+      }}
+  />
+```
+
+#### Move the slot customizations to the `Breadcrumbs` slots
+
+The removed slots of `StackBreadcrumbs` and `ToolbarBreadcrumbs` are replaced by the slots of `Breadcrumbs`:
+
+| `StackBreadcrumbs` (v10) | `Breadcrumbs` (v11) |
+| ------------------------ | ------------------- |
+| `breadcrumbs`            | `toolbarContainer`  |
+| `listItem`               | `menuContainer`     |
+| `link`                   | `item`              |
+| `disabledLink`           | `activeItem`        |
+| `overflowLink`           | `overflowButton`    |
+| `separator`              | `separator`         |
+
+| `ToolbarBreadcrumbs` (v10)              | `Breadcrumbs` (v11)                                           |
+| --------------------------------------- | ------------------------------------------------------------- |
+| `breadcrumbsList`                       | `toolbarContainer`                                            |
+| `breadcrumbsItem`                       | `item`                                                        |
+| `currentBreadcrumbsItem`                | `activeItem`                                                  |
+| `breadcrumbsItemSeparator`              | `separator`                                                   |
+| `breadcrumbsEllipsisItem`               | `ellipsis`                                                    |
+| `mobileBreadcrumbsButton`               | `mobileRootButton`                                            |
+| `mobileStandaloneCurrentBreadcrumbItem` | `mobileRootButton`                                            |
+| `mobileMenuIcon`                        | `mobileMenuIcon`                                              |
+| `mobileMenu`                            | `expandedMenu`                                                |
+| `mobileMenuItem`                        | `expandedMenuSubitemWrapper`, `expandedMenuActiveItemWrapper` |
+| `mobileMenuItemText`                    | `expandedMenuItem`, `expandedMenuActiveItem`                  |
+| `mobileMenuItemNestingIndicator`        | `pageTreeVerticalLine`                                        |
+
+`StackBreadcrumbs` keeps its `root`, `backButton` and `backButtonSeparator` slots, `ToolbarBreadcrumbs` keeps its `root` slot.
+Their `root` slot renders `Breadcrumbs`, so pass the props of the `Breadcrumbs` slots through `slotProps.root.slotProps`:
+
+```diff
+  <StackBreadcrumbs
+      slotProps={{
+-         link: { sx: { fontWeight: 600 } },
++         root: { slotProps: { item: { sx: { fontWeight: 600 } } } },
+      }}
+  />
+```
+
+```diff
+  <Toolbar
+      slotProps={{
+          breadcrumbs: {
+-             slotProps: { breadcrumbsItem: { sx: { fontWeight: 600 } } },
++             slotProps: { root: { slotProps: { item: { sx: { fontWeight: 600 } } } } },
+          },
+      }}
+  />
+```
+
+Move the `styleOverrides` of the removed class keys from `DextinityAdminStackBreadcrumbs` and `DextinityAdminToolbarBreadcrumbs` to `DextinityAdminBreadcrumbs`.
+`DextinityAdminBreadcrumbs` applies to all breadcrumbs, so the overrides now affect `StackBreadcrumbs`, `ToolbarBreadcrumbs` and `Breadcrumbs` alike:
+
+```diff title="admin/src/theme.ts"
+  export const theme = createDextinityTheme({
+      components: {
+-         DextinityAdminStackBreadcrumbs: {
+-             styleOverrides: { link: { fontWeight: 600 } },
+-         },
+-         DextinityAdminToolbarBreadcrumbs: {
+-             styleOverrides: { breadcrumbsItem: { fontWeight: 600 } },
+-         },
++         DextinityAdminBreadcrumbs: {
++             styleOverrides: { item: { fontWeight: 600 } },
++         },
+      },
+  });
+```
+
+To keep an override limited to one of them, target the `Breadcrumbs` class name from its `root` instead:
+
+```ts title="admin/src/theme.ts"
+DextinityAdminStackBreadcrumbs: {
+    styleOverrides: {
+        root: {
+            "& .DextinityAdminBreadcrumbs-item": { fontWeight: 600 },
+        },
+    },
+},
+```
+
+Update CSS selectors that use the class names of the removed slots in the same way, for example `.DextinityAdminStackBreadcrumbs-link` → `.DextinityAdminBreadcrumbs-item`.
+Find them:
+
+```sh
+grep -rn -E "DextinityAdmin(Stack|Toolbar)Breadcrumbs-(breadcrumbs|listItem|link|disabledLink|overflowLink|separator|currentBreadcrumbsItem|mobile)" src
+```
+
+#### Check the scope indicator of `Toolbar`
+
+`Toolbar` passes its `scopeIndicator` to the breadcrumbs as `startAdornment`.
+The `scopeIndicator` slot is rendered inside the breadcrumbs now, instead of next to them in the top bar.
+Check styles that rely on the previous position, for example a selector like `.DextinityAdminToolbar-topBar > .DextinityAdminToolbar-scopeIndicator`.
+
 <!-- "Verify lint passes" must always be the last step for this service. -->
 
 ### Verify lint passes

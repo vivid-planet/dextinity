@@ -46,20 +46,20 @@
         "@dextinity/eslint-plugin": "workspace:*",
         "@eslint/eslintrc": "^3.3.7",
         "@eslint/js": "^9.39.5",
-        "@graphql-eslint/eslint-plugin": "^4.4.1",
+        "@graphql-eslint/eslint-plugin": "^4.4.2",
         "@next/eslint-plugin-next": "^16.3.8",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-formatjs": "^5.4.2",
         "eslint-plugin-import": "^2.32.0",
         "eslint-plugin-jsonc": "^2.21.1",
         "eslint-plugin-package-json": "^0.91.2",
-        "eslint-plugin-prettier": "^5.5.6",
+        "eslint-plugin-prettier": "^5.5.7",
         "eslint-plugin-react": "^7.37.5",
         "eslint-plugin-react-hooks": "^5.2.0",
         "eslint-plugin-simple-import-sort": "^12.1.1",
         "eslint-plugin-unused-imports": "^4.4.1",
         "globals": "^17.13.0",
-        "typescript-eslint": "^8.71.2"
+        "typescript-eslint": "^8.72.0"
     },
     "devDependencies": {
         "eslint": "^9.39.5",

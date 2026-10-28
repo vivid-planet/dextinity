@@ -2896,9 +2896,6 @@ importers:
       history:
         specifier: ^4.10.1
         version: 4.10.1
-      qs:
-        specifier: ^6.16.0
-        version: 6.16.0
       react:
         specifier: ^19.3.0
         version: 19.3.0

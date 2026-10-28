@@ -44,7 +44,6 @@
         "final-form": "^4.20.10",
         "graphql": "^16.14.2",
         "history": "^4.10.1",
-        "qs": "^6.16.0",
         "react": "^19.3.0",
         "react-dom": "^19.3.0",
         "react-final-form": "^6.5.9",

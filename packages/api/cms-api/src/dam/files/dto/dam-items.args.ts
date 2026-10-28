@@ -63,10 +63,10 @@ export function createDamItemArgs({ Scope }: { Scope: Type<DamScopeInterface> })
         @ValidateNested()
         filter?: DamItemFilterInput;
 
-        @Field({ nullable: true, defaultValue: defaultDamItemSortColumnName })
+        @Field({ nullable: true })
         @IsString()
         @IsOptional()
-        sortColumnName?: string;
+        sortColumnName?: string = defaultDamItemSortColumnName;
     }
 
     return DamItemsArgs;
@@ -113,10 +113,10 @@ export function createDamItemPositionArgs({ Scope }: { Scope: Type<DamScopeInter
         @ValidateNested()
         filter?: DamItemFilterInput;
 
-        @Field({ nullable: true, defaultValue: defaultDamItemSortColumnName })
+        @Field({ nullable: true })
         @IsString()
         @IsOptional()
-        sortColumnName?: string;
+        sortColumnName?: string = defaultDamItemSortColumnName;
     }
 
     return DamItemPositionArgs;

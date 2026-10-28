@@ -22,7 +22,7 @@ Set the color twice: as `background-color`, and as a `background-image` of a sol
 - Set both properties on every element that paints the background, such as the inner `<table>` of a section too. Otherwise Gmail iOS, Outlook iOS and Outlook on the web paint the dark color of that element over the image.
 - On an MJML section, set `background-color` and `background-image` with `!important` in an inlined style. Otherwise the `background` shorthand that MJML writes comes after the image and removes it.
 - Gmail Android also inverts the background image, whatever its file size, of a box that it shows at about `64px` or less per side. For a small box, put the color into the content image instead (see [Keep a Logo Readable](#keep-a-logo-readable)).
-- Do not use this technique behind dark text on a light background. Outlook iOS keeps the light background but still turns the text light, so the text disappears. The technique is safe behind light text on a dark background, and for a light box that holds only an image.
+- Use this technique behind images only, not behind text. Outlook iOS turns dark text on a light background light, and Gmail iOS and Outlook on the web turn light text on a dark background dark. In both cases the text disappears.
 - Name the PNG after its color, such as `001e50-100x100.png` for `#001e50`. When the theme color changes, replace the image too.
 
 ## Keep a Logo Readable

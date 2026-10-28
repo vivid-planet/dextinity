@@ -1,6 +1,6 @@
 import { Mark, mergeAttributes } from "@tiptap/core";
 
-import { jsonDataAttribute } from "./jsonDataAttribute";
+import { jsonDataAttribute, parseJsonData } from "./jsonDataAttribute";
 
 declare module "@tiptap/core" {
     interface Commands<ReturnType> {
@@ -24,7 +24,7 @@ export const CmsLink = Mark.create({
     },
 
     parseHTML() {
-        return [{ tag: "a[data-cms-link]" }];
+        return [{ tag: "a[data-cms-link]", getAttrs: (element) => (parseJsonData(element) === null ? false : null) }];
     },
 
     renderHTML({ HTMLAttributes }) {

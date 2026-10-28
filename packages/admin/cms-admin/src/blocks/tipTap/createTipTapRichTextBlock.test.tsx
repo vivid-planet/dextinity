@@ -318,16 +318,28 @@ describe("createTipTapRichTextBlock", () => {
             expect(childBlockNodes?.map((node) => node.attrs?.data)).toEqual([data, data]);
         });
 
+        const linkBlock: BlockInterface & LinkBlockInterface = {
+            ...createBlockSkeleton(),
+            name: "Link",
+            displayName: "Link",
+            category: BlockCategory.Other,
+            defaultValues: () => ({}),
+            AdminComponent: () => null,
+            previewContent: () => [],
+        };
+
+        const collectLinkData = (editor: Editor) => {
+            const linkData: unknown[] = [];
+            editor.state.doc.descendants((node) => {
+                const linkMark = node.marks.find((mark) => mark.type.name === "link");
+                if (linkMark) {
+                    linkData.push(linkMark.attrs.data);
+                }
+            });
+            return linkData;
+        };
+
         it("should keep a link's data when copying and pasting it", () => {
-            const linkBlock: BlockInterface & LinkBlockInterface = {
-                ...createBlockSkeleton(),
-                name: "Link",
-                displayName: "Link",
-                category: BlockCategory.Other,
-                defaultValues: () => ({}),
-                AdminComponent: () => null,
-                previewContent: () => [],
-            };
             const editor = createEditor({ link: linkBlock });
             const data = { activeType: "internal", attachedBlocks: [{ type: "internal", props: { targetPage: { id: "page-1" } } }] };
             editor.commands.setContent({
@@ -343,14 +355,16 @@ describe("createTipTapRichTextBlock", () => {
 
             copyAndPasteAll(editor);
 
-            const linkData: unknown[] = [];
-            editor.state.doc.descendants((node) => {
-                const linkMark = node.marks.find((mark) => mark.type.name === "link");
-                if (linkMark) {
-                    linkData.push(linkMark.attrs.data);
-                }
-            });
-            expect(linkData).toEqual([data, data]);
+            expect(collectLinkData(editor)).toEqual([data, data]);
+        });
+
+        it("should paste a link with invalid data as plain text", () => {
+            const editor = createEditor({ link: linkBlock });
+
+            editor.view.pasteHTML('<p><a data-cms-link="" data-json="invalid">pasted</a></p>', new Event("paste") as ClipboardEvent);
+
+            expect(editor.getText()).toBe("pasted");
+            expect(collectLinkData(editor)).toEqual([]);
         });
     });
 

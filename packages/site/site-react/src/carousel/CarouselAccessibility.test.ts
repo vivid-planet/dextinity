@@ -15,12 +15,12 @@ const createCarousel = ({ rootTabIndex }: { rootTabIndex?: number } = {}) => {
         root.tabIndex = rootTabIndex;
     }
     const viewport = document.createElement("div");
-    Object.defineProperty(viewport, "clientWidth", { value: 200 });
+    viewport.getBoundingClientRect = () => new DOMRect(0, 0, 200, 100);
     const container = document.createElement("div");
     const buttons = Array.from({ length: 4 }, () => document.createElement("button"));
     const slides = buttons.map((button, index) => {
         const slide = document.createElement("div");
-        Object.defineProperties(slide, { offsetLeft: { value: index * 100 }, offsetWidth: { value: 100 } });
+        slide.getBoundingClientRect = () => new DOMRect(index * 100, 0, 100, 100);
         slide.appendChild(button);
         container.appendChild(slide);
         return slide;
@@ -29,7 +29,8 @@ const createCarousel = ({ rootTabIndex }: { rootTabIndex?: number } = {}) => {
     root.appendChild(viewport);
     document.body.appendChild(root);
 
-    const snaps = [0, 0.5, 1];
+    // Embla's scroll positions of the snaps. The slides stay at their initial position, as if Embla hadn't started to animate.
+    const snaps = [0, -100, -200];
     const listeners = new Set<() => void>();
     let selectedSnap = 0;
     const select = (snapIndex: number) => {
@@ -42,7 +43,7 @@ const createCarousel = ({ rootTabIndex }: { rootTabIndex?: number } = {}) => {
     const emblaApi = {
         rootNode: () => viewport,
         slideNodes: () => slides,
-        scrollSnapList: () => snaps,
+        internalEngine: () => ({ scrollSnaps: snaps, offsetLocation: { get: () => 0 } }),
         selectedScrollSnap: () => selectedSnap,
         scrollPrev: vi.fn(() => select(selectedSnap - 1)),
         scrollNext: vi.fn(() => select(selectedSnap + 1)),

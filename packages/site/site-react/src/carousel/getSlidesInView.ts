@@ -6,44 +6,39 @@ type SlideBounds = {
 };
 
 type GetSlidesInViewOptions = {
+    /** Positions of the slides relative to the start of the viewport. */
     slides: SlideBounds[];
     viewportSize: number;
-    /** Scroll progress of the scroll snap, between 0 and 1, as returned by Embla's `scrollSnapList()`. */
-    scrollProgress: number;
 };
 
-// Offsets are rounded to whole pixels.
+// Rectangles can be off by fractions of a pixel.
 const tolerance = 1;
 
-export const getSlidesInView = ({ slides, viewportSize, scrollProgress }: GetSlidesInViewOptions) => {
-    if (slides.length === 0) {
-        return [];
-    }
+export const getSlidesInView = ({ slides, viewportSize }: GetSlidesInViewOptions) => {
+    const fullyVisibleSlides = slides.flatMap((slide, index) => (slide.start >= -tolerance && slide.end <= viewportSize + tolerance ? [index] : []));
 
-    const contentStart = Math.min(...slides.map((slide) => slide.start));
-    const contentEnd = Math.max(...slides.map((slide) => slide.end));
-    const scrollLength = Math.max(0, contentEnd - contentStart - viewportSize);
-    const viewStart = contentStart + scrollProgress * scrollLength;
-    const viewEnd = viewStart + viewportSize;
-
-    const fullyVisibleSlides = slides.flatMap((slide, index) =>
-        slide.start >= viewStart - tolerance && slide.end <= viewEnd + tolerance ? [index] : [],
-    );
-
-    if (fullyVisibleSlides.length > 0) {
+    if (fullyVisibleSlides.length > 0 || slides.length === 0) {
         return fullyVisibleSlides;
     }
 
     // A slide wider than the viewport is never fully visible, but its content has to stay reachable.
-    const visibleSizes = slides.map((slide) => Math.min(slide.end, viewEnd) - Math.max(slide.start, viewStart));
+    const visibleSizes = slides.map((slide) => Math.min(slide.end, viewportSize) - Math.max(slide.start, 0));
     const largestVisibleSize = Math.max(...visibleSizes);
 
     return largestVisibleSize > 0 ? [visibleSizes.indexOf(largestVisibleSize)] : [];
 };
 
-export const getSlidesInViewAtSnap = (emblaApi: EmblaCarouselType, snapIndex: number) =>
-    getSlidesInView({
-        slides: emblaApi.slideNodes().map((slide) => ({ start: slide.offsetLeft, end: slide.offsetLeft + slide.offsetWidth })),
-        viewportSize: emblaApi.rootNode().clientWidth,
-        scrollProgress: emblaApi.scrollSnapList()[snapIndex] ?? 0,
+export const getSlidesInViewAtSnap = (emblaApi: EmblaCarouselType, snapIndex: number) => {
+    const engine = emblaApi.internalEngine();
+    const viewport = emblaApi.rootNode().getBoundingClientRect();
+    // The slides are measured at the current position and moved by the distance to the snap, because Embla is still animating.
+    const distanceToSnap = (engine.scrollSnaps[snapIndex] ?? engine.offsetLocation.get()) - engine.offsetLocation.get();
+
+    return getSlidesInView({
+        slides: emblaApi.slideNodes().map((slide) => {
+            const rect = slide.getBoundingClientRect();
+            return { start: rect.left - viewport.left + distanceToSnap, end: rect.right - viewport.left + distanceToSnap };
+        }),
+        viewportSize: viewport.width,
     });
+};

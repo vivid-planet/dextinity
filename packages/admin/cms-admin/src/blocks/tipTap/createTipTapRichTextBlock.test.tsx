@@ -183,16 +183,16 @@ describe("createTipTapRichTextBlock", () => {
             const bold = [{ type: "bold" }];
             editor.commands.setContent({
                 type: "doc",
-                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Winterräder", marks: bold }] }],
+                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Wonderful", marks: bold }] }],
             });
             editor.commands.setTextSelection(7);
 
             editor.commands[command]();
 
             expect(editor.getJSON().content?.[0].content).toEqual([
-                { type: "text", text: "Winter", marks: bold },
+                { type: "text", text: "Wonder", marks: bold },
                 { type: nodeType, marks: bold },
-                { type: "text", text: "räder", marks: bold },
+                { type: "text", text: "ful", marks: bold },
             ]);
         });
 
@@ -200,16 +200,16 @@ describe("createTipTapRichTextBlock", () => {
             const editor = createEditor();
             editor.commands.setContent({
                 type: "doc",
-                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Winterräder" }] }],
+                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Wonderful" }] }],
             });
             editor.commands.setTextSelection(7);
 
             editor.commands.insertSoftHyphen();
 
             expect(editor.getJSON().content?.[0].content).toEqual([
-                { type: "text", text: "Winter" },
+                { type: "text", text: "Wonder" },
                 { type: "softHyphen" },
-                { type: "text", text: "räder" },
+                { type: "text", text: "ful" },
             ]);
         });
 

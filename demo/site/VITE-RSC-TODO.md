@@ -62,9 +62,9 @@ Kept the short `ssr.resolve.noExternal` list (`prop-types`, `swiper`). Tried `no
 
 Security headers were set on Node level in `server.ts`, static files, their cache headers and `no-store` for error responses only existed in the production server, and `robots.txt`/`sitemap.xml` got their `Cache-Control` from a path list there. Now `src/handler.ts` starts with `securityHeadersMiddleware` (only sets headers the response doesn't have, the proxied DAM files keep the API's), `errorResponseCacheControlMiddleware` and, in production, `staticFilesMiddleware`; the two routes set their own `Cache-Control`. `server.ts` only keeps the transport (origin check, metrics, compression). Verified by comparing 61 requests in dev and production before/after: production identical except the spelling of `text/plain;charset=UTF-8`; dev now matches production for error responses and robots/sitemap, files served by Vite in dev have no security headers anymore. Ref: audi6 `middleware/securityHeaders.ts`, `middleware/cacheControl.ts`.
 
-### #12 Memoize fetches per request
+### #12 Memoize fetches per request (dropped)
 
-The fetch cache only de-duplicates concurrent requests in the cached path; preview requests aren't memoized. Add a per-request memo to the request context. Ref: audi6 `requestContext.ts` (`fetchMemo`) + `fetchCache/fetchCache.ts`.
+Measured the GraphQL requests of 7 page types, each normally and in the site preview (which bypasses the fetch cache): every request ran exactly once per page request (2–4 per page). The duplicates of the Next.js site came from `generateMetadata` and the page loading the same data, which Next.js memoized; with the metadata rendered in the page component, they're gone. Concurrent identical requests are already de-duplicated by the fetch cache. If duplicates appear later, use React's `cache()`, which is scoped to the render in the RSC environment, instead of a custom memo. Ref: audi6 `requestContext.ts` (`fetchMemo`).
 
 ## Navigation
 

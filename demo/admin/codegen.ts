@@ -29,6 +29,7 @@ const config: CodegenConfig = {
                 namingConvention: "keep",
                 scalars: rootBlocks.reduce((scalars, rootBlock) => ({ ...scalars, [rootBlock]: rootBlock }), {
                     DateTime: "string",
+                    JSONObject: "any",
                     Date: "string",
                     LocalDate: "string",
                     BigInt: "number",
@@ -45,13 +46,12 @@ const config: CodegenConfig = {
                 baseTypesPath: "graphql.generated.ts",
             },
             config: {
-                avoidOptionals: {
-                    field: true,
-                },
                 enumsAsTypes: true,
                 namingConvention: "keep",
                 scalars: rootBlocks.reduce((scalars, rootBlock) => ({ ...scalars, [rootBlock]: rootBlock }), {
+                    ID: "string",
                     DateTime: "string",
+                    JSONObject: "any",
                     Date: "string",
                     LocalDate: "string",
                     BigInt: "number",

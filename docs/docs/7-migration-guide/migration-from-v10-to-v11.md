@@ -759,6 +759,18 @@ cd admin
 npm run intl:extract
 ```
 
+### Stop reading `__typename` from the file upload fragments
+
+`GQLFinalFormFileUploadFragment` and `GQLFinalFormFileUploadDownloadableFragment` no longer have a `__typename` field.
+
+Find the usages:
+
+```sh
+grep -rn "GQLFinalFormFileUpload\(Downloadable\)\?Fragment" src
+```
+
+Where your code reads `__typename` from a value of one of these types, select `__typename` in your own query and use that query's type instead.
+
 <!-- "Verify lint passes" must always be the last step for this service. -->
 
 ### Verify lint passes

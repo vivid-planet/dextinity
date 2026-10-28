@@ -86,7 +86,6 @@ function ProductsGridToolbar({ exportApi, selectionModel }: ProductsGridToolbarP
                                     mutation: updateProductStatusMutation,
                                     variables: { id: id as string, status: "Published" },
                                     optimisticResponse: {
-                                        __typename: "Mutation",
                                         updateProduct: { __typename: "Product", id: id as string, status: "Published" },
                                     },
                                 });
@@ -102,7 +101,6 @@ function ProductsGridToolbar({ exportApi, selectionModel }: ProductsGridToolbarP
                                     mutation: updateProductStatusMutation,
                                     variables: { id: id as string, status: "Unpublished" },
                                     optimisticResponse: {
-                                        __typename: "Mutation",
                                         updateProduct: { __typename: "Product", id: id as string, status: "Unpublished" },
                                     },
                                 });
@@ -292,7 +290,6 @@ export function ProductsGrid() {
                                     mutation: updateProductStatusMutation,
                                     variables: { id: params.row.id, status: status ? "Published" : "Unpublished" },
                                     optimisticResponse: {
-                                        __typename: "Mutation",
                                         updateProduct: { __typename: "Product", id: params.row.id, status: status ? "Published" : "Unpublished" },
                                     },
                                 });
@@ -460,6 +457,7 @@ const deleteProductMutation = gql`
 const updateProductStatusMutation = gql`
     mutation UpdateProductStatus($id: ID!, $status: ProductStatus!) {
         updateProduct(id: $id, input: { status: $status }) {
+            __typename
             id
             status
         }

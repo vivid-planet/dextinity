@@ -4,6 +4,7 @@ import { damFileThumbnailFragment } from "./thumbnail/DamThumbnail";
 
 const damFileTableFragment = gql`
     fragment DamFileTable on DamFile {
+        __typename
         id
         name
         fileUrl
@@ -43,6 +44,7 @@ const damFileTableFragment = gql`
 
 const damFolderTableFragment = gql`
     fragment DamFolderTable on DamFolder {
+        __typename
         id
         name
         mpath

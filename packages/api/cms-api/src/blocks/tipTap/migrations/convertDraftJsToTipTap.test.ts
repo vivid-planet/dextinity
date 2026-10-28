@@ -887,6 +887,32 @@ describe("convertDraftJsToTipTap", () => {
             ).not.toThrow();
         });
 
+        it("counts range offsets in code points, so a range after an emoji keeps its text", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({
+                            type: "unstyled",
+                            text: "🔗 bold 🎉 end",
+                            inlineStyleRanges: [
+                                { style: "BOLD", offset: 2, length: 4 },
+                                { style: "ITALIC", offset: 7, length: 1 },
+                            ],
+                        }),
+                    ],
+                    entityMap: {},
+                },
+                { resolvedOptions: allEnabled },
+            );
+            expect(result.content?.[0].content).toEqual([
+                { type: "text", text: "🔗 " },
+                { type: "text", text: "bold", marks: [{ type: "bold" }] },
+                { type: "text", text: " " },
+                { type: "text", text: "🎉", marks: [{ type: "italic" }] },
+                { type: "text", text: " end" },
+            ]);
+        });
+
         it("maps a custom inline style via inlineStyleMap to an inlineStyle mark", () => {
             const result = convertDraftJsToTipTap(
                 {
@@ -1106,6 +1132,26 @@ describe("convertDraftJsToTipTap", () => {
             );
             expect(result.content?.[0].content).toEqual([
                 { type: "text", text: "click", marks: [{ type: "link", attrs: { data: { href: "https://example.com" } } }] },
+            ]);
+        });
+
+        it("keeps the whole link text when the link follows an emoji", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({
+                            type: "unstyled",
+                            text: "🔗 https://example.com/",
+                            entityRanges: [{ key: 0, offset: 2, length: 20 }],
+                        }),
+                    ],
+                    entityMap: { "0": { type: "LINK", mutability: "MUTABLE", data: { href: "https://example.com/" } } },
+                },
+                { resolvedOptions: allEnabled, link: dummyLinkBlock },
+            );
+            expect(result.content?.[0].content).toEqual([
+                { type: "text", text: "🔗 " },
+                { type: "text", text: "https://example.com/", marks: [{ type: "link", attrs: { data: { href: "https://example.com/" } } }] },
             ]);
         });
 

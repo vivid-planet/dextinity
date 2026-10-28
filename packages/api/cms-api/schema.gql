@@ -541,8 +541,8 @@ type Query {
   redirect(id: ID!): Redirect!
   redirectBySource(scope: RedirectScopeInput! = {}, source: String!, sourceType: RedirectSourceType!): Redirect
   redirectSourceAvailable(scope: RedirectScopeInput! = {}, source: String!): Boolean!
-  damItemsList(offset: Int! = 0, limit: Int! = 25, sortColumnName: String, sortDirection: SortDirection! = ASC, scope: DamScopeInput! = {}, folderId: ID, includeArchived: Boolean, filter: DamItemFilterInput): PaginatedDamItems!
-  damItemListPosition(sortColumnName: String, sortDirection: SortDirection! = ASC, scope: DamScopeInput! = {}, id: ID!, type: DamItemType!, folderId: ID, includeArchived: Boolean, filter: DamItemFilterInput): Int!
+  damItemsList(offset: Int! = 0, limit: Int! = 25, sortColumnName: String = "name", sortDirection: SortDirection! = ASC, scope: DamScopeInput! = {}, folderId: ID, includeArchived: Boolean, filter: DamItemFilterInput): PaginatedDamItems!
+  damItemListPosition(sortColumnName: String = "name", sortDirection: SortDirection! = ASC, scope: DamScopeInput! = {}, id: ID!, type: DamItemType!, folderId: ID, includeArchived: Boolean, filter: DamItemFilterInput): Int!
   damFilesList(
     offset: Int! = 0
     limit: Int! = 25

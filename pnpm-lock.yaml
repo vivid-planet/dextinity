@@ -2231,8 +2231,8 @@ importers:
         specifier: ^10.0.1
         version: 10.0.1
       jose:
-        specifier: ^5.10.0
-        version: 5.10.0
+        specifier: ^6.2.13
+        version: 6.2.13
       jsdom:
         specifier: ^28.1.0
         version: 28.1.0(@noble/hashes@1.8.0)(supports-color@8.1.1)
@@ -2667,8 +2667,8 @@ importers:
         specifier: workspace:*
         version: link:../site-react
       jose:
-        specifier: ^5.10.0
-        version: 5.10.0
+        specifier: ^6.2.13
+        version: 6.2.13
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -2746,8 +2746,8 @@ importers:
         specifier: ^6.2.1
         version: 6.2.1
       jose:
-        specifier: ^5.10.0
-        version: 5.10.0
+        specifier: ^6.2.13
+        version: 6.2.13
       scroll-into-view-if-needed:
         specifier: ^3.1.0
         version: 3.1.0
@@ -14073,6 +14073,9 @@ packages:
 
   jose@6.2.12:
     resolution: {integrity: sha512-9NiFmJEex0sy2Dk58j2UGBSHgUs2ypF9eZSu4L6vjOX3Dp96Sw1F3uL+H+D1sx02jZZdzUT0HgvCy59CuvXcWw==}
+
+  jose@6.2.13:
+    resolution: {integrity: sha512-7TIg10ZE1x82YediN+lcrPNvGMKge9yFHQD+Qho/b8y2adfugU3AsvvHfxV0fzyFllT6l9xCjf4RWY9g/Z9PJQ==}
 
   joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
@@ -32687,6 +32690,8 @@ snapshots:
 
   jose@6.2.12: {}
 
+  jose@6.2.13: {}
+
   joycon@3.1.1: {}
 
   js-beautify@1.15.4:
@@ -32860,7 +32865,7 @@ snapshots:
     dependencies:
       '@types/jsonwebtoken': 9.0.10
       debug: 4.4.3(supports-color@8.1.1)
-      jose: 6.2.12
+      jose: 6.2.13
       limiter: 1.1.5
       lru-cache: 11.5.3
       lru-memoizer: 3.0.0

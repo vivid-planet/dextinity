@@ -13,6 +13,8 @@ import {
     BlockDataInterface,
     BlockInputFactory,
     BlockInputInterface,
+    type BlockMetaTipTap,
+    type BlockMetaTipTapStyledNode,
     ChildBlockInfo,
     registerBlock,
 } from "../block";
@@ -49,6 +51,7 @@ import {
     resolveTextBlocks,
     type TipTapListOptions,
     type TipTapResolvedList,
+    type TipTapResolvedStyledNode,
     type TipTapResolvedTextBlock,
     type TipTapTextBlock,
     unorderedListName,
@@ -308,6 +311,43 @@ export function buildExtensions({
         ...(hasBlockChildBlocks ? [CmsBlock] : []),
         ...(hasInlineChildBlocks ? [CmsInlineBlock] : []),
     ];
+}
+
+const getStyledNodeMeta = ({ styles, defaultStyle }: TipTapResolvedStyledNode): BlockMetaTipTapStyledNode => ({
+    styles: styles.map((style) => style.name),
+    defaultStyle,
+});
+
+function buildTipTapBlockMeta({
+    schema,
+    resolvedOptions,
+    inlineStyles,
+    placeholders,
+    linkBlock,
+    maxTextBlocks,
+    listLevelMax,
+}: {
+    schema: Schema;
+    resolvedOptions: TipTapResolvedOptions;
+    inlineStyles: TipTapInlineStyle[];
+    placeholders: TipTapPlaceholder[];
+    linkBlock?: Block;
+    maxTextBlocks?: number;
+    listLevelMax?: number;
+}): BlockMetaTipTap {
+    return {
+        nodes: Object.keys(schema.nodes),
+        marks: Object.keys(schema.marks),
+        textBlocks: resolvedOptions.textBlocks.map((textBlock) => ({ name: textBlock.name, tag: textBlock.tag, ...getStyledNodeMeta(textBlock) })),
+        defaultTextBlock: resolvedOptions.defaultTextBlock.name,
+        orderedList: resolvedOptions.orderedList ? getStyledNodeMeta(resolvedOptions.orderedList) : null,
+        unorderedList: resolvedOptions.unorderedList ? getStyledNodeMeta(resolvedOptions.unorderedList) : null,
+        inlineStyles: inlineStyles.map(({ name, appliesTo }) => ({ name, appliesTo: appliesTo ?? null })),
+        placeholders: placeholders.map((placeholder) => placeholder.name),
+        link: linkBlock?.name ?? null,
+        maxTextBlocks: maxTextBlocks ?? null,
+        listLevelMax: listLevelMax ?? null,
+    };
 }
 
 // checks the raw JSON for mark types that don't exist in the schema.
@@ -689,6 +729,7 @@ export function createTipTapRichTextBlock(
         hasInlineChildBlocks,
     });
     const schema = getSchema(extensions);
+    const tipTap = buildTipTapBlockMeta({ schema, resolvedOptions, inlineStyles, placeholders, linkBlock: LinkBlock, maxTextBlocks, listLevelMax });
 
     const draftJsTextBlockMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.textBlockMap : undefined;
     const draftJsListItemMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.listItemMap : undefined;
@@ -727,7 +768,7 @@ export function createTipTapRichTextBlock(
 
     @BlockDataMigrationVersion(migrate?.version, migrateVendor?.version)
     class TipTapRichTextBlockData extends BlockData implements TipTapRichTextBlockDataInterface {
-        @BlockField({ type: "tipTapRichTextBlock", childBlocks })
+        @BlockField({ type: "tipTapRichTextBlock", childBlocks, tipTap })
         tipTapContent: JSONContent;
 
         searchText(): SearchText[] {
@@ -791,7 +832,7 @@ export function createTipTapRichTextBlock(
             orderedList: resolvedOptions.orderedList,
             unorderedList: resolvedOptions.unorderedList,
         })
-        @BlockField({ type: "tipTapRichTextBlock", childBlocks })
+        @BlockField({ type: "tipTapRichTextBlock", childBlocks, tipTap })
         tipTapContent: JSONContent;
 
         transformToBlockData(): TipTapRichTextBlockData {

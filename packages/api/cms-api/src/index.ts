@@ -31,6 +31,8 @@ export {
     BlockMetaFieldKind,
     BlockMetaInterface,
     BlockMetaLiteralFieldKind,
+    BlockMetaTipTap,
+    BlockMetaTipTapStyledNode,
     BlockTransformerServiceInterface,
     BlockWarning,
     ChildBlockInfo,

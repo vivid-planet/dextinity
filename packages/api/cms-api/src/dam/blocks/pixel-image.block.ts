@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsOptional, IsUUID, ValidateNested } from "class-validator";
 
 import {
     BlockContext,
@@ -67,8 +67,7 @@ class PixelImageBlockData extends BlockData {
 
 class PixelImageBlockInput extends BlockInput {
     @IsOptional()
-    @IsNotEmpty()
-    @IsString()
+    @IsUUID()
     damFileId?: string;
 
     @Type(() => ImageCropAreaInput)

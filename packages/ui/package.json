@@ -39,10 +39,10 @@
         "test:watch": "vitest --watch"
     },
     "dependencies": {
-        "@base-ui/react": "^1.5.0",
         "clsx": "^2.1.1"
     },
     "devDependencies": {
+        "@base-ui/react": "^1.5.0",
         "@dextinity/eslint-config": "workspace:*",
         "@storybook/addon-docs": "^10.6.1",
         "@storybook/addon-vitest": "10.6.1",
@@ -72,6 +72,7 @@
         "vitest": "^4.1.11"
     },
     "peerDependencies": {
+        "@base-ui/react": "^1.5.0",
         "react": "^18.0.0 || ^19.0.0",
         "react-dom": "^18.0.0 || ^19.0.0"
     },

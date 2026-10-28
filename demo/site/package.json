@@ -83,7 +83,7 @@
         "eslint": "^9.39.5",
         "graphql": "^16.14.2",
         "jsdom": "^28.1.0",
-        "npm-run-all2": "^9.0.3",
+        "npm-run-all2": "^9.0.4",
         "prettier": "^3.9.10",
         "sass": "^1.105.1",
         "schema-dts": "^2.1.0",

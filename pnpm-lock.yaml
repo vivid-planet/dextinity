@@ -2902,6 +2902,9 @@ importers:
       qs:
         specifier: ^6.16.0
         version: 6.16.0
+      query-string:
+        specifier: ^9.5.1
+        version: 9.5.1
       react:
         specifier: ^19.3.0
         version: 19.3.0
@@ -2954,9 +2957,6 @@ importers:
       '@types/history':
         specifier: ^4.7.11
         version: 4.7.11
-      '@types/qs':
-        specifier: ^6.15.1
-        version: 6.15.1
       '@types/react':
         specifier: ^19.3.0
         version: 19.3.0

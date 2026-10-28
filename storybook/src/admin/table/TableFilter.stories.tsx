@@ -12,7 +12,7 @@ import {
     useTableQueryFilter,
 } from "@dextinity/admin";
 import { Typography } from "@mui/material";
-import * as qs from "qs";
+import queryString from "query-string";
 
 import { apolloRestStoryDecorator } from "../../apollo-rest-story.decorator";
 
@@ -47,7 +47,7 @@ function pathFunction({ args }: { args: { [key: string]: any } }) {
         }
         return acc;
     }, {});
-    return `users?${qs.stringify(q, { arrayFormat: "brackets" })}`;
+    return `users?${queryString.stringify(q, { arrayFormat: "bracket" })}`;
 }
 
 interface IQueryData {

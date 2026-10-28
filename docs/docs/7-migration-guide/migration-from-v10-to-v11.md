@@ -782,7 +782,7 @@ The `separator` prop is replaced by `iconMapping.separator`:
 ```
 
 The `overflowLinkText` prop is removed without replacement.
-The overflow button is rendered by the `ellipsis` slot of `Breadcrumbs`.
+The overflow button's label is rendered by the `ellipsis` slot of `Breadcrumbs`.
 
 The icon of the back button can now be replaced through `iconMapping.backButton`.
 
@@ -813,14 +813,18 @@ This also applies when the icons are set through the `breadcrumbs` slot of `Tool
 
 The removed slots of `StackBreadcrumbs` and `ToolbarBreadcrumbs` are replaced by the slots of `Breadcrumbs`:
 
-| `StackBreadcrumbs` (v10) | `Breadcrumbs` (v11) |
-| ------------------------ | ------------------- |
-| `breadcrumbs`            | `toolbarContainer`  |
-| `listItem`               | `menuContainer`     |
-| `link`                   | `item`              |
-| `disabledLink`           | `activeItem`        |
-| `overflowLink`           | `overflowButton`    |
-| `separator`              | `separator`         |
+| `StackBreadcrumbs` (v10) | `Breadcrumbs` (v11), desktop | `Breadcrumbs` (v11), mobile                                   |
+| ------------------------ | ---------------------------- | ------------------------------------------------------------- |
+| `breadcrumbs`            | `toolbarContainer`           | `toolbarContainer`                                            |
+| `listItem`               | `menuContainer`              | `expandedMenuSubitemWrapper`, `expandedMenuActiveItemWrapper` |
+| `link`                   | `item`                       | `expandedMenuItem`                                            |
+| `disabledLink`           | `activeItem`                 | `activeItem`, `expandedMenuActiveItem`                        |
+| `overflowLink`           | `overflowButton`             | — (no overflow button on mobile)                              |
+| `separator`              | `separator`                  | `separator`                                                   |
+
+`StackBreadcrumbs` used to render the same trail on all screen sizes.
+`Breadcrumbs` shows the current item with a menu of the whole trail on mobile, which is rendered by other slots.
+Apply a customization to the slots of both columns to keep it on all screen sizes.
 
 | `ToolbarBreadcrumbs` (v10)              | `Breadcrumbs` (v11)                                           |
 | --------------------------------------- | ------------------------------------------------------------- |

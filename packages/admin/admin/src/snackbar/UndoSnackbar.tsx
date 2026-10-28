@@ -32,6 +32,7 @@ export const UndoSnackbar = <Payload,>({ onUndoClick, payload, ...props }: UndoS
             {...props}
             slots={{
                 transition: (props: SlideProps) => <Slide {...props} direction="right" />,
+                ...props.slots,
             }}
         />
     );

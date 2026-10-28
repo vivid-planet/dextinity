@@ -427,8 +427,8 @@ importers:
         specifier: ^8.3.0
         version: 8.3.0
       http-proxy-middleware:
-        specifier: ^3.0.7
-        version: 3.0.7(supports-color@8.1.1)
+        specifier: ^3.0.10
+        version: 3.0.10(supports-color@8.1.1)
     devDependencies:
       '@types/express':
         specifier: ^5.0.6
@@ -13517,8 +13517,8 @@ packages:
       '@types/express':
         optional: true
 
-  http-proxy-middleware@3.0.7:
-    resolution: {integrity: sha512-iwbQltVlx8bCrqePUM8C+hllHvdawVhQJaLrj1X7qllkvFQdXFsr16pW/mo9+JDVjN+QO2XUx9jd8SmoFkE5qw==}
+  http-proxy-middleware@3.0.10:
+    resolution: {integrity: sha512-Niw9P+62tB2DuWJ/Vjxn53gAmDrRBM7hku8YRoxMFQu7pAkhITq0Dq9Uw4X/8hnAZ9kHsnDuBXKMzuN2i/RnGw==}
     engines: {node: ^14.18.0 || ^16.10.0 || >=18.0.0}
 
   http-proxy@1.18.1:
@@ -32168,7 +32168,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  http-proxy-middleware@3.0.7(supports-color@8.1.1):
+  http-proxy-middleware@3.0.10(supports-color@8.1.1):
     dependencies:
       '@types/http-proxy': 1.17.17
       debug: 4.4.3(supports-color@8.1.1)

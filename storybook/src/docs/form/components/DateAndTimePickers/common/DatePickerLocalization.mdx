@@ -3,6 +3,8 @@ import dedent from "ts-dedent";
 
 ## Localization
 
+This applies to the deprecated `@dextinity/admin-date-time` components only. The components in `@dextinity/admin` read the date-fns locale from MUI X's `LocalizationProvider` (`adapterLocale`).
+
 For localization of the DatePicker, it needs to be wrapped by `DateFnsLocaleProvider` with the desired locale. <br />
 Generally, this is done at the entry point of the application, e.g., in `App.tsx`:
 

@@ -74,15 +74,17 @@ export class ManyImagesTestPageFixtureService {
         });
         pageInput.stage = StageBlock.blockInputFactory({ blocks: [] });
 
-        await this.entityManager.persistAndFlush(
-            this.entityManager.create(Page, {
-                id: uuidDocument,
-                content: pageInput.content.transformToBlockData(),
-                seo: pageInput.seo.transformToBlockData(),
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                stage: pageInput.stage.transformToBlockData(),
-            }),
-        );
+        await this.entityManager
+            .persist(
+                this.entityManager.create(Page, {
+                    id: uuidDocument,
+                    content: pageInput.content.transformToBlockData(),
+                    seo: pageInput.seo.transformToBlockData(),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    stage: pageInput.stage.transformToBlockData(),
+                }),
+            )
+            .flush();
     }
 }

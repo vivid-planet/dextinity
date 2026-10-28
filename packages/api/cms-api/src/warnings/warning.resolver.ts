@@ -1,21 +1,20 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, raw } from "@mikro-orm/postgresql";
+import { EntityManager, type QBFilterQuery, type QueryBuilder, raw, type RawQueryFragment } from "@mikro-orm/postgresql";
 import { UnauthorizedException } from "@nestjs/common";
 import { Args, ID, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
-import isEqual from "lodash.isequal";
 
-import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
-import { gqlArgsToMikroOrmQuery, splitSearchString } from "../common/filter/mikro-orm";
-import { EntityInfoObject } from "../entity-info/entity-info.object";
-import { EntityInfoService } from "../entity-info/entity-info.service";
-import { AffectedEntity } from "../user-permissions/decorators/affected-entity.decorator";
-import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
-import { CurrentUser } from "../user-permissions/dto/current-user";
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { PaginatedWarnings } from "./dto/paginated-warnings";
-import { WarningsArgs } from "./dto/warnings.args";
-import { Warning } from "./entities/warning.entity";
-import { referencesEntityInfo, remapWarningOrderBy, remapWarningQueryFields, type WarningQuery } from "./warning-query-fields.helper";
+import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator.js";
+import { gqlArgsToMikroOrmQuery, splitSearchString } from "../common/filter/mikro-orm.js";
+import { EntityInfoObject } from "../entity-info/entity-info.object.js";
+import { EntityInfoService } from "../entity-info/entity-info.service.js";
+import { isScopeWithin } from "../user-permissions/access-control.service.js";
+import { AffectedEntity } from "../user-permissions/decorators/affected-entity.decorator.js";
+import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { CurrentUser } from "../user-permissions/dto/current-user.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { PaginatedWarnings } from "./dto/paginated-warnings.js";
+import { WarningsArgs } from "./dto/warnings.args.js";
+import { Warning } from "./entities/warning.entity.js";
+import { referencesEntityInfo, remapWarningOrderBy, remapWarningQueryFields, type WarningQuery } from "./warning-query-fields.helper.js";
 
 @Resolver(() => Warning)
 @RequiredPermission(["warnings"], { skipScopeCheck: true })
@@ -23,13 +22,12 @@ export class WarningResolver {
     constructor(
         private readonly entityManager: EntityManager,
         private readonly entityInfoService: EntityInfoService,
-        @InjectRepository(Warning) private readonly repository: EntityRepository<Warning>,
     ) {}
 
     @Query(() => Warning)
     @AffectedEntity(Warning)
     async warning(@Args("id", { type: () => ID }) id: string): Promise<Warning> {
-        const warning = await this.repository.findOneOrFail(id);
+        const warning = await this.entityManager.findOneOrFail(Warning, id);
         return warning;
     }
 
@@ -42,7 +40,7 @@ export class WarningResolver {
         const allowedScopesForUser = user.permissions.find(({ permission }) => permission === "warnings")?.contentScopes;
 
         for (const scope of scopes) {
-            if (!allowedScopesForUser?.find((allowedScope) => isEqual(allowedScope, scope))) {
+            if (!allowedScopesForUser?.some((allowedScope) => isScopeWithin(scope, allowedScope))) {
                 throw new UnauthorizedException("Scopes were passed that the user does not have permission to");
             }
         }
@@ -112,18 +110,23 @@ export class WarningResolver {
 
         const queryBuilder = this.entityManager.createQueryBuilder(Warning, "warning").select("warning.*");
 
-        // Join the EntityInfo view only when name / secondary information is used: it's a union over all
+        // Join the EntityInfo view only when name / secondary information / visible is used: it's a union over all
         // entity tables, so an unconditional join would slow the common case (and the count query). It's
         // keyed by entity name + id from the warning's `sourceInfo`.
         if (referencesEntityInfo(where) || referencesEntityInfo(orderBy)) {
-            const entityInfoQueryBuilder = this.entityManager.createQueryBuilder(EntityInfoObject, "entityInfo");
-            queryBuilder.leftJoin(entityInfoQueryBuilder, "entityInfo", {
+            const entityInfoQueryBuilder: QueryBuilder<EntityInfoObject> = this.entityManager.createQueryBuilder(EntityInfoObject);
+            const joinCondition: Record<string, RawQueryFragment> = {
                 "entityInfo.entityName": raw(`"warning"."sourceInfo"->>'rootEntityName'`),
                 "entityInfo.id": raw(`"warning"."sourceInfo"->>'targetId'`),
-            });
+            };
+            queryBuilder.leftJoin(entityInfoQueryBuilder, "entityInfo", joinCondition);
         }
 
-        queryBuilder.where(where).limit(limit).offset(offset);
+        // The EntityInfo join is conditional, so the QueryBuilder cannot statically track the "entityInfo" alias.
+        queryBuilder
+            .where(where as QBFilterQuery<Warning, "warning">)
+            .limit(limit)
+            .offset(offset);
 
         if (orderBy) {
             queryBuilder.orderBy(orderBy);

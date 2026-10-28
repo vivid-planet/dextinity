@@ -29,6 +29,7 @@ alwaysApply: false
 
 - Use **named exports only**. Default exports are allowed only when technically required (e.g. a framework demands it).
 - Use relative imports only for **sibling or child** files within the same module. Everything else uses the `@src/…` alias.
+    - This only applies to projects that define the `@src/…` path alias. Library packages compiled with plain `tsc` can't use it, because `tsc` doesn't rewrite path aliases in its output, so they use relative imports, including for ancestor files.
 
 ## Async & iteration
 
@@ -47,4 +48,4 @@ alwaysApply: false
     }
     ```
 
-- GraphQL-exposed enums follow a different rule — see [api-nestjs.instructions.md](api-nestjs.instructions.md#graphql-enums).
+- The same applies to GraphQL-exposed enums, where diverging keys and values cause runtime errors — see [api-nestjs.instructions.md](api-nestjs.instructions.md#graphql-enums).

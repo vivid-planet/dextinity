@@ -18,8 +18,8 @@ import {
     useFormSaveConflict,
 } from "@dextinity/cms-admin";
 import type { GQLProductVariantMutationErrorCode } from "@src/graphql.generated";
+import { deepEqual } from "fast-equals";
 import { FORM_ERROR, type FormApi } from "final-form";
-import isEqual from "lodash.isequal";
 import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
@@ -164,7 +164,7 @@ export function ProductVariantForm({ id, productId }: FormProps) {
             onSubmit={handleSubmit}
             mode="edit"
             initialValues={initialValues}
-            initialValuesEqual={isEqual} //required to compare block data correctly
+            initialValuesEqual={deepEqual} //required to compare block data correctly
             subscription={{}}
         >
             {() => (
@@ -177,7 +177,7 @@ export function ProductVariantForm({ id, productId }: FormProps) {
                         component={FinalFormInput}
                         label={<FormattedMessage id="productVariant.name" defaultMessage="Name" />}
                     />
-                    <Field name="image" isEqual={isEqual} fullWidth>
+                    <Field name="image" isEqual={deepEqual} fullWidth>
                         {createFinalFormBlock(rootBlocks.image)}
                     </Field>
                 </>

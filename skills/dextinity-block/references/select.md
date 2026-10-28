@@ -6,6 +6,33 @@ The basic enum definition (`export enum Variant { ... }`, `@IsEnum`, `@BlockFiel
 
 ---
 
+## Required or Optional
+
+A single select is optional only when "no value" has its own meaning on the site (for example, no badge). Otherwise, it is required: set `defaultValue` and `required: true`, as in the examples below.
+
+An optional select uses a nullable API field (see [api-patterns.md](api-patterns.md#savability)) and `createCompositeBlockField` with a `SelectField`:
+
+```tsx
+badgeColor: {
+    block: createCompositeBlockField<ExampleBlockData["badgeColor"]>({
+        defaultValue: undefined,
+        AdminComponent: ({ state, updateState }) => (
+            <BlocksFinalForm<{ value: typeof state }> onSubmit={({ value }) => updateState(value)} initialValues={{ value: state }}>
+                <SelectField
+                    name="value"
+                    label={<FormattedMessage id="exampleBlock.badgeColor" defaultMessage="Badge color" />}
+                    options={badgeColorOptions}
+                    fullWidth
+                />
+            </BlocksFinalForm>
+        ),
+        extractTextContents: () => [],
+    }),
+},
+```
+
+---
+
 ## Numeric Select (Non-Enum)
 
 Select fields work for `number` values too — no enum needed in the API. Use `@IsInt` (or `@IsNumber`) instead of `@IsEnum`, and plain `number` as the TypeScript type.
@@ -46,6 +73,7 @@ overlay: {
     block: createCompositeBlockSelectField<ExampleBlockData["overlay"]>({
         defaultValue: 50,
         options: overlayOptions,
+        required: true,
     }),
     title: <FormattedMessage id="exampleBlock.overlay" defaultMessage="Overlay" />,
 },
@@ -91,6 +119,7 @@ variant: {
         label: <FormattedMessage id="exampleBlock.variant" defaultMessage="Variant" />,
         defaultValue: "contained",
         options: variantOptions,
+        required: true,
     }),
 },
 
@@ -99,6 +128,7 @@ alignment: {
     block: createCompositeBlockSelectField<ExampleBlockData["alignment"]>({
         defaultValue: "left",
         options: alignmentOptions,
+        required: true,
     }),
     title: <FormattedMessage id="exampleBlock.alignment" defaultMessage="Alignment" />,
 },
@@ -145,14 +175,6 @@ categories: {
 
 ---
 
-## `required` Option
-
-`required: true` removes the empty/placeholder option from the dropdown — the user must always have a value selected.
-
-Use it for fields with no meaningful "none" state (e.g., HTML tag choice). For most enum fields, prefer `defaultValue` over `required` — this keeps the block savable immediately while still letting users change the value.
-
----
-
 ## Default Value Rules
 
 | Scenario                       | `defaultValue`                                                   |
@@ -162,8 +184,6 @@ Use it for fields with no meaningful "none" state (e.g., HTML tag choice). For m
 | Numeric select                 | Middle or most common value (`50` for overlay percentage)        |
 | Multi-select                   | `[]`                                                             |
 
-Enum fields are always required in the API (`@IsEnum` rejects `undefined`), so the Admin **must** provide a `defaultValue`.
-
 ---
 
 ## Common Pitfalls
@@ -172,5 +192,5 @@ Enum fields are always required in the API (`@IsEnum` rejects `undefined`), so t
 2. **Multi-select: missing `{ each: true }`** — `@IsEnum(MyEnum)` without it rejects arrays.
 3. **Multi-select: missing `array: true` in `@BlockField`** — field serialises as a single value instead of an array.
 4. **Missing `defaultValue`** — block fails to save on first add because `@IsEnum` rejects `undefined`.
-5. **Enum not exported** — must be exported from the API file to appear in the generated GraphQL schema and `@src/blocks.generated` types.
-6. **`@IsOptional()` on an enum field** — enum fields must always have a value; making them optional creates an API/Admin inconsistency.
+5. **Missing `required: true`** — the user can clear the field, and the block then fails to save.
+6. **Enum not exported** — must be exported from the API file to appear in the generated GraphQL schema and `@src/blocks.generated` types.

@@ -2,22 +2,22 @@ import { plainToInstance, Transform, Type } from "class-transformer";
 import { IsBoolean, IsIn, IsUUID, ValidateNested } from "class-validator";
 
 import {
-    Block,
-    BlockContext,
+    type Block,
+    type BlockContext,
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockInput,
-    BlockInputInterface,
-    ChildBlockInfo,
+    type BlockInputInterface,
+    type ChildBlockInfo,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
     isBlockDataInterface,
     isBlockInputInterface,
-    SimpleBlockInputInterface,
-    TraversableTransformBlockResponse,
-} from "../block";
-import { BlockField } from "../decorators/field";
-import { BlockFactoryNameOrOptions } from "./types";
+    type SimpleBlockInputInterface,
+    type TraversableTransformBlockResponse,
+} from "../block.js";
+import { BlockField } from "../decorators/field.js";
+import type { BlockFactoryNameOrOptions } from "./types.js";
 
 interface ColumnsBlockLayout {
     name: string;

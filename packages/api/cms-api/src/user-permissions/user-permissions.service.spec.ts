@@ -1,60 +1,116 @@
 import type { DiscoveryService } from "@golevelup/nestjs-discovery";
-import type { EntityRepository } from "@mikro-orm/postgresql";
-import { describe, expect, it, vi } from "vitest";
+import { createMock } from "@golevelup/ts-vitest";
+import type { EntityManager } from "@mikro-orm/postgresql";
+import { describe, expect, it } from "vitest";
 
-import type { UserContentScopes } from "./entities/user-content-scopes.entity";
-import type { UserPermission } from "./entities/user-permission.entity";
-import type { ContentScope } from "./interfaces/content-scope.interface";
-import type { User } from "./interfaces/user";
-import { UserPermissionsService } from "./user-permissions.service";
-import { type AccessControlServiceInterface, UserPermissions, type UserPermissionsOptions } from "./user-permissions.types";
+import type { UserContentScopes } from "./entities/user-content-scopes.entity.js";
+import type { ContentScope } from "./interfaces/content-scope.interface.js";
+import type { User } from "./interfaces/user.js";
+import { UserPermissionsService } from "./user-permissions.service.js";
+import { type AccessControlServiceInterface, UserPermissions, type UserPermissionsOptions } from "./user-permissions.types.js";
 
-function createService({
-    availableContentScopes,
-    getContentScopesForUser,
-}: {
-    availableContentScopes: ContentScope[];
-    getContentScopesForUser?: AccessControlServiceInterface["getContentScopesForUser"];
-}) {
-    const options: UserPermissionsOptions = { availableContentScopes };
-    const accessControlService: AccessControlServiceInterface = { isAllowed: () => true, getContentScopesForUser };
-    const contentScopeRepository = { findOne: vi.fn().mockResolvedValue(null) } as unknown as EntityRepository<UserContentScopes>;
-    const permissionRepository = {} as EntityRepository<UserPermission>;
+const user: User = { id: "1", name: "User", email: "user@example.com" };
 
-    return new UserPermissionsService(options, undefined, accessControlService, permissionRepository, contentScopeRepository, {} as DiscoveryService);
+function createService(
+    options: UserPermissionsOptions,
+    {
+        getContentScopesForUser,
+        manualContentScopes,
+    }: { getContentScopesForUser?: AccessControlServiceInterface["getContentScopesForUser"]; manualContentScopes?: ContentScope[] } = {},
+): UserPermissionsService {
+    return new UserPermissionsService(
+        options,
+        undefined,
+        createMock<AccessControlServiceInterface>({ isAllowed: () => true, getContentScopesForUser }),
+        createMock<EntityManager>({
+            findOne: async () => (manualContentScopes ? ({ userId: user.id, contentScopes: manualContentScopes } as UserContentScopes) : null),
+        }),
+        createMock<DiscoveryService>(),
+    );
 }
 
 describe("UserPermissionsService", () => {
-    const scopeA: ContentScope = { domain: "main", language: "en" };
-    const scopeB: ContentScope = { domain: "secondary", language: "de" };
-
-    const userA: User = { id: "a", name: "User A", email: "a@example.com" };
-    const userB: User = { id: "b", name: "User B", email: "b@example.com" };
-
-    describe("getContentScopesForUsers", () => {
-        it("computes the available content scopes only once for all users", async () => {
+    describe("getAvailableContentScopeDimensions", () => {
+        it("returns the configured dimensions and humanizes missing labels", async () => {
             const service = createService({
-                availableContentScopes: [scopeA, scopeB],
-                getContentScopesForUser: () => UserPermissions.allContentScopes,
+                availableContentScopeDimensions: [{ name: "domain", label: "Domain" }, { name: "language" }, { name: "product" }],
             });
-            const getAvailableContentScopes = vi.spyOn(service, "getAvailableContentScopes");
 
-            const result = await service.getContentScopesForUsers([userA, userB]);
+            const dimensions = await service.getAvailableContentScopeDimensions();
 
-            expect(getAvailableContentScopes).toHaveBeenCalledTimes(1);
-            expect(result).toEqual([
-                [scopeA, scopeB],
-                [scopeA, scopeB],
+            expect(dimensions).toEqual([
+                { name: "domain", label: "Domain" },
+                { name: "language", label: "Language" },
+                { name: "product", label: "Product" },
             ]);
         });
 
-        it("returns each user's content scopes in the order of the passed users", async () => {
+        it("resolves a factory function", async () => {
             const service = createService({
-                availableContentScopes: [scopeA, scopeB],
-                getContentScopesForUser: (user) => (user.id === "a" ? [scopeA] : [scopeB]),
+                availableContentScopeDimensions: () => [{ name: "domain" }],
             });
 
-            await expect(service.getContentScopesForUsers([userA, userB])).resolves.toEqual([[scopeA], [scopeB]]);
+            const dimensions = await service.getAvailableContentScopeDimensions();
+
+            expect(dimensions).toEqual([{ name: "domain", label: "Domain" }]);
+        });
+
+        it("derives the dimensions from the available content scopes when not configured", async () => {
+            const service = createService({
+                availableContentScopes: [
+                    { domain: "main", language: "en" },
+                    { domain: "main", language: "de" },
+                ],
+            });
+
+            const dimensions = await service.getAvailableContentScopeDimensions();
+
+            expect(dimensions).toEqual([
+                { name: "domain", label: "Domain" },
+                { name: "language", label: "Language" },
+            ]);
+        });
+
+        it("returns no dimensions when nothing is configured", async () => {
+            const service = createService({});
+
+            const dimensions = await service.getAvailableContentScopeDimensions();
+
+            expect(dimensions).toEqual([]);
+        });
+    });
+
+    describe("filterContentScopesForUser", () => {
+        const options: UserPermissionsOptions = {
+            availableContentScopes: [
+                { domain: "main", language: "en" },
+                { domain: "main", language: "de" },
+            ],
+            availableContentScopeDimensions: [{ name: "domain" }, { name: "language" }, { name: "product" }],
+        };
+
+        it("returns a manual content scope as-is, including a value for a dimension outside the available content scopes", async () => {
+            const service = createService(options, { manualContentScopes: [{ domain: "main", language: "en", product: "product-42" }] });
+
+            expect(await service.filterContentScopesForUser({ user, includeContentScopesManual: true })).toEqual([
+                { domain: "main", language: "en", product: "product-42" },
+            ]);
+        });
+
+        it("returns a manual content scope even when it is not part of the available content scopes", async () => {
+            const service = createService(options, { manualContentScopes: [{ domain: "main", language: "fr", product: "product-42" }] });
+
+            expect(await service.filterContentScopesForUser({ user, includeContentScopesManual: true })).toEqual([
+                { domain: "main", language: "fr", product: "product-42" },
+            ]);
+        });
+
+        it("represents access to all content scopes as a per-dimension wildcard spanning all declared dimensions", async () => {
+            const service = createService(options, { getContentScopesForUser: () => UserPermissions.allContentScopes });
+
+            expect(await service.filterContentScopesForUser({ user, includeContentScopesManual: false })).toEqual([
+                { domain: "*", language: "*", product: "*" },
+            ]);
         });
     });
 });

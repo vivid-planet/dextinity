@@ -1,11 +1,12 @@
 import { CrudField } from "@dextinity/cms-api";
-import { BaseEntity, defineConfig, Embeddable, Embedded, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Embeddable, Embedded, Entity, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 import { describe, expect, it } from "vitest";
 
-import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
-import { generateCrud } from "../generate-crud";
+import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper.js";
+import { generateCrud } from "../generate-crud.js";
 
 @Embeddable()
 export class TestEntityScope {
@@ -17,7 +18,7 @@ export class TestEntityScope {
 export class TestEntity extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
     @CrudField({ filter: false, search: false })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Embedded(() => TestEntityScope)
     scope: TestEntityScope;
@@ -28,13 +29,13 @@ describe("GenerateCrud without find condition", () => {
         LazyMetadataStorage.load();
         const orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [TestEntity, TestEntityScope],
             }),
         );
 
-        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntity"));
+        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntity"));
         const formattedOut = await formatGeneratedFiles(out);
 
         {
@@ -48,7 +49,7 @@ describe("GenerateCrud without find condition", () => {
                 source
                     .getImportDeclarations()
                     .filter((imp) => imp.getModuleSpecifierValue() === "@mikro-orm/postgresql")
-                    .map((imp) => imp.getNamedImports().map((namedImp) => namedImp.getText()))
+                    .map((imp) => imp.getNamedImports().map((namedImp) => namedImp.getName()))
                     .flat(),
             ).toContain("ObjectQuery");
 

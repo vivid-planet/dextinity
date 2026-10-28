@@ -28,9 +28,9 @@ const theme = createTheme({
 registerStyles(
     (theme) => css`
         ${theme.breakpoints.default.belowMediaQuery} {
-            .symmetricThreeColumnsSection > table > tbody > tr > td {
+            .symmetricThreeColumnsSection > table > tbody > tr > td > div {
                 display: flex !important;
-                gap: 20px !important;
+                column-gap: 20px !important;
             }
 
             .symmetricThreeColumnsSection__column {
@@ -47,7 +47,7 @@ registerStyles(
         }
 
         ${theme.breakpoints.mobile.belowMediaQuery} {
-            .symmetricThreeColumnsSection > table > tbody > tr > td {
+            .symmetricThreeColumnsSection > table > tbody > tr > td > div {
                 flex-direction: column !important;
             }
 
@@ -55,6 +55,11 @@ registerStyles(
                 flex: none !important;
                 width: 100% !important;
                 max-width: 100% !important;
+                margin-bottom: 20px !important;
+            }
+
+            .symmetricThreeColumnsSection__column--last {
+                margin-bottom: 0 !important;
             }
         }
     `,
@@ -73,7 +78,7 @@ export const Default: StoryObj = {
             const innerColumnWidth = `${((contentWidthPerColumn + columnGap) / availableContentWidth) * 100}%`;
 
             return (
-                <MjmlSection indent className="symmetricThreeColumnsSection">
+                <MjmlSection indent disableResponsiveBehavior className="symmetricThreeColumnsSection">
                     <MjmlColumn width={outerColumnWidth} paddingRight={halfColumnGap} className="symmetricThreeColumnsSection__column">
                         <MjmlText variant="subheading" bottomSpacing>
                             First column
@@ -95,7 +100,11 @@ export const Default: StoryObj = {
                             Numquam aut voluptas numquam aspernatur. Consequatur quidem omnis dolorem natus quis soluta. Est recusandae delectus.
                         </MjmlText>
                     </MjmlColumn>
-                    <MjmlColumn width={outerColumnWidth} paddingLeft={halfColumnGap} className="symmetricThreeColumnsSection__column">
+                    <MjmlColumn
+                        width={outerColumnWidth}
+                        paddingLeft={halfColumnGap}
+                        className="symmetricThreeColumnsSection__column symmetricThreeColumnsSection__column--last"
+                    >
                         <MjmlText variant="subheading" bottomSpacing>
                             Third column
                         </MjmlText>
@@ -142,7 +151,7 @@ registerStyles(
         ${theme.breakpoints.default.belowMediaQuery} {
             .neverStackingThreeColumnsSection > table > tbody > tr > td > div {
                 display: flex !important;
-                gap: 20px !important;
+                column-gap: 20px !important;
             }
 
             .neverStackingThreeColumnsSection__column {
@@ -214,9 +223,8 @@ export const NeverStacks: StoryObj = {
                             so columns stay side-by-side at every viewport.
                         </MjmlText>
                         <MjmlText bottomSpacing>
-                            <code>disableResponsiveBehavior</code> wraps the columns in an <code>MjmlGroup</code> internally so MJML&apos;s own mobile
-                            auto-stack is suppressed even in clients that ignore the flex CSS. Because of that wrapper, the flex reset targets one
-                            level deeper (<code>… &gt; td &gt; div</code>) than in the default layout.
+                            Both layouts set <code>disableResponsiveBehavior</code> to get the inline widths. It also suppresses MJML&apos;s own
+                            mobile auto-stack, which is the wanted result here, so no <code>mobile</code> block replaces it.
                         </MjmlText>
                         <MjmlText>
                             Suitable for short, fixed-value rows — metrics, numeric summaries, icon strips — that remain readable even when narrow.

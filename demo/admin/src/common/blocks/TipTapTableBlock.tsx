@@ -1,9 +1,13 @@
 import { createTableBlock } from "@dextinity/cms-admin";
 import { FormattedMessage } from "react-intl";
 
+import { createResponsiveTableBlock } from "./table/createResponsiveTableBlock";
 import { TipTapRichTextBlock } from "./TipTapRichTextBlock";
 
-export const TipTapTableBlock = createTableBlock({ richText: TipTapRichTextBlock, name: "TipTapTable" }, (block) => ({
-    ...block,
+const TipTapTableContentBlock = createTableBlock({ richText: TipTapRichTextBlock, name: "TipTapTableContent" });
+
+export const TipTapTableBlock = createResponsiveTableBlock({
+    name: "TipTapTable",
     displayName: <FormattedMessage id="tipTapTableBlock.displayName" defaultMessage="Table (TipTap)" />,
-}));
+    tableContentBlock: TipTapTableContentBlock,
+});

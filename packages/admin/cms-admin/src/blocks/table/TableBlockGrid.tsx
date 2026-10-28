@@ -10,7 +10,7 @@ import {
     type GridRenderEditCellParams,
     useGridApiRef,
 } from "@mui/x-data-grid-pro";
-import { type ComponentProps, type Dispatch, type SetStateAction, useEffect } from "react";
+import { type ComponentProps, type Dispatch, type SetStateAction, useCallback, useEffect } from "react";
 
 import type { TableBlockData } from "../../blocks.generated";
 import type { TableBlockState } from "../createTableBlock";
@@ -20,8 +20,12 @@ import { dataGridStyles } from "./dataGridStyles";
 import { EditCell } from "./EditCell";
 import { RowActionsCell } from "./RowActionsCell";
 import { useTableBlockContext } from "./TableBlockContext";
+import { useScrollToAndHighlightCell } from "./useScrollToAndHighlightCell";
+import { type CellPosition, createCellKey } from "./utils/cellRoute";
+import { moveColumnToIndex } from "./utils/column";
 import { ensureMinimumTableState } from "./utils/ensureMinimumTableState";
-import { useRecentlyPastedIds } from "./utils/useRecentlyPastedIds";
+import { moveRowToIndex } from "./utils/row";
+import { useTemporarilyHighlightedIds } from "./utils/useTemporarilyHighlightedIds";
 
 type ColumnSize = TableBlockData["columns"][number]["size"];
 type TableBlockColumn = TableBlockData["columns"][number];
@@ -45,13 +49,18 @@ const flexForColumnSize: Record<ColumnSize, number> = {
 type Props = {
     state: TableBlockState;
     updateState: Dispatch<SetStateAction<TableBlockState>>;
+    clickedCell?: CellPosition;
 };
 
-export const TableBlockGrid = ({ state, updateState }: Props) => {
+export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
     const { RichTextBlock } = useTableBlockContext();
     const apiRef = useGridApiRef();
-    const { recentlyPastedIds: recentlyPastedRowIds, addToRecentlyPastedIds: addToRecentlyPastedRowIds } = useRecentlyPastedIds();
-    const { recentlyPastedIds: recentlyPastedColumnIds, addToRecentlyPastedIds: addToRecentlyPastedColumnIds } = useRecentlyPastedIds();
+    const { highlightedIds: recentlyPastedRowIds, highlightTemporarily: addToRecentlyPastedRowIds } = useTemporarilyHighlightedIds();
+    const { highlightedIds: recentlyPastedColumnIds, highlightTemporarily: addToRecentlyPastedColumnIds } = useTemporarilyHighlightedIds();
+    const { highlightedIds: recentlyClickedCellKeys, highlightTemporarily: highlightCellKey } = useTemporarilyHighlightedIds();
+
+    const highlightCell = useCallback((cell: CellPosition) => highlightCellKey(createCellKey(cell)), [highlightCellKey]);
+    useScrollToAndHighlightCell({ apiRef, cell: clickedCell, highlightCell });
 
     useEffect(() => {
         if (state.columns.length === 0 || state.rows.length === 0) {
@@ -86,21 +95,6 @@ export const TableBlockGrid = ({ state, updateState }: Props) => {
         return newRow;
     };
 
-    const moveRow = (targetIndex: number, rowId: string) => {
-        updateState((state) => {
-            const movingRow = state.rows.find((row) => row.id === rowId);
-            if (!movingRow) {
-                return state;
-            }
-
-            const otherRows = state.rows.filter((row) => row.id !== rowId);
-            return {
-                ...state,
-                rows: [...otherRows.slice(0, targetIndex), movingRow, ...otherRows.slice(targetIndex)],
-            };
-        });
-    };
-
     useEffect(() => {
         const handleMoveColumn: GridEventListener<"columnHeaderDragEnd"> = ({ field: columnId }) => {
             if (!apiRef.current) {
@@ -108,18 +102,7 @@ export const TableBlockGrid = ({ state, updateState }: Props) => {
             }
             const targetIndex = apiRef.current.getColumnIndex(columnId) - 1;
 
-            updateState((state) => {
-                const movingColumn = state.columns.find((column: TableBlockColumn) => column.id === columnId);
-                if (!movingColumn) {
-                    return state;
-                }
-
-                const otherColumns = state.columns.filter((column: TableBlockColumn) => column.id !== columnId);
-                return {
-                    ...state,
-                    columns: [...otherColumns.slice(0, targetIndex), movingColumn, ...otherColumns.slice(targetIndex)],
-                };
-            });
+            updateState((state) => moveColumnToIndex({ state, columnId, targetIndex }));
         };
 
         return apiRef.current?.subscribeEvent("columnHeaderDragEnd", handleMoveColumn);
@@ -152,12 +135,13 @@ export const TableBlockGrid = ({ state, updateState }: Props) => {
                 const rowFromState = state.rows.find((rowInState) => rowInState.id === row.id);
                 const rowWasRecentlyPasted = recentlyPastedRowIds.includes(row.id);
                 const columnWasRecentlyPasted = recentlyPastedColumnIds.includes(columnId);
+                const cellWasRecentlyClicked = recentlyClickedCellKeys.includes(createCellKey({ columnId, rowId: row.id }));
 
                 return (
                     <CellValue
                         value={value}
                         highlighted={rowFromState?.highlighted || highlighted}
-                        recentlyPasted={rowWasRecentlyPasted || columnWasRecentlyPasted}
+                        isTemporarilyHighlighted={rowWasRecentlyPasted || columnWasRecentlyPasted || cellWasRecentlyClicked}
                     />
                 );
             },
@@ -206,7 +190,7 @@ export const TableBlockGrid = ({ state, updateState }: Props) => {
             }}
             sx={dataGridStyles}
             onRowOrderChange={({ targetIndex, row }) => {
-                moveRow(targetIndex, row.id);
+                updateState((state) => moveRowToIndex({ state, rowId: row.id, targetIndex }));
             }}
             processRowUpdate={processRowUpdate}
         />

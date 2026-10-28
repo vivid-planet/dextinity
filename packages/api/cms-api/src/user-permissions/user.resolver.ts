@@ -1,16 +1,15 @@
 import { Logger } from "@nestjs/common";
 import { Args, Int, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
-import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
-import { PaginatedResponseFactory } from "../common/pagination/paginated-response.factory";
-import { AbstractAccessControlService } from "./access-control.service";
-import { RequiredPermission } from "./decorators/required-permission.decorator";
-import { CurrentUser } from "./dto/current-user";
-import { FindUsersArgs, PermissionFilter } from "./dto/paginated-user-list";
-import { UserPermissionsUser } from "./dto/user";
-import { User } from "./interfaces/user";
-import { UserContentScopesLoaderService } from "./user-content-scopes-loader.service";
-import { UserPermissionsService } from "./user-permissions.service";
+import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator.js";
+import { PaginatedResponseFactory } from "../common/pagination/paginated-response.factory.js";
+import { AbstractAccessControlService } from "./access-control.service.js";
+import { RequiredPermission } from "./decorators/required-permission.decorator.js";
+import { CurrentUser } from "./dto/current-user.js";
+import { FindUsersArgs, type PermissionFilter } from "./dto/paginated-user-list.js";
+import { UserPermissionsUser } from "./dto/user.js";
+import type { User } from "./interfaces/user.js";
+import { UserPermissionsService } from "./user-permissions.service.js";
 
 @ObjectType()
 class UserPermissionPaginatedUserList extends PaginatedResponseFactory.create(UserPermissionsUser) {}
@@ -20,10 +19,7 @@ class UserPermissionPaginatedUserList extends PaginatedResponseFactory.create(Us
 export class UserResolver {
     private readonly logger = new Logger(UserResolver.name);
 
-    constructor(
-        private readonly userService: UserPermissionsService,
-        private readonly userContentScopesLoader: UserContentScopesLoaderService,
-    ) {}
+    constructor(private readonly userService: UserPermissionsService) {}
 
     @Query(() => UserPermissionsUser)
     async userPermissionsUserById(@Args("id", { type: () => String }) id: string): Promise<UserPermissionsUser> {
@@ -112,14 +108,14 @@ export class UserResolver {
         return false;
     }
 
-    @ResolveField(() => Int)
-    async permissionsCount(@Parent() user: UserPermissionsUser): Promise<number> {
-        return (await this.userService.getPermissions(user)).length;
+    @ResolveField(() => Int, { deprecationReason: "The Permissions column was removed from the users list. Will be removed in the next version." })
+    permissionsCount(): number {
+        return 0;
     }
 
-    @ResolveField(() => Int)
-    async contentScopesCount(@Parent() user: UserPermissionsUser): Promise<number> {
-        return (await this.userContentScopesLoader.load(user)).length;
+    @ResolveField(() => Int, { deprecationReason: "The Scopes column was removed from the users list. Will be removed in the next version." })
+    contentScopesCount(): number {
+        return 0;
     }
 
     @ResolveField(() => Boolean)

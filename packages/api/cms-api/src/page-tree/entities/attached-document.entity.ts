@@ -1,6 +1,7 @@
-import { BaseEntity, Entity, Index, PrimaryKey, Property, Unique } from "@mikro-orm/postgresql";
+import { Entity, Index, PrimaryKey, Property, Unique } from "@mikro-orm/decorators/legacy";
+import { BaseEntity } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 @ObjectType()
 @Entity({ tableName: "PageTreeNodeDocument" })
@@ -8,7 +9,7 @@ import { v4 as uuid } from "uuid";
 export class AttachedDocument extends BaseEntity {
     @PrimaryKey({ columnType: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ columnType: "uuid" })
     @Index()

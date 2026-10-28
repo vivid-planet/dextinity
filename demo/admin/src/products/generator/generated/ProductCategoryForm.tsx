@@ -30,7 +30,7 @@ import { GQLCreateProductCategoryMutationVariables } from "./ProductCategoryForm
 import { updateProductCategoryMutation } from "./ProductCategoryForm.gql";
 import { GQLUpdateProductCategoryMutation } from "./ProductCategoryForm.gql.generated";
 import { GQLUpdateProductCategoryMutationVariables } from "./ProductCategoryForm.gql.generated";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 type FormValues = GQLProductCategoryFormFragment;
 interface FormProps {
     onCreate?: (id: string) => void;
@@ -102,7 +102,7 @@ export function ProductCategoryForm({ onCreate, id }: FormProps) {
             onSubmit={handleSubmit}
             mode={mode}
             initialValues={initialValues}
-            initialValuesEqual={isEqual} //required to compare block data correctly
+            initialValuesEqual={deepEqual} //required to compare block data correctly
             subscription={{}}
         >
             {() => (

@@ -1,10 +1,18 @@
 import { IsEnum, IsUUID } from "class-validator";
 
-import { BlockData, BlockIndexData, BlockInput, blockInputToData, BlockMetaField, BlockMetaFieldKind, createBlock } from "../../blocks/block";
-import { AnnotationBlockMeta, BlockField } from "../../blocks/decorators/field";
-import { IsUndefinable } from "../../common/validators/is-undefinable";
-import { FILE_ENTITY } from "../files/entities/file.entity";
-import { DamFileDownloadLinkBlockTransformerService } from "./dam-file-download-link-block-transformer.service";
+import {
+    BlockData,
+    type BlockIndexData,
+    BlockInput,
+    blockInputToData,
+    type BlockMetaField,
+    BlockMetaFieldKind,
+    createBlock,
+} from "../../blocks/block.js";
+import { AnnotationBlockMeta, BlockField } from "../../blocks/decorators/field.js";
+import { IsUndefinable } from "../../common/validators/is-undefinable.js";
+import { FILE_ENTITY } from "../files/entities/file.entity.js";
+import { DamFileDownloadLinkBlockTransformerService } from "./dam-file-download-link-block-transformer.service.js";
 
 export enum OpenFileTypeMethod {
     NewTab = "NewTab",

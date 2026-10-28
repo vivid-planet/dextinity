@@ -564,9 +564,9 @@ describe("createRichTextBlock — nested lists", () => {
         );
     }
 
-    it("renders every level inside one text component, leaving no unprocessed MJML tag in the compiled mail", () => {
+    it("renders every level inside one text component, leaving no unprocessed MJML tag in the compiled mail", async () => {
         const data = createBlockData(createNestedListBlocks([0, 1]));
-        const { html } = renderMailHtml(
+        const { html } = await renderMailHtml(
             <MjmlMailRoot>
                 <MjmlSection indent>
                     <MjmlColumn>

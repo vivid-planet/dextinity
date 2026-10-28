@@ -1,7 +1,7 @@
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 
-import { BrevoContactAttributesInterface } from "../../types";
+import type { BrevoContactAttributesInterface } from "../../types.js";
 
 export interface BrevoContactInterface {
     id: number;

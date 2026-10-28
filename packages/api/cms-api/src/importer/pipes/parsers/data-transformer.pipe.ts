@@ -2,8 +2,8 @@ import type { LoggerService } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { Transform as StreamTransform, type TransformCallback } from "stream";
 
-import type { ImporterInputClass } from "../../importer-input.type";
-import type { ImporterPipe, PipeData, PipeMetadata } from "../importer-pipe.type";
+import type { ImporterInputClass } from "../../importer-input.type.js";
+import type { ImporterPipe, PipeData, PipeMetadata } from "../importer-pipe.type.js";
 
 export class DataTransformerPipe implements ImporterPipe {
     constructor(private readonly inputClass: ImporterInputClass) {}
@@ -19,7 +19,6 @@ class DataTransformer extends StreamTransform {
         private readonly inputClass: ImporterInputClass,
     ) {
         super({ writableObjectMode: true, objectMode: true });
-        this.logger = logger;
     }
 
     async _transform(inputData: { data: PipeData; metadata: PipeMetadata }, encoding: BufferEncoding, callback: TransformCallback) {

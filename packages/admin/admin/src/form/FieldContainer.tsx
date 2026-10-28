@@ -82,33 +82,43 @@ const Root = createComponentSlot(FormControl)<FieldContainerClassKey, OwnerState
     ({ theme, ownerState }) => css`
         max-width: 100%;
 
-        ${ownerState.fullWidth &&
-        ownerState.variant === "horizontal" &&
-        css`
-            container-type: inline-size;
-            container-name: dextinity-admin-field-container-root;
-        `}
-
-        ${ownerState.fieldMargin !== "never" &&
-        css`
-            margin-bottom: ${theme.spacing(4)};
-            ${!ownerState.fullWidth &&
+        ${
+            ownerState.fullWidth &&
+            ownerState.variant === "horizontal" &&
             css`
-                margin-right: ${theme.spacing(4)};
-            `}
-        `}
+                container-type: inline-size;
+                container-name: dextinity-admin-field-container-root;
+            `
+        }
 
-        ${ownerState.fieldMargin === "onlyIfNotLast" &&
-        css`
-            &:last-child {
-                margin-bottom: 0;
+        ${
+            ownerState.fieldMargin !== "never" &&
+            css`
+                margin-bottom: ${theme.spacing(4)};
+                ${
+                    !ownerState.fullWidth &&
+                    css`
+                        margin-right: ${theme.spacing(4)};
+                    `
+                }
+            `
+        }
 
-                ${!ownerState.fullWidth &&
-                css`
-                    margin-right: 0;
-                `}
-            }
-        `}
+        ${
+            ownerState.fieldMargin === "onlyIfNotLast" &&
+            css`
+                &:last-child {
+                    margin-bottom: 0;
+
+                    ${
+                        !ownerState.fullWidth &&
+                        css`
+                            margin-right: 0;
+                        `
+                    }
+                }
+            `
+        }
     `,
 );
 
@@ -117,47 +127,53 @@ const InnerContainer = createComponentSlot("div")<FieldContainerClassKey, OwnerS
     slotName: "innerContainer",
 })(
     ({ theme, ownerState }) => css`
-        ${ownerState.variant === "horizontal" &&
-        css`
-            @container dextinity-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
-                display: flex;
-                flex-direction: row;
-                max-width: 944px;
-                gap: ${theme.spacing(4)};
-            }
-        `}
+        ${
+            ownerState.variant === "horizontal" &&
+            css`
+                @container dextinity-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
+                    display: flex;
+                    flex-direction: row;
+                    max-width: 944px;
+                    gap: ${theme.spacing(4)};
+                }
+            `
+        }
 
-        ${ownerState.hasError &&
-        css`
-            [class*="${inputBaseClasses.root}"]:not([class*="${inputBaseClasses.focused}"]) {
-                border-color: ${theme.palette.error.main};
-            }
+        ${
+            ownerState.hasError &&
+            css`
+                [class*="${inputBaseClasses.root}"]:not([class*="${inputBaseClasses.focused}"]) {
+                    border-color: ${theme.palette.error.main};
+                }
 
-            [class*="${inputBaseClasses.root}"]:hover:not([class*="${inputBaseClasses.focused}"]) {
-                border-color: ${theme.palette.error.main};
-            }
+                [class*="${inputBaseClasses.root}"]:hover:not([class*="${inputBaseClasses.focused}"]) {
+                    border-color: ${theme.palette.error.main};
+                }
 
-            .DextinityAdminRte-root:not(:focus-within),
-            .DextinityAdminRte-root:hover:not(:focus-within) {
-                --dextinity-admin-rte-outer-border-color: ${theme.palette.error.main};
-            }
-        `}
+                .DextinityAdminRte-root:not(:focus-within),
+                .DextinityAdminRte-root:hover:not(:focus-within) {
+                    --dextinity-admin-rte-outer-border-color: ${theme.palette.error.main};
+                }
+            `
+        }
 
-        ${ownerState.hasWarning &&
-        css`
-            [class*="${inputBaseClasses.root}"]:not([class*="${inputBaseClasses.focused}"]) {
-                border-color: ${theme.palette.warning.main};
-            }
+        ${
+            ownerState.hasWarning &&
+            css`
+                [class*="${inputBaseClasses.root}"]:not([class*="${inputBaseClasses.focused}"]) {
+                    border-color: ${theme.palette.warning.main};
+                }
 
-            [class*="${inputBaseClasses.root}"]:hover:not([class*="${inputBaseClasses.focused}"]) {
-                border-color: ${theme.palette.warning.main};
-            }
+                [class*="${inputBaseClasses.root}"]:hover:not([class*="${inputBaseClasses.focused}"]) {
+                    border-color: ${theme.palette.warning.main};
+                }
 
-            .DextinityAdminRte-root:not(:focus-within),
-            .DextinityAdminRte-root:hover:not(:focus-within) {
-                --dextinity-admin-rte-outer-border-color: ${theme.palette.warning.main};
-            }
-        `}
+                .DextinityAdminRte-root:not(:focus-within),
+                .DextinityAdminRte-root:hover:not(:focus-within) {
+                    --dextinity-admin-rte-outer-border-color: ${theme.palette.warning.main};
+                }
+            `
+        }
     `,
 );
 
@@ -166,42 +182,52 @@ const Label = createComponentSlot(FormLabel)<FieldContainerClassKey, OwnerState>
     slotName: "label",
 })(
     ({ theme, ownerState }) => css`
-        ${!ownerState.hasLabel &&
-        css`
-            display: none;
+        ${
+            !ownerState.hasLabel &&
+            css`
+                display: none;
 
-            ${ownerState.variant === "horizontal" &&
+                ${
+                    ownerState.variant === "horizontal" &&
+                    css`
+                        @container dextinity-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
+                            display: block;
+                        }
+                    `
+                }
+            `
+        }
+
+        ${
+            ownerState.variant === "horizontal" &&
             css`
                 @container dextinity-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
-                    display: block;
+                    width: calc(100% / 3);
+                    flex-shrink: 0;
+                    flex-grow: 0;
+                    margin-bottom: 0;
+                    margin-top: ${theme.spacing(2)};
                 }
-            `}
-        `}
+            `
+        }
 
-        ${ownerState.variant === "horizontal" &&
-        css`
-            @container dextinity-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
-                width: calc(100% / 3);
-                flex-shrink: 0;
-                flex-grow: 0;
-                margin-bottom: 0;
-                margin-top: ${theme.spacing(2)};
-            }
-        `}
+        ${
+            ownerState.hasError &&
+            css`
+                &:not([class*="${formLabelClasses.focused}"]) {
+                    color: ${theme.palette.error.main};
+                }
+            `
+        }
 
-        ${ownerState.hasError &&
-        css`
-            &:not([class*="${formLabelClasses.focused}"]) {
-                color: ${theme.palette.error.main};
-            }
-        `}
-
-        ${ownerState.hasWarning &&
-        css`
-            &:not([class*="${formLabelClasses.focused}"]) {
-                color: ${theme.palette.warning.main};
-            }
-        `}
+        ${
+            ownerState.hasWarning &&
+            css`
+                &:not([class*="${formLabelClasses.focused}"]) {
+                    color: ${theme.palette.warning.main};
+                }
+            `
+        }
     `,
 );
 
@@ -210,26 +236,30 @@ const InputContainer = createComponentSlot("div")<FieldContainerClassKey, OwnerS
     slotName: "inputContainer",
 })(
     ({ ownerState }) => css`
-        ${ownerState.variant === "horizontal" &&
-        ownerState.fullWidth &&
-        css`
-            @container dextinity-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
-                flex-grow: 1;
-                /* Overrides the flex default (min-width: auto), which would prevent the item from shrinking below its content width and cause layout overflow. */
-                min-width: 0;
-            }
-        `}
-
-        ${ownerState.variant === "horizontal" &&
-        css`
-            @container dextinity-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
-                min-height: 40px;
-
-                > .DextinityAdminFormFieldContainer-root {
-                    margin-bottom: 0;
+        ${
+            ownerState.variant === "horizontal" &&
+            ownerState.fullWidth &&
+            css`
+                @container dextinity-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
+                    flex-grow: 1;
+                    /* Overrides the flex default (min-width: auto), which would prevent the item from shrinking below its content width and cause layout overflow. */
+                    min-width: 0;
                 }
-            }
-        `}
+            `
+        }
+
+        ${
+            ownerState.variant === "horizontal" &&
+            css`
+                @container dextinity-admin-field-container-root (min-width: ${ownerState.forceVerticalContainerSize}px) {
+                    min-height: 40px;
+
+                    > .DextinityAdminFormFieldContainer-root {
+                        margin-bottom: 0;
+                    }
+                }
+            `
+        }
 
         & > [class*="${inputBaseClasses.root}"] {
             width: 100%;

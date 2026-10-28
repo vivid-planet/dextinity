@@ -5,13 +5,13 @@ import { FormattedNumber } from "react-intl";
 
 interface Props {
     title: ReactNode;
-    currentNumber?: number;
-    targetNumber?: number;
+    currentNumber?: number | null;
+    targetNumber?: number | null;
     variant?: "normal" | "circle";
 }
 
 export const PercentageCard: FC<Props> = ({ title, currentNumber, targetNumber, variant = "normal" }) => {
-    const percentage = currentNumber === undefined || targetNumber === undefined || targetNumber <= 0 ? null : (currentNumber / targetNumber) * 100;
+    const percentage = currentNumber == null || targetNumber == null || targetNumber <= 0 ? null : (currentNumber / targetNumber) * 100;
     const renderSkeleton = currentNumber === undefined || targetNumber === undefined;
 
     const values = (
@@ -36,7 +36,8 @@ export const PercentageCard: FC<Props> = ({ title, currentNumber, targetNumber, 
                     <Skeleton variant="text" width={100} height={20} />
                 ) : (
                     <>
-                        <FormattedNumber value={currentNumber} /> / <FormattedNumber value={targetNumber} />
+                        {currentNumber === null ? "–" : <FormattedNumber value={currentNumber} />} /{" "}
+                        {targetNumber === null ? "–" : <FormattedNumber value={targetNumber} />}
                     </>
                 )}
             </Typography>

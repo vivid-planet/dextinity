@@ -32,7 +32,8 @@ const Tooltip = createComponentSlot(BaseTooltip)<FeedbackButtonClassKey>({
 })();
 
 export interface FeedbackButtonProps
-    extends ThemedComponentBaseProps<{
+    extends
+        ThemedComponentBaseProps<{
             root: typeof Button;
             tooltip: typeof BaseTooltip;
         }>,

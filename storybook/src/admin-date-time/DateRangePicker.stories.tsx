@@ -5,6 +5,7 @@ import { Form } from "react-final-form";
 
 export default {
     title: "@dextinity/admin-date-time",
+    tags: ["deprecated"],
 };
 
 export const DateRangePicker = () => {

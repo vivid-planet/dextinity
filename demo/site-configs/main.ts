@@ -5,6 +5,7 @@ const port = parseInt(process.env.SITE_PORT || "3000", 10);
 
 const envToDomainMap: Record<Environment, string> = {
     local: `${host}:${port}`,
+    digitalocean: "demo.digitalocean.dextinity.com",
 };
 
 export default ((env) => {
@@ -20,6 +21,13 @@ export default ((env) => {
                 languages: ["en", "de"],
             },
             recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY ?? "",
+            organization: {
+                name: "Vivid Planet Software GmbH",
+                url: "https://www.vivid-planet.com",
+                logo: "/assets/dextinity-logo.svg",
+                sameAs: ["https://github.com/vivid-planet"],
+                description: "Vivid Planet Software GmbH develops Dextinity CMS, the open-source content management system.",
+            },
         },
     };
 }) satisfies GetSiteConfig;

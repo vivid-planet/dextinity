@@ -311,7 +311,13 @@ Each component requires two props:
         ) {
             item: damFile(id: $id) {
                 id
-                dependents(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
+                dependents(
+                    offset: $offset
+                    limit: $limit
+                    forceRefresh: $forceRefresh
+                    filter: $filter
+                    sort: $sort
+                ) {
                     nodes {
                         rootGraphqlObjectType
                         rootId
@@ -320,6 +326,7 @@ Each component requires two props:
                         name
                         secondaryInformation
                         visible
+                        scope
                     }
                     totalCount
                 }
@@ -333,3 +340,12 @@ Each component requires two props:
 ```
 
 </details>
+
+#### 6. Scopes
+
+Both lists use the `scope` field to link to the entry in the scope it actually belongs to.
+This matters when an entity is used across scopes, for instance a DAM that is shared between multiple sites.
+Make sure to request the field in your query, otherwise the links point to the currently active scope.
+
+The scope is resolved from the entity's `scope` property or its `@ScopedEntity()` decorator.
+Entities with multiple scopes report their first scope.

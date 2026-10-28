@@ -1,13 +1,20 @@
 import { IsOptional, IsUUID } from "class-validator";
 
-import { BaseVideoBlockData, BaseVideoBlockInput } from "../../../blocks/base-video-block";
-import { BlockDataInterface, BlockIndexData, blockInputToData, BlockMetaField, BlockMetaFieldKind, createBlock } from "../../../blocks/block";
-import { AnnotationBlockMeta, BlockField } from "../../../blocks/decorators/field";
-import { typeSafeBlockMigrationPipe } from "../../../blocks/migrations/typeSafeBlockMigrationPipe";
-import { DamFileAiContentType } from "../../files/entities/ai-content-type.enum";
-import { FILE_ENTITY } from "../../files/entities/file.entity";
-import { DamVideoBlockTransformerService } from "./dam-video-block-transformer.service";
-import { AddPreviewImageMigration } from "./migrations/1-add-preview-image.migration";
+import { BaseVideoBlockData, BaseVideoBlockInput } from "../../../blocks/base-video-block.js";
+import {
+    type BlockDataInterface,
+    type BlockIndexData,
+    blockInputToData,
+    type BlockMetaField,
+    BlockMetaFieldKind,
+    createBlock,
+} from "../../../blocks/block.js";
+import { AnnotationBlockMeta, BlockField } from "../../../blocks/decorators/field.js";
+import { typeSafeBlockMigrationPipe } from "../../../blocks/migrations/typeSafeBlockMigrationPipe.js";
+import { DamFileAiContentType } from "../../files/entities/ai-content-type.enum.js";
+import { FILE_ENTITY } from "../../files/entities/file.entity.js";
+import { DamVideoBlockTransformerService } from "./dam-video-block-transformer.service.js";
+import { AddPreviewImageMigration } from "./migrations/1-add-preview-image.migration.js";
 
 class DamVideoBlockData extends BaseVideoBlockData {
     damFileId?: string;
@@ -143,9 +150,11 @@ class Meta extends AnnotationBlockMeta {
 export const DamVideoBlock = createBlock(DamVideoBlockData, DamVideoBlockInput, {
     name: "DamVideo",
     blockMeta: new Meta(DamVideoBlockData),
-    migrate: {
+    migrateVendor: {
         version: 1,
         migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration]),
+        // The migration counted in the block's version before it moved into the vendor chain
+        legacyVersions: 1,
     },
 });
 

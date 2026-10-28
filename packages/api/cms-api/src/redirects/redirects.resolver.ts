@@ -1,29 +1,29 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, FilterQuery, FindOptions, wrap } from "@mikro-orm/postgresql";
-import { Inject, Type } from "@nestjs/common";
+import { EntityManager, type FilterQuery, type FindOptions, wrap } from "@mikro-orm/postgresql";
+import { Inject, type Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Mutation, ObjectType, Query, Resolver } from "@nestjs/graphql";
 
-import type { ExtractBlockData } from "../blocks/block";
-import { DextinityValidationException } from "../common/errors/validation.exception";
-import { PaginatedResponseFactory } from "../common/pagination/paginated-response.factory";
-import { DynamicDtoValidationPipe } from "../common/validation/dynamic-dto-validation.pipe";
-import { validateNotModified } from "../document/validateNotModified";
-import { PageTreeReadApiService } from "../page-tree/page-tree-read-api.service";
-import { AffectedEntity } from "../user-permissions/decorators/affected-entity.decorator";
-import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
-import { EmptyRedirectScope } from "./dto/empty-redirect-scope";
-import { PaginatedRedirectsArgsFactory } from "./dto/paginated-redirects-args.factory";
-import { RedirectInputInterface } from "./dto/redirect-input.factory";
-import { RedirectUpdateActivenessInput } from "./dto/redirect-update-activeness.input";
-import { RedirectsArgsFactory } from "./dto/redirects-args.factory";
-import { RedirectInterface } from "./entities/redirect-entity.factory";
-import { RedirectTargetUrlServiceInterface } from "./redirect-target-url.service";
-import { REDIRECTS_TARGET_URL_SERVICE } from "./redirects.constants";
-import { RedirectSourceType } from "./redirects.enum";
-import { RedirectsLinkBlock } from "./redirects.module";
-import { RedirectsService } from "./redirects.service";
-import { isEmptyFilter, redirectMatchesFilter } from "./redirects.util";
-import { RedirectScopeInterface } from "./types";
+import type { ExtractBlockData } from "../blocks/block.js";
+import { DextinityValidationException } from "../common/errors/validation.exception.js";
+import { PaginatedResponseFactory } from "../common/pagination/paginated-response.factory.js";
+import { DynamicDtoValidationPipe } from "../common/validation/dynamic-dto-validation.pipe.js";
+import { validateNotModified } from "../document/validateNotModified.js";
+import { PageTreeReadApiService } from "../page-tree/page-tree-read-api.service.js";
+import { AffectedEntity } from "../user-permissions/decorators/affected-entity.decorator.js";
+import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { EmptyRedirectScope } from "./dto/empty-redirect-scope.js";
+import { PaginatedRedirectsArgsFactory } from "./dto/paginated-redirects-args.factory.js";
+import type { RedirectInputInterface } from "./dto/redirect-input.factory.js";
+import { RedirectUpdateActivenessInput } from "./dto/redirect-update-activeness.input.js";
+import { RedirectsArgsFactory } from "./dto/redirects-args.factory.js";
+import type { RedirectInterface } from "./entities/redirect-entity.factory.js";
+import { resolveRedirectEntity } from "./entities/resolve-redirect-entity.js";
+import type { RedirectTargetUrlServiceInterface } from "./redirect-target-url.service.js";
+import { REDIRECTS_TARGET_URL_SERVICE } from "./redirects.constants.js";
+import { RedirectSourceType } from "./redirects.enum.js";
+import type { RedirectsLinkBlock } from "./redirects.module.js";
+import { RedirectsService } from "./redirects.service.js";
+import { isEmptyFilter, redirectMatchesFilter } from "./redirects.util.js";
+import type { RedirectScopeInterface } from "./types.js";
 
 export function createRedirectsResolver({
     Redirect,
@@ -60,7 +60,6 @@ export function createRedirectsResolver({
     class RedirectsResolver {
         constructor(
             private readonly redirectService: RedirectsService,
-            @InjectRepository("Redirect") private readonly repository: EntityRepository<RedirectInterface>,
             private readonly pageTreeReadApi: PageTreeReadApiService,
             private readonly entityManager: EntityManager,
             @Inject(REDIRECTS_TARGET_URL_SERVICE) private readonly targetUrlService: RedirectTargetUrlServiceInterface,
@@ -81,7 +80,7 @@ export function createRedirectsResolver({
 
             await this.pageTreeReadApi.preloadNodes(scope);
 
-            return this.repository.find(where, options);
+            return this.entityManager.find(resolveRedirectEntity(), where, options);
         }
 
         @Query(() => PaginatedRedirects)
@@ -107,7 +106,7 @@ export function createRedirectsResolver({
 
                 await this.pageTreeReadApi.preloadNodes(scope);
 
-                const allRedirects = await this.repository.find(where, options);
+                const allRedirects = await this.entityManager.find(resolveRedirectEntity(), where, options);
                 const redirects = [];
 
                 const targetUrlCache = new Map<string, string | undefined>();
@@ -171,14 +170,14 @@ export function createRedirectsResolver({
 
             await this.pageTreeReadApi.preloadNodes(scope);
 
-            const [entities, totalCount] = await this.repository.findAndCount(where, options);
+            const [entities, totalCount] = await this.entityManager.findAndCount(resolveRedirectEntity(), where, options);
             return new PaginatedRedirects(entities, totalCount);
         }
 
         @Query(() => Redirect)
         @AffectedEntity(Redirect)
         async redirect(@Args("id", { type: () => ID }) id: string): Promise<RedirectInterface> {
-            const redirect = await this.repository.findOneOrFail(id);
+            const redirect = await this.entityManager.findOneOrFail(resolveRedirectEntity(), id);
             return redirect;
         }
 
@@ -192,7 +191,7 @@ export function createRedirectsResolver({
             if (hasNonEmptyScope) {
                 where.scope = nonEmptyScopeOrNothing(scope);
             }
-            const redirect = await this.repository.findOne(where);
+            const redirect = await this.entityManager.findOne(resolveRedirectEntity(), where);
             return redirect ?? null;
         }
 
@@ -214,14 +213,14 @@ export function createRedirectsResolver({
                 throw new DextinityValidationException("Validation failed");
             }
 
-            const entity = this.repository.create({
+            const entity = this.entityManager.create(resolveRedirectEntity(), {
                 scope: nonEmptyScopeOrNothing(scope),
                 activatedAt: new Date(),
                 ...input,
                 target: input.target.transformToBlockData(),
             });
-            await this.entityManager.persistAndFlush(entity);
-            return this.repository.findOneOrFail(entity.id);
+            await this.entityManager.persist(entity).flush();
+            return this.entityManager.findOneOrFail(resolveRedirectEntity(), entity.id);
         }
 
         @Mutation(() => Redirect)
@@ -231,7 +230,7 @@ export function createRedirectsResolver({
             @Args("input", { type: () => RedirectInput }, new DynamicDtoValidationPipe(RedirectInput)) input: RedirectInputInterface,
             @Args("lastUpdatedAt", { type: () => Date, nullable: true }) lastUpdatedAt?: Date,
         ): Promise<RedirectInterface> {
-            const redirect = await this.repository.findOneOrFail(id);
+            const redirect = await this.entityManager.findOneOrFail(resolveRedirectEntity(), id);
             if (redirect != null && lastUpdatedAt) {
                 validateNotModified(redirect, lastUpdatedAt);
             }
@@ -241,8 +240,8 @@ export function createRedirectsResolver({
             }
 
             wrap(redirect).assign({ ...input, target: input.target.transformToBlockData() });
-            await this.entityManager.persistAndFlush(redirect);
-            return this.repository.findOneOrFail(id);
+            await this.entityManager.persist(redirect).flush();
+            return this.entityManager.findOneOrFail(resolveRedirectEntity(), id);
         }
 
         @Mutation(() => Redirect)
@@ -251,30 +250,30 @@ export function createRedirectsResolver({
             @Args("id", { type: () => ID }) id: string,
             @Args("input", { type: () => RedirectUpdateActivenessInput }) input: RedirectUpdateActivenessInput,
         ): Promise<RedirectInterface> {
-            const redirect = await this.repository.findOneOrFail(id);
+            const redirect = await this.entityManager.findOneOrFail(resolveRedirectEntity(), id);
 
             wrap(redirect).assign({ active: input.active, activatedAt: input.active ? new Date() : null });
-            await this.entityManager.persistAndFlush(redirect);
+            await this.entityManager.persist(redirect).flush();
 
-            return this.repository.findOneOrFail(id);
+            return this.entityManager.findOneOrFail(resolveRedirectEntity(), id);
         }
 
         @Mutation(() => Boolean)
         @AffectedEntity(Redirect)
         async deleteRedirect(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
-            const entity = await this.repository.findOneOrFail(id);
-            await this.entityManager.removeAndFlush(entity);
+            const entity = await this.entityManager.findOneOrFail(resolveRedirectEntity(), id);
+            await this.entityManager.remove(entity).flush();
             return true;
         }
 
         @Mutation(() => Boolean)
         @AffectedEntity(Redirect, { idArg: "ids" })
         async deleteRedirects(@Args("ids", { type: () => [ID] }) ids: string[]): Promise<boolean> {
-            const entities = await this.repository.find({ id: { $in: ids } });
+            const entities = await this.entityManager.find(resolveRedirectEntity(), { id: { $in: ids } });
             if (entities.length !== ids.length) {
                 throw new Error("Couldn't find all redirects that were passed as input");
             }
-            await this.entityManager.removeAndFlush(entities);
+            await this.entityManager.remove(entities).flush();
             return true;
         }
     }

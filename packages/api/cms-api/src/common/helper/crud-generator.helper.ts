@@ -1,6 +1,6 @@
 import type { EntityMetadata } from "@mikro-orm/postgresql";
 
-import { CRUD_FIELD_METADATA_KEY, type CrudFieldOptions } from "../decorators/crud-generator.decorator";
+import { CRUD_FIELD_METADATA_KEY, type CrudFieldOptions } from "../decorators/crud-generator.decorator.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function hasCrudFieldFeature(metadataClass: any, propName: string, option: keyof CrudFieldOptions): boolean {

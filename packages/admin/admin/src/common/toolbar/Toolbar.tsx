@@ -9,16 +9,15 @@ import { ToolbarBreadcrumbs } from "./ToolbarBreadcrumbs";
 
 export type ToolbarClassKey = "root" | "topBar" | "bottomBar" | "mainContentContainer" | "breadcrumbs" | "scopeIndicator" | "topBarActions";
 
-export interface ToolbarProps
-    extends ThemedComponentBaseProps<{
-        root: typeof Paper;
-        bottomBar: typeof MuiToolbar;
-        mainContentContainer: "div";
-        topBar: "div";
-        breadcrumbs: typeof ToolbarBreadcrumbs;
-        scopeIndicator: "div";
-        topBarActions: "div";
-    }> {
+export interface ToolbarProps extends ThemedComponentBaseProps<{
+    root: typeof Paper;
+    bottomBar: typeof MuiToolbar;
+    mainContentContainer: "div";
+    topBar: "div";
+    breadcrumbs: typeof ToolbarBreadcrumbs;
+    scopeIndicator: "div";
+    topBarActions: "div";
+}> {
     elevation?: number;
     children?: ReactNode;
     scopeIndicator?: ReactNode;
@@ -26,7 +25,7 @@ export interface ToolbarProps
     hideTopBar?: boolean;
     /**
      * The height of the header above the toolbar. Default behaviour is to use the height of the headerHeight from the
-     * MasterLayoutContext, but can be overriden here
+     * MasterLayoutContext, but can be overridden here
      */
     headerHeight?: number;
 }

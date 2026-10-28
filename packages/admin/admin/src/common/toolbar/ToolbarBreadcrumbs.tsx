@@ -30,10 +30,9 @@ const Root = createComponentSlot(Breadcrumbs)<ToolbarBreadcrumbsClassKey>({
     }
 `);
 
-export interface ToolbarBreadcrumbsProps
-    extends ThemedComponentBaseProps<{
-        root: typeof Breadcrumbs;
-    }> {
+export interface ToolbarBreadcrumbsProps extends ThemedComponentBaseProps<{
+    root: typeof Breadcrumbs;
+}> {
     /**
      * Rendered at the start of the breadcrumbs, before the items, for instance a scope indicator.
      */

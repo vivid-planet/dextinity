@@ -1,6 +1,6 @@
 const WEBP = "image/webp";
 const PNG = "image/png";
-const JPEG = "image/jpeg";
+export const JPEG = "image/jpeg";
 const GIF = "image/gif";
 
 export const BASIC_TYPES = [JPEG, PNG, GIF];

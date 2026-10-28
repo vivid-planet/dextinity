@@ -5,6 +5,7 @@ const port = parseInt(process.env.SITE_PORT || "3000", 10);
 
 const envToDomainMap: Record<Environment, string> = {
     local: `${host}:${port}`,
+    digitalocean: "secondary.demo.digitalocean.dextinity.com",
 };
 
 export default ((env) => {
@@ -19,6 +20,9 @@ export default ((env) => {
                 languages: ["en", "de"],
             },
             recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY ?? "",
+            organization: {
+                name: "Dextinity Site Secondary",
+            },
         },
     };
 }) satisfies GetSiteConfig;

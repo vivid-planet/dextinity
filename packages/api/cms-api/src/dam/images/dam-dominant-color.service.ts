@@ -2,13 +2,13 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { promisify } from "util";
 import { inflate as inflateCallback } from "zlib";
 
-import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service";
-import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util";
-import { Extension, ResizingType } from "../../imgproxy/imgproxy.enum";
-import { ImgproxyService } from "../../imgproxy/imgproxy.service";
-import { DamConfig } from "../dam.config";
-import { DAM_CONFIG } from "../dam.constants";
-import { DominantColorCalculatorInterface } from "../dominant-color-calculator.interface";
+import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service.js";
+import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util.js";
+import { Extension, ResizingType } from "../../imgproxy/imgproxy.enum.js";
+import { ImgproxyService } from "../../imgproxy/imgproxy.service.js";
+import type { DamConfig } from "../dam.config.js";
+import { DAM_CONFIG } from "../dam.constants.js";
+import type { DominantColorCalculatorInterface } from "../dominant-color-calculator.interface.js";
 
 const inflate = promisify(inflateCallback);
 

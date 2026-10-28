@@ -1,6 +1,6 @@
 import { type CustomDecorator, SetMetadata } from "@nestjs/common";
 
-import type { SendMailParams } from "../mailer/mailer.service";
+import type { SendMailParams } from "../mailer/mailer.service.js";
 
 export type MailTemplateMetadata = object; // placeholder for future metadata
 

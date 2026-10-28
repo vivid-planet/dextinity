@@ -1,15 +1,16 @@
-import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 import { describe, expect, it } from "vitest";
 
-import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
-import { generateCrud } from "../generate-crud";
+import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper.js";
+import { generateCrud } from "../generate-crud.js";
 
 @Entity()
 export class TestEntityWithString extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ columnType: "text" })
     title: string;
@@ -18,7 +19,7 @@ export class TestEntityWithString extends BaseEntity {
 @Entity()
 export class TestEntityWithNumber extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     foo: number;
@@ -27,7 +28,7 @@ export class TestEntityWithNumber extends BaseEntity {
 @Entity()
 export class TestEntityWithTextRuntimeType extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ type: "text" })
     title: string;
@@ -39,13 +40,13 @@ describe("GenerateCrud", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityWithString],
                 }),
             );
 
-            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithString"));
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntityWithString"));
             const lintedOut = await formatGeneratedFiles(out);
 
             const file = lintedOut.find((file) => file.name === "test-entity-with-string.resolver.ts");
@@ -74,13 +75,13 @@ describe("GenerateCrud", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityWithString],
                 }),
             );
 
-            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithString"));
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntityWithString"));
             const formattedOut = await formatGeneratedFiles(out);
 
             const file = formattedOut.find((file) => file.name === "dto/test-entity-with-string.filter.ts");
@@ -114,13 +115,13 @@ describe("GenerateCrud", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityWithNumber],
                 }),
             );
 
-            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithNumber"));
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntityWithNumber"));
             const formattedOut = await formatGeneratedFiles(out);
 
             const file = formattedOut.find((file) => file.name === "dto/test-entity-with-number.filter.ts");
@@ -154,13 +155,16 @@ describe("GenerateCrud", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityWithTextRuntimeType],
                 }),
             );
 
-            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithTextRuntimeType"));
+            const out = await generateCrud(
+                { requiredPermission: testPermission },
+                orm.em.getMetadata().getByClassName("TestEntityWithTextRuntimeType"),
+            );
             const formattedOut = await formatGeneratedFiles(out);
             const file = formattedOut.find((file) => file.name === "dto/test-entity-with-text-runtime-type.filter.ts");
             if (!file) {

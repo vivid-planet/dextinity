@@ -1,9 +1,9 @@
 import type { ImporterPipe } from "@dextinity/cms-api";
 import { type Connection, type EntityManager, type IDatabaseDriver, Reference } from "@mikro-orm/core";
 import type { LoggerService } from "@nestjs/common";
+import { randomUUID } from "crypto";
 import slugify from "slugify";
 import { Transform, type TransformCallback } from "stream";
-import { v4 as uuid } from "uuid";
 
 import { ProductCategory } from "./entities/product-category.entity";
 import type { ProductImporterInput } from "./product-importer.input";
@@ -45,7 +45,7 @@ class ProductPrePersist extends Transform {
             const slug = slugify(`${data.category}`, { lower: true });
 
             const categoryData = {
-                id: uuid(),
+                id: randomUUID(),
                 title: data.category,
                 slug,
                 position: 1,

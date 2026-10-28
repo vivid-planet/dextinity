@@ -1,10 +1,11 @@
-import { BaseEntity, Entity, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
+import { randomUUID } from "crypto";
 import { GraphQLJSONObject } from "graphql-scalars";
-import { v4 as uuid } from "uuid";
 
-import { ContentScope } from "../interfaces/content-scope.interface";
-import { CombinedPermission, Permission } from "../user-permissions.types";
+import type { ContentScope } from "../interfaces/content-scope.interface.js";
+import { CombinedPermission, type Permission } from "../user-permissions.types.js";
 
 export enum UserPermissionSource {
     MANUAL = "MANUAL",
@@ -19,7 +20,7 @@ registerEnumType(UserPermissionSource, {
 export class UserPermission extends BaseEntity {
     @Field(() => ID)
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     userId: string;

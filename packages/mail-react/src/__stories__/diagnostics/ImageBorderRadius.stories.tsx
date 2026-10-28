@@ -37,10 +37,16 @@ const textColumnWidth = sectionInnerWidth - AVATAR_SIZE;
 const halfColumnWidth = (sectionInnerWidth - COLUMN_GAP) / 2;
 const halfColumnImageHeight = 172;
 
+// Yahoo Mail and Outlook.com drop the calc() below, so this percentage takes over there. Floored, so the two columns never total more than the section.
+const narrowestSectionInnerWidth = theme.breakpoints.mobile.value - 2 * sectionIndent;
+const textColumnFallbackWidth = `${Math.floor(((narrowestSectionInnerWidth - AVATAR_SIZE) / narrowestSectionInnerWidth) * 100)}%`;
+
 registerStyles(
     (theme) => css`
         ${theme.breakpoints.default.belowMediaQuery} {
             .imageBorderRadius__textColumn {
+                width: ${textColumnFallbackWidth} !important;
+                max-width: ${textColumnFallbackWidth} !important;
                 width: calc(100% - ${AVATAR_SIZE}px) !important;
                 max-width: calc(100% - ${AVATAR_SIZE}px) !important;
             }

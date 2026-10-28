@@ -4,7 +4,7 @@ import type { Permission } from "@dextinity/cms-api";
 import { format, type Options, resolveConfig } from "prettier";
 import { Project, type SourceFile } from "ts-morph";
 
-import type { GeneratedFile } from "./write-generated-files";
+import type { GeneratedFile } from "./write-generated-files.js";
 
 let options: Options | null;
 export async function formatSource(sourceCode: string): Promise<string> {

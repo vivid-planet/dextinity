@@ -1,22 +1,23 @@
+import { isDeepStrictEqual } from "node:util";
+
+import { resolveEntityClass } from "@dextinity/cms-api";
 import * as csv from "@fast-csv/parse";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 import { IsEmail, IsNotEmpty, validateSync } from "class-validator";
 import { GraphQLJSONObject } from "graphql-scalars";
-import isEqual from "lodash.isequal";
-import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
-import { TargetGroupInterface } from "src/target-group/entity/target-group-entity.factory";
-import { Readable } from "stream";
+import type { Readable } from "stream";
 
-import { BrevoApiContactsService, CreateDoubleOptInContactData } from "../brevo-api/brevo-api-contact.service";
-import { BrevoContactsService } from "../brevo-contact/brevo-contacts.service";
-import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
-import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
-import { TargetGroupsService } from "../target-group/target-groups.service";
-import { EmailCampaignScopeInterface } from "../types";
+import { BrevoApiContactsService, type CreateDoubleOptInContactData } from "../brevo-api/brevo-api-contact.service.js";
+import type { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory.js";
+import { BrevoContactsService } from "../brevo-contact/brevo-contacts.service.js";
+import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory.js";
+import type { BrevoModuleConfig } from "../config/brevo-module.config.js";
+import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants.js";
+import type { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory.js";
+import { TargetGroupsService } from "../target-group/target-groups.service.js";
+import type { EmailCampaignScopeInterface } from "../types.js";
 
 class BasicValidateableRow {
     @IsEmail()
@@ -68,8 +69,7 @@ export class BrevoContactImportService {
         private readonly brevoApiContactsService: BrevoApiContactsService,
         private readonly brevoContactsService: BrevoContactsService,
         private readonly targetGroupsService: TargetGroupsService,
-        @InjectRepository("BrevoTargetGroup") private readonly targetGroupRepository: EntityRepository<TargetGroupInterface>,
-        @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
+        private readonly entityManager: EntityManager,
     ) {}
 
     async importContactsFromCsv({
@@ -85,7 +85,9 @@ export class BrevoContactImportService {
         const failedColumns: Record<string, string>[] = [];
         const blacklistedColumns: Record<string, string>[] = [];
 
-        const targetGroups = await this.targetGroupRepository.find({ id: { $in: targetGroupIds } });
+        const targetGroups = await this.entityManager.find(resolveEntityClass<TargetGroupInterface>("BrevoTargetGroup"), {
+            id: { $in: targetGroupIds },
+        });
         const contactSource = ContactSource.csvImport;
 
         for (const targetGroup of targetGroups) {
@@ -93,7 +95,7 @@ export class BrevoContactImportService {
                 throw new Error("Main lists are not allowed as target groups for import");
             }
 
-            if (!isEqual(targetGroup.scope, scope)) {
+            if (!isDeepStrictEqual(targetGroup.scope, scope)) {
                 throw new Error("Target group scope does not match the scope of the import file");
             }
         }
@@ -194,7 +196,7 @@ export class BrevoContactImportService {
                     return "updated";
                 }
             } else if (!brevoContact) {
-                const brevoConfig = await this.brevoConfigRepository.findOneOrFail({ scope });
+                const brevoConfig = await this.entityManager.findOneOrFail(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"), { scope });
 
                 const success = await this.brevoContactsService.createContact({
                     ...contact,

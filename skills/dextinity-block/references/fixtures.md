@@ -53,13 +53,10 @@ For blocks created with `createBlock()`. Inject child fixture services via the c
 import { faker } from "@faker-js/faker";
 import { Injectable } from "@nestjs/common";
 import { DamImageBlock, type ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
-import { MyItemBlock } from "@src/documents/pages/blocks/my-item.block";
+import { MyItemBlock, Variant } from "@src/documents/pages/blocks/my-item.block";
 import { type BlockFixture } from "../block-fixture.type";
 import { DamImageBlockFixtureService } from "../media/dam-image-block-fixture.service";
 import { RichTextBlockFixtureService } from "../text-and-content/rich-text-block-fixture.service";
-
-// Import the enum directly from the block file
-import { Variant } from "@src/documents/pages/blocks/my-item.block";
 
 @Injectable()
 export class MyItemBlockFixtureService implements BlockFixture {

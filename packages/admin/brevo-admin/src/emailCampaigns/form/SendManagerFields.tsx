@@ -1,6 +1,5 @@
 import { useApolloClient, useMutation } from "@apollo/client";
-import { Field, FinalFormSelect, SaveButton, Tooltip, useAsyncOptionsProps, useStackSwitchApi } from "@dextinity/admin";
-import { FinalFormDateTimePicker } from "@dextinity/admin-date-time";
+import { DateTimePickerField, Field, FinalFormSelect, SaveButton, Tooltip, useAsyncOptionsProps, useStackSwitchApi } from "@dextinity/admin";
 import { Info, Newsletter } from "@dextinity/admin-icons";
 import { BlockAdminComponentPaper, BlockAdminComponentSectionGroup, type ContentScope } from "@dextinity/cms-admin";
 import { Card } from "@mui/material";
@@ -79,11 +78,10 @@ export const SendManagerFields = ({ isCampaignCreated, scope, id, isSendable }: 
                         multiple
                         fullWidth
                     />
-                    <Field
+                    <DateTimePickerField
                         name="scheduledAt"
                         disabled={isCampaignCreated}
                         fullWidth
-                        clearable
                         label={
                             <>
                                 <FormattedMessage id="dextinity.emailCampaigns.scheduledAt" defaultMessage="Schedule date and time" />{" "}
@@ -101,12 +99,8 @@ export const SendManagerFields = ({ isCampaignCreated, scope, id, isSendable }: 
                                 )}
                             </>
                         }
-                        component={FinalFormDateTimePicker}
                         validate={(value) => (isCampaignCreated ? undefined : validateScheduledAt(value, now))}
-                        componentsProps={{
-                            datePicker: { placeholder: "DD.MM.YYYY", minDate: now },
-                            timePicker: { placeholder: "HH:mm" },
-                        }}
+                        minDateTime={now}
                     />
 
                     <SaveButton

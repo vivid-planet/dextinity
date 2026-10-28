@@ -3,12 +3,12 @@ import { Inject, Injectable, Logger, type OnModuleInit } from "@nestjs/common";
 import { addMinutes, differenceInMinutes } from "date-fns";
 import fs from "fs";
 
-import { CONTENT_SCOPE_ANNOTATION } from "../builds/builds.constants";
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { KubernetesJobStatus } from "./job-status.enum";
-import { KUBERNETES_CONFIG, PARENT_CRON_JOB_LABEL } from "./kubernetes.constants";
-import { KubernetesConfig } from "./kubernetes.module";
-import { getAnnotation, toLegacyLabelSelector } from "./kubernetes-metadata";
+import { CONTENT_SCOPE_ANNOTATION } from "../builds/builds.constants.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { KubernetesJobStatus } from "./job-status.enum.js";
+import { KUBERNETES_CONFIG, PARENT_CRON_JOB_LABEL } from "./kubernetes.constants.js";
+import type { KubernetesConfig } from "./kubernetes.module.js";
+import { getAnnotation, toLegacyLabelSelector } from "./kubernetes-metadata.js";
 
 @Injectable()
 export class KubernetesService implements OnModuleInit {
@@ -147,15 +147,15 @@ export class KubernetesService implements OnModuleInit {
 
     getStatusForKubernetesJob(job: V1Job): KubernetesJobStatus {
         let status = KubernetesJobStatus.pending;
-        if (job.status?.active ?? 0 > 0) {
+        if ((job.status?.active ?? 0) > 0) {
             status = KubernetesJobStatus.active;
         }
         // A job can have both succeeded = 1 and failed = 1 states. This may happend due to a job's restart policy. For instance, a job may fail on
         // the first attempt (failed = 1) and succeed on the second attempt (succeeded = 1). We therefore check the succeeded status before the failed
         // status.
-        else if (job.status?.succeeded ?? 0 > 0) {
+        else if ((job.status?.succeeded ?? 0) > 0) {
             status = KubernetesJobStatus.succeeded;
-        } else if (job.status?.failed ?? 0 > 0) {
+        } else if ((job.status?.failed ?? 0) > 0) {
             status = KubernetesJobStatus.failed;
         }
         return status;

@@ -67,6 +67,27 @@ export function createSeoBlock(
 
         displayName: <FormattedMessage id="dextinity.blocks.seo" defaultMessage="SEO" />,
 
+        extractTextContents: (state, options) => {
+            const contents: string[] = [];
+
+            if (state.htmlTitle) {
+                contents.push(state.htmlTitle);
+            }
+            if (state.metaDescription) {
+                contents.push(state.metaDescription);
+            }
+            if (state.openGraphTitle) {
+                contents.push(state.openGraphTitle);
+            }
+            if (state.openGraphDescription) {
+                contents.push(state.openGraphDescription);
+            }
+
+            contents.push(...(block.extractTextContents?.(state, options) ?? []));
+
+            return contents;
+        },
+
         AdminComponent: ({ state, updateState }) => {
             const intl = useIntl();
             const { openGraphImage } = composedApi.adminComponents({
@@ -147,7 +168,6 @@ export function createSeoBlock(
                                 generateSeoTag={generateSeoTag}
                                 multiline
                                 rows={3}
-                                rowsMax={5}
                                 component={FinalFormInput}
                                 fullWidth
                             />
@@ -177,7 +197,6 @@ export function createSeoBlock(
                                 generateSeoTag={generateSeoTag}
                                 multiline={true}
                                 rows={3}
-                                rowsMax={5}
                                 component={FinalFormInput}
                                 fullWidth
                             />
@@ -330,8 +349,10 @@ export function createSeoBlock(
 }
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-interface FieldWithContentGenerationProps<FieldValue = any, FieldElement extends HTMLElement = HTMLElement>
-    extends FieldProps<FieldValue, FieldElement> {
+interface FieldWithContentGenerationProps<FieldValue = any, FieldElement extends HTMLElement = HTMLElement> extends FieldProps<
+    FieldValue,
+    FieldElement
+> {
     name: SeoTag;
     generateSeoTag: (tag: SeoTag, currentValue: string | undefined) => Promise<string>;
 }

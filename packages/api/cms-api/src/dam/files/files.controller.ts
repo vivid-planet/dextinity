@@ -1,4 +1,4 @@
-import { BaseEntity } from "@mikro-orm/postgresql";
+import type { BaseEntity } from "@mikro-orm/postgresql";
 import {
     BadRequestException,
     Body,
@@ -6,44 +6,46 @@ import {
     ForbiddenException,
     Get,
     Headers,
+    HttpStatus,
     Inject,
     Logger,
     NotFoundException,
     Param,
     Post,
     Res,
-    Type,
+    type Type,
     UploadedFile,
     UseInterceptors,
 } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
-import { Response } from "express";
-import { OutgoingHttpHeaders } from "http";
+import { create as createContentDisposition } from "content-disposition";
+import type { Response } from "express";
+import type { OutgoingHttpHeaders } from "http";
 import { basename, extname } from "path";
-import { Readable } from "stream";
+import type { Readable } from "stream";
 
-import { DisableDextinityGuards } from "../../auth/decorators/disable-dextinity-guards.decorator";
-import { GetCurrentUser } from "../../auth/decorators/get-current-user.decorator";
-import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service";
-import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util";
-import { DextinityValidationException } from "../../common/errors/validation.exception";
-import { FileUploadInput } from "../../file-utils/file-upload.input";
-import { calculatePartialRanges, slugifyFilename } from "../../file-utils/files.utils";
-import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
-import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
-import { CurrentUser } from "../../user-permissions/dto/current-user";
-import { DamConfig } from "../dam.config";
-import { DAM_CONFIG } from "../dam.constants";
-import { DamScopeAccessControlService } from "../scope-access-control.service";
-import { DamScopeInterface } from "../types";
-import { DamUploadFileInterceptor } from "./dam-upload-file.interceptor";
-import { EmptyDamScope } from "./dto/empty-dam-scope";
-import { createUploadFileBody, ReplaceFileByIdBody, UploadFileBodyInterface } from "./dto/file.body";
-import { FileParams, HashFileParams } from "./dto/file.params";
-import { FileInterface } from "./entities/file.entity";
-import { FilesService } from "./files.service";
-import { FoldersService } from "./folders.service";
+import { DisableDextinityGuards } from "../../auth/decorators/disable-dextinity-guards.decorator.js";
+import { GetCurrentUser } from "../../auth/decorators/get-current-user.decorator.js";
+import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service.js";
+import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util.js";
+import { DextinityValidationException } from "../../common/errors/validation.exception.js";
+import type { FileUploadInput } from "../../file-utils/file-upload.input.js";
+import { calculatePartialRanges, slugifyFilename } from "../../file-utils/files.utils.js";
+import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal.js";
+import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator.js";
+import { CurrentUser } from "../../user-permissions/dto/current-user.js";
+import type { DamConfig } from "../dam.config.js";
+import { DAM_CONFIG } from "../dam.constants.js";
+import { DamScopeAccessControlService } from "../scope-access-control.service.js";
+import type { DamScopeInterface } from "../types.js";
+import { DamUploadFileInterceptor } from "./dam-upload-file.interceptor.js";
+import { EmptyDamScope } from "./dto/empty-dam-scope.js";
+import { createUploadFileBody, ReplaceFileByIdBody, type UploadFileBodyInterface } from "./dto/file.body.js";
+import { FileParams, HashFileParams } from "./dto/file.params.js";
+import type { FileInterface } from "./entities/file.entity.js";
+import { FilesService } from "./files.service.js";
+import { FoldersService } from "./folders.service.js";
 
 const fileUrl = `:fileId/:filename`;
 
@@ -215,6 +217,7 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new ForbiddenException();
             }
 
+            res.setHeader("Content-Disposition", createContentDisposition(file.name, { type: "inline" }));
             return this.streamFile(file, res, { range, overrideHeaders: { "cache-control": "max-age=31536000, private" } }); // Local caches only (1 year)
         }
 
@@ -239,7 +242,7 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new ForbiddenException();
             }
 
-            res.setHeader("Content-Disposition", "attachment");
+            res.setHeader("Content-Disposition", createContentDisposition(file.name));
             return this.streamFile(file, res, { range, overrideHeaders: { "cache-control": "max-age=31536000, private" } }); // Local caches only (1 year)
         }
 
@@ -264,7 +267,15 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
-            res.setHeader("Content-Disposition", "attachment");
+            // Requested with a filename that no longer matches the file (e.g. an extension-less URL from before file
+            // extensions were added to DAM file URLs). The hash still validates because it was signed for that filename,
+            // so permanently redirect to the current canonical URL instead of serving under the stale one.
+            if (params.filename !== file.name) {
+                res.redirect(HttpStatus.MOVED_PERMANENTLY, await this.filesService.createFileDownloadUrl(file, {}));
+                return;
+            }
+
+            res.setHeader("Content-Disposition", createContentDisposition(file.name));
             return this.streamFile(file, res, { range, overrideHeaders: { "cache-control": "max-age=31536000, s-maxage=86400, public" } }); // Public cache, 1 year for browsers, 1 day for proxies/cdn's
         }
 
@@ -289,6 +300,13 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
+            // See the comment in downloadFile above.
+            if (params.filename !== file.name) {
+                res.redirect(HttpStatus.MOVED_PERMANENTLY, await this.filesService.createFileUrl(file, {}));
+                return;
+            }
+
+            res.setHeader("Content-Disposition", createContentDisposition(file.name, { type: "inline" }));
             return this.streamFile(file, res, {
                 range,
                 overrideHeaders: {

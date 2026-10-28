@@ -1,18 +1,18 @@
 import { type EntityMetadata, type FilterQuery, type ObjectQuery, type OrderDefinition, raw } from "@mikro-orm/postgresql";
 
-import { type CrudSearchField, getCrudSearchFieldsFromMetadata } from "../helper/crud-generator.helper";
-import type { SortDirection } from "../sorting/sort-direction.enum";
-import { BooleanFilter } from "./boolean.filter";
-import { DateFilter } from "./date.filter";
-import { DateTimeFilter } from "./date-time.filter";
-import { type EnumFilterInterface, isEnumFilter } from "./enum.filter.factory";
-import { type EnumsFilterInterface, isEnumsFilter } from "./enums.filter.factory";
-import { IdFilter } from "./id.filter";
-import { ManyToManyFilter } from "./many-to-many.filter";
-import { ManyToOneFilter } from "./many-to-one.filter";
-import { NumberFilter } from "./number.filter";
-import { OneToManyFilter } from "./one-to-many.filter";
-import { StringFilter } from "./string.filter";
+import { type CrudSearchField, getCrudSearchFieldsFromMetadata } from "../helper/crud-generator.helper.js";
+import type { SortDirection } from "../sorting/sort-direction.enum.js";
+import { BooleanFilter } from "./boolean.filter.js";
+import { DateFilter } from "./date.filter.js";
+import { DateTimeFilter } from "./date-time.filter.js";
+import { type EnumFilterInterface, isEnumFilter } from "./enum.filter.factory.js";
+import { type EnumsFilterInterface, isEnumsFilter } from "./enums.filter.factory.js";
+import { IdFilter } from "./id.filter.js";
+import { ManyToManyFilter } from "./many-to-many.filter.js";
+import { ManyToOneFilter } from "./many-to-one.filter.js";
+import { NumberFilter } from "./number.filter.js";
+import { OneToManyFilter } from "./one-to-many.filter.js";
+import { StringFilter } from "./string.filter.js";
 
 function quoteLike(string: string): string {
     return string.replace(/([%_\\])/g, "\\$1");

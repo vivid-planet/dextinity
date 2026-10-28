@@ -56,7 +56,7 @@ export class MyCustomMail implements MailTemplateInterface<MailProps> {
     async generateMail(props: MailProps) {
         const intl = this.translationService.getIntl();
 
-        const { html, mjmlWarnings } = renderMailHtml(
+        const { html, mjmlWarnings } = await renderMailHtml(
             <MjmlMailRoot>
                 <IntlProvider locale="de" defaultLocale="de" messages={intl.messages}>
                     <MailContent {...props} />

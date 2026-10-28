@@ -69,8 +69,43 @@ async function uploadOrReplaceByFilenameAndFolder<ResponseData>(
         body: formData,
         signal,
     });
+
+    if (!response.ok) {
+        throw new UploadFileError({ status: response.status, data: await parseResponseBody(response) });
+    }
+
     const dataJson = await response.json();
     return { data: dataJson };
+}
+
+class UploadFileError extends Error {
+    readonly response: { status: number; data: unknown };
+
+    constructor(response: { status: number; data: unknown }) {
+        super(getErrorMessage(response.data) ?? `Uploading the file failed with status ${response.status}`);
+        this.response = response;
+    }
+}
+
+function getErrorMessage(data: unknown): string | undefined {
+    if (typeof data === "object" && data !== null && "message" in data && typeof data.message === "string") {
+        return data.message;
+    }
+    return undefined;
+}
+
+async function parseResponseBody(response: Response): Promise<unknown> {
+    const text = await response.text();
+    const isJson = response.headers.get("content-type")?.includes("application/json") ?? false;
+    if (!isJson) {
+        return text;
+    }
+    // A proxy or failing server can send an empty or malformed body with a JSON content type
+    try {
+        return JSON.parse(text);
+    } catch {
+        return text;
+    }
 }
 
 interface ReplaceFileByIdData {
@@ -100,6 +135,11 @@ export function replaceById({ apiUrl, data, damBasePath }: Omit<UploadFileParams
             body: formData,
             signal: controller.signal,
         });
+
+        if (!response.ok) {
+            throw new UploadFileError({ status: response.status, data: await parseResponseBody(response) });
+        }
+
         const dataJson = await response.json();
         return { data: dataJson };
     })();

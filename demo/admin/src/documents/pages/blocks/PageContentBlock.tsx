@@ -15,7 +15,6 @@ import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
 import { TipTapTableBlock } from "@src/common/blocks/TipTapTableBlock";
 import { NewsDetailBlock } from "@src/news/blocks/NewsDetailBlock";
 import { NewsListBlock } from "@src/news/blocks/NewsListBlock";
-import { ProductListBlock } from "@src/products/blocks/ProductListBlock";
 import { userGroupAdditionalItemFields } from "@src/userGroups/userGroupAdditionalItemFields";
 import { UserGroupChip } from "@src/userGroups/UserGroupChip";
 import { UserGroupContextMenuItem } from "@src/userGroups/UserGroupContextMenuItem";
@@ -55,7 +54,6 @@ export const PageContentBlock = createBlocksBlock({
         table: TableBlock,
         tipTapTable: TipTapTableBlock,
         tipTapRichText: TipTapRichTextBlock,
-        productList: ProductListBlock,
         pageTreeIndex: PageTreeIndexBlock,
         contactForm: ContactFormBlock,
     },

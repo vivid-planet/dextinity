@@ -15,7 +15,7 @@ export class ProductPublishedMail implements MailTemplateInterface<MailProps> {
         const { renderMailHtml } = await import("@dextinity/mail-react/server");
 
         const intl = await this.translationService.getIntl(props.recipient.language);
-        const { html, mjmlWarnings } = renderMailHtml(
+        const { html, mjmlWarnings } = await renderMailHtml(
             <IntlProvider {...intl}>
                 <Mail {...props} />
             </IntlProvider>,

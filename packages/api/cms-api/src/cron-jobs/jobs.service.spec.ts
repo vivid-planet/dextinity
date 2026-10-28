@@ -1,8 +1,8 @@
 import { Test, type TestingModule } from "@nestjs/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { KubernetesModule } from "../kubernetes/kubernetes.module";
-import { JobsService } from "./jobs.service";
+import { KubernetesModule } from "../kubernetes/kubernetes.module.js";
+import { JobsService } from "./jobs.service.js";
 
 vi.mock("@kubernetes/client-node", () => ({}));
 

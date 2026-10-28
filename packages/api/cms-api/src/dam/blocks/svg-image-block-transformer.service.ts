@@ -31,7 +31,7 @@ export class SvgImageBlockTransformerService implements BlockTransformerServiceI
 
         const file = await this.filesService.findOneById(block.damFileId);
 
-        if (!file) {
+        if (!file || this.filesService.isBlockedByLicense(file, { previewDamUrls })) {
             return {};
         }
 

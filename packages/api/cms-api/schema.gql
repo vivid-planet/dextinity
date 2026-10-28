@@ -169,6 +169,11 @@ enum LicenseType {
   RIGHTS_MANAGED
 }
 
+type DamSettings {
+  id: ID!
+  invalidLicenseFallbackImage: DamFile
+}
+
 type BuildTemplate {
   id: ID!
   name: String!
@@ -588,6 +593,7 @@ type Query {
   warnings(offset: Int! = 0, limit: Int! = 25, status: [WarningStatus!]! = [open], search: String, scopes: [JSONObject!]!, filter: WarningFilter, sort: [WarningSort!]): PaginatedWarnings!
   damMediaAlternative(id: ID!): DamMediaAlternative!
   damMediaAlternatives(offset: Int! = 0, limit: Int! = 25, search: String, sort: [DamMediaAlternativeSort!], for: ID, alternative: ID, type: DamMediaAlternativeType): PaginatedDamMediaAlternatives!
+  damSettings(scope: DamScopeInput! = {}): DamSettings
   myFullTextSearch(search: String!, offset: Int! = 0, limit: Int! = 25, scope: JSONObject): PaginatedEntityInfo!
 }
 
@@ -838,6 +844,7 @@ type Mutation {
   createDamMediaAlternative(for: ID!, alternative: ID!, input: DamMediaAlternativeInput!): DamMediaAlternative!
   updateDamMediaAlternative(id: ID!, input: DamMediaAlternativeUpdateInput!): DamMediaAlternative!
   deleteDamMediaAlternative(id: ID!): Boolean!
+  updateDamSettings(scope: DamScopeInput! = {}, input: DamSettingsInput!): DamSettings!
 }
 
 input CreateBuildsInput {
@@ -958,4 +965,8 @@ input DamMediaAlternativeUpdateInput {
   type: DamMediaAlternativeType
   for: ID
   alternative: ID
+}
+
+input DamSettingsInput {
+  invalidLicenseFallbackImageId: ID
 }

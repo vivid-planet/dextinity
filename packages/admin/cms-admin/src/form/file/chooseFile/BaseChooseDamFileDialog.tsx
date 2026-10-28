@@ -94,7 +94,7 @@ export const BaseChooseDamFileDialog = ({
                             hideContextMenu={true}
                             hideMultiselect={hideMultiselect}
                             hideArchiveFilter={true}
-                            toolbarOptions={{ hideSelectiveActions: true }}
+                            toolbarOptions={{ hideSelectiveActions: true, hideSettingsAction: true }}
                             disableFolderSelection={disableFolderSelection}
                             keepNonExistentRowsSelected={keepNonExistentRowsSelected}
                             initialSelection={initialFileIds ? new Map(initialFileIds.map((id) => [id, "file"])) : undefined}

@@ -37,8 +37,10 @@ interface ButtonSlotProps<StartIcon extends ElementType, EndIcon extends Element
     endIcon?: SlotPropsValue<ButtonOwnerState, EndIcon>;
 }
 
-export interface ButtonProps<StartIcon extends ElementType = "span", EndIcon extends ElementType = "span">
-    extends Omit<BaseButton.Props, "className"> {
+export interface ButtonProps<StartIcon extends ElementType = "span", EndIcon extends ElementType = "span"> extends Omit<
+    BaseButton.Props,
+    "className"
+> {
     /**
      * Visual style.
      *

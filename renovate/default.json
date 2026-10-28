@@ -68,10 +68,6 @@
             "baseBranches": ["next"]
         },
         {
-            "groupName": "SWC",
-            "matchPackageNames": ["@swc/plugin-emotion", "@vitejs/plugin-react-swc"]
-        },
-        {
             "groupName": "Next.js",
             "matchPackageNames": ["next", "@next/bundle-analyzer", "@next/eslint-plugin-next", "eslint-config-next"]
         },

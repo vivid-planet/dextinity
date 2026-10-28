@@ -88,7 +88,7 @@
             "entry": ["./src/loader.ts", "./src/**/*.dextinityGen.{ts,tsx}"],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["./src/**/generated/**", "**/graphql.generated.ts", "**/*.generated.ts"],
-            "ignoreDependencies": ["@swc/plugin-emotion", "cosmiconfig-toml-loader", "@babel/core"]
+            "ignoreDependencies": ["cosmiconfig-toml-loader"]
         },
         "demo/api": {
             "entry": [

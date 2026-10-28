@@ -1,5 +1,6 @@
 "use client";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
+import { Link } from "@src/framework/Link";
 import { usePathname } from "@src/framework/RouterProvider";
 import { createBrowserGraphQLFetch } from "@src/util/browserGraphQLClient";
 import { useState } from "react";
@@ -21,13 +22,13 @@ export function NewsPage({ initialData, scope }: { initialData: GQLNewsIndexPage
             <h1>News</h1>
             <div className={styles.cardList}>
                 {newsList.map((news) => (
-                    <a key={news.id} href={`${pathname}/${news.slug}`} className={styles.card}>
+                    <Link key={news.id} href={`${pathname}/${news.slug}`} className={styles.card}>
                         <DamImageBlock data={news.image} aspectRatio="4x3" />
                         <h2>{news.title}</h2>
                         <p>
                             <FormattedDate value={news.createdAt} />
                         </p>
-                    </a>
+                    </Link>
                 ))}
             </div>
             <div>

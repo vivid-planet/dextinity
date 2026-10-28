@@ -1,5 +1,6 @@
 import type { PropsWithData } from "@dextinity/site-react";
 import type { NewsLinkBlockData } from "@src/blocks.generated";
+import { Link } from "@src/framework/Link";
 import { createSitePath } from "@src/util/createSitePath";
 import type { AnchorHTMLAttributes, JSX, PropsWithChildren } from "react";
 
@@ -11,7 +12,7 @@ function NewsLinkBlock({ data: { news }, children, ...anchorProps }: PropsWithCh
     }
 
     return (
-        <a
+        <Link
             {...anchorProps}
             href={createSitePath({
                 scope: news.scope,
@@ -19,7 +20,7 @@ function NewsLinkBlock({ data: { news }, children, ...anchorProps }: PropsWithCh
             })}
         >
             {children}
-        </a>
+        </Link>
     );
 }
 

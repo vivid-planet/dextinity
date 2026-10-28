@@ -1,3 +1,4 @@
+import { Link } from "@src/framework/Link";
 import { DefaultTitle } from "@src/layout/DefaultTitle";
 
 export default function NotFound404() {
@@ -5,7 +6,7 @@ export default function NotFound404() {
         <>
             <DefaultTitle />
             <p>Page not found.</p>
-            <a href="/">Return Home</a>
+            <Link href="/">Return Home</Link>
         </>
     );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { SvgUse } from "@src/common/helpers/SvgUse";
+import { Link } from "@src/framework/Link";
 import { useIntl } from "react-intl";
 
 import { PageLayout } from "../PageLayout";
@@ -21,9 +22,9 @@ export const Header = ({ header }: Props) => {
             <PageLayout grid>
                 <div className={styles.pageLayoutContent}>
                     <nav className={styles.root}>
-                        <a href="/" title={intl.formatMessage({ id: "header.logo.title", defaultMessage: "Dextinity Logo" })}>
+                        <Link href="/" title={intl.formatMessage({ id: "header.logo.title", defaultMessage: "Dextinity Logo" })}>
                             <SvgUse href="/assets/dextinity-logo.svg#root" />
-                        </a>
+                        </Link>
                         <DesktopMenu menu={header} />
                         <MobileMenu menu={header} />
                     </nav>

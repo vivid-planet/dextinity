@@ -1,5 +1,6 @@
 import { type PropsWithData, withPreview } from "@dextinity/site-react";
 import type { PageTreeIndexBlockData } from "@src/blocks.generated";
+import { Link } from "@src/framework/Link";
 import { PageLayout } from "@src/layout/PageLayout";
 import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import { createSitePath } from "@src/util/createSitePath";
@@ -24,9 +25,9 @@ function renderTree(nodes: PageTreeNodeWithChildren[]): JSX.Element {
         <ul className={styles.list}>
             {nodes.map((node) => (
                 <li key={node.id} className={styles.listItem}>
-                    <a href={createSitePath({ path: node.path, scope: node.scope })} className={styles.link}>
+                    <Link href={createSitePath({ path: node.path, scope: node.scope })} className={styles.link}>
                         {node.name}
-                    </a>
+                    </Link>
                     {node.children.length > 0 && renderTree(node.children)}
                 </li>
             ))}

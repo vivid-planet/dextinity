@@ -5,6 +5,7 @@ import { rscStream } from "rsc-html-stream/client";
 
 import { GlobalErrorBoundary } from "./GlobalErrorBoundary";
 import type { RscPayload } from "./render";
+import { setBrowserRouter } from "./RouterProvider";
 import { createRscUrl, stripRscPrefix } from "./rscRequest";
 
 type ScrollTarget = "top" | "hash" | undefined;
@@ -58,51 +59,44 @@ async function navigate(href: string, scrollTarget: ScrollTarget) {
     }
 }
 
-function shouldHandleLinkClick(event: MouseEvent, link: HTMLAnchorElement) {
-    return (
-        event.button === 0 &&
-        !event.metaKey &&
-        !event.ctrlKey &&
-        !event.altKey &&
-        !event.shiftKey &&
-        !event.defaultPrevented &&
-        (!link.target || link.target === "_self") &&
-        !link.hasAttribute("download") &&
-        link.origin === window.location.origin &&
-        !link.pathname.startsWith("/dam/") &&
-        !link.pathname.startsWith("/api/")
-    );
+function getScrollTarget(url: URL, scroll: boolean): ScrollTarget {
+    if (!scroll) {
+        return undefined;
+    }
+    return url.hash ? "hash" : "top";
 }
 
-function listenToNavigation() {
-    document.addEventListener("click", (event) => {
-        const link = (event.target as Element | null)?.closest("a");
-        if (!link || !link.href || !shouldHandleLinkClick(event, link)) {
-            return;
-        }
-        if (link.hash && link.pathname === window.location.pathname && link.search === window.location.search) {
-            // Let the browser scroll to the anchor
-            return;
-        }
-        event.preventDefault();
-        window.history.pushState(null, "", link.href);
-        navigate(link.href, link.hash ? "hash" : "top");
+function changeHistory(method: "pushState" | "replaceState", href: string, scroll: boolean) {
+    const url = new URL(href, window.location.href);
+    if (url.origin !== window.location.origin) {
+        window.location.assign(url);
+        return;
+    }
+    window.history[method](null, "", url);
+    navigate(url.href, getScrollTarget(url, scroll));
+}
+
+function refresh() {
+    navigate(window.location.href, undefined);
+}
+
+function setUpNavigation() {
+    setBrowserRouter({
+        push: (href, { scroll = true } = {}) => changeHistory("pushState", href, scroll),
+        replace: (href, { scroll = true } = {}) => changeHistory("replaceState", href, scroll),
+        refresh,
     });
 
-    window.addEventListener("popstate", () => {
-        navigate(window.location.href, undefined);
-    });
+    window.addEventListener("popstate", refresh);
 }
 
 async function main() {
     const initialPayload = await createFromReadableStream<RscPayload>(rscStream);
     hydrateRoot(document, <BrowserRoot initialPayload={initialPayload} />);
-    listenToNavigation();
+    setUpNavigation();
 
     if (import.meta.hot) {
-        import.meta.hot.on("rsc:update", () => {
-            navigate(window.location.href, undefined);
-        });
+        import.meta.hot.on("rsc:update", refresh);
     }
 }
 

@@ -68,9 +68,9 @@ Measured the GraphQL requests of 7 page types, each normally and in the site pre
 
 ## Navigation
 
-### #13 Replace global click interception with a `Link` component and router API
+### #13 Replace global click interception with a `Link` component and router API (done)
 
-`framework/entry.browser.tsx` intercepts clicks on every `<a>` with exceptions (`/dam/`, `/api/`). Opt-in `Link` + `useRouter()` (`push`/`replace`/`refresh`). Ref: audi6 `framework/Link.tsx`, `navigation.tsx`, `entry.browser.tsx` (same-path navigation without refetch).
+`framework/entry.browser.tsx` intercepted clicks on every `<a>`, with a path list for the exceptions (`/dam/`, `/api/`), so every non-page link outside that list needed a full page load as fallback. Now client navigation is opt-in: `framework/Link.tsx` renders an `<a>` and navigates on the client for plain left clicks on same-origin links (`isClientNavigationClick`; modifier keys, `target`, `download`, other origins and hash changes on the current page stay with the browser), `useRouter()` from `framework/RouterProvider.tsx` offers `push`/`replace`/`refresh` (with `scroll: false`). The demo's internal links use `Link`; DAM files, external links, skip links and the error page stay plain `<a>`. Verified in dev and production: navigation, back/forward and redirects keep the page, plain `<a>` and Ctrl+click load the page in the browser. Ref: audi6 `framework/Link.tsx`, `navigation.tsx`.
 
 ### #14 Add abort, pending state, scroll restoration, prefetch, route announcer
 
@@ -141,7 +141,7 @@ Counterpart to `@dextinity/site-nextjs`: re-exports `@dextinity/site-react` and 
 | 22  | `/_rsc` prefix handling                                                                                                                              | `src/framework/rscRequest.ts`, `entry.rsc.tsx`                      | #20, #4, #38 |
 | 23  | Request context core (request, isRsc, cookies, memo, typed slot for project data)                                                                    | `src/framework/requestContext.ts`                                   | #20, #9, #12 |
 | 24  | `renderPage`, `notFound()`, `redirect()`                                                                                                             | `src/framework/render.tsx`, `navigation.ts`                         | #20, #6      |
-| 25  | Router hooks + `Link` + `useRouter`                                                                                                                  | `src/framework/RouterProvider.tsx`                                  | #20, #13     |
+| 25  | Router hooks + `Link` + `useRouter`                                                                                                                  | `src/framework/RouterProvider.tsx`, `Link.tsx`                      | #20, #13     |
 | 26  | Error boundary, error and not found handling                                                                                                         | (from #2)                                                           | #20, #2      |
 | 27  | `Metadata` component with base URL resolution, replaces `absoluteUrl`                                                                                | inline in `src/documents/pages/Page.tsx`, `src/util/absoluteUrl.ts` | #20, #7      |
 | 28  | Production and dev server (`createServer({ staticDir, securityHeaders, cdnOriginCheckSecret })`, Vite middleware mode in dev, metrics/tracing hooks) | `server.ts`                                                         | #20, #11     |

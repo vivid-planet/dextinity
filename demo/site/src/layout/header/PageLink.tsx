@@ -1,5 +1,6 @@
 "use client";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
+import { Link } from "@src/framework/Link";
 import { usePathname } from "@src/framework/RouterProvider";
 import { createSitePath } from "@src/util/createSitePath";
 import type { JSX, PropsWithChildren } from "react";
@@ -34,7 +35,7 @@ function PageLink({ page, children, className: passedClassName, activeClassName 
         );
     } else if (page.documentType === "Page") {
         return (
-            <a
+            <Link
                 href={createSitePath({
                     path: page.path,
                     scope: page.scope,
@@ -42,11 +43,11 @@ function PageLink({ page, children, className: passedClassName, activeClassName 
                 className={className}
             >
                 {children}
-            </a>
+            </Link>
         );
     } else if (page.documentType === "PredefinedPage") {
         return (
-            <a
+            <Link
                 href={createSitePath({
                     path: page.path,
                     scope: page.scope,
@@ -54,7 +55,7 @@ function PageLink({ page, children, className: passedClassName, activeClassName 
                 className={className}
             >
                 {children}
-            </a>
+            </Link>
         );
     } else {
         if (process.env.NODE_ENV === "development") {

@@ -1,5 +1,78 @@
 # @comet/cms-api
 
+## 10.11.0
+
+### Minor Changes
+
+- 05ea45d: Replace images with an invalid license with a fallback image
+
+    When the license feature is enabled (`enableLicenseFeature`), `PixelImageBlock` renders a fallback image instead of an image whose license has expired or isn't valid yet.
+    The fallback image is set per DAM scope in the DAM settings.
+    It is delivered under its own URL and with its own crop area, the crop area set in the block is ignored.
+    If no fallback image is set, the block renders no image.
+
+    `SvgImageBlock`, `DamVideoBlock` and `DamFileDownloadLinkBlock` render no file if its license is invalid, and `DamVideoBlock` leaves out captions with an invalid license.
+
+    The GraphQL fields `DamFile.fileUrl`, `DamFileImage.url` and `DamFileImage.urlTemplate` return the fallback image's URL for a pixel image with an invalid license.
+    `DamFileImage.url` and `DamFileImage.urlTemplate` return `null` if no fallback image is set.
+
+    None of this applies to requests for preview DAM URLs, so the Admin keeps showing the original file.
+
+    The public file and image URLs of a file with an invalid license respond with `410 Gone`.
+
+### Patch Changes
+
+- 97b3b42: Allow `graphql-scalars` v2
+
+    v2 only drops support for `graphql` below v16 and for Node 20, so projects can update to it whenever they want.
+
+- 22bd832: Fix the error after uploading files to the DAM when the asset list isn't sorted
+
+    When no sort column was selected in the asset list, `damItemListPosition` failed with an SQL error such as `column folder.undefined does not exist`, and the admin showed this error after every upload.
+    `damItemsList` and `damItemListPosition` now sort by `name` when no sort column is given, and the GraphQL schema declares `name` as the default of their `sortColumnName` argument.
+
+- bc24036: Keep inline styles and links in place after emojis when migrating Draft.js content to TipTap
+
+    Draft.js stores the offsets of inline styles and entities in code points, but `migrateFromDraftJs` used them as string indices, which count UTF-16 code units.
+    Every emoji or other character outside the Basic Multilingual Plane shifted the ranges after it by one character, and a range ending inside such a character split it into two broken characters.
+
+- 79c2746: Reject unknown block types in the input of `createBlocksBlock` and `createOneOfBlock`
+
+    Previously, an item with a `type` that isn't in `supportedBlocks` was removed from `blocks` or `attachedBlocks` before validation, and the mutation saved the block without it.
+    Now, such an input fails validation with an `isIn` error at the `type` of the item, for instance `blocks.1.type`.
+    The index in the error path is the index of the item in the input.
+    Code that calls `blockInputFactory` without validating the result keeps such an item now, and `transformToBlockData()` throws for it. Call `validate()` to detect it.
+
+    The Admin only sends supported block types and isn't affected.
+    Stored block data with unknown types is still filtered when loaded, as a block may have been removed from `supportedBlocks` since the data was saved.
+
+- 79c2746: Report invalid block input as validation errors instead of internal errors
+
+    - `createBlocksBlock` and `createOneOfBlock`: Report a `blocks` or `attachedBlocks` value that isn't an array with an `isArray` error. Previously, the mutation failed with `value.filter is not a function`. `createListBlock` additionally reports an `isArray` error. All three report an item that is an array with an `isObject` error, which `createListBlock` accepted before and which failed when saving.
+    - `ChildBlockInput`: Report a missing non-nullable child block with an `isDefined` error. Previously, the mutation failed with `Missing child block input for '<key>'`. Code that calls `blockInputFactory` without validating the result doesn't get this error anymore and must call `validate()` to detect a missing child block. This includes the `openGraphImage` of the SEO block, which was marked as optional although the mutation failed without it.
+    - `createRichTextBlock`: Add a message to the `isDraftContent` error, which was empty
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- 9a5fd29: Report each validation error in the `openGraphImage` of the SEO block once
+
+    The field had an additional `@ValidateNested()` next to `@ChildBlockInput()`, which already adds it, so the image was validated twice.
+
+- c5f02ac: Keep bold, italic and links on soft hyphens and non-breaking spaces in TipTap rich texts
+
+    `migrateFromDraftJs` and the editor's soft hyphen and non-breaking space buttons created these nodes without the marks of the surrounding text.
+    On the site, a soft hyphen in a bold word was rendered outside the `<strong>`, so the hyphen at a line break was thinner than the letters around it, and a link containing one was split into two links.
+
+- a6050c4: Validate `damFileId` as UUID in `PixelImageBlock` and `SvgImageBlock`
+
+    Previously, any non-empty string was accepted and saved, resulting in a broken image.
+
 ## 10.10.0
 
 ### Minor Changes

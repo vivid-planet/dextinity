@@ -8,7 +8,13 @@ vi.mock("../../context/useBlockContext", () => ({
 afterEach(cleanup);
 
 import { mockStates } from "../__mocks__/TableBlockData.mocks";
-import { clickButtonOfRowAtIndex, getCellsExcludingTheDragHandleAndActionsCells, openRowOptionsAtIndex, renderTableBlock } from "./utils";
+import {
+    clickButtonOfRowAtIndex,
+    getBodyRowgroup,
+    getCellsExcludingTheDragHandleAndActionsCells,
+    openRowOptionsAtIndex,
+    renderTableBlock,
+} from "./utils";
 
 const getCellValuesPerRow = (rowgroup: HTMLElement) =>
     within(rowgroup)
@@ -18,7 +24,7 @@ const getCellValuesPerRow = (rowgroup: HTMLElement) =>
 describe("TableBlock: Move a row", () => {
     it("should swap a row with the row below when moving it down", async () => {
         const rendered = renderTableBlock(mockStates.default);
-        const rowgroup = rendered.getByRole("rowgroup");
+        const rowgroup = getBodyRowgroup(rendered);
         const [firstRowBefore, secondRowBefore, ...otherRowsBefore] = getCellValuesPerRow(rowgroup);
 
         clickButtonOfRowAtIndex(rendered, 0, /move down/i);
@@ -28,7 +34,7 @@ describe("TableBlock: Move a row", () => {
 
     it("should swap a row with the row above when moving it up", async () => {
         const rendered = renderTableBlock(mockStates.default);
-        const rowgroup = rendered.getByRole("rowgroup");
+        const rowgroup = getBodyRowgroup(rendered);
         const [firstRowBefore, secondRowBefore, ...otherRowsBefore] = getCellValuesPerRow(rowgroup);
 
         clickButtonOfRowAtIndex(rendered, 1, /move up/i);

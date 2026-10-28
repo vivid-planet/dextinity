@@ -1,4 +1,5 @@
 import MuiCheckbox, { type CheckboxProps } from "@mui/material/Checkbox";
+import { mergeSlotProps } from "@mui/material/utils";
 import type { FieldRenderProps } from "react-final-form";
 
 export type FinalFormCheckboxProps = CheckboxProps;
@@ -15,5 +16,16 @@ export const FinalFormCheckbox = ({
     meta,
     ...rest
 }: FinalFormCheckboxProps & FinalFormCheckboxInternalProps) => {
-    return <MuiCheckbox {...rest} name={name} inputProps={restInput} onChange={onChange} checked={checked} />;
+    return (
+        <MuiCheckbox
+            {...rest}
+            name={name}
+            onChange={onChange}
+            checked={checked}
+            slotProps={{
+                ...rest.slotProps,
+                input: mergeSlotProps(rest.slotProps?.input, restInput),
+            }}
+        />
+    );
 };

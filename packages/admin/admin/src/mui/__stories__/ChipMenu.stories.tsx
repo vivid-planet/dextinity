@@ -30,7 +30,12 @@ export const ChipMenu = {
             <Stack spacing={4}>
                 <Card>
                     <CardContent>
-                        <Typography variant="h3" mb={6}>
+                        <Typography
+                            variant="h3"
+                            sx={{
+                                mb: 6,
+                            }}
+                        >
                             Chip Menu
                         </Typography>
 

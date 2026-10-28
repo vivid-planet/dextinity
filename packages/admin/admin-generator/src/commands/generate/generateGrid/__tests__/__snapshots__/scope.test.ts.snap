@@ -97,7 +97,7 @@ import { Excel as ExcelIcon } from "@dextinity/admin-icons";
         return (
             <DataGridToolbar>
                 <FillSpace />
-        <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+        <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
         <FormattedMessage id="product.productsForm.newEntry" defaultMessage="New Product" />
     </Button>
             </DataGridToolbar>
@@ -141,7 +141,7 @@ renderCell: (params) => {
                             return (
                                 <>
                                 
-                                        <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                                        <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                             <EditIcon />
                                         </IconButton>
                                 </>
@@ -281,7 +281,7 @@ import { Excel as ExcelIcon } from "@dextinity/admin-icons";
         return (
             <DataGridToolbar>
                 <FillSpace />
-        <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+        <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
         <FormattedMessage id="product.productsForm.newEntry" defaultMessage="New Product" />
     </Button>
             </DataGridToolbar>
@@ -323,7 +323,7 @@ renderCell: (params) => {
                             return (
                                 <>
                                 
-                                        <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                                        <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                             <EditIcon />
                                         </IconButton>
                                 </>

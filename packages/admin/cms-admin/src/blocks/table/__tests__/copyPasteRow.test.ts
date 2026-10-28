@@ -9,7 +9,7 @@ vi.mock("../../context/useBlockContext", () => ({
 afterEach(cleanup);
 
 import { getPlainTextFromState, mockStates } from "../__mocks__/TableBlockData.mocks";
-import { clickButtonOfRowAtIndex, renderTableBlock, waitForClipboardToHaveValue } from "./utils";
+import { clickButtonOfRowAtIndex, getBodyRowgroup, renderTableBlock, waitForClipboardToHaveValue } from "./utils";
 
 describe("TableBlock: Copy and paste a row", () => {
     beforeEach(() => {
@@ -30,7 +30,7 @@ describe("TableBlock: Copy and paste a row", () => {
         };
 
         const rendered = renderTableBlock(initialBlockData);
-        const rowgroup = rendered.getByRole("rowgroup");
+        const rowgroup = getBodyRowgroup(rendered);
 
         clickButtonOfRowAtIndex(rendered, sourceRowIndex, /copy/i);
         await waitForClipboardToHaveValue();

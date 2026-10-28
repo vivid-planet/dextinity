@@ -501,10 +501,11 @@ export const SearchAutocomplete = () => {
                     ]}
                     getOptionLabel={(option) => option.name}
                     style={{ width: 350 }}
-                    renderInput={({ InputProps, ...restParams }) => (
+                    renderInput={({ slotProps: { input: inputProps, htmlInput: htmlInputProps }, ...restParams }) => (
                         <InputBase
                             {...restParams}
-                            {...InputProps}
+                            {...inputProps}
+                            slotProps={{ input: htmlInputProps }}
                             placeholder="Search"
                             startAdornment={
                                 <InputAdornment position="start">

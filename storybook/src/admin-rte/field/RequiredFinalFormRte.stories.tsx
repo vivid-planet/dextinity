@@ -18,7 +18,12 @@ type FormValues = {
 
 export const RequiredFinalFormRte = () => {
     return (
-        <Box maxWidth={800} p={4}>
+        <Box
+            sx={{
+                maxWidth: 800,
+                p: 4,
+            }}
+        >
             <FieldSet>
                 <Form<FormValues>
                     onSubmit={(values) => {

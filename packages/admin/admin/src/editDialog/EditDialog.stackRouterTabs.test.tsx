@@ -103,6 +103,7 @@ describe("EditDialog with Stack, Router Tabs and Grid", () => {
                                                         data-testid="edit.row"
                                                         color="primary"
                                                         component={StackLink}
+                                                        nativeButton={false}
                                                         pageName="productEdit"
                                                         payload={params.row.id}
                                                     >

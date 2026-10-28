@@ -51,7 +51,11 @@ export const DependencyActions = ({ graphqlObjectType, id, rootColumnName, jsonP
                     />
                 }
             >
-                <Box display="flex">
+                <Box
+                    sx={{
+                        display: "flex",
+                    }}
+                >
                     <IconButton disabled>
                         <OpenNewTab />
                     </IconButton>
@@ -77,7 +81,11 @@ export const DependencyActions = ({ graphqlObjectType, id, rootColumnName, jsonP
     };
 
     return (
-        <Box display="flex">
+        <Box
+            sx={{
+                display: "flex",
+            }}
+        >
             <Tooltip title={<FormattedMessage {...messages.openInNewTab} />}>
                 <IconButton
                     onClick={async () => {

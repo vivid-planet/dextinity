@@ -27,7 +27,7 @@ export function AboutModal({ open, onClose, logo = <DextinityLogo sx={{ fontSize
     const buildInformation = useBuildInformation();
 
     return (
-        <Modal open={open} onClose={onClose} closeAfterTransition BackdropComponent={Backdrop}>
+        <Modal open={open} onClose={onClose} closeAfterTransition slots={{ backdrop: Backdrop }}>
             <Dialog open onClose={onClose}>
                 <DialogTitle>
                     <DialogTitleContent>
@@ -43,7 +43,11 @@ export function AboutModal({ open, onClose, logo = <DextinityLogo sx={{ fontSize
                 <DialogContent>
                     <LogoContainer>{logo}</LogoContainer>
                     <VersionContainer>
-                        <Typography fontWeight={500}>{`v${version}`}</Typography>
+                        <Typography
+                            sx={{
+                                fontWeight: 500,
+                            }}
+                        >{`v${version}`}</Typography>
                         {buildInformation?.number && buildInformation.commitHash && (
                             <Typography>
                                 <FormattedMessage

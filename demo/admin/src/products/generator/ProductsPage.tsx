@@ -53,12 +53,12 @@ export function ProductsPage() {
                     <StackMainContent fullHeight>
                         <ProductsGrid
                             toolbarAction={
-                                <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+                                <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
                                     <FormattedMessage id="product.newProduct" defaultMessage="New Product" />
                                 </Button>
                             }
                             rowAction={(params) => (
-                                <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                                <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                     <Edit />
                                 </IconButton>
                             )}

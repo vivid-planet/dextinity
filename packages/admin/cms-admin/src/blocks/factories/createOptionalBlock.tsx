@@ -154,7 +154,11 @@ export function createOptionalBlock<T extends BlockInterface>(
                                     }}
                                 >
                                     <Divider />
-                                    <Box padding={decoratedBlock.definesOwnPadding ? 0 : 3}>
+                                    <Box
+                                        sx={{
+                                            padding: decoratedBlock.definesOwnPadding ? 0 : 3,
+                                        }}
+                                    >
                                         <decoratedBlock.AdminComponent
                                             updateState={updateSubBlocksFn}
                                             state={state.block ? state.block : decoratedBlock.defaultValues()}

@@ -123,7 +123,7 @@ export const PagesPageActionToolbar = ({
     return (
         <>
             {progressDialog}
-            <Root container justifyContent="space-between">
+            <Root container sx={{ justifyContent: "space-between" }}>
                 <Grid>
                     <SelectAllLabel
                         control={

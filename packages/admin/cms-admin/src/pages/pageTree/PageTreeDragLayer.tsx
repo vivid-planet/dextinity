@@ -41,7 +41,11 @@ const PageTreeDragLayer = ({ numberSelectedPages }: PageTreeDragLayerProps) => {
                 {!item.selected || numberSelectedPages === 1 ? (
                     <PageLabel page={item} />
                 ) : (
-                    <Box pl={4}>
+                    <Box
+                        sx={{
+                            pl: 4,
+                        }}
+                    >
                         <FormattedMessage
                             id="dextinity.pagetree.dragLayer.numberDraggedPages"
                             defaultMessage="{numItems} pages"

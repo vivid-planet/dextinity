@@ -21,14 +21,26 @@ export const TablePagination = ({ totalCount, pagingInfo, rowName }: IProps) => 
     return (
         <TableCell colSpan={1000}>
             <Toolbar>
-                <Grid container justifyContent="space-between" alignItems="center">
+                <Grid
+                    container
+                    sx={{
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                    }}
+                >
                     <Grid>
                         <Typography color="textPrimary" variant="body2">
                             <FormattedNumber value={totalCount} /> {rowName}
                         </Typography>
                     </Grid>
                     <Grid>
-                        <Grid container alignItems="center" spacing={2}>
+                        <Grid
+                            container
+                            spacing={2}
+                            sx={{
+                                alignItems: "center",
+                            }}
+                        >
                             {pagingInfo.totalPages && pagingInfo.currentPage && (
                                 <Grid>
                                     <Typography color="textSecondary" variant="body2">

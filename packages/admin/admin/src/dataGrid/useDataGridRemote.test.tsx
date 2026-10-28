@@ -17,6 +17,7 @@ const mockedPage = 17;
 const mockedPageSize = 42;
 
 const mockedApi: GridApi = {} as GridApi;
+const mockedCallbackDetails = { api: mockedApi, apiRef: { current: mockedApi } };
 
 describe("useDataGridRemote", () => {
     it("reads sort param from URL and returns correct value", () => {
@@ -57,9 +58,7 @@ describe("useDataGridRemote", () => {
         const { result } = renderHook(() => useDataGridRemote(), { wrapper: ({ children }) => <Router history={history}>{children}</Router> });
 
         act(() => {
-            result.current.onSortModelChange?.([{ field: mockedSortField, sort: mockedSort }], {
-                api: mockedApi,
-            });
+            result.current.onSortModelChange?.([{ field: mockedSortField, sort: mockedSort }], mockedCallbackDetails);
         });
 
         expect(history.location.search).toEqual(`?${queryString.stringify({ sort: `${mockedSortField}:${mockedSort}` })}`);
@@ -71,9 +70,7 @@ describe("useDataGridRemote", () => {
         const { result } = renderHook(() => useDataGridRemote(), { wrapper: ({ children }) => <Router history={history}>{children}</Router> });
 
         act(() => {
-            result.current.onFilterModelChange?.(mockedFilterModel, {
-                api: mockedApi,
-            });
+            result.current.onFilterModelChange?.(mockedFilterModel, mockedCallbackDetails);
         });
 
         expect(history.location.search).toEqual(`?${queryString.stringify({ filter: JSON.stringify(mockedFilterModel) })}`);
@@ -85,12 +82,7 @@ describe("useDataGridRemote", () => {
         const { result } = renderHook(() => useDataGridRemote(), { wrapper: ({ children }) => <Router history={history}>{children}</Router> });
 
         act(() => {
-            result.current.onPaginationModelChange?.(
-                { page: mockedPage, pageSize: 25 },
-                {
-                    api: mockedApi,
-                },
-            );
+            result.current.onPaginationModelChange?.({ page: mockedPage, pageSize: 25 }, mockedCallbackDetails);
         });
 
         expect(history.location.search).toEqual(`?${queryString.stringify({ page: mockedPage, pageSize: 25 })}`);
@@ -102,7 +94,7 @@ describe("useDataGridRemote", () => {
         const { result } = renderHook(() => useDataGridRemote(), { wrapper: ({ children }) => <Router history={history}>{children}</Router> });
 
         act(() => {
-            result.current.onPaginationModelChange?.({ page: 0, pageSize: mockedPageSize }, { api: mockedApi });
+            result.current.onPaginationModelChange?.({ page: 0, pageSize: mockedPageSize }, mockedCallbackDetails);
         });
 
         expect(history.location.search).toEqual(`?${queryString.stringify({ pageSize: mockedPageSize, page: 0 })}`);
@@ -141,18 +133,18 @@ describe("useDataGridRemote", () => {
         });
 
         act(() => {
-            result.current.onSortModelChange?.([{ field: mockedSortField, sort: mockedSort }], { api: mockedApi });
+            result.current.onSortModelChange?.([{ field: mockedSortField, sort: mockedSort }], mockedCallbackDetails);
         });
 
         expect(history.location.search).toContain(`${prefix}sort`);
 
         act(() => {
-            result.current.onFilterModelChange?.(mockedFilterModel, { api: mockedApi });
+            result.current.onFilterModelChange?.(mockedFilterModel, mockedCallbackDetails);
         });
         expect(history.location.search).toContain(`${prefix}filter`);
 
         act(() => {
-            result.current.onPaginationModelChange?.({ page: mockedPage, pageSize: mockedPage }, { api: mockedApi });
+            result.current.onPaginationModelChange?.({ page: mockedPage, pageSize: mockedPage }, mockedCallbackDetails);
         });
         expect(history.location.search).toContain(`${prefix}page`);
         expect(history.location.search).toContain(`${prefix}pageSize`);

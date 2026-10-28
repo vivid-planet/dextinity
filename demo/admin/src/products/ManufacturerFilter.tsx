@@ -78,15 +78,17 @@ function ManufacturerFilter({ item, applyValue, apiRef }: GridFilterInputValuePr
                     }}
                     label={apiRef.current.getLocaleText("filterPanelInputLabel")}
                     slotProps={{
+                        ...params.slotProps,
                         inputLabel: {
+                            ...params.slotProps.inputLabel,
                             shrink: true,
                         },
                         input: {
-                            ...params.InputProps,
+                            ...params.slotProps.input,
                             endAdornment: (
                                 <>
                                     {item.value && <ClearInputAdornment position="end" onClick={() => handleApplyValue(undefined)} />}
-                                    {params.InputProps.endAdornment}
+                                    {params.slotProps.input.endAdornment}
                                 </>
                             ),
                         },

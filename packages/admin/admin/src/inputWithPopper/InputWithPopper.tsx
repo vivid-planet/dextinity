@@ -13,7 +13,7 @@ import { type ElementType, type ReactNode, type RefObject, useCallback, useEffec
 import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 import { InputBase, Paper, Popper, Root } from "./InputWithPopper.slots";
 
-export type InputWithPopperComponents = InputBaseProps["components"] & {
+export type InputWithPopperComponents = {
     Transition?: ElementType<TransitionProps>;
 };
 
@@ -27,7 +27,7 @@ type BaseProps = ThemedComponentBaseProps<{
     clickAwayListener: typeof ClickAwayListener;
 }>;
 
-export interface InputWithPopperProps extends Omit<InputBaseProps, "components" | "inputRef" | "sx" | "slotProps">, BaseProps {
+export interface InputWithPopperProps extends Omit<InputBaseProps, "inputRef" | "sx" | "slotProps">, BaseProps {
     children: ((closePopper: ClosePopper) => ReactNode) | ReactNode;
     components?: InputWithPopperComponents;
     onOpenPopper?: () => void;
@@ -49,7 +49,7 @@ export const InputWithPopper = (inProps: InputWithPopperProps) => {
         slotProps,
         ...inputBaseProps
     } = useThemeProps({ props: inProps, name: "DextinityAdminInputWithPopper" });
-    const { Transition = Grow, ...inputBaseComponents } = components;
+    const { Transition = Grow } = components;
 
     const rootRef = useRef<HTMLDivElement>(null);
     const ownInputRef = useRef<HTMLElement>(null);
@@ -118,7 +118,6 @@ export const InputWithPopper = (inProps: InputWithPopperProps) => {
                         inputBaseProps.onFocus?.(e);
                         openPopper();
                     }}
-                    components={inputBaseComponents}
                     {...slotProps?.inputBase}
                     slotProps={{
                         ...slotProps?.inputBase?.slotProps,

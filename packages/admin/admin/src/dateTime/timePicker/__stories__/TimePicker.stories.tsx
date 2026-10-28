@@ -138,7 +138,13 @@ export const MultiplePickers: Story = {
         const [endTime, setEndTime] = useState<string | undefined>("17:00");
 
         return (
-            <Box display="flex" flexDirection="column" gap={4}>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
+                }}
+            >
                 <Typography variant="h5">Work Hours</Typography>
                 <TimePicker {...args} label="Start Time" fullWidth value={startTime} onChange={setStartTime} />
                 <TimePicker {...args} label="End Time" fullWidth value={endTime} onChange={setEndTime} />

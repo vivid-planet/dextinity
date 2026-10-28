@@ -136,7 +136,13 @@ export const MultiplePickers: Story = {
         const [project, setProject] = useState<DateRange | undefined>({ start: "2024-08-01", end: "2024-09-30" });
 
         return (
-            <Box display="flex" flexDirection="column" gap={4}>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
+                }}
+            >
                 <Typography variant="h5">Date Range Selection</Typography>
                 <DateRangePicker {...args} label="Vacation Period" fullWidth value={vacation} onChange={setVacation} />
                 <DateRangePicker {...args} label="Project Duration" fullWidth value={project} onChange={setProject} />

@@ -62,7 +62,13 @@ export const PageDeleteDialog = (props: PageDeleteDialogProps) => {
             </DialogTitle>
             <DialogContent>
                 <DeleteContentInformation variant="outlined">
-                    <Box padding={4} display="flex" flexDirection="row">
+                    <Box
+                        sx={{
+                            padding: 4,
+                            display: "flex",
+                            flexDirection: "row",
+                        }}
+                    >
                         <WarningIconWrapper>
                             <WarningIcon color="inherit" fontSize="large" />
                         </WarningIconWrapper>
@@ -90,7 +96,13 @@ export const PageDeleteDialog = (props: PageDeleteDialogProps) => {
 
                 {dialogInformation && dialogInformation?.publishedCount > 0 && (
                     <BlockAdminComponentPaper>
-                        <Box display="flex" flexDirection="row" justifyContent="space-between">
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
                             <PageVisibility>
                                 <PageVisibilityIcon visibility="Published" />
                                 <FormattedMessage id="dextinity.pages.pages.page.visibility.published" defaultMessage="Published" />
@@ -109,7 +121,13 @@ export const PageDeleteDialog = (props: PageDeleteDialogProps) => {
                 )}
                 {dialogInformation && dialogInformation?.unpublishedCount > 0 && (
                     <BlockAdminComponentPaper>
-                        <Box display="flex" flexDirection="row" justifyContent="space-between">
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
                             <PageVisibility>
                                 <PageVisibilityIcon visibility="Unpublished" />
                                 <FormattedMessage id="dextinity.pages.pages.page.visibility.unpublished" defaultMessage="Unpublished" />
@@ -128,7 +146,13 @@ export const PageDeleteDialog = (props: PageDeleteDialogProps) => {
                 )}
                 {dialogInformation && dialogInformation?.archivedCount > 0 && (
                     <BlockAdminComponentPaper>
-                        <Box display="flex" flexDirection="row" justifyContent="space-between">
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                            }}
+                        >
                             <PageVisibility>
                                 <PageVisibilityIcon visibility="Archived" />
                                 <FormattedMessage id="dextinity.pages.pages.page.visibility.archived" defaultMessage="Archived" />

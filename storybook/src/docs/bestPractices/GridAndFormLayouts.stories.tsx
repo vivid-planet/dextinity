@@ -478,7 +478,7 @@ export const GridWithFormOnAPage = {
                     <GridToolbarQuickFilter />
                     <GridFilterButton />
                     <FillSpace />
-                    <Button responsive startIcon={<Add />} component={StackLink} pageName="add" payload="add">
+                    <Button responsive startIcon={<Add />} component={StackLink} nativeButton={false} pageName="add" payload="add">
                         Add new item
                     </Button>
                 </DataGridToolbar>
@@ -494,7 +494,7 @@ export const GridWithFormOnAPage = {
                 headerName: "",
                 width: 52,
                 renderCell: (params) => (
-                    <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                    <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                         <Edit />
                     </IconButton>
                 ),
@@ -601,7 +601,7 @@ export const NestedGridsAndFormsWithTabs = {
                 headerName: "",
                 width: 52,
                 renderCell: (params) => (
-                    <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                    <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                         <Edit />
                     </IconButton>
                 ),
@@ -717,7 +717,7 @@ export const NestedFormInGridInTabsInGrid = {
                 headerName: "",
                 width: 52,
                 renderCell: (params) => (
-                    <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                    <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                         <Edit />
                     </IconButton>
                 ),

@@ -43,16 +43,19 @@ export const getMuiInputBase: GetMuiComponentTheme<"MuiInputBase"> = (component,
             "&::-ms-clear": {
                 display: "none",
             },
-        },
-        inputMultiline: {
-            padding: `calc(${spacing(2)} - 1px)`,
-            resize: "vertical",
-        },
-        inputAdornedStart: {
-            paddingLeft: spacing(2),
-        },
-        inputAdornedEnd: {
-            paddingRight: spacing(2),
+
+            [`.${inputBaseClasses.multiline} &`]: {
+                padding: `calc(${spacing(2)} - 1px)`,
+                resize: "vertical",
+            },
+
+            [`.${inputBaseClasses.adornedStart} &`]: {
+                paddingLeft: spacing(2),
+            },
+
+            [`.${inputBaseClasses.adornedEnd} &`]: {
+                paddingRight: spacing(2),
+            },
         },
     }),
 });

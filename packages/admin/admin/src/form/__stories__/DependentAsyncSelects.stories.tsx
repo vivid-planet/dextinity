@@ -19,7 +19,11 @@ export const DependentAsyncSelects = function () {
     const client = useApolloClient();
 
     return (
-        <Box maxWidth={400}>
+        <Box
+            sx={{
+                maxWidth: 400,
+            }}
+        >
             <FinalForm<FormValues>
                 mode="add"
                 onSubmit={() => {

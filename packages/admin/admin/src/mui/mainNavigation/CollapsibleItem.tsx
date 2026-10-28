@@ -199,18 +199,11 @@ export const MainNavigationCollapsibleItem = (inProps: MainNavigationCollapsible
             {!isMenuOpen && drawerVariant === "permanent" ? (
                 <Menu
                     id={mouseOverMenuId}
-                    MenuListProps={{
-                        "aria-labelledby": itemId,
-                        onMouseLeave: closeMenu,
-                        style: { pointerEvents: "auto", paddingBottom: itemLevel == 1 ? 10 : undefined },
-                        disablePadding: itemLevel !== 2,
-                    }}
                     sx={{
                         pointerEvents: "none",
                     }}
                     open={isSubmenuOpen && anchorEl !== null}
                     anchorEl={anchorEl}
-                    TransitionComponent={Fade}
                     anchorOrigin={{
                         vertical: "center",
                         horizontal: "right",
@@ -220,6 +213,17 @@ export const MainNavigationCollapsibleItem = (inProps: MainNavigationCollapsible
                         horizontal: "left",
                     }}
                     onClose={handlePopoverClose}
+                    slotProps={{
+                        list: {
+                            "aria-labelledby": itemId,
+                            onMouseLeave: closeMenu,
+                            style: { pointerEvents: "auto", paddingBottom: itemLevel == 1 ? 10 : undefined },
+                            disablePadding: itemLevel !== 2,
+                        },
+                    }}
+                    slots={{
+                        transition: Fade,
+                    }}
                 >
                     {itemLevel === 1 && <ItemTitle>{primary}</ItemTitle>}
                     {childElements}

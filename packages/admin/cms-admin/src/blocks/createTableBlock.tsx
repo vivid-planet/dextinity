@@ -206,9 +206,15 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
                                 maxWidth="xl"
                                 onClose={closeTableBlock}
                                 title={intl.formatMessage({ id: "dextinity.blocks.table.displayName", defaultMessage: "Table" })}
-                                PaperProps={{ sx: { height: "100%", maxHeight: 880 } }}
                                 sx={(theme) => ({ zIndex: theme.zIndex.modal - 2 })}
-                                slotProps={{ root: { slotProps: { transition: { onEntered: handleDialogOpened } } } }}
+                                slotProps={{
+                                    root: {
+                                        slotProps: {
+                                            paper: { sx: { height: "100%", maxHeight: 880 } },
+                                            transition: { onEntered: handleDialogOpened },
+                                        },
+                                    },
+                                }}
                             >
                                 <TableBlockGrid state={state} updateState={updateState} clickedCell={hasDialogOpened ? clickedCell : undefined} />
                                 <DialogActions>

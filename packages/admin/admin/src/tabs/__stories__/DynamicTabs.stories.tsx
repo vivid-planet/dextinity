@@ -55,13 +55,21 @@ export const DynamicTabsAndRouterTabs = {
         return (
             <>
                 <Button onClick={() => setShowFourthTab((show) => !show)}>{showFourthTab ? "Hide" : "Show"} fourth tab</Button>
-
-                <Typography py={4} variant="h2">
+                <Typography
+                    variant="h2"
+                    sx={{
+                        py: 4,
+                    }}
+                >
                     Tabs:
                 </Typography>
                 <DynamicTabs showFourthTab={showFourthTab} />
-
-                <Typography py={4} variant="h2">
+                <Typography
+                    variant="h2"
+                    sx={{
+                        py: 4,
+                    }}
+                >
                     RouterTabs:
                 </Typography>
                 <DynamicRouterTabs showFourthTab={showFourthTab} />

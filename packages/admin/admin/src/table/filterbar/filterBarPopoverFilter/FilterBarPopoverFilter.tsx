@@ -2,6 +2,7 @@ import { Check, Reset } from "@dextinity/admin-icons";
 // eslint-disable-next-line no-restricted-imports
 import { Button, type ButtonProps, type ComponentsOverrides, Popover as MuiPopover, type Theme } from "@mui/material";
 import { css, useThemeProps } from "@mui/material/styles";
+import { mergeSlotProps } from "@mui/material/utils";
 import { type ComponentType, type MouseEvent, type PropsWithChildren, useState } from "react";
 import { Form, useForm } from "react-final-form";
 import { FormattedMessage } from "react-intl";
@@ -148,15 +149,16 @@ export function FilterBarPopoverFilter(inProps: PropsWithChildren<FilterBarPopov
                                     vertical: "bottom",
                                     horizontal: "left",
                                 }}
-                                PaperProps={{
-                                    square: true,
-                                    elevation: 1,
-                                    ...slotProps?.popover?.PaperProps,
-                                    sx: {
-                                        marginLeft: "-1", //due to border of popover, but now overrideable with styling if needed
-                                        marginTop: "2", //due to boxShadow of popover to not overlap border of clickable fieldBar
-                                        ...slotProps?.popover?.PaperProps?.sx,
-                                    },
+                                slotProps={{
+                                    ...slotProps?.popover?.slotProps,
+                                    paper: mergeSlotProps(slotProps?.popover?.slotProps?.paper, {
+                                        square: true,
+                                        elevation: 1,
+                                        sx: {
+                                            marginLeft: "-1", //due to border of popover, but now overrideable with styling if needed
+                                            marginTop: "2", //due to boxShadow of popover to not overlap border of clickable fieldBar
+                                        },
+                                    }),
                                 }}
                                 elevation={2}
                                 keepMounted

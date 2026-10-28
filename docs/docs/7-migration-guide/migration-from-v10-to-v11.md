@@ -759,6 +759,208 @@ cd admin
 npm run intl:extract
 ```
 
+### Update MUI to v9
+
+The admin packages now require MUI v9 and MUI X v9. See the [Material UI](https://mui.com/material-ui/migration/upgrade-to-v9/), [Data Grid](https://mui.com/x/migration/migration-data-grid-v8/) and [Date and Time Pickers](https://mui.com/x/migration/migration-pickers-v8/) migration guides for the complete list of changes.
+
+Update every `@mui/*` dependency in `admin/package.json`: `@mui/material`, `@mui/system` and `@mui/utils` to `^9.5.0`, and the MUI X packages (`@mui/x-data-grid`, `@mui/x-data-grid-pro`, `@mui/x-data-grid-premium`, `@mui/x-date-pickers`, `@mui/x-date-pickers-pro`, `@mui/x-license`) to `^9.15.0`:
+
+```diff title="admin/package.json"
+{
+    "dependencies": {
+-       "@mui/material": "^7.3.11",
+-       "@mui/system": "^7.3.11",
+-       "@mui/x-data-grid-pro": "^8.29.3",
+-       "@mui/x-date-pickers": "^8.29.4",
++       "@mui/material": "^9.5.0",
++       "@mui/system": "^9.5.0",
++       "@mui/x-data-grid-pro": "^9.15.0",
++       "@mui/x-date-pickers": "^9.15.0",
+    }
+}
+```
+
+```sh
+cd admin
+npm install
+```
+
+The default browser targets of MUI v9 are Chrome 117, Edge 121, Firefox 121 and Safari 17.
+
+#### Run the codemods
+
+MUI v9 removes the system props, the deprecated component props (`PaperProps`, `TransitionComponent`, `inputProps`, …) and the deprecated CSS classes. Migrate them with the codemods:
+
+```sh
+cd admin
+npx @mui/codemod@9.4.0 v9.0.0/system-props src
+npx @mui/codemod@9.4.0 deprecations/all src
+npx @mui/x-codemod@latest v9.0.0/preset-safe src
+```
+
+:::note
+
+`@mui/codemod` 9.5.0 fails to start with `TypeError: yargs.command is not a function`. Version 9.4.0 contains the same v9 codemods.
+
+:::
+
+The codemods also rewrite the files in `generated/` folders. Instead of keeping these changes, regenerate the files with the Admin Generator afterwards:
+
+```sh
+cd admin
+npx dextinity-admin-generator generate
+```
+
+Then type-check the admin and fix the remaining errors with the following steps:
+
+```sh
+cd admin
+npx tsc --noEmit
+```
+
+#### Replace the removed keys in the theme
+
+The codemods only rewrite class selectors such as `.MuiButton-containedPrimary`. Keys of `styleOverrides` that MUI v9 removed (e.g., `containedPrimary`, `iconSizeMedium`, `outlinedSuccess`, `paperScrollPaper`, `inputMultiline`, `inputAdornedStart`) fail to compile. Move their styles into the remaining key of the variant and target the color, size or slot with a compound selector:
+
+```diff
++ import { buttonClasses } from "@mui/material";
+
+  styleOverrides: {
+-     containedPrimary: {
+-         backgroundColor: palette.primary.main,
+-     },
++     contained: {
++         [`&.${buttonClasses.colorPrimary}`]: {
++             backgroundColor: palette.primary.main,
++         },
++     },
+  },
+```
+
+Styles of a slot that depend on the state of the root (e.g., `inputAdornedStart` of `MuiInputBase`) move into the key of the slot and target the root class:
+
+```diff
+  styleOverrides: {
+-     inputAdornedStart: {
+-         paddingLeft: spacing(2),
+-     },
++     input: {
++         [`.${inputBaseClasses.adornedStart} &`]: {
++             paddingLeft: spacing(2),
++         },
++     },
+  },
+```
+
+#### Replace the removed props the codemods miss
+
+The codemods only migrate props written as JSX attributes of MUI components. Replace the removed props in all other places by hand, for instance in `slotProps` objects, in props of Dextinity components that are passed on to MUI components, and on components the codemods don't cover (e.g., `DialogTitle` or components created with `styled()`):
+
+```sh
+grep -rnE "PaperProps|MenuListProps|TransitionComponent|BackdropComponent|InputProps|InputLabelProps|primaryTypographyProps|ScrollButtonComponent|componentsProps" src --include="*.tsx" --exclude-dir=generated
+```
+
+```diff
+  <Dialog
+      slotProps={{
+          root: {
+-             PaperProps: { sx: { height: "100%" } },
++             slotProps: { paper: { sx: { height: "100%" } } },
+          },
+      }}
+  />
+```
+
+The following Dextinity props passed on removed MUI props and changed accordingly:
+
+| Component                | Before                                                                     | After                                                                                             |
+| ------------------------ | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `ToolbarBreadcrumbs`     | `slotProps.mobileMenu.MenuListProps`<br/>`slotProps.mobileMenu.PaperProps` | `slotProps.mobileMenu.slotProps.list`<br/>`slotProps.mobileMenu.slotProps.paper`                  |
+| `MainNavigation`         | `slotProps.permanentDrawer.PaperProps`                                     | `slotProps.permanentDrawer.slotProps.paper`                                                       |
+| `FilterBarPopoverFilter` | `slotProps.popover.PaperProps`                                             | `slotProps.popover.slotProps.paper`                                                               |
+| `Tabs`                   | `ScrollButtonComponent`                                                    | `slots.scrollButtons`                                                                             |
+| `RouterTabs`             | `tabsProps.ScrollButtonComponent`                                          | `tabsProps.slots.scrollButtons`                                                                   |
+| `InputWithPopper`        | `components` with the slots of the input                                   | `components` only accepts `Transition`, pass the slots of the input with `slots`                  |
+| `ColorPicker`            | `components` with the slots of the input                                   | `components` only accepts `Transition` and the previews, pass the slots of the input with `slots` |
+| `RowActionsSubMenu`      | `componentsProps` with the slot props of the menu                          | `slotProps`                                                                                       |
+
+#### Pass the input props of the `Autocomplete` with the slot props
+
+The params of `renderInput` of the `Autocomplete` contain `slotProps.input`, `slotProps.htmlInput` and `slotProps.inputLabel` instead of `InputProps`, `inputProps` and `InputLabelProps`. A `TextField` accepts these slot props, so spreading the params still works. If you pass `slotProps` to the `TextField` as well, merge them with the params. Otherwise, the props of the `<input>` are lost and the `Autocomplete` stops working:
+
+```diff
+  renderInput={(params) => (
+      <TextField
+          {...params}
+          slotProps={{
++             ...params.slotProps,
+              input: {
+-                 ...params.InputProps,
++                 ...params.slotProps.input,
+                  endAdornment: (
+                      <>
+                          <ClearInputAdornment position="end" onClick={handleClear} />
+-                         {params.InputProps.endAdornment}
++                         {params.slotProps.input.endAdornment}
+                      </>
+                  ),
+              },
+          }}
+      />
+  )}
+```
+
+An `InputBase` doesn't accept these slot props. Pass the input props to it and the props of the `<input>` with `slotProps.input`:
+
+```diff
+- renderInput={({ InputProps, ...params }) => <InputBase {...params} {...InputProps} />}
++ renderInput={({ slotProps: { input: inputProps, htmlInput: htmlInputProps }, ...params }) => (
++     <InputBase {...params} {...inputProps} slotProps={{ input: htmlInputProps }} />
++ )}
+```
+
+TypeScript doesn't catch an overridden `slotProps`, so check every `renderInput` of your project:
+
+```sh
+grep -rn "renderInput" src
+```
+
+#### Render buttons that link to a stack page with `nativeButton={false}`
+
+In development, MUI v9 logs an error when a `Button` or `IconButton` renders a custom component that isn't a `<button>`, unless it has a `to` or `href` prop. This applies to buttons rendered with `StackLink`. Add `nativeButton={false}` to them:
+
+```diff
+- <IconButton component={StackLink} pageName="edit" payload={row.id}>
++ <IconButton component={StackLink} nativeButton={false} pageName="edit" payload={row.id}>
+```
+
+```sh
+grep -rn "component={StackLink}" src --exclude-dir=generated
+```
+
+The Admin Generator adds `nativeButton={false}` to the files it generates.
+
+#### Update the tests of Data Grids
+
+The column headers of the Data Grid have the `rowgroup` role now. Queries such as `getByRole("rowgroup")` find two elements, so exclude the column headers:
+
+```ts
+const bodyRowgroup = rendered
+    .getAllByRole("rowgroup")
+    .find((rowgroup) => !rowgroup.classList.contains(gridClasses.columnHeaders));
+```
+
+The details passed to the callbacks of the Data Grid require `apiRef` now. Add it where your tests call these callbacks:
+
+```diff
+- onSortModelChange(sortModel, { api });
++ onSortModelChange(sortModel, { api, apiRef: { current: api } });
+```
+
+#### Regenerate the MUI X license key
+
+MUI X v9 requires a new license key for the Pro and Premium packages. Regenerate it in the [MUI Store](https://mui.com/store/) and replace the key wherever your project sets it, for example, in the environment variables of the admin.
+
 <!-- "Verify lint passes" must always be the last step for this service. -->
 
 ### Verify lint passes

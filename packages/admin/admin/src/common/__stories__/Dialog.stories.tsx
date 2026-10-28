@@ -32,7 +32,13 @@ export const DialogStory: Story = {
                     }}
                     title="Dialog"
                 >
-                    <Box padding={4}>Content</Box>
+                    <Box
+                        sx={{
+                            padding: 4,
+                        }}
+                    >
+                        Content
+                    </Box>
                 </Dialog>
             </div>
         );

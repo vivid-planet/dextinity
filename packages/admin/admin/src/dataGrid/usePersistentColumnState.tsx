@@ -63,7 +63,7 @@ type GridProps = {
     pinnedColumns: DataGridProProps["pinnedColumns"];
     onPinnedColumnsChange: DataGridProProps["onPinnedColumnsChange"];
 
-    onColumnWidthChange: DataGridProProps["onColumnWidthChange"];
+    onColumnWidthChange: DataGridProps["onColumnWidthChange"];
 
     onColumnOrderChange: DataGridProps["onColumnOrderChange"];
 

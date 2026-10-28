@@ -112,7 +112,7 @@ function ProductsGridToolbar({ exportApi, selectionModel }: ProductsGridToolbarP
                 ]}
                 selectionSize={selectionModel.ids.size}
             />
-            <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+            <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
                 <FormattedMessage id="products.newProduct" defaultMessage="New Product" />
             </Button>
         </DataGridToolbar>
@@ -322,7 +322,7 @@ export function ProductsGrid() {
                     return (
                         <>
                             <ProductsGridPreviewAction {...params} />
-                            <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                            <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                 <Edit />
                             </IconButton>
                             <CrudContextMenu

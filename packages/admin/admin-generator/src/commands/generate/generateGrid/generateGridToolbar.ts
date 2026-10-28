@@ -115,7 +115,7 @@ const renderToolbarActions = ({ forwardToolbarAction, addItemText, excelExport, 
         ]}
     />`;
 
-    const defaultAddItemButton = `<Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+    const defaultAddItemButton = `<Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
         ${addItemText}
     </Button>`;
 

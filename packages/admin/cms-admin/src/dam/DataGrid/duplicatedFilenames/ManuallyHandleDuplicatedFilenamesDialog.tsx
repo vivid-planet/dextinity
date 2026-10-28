@@ -106,7 +106,13 @@ export const ManuallyHandleDuplicatedFilenamesDialog: FunctionComponent<Duplicat
                 </StyledList>
             </DialogContent>
             <DialogActions>
-                <Box display="flex" justifyContent="space-between" width="100%">
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        width: "100%",
+                    }}
+                >
                     <Button variant="textDark" onClick={onSkip} startIcon={<Forward />}>
                         <FormattedMessage
                             id="dextinity.dam.duplicateFilenameDialog.action.skip"

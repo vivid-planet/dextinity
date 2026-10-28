@@ -136,7 +136,13 @@ export const MultiplePickers: Story = {
         const [endDateTime, setEndDateTime] = useState<Date | undefined>(new Date(2024, 0, 15, 17, 0));
 
         return (
-            <Box display="flex" flexDirection="column" gap={4}>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
+                }}
+            >
                 <Typography variant="h5">Date Time Range Selection</Typography>
                 <DateTimePicker {...args} label="Start Date Time" fullWidth value={startDateTime} onChange={setStartDateTime} />
                 <DateTimePicker {...args} label="End Date Time" fullWidth value={endDateTime} onChange={setEndDateTime} />

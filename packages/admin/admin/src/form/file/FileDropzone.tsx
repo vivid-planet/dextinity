@@ -76,7 +76,14 @@ export const FileDropzone = (inProps: FileDropzoneProps) => {
     const dropzoneState = useDropzone({ ...restDropzoneOptions, disabled, multiple });
 
     return (
-        <Box display="contents" onDragOver={() => setDragging(true)} onDragLeave={() => setDragging(false)} onDrop={() => setDragging(false)}>
+        <Box
+            onDragOver={() => setDragging(true)}
+            onDragLeave={() => setDragging(false)}
+            onDrop={() => setDragging(false)}
+            sx={{
+                display: "contents",
+            }}
+        >
             <Root
                 {...dropzoneState.getRootProps()}
                 tabIndex={disabled ? -1 : 0}

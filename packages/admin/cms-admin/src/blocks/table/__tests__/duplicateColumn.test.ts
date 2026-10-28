@@ -8,14 +8,14 @@ vi.mock("../../context/useBlockContext", () => ({
 afterEach(cleanup);
 
 import { mockStates } from "../__mocks__/TableBlockData.mocks";
-import { clickButtonOfColumnAtIndex, renderTableBlock } from "./utils";
+import { clickButtonOfColumnAtIndex, getBodyRowgroup, renderTableBlock } from "./utils";
 
 describe("TableBlock: Duplicate a column", () => {
     it("should have a new column with the same values as the source column", async () => {
         const rendered = renderTableBlock(mockStates.default);
         const sourceColumnIndex = 2;
 
-        const rowgroup = rendered.getByRole("rowgroup");
+        const rowgroup = getBodyRowgroup(rendered);
         const rows = within(rowgroup).getAllByRole("row");
         const originalNumberOfCellsInRow = within(rows[0]).getAllByRole("gridcell").length;
 

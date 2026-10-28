@@ -344,7 +344,6 @@ export function createEditPageNode({
                                         }}
                                     </Field>
                                 )}
-
                                 <FormSpy subscription={{ values: true, dirtyFields: true }}>
                                     {({ values, dirtyFields }) => {
                                         if (!values.slug) {
@@ -371,7 +370,11 @@ export function createEditPageNode({
                                                     </Typography>
                                                 </FieldContainer>
                                                 {mode === "edit" && dirtyFields.slug && isRedirectSourceAvailable && (
-                                                    <Box mt={3}>
+                                                    <Box
+                                                        sx={{
+                                                            mt: 3,
+                                                        }}
+                                                    >
                                                         <FieldContainer
                                                             variant="horizontal"
                                                             label={
@@ -403,7 +406,12 @@ export function createEditPageNode({
                                                                             </>
                                                                         }
                                                                     >
-                                                                        <Box component="span" marginLeft={1}>
+                                                                        <Box
+                                                                            component="span"
+                                                                            sx={{
+                                                                                marginLeft: 1,
+                                                                            }}
+                                                                        >
                                                                             <IconButton>
                                                                                 <Info />
                                                                             </IconButton>
@@ -415,7 +423,12 @@ export function createEditPageNode({
                                                             <CheckboxField
                                                                 initialValue={isActivePage}
                                                                 label={
-                                                                    <Typography display="flex" alignItems="center">
+                                                                    <Typography
+                                                                        sx={{
+                                                                            display: "flex",
+                                                                            alignItems: "center",
+                                                                        }}
+                                                                    >
                                                                         <div>
                                                                             <Typography variant="body1">
                                                                                 <FormattedMessage
@@ -428,7 +441,12 @@ export function createEditPageNode({
                                                                                 />
                                                                             </Typography>
                                                                             {numberOfDescendants > 0 && (
-                                                                                <Typography variant="body2" color="rgba(0, 0, 0, 0.6)">
+                                                                                <Typography
+                                                                                    variant="body2"
+                                                                                    sx={{
+                                                                                        color: "rgba(0, 0, 0, 0.6)",
+                                                                                    }}
+                                                                                >
                                                                                     <FormattedMessage
                                                                                         tagName="span"
                                                                                         id="dextinity.pages.pages.page.createAutomaticRedirects.labelSubline"
@@ -458,11 +476,13 @@ export function createEditPageNode({
                                         );
                                     }}
                                 </FormSpy>
-
-                                <Box marginY={6}>
+                                <Box
+                                    sx={{
+                                        marginY: 6,
+                                    }}
+                                >
                                     <Divider />
                                 </Box>
-
                                 <Field
                                     label={intl.formatMessage({
                                         id: "dextinity.pages.pages.page.documentType",
@@ -497,7 +517,6 @@ export function createEditPageNode({
                                         variant="horizontal"
                                     />
                                 )}
-
                                 {additionalFormFields}
                             </>
                         );

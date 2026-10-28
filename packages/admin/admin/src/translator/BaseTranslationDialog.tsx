@@ -33,7 +33,15 @@ export const BaseTranslationDialog = <T,>(props: TranslationDialogBaseProps<T>) 
                 <FormattedMessage id="dextinity.translator.translation" defaultMessage="Translation" />
             </DialogTitle>
             <DialogContent>
-                <Grid container columnSpacing={4} rowSpacing={2} columns={2} alignItems="center">
+                <Grid
+                    container
+                    columnSpacing={4}
+                    rowSpacing={2}
+                    columns={2}
+                    sx={{
+                        alignItems: "center",
+                    }}
+                >
                     <Grid size={1}>
                         <Typography variant="subtitle2">
                             <FormattedMessage id="dextinity.translator.original" defaultMessage="Original" />

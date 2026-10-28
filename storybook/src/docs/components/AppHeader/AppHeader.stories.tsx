@@ -11,7 +11,12 @@ export const Basic = {
     render: () => {
         function AccountHeaderItem() {
             return (
-                <Box display="flex" alignItems="center">
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                    }}
+                >
                     <Avatar style={{ marginRight: 10 }}>
                         <Account />
                     </Avatar>
@@ -24,11 +29,8 @@ export const Basic = {
             <AppHeader position="relative" headerHeight={60}>
                 <AppHeaderMenuButton />
                 <DextinityLogo variant="light" sx={{ fontSize: 34 }} />
-
                 <FillSpace />
-
                 <AppHeaderButton startIcon={<Preview />}>Preview</AppHeaderButton>
-
                 <AppHeaderDropdown buttonChildren="Language" startIcon={<Language />}>
                     {(closeDropdown: () => void) => {
                         const onItemClicked = () => {
@@ -46,7 +48,6 @@ export const Basic = {
                         );
                     }}
                 </AppHeaderDropdown>
-
                 <AppHeaderDropdown buttonChildren={<AccountHeaderItem />}>
                     <MenuList>
                         <MenuItem>Edit Profile</MenuItem>
@@ -55,7 +56,11 @@ export const Basic = {
 
                     <Divider />
 
-                    <Box padding={4}>
+                    <Box
+                        sx={{
+                            padding: 4,
+                        }}
+                    >
                         <Button startIcon={<Logout />} fullWidth>
                             Logout
                         </Button>
@@ -160,9 +165,13 @@ export const CustomButton = {
             <AppHeader position="relative" headerHeight={60}>
                 <Typography style={{ padding: 20 }}>Header button custom content</Typography>
                 <FillSpace />
-
                 <AppHeaderButton>
-                    <Box display="flex" alignItems="center">
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                        }}
+                    >
                         <Avatar style={{ marginRight: 10 }}>
                             <Account />
                         </Avatar>
@@ -187,7 +196,12 @@ export const Dropdown = {
                     <FillSpace />
 
                     <AppHeaderDropdown buttonChildren={<Snips />} dropdownArrow={null}>
-                        <Box padding={4} width={200}>
+                        <Box
+                            sx={{
+                                padding: 4,
+                                width: 200,
+                            }}
+                        >
                             <Typography>
                                 <strong>Dropdown Text</strong>
                                 <br />

@@ -26,7 +26,17 @@ export const MailTwoListSizesRichTextBlock = createRichTextBlock(
                 copy: { label: <FormattedMessage id="mail.twoListSizesRichText.blockType.copy" defaultMessage="Copy (Default)" /> },
                 "copy-small": {
                     label: <FormattedMessage id="mail.twoListSizesRichText.blockType.copySmall" defaultMessage="Copy (Small)" />,
-                    renderConfig: { element: (props) => <Typography paragraph variant="body2" {...props} /> },
+                    renderConfig: {
+                        element: (props) => (
+                            <Typography
+                                variant="body2"
+                                {...props}
+                                sx={{
+                                    marginBottom: "16px",
+                                }}
+                            />
+                        ),
+                    },
                 },
                 // The built-in list types are toolbar buttons unless `group` moves them into the block-type select.
                 "unordered-list-item": {

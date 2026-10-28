@@ -8,7 +8,7 @@ vi.mock("../../context/useBlockContext", () => ({
 afterEach(cleanup);
 
 import { getPlainTextFromState, mockStates } from "../__mocks__/TableBlockData.mocks";
-import { clickButtonOfRowAtIndex, renderTableBlock } from "./utils";
+import { clickButtonOfRowAtIndex, getBodyRowgroup, renderTableBlock } from "./utils";
 
 describe("TableBlock: Duplicate a row", () => {
     it("should have a new row with the same values as the source row", async () => {
@@ -18,7 +18,7 @@ describe("TableBlock: Duplicate a row", () => {
 
         clickButtonOfRowAtIndex(rendered, sourceRowIndex, /duplicate/i);
 
-        const rowgroup = rendered.getByRole("rowgroup");
+        const rowgroup = getBodyRowgroup(rendered);
         const rows = within(rowgroup).getAllByRole("row");
         const sourceRowElement = rows[sourceRowIndex];
         const sourceRowCells = within(sourceRowElement).getAllByRole("gridcell");

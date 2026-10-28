@@ -59,7 +59,13 @@ export const Default = {
         const showDarkBackground = variant === "textLight";
 
         return (
-            <Box py={10} px={8} bgcolor={showDarkBackground ? "#333" : "transparent"}>
+            <Box
+                sx={{
+                    py: 10,
+                    px: 8,
+                    bgcolor: showDarkBackground ? "#333" : "transparent",
+                }}
+            >
                 <Button
                     onClick={() => {
                         alert("Button clicked");
@@ -81,7 +87,13 @@ export const AllVariants = {
     render: () => {
         return (
             <Stack spacing={10}>
-                <Stack direction="row" alignItems="center" spacing={8}>
+                <Stack
+                    direction="row"
+                    spacing={8}
+                    sx={{
+                        alignItems: "center",
+                    }}
+                >
                     <Button>Button</Button>
                     <Button startIcon={<ArrowRight />}>Button</Button>
                     <Button endIcon={<ArrowRight />}>Button</Button>
@@ -106,7 +118,13 @@ export const AllVariants = {
                         Button
                     </Button>
                 </Stack>
-                <Stack direction="row" alignItems="center" spacing={8}>
+                <Stack
+                    direction="row"
+                    spacing={8}
+                    sx={{
+                        alignItems: "center",
+                    }}
+                >
                     <Button variant="secondary">Button</Button>
                     <Button variant="secondary" startIcon={<ArrowRight />}>
                         Button
@@ -138,7 +156,13 @@ export const AllVariants = {
                         Button
                     </Button>
                 </Stack>
-                <Stack direction="row" alignItems="center" spacing={8}>
+                <Stack
+                    direction="row"
+                    spacing={8}
+                    sx={{
+                        alignItems: "center",
+                    }}
+                >
                     <Button variant="outlined">Button</Button>
                     <Button variant="outlined" startIcon={<ArrowRight />}>
                         Button
@@ -170,7 +194,13 @@ export const AllVariants = {
                         Button
                     </Button>
                 </Stack>
-                <Stack direction="row" alignItems="center" spacing={8}>
+                <Stack
+                    direction="row"
+                    spacing={8}
+                    sx={{
+                        alignItems: "center",
+                    }}
+                >
                     <Button variant="destructive">Button</Button>
                     <Button variant="destructive" startIcon={<ArrowRight />}>
                         Button
@@ -202,7 +232,13 @@ export const AllVariants = {
                         Button
                     </Button>
                 </Stack>
-                <Stack direction="row" alignItems="center" spacing={8}>
+                <Stack
+                    direction="row"
+                    spacing={8}
+                    sx={{
+                        alignItems: "center",
+                    }}
+                >
                     <Button variant="success">Button</Button>
                     <Button variant="success" startIcon={<ArrowRight />}>
                         Button
@@ -236,11 +272,13 @@ export const AllVariants = {
                 </Stack>
                 <Stack
                     direction="row"
-                    alignItems="center"
                     spacing={8}
-                    paddingTop={8}
-                    paddingBottom={8}
-                    sx={{ backgroundColor: (theme) => theme.palette.grey[800] }}
+                    sx={{
+                        alignItems: "center",
+                        paddingTop: 8,
+                        paddingBottom: 8,
+                        backgroundColor: (theme) => theme.palette.grey[800],
+                    }}
                 >
                     <Button variant="textLight">Button</Button>
                     <Button variant="textLight" startIcon={<ArrowRight />}>
@@ -273,7 +311,13 @@ export const AllVariants = {
                         Button
                     </Button>
                 </Stack>
-                <Stack direction="row" alignItems="center" spacing={8}>
+                <Stack
+                    direction="row"
+                    spacing={8}
+                    sx={{
+                        alignItems: "center",
+                    }}
+                >
                     <Button variant="textDark">Button</Button>
                     <Button variant="textDark" startIcon={<ArrowRight />}>
                         Button
@@ -354,7 +398,13 @@ export const Responsive = {
         const customMobileIcon = <Favorite />;
 
         return (
-            <Stack direction="row" alignItems="center" spacing={2}>
+            <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                    alignItems: "center",
+                }}
+            >
                 <Button
                     responsive
                     startIcon={startIcon ? <Wrench /> : undefined}

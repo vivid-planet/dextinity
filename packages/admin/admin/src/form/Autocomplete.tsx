@@ -151,13 +151,13 @@ export const FinalFormAutocomplete = <
             disabled={disabled}
             readOnly={readOnly}
             multiple={multiple as Multiple}
-            renderInput={(params: AutocompleteRenderInputParams) => {
+            renderInput={({ slotProps: { input: inputProps, htmlInput: htmlInputProps }, ...params }: AutocompleteRenderInputParams) => {
                 const endAdornment = (
                     <>
                         {loading && <CircularProgress color="inherit" size={16} />}
                         {clearable && hasValue && <ClearInputAdornment position="end" onClick={() => onChange(multiple ? [] : "")} />}
                         {loadingError && <Error color="error" />}
-                        {params.InputProps.endAdornment}
+                        {inputProps.endAdornment}
                     </>
                 );
 
@@ -166,7 +166,8 @@ export const FinalFormAutocomplete = <
                         <MultipleInputBase
                             {...restInput}
                             {...params}
-                            {...params.InputProps}
+                            {...inputProps}
+                            slotProps={{ input: htmlInputProps }}
                             // Disable HTML required for multiple select as the input stays empty (values are shown for example as chips) and the input is used for the autocomplete input
                             required={false}
                             endAdornmentWidth={endAdornmentWidth}
@@ -179,7 +180,8 @@ export const FinalFormAutocomplete = <
                     <InputBase
                         {...restInput}
                         {...params}
-                        {...params.InputProps}
+                        {...inputProps}
+                        slotProps={{ input: htmlInputProps }}
                         required={required}
                         endAdornment={<InputAdornment position="end">{endAdornment}</InputAdornment>}
                     />

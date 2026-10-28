@@ -143,7 +143,7 @@ export function CronJobsGrid() {
                         renderCell: ({ row }) => (
                             <>
                                 <Tooltip title={<FormattedMessage id="dextinity.pages.cronJobs.showRuns" defaultMessage="Show runs" />}>
-                                    <IconButton component={StackLink} pageName="jobs" payload={row.name}>
+                                    <IconButton component={StackLink} nativeButton={false} pageName="jobs" payload={row.name}>
                                         <Time color="primary" />
                                     </IconButton>
                                 </Tooltip>

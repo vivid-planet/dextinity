@@ -281,7 +281,7 @@ export function AddContactsGridSelect({ id, scope, assignedContactsTargetGroupBr
                     return (
                         <MemoryRouter>
                             <Dialog open={isDialogOpen} maxWidth="lg" onClose={() => setIsDialogOpen(false)}>
-                                <DialogTitle display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
+                                <DialogTitle sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                                     <ToolbarFillSpace />
                                     <IconButton onClick={() => setIsDialogOpen(false)}>
                                         <Close htmlColor={theme.palette.common.white} />

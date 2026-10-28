@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronRight, ChevronUp } from "@dextinity/admin-icons";
 import { ButtonBase, type ComponentsOverrides, css, ListItemText, Menu, MenuItem, type Theme, Typography, useThemeProps } from "@mui/material";
+import { mergeSlotProps } from "@mui/material/utils";
 import { Fragment, type ReactNode, useRef, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -140,16 +141,10 @@ export const ToolbarBreadcrumbs = (inProps: ToolbarBreadcrumbsProps) => {
                     horizontal: "center",
                     ...slotProps?.mobileMenu?.transformOrigin,
                 }}
-                MenuListProps={{
-                    component: "div",
-                    ...slotProps?.mobileMenu?.MenuListProps,
-                }}
-                PaperProps={{
-                    ...slotProps?.mobileMenu?.PaperProps,
-                    sx: {
-                        width: menuWidth,
-                        ...slotProps?.mobileMenu?.PaperProps?.sx,
-                    },
+                slotProps={{
+                    ...slotProps?.mobileMenu?.slotProps,
+                    list: mergeSlotProps(slotProps?.mobileMenu?.slotProps?.list, { component: "div" }),
+                    paper: mergeSlotProps(slotProps?.mobileMenu?.slotProps?.paper, { sx: { width: menuWidth } }),
                 }}
             >
                 {breadcrumbs.map(({ title, url }, nestingLevel) => {

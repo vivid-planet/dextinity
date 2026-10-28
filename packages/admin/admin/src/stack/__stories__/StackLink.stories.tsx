@@ -27,7 +27,7 @@ export const _StackLink = {
                         </StackPage>
                         <StackPage name="page2">
                             <h3>Page 2</h3>
-                            <Button component={StackLink} pageName="page1" payload="test">
+                            <Button component={StackLink} nativeButton={false} pageName="page1" payload="test">
                                 button based on StackLink
                             </Button>
                         </StackPage>

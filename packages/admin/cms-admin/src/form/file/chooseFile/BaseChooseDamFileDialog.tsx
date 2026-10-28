@@ -63,8 +63,10 @@ export const BaseChooseDamFileDialog = ({
             title={title}
             slotProps={{
                 root: {
-                    PaperProps: {
-                        sx: { height: "100%" }, // The fixed height prevents the height of the dialog from changing when navigating between folders which may have different heights depending on the number of items in the folder
+                    slotProps: {
+                        paper: {
+                            sx: { height: "100%" }, // The fixed height prevents the height of the dialog from changing when navigating between folders which may have different heights depending on the number of items in the folder
+                        },
                     },
                 },
             }}

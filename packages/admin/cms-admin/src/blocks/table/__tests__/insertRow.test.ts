@@ -6,7 +6,7 @@ vi.mock("../../context/useBlockContext", () => ({
 }));
 
 import { getPlainTextFromState, mockStates } from "../__mocks__/TableBlockData.mocks";
-import { clickButtonOfRowAtIndex, renderTableBlock } from "./utils";
+import { clickButtonOfRowAtIndex, getBodyRowgroup, renderTableBlock } from "./utils";
 
 afterEach(cleanup);
 
@@ -17,7 +17,7 @@ describe("TableBlock: Insert a new row", () => {
 
         clickButtonOfRowAtIndex(rendered, 0, /add row above/i);
 
-        const rowgroup = rendered.getByRole("rowgroup");
+        const rowgroup = getBodyRowgroup(rendered);
         const rows = within(rowgroup).getAllByRole("row");
 
         const numberOfRowsAfterInserting = initialBlockData.rows.length + 1;
@@ -46,7 +46,7 @@ describe("TableBlock: Insert a new row", () => {
 
         clickButtonOfRowAtIndex(rendered, targetRowIndex, /add row below/i);
 
-        const rowgroup = rendered.getByRole("rowgroup");
+        const rowgroup = getBodyRowgroup(rendered);
         const rows = within(rowgroup).getAllByRole("row");
 
         const numberOfRowsAfterInserting = initialBlockData.rows.length + 1;
@@ -74,7 +74,7 @@ describe("TableBlock: Insert a new row", () => {
 
         clickButtonOfRowAtIndex(rendered, targetRowIndex, /add row below/i);
 
-        const rowgroup = rendered.getByRole("rowgroup");
+        const rowgroup = getBodyRowgroup(rendered);
         const rows = within(rowgroup).getAllByRole("row");
 
         const numberOfRowsAfterInserting = initialBlockData.rows.length + 1;

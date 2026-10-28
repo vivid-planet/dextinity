@@ -63,10 +63,19 @@ export const _Chip = {
             <Stack spacing={4}>
                 <Card>
                     <CardContent>
-                        <Typography variant="h3" mb={10}>
+                        <Typography
+                            variant="h3"
+                            sx={{
+                                mb: 10,
+                            }}
+                        >
                             Chips
                         </Typography>
-                        <Box mb={10}>
+                        <Box
+                            sx={{
+                                mb: 10,
+                            }}
+                        >
                             <Typography variant="h4" gutterBottom>
                                 Customizable Chip
                             </Typography>
@@ -84,11 +93,21 @@ export const _Chip = {
                                 onDelete={deletable ? () => console.log("Delete") : undefined}
                             />
                         </Box>
-                        <Box mb={10}>
+                        <Box
+                            sx={{
+                                mb: 10,
+                            }}
+                        >
                             <Typography variant="h4" gutterBottom>
                                 Medium size Chips
                             </Typography>
-                            <Grid container spacing={2} mb={5}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 5,
+                                }}
+                            >
                                 <Grid>
                                     <Chip label="Normal" />
                                 </Grid>
@@ -110,7 +129,13 @@ export const _Chip = {
                                     />
                                 </Grid>
                             </Grid>
-                            <Grid container spacing={2} mb={5}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 5,
+                                }}
+                            >
                                 <Grid>
                                     <Chip variant="outlined" label="Normal" />
                                 </Grid>
@@ -133,7 +158,13 @@ export const _Chip = {
                                     />
                                 </Grid>
                             </Grid>
-                            <Grid container spacing={2} mb={5}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 5,
+                                }}
+                            >
                                 <Grid>
                                     <Chip color="primary" label="Normal" />
                                 </Grid>
@@ -156,7 +187,13 @@ export const _Chip = {
                                     />
                                 </Grid>
                             </Grid>
-                            <Grid container spacing={2} mb={5}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 5,
+                                }}
+                            >
                                 <Grid>
                                     <Chip color="success" label="Normal" />
                                 </Grid>
@@ -179,7 +216,13 @@ export const _Chip = {
                                     />
                                 </Grid>
                             </Grid>
-                            <Grid container spacing={2} mb={5}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 5,
+                                }}
+                            >
                                 <Grid>
                                     <Chip color="error" label="Normal" />
                                 </Grid>
@@ -202,7 +245,13 @@ export const _Chip = {
                                     />
                                 </Grid>
                             </Grid>
-                            <Grid container spacing={2} mb={5}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 5,
+                                }}
+                            >
                                 <Grid>
                                     <Chip color="warning" label="Normal" />
                                 </Grid>
@@ -225,7 +274,13 @@ export const _Chip = {
                                     />
                                 </Grid>
                             </Grid>
-                            <Grid container spacing={2} mb={5}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 5,
+                                }}
+                            >
                                 <Grid>
                                     <Chip variant="filled" color="info" label="Normal" />
                                 </Grid>
@@ -253,8 +308,18 @@ export const _Chip = {
                         <Typography variant="h4" gutterBottom>
                             Small size Chips
                         </Typography>
-                        <Box mb={10}>
-                            <Grid container spacing={2} mb={5}>
+                        <Box
+                            sx={{
+                                mb: 10,
+                            }}
+                        >
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 5,
+                                }}
+                            >
                                 <Grid>
                                     <Chip size="small" label="Normal" />
                                 </Grid>
@@ -277,7 +342,13 @@ export const _Chip = {
                                     />
                                 </Grid>
                             </Grid>
-                            <Grid container spacing={2} mb={5}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 5,
+                                }}
+                            >
                                 <Grid>
                                     <Chip size="small" variant="outlined" label="Normal" />
                                 </Grid>
@@ -301,7 +372,13 @@ export const _Chip = {
                                     />
                                 </Grid>
                             </Grid>
-                            <Grid container spacing={2} mb={5}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 5,
+                                }}
+                            >
                                 <Grid>
                                     <Chip size="small" color="primary" label="Normal" />
                                 </Grid>
@@ -325,7 +402,13 @@ export const _Chip = {
                                     />
                                 </Grid>
                             </Grid>
-                            <Grid container spacing={2} mb={5}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 5,
+                                }}
+                            >
                                 <Grid>
                                     <Chip size="small" color="success" label="Normal" />
                                 </Grid>
@@ -349,7 +432,13 @@ export const _Chip = {
                                     />
                                 </Grid>
                             </Grid>
-                            <Grid container spacing={2} mb={5}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 5,
+                                }}
+                            >
                                 <Grid>
                                     <Chip size="small" color="error" label="Normal" />
                                 </Grid>
@@ -373,7 +462,13 @@ export const _Chip = {
                                     />
                                 </Grid>
                             </Grid>
-                            <Grid container spacing={2} mb={5}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 5,
+                                }}
+                            >
                                 <Grid>
                                     <Chip size="small" color="warning" label="Normal" />
                                 </Grid>
@@ -397,7 +492,13 @@ export const _Chip = {
                                     />
                                 </Grid>
                             </Grid>
-                            <Grid container spacing={2} mb={5}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 5,
+                                }}
+                            >
                                 <Grid>
                                     <Chip size="small" variant="filled" color="info" label="Normal" />
                                 </Grid>

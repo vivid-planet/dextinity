@@ -64,7 +64,11 @@ export const Default = {
         };
 
         return (
-            <Box height={400}>
+            <Box
+                sx={{
+                    height: 400,
+                }}
+            >
                 <DataGrid
                     density={density}
                     rows={exampleRows}

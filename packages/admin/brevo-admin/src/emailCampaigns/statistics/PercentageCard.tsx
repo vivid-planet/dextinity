@@ -47,7 +47,12 @@ export const PercentageCard: FC<Props> = ({ title, currentNumber, targetNumber, 
     return (
         <Paper>
             <Content>
-                <Typography variant="h6" mb={2}>
+                <Typography
+                    variant="h6"
+                    sx={{
+                        mb: 2,
+                    }}
+                >
                     {title}
                 </Typography>
                 {variant === "normal" && values}

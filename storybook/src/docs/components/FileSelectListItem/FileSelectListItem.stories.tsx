@@ -78,7 +78,13 @@ export const Basic = {
 export const Preview = {
     render: () => {
         return (
-            <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap={2}>
+            <Box
+                sx={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(3, 1fr)",
+                    gap: 2,
+                }}
+            >
                 <FileSelectListItem
                     file={{
                         loading: true,

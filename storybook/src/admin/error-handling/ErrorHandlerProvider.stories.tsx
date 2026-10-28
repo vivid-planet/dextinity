@@ -44,22 +44,38 @@ export const _ErrorHandlerProvider = {
 
         return (
             <>
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Card variant="outlined">
                         <CardContent>
                             <Typography variant="h3" gutterBottom>
                                 ErrorHandlerProvider
                             </Typography>
                             <Alert severity="info">
-                                <Typography paragraph>
+                                <Typography
+                                    sx={{
+                                        marginBottom: "16px",
+                                    }}
+                                >
                                     <code>ErrorHandlerProvider</code> exposes a single <code>onError</code> callback to every descendant{" "}
                                     <code>ErrorBoundary</code>. The boundary still renders its visible Alert UI; the callback is invoked additively
                                     from <code>componentDidCatch</code> for centralized error reporting (e.g., Sentry).
                                 </Typography>
-                                <Typography paragraph>
+                                <Typography
+                                    sx={{
+                                        marginBottom: "16px",
+                                    }}
+                                >
                                     Toggle the knob to throw inside the boundary and watch the captured errors appear below.
                                 </Typography>
-                                <Typography paragraph>
+                                <Typography
+                                    sx={{
+                                        marginBottom: "16px",
+                                    }}
+                                >
                                     More info on Error Boundaries:{" "}
                                     <Link href="https://reactjs.org/docs/error-boundaries.html">https://reactjs.org/docs/error-boundaries.html</Link>
                                 </Typography>
@@ -67,8 +83,11 @@ export const _ErrorHandlerProvider = {
                         </CardContent>
                     </Card>
                 </Box>
-
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Card variant="outlined">
                         <CardContent>
                             <Typography variant="h5" gutterBottom>
@@ -82,7 +101,6 @@ export const _ErrorHandlerProvider = {
                         </CardContent>
                     </Card>
                 </Box>
-
                 <Card variant="outlined">
                     <CardContent>
                         <Typography variant="h5" gutterBottom>

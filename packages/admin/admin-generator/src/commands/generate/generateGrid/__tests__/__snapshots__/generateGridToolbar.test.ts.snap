@@ -51,7 +51,7 @@ exports[`generateGridToolbar > generates toolbar with custom newEntryText 1`] = 
         return (
             <DataGridToolbar>
                 <FillSpace />
-        <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+        <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
         <FormattedMessage id="booksMessages.bookFragment.newEntry" defaultMessage="Create new book" />
     </Button>
             </DataGridToolbar>
@@ -65,7 +65,7 @@ exports[`generateGridToolbar > generates toolbar with minimal features 1`] = `
         return (
             <DataGridToolbar>
                 <FillSpace />
-        <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+        <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
         <FormattedMessage id="booksMessages.bookFragment.newEntry" defaultMessage="New Book" />
     </Button>
             </DataGridToolbar>

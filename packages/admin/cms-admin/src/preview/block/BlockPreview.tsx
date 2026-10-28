@@ -60,7 +60,15 @@ function BlockPreview({ url, previewState, previewApi: { device, setDevice, show
     return (
         <Root>
             <ActionsContainer>
-                <Grid container justifyContent="space-between" alignItems="center" wrap="nowrap" spacing={1}>
+                <Grid
+                    container
+                    wrap="nowrap"
+                    spacing={1}
+                    sx={{
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                    }}
+                >
                     <Grid>
                         <MinimizeButton onClick={handleMinimizeClick}>
                             <Minimize />

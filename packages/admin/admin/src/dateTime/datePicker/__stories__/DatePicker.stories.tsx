@@ -136,7 +136,13 @@ export const MultiplePickers: Story = {
         const [endDate, setEndDate] = useState<string | undefined>("2024-01-30");
 
         return (
-            <Box display="flex" flexDirection="column" gap={4}>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
+                }}
+            >
                 <Typography variant="h5">Date Range Selection</Typography>
                 <DatePicker {...args} label="Start Date" fullWidth value={startDate} onChange={setStartDate} />
                 <DatePicker {...args} label="End Date" fullWidth value={endDate} onChange={setEndDate} />

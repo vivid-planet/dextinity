@@ -86,7 +86,7 @@ function ManufacturersGridToolbar() {
             <GridToolbarQuickFilter />
             <GridFilterButton />
             <FillSpace />
-            <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+            <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
                 <FormattedMessage id="manufacturer.manufacturersGridFuture.newEntry" defaultMessage="Add Manufacturer" />
             </Button>
         </DataGridToolbar>
@@ -311,7 +311,7 @@ export function ManufacturersGrid() {
                 renderCell: (params) => {
                     return (
                         <>
-                            <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                            <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                 <EditIcon />
                             </IconButton>
                             <CrudContextMenu

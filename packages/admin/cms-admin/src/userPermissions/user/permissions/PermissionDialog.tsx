@@ -79,6 +79,7 @@ export const PermissionDialog = ({ userId, permissionId, handleDialogClose }: Fo
                 }
             }
             fragment UserPermissionDialog on UserPermission {
+                __typename
                 permission
                 source
                 validFrom

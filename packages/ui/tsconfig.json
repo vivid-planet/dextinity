@@ -4,6 +4,9 @@
         "module": "preserve",
         "moduleResolution": "bundler",
         "outDir": "lib",
+        "paths": {
+            "vitest": ["./node_modules/vitest"]
+        },
         "rootDir": ".",
         "strict": true,
         "target": "esnext",

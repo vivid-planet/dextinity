@@ -1,7 +1,7 @@
 import { ChevronDown, ChevronUp, Clear, Search } from "@dextinity/admin-icons";
 import { IconButton, InputAdornment, InputBase, Typography } from "@mui/material";
 import { type ChangeEvent, type KeyboardEvent, useEffect, useRef, useState } from "react";
-import { useHotkeys, useIsHotkeyPressed } from "react-hotkeys-hook";
+import { useHotkeys } from "react-hotkeys-hook";
 import { useDebouncedCallback } from "use-debounce";
 
 interface SearchInputProps {
@@ -25,7 +25,6 @@ export const SearchInput = ({
 }: SearchInputProps) => {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [internalQuery, setInternalQuery] = useState(query);
-    const isPressed = useIsHotkeyPressed();
 
     const debouncedOnQueryChange = useDebouncedCallback(onQueryChange, 250);
 
@@ -43,7 +42,7 @@ export const SearchInput = ({
         }
     };
 
-    useHotkeys("ctrl+f, command+f", (event) => {
+    useHotkeys("ctrl+f, meta+f", (event) => {
         event.preventDefault();
         inputRef.current?.focus();
     });
@@ -60,7 +59,7 @@ export const SearchInput = ({
     const handleKeyUp = (event: KeyboardEvent<HTMLInputElement>) => {
         switch (event.key) {
             case "Enter":
-                if (isPressed("shift")) {
+                if (event.shiftKey) {
                     jumpToPreviousMatch?.();
                 } else {
                     jumpToNextMatch?.();

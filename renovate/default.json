@@ -91,6 +91,10 @@
         {
             "groupName": "Stylelint",
             "matchPackageNames": ["stylelint", "/^stylelint-*/"]
+        },
+        {
+            "groupName": "OpenTelemetry",
+            "matchPackageNames": ["@opentelemetry/**"]
         }
     ],
     "regexManagers": [

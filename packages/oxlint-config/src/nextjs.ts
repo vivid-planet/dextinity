@@ -1,4 +1,4 @@
-import { defineConfig } from "oxlint";
+import { defineConfig, type OxlintConfig } from "oxlint";
 
 import coreConfig, { restrictedImportPatterns } from "./core.js";
 import { disabledReactCompilerRules } from "./react.js";
@@ -19,7 +19,7 @@ export const restrictedImportPaths = [
     },
 ];
 
-const config = defineConfig({
+const config: OxlintConfig = defineConfig({
     extends: [coreConfig],
     plugins: ["eslint", "typescript", "import", "react", "nextjs"],
     env: {

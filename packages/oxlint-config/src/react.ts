@@ -1,4 +1,4 @@
-import { defineConfig } from "oxlint";
+import { defineConfig, type DummyRuleMap, type OxlintConfig } from "oxlint";
 
 import coreConfig, { resolvePlugin, restrictedImportPatterns } from "./core.js";
 
@@ -41,7 +41,7 @@ export const restrictedImportPaths = [
     ]),
 ];
 
-export const disabledReactCompilerRules = {
+export const disabledReactCompilerRules: DummyRuleMap = {
     "react/error-boundaries": "off",
     "react/globals": "off",
     "react/immutability": "off",
@@ -56,7 +56,7 @@ export const disabledReactCompilerRules = {
     "react/void-use-memo": "off",
 };
 
-const config = defineConfig({
+const config: OxlintConfig = defineConfig({
     extends: [coreConfig],
     plugins: ["eslint", "typescript", "import", "react"],
     jsPlugins: [{ name: "formatjs", specifier: resolvePlugin("eslint-plugin-formatjs") }],

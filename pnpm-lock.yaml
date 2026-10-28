@@ -2688,6 +2688,9 @@ importers:
         specifier: ^12.1.1
         version: 12.1.1(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))
     devDependencies:
+      npm-run-all2:
+        specifier: ^9.0.3
+        version: 9.0.3
       oxlint:
         specifier: 1.89.0
         version: 1.89.0(oxlint-tsgolint@7.0.2004)
@@ -2697,6 +2700,9 @@ importers:
       prettier:
         specifier: ^3.9.10
         version: 3.9.10
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/site/site-nextjs:
     dependencies:

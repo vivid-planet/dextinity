@@ -1,6 +1,6 @@
-import { defineConfig } from "oxlint";
+import { defineConfig, type OxlintConfig } from "oxlint";
 
-export const resolvePlugin = (specifier) => import.meta.resolve(specifier);
+export const resolvePlugin = (specifier: string) => import.meta.resolve(specifier);
 
 export const restrictedImportPatterns = [
     {
@@ -9,7 +9,7 @@ export const restrictedImportPatterns = [
     },
 ];
 
-const config = defineConfig({
+const config: OxlintConfig = defineConfig({
     plugins: ["eslint", "typescript", "import"],
     jsPlugins: [
         { name: "@dextinity", specifier: resolvePlugin("@dextinity/eslint-plugin") },

@@ -11,26 +11,34 @@
     "type": "module",
     "exports": {
         "./core.js": {
-            "types": "./core.d.ts",
-            "import": "./core.js"
+            "types": "./lib/core.d.ts",
+            "import": "./lib/core.js"
         },
         "./nestjs.js": {
-            "types": "./nestjs.d.ts",
-            "import": "./nestjs.js"
+            "types": "./lib/nestjs.d.ts",
+            "import": "./lib/nestjs.js"
         },
         "./nextjs.js": {
-            "types": "./nextjs.d.ts",
-            "import": "./nextjs.js"
+            "types": "./lib/nextjs.d.ts",
+            "import": "./lib/nextjs.js"
         },
         "./react.js": {
-            "types": "./react.d.ts",
-            "import": "./react.js"
+            "types": "./lib/react.d.ts",
+            "import": "./lib/react.js"
         }
     },
+    "files": [
+        "lib"
+    ],
     "scripts": {
-        "lint": "pnpm exec prettier --check '*.{ts,js,json,md,yml,yaml}'",
+        "build": "pnpm run clean && tsc",
+        "clean": "rimraf lib",
+        "dev": "tsc --watch",
+        "lint": "run-p lint:prettier lint:tsc",
         "lint:ci": "pnpm run lint",
-        "lint:fix": "pnpm run lint --write"
+        "lint:fix": "pnpm run lint:prettier --write",
+        "lint:prettier": "pnpm exec prettier --check '*.{ts,js,json,md,yml,yaml}' 'src/**/*.ts'",
+        "lint:tsc": "tsc --noEmit"
     },
     "dependencies": {
         "@dextinity/eslint-plugin": "workspace:*",
@@ -40,9 +48,11 @@
         "eslint-plugin-simple-import-sort": "^12.1.1"
     },
     "devDependencies": {
+        "npm-run-all2": "^9.0.3",
         "oxlint": "1.89.0",
         "oxlint-tsgolint": "7.0.2004",
-        "prettier": "^3.9.10"
+        "prettier": "^3.9.10",
+        "typescript": "^6.0.3"
     },
     "peerDependencies": {
         "oxlint": "1.89.0",

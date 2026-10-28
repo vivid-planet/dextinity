@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "outDir": "lib",
+        "rootDir": "src",
+        "strict": true,
+        "target": "ES2022"
+    },
+    "exclude": ["node_modules", "lib"],
+    "extends": "../../tsconfig.core.json",
+    "include": ["./src"]
+}

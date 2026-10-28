@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { BlockData, type BlockDataInterface, BlockInput, blockInputToData, createBlock } from "./block";
-import { ExternalLinkBlock } from "./externalLink/external-link.block";
-import { createOneOfBlock } from "./factories/createOneOfBlock";
-import { createRichTextBlock } from "./factories/createRichTextBlock";
-import { createTipTapRichTextBlock } from "./tipTap/createTipTapRichTextBlock";
+import { BlockData, type BlockDataInterface, BlockInput, blockInputToData, createBlock } from "./block.js";
+import { ExternalLinkBlock } from "./externalLink/external-link.block.js";
+import { createOneOfBlock } from "./factories/createOneOfBlock.js";
+import { createRichTextBlock } from "./factories/createRichTextBlock.js";
+import { createTipTapRichTextBlock } from "./tipTap/createTipTapRichTextBlock.js";
 
 class TestBlockData extends BlockData {}
 

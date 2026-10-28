@@ -88,42 +88,42 @@ input BooleanFilter {
 
 type BrevoApiCampaignStatistics {
   """Number of total clicks for the campaign"""
-  clickers: Int!
+  clickers: Int
 
   """Number of complaints (Spam reports) for the campaign"""
-  complaints: Int!
+  complaints: Int
 
   """Number of delivered emails for the campaign"""
-  delivered: Int!
+  delivered: Int
 
   """
   Rate of recipients without any privacy protection option enabled in their email client, applied to all delivered emails
   """
-  estimatedViews: Int!
+  estimatedViews: Int
 
   """Number of hardbounces for the campaign"""
-  hardBounces: Int!
+  hardBounces: Int
 
   """Number of sent emails for the campaign"""
-  sent: Int!
+  sent: Int
 
   """Number of softbounce for the campaign"""
-  softBounces: Int!
+  softBounces: Int
 
   """Number of unique openings for the campaign"""
-  trackableViews: Int!
+  trackableViews: Int
 
   """Number of unique clicks for the campaign"""
-  uniqueClicks: Int!
+  uniqueClicks: Int
 
   """Number of unique openings for the campaign"""
-  uniqueViews: Int!
+  uniqueViews: Int
 
   """Number of unsubscription for the campaign"""
-  unsubscriptions: Int!
+  unsubscriptions: Int
 
   """Number of openings for the campaign"""
-  viewed: Int!
+  viewed: Int
 }
 
 type BrevoApiEmailTemplate {
@@ -310,6 +310,11 @@ type BuildTemplate {
   Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
+  name: String!
+}
+
+type ContentScopeDimension {
+  label: String!
   name: String!
 }
 
@@ -658,6 +663,7 @@ type EntityInfo {
   id: String!
   name: String!
   secondaryInformation: String
+  visible: Boolean!
 }
 
 input FileFilterInput {
@@ -2041,6 +2047,7 @@ type Query {
   redirects(active: Boolean, query: String, scope: RedirectScopeInput!, sortColumnName: String, sortDirection: SortDirection! = ASC, type: RedirectGenerationType): [Redirect!]! @deprecated(reason: "Use paginatedRedirects instead. Will be removed in the next version.")
   sitePreviewJwt(includeInvisible: Boolean!, path: String!, scope: JSONObject!): String!
   topMenu(scope: PageTreeNodeScopeInput!): [PageTreeNode!]!
+  userPermissionsAvailableContentScopeDimensions: [ContentScopeDimension!]!
   userPermissionsAvailableContentScopes: [ContentScopeWithLabel!]!
   userPermissionsAvailablePermissions: [String!]!
   userPermissionsContentScopes(skipManual: Boolean, userId: String!): [JSONObject!]!
@@ -2367,6 +2374,7 @@ input WarningFilter {
   status: WarningStatusEnumFilter
   type: StringFilter
   updatedAt: DateTimeFilter
+  visible: BooleanFilter
 }
 
 enum WarningSeverity {
@@ -2394,6 +2402,7 @@ enum WarningSortField {
   status
   type
   updatedAt
+  visible
 }
 
 type WarningSourceInfo {

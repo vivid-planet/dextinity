@@ -1,10 +1,10 @@
 import type { JSONContent } from "@tiptap/core";
 import type { ClassConstructor } from "class-transformer";
 
-import { BlockMigration } from "../../migrations/BlockMigration";
-import type { BlockMigrationInterface } from "../../migrations/types";
-import type { TipTapResolvedOptions } from "../createTipTapRichTextBlock";
-import { findTextBlockForTag, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks";
+import { BlockMigration } from "../../migrations/BlockMigration.js";
+import type { BlockMigrationInterface } from "../../migrations/types.js";
+import type { TipTapResolvedOptions } from "../createTipTapRichTextBlock.js";
+import { findTextBlockForTag, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks.js";
 
 interface From {
     tipTapContent: JSONContent;

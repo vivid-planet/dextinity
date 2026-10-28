@@ -16,7 +16,7 @@ const supportedBlocks: SupportedBlocks = {
     tipTapText: (data) => <MailTipTapRichTextBlock data={data} />,
     image: (data) => <MailImageBlock data={data} />,
     button: (data) => <MailButtonBlock data={data} />,
-    divider: () => <MailDividerBlock />,
+    divider: (data) => <MailDividerBlock data={data} />,
     spacer: (data) => <MailSpacerBlock data={data} />,
 };
 

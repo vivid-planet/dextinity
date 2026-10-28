@@ -3,11 +3,13 @@ import { Inject, Injectable } from "@nestjs/common";
 import { createHmac } from "crypto";
 import { parse } from "path";
 
-import { FocalPoint } from "../../file-utils/focal-point.enum";
-import { DamConfig } from "../dam.config";
-import { DAM_CONFIG } from "../dam.constants";
-import { ImageInterface } from "./dto/image.interface";
-import { ImageParams } from "./dto/image.params";
+import { FocalPoint } from "../../file-utils/focal-point.enum.js";
+import { getBasicImageExtension } from "../../file-utils/images.util.js";
+import type { DamConfig } from "../dam.config.js";
+import { DAM_CONFIG } from "../dam.constants.js";
+import type { FileInterface } from "../files/entities/file.entity.js";
+import type { ImageInterface } from "./dto/image.interface.js";
+import type { ImageParams } from "./dto/image.params.js";
 
 @Injectable()
 export class ImagesService {
@@ -24,7 +26,7 @@ export class ImagesService {
 
     createUrlTemplate({ file, cropArea }: ImageInterface, { previewDamUrls = false }: { previewDamUrls?: boolean }): string {
         const imageCropArea = cropArea !== undefined ? cropArea : file.image!.cropArea;
-        const filename = parse(file.name).name;
+        const filename = this.createFilename(file);
 
         const baseUrl = [`/${this.config.basePath}/images`];
         if (previewDamUrls) {
@@ -54,5 +56,22 @@ export class ImagesService {
             "resize:$resizeWidth:$resizeHeight",
             filename,
         ].join("/");
+    }
+
+    createUrl({ resizeWidth, resizeHeight, ...image }: ImageInterface & { resizeWidth: number; resizeHeight: number }): string {
+        return this.createUrlTemplate(image, {}).replace("$resizeWidth", String(resizeWidth)).replace("$resizeHeight", String(resizeHeight));
+    }
+
+    createFilename(file: FileInterface): string {
+        const name = parse(file.name).name;
+        // CDNs like Cloudflare (Vary for Images) don't cache a response whose type doesn't match the URL extension,
+        // so the extension is the one of the format delivered when the Accept header offers no modern format.
+        return this.config.includeFormatExtensionInImageUrls ? `${name}.${getBasicImageExtension(file.mimetype)}` : name;
+    }
+
+    shouldRedirectToCurrentUrl(file: FileInterface, filename: string): boolean {
+        // The hash still validates for an outdated filename (one without extension or from before a rename) because it was signed for it.
+        // Without the option, such filenames are served as before the option existed.
+        return this.config.includeFormatExtensionInImageUrls === true && filename !== this.createFilename(file);
     }
 }

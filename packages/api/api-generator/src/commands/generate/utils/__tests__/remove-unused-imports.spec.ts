@@ -1,7 +1,7 @@
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
 
-import { removeUnusedImports } from "../write-generated-file";
+import { removeUnusedImports } from "../write-generated-file.js";
 
 function runTransform(input: string): string {
     input = input.trim().replace(/^\s+/gm, "");
@@ -96,6 +96,36 @@ describe("removeUnusedImports", () => {
         const expected = `
       import * as fs from 'fs';
       fs.readFile('test.txt');
+    `;
+
+        expect(runTransform(input)).toBe(expected.trim().replace(/^\s+/gm, ""));
+    });
+
+    it("keeps inline type specifiers", () => {
+        const input = `
+      import { a, type B, c } from 'lib';
+      const x: B = a;
+    `;
+
+        const expected = `
+      import { a, type B } from 'lib';
+      const x: B = a;
+    `;
+
+        expect(runTransform(input)).toBe(expected.trim().replace(/^\s+/gm, ""));
+    });
+
+    it("converts to type-only import if only inline type specifiers remain", () => {
+        const input = `
+      import { a, type B, type C } from 'lib';
+      let x: B;
+      let y: C;
+    `;
+
+        const expected = `
+      import type { B, C } from 'lib';
+      let x: B;
+      let y: C;
     `;
 
         expect(runTransform(input)).toBe(expected.trim().replace(/^\s+/gm, ""));

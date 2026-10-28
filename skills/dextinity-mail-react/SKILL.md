@@ -619,7 +619,7 @@ Use `renderMailHtml` to convert the React tree to final HTML for sending:
 import { MjmlMailRoot, MjmlSection, MjmlColumn, MjmlText } from "@dextinity/mail-react";
 import { renderMailHtml } from "@dextinity/mail-react/server";
 
-const { html, mjmlWarnings } = renderMailHtml(
+const { html, mjmlWarnings } = await renderMailHtml(
     <MjmlMailRoot theme={theme}>
         <MjmlSection indent>
             <MjmlColumn>
@@ -633,7 +633,8 @@ const { html, mjmlWarnings } = renderMailHtml(
 - **Server** (`@dextinity/mail-react/server`) — uses `mjml`, requires Node.js
 - **Client** (`@dextinity/mail-react/client`) — uses `mjml-browser`, works without `fs`
 - `renderMailHtml` is **not** on the main `@dextinity/mail-react` barrel — always import from `/server` or `/client`
-- Returns `{ html: string; mjmlWarnings: MjmlWarning[] }` — warnings are collected, not thrown
+- Async — returns a promise of `{ html: string; mjmlWarnings: MjmlWarning[] }`; warnings are collected, not thrown
+- The server `renderMailHtml` turns off `mj-include` by default, because an include can read files on the server. To use it, pass `{ ignoreIncludes: false }` together with a `filePath` or `includePath` directory, and include files by a relative path inside it — MJML denies absolute paths and paths outside these directories.
 - A framework that bundles server code (Next.js) must list `mjml` in the application's own `package.json` too, or rendering fails at runtime
 - Nothing imports it directly — add `mjml` to `ignoreDependencies` in `knip.json` rather than removing it as unused
 
@@ -642,7 +643,7 @@ const { html, mjmlWarnings } = renderMailHtml(
 When generating emails outside Storybook (e.g., in a mail template's `generateMail` method), always log `mjmlWarnings` in development to catch structural issues early:
 
 ```tsx
-const { html, mjmlWarnings } = renderMailHtml(/* ... */);
+const { html, mjmlWarnings } = await renderMailHtml(/* ... */);
 
 if (process.env.NODE_ENV === "development" && mjmlWarnings.length) {
     console.warn(`${mjmlWarnings.length} MJML Warnings`, mjmlWarnings);
@@ -652,6 +653,26 @@ if (process.env.NODE_ENV === "development" && mjmlWarnings.length) {
 **Never log MJML warnings in production.** These warnings flag structural MJML issues (e.g., content outside the section → column → content hierarchy) and are useful during development, but the rendered HTML is always produced successfully regardless of warnings. In rare cases, achieving a specific layout intentionally requires a technically invalid MJML structure — logging these in production would spam error trackers like Sentry with noise that cannot be acted upon.
 
 Outside Storybook, wrap content in `MjmlMailRoot` yourself (the Storybook decorator handles it automatically).
+
+### Block Preview in the Admin
+
+Wrap each mail block in `withPreview` and put the `className` it passes on the component that spans the whole block, usually the outer `MjmlSection`:
+
+```tsx
+export const MailTextBlock = withPreview<PropsWithData<MailTextBlockData>>(
+    ({ data, className }) => (
+        <MjmlSection className={className}>
+            <MjmlColumn>
+                <MjmlText>{data.text}</MjmlText>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+    { label: "Text" },
+);
+```
+
+- Register a block without data of its own with its data anyway, `divider: (data) => <MailDividerBlock data={data} />`, or it gets no route.
+- The block preview page must put the ref from `useRefToRegisterMailBlocksForPreview(useIFrameBridge())` on the element that contains the mail HTML.
 
 ---
 

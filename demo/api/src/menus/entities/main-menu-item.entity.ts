@@ -1,9 +1,10 @@
 import { BlockDataInterface, RootBlock, RootBlockDataScalar, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
-import { BaseEntity, Entity, OneToOne, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, OneToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { RichTextBlock } from "@src/common/blocks/rich-text.block";
 import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 @Entity()
 @ObjectType()
@@ -13,7 +14,7 @@ export class MainMenuItem extends BaseEntity {
 
     @PrimaryKey({ columnType: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @OneToOne({ joinColumn: "nodeId", deleteRule: "CASCADE" })
     @Field(() => PageTreeNode)

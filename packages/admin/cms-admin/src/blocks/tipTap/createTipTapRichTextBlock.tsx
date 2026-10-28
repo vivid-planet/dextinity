@@ -7,7 +7,7 @@ import Superscript from "@tiptap/extension-superscript";
 import { skipTrailingNodeMeta } from "@tiptap/extensions";
 import { EditorContent, type JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import {
     type ComponentType,
     type ForwardRefExoticComponent,
@@ -302,6 +302,21 @@ function getPlainTextFromContent(content: JSONContent): string {
     return text;
 }
 
+function getTextLines(content: JSONContent): string[] {
+    if (content.type !== "textBlock") {
+        return (content.content ?? []).flatMap(getTextLines);
+    }
+    const lines = [""];
+    for (const child of content.content ?? []) {
+        if (child.type === "hardBreak") {
+            lines.push("");
+        } else {
+            lines[lines.length - 1] += getPlainTextFromContent(child);
+        }
+    }
+    return lines;
+}
+
 const buildEmptyContent = ({ defaultTextBlock }: TipTapResolvedOptions): JSONContent => {
     const attrs: JSONContent["attrs"] = { textBlock: defaultTextBlock.name };
     if (defaultTextBlock.defaultStyle !== null) {
@@ -441,6 +456,13 @@ function collectCmsBlockNodes(content: JSONContent): Array<{ blockType: string; 
     return results;
 }
 
+const hasContent = (content: JSONContent): boolean =>
+    isCmsBlockNode(content) || (content.type === "textBlock" ? (content.content?.length ?? 0) > 0 : (content.content ?? []).some(hasContent));
+
+export function isTipTapRichTextEmpty(tipTapContent: JSONContent): boolean {
+    return !hasContent(tipTapContent);
+}
+
 function collectLinkMarksData(content: JSONContent): unknown[] {
     const results: unknown[] = [];
 
@@ -509,13 +531,14 @@ export function buildTipTapExtensions({
             code: false,
             codeBlock: false,
             link: false,
-            // A text block is directly editable (Enter at its end already creates the next one), so it
-            // doesn't need TrailingNode's own empty paragraph the way a trailing atom node (e.g. a child block) does.
-            trailingNode: { notAfter: ["textBlock"] },
+            // Enter at the end of a text block creates the next one, and Enter in an empty last list item
+            // leaves the list, so only a trailing atom node (e.g. a child block) needs TrailingNode's empty
+            // text block. After a list, it couldn't be deleted: TrailingNode adds it again right away.
+            trailingNode: { notAfter: ["textBlock", "orderedList", "bulletList"] },
         }),
         createTextBlock({ ...resolvedOptions, hasTextBlockStyles: hasStyles, styled }),
         ...(hasParagraph ? [TextBlockListItem] : []),
-        ...(styledNodes.some((styledNode) => styledNode.defaultStyle !== null) ? [createDefaultTextBlockStyle(resolvedOptions)] : []),
+        ...(hasStyles ? [createDefaultTextBlockStyle(resolvedOptions)] : []),
         // Only worth replacing the list shortcuts where a list has styles of its own to apply.
         ...([resolvedOptions.orderedList, resolvedOptions.unorderedList].some((list) => list && list.styles.length > 0)
             ? [createTextBlockList(resolvedOptions)]
@@ -645,7 +668,7 @@ export const TipTapEditor = ({
 
         contentEmittedByEditor.current.length = 0;
 
-        if (isEqual(state.tipTapContent, editor.getJSON())) {
+        if (deepEqual(state.tipTapContent, editor.getJSON())) {
             return;
         }
 
@@ -851,7 +874,10 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
         ReadOnlyComponent: ({ state }) => <TipTapEditor state={state} updateState={() => {}} {...sharedEditorProps} readOnly />,
 
         previewContent: (state) => {
-            const text = getPlainTextFromContent(state.tipTapContent);
+            const text = getTextLines(state.tipTapContent)
+                .map((line) => line.trim())
+                .filter((line) => line.length > 0)
+                .join(" ");
             const MAX_CHARS = 100;
             return text.length > 0 ? [{ type: "text", content: text.slice(0, MAX_CHARS) }] : [];
         },

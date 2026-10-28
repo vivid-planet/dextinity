@@ -1,23 +1,22 @@
-import { V1CronJob, V1Job } from "@kubernetes/client-node";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import type { V1CronJob, V1Job } from "@kubernetes/client-node";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import parser from "cron-parser";
+import { CronExpressionParser } from "cron-parser";
 import { format } from "date-fns";
 
-import { KubernetesJobStatus } from "../kubernetes/job-status.enum";
-import { INSTANCE_LABEL, LABEL_ANNOTATION, PARENT_CRON_JOB_LABEL } from "../kubernetes/kubernetes.constants";
-import { KubernetesService } from "../kubernetes/kubernetes.service";
-import { getAnnotation, getLabel } from "../kubernetes/kubernetes-metadata";
-import { CurrentUser } from "../user-permissions/dto/current-user";
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants";
-import { AccessControlServiceInterface } from "../user-permissions/user-permissions.types";
-import { BuildTemplatesService } from "./build-templates.service";
-import { BUILDER_LABEL, TRIGGER_ANNOTATION } from "./builds.constants";
-import { AutoBuildStatus } from "./dto/auto-build-status.object";
-import { Build } from "./dto/build.object";
-import { ChangesSinceLastBuild } from "./entities/changes-since-last-build.entity";
+import { KubernetesJobStatus } from "../kubernetes/job-status.enum.js";
+import { INSTANCE_LABEL, LABEL_ANNOTATION, PARENT_CRON_JOB_LABEL } from "../kubernetes/kubernetes.constants.js";
+import { KubernetesService } from "../kubernetes/kubernetes.service.js";
+import { getAnnotation, getLabel } from "../kubernetes/kubernetes-metadata.js";
+import type { CurrentUser } from "../user-permissions/dto/current-user.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants.js";
+import type { AccessControlServiceInterface } from "../user-permissions/user-permissions.types.js";
+import { BuildTemplatesService } from "./build-templates.service.js";
+import { BUILDER_LABEL, TRIGGER_ANNOTATION } from "./builds.constants.js";
+import { AutoBuildStatus } from "./dto/auto-build-status.object.js";
+import type { Build } from "./dto/build.object.js";
+import { ChangesSinceLastBuild } from "./entities/changes-since-last-build.entity.js";
 
 const JOB_HISTORY_LIMIT = 20;
 
@@ -26,7 +25,6 @@ export class BuildsService {
     private readonly logger = new Logger(BuildsService.name);
 
     constructor(
-        @InjectRepository(ChangesSinceLastBuild) private readonly changesRepository: EntityRepository<ChangesSinceLastBuild>,
         private readonly buildTemplatesService: BuildTemplatesService,
         private readonly kubernetesService: KubernetesService,
         @Inject(ACCESS_CONTROL_SERVICE) private accessControlService: AccessControlServiceInterface,
@@ -121,7 +119,7 @@ export class BuildsService {
         }
         autoBuildStatus.lastCheck = cronJob.status?.lastScheduleTime;
 
-        const interval = parser.parseExpression(cronJob.spec?.schedule as string);
+        const interval = CronExpressionParser.parse(cronJob.spec?.schedule as string);
         autoBuildStatus.nextCheck = interval.next().toDate();
 
         return autoBuildStatus;
@@ -134,25 +132,25 @@ export class BuildsService {
             scope = "all";
         }
 
-        if ((await this.changesRepository.findOne({ scope })) === null) {
-            await this.entityManager.persistAndFlush(this.changesRepository.create({ scope }));
+        if ((await this.entityManager.findOne(ChangesSinceLastBuild, { scope })) === null) {
+            await this.entityManager.persist(this.entityManager.create(ChangesSinceLastBuild, { scope })).flush();
         }
     }
 
     async hasChangesSinceLastBuild(): Promise<boolean> {
-        return (await this.changesRepository.count()) > 0;
+        return (await this.entityManager.count(ChangesSinceLastBuild)) > 0;
     }
 
     async deleteChangesSinceLastBuild(): Promise<void> {
-        await this.changesRepository.createQueryBuilder().truncate().execute();
+        await this.entityManager.createQueryBuilder(ChangesSinceLastBuild).truncate().execute();
     }
 
     async shouldRebuildAllScopes(): Promise<boolean> {
-        return (await this.changesRepository.findOne({ scope: "all" })) !== null;
+        return (await this.entityManager.findOne(ChangesSinceLastBuild, { scope: "all" })) !== null;
     }
 
     async getScopesWithChanges(): Promise<ContentScope[]> {
-        return (await this.changesRepository.find({ scope: { $ne: "all" } })).map((change) => change.scope) as ContentScope[];
+        return (await this.entityManager.find(ChangesSinceLastBuild, { scope: { $ne: "all" } })).map((change) => change.scope) as ContentScope[];
     }
 
     async getBuilderCronJobsToStart(scopesWithChanges: ContentScope[]): Promise<V1CronJob[]> {

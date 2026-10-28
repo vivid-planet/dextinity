@@ -224,18 +224,11 @@ Blocks created with factory helpers (e.g., `ColumnsBlockFactory.create`) accept 
 
 ```ts
 // Before
-export const ColumnsBlock = ColumnsBlockFactory.create(
-    {
-        /* ... */
-    },
-    "Columns",
-);
+export const ColumnsBlock = ColumnsBlockFactory.create({/* ... */}, "Columns");
 
 // After
 export const ColumnsBlock = ColumnsBlockFactory.create(
-    {
-        /* ... */
-    },
+    {/* ... */},
     {
         name: "Columns",
         migrate: {

@@ -1,6 +1,6 @@
 import { type ApolloClient, gql } from "@apollo/client";
 import { LocalErrorScopeApolloContext } from "@dextinity/admin";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 import { v4 as uuid } from "uuid";
@@ -107,7 +107,7 @@ export async function sendPages(
                     //TODO use damFile.size; to build a progress bar for uploading/downloading files
                     if (dependencyReplacements.some((replacement) => replacement.type == "DamFile" && replacement.originalId === damFile.id)) {
                         //file already handled (same file used multiple times on page)
-                    } else if (!hasDamScope || isEqual(damFile.scope, targetDamScope)) {
+                    } else if (!hasDamScope || deepEqual(damFile.scope, targetDamScope)) {
                         //same scope, same server, no need to copy
                     } else {
                         // TODO eventually handle multiple files in one request for better performance
@@ -134,7 +134,7 @@ export async function sendPages(
                             });
                         } else {
                             // copying is required
-                            if (damFile.scope && !sourceScopes.some((scope) => isEqual(scope, damFile.scope))) {
+                            if (damFile.scope && !sourceScopes.some((scope) => deepEqual(scope, damFile.scope))) {
                                 sourceScopes.push(damFile.scope);
                             }
                         }
@@ -247,7 +247,7 @@ export async function sendPages(
                         //already copied
                     } else {
                         // not copied yet
-                        if (!hasDamScope || isEqual(damFile.scope, targetDamScope)) {
+                        if (!hasDamScope || deepEqual(damFile.scope, targetDamScope)) {
                             //same scope, same server, no need to copy
                         } else {
                             //batch copy below
@@ -277,7 +277,7 @@ export async function sendPages(
             }
 
             // 3b. Replace unhandled dependencies with undefined (when copying to another scope)
-            if (sourcePage.document && !isEqual(sourceContentScope, targetContentScope)) {
+            if (sourcePage.document && !deepEqual(sourceContentScope, targetContentScope)) {
                 const unhandledDependencies = unhandledDependenciesFromDocument(documentType, sourcePage.document, {
                     existingReplacements: dependencyReplacements,
                     hasDamScope,
@@ -350,7 +350,7 @@ function unhandledDependenciesFromDocument(
                 return false;
             }
 
-            if (isEqual(dependency.data.damFile.scope, targetDamScope)) {
+            if (deepEqual(dependency.data.damFile.scope, targetDamScope)) {
                 // Source and target DAM scope are the same, so no need to handle this dependency
                 return false;
             }

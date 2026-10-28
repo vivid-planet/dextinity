@@ -719,7 +719,8 @@ export const TipTapToolbar = ({
                             <MenuItem
                                 key={key}
                                 onClick={() => {
-                                    handleChildBlockClose();
+                                    // Refocusing the editor here would steal focus from the dialog after it has opened
+                                    setChildBlockAnchorEl(null);
                                     setInsertChildBlock({ key, ...childBlock });
                                 }}
                             >

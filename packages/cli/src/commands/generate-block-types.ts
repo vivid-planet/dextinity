@@ -49,6 +49,8 @@ function writeFieldType(field: BlockMetaField, blockNamePostfix: string) {
         if (field.array) {
             content += "[]";
         }
+    } else if (field.kind === "RichTextBlock") {
+        content += "unknown";
     } else if (field.kind === "TipTapRichTextBlock") {
         isTipTapNodeTypeUsed = true;
         content += "TipTapNode";

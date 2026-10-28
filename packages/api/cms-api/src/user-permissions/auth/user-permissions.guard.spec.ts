@@ -1,21 +1,22 @@
 import { createMock } from "@golevelup/ts-vitest";
-import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey } from "@mikro-orm/postgresql";
-import { ExecutionContext } from "@nestjs/common";
-import { ModuleRef, Reflector } from "@nestjs/core";
+import { Entity, PrimaryKey, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM } from "@mikro-orm/postgresql";
+import type { ExecutionContext } from "@nestjs/common";
+import { type ModuleRef, Reflector } from "@nestjs/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { DISABLE_DEXTINITY_GUARDS_METADATA_KEY } from "../../auth/decorators/disable-dextinity-guards.decorator";
-import { DextinityValidationException } from "../../common/errors/validation.exception";
-import { PageTreeService } from "../../page-tree/page-tree.service";
-import { AbstractAccessControlService } from "../access-control.service";
-import { ContentScopeService } from "../content-scope.service";
-import { AFFECTED_ENTITY_METADATA_KEY, AffectedEntityMeta } from "../decorators/affected-entity.decorator";
-import { AFFECTED_SCOPE_METADATA_KEY, AffectedScopeMeta } from "../decorators/affected-scope.decorator";
-import { REQUIRED_PERMISSION_METADATA_KEY, RequiredPermissionMetadata } from "../decorators/required-permission.decorator";
-import { SCOPED_ENTITY_METADATA_KEY, ScopedEntityMeta } from "../decorators/scoped-entity.decorator";
-import { CurrentUser } from "../dto/current-user";
-import { Permission } from "../user-permissions.types";
-import { UserPermissionsGuard } from "./user-permissions.guard";
+import { DISABLE_DEXTINITY_GUARDS_METADATA_KEY } from "../../auth/decorators/disable-dextinity-guards.decorator.js";
+import { DextinityValidationException } from "../../common/errors/validation.exception.js";
+import type { PageTreeService } from "../../page-tree/page-tree.service.js";
+import { AbstractAccessControlService } from "../access-control.service.js";
+import { ContentScopeService } from "../content-scope.service.js";
+import { AFFECTED_ENTITY_METADATA_KEY, type AffectedEntityMeta } from "../decorators/affected-entity.decorator.js";
+import { AFFECTED_SCOPE_METADATA_KEY, type AffectedScopeMeta } from "../decorators/affected-scope.decorator.js";
+import { REQUIRED_PERMISSION_METADATA_KEY, type RequiredPermissionMetadata } from "../decorators/required-permission.decorator.js";
+import { SCOPED_ENTITY_METADATA_KEY, type ScopedEntityMeta } from "../decorators/scoped-entity.decorator.js";
+import type { CurrentUser } from "../dto/current-user.js";
+import type { Permission } from "../user-permissions.types.js";
+import { UserPermissionsGuard } from "./user-permissions.guard.js";
 
 const permissions = {
     p1: "p1" as Permission,
@@ -96,18 +97,16 @@ describe("UserPermissionsGuard", () => {
         });
     };
     const mockAffectedEntityValues = (values: { id: number | string; [key: string]: unknown }[]) => {
-        orm.em.getRepository = vi
-            .fn()
-            .mockReturnValue({ findOneOrFail: vi.fn().mockImplementation((id: number | string) => values.find((v) => v.id === id)) });
+        orm.em.findOneOrFail = vi.fn().mockImplementation((_entityName: unknown, id: number | string) => values.find((v) => v.id === id));
     };
 
     beforeEach(async () => {
         reflector = new Reflector();
         orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
                 entities: [TestEntity, TestEntityWithUuidType, TestEntityWithUuidColumnType],
-                connect: false,
                 allowGlobalContext: true,
             }),
         );
@@ -683,7 +682,7 @@ describe("UserPermissionsGuard", () => {
 
     it("fails when RequiredPermission decorator is missing", async () => {
         mockAnnotations({});
-        expect(async () =>
+        await expect(async () =>
             guard.canActivate(
                 mockContext({
                     userPermissions: [{ permission: permissions.p1, contentScopes: [] }],
@@ -699,7 +698,7 @@ describe("UserPermissionsGuard", () => {
                 options: { skipScopeCheck: true },
             },
         });
-        expect(async () =>
+        await expect(async () =>
             guard.canActivate(
                 mockContext({
                     userPermissions: [{ permission: permissions.p1, contentScopes: [] }],
@@ -715,7 +714,7 @@ describe("UserPermissionsGuard", () => {
                 options: { skipScopeCheck: false },
             },
         });
-        expect(async () =>
+        await expect(async () =>
             guard.canActivate(
                 mockContext({
                     userPermissions: [{ permission: permissions.p1, contentScopes: [{ a: "a" }] }],

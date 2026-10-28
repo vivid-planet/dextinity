@@ -1,8 +1,9 @@
 import { CrudField, CrudGenerator } from "@dextinity/cms-api";
-import { BaseEntity, Collection, Entity, ManyToOne, OneToMany, OptionalProps, PrimaryKey, Property, Ref } from "@mikro-orm/postgresql";
+import { Entity, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, Collection, OptionalProps, Ref } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { Min } from "class-validator";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { Product } from "./product.entity";
 import { ProductCategoryType } from "./product-category-type.entity";
@@ -15,7 +16,7 @@ export class ProductCategory extends BaseEntity {
 
     @PrimaryKey({ type: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     @Field()

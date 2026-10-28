@@ -15,8 +15,8 @@ import {
 } from "@dextinity/admin";
 import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { Collapse, Divider } from "@mui/material";
+import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
-import isEqual from "lodash.isequal";
 import { useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 
@@ -190,7 +190,7 @@ export function ManufacturerForm({ id }: FormProps) {
             onSubmit={handleSubmit}
             mode={mode}
             initialValues={initialValues}
-            initialValuesEqual={isEqual} //required to compare block data correctly
+            initialValuesEqual={deepEqual} //required to compare block data correctly
             subscription={{}}
         >
             <>

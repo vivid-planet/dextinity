@@ -1,6 +1,6 @@
 import { mergeAttributes, Node } from "@tiptap/core";
 
-import type { TipTapResolvedTextBlock } from "../textBlocks";
+import type { TipTapResolvedTextBlock } from "../textBlocks.js";
 
 /**
  * The single node every paragraph and heading is stored as, mirroring the Admin's. Which of the

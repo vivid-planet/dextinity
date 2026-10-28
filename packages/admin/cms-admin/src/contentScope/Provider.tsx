@@ -1,4 +1,4 @@
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { createContext, type Dispatch, type ReactNode, type SetStateAction, useCallback, useContext, useMemo, useState } from "react";
 import { type match, Redirect, Route, Switch, useHistory, useRouteMatch } from "react-router";
 
@@ -165,7 +165,7 @@ export function ContentScopeProvider({
     if (storedScope && storedScope !== "undefined") {
         const parsedStoredScope = JSON.parse(storedScope);
         // Validate that the stored scope is in the user's allowed scopes
-        const isStoredScopeAllowed = values.some((value) => isEqual(parsedStoredScope, value.scope));
+        const isStoredScopeAllowed = values.some((value) => deepEqual(parsedStoredScope, value.scope));
 
         if (isStoredScopeAllowed) {
             defaultUrl = location.createUrl(parsedStoredScope);

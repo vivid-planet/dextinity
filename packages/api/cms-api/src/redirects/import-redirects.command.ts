@@ -1,18 +1,19 @@
 import * as csv from "@fast-csv/parse";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { CreateRequestContext, EntityManager, EntityRepository, FilterQuery, MikroORM } from "@mikro-orm/postgresql";
+import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
+import { EntityManager, type FilterQuery, MikroORM } from "@mikro-orm/postgresql";
 import { forwardRef, Inject } from "@nestjs/common";
 import * as console from "console";
 import * as fs from "fs";
 import { Command, CommandRunner } from "nest-commander";
 
-import { PageTreeService } from "../page-tree/page-tree.service";
-import { PageTreeReadApiOptions } from "../page-tree/page-tree-read-api";
-import { RedirectInterface } from "./entities/redirect-entity.factory";
-import { REDIRECTS_LINK_BLOCK } from "./redirects.constants";
-import { RedirectGenerationType, RedirectSourceType } from "./redirects.enum";
-import { RedirectsLinkBlock } from "./redirects.module";
-import { RedirectScopeInterface } from "./types";
+import { PageTreeService } from "../page-tree/page-tree.service.js";
+import type { PageTreeReadApiOptions } from "../page-tree/page-tree-read-api.js";
+import type { RedirectInterface } from "./entities/redirect-entity.factory.js";
+import { resolveRedirectEntity } from "./entities/resolve-redirect-entity.js";
+import { REDIRECTS_LINK_BLOCK } from "./redirects.constants.js";
+import { RedirectGenerationType, RedirectSourceType } from "./redirects.enum.js";
+import type { RedirectsLinkBlock } from "./redirects.module.js";
+import type { RedirectScopeInterface } from "./types.js";
 
 interface Row {
     target: string;
@@ -32,7 +33,6 @@ export class ImportRedirectsCommand extends CommandRunner {
         private readonly orm: MikroORM,
         private readonly entityManager: EntityManager,
         @Inject(forwardRef(() => PageTreeService)) private readonly pageTreeService: PageTreeService,
-        @InjectRepository("Redirect") private readonly repository: EntityRepository<RedirectInterface>,
         @Inject(REDIRECTS_LINK_BLOCK) private readonly linkBlock: RedirectsLinkBlock,
     ) {
         super();
@@ -55,11 +55,11 @@ export class ImportRedirectsCommand extends CommandRunner {
             if (row["scope"]) {
                 where["scope"] = row["scope"];
             }
-            const existingRedirect = await this.repository.findOne(where);
+            const existingRedirect = await this.entityManager.findOne(resolveRedirectEntity(), where);
 
             if (row["target_type"] === "internal" && node) {
                 if (existingRedirect) {
-                    this.repository.assign(existingRedirect, {
+                    this.entityManager.assign(existingRedirect, {
                         target: this.linkBlock
                             .blockInputFactory({
                                 attachedBlocks: [
@@ -78,7 +78,7 @@ export class ImportRedirectsCommand extends CommandRunner {
 
                     successes++;
                 } else {
-                    const redirect = this.repository.create({
+                    const redirect = this.entityManager.create(resolveRedirectEntity(), {
                         sourceType: RedirectSourceType.path,
                         source: row["source"],
                         target: this.linkBlock
@@ -105,7 +105,7 @@ export class ImportRedirectsCommand extends CommandRunner {
                 }
             } else if (row["target_type"] === "external") {
                 if (existingRedirect) {
-                    this.repository.assign(existingRedirect, {
+                    this.entityManager.assign(existingRedirect, {
                         target: this.linkBlock
                             .blockInputFactory({
                                 attachedBlocks: [
@@ -126,7 +126,7 @@ export class ImportRedirectsCommand extends CommandRunner {
 
                     successes++;
                 } else {
-                    const redirect = this.repository.create({
+                    const redirect = this.entityManager.create(resolveRedirectEntity(), {
                         sourceType: RedirectSourceType.path,
                         source: row["source"],
                         target: this.linkBlock

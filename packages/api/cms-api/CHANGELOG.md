@@ -1,5 +1,60 @@
 # @comet/cms-api
 
+## 10.10.0
+
+### Minor Changes
+
+- 3862673: Add the `includeFormatExtensionInImageUrls` option to include a file extension in DAM image URLs
+
+    CDN features that cache an image per format, such as Cloudflare's [Vary for Images](https://developers.cloudflare.com/cache/advanced-configuration/vary-for-images/) or the WebP option of Bunny's [Vary Cache](https://bunny.net/docs/cdn/vary-cache), require the file extension in the URL path.
+    With the option enabled, image URLs end with the extension of the format the API delivers when the `Accept` header offers no modern format, e.g. `photo.png`.
+    Originals that aren't JPEG, PNG or GIF get `.jpg`, because the API delivers them as JPEG.
+    Image URLs with an outdated filename, i.e. without extension or from before the file was renamed, permanently redirect to the current URL.
+
+    The API accepts image URLs with and without extension regardless of the option, so disabling it again doesn't break URLs that are already in use.
+
+    **Example**
+
+    ```ts
+    DamModule.register({
+        damConfig: {
+            // ...
+            includeFormatExtensionInImageUrls: true,
+        },
+        // ...
+    });
+    ```
+
+- b6bca3b: TipTap Rich Text Block: fill in a missing text block style with the `defaultStyle` when reading the block
+
+    Content written before a `defaultStyle` was configured carries no style, so the site had to render a missing style like the default. The API now applies the `defaultStyle` of the text block, or inside a list item of the list, whenever it reads a text block without a style. The site always receives the style's name, and the content needs no migration.
+
+- 7a121f1: Rework the content scopes management in the user permissions panel
+
+    The user permissions panel now renders a consistent set of content scope columns for every user based on the content scope dimensions declared in the API (`userPermissionsAvailableContentScopeDimensions`). A dimension whose value is the `"*"` wildcard is shown as "All".
+    - Content scopes are assigned through an "Add scope" dialog that builds a scope from one dropdown per enumerable dimension, cascading so that only existing combinations can be selected. Each dropdown also offers an "All" option to grant every value of that dimension (`*` wildcard). Dimensions that are not part of `availableContentScopes` are entered as a free text value (`*` grants all values).
+    - The assigned content scopes and the permission-specific content scopes (override dialog) use the same paginated grid and add dialog, and show manually assigned scopes first.
+    - Removing a content scope asks for confirmation, consistent with removing a permission.
+    - The assignment type is shown in a consistent way across the permissions and content scopes grids.
+
+- ad1ad05: Add `visible` to `EntityInfo` and support filtering and sorting warnings by it
+
+    The `EntityInfo` GraphQL type now exposes the entity's visibility (e.g., whether a page is published).
+    The `warnings` query accepts a `visible` filter and sort field, resolved via the joined `EntityInfo`.
+    Warnings of entities without an `EntityInfo` are treated as visible.
+
+### Patch Changes
+
+- b6441cb: Convert a soft line break in DraftJS content to a `hardBreak` node when migrating to TipTap
+
+    DraftJS stores a soft line break (Shift+Enter) as a newline within the block's text. The migration kept it as a newline in a TipTap text node, which the rich text renderers don't render as a line break.
+
+- d5d2a85: Return one search text entry per text block in `createTipTapRichTextBlock`
+
+    Previously, `searchText()` returned one entry per TipTap text node. Since TipTap splits a line into several text nodes wherever a mark such as bold, italic or a link starts or ends, a single sentence ended up as several entries. Consumers that join the entries with spaces got stray spaces, for instance before a period following a link.
+
+    Now `searchText()` returns one entry per paragraph or heading, like the DraftJS-based rich text block. A hard break within a text block becomes a newline.
+
 ## 10.9.1
 
 ## 10.9.0

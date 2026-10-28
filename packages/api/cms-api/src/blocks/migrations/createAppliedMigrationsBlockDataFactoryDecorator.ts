@@ -1,5 +1,5 @@
-import type { BlockDataFactory, BlockDataInterface } from "../block";
-import { applyBlockMigrations, type BlockMigrateOptions } from "./applyMigrations";
+import type { BlockDataFactory, BlockDataInterface } from "../block.js";
+import { applyBlockMigrations, type BlockMigrateOptions } from "./applyMigrations.js";
 
 // Decorates a BlockDataFactory to apply migrations
 export function createAppliedMigrationsBlockDataFactoryDecorator(options: BlockMigrateOptions) {

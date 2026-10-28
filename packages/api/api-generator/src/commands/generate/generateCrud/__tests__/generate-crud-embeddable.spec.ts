@@ -1,13 +1,14 @@
 import { CrudField } from "@dextinity/cms-api";
-import { BaseEntity, defineConfig, Embeddable, Embedded, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Embeddable, Embedded, Entity, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM } from "@mikro-orm/postgresql";
 import { Field, InputType } from "@nestjs/graphql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
-import type { GeneratedFile } from "../../utils/write-generated-files";
-import { generateCrud } from "../generate-crud";
+import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper.js";
+import type { GeneratedFile } from "../../utils/write-generated-files.js";
+import { generateCrud } from "../generate-crud.js";
 
 @Embeddable()
 @InputType("TestEmbeddedInput")
@@ -20,7 +21,7 @@ export class TestEmbedded {
 @Entity()
 export class TestEntityWithEmbedded extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     foo: string;
@@ -40,7 +41,7 @@ export class TestWithoutEmbedded {
 @Entity()
 export class TestEntityWithoutEmbedded extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     foo: string;
@@ -58,13 +59,13 @@ describe("GenerateCrudInputEmbedded", () => {
             LazyMetadataStorage.load();
             orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityWithEmbedded, TestEmbedded],
                 }),
             );
 
-            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithEmbedded"));
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntityWithEmbedded"));
             formattedOut = await formatGeneratedFiles(out);
             const foundFile = formattedOut.find((file) => file.name === "test-entity-with-embedded.resolver.ts");
             if (!foundFile) {
@@ -163,13 +164,13 @@ describe("GenerateCrudInputEmbedded", () => {
             LazyMetadataStorage.load();
             orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityWithoutEmbedded, TestWithoutEmbedded],
                 }),
             );
 
-            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithoutEmbedded"));
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntityWithoutEmbedded"));
             formattedOut = await formatGeneratedFiles(out);
             const foundFile = formattedOut.find((file) => file.name === "test-entity-without-embedded.resolver.ts");
             if (!foundFile) {

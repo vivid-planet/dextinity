@@ -431,7 +431,7 @@ export function generateForm(
 
     const code = `
     ${generateImportsCode(imports)}
-    import isEqual from "lodash.isequal";
+    import { deepEqual } from "fast-equals";
 
     ${
         rootBlockFields.length > 0
@@ -587,7 +587,7 @@ export function generateForm(
                 onSubmit={handleSubmit}
                 mode=${mode == "all" ? `{mode}` : editMode ? `"edit"` : `"add"`}
                 initialValues={initialValues}
-                initialValuesEqual={isEqual} //required to compare block data correctly
+                initialValuesEqual={deepEqual} //required to compare block data correctly
                 subscription={{ ${finalFormSubscription.length ? finalFormSubscription.map((field) => `${field}: true`).join(", ") : ``} }}
             >
                 {(${finalFormRenderProps.length ? `{${finalFormRenderProps.join(", ")}}` : ``}) => (

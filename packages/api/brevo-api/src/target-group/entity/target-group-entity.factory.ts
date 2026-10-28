@@ -1,11 +1,12 @@
-import { DocumentInterface } from "@dextinity/cms-api";
-import { Collection, Embedded, Entity, ManyToMany, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import { DocumentInterface, resolveEntityClass } from "@dextinity/cms-api";
+import { Embedded, Entity, ManyToMany, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { Collection, OptionalProps } from "@mikro-orm/postgresql";
+import type { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
-import { EmailCampaignInterface } from "../../email-campaign/entities/email-campaign-entity.factory";
-import { BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "../../types";
+import type { EmailCampaignInterface } from "../../email-campaign/entities/email-campaign-entity.factory.js";
+import type { BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "../../types.js";
 
 export interface TargetGroupInterface {
     [OptionalProps]?: "createdAt" | "updatedAt" | "totalSubscribers";
@@ -40,7 +41,7 @@ export function createTargetGroupEntity({
 
         @PrimaryKey({ columnType: "uuid" })
         @Field(() => ID)
-        id: string = uuid();
+        id: string = randomUUID();
 
         @Property({ columnType: "timestamp with time zone" })
         @Field()
@@ -77,7 +78,10 @@ export function createTargetGroupEntity({
         @Field(() => Int, { nullable: true })
         assignedContactsTargetGroupBrevoId?: number;
 
-        @ManyToMany("BrevoEmailCampaign", "targetGroups")
+        @ManyToMany(
+            () => resolveEntityClass<EmailCampaignInterface>("BrevoEmailCampaign"),
+            (campaign: EmailCampaignInterface) => campaign.targetGroups,
+        )
         campaigns = new Collection<EmailCampaignInterface>(this);
     }
     if (BrevoFilterAttributes) {

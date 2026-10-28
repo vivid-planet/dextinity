@@ -1,5 +1,23 @@
 # @comet/site-react
 
+## 10.10.0
+
+### Patch Changes
+
+- 9d65d08: Fix the selection in the block preview for blocks that a page renders more than once
+
+    When one copy of such a block unmounted, the other copies could not be selected in the block preview until it was reloaded.
+
+- 41b3249: Respect the `autoplay` setting of `YouTubeVideoBlock` when no preview image is set
+
+    Previously the video only started playing after the preview image was clicked, so blocks without a preview image (e.g. in a kiosk) never autoplayed.
+
+    The embedded player is now also loaded lazily, so a video further down the page doesn't start playing before it is anywhere near the viewport.
+
+- 3ba43d6: Play the video unmuted in `YouTubeVideoBlock`, `VimeoVideoBlock` and `DamVideoBlock` when it is started by clicking the preview image
+
+    Autoplaying videos still start muted, since browsers block unmuted autoplay without a user interaction. The click on the preview image is such an interaction, so muting is no longer necessary from that point on.
+
 ## 10.9.1
 
 ## 10.9.0

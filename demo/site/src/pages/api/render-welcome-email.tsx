@@ -61,7 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     const messages = await loadMessages(scope.language);
-    const { html, mjmlWarnings } = renderMailHtml(
+    const { html, mjmlWarnings } = await renderMailHtml(
         <WelcomeEmailMail content={content} config={getMailConfig(scope)} locale={scope.language} messages={messages} />,
     );
 

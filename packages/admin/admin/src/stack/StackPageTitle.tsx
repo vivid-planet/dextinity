@@ -1,4 +1,4 @@
-import isEqual from "lodash.isequal";
+import { circularDeepEqual } from "fast-equals";
 import { Component, type ContextType, isValidElement, type PropsWithChildren, type ReactNode } from "react";
 
 import { StackSwitchApiContext } from "./Switch";
@@ -23,7 +23,8 @@ export class StackPageTitle extends Component<IProps> {
         const prevTitle = prevProps.title;
         const currTitle = this.props.title;
 
-        if (isValidElement(prevTitle) && isValidElement(currTitle) && isEqual(prevTitle.props, currTitle.props)) {
+        // Titles are arbitrary React nodes, whose props can contain circular references
+        if (isValidElement(prevTitle) && isValidElement(currTitle) && circularDeepEqual(prevTitle.props, currTitle.props)) {
             return;
         }
 

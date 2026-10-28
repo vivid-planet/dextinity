@@ -1,4 +1,4 @@
-import type { BlockFactoryNameOrOptions } from "./types";
+import type { BlockFactoryNameOrOptions } from "./types.js";
 
 export function withDefaultDescription(nameOrOptions: BlockFactoryNameOrOptions, description: string): Exclude<BlockFactoryNameOrOptions, string> {
     if (typeof nameOrOptions === "string") {

@@ -2,11 +2,13 @@ import { Editor, type JSONContent } from "@tiptap/core";
 import { describe, expect, it, vi } from "vitest";
 
 import { render } from "../../testing/test-utils";
+import type { BlockContext } from "../context/BlockContext";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "../types";
 import {
     buildTipTapExtensions,
     createTipTapRichTextBlock,
+    isTipTapRichTextEmpty,
     resolveTipTapOptions,
     type TipTapRichTextBlockFactoryOptions,
     type TipTapRichTextBlockState,
@@ -106,11 +108,14 @@ describe("createTipTapRichTextBlock", () => {
                     resolvedOptions: resolveTipTapOptions(options),
                     inlineStyles: [],
                     placeholders: [],
-                    childBlocks: {},
+                    childBlocks: options.childBlocks ?? {},
                     maxTextBlocks: options.maxTextBlocks,
                 }),
             });
         }
+
+        const pressKey = (editor: Editor, key: string) =>
+            editor.view.someProp("handleKeyDown", (handleKeyDown) => handleKeyDown(editor.view, new KeyboardEvent("keydown", { key })));
 
         const listItem = (text: string): JSONContent => ({
             type: "listItem",
@@ -122,12 +127,42 @@ describe("createTipTapRichTextBlock", () => {
             expect(editor.schema.topNodeType.contentMatch.defaultType?.name).toBe("textBlock");
         });
 
-        it.each(["orderedList", "bulletList"])("should end content ending with an %s with an empty default text block", (listType) => {
+        it.each(["orderedList", "bulletList"])("should not add an empty text block after an %s at the end of the content", (listType) => {
             const editor = createEditor();
 
             editor.commands.setContent({ type: "doc", content: [{ type: listType, content: [listItem("item")] }] });
 
-            expect(editor.state.doc.lastChild?.toJSON()).toEqual({ type: "textBlock", attrs: { textBlock: "paragraph" } });
+            expect(editor.getJSON().content?.map((node) => node.type)).toEqual([listType]);
+        });
+
+        it.each(["orderedList", "bulletList"])(
+            "should delete an empty text block after an %s at the end of the content with Backspace",
+            (listType) => {
+                const editor = createEditor();
+                editor.commands.setContent({
+                    type: "doc",
+                    content: [
+                        { type: listType, content: [listItem("item")] },
+                        { type: "textBlock", attrs: { textBlock: "paragraph" } },
+                    ],
+                });
+                editor.commands.setTextSelection(editor.state.doc.content.size - 1);
+
+                pressKey(editor, "Backspace");
+
+                expect(editor.getJSON().content).toEqual([expect.objectContaining({ type: listType, content: [listItem("item")] })]);
+            },
+        );
+
+        it.each(["orderedList", "bulletList"])("should leave an %s at the end of the content with Enter in its empty last item", (listType) => {
+            const editor = createEditor();
+            editor.commands.setContent({ type: "doc", content: [{ type: listType, content: [listItem("item")] }] });
+            editor.commands.setTextSelection(editor.state.doc.content.size - 3);
+
+            pressKey(editor, "Enter");
+            pressKey(editor, "Enter");
+
+            expect(editor.getJSON().content?.map((node) => node.type)).toEqual([listType, "textBlock"]);
         });
 
         it("should leave a single empty default text block after deleting all content", () => {
@@ -159,8 +194,30 @@ describe("createTipTapRichTextBlock", () => {
             expect(editor.getJSON()).toEqual({ type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "heading-2" } }] });
         });
 
-        const toggleList = (editor: Editor, listType: "orderedList" | "bulletList") =>
-            listType === "orderedList" ? editor.commands.toggleOrderedList() : editor.commands.toggleBulletList();
+        it("should drop a style the new text block doesn't offer when no text block has a defaultStyle", () => {
+            const style = { name: "copy100", label: "Copy 100", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
+            const editor = createEditor({
+                textBlocks: [
+                    { name: "paragraph", label: "Paragraph", tag: "p", styles: [style] },
+                    { name: "heading-1", label: "Heading 1", tag: "h1" },
+                ],
+            });
+            editor.commands.setContent({
+                type: "doc",
+                content: [
+                    { type: "textBlock", attrs: { textBlock: "paragraph", textBlockStyle: "copy100" }, content: [{ type: "text", text: "Title" }] },
+                    { type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Copy" }] },
+                ],
+            });
+            editor.commands.setTextSelection(1);
+
+            editor.commands.updateAttributes("textBlock", { textBlock: "heading-1" });
+
+            expect(editor.getJSON().content?.map((node) => node.attrs)).toEqual([
+                { textBlock: "heading-1", textBlockStyle: null },
+                { textBlock: "paragraph", textBlockStyle: null },
+            ]);
+        });
 
         const paragraph = (text: string): JSONContent => ({
             type: "textBlock",
@@ -168,27 +225,37 @@ describe("createTipTapRichTextBlock", () => {
             content: [{ type: "text", text }],
         });
 
-        it.each(["orderedList", "bulletList"] as const)(
-            "should not add an empty text block after the %s when it would exceed maxTextBlocks",
-            (listType) => {
-                const editor = createEditor({ maxTextBlocks: 2 });
-                editor.commands.setContent({ type: "doc", content: [paragraph("first"), paragraph("second")] });
-                editor.commands.setTextSelection(editor.state.doc.content.size - 1);
+        const childBlock: BlockInterface = {
+            ...createBlockSkeleton(),
+            name: "Child",
+            displayName: "Child",
+            category: BlockCategory.Other,
+            defaultValues: () => ({}),
+            AdminComponent: () => null,
+            previewContent: () => [],
+        };
 
-                toggleList(editor, listType);
-
-                expect(editor.getJSON().content?.map((node) => node.type)).toEqual(["textBlock", listType]);
-            },
-        );
-
-        it.each(["orderedList", "bulletList"] as const)("should add an empty text block after the %s below maxTextBlocks", (listType) => {
-            const editor = createEditor({ maxTextBlocks: 2 });
-            editor.commands.setContent({ type: "doc", content: [paragraph("first")] });
+        const insertChildBlockAtEnd = (editor: Editor) => {
             editor.commands.setTextSelection(editor.state.doc.content.size - 1);
+            editor.commands.insertCmsBlock({ blockType: "child", data: {} });
+        };
 
-            toggleList(editor, listType);
+        it("should not add an empty text block after a child block when it would exceed maxTextBlocks", () => {
+            const editor = createEditor({ maxTextBlocks: 2, childBlocks: { child: { block: childBlock, display: "block" } } });
+            editor.commands.setContent({ type: "doc", content: [paragraph("first")] });
 
-            expect(editor.getJSON().content?.map((node) => node.type)).toEqual([listType, "textBlock"]);
+            insertChildBlockAtEnd(editor);
+
+            expect(editor.getJSON().content?.map((node) => node.type)).toEqual(["textBlock", "cmsBlock"]);
+        });
+
+        it("should add an empty text block after a child block below maxTextBlocks", () => {
+            const editor = createEditor({ maxTextBlocks: 3, childBlocks: { child: { block: childBlock, display: "block" } } });
+            editor.commands.setContent({ type: "doc", content: [paragraph("first")] });
+
+            insertChildBlockAtEnd(editor);
+
+            expect(editor.getJSON().content?.map((node) => node.type)).toEqual(["textBlock", "cmsBlock", "textBlock"]);
         });
     });
 
@@ -214,6 +281,58 @@ describe("createTipTapRichTextBlock", () => {
 
             expect(editor.getJSON().content).toEqual([paragraph("first"), paragraph("second")]);
             expect(updateState).toHaveBeenLastCalledWith({ tipTapContent: { type: "doc", content: [paragraph("first"), paragraph("second")] } });
+        });
+    });
+
+    describe("previewContent", () => {
+        const block = createTipTapRichTextBlock({});
+        const previewContent = (content: JSONContent[]) => block.previewContent({ tipTapContent: { type: "doc", content } }, {} as BlockContext);
+        const textBlock = (content: JSONContent[]): JSONContent => ({ type: "textBlock", attrs: { textBlock: "paragraph" }, content });
+
+        it("should separate text blocks with a space instead of joining them directly", () => {
+            expect(previewContent([textBlock([{ type: "text", text: "First" }]), textBlock([{ type: "text", text: "Second" }])])).toEqual([
+                { type: "text", content: "First Second" },
+            ]);
+        });
+
+        it("should separate list items with a space", () => {
+            const listItem = (text: string): JSONContent => ({ type: "listItem", content: [textBlock([{ type: "text", text }])] });
+            expect(previewContent([{ type: "bulletList", content: [listItem("First"), listItem("Second")] }])).toEqual([
+                { type: "text", content: "First Second" },
+            ]);
+        });
+
+        it("should replace a hard break with a space", () => {
+            expect(previewContent([textBlock([{ type: "text", text: "First" }, { type: "hardBreak" }, { type: "text", text: "Second" }])])).toEqual([
+                { type: "text", content: "First Second" },
+            ]);
+        });
+
+        it("should keep the marked parts of a line together", () => {
+            expect(
+                previewContent([
+                    textBlock([
+                        { type: "text", text: "un" },
+                        { type: "text", marks: [{ type: "bold" }], text: "believ" },
+                        { type: "text", text: "able" },
+                    ]),
+                ]),
+            ).toEqual([{ type: "text", content: "unbelievable" }]);
+        });
+
+        it("should skip empty lines instead of adding extra spaces", () => {
+            expect(
+                previewContent([
+                    textBlock([{ type: "text", text: "First" }]),
+                    textBlock([]),
+                    textBlock([{ type: "text", text: "  " }]),
+                    textBlock([{ type: "text", text: "Second" }]),
+                ]),
+            ).toEqual([{ type: "text", content: "First Second" }]);
+        });
+
+        it("should return no preview for empty content", () => {
+            expect(previewContent([textBlock([])])).toEqual([]);
         });
     });
 
@@ -419,5 +538,34 @@ describe("createTipTapRichTextBlock", () => {
 
             await expect(translateBlockContent(block, state, corruptingTranslate)).rejects.toThrow(/placeholder id/);
         });
+    });
+});
+
+describe("isTipTapRichTextEmpty", () => {
+    const doc = (...content: JSONContent[]): JSONContent => ({ type: "doc", content });
+
+    it("should treat the default value of a block as empty", () => {
+        expect(isTipTapRichTextEmpty(createTipTapRichTextBlock().defaultValues().tipTapContent)).toBe(true);
+    });
+
+    it("should treat several text blocks without text as empty", () => {
+        expect(isTipTapRichTextEmpty(doc({ type: "textBlock", attrs: { textBlock: "heading-1" } }, { type: "textBlock" }))).toBe(true);
+    });
+
+    it("should not treat a document with text in a nested list item as empty", () => {
+        const listItem: JSONContent = { type: "listItem", content: [{ type: "textBlock", content: [{ type: "text", text: "item" }] }] };
+        expect(isTipTapRichTextEmpty(doc({ type: "textBlock" }, { type: "bulletList", content: [listItem] }))).toBe(false);
+    });
+
+    it("should not treat a document with only whitespace as empty, like isRichTextEmpty", () => {
+        expect(isTipTapRichTextEmpty(doc({ type: "textBlock", content: [{ type: "text", text: " " }] }))).toBe(false);
+    });
+
+    it.each(["nonBreakingSpace", "softHyphen"])("should not treat a document with only a %s as empty", (type) => {
+        expect(isTipTapRichTextEmpty(doc({ type: "textBlock", content: [{ type }] }))).toBe(false);
+    });
+
+    it("should not treat a document with only a child block as empty", () => {
+        expect(isTipTapRichTextEmpty(doc({ type: "cmsBlock", attrs: { blockType: "image", data: {} } }))).toBe(false);
     });
 });

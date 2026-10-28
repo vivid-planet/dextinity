@@ -1,7 +1,7 @@
 import { IsOptional, IsString } from "class-validator";
 
-import { BlockData, BlockInput, blockInputToData, createBlock } from "../../blocks/block";
-import { BlockField } from "../../blocks/decorators/field";
+import { BlockData, BlockInput, blockInputToData, createBlock } from "../../blocks/block.js";
+import { BlockField } from "../../blocks/decorators/field.js";
 
 class AnchorBlockData extends BlockData {
     @BlockField({ nullable: true })

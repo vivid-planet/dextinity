@@ -1,9 +1,10 @@
-import { CreateRequestContext, MikroORM } from "@mikro-orm/core";
+import { MikroORM } from "@mikro-orm/core";
+import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { Logger } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
-import { MailTemplateInterface } from "./mail-template.decorator";
-import { MailTemplateService } from "./mail-template.service";
+import type { MailTemplateInterface } from "./mail-template.decorator.js";
+import { MailTemplateService } from "./mail-template.service.js";
 
 @Command({
     name: "mail-template:test",

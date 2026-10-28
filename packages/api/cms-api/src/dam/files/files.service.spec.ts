@@ -1,10 +1,18 @@
-import type { EntityRepository, MikroORM, QueryBuilder } from "@mikro-orm/postgresql";
+import { Entity, PrimaryKey } from "@mikro-orm/decorators/legacy";
+import type { EntityManager, MikroORM, QueryBuilder } from "@mikro-orm/postgresql";
 import { Logger } from "@nestjs/common";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { FileFilterInput } from "./dto/file.args";
-import type { FileInterface } from "./entities/file.entity";
-import { FilesService } from "./files.service";
+import type { FileFilterInput } from "./dto/file.args.js";
+import type { FileInterface } from "./entities/file.entity.js";
+import { FilesService } from "./files.service.js";
+
+// Decorating a stand-in entity registers "DamFile" in MikroORM's metadata, which is all `resolveFileEntity()` needs.
+@Entity({ tableName: "DamFile" })
+class DamFile {
+    @PrimaryKey({ columnType: "uuid" })
+    id!: string;
+}
 
 const FOLDER_ID = "11111111-1111-1111-1111-111111111111";
 const FILE_ID_A = "22222222-2222-2222-2222-222222222222";
@@ -29,23 +37,21 @@ function createServiceWithMockQueryBuilder() {
         getCount: vi.fn().mockResolvedValue(0),
     };
 
-    const filesRepository = {
-        createQueryBuilder: vi.fn().mockReturnValue(mockQb),
-    } as unknown as EntityRepository<FileInterface>;
+    const entityManager = {
+        createQueryBuilder: vi.fn((entity) => (entity === DamFile ? mockQb : undefined)),
+    } as unknown as EntityManager;
 
     const service = new FilesService(
-        filesRepository,
-        null as never, // damMediaAlternativesRepository
         null as never, // blobStorageBackendService
         null as never, // foldersService
         null as never, // DAM_CONFIG
         null as never, // orm
-        null as never, // entityManager
+        entityManager,
         null as never, // dominantColorCalculator
     );
 
     const hasFolderConstraint = () =>
-        andWhereArgs.some((arg) => typeof arg === "object" && arg !== null && "folder" in (arg as Record<string, unknown>));
+        andWhereArgs.some((arg) => typeof arg === "object" && arg !== null && "folder" in (arg as unknown as Record<string, unknown>));
 
     return { service, andWhereArgs, hasFolderConstraint };
 }
@@ -132,8 +138,6 @@ describe("FilesService.saveDominantColor", () => {
         const orm = { em: { fork: () => entityManager } } as unknown as MikroORM;
 
         const service = new FilesService(
-            null as never, // filesRepository
-            null as never, // damMediaAlternativesRepository
             null as never, // blobStorageBackendService
             null as never, // foldersService
             null as never, // DAM_CONFIG

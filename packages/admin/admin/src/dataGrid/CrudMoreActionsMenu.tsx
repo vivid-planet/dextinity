@@ -40,15 +40,14 @@ interface ActionItem extends ComponentProps<typeof MenuItem> {
     icon?: ReactNode;
 }
 
-export interface CrudMoreActionsMenuProps
-    extends ThemedComponentBaseProps<{
-        menu: typeof Menu;
-        menuItem: typeof MenuItem;
-        button: typeof Button;
-        group: typeof CrudMoreActionsGroup;
-        divider: typeof Divider;
-        chip: typeof Chip;
-    }> {
+export interface CrudMoreActionsMenuProps extends ThemedComponentBaseProps<{
+    menu: typeof Menu;
+    menuItem: typeof MenuItem;
+    button: typeof Button;
+    group: typeof CrudMoreActionsGroup;
+    divider: typeof Divider;
+    chip: typeof Chip;
+}> {
     selectionSize?: number;
     overallActions?: Maybe<ActionItem | ReactElement>[];
     selectiveActions?: Maybe<ActionItem | ReactElement>[];

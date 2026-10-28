@@ -187,6 +187,7 @@ export class AppModule {
                         filesDirectory: `${config.blob.storageDirectoryPrefix}-files`,
                         maxFileSize: config.dam.uploadsMaxFileSize,
                         maxSrcResolution: config.dam.maxSrcResolution,
+                        includeFormatExtensionInImageUrls: true,
                     },
                     Scope: DamScope,
                     File: DamFile,

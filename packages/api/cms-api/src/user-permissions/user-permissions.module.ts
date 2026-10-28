@@ -1,27 +1,27 @@
 import { DiscoveryModule } from "@golevelup/nestjs-discovery";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
-import { DynamicModule, Global, Module, Provider } from "@nestjs/common";
+import { type DynamicModule, Global, Module, type Provider } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { registerEnumType } from "@nestjs/graphql";
 
-import { UserPermissionsGuard } from "./auth/user-permissions.guard";
-import { ContentScopeService } from "./content-scope.service";
-import { UserContentScopes } from "./entities/user-content-scopes.entity";
-import { UserPermission } from "./entities/user-permission.entity";
-import { UserResolver } from "./user.resolver";
-import { UserContentScopesResolver } from "./user-content-scopes.resolver";
-import { UserPermissionResolver } from "./user-permission.resolver";
-import { ACCESS_CONTROL_SERVICE, USER_PERMISSIONS_OPTIONS, USER_PERMISSIONS_USER_SERVICE } from "./user-permissions.constants";
-import { UserPermissionsPublicService } from "./user-permissions.public.service";
-import { UserPermissionsService } from "./user-permissions.service";
+import { UserPermissionsGuard } from "./auth/user-permissions.guard.js";
+import { ContentScopeService } from "./content-scope.service.js";
+import { UserContentScopes } from "./entities/user-content-scopes.entity.js";
+import { UserPermission } from "./entities/user-permission.entity.js";
+import { UserResolver } from "./user.resolver.js";
+import { UserContentScopesResolver } from "./user-content-scopes.resolver.js";
+import { UserPermissionResolver } from "./user-permission.resolver.js";
+import { ACCESS_CONTROL_SERVICE, USER_PERMISSIONS_OPTIONS, USER_PERMISSIONS_USER_SERVICE } from "./user-permissions.constants.js";
+import { UserPermissionsPublicService } from "./user-permissions.public.service.js";
+import { UserPermissionsService } from "./user-permissions.service.js";
 import {
     CombinedPermission,
     registerAdditionalPermissions,
-    UserPermissionsAsyncOptions,
-    UserPermissionsModuleAsyncOptions,
-    UserPermissionsModuleSyncOptions,
-    UserPermissionsOptionsFactory,
-} from "./user-permissions.types";
+    type UserPermissionsAsyncOptions,
+    type UserPermissionsModuleAsyncOptions,
+    type UserPermissionsModuleSyncOptions,
+    type UserPermissionsOptionsFactory,
+} from "./user-permissions.types.js";
 
 @Global()
 @Module({

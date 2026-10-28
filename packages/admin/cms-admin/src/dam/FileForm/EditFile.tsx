@@ -18,7 +18,7 @@ import {
 import { Card, CardContent, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { format } from "date-fns";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { type ReactNode, useCallback } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Link as RouterLink } from "react-router-dom";
@@ -192,7 +192,7 @@ const EditFileInner = ({ file, id, contentScopeIndicator }: EditFileInnerProps) 
                     durationTo: file.license?.durationTo ? format(new Date(file.license.durationTo), "yyyy-MM-dd") : undefined,
                 },
             }}
-            initialValuesEqual={(prevValues, newValues) => isEqual(prevValues, newValues)}
+            initialValuesEqual={(prevValues, newValues) => deepEqual(prevValues, newValues)}
         >
             {() => (
                 <>

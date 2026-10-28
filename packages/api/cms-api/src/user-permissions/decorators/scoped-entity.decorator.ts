@@ -1,7 +1,7 @@
 import type { AnyEntity } from "@mikro-orm/postgresql";
 import { type CustomDecorator, SetMetadata, type Type } from "@nestjs/common";
 
-import type { ContentScope } from "../../user-permissions/interfaces/content-scope.interface";
+import type { ContentScope } from "../../user-permissions/interfaces/content-scope.interface.js";
 
 type EntityScopeFunction<Entity extends AnyEntity = AnyEntity> = (
     item: Entity,
@@ -29,9 +29,7 @@ export type SingleEntityScopeMapping = string | Record<string, string>;
 export type EntityScopeMapping = SingleEntityScopeMapping | SingleEntityScopeMapping[];
 
 export type ScopedEntityMeta<Entity extends AnyEntity = AnyEntity> =
-    | EntityScopeFunction<Entity>
-    | Type<EntityScopeServiceInterface<Entity>>
-    | EntityScopeMapping;
+    EntityScopeFunction<Entity> | Type<EntityScopeServiceInterface<Entity>> | EntityScopeMapping;
 
 export const SCOPED_ENTITY_METADATA_KEY = "scopedEntity";
 

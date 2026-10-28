@@ -8,8 +8,8 @@ import { renderMailHtml } from "../../../server/renderMailHtml.js";
 import { MjmlImage } from "../MjmlImage.js";
 
 describe("MjmlImage", () => {
-    it("writes borderRadius into the style attribute of the compiled <img>", () => {
-        const { html } = renderMailHtml(
+    it("writes borderRadius into the style attribute of the compiled <img>", async () => {
+        const { html } = await renderMailHtml(
             <MjmlMailRoot>
                 <MjmlSection>
                     <MjmlColumn>
@@ -22,22 +22,22 @@ describe("MjmlImage", () => {
         expect(findImageTag(html)).toContain("border-radius:8px");
     });
 
-    it("gives classic Outlook a VML shape and hides the image from it", () => {
-        const html = renderRoundedImage({ width: 536, height: 301 });
+    it("gives classic Outlook a VML shape and hides the image from it", async () => {
+        const html = await renderRoundedImage({ width: 536, height: 301 });
 
         expect(html).toMatch(/<!--\[if mso\]><tr><td[^>]*style="padding:0;font-size:0"[^>]*><v:roundrect/);
         expect(html).toContain('<!--[if !mso]><!--><tr><td align="center" class="mjmlImage"');
         expect(html).toContain("<!--<![endif]-->");
     });
 
-    it("keeps the image clickable in Outlook, where the surrounding link is hidden", () => {
-        const html = renderRoundedImage({ width: 536, height: 301, href: "https://example.com" });
+    it("keeps the image clickable in Outlook, where the surrounding link is hidden", async () => {
+        const html = await renderRoundedImage({ width: 536, height: 301, href: "https://example.com" });
 
         expect(html).toMatch(/<v:roundrect[^>]*href="https:\/\/example.com"/);
     });
 
-    it("leaves the markup untouched when the height is unknown", () => {
-        const html = renderRoundedImage({ width: 536 });
+    it("leaves the markup untouched when the height is unknown", async () => {
+        const html = await renderRoundedImage({ width: 536 });
 
         expect(html).not.toContain("v:roundrect");
         expect(html).not.toContain("<!--[if !mso]><!-->");
@@ -45,8 +45,8 @@ describe("MjmlImage", () => {
 });
 
 /** Returns the rendered `<body>`, so assertions can't match MJML's own conditional comments in the `<head>`. */
-function renderRoundedImage(imageProps: Partial<ComponentProps<typeof MjmlImage>>): string {
-    const { html } = renderMailHtml(
+async function renderRoundedImage(imageProps: Partial<ComponentProps<typeof MjmlImage>>): Promise<string> {
+    const { html } = await renderMailHtml(
         <MjmlMailRoot>
             <MjmlSection>
                 <MjmlColumn>

@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import type { Block } from "../../block";
-import { resolveTipTapOptions } from "../createTipTapRichTextBlock";
-import { assertDraftJsHeadingsAreUnambiguous, buildStrippedTipTapDoc, convertDraftJsToTipTap, type DraftJsContent } from "./convertDraftJsToTipTap";
+import type { Block } from "../../block.js";
+import { resolveTipTapOptions } from "../createTipTapRichTextBlock.js";
+import {
+    assertDraftJsHeadingsAreUnambiguous,
+    buildStrippedTipTapDoc,
+    convertDraftJsToTipTap,
+    type DraftJsContent,
+} from "./convertDraftJsToTipTap.js";
 
 const allEnabled = resolveTipTapOptions({ underline: true });
 const allDisabled = resolveTipTapOptions({
@@ -1012,6 +1017,80 @@ describe("convertDraftJsToTipTap", () => {
                 { resolvedOptions: { ...allDisabled, nonBreakingSpace: true } },
             );
             expect(result.content?.[0].content).toEqual([{ type: "text", text: "a" }, { type: "nonBreakingSpace" }, { type: "text", text: "b­c" }]);
+        });
+    });
+
+    describe("soft line breaks", () => {
+        it("converts a newline into a hardBreak node", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "unstyled", text: "First line\nSecond line" })], entityMap: {} },
+                { resolvedOptions: allEnabled },
+            );
+            expect(result.content?.[0].content).toEqual([
+                { type: "text", text: "First line" },
+                { type: "hardBreak" },
+                { type: "text", text: "Second line" },
+            ]);
+        });
+
+        it("converts a newline when all optional features are disabled", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "unstyled", text: "a\nb" })], entityMap: {} },
+                { resolvedOptions: allDisabled },
+            );
+            expect(result.content?.[0].content).toEqual([{ type: "text", text: "a" }, { type: "hardBreak" }, { type: "text", text: "b" }]);
+        });
+
+        it("keeps the marks of a style and a link spanning the line break on both sides", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({
+                            type: "unstyled",
+                            text: "ab\ncd",
+                            inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 4 }],
+                            entityRanges: [{ key: 0, offset: 1, length: 4 }],
+                        }),
+                    ],
+                    entityMap: { "0": { type: "LINK", mutability: "MUTABLE", data: { href: "https://example.com" } } },
+                },
+                { resolvedOptions: allEnabled, link: dummyLinkBlock },
+            );
+            const linkMark = { type: "link", attrs: { data: { href: "https://example.com" } } };
+            expect(result.content?.[0].content).toEqual([
+                { type: "text", text: "a", marks: [{ type: "bold" }] },
+                { type: "text", text: "b", marks: [{ type: "bold" }, linkMark] },
+                { type: "hardBreak" },
+                { type: "text", text: "c", marks: [{ type: "bold" }, linkMark] },
+                { type: "text", text: "d", marks: [linkMark] },
+            ]);
+        });
+
+        it("emits no empty text nodes for leading, trailing and consecutive newlines", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "unstyled", text: "\na\n\nb\n" })], entityMap: {} },
+                { resolvedOptions: allEnabled },
+            );
+            expect(result.content?.[0].content).toEqual([
+                { type: "hardBreak" },
+                { type: "text", text: "a" },
+                { type: "hardBreak" },
+                { type: "hardBreak" },
+                { type: "text", text: "b" },
+                { type: "hardBreak" },
+            ]);
+        });
+
+        it("converts a newline within a list item", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "unordered-list-item", text: "a\nb" })], entityMap: {} },
+                { resolvedOptions: allEnabled },
+            );
+            expect(result.content?.[0].content?.[0].content?.[0].content).toEqual([
+                { type: "text", text: "a" },
+                { type: "hardBreak" },
+                { type: "text", text: "b" },
+            ]);
         });
     });
 

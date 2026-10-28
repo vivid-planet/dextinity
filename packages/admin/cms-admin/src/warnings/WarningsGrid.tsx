@@ -18,7 +18,7 @@ import {
 import { Chip } from "@mui/material";
 import type { GridFilterModel } from "@mui/x-data-grid";
 import { capitalCase } from "change-case";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { useContentScope } from "../contentScope/Provider";
@@ -47,6 +47,7 @@ const warningsFragment = gql`
         entityInfo {
             name
             secondaryInformation
+            visible
         }
         scope
     }
@@ -84,7 +85,7 @@ export interface WarningsGridProps {
 export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
     const intl = useIntl();
     const dataGridProps = {
-        ...useDataGridRemote({ initialFilter: { items: [{ field: "status", operator: "is", value: "open" }] } }),
+        ...useDataGridRemote({ initialFilter: { items: [{ field: "visible", operator: "is", value: true }] } }),
         ...usePersistentColumnState("WarningsGrid"),
     };
     const { messages: warningMessages } = useWarningsConfig();
@@ -148,6 +149,14 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
             valueGetter: (params, row) => row.entityInfo?.secondaryInformation,
         },
         {
+            field: "visible",
+            headerName: intl.formatMessage({ id: "dextinity.warning.visible", defaultMessage: "Visible" }),
+            type: "boolean",
+            width: 100,
+            // Matches the API: warnings of entities without an EntityInfo count as visible.
+            valueGetter: (params, row) => row.entityInfo?.visible ?? true,
+        },
+        {
             field: "type",
             headerName: intl.formatMessage({ id: "dextinity.warning.type", defaultMessage: "Type" }),
             type: "singleSelect",
@@ -179,7 +188,7 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
                 if (typeof value === "object" && value !== null) {
                     // Check if there is a scope value in the options, if so, return the label
                     const scope = scopeValueOptions.find((scope) => {
-                        return isEqual(JSON.parse(scope.value), value);
+                        return deepEqual(JSON.parse(scope.value), value);
                     });
                     if (scope) {
                         return scope.label;

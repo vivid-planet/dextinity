@@ -1,12 +1,12 @@
 import { IsOptional, IsString } from "class-validator";
 
-import { BaseVideoBlockData, BaseVideoBlockInput } from "../base-video-block";
-import { BlockDataInterface, blockInputToData, createBlock } from "../block";
-import { BlockField } from "../decorators/field";
-import { typeSafeBlockMigrationPipe } from "../migrations/typeSafeBlockMigrationPipe";
-import { IsValidYouTubeIdentifier } from "../validator/is-valid-you-tube-identifier";
-import { RemoveAspectRatioMigration } from "./migrations/1-remove-aspect-ratio.migration";
-import { AddPreviewImageMigration } from "./migrations/2-add-preview-image.migration";
+import { BaseVideoBlockData, BaseVideoBlockInput } from "../base-video-block.js";
+import { type BlockDataInterface, blockInputToData, createBlock } from "../block.js";
+import { BlockField } from "../decorators/field.js";
+import { typeSafeBlockMigrationPipe } from "../migrations/typeSafeBlockMigrationPipe.js";
+import { IsValidYouTubeIdentifier } from "../validator/is-valid-you-tube-identifier.js";
+import { RemoveAspectRatioMigration } from "./migrations/1-remove-aspect-ratio.migration.js";
+import { AddPreviewImageMigration } from "./migrations/2-add-preview-image.migration.js";
 
 class YouTubeVideoBlockData extends BaseVideoBlockData {
     @BlockField({ nullable: true })

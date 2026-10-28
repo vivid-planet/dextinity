@@ -5,6 +5,7 @@ const port = parseInt(process.env.SITE_PORT || "3000", 10);
 
 const envToDomainMap: Record<Environment, string> = {
     local: `${host}:${port}`,
+    digitalocean: "demo.digitalocean.dextinity.com",
 };
 
 export default ((env) => {

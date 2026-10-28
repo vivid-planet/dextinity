@@ -1,6 +1,6 @@
 import type { V1ObjectMeta } from "@kubernetes/client-node";
 
-import { LABEL_PREFIX, LEGACY_LABEL_PREFIX } from "./kubernetes.constants";
+import { LABEL_PREFIX, LEGACY_LABEL_PREFIX } from "./kubernetes.constants.js";
 
 type KubernetesResource = { metadata?: V1ObjectMeta };
 

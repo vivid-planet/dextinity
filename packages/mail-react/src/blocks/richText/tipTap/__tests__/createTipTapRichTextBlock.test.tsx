@@ -169,7 +169,7 @@ describe("createTipTapRichTextBlock", () => {
         expect(getListItemClassOf(markup, "Child")).toContain("bodyText");
     });
 
-    it("leaves no `mj-text` tag in the compiled mail for a nested list", () => {
+    it("leaves no `mj-text` tag in the compiled mail for a nested list", async () => {
         const { MjmlTipTapRichTextBlock } = createTipTapRichTextBlock();
         const data = createBlockData([
             {
@@ -177,7 +177,7 @@ describe("createTipTapRichTextBlock", () => {
                 content: [{ type: "listItem", content: [createParagraph("Parent"), { type: "bulletList", content: [createListItem("Child")] }] }],
             },
         ]);
-        const { html } = renderMailHtml(
+        const { html } = await renderMailHtml(
             <MjmlMailRoot>
                 <MjmlSection indent>
                     <MjmlColumn>

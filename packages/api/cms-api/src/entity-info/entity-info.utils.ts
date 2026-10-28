@@ -1,6 +1,6 @@
 import type { AnyEntity } from "@mikro-orm/postgresql";
 
-import type { EntityInfo, EntityInfoSql } from "./entity-info.decorator";
+import type { EntityInfo, EntityInfoSql } from "./entity-info.decorator.js";
 
 export function isEntityInfoSql(entityInfo: EntityInfo<AnyEntity>): entityInfo is EntityInfoSql {
     return typeof entityInfo === "object" && "sql" in entityInfo;

@@ -1,6 +1,6 @@
 import { Node as ProseMirrorNode, type Schema } from "@tiptap/pm/model";
 
-import type { TipTapResolvedList, TipTapResolvedTextBlock } from "./textBlocks";
+import type { TipTapResolvedList, TipTapResolvedTextBlock } from "./textBlocks.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TipTapContent = Record<string, any>;

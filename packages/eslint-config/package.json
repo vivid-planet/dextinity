@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/eslint-config",
-    "version": "10.9.1",
+    "version": "10.10.0",
     "description": "A set of ESLint configurations for Dextinity projects",
     "repository": {
         "directory": "packages/eslint-config",
@@ -42,14 +42,13 @@
         "lint:prettier": "pnpm exec prettier --check '*.{ts,js,json,md,yml,yaml}'"
     },
     "dependencies": {
-        "@calm/eslint-plugin-react-intl": "^1.4.1",
         "@dextinity/eslint-plugin": "workspace:*",
         "@eslint/eslintrc": "^3.3.7",
         "@eslint/js": "^9.39.5",
         "@graphql-eslint/eslint-plugin": "^4.4.1",
         "@next/eslint-plugin-next": "^16.3.8",
         "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-formatjs": "^5.4.2",
+        "eslint-plugin-formatjs": "^8.0.5",
         "eslint-plugin-import": "^2.32.0",
         "eslint-plugin-jsonc": "^2.21.1",
         "eslint-plugin-package-json": "^0.91.2",
@@ -58,14 +57,14 @@
         "eslint-plugin-react-hooks": "^5.2.0",
         "eslint-plugin-simple-import-sort": "^12.1.1",
         "eslint-plugin-unused-imports": "^4.4.1",
-        "globals": "^15.15.0",
-        "npm-run-all2": "^8.0.4",
-        "typescript-eslint": "^8.71.0"
+        "globals": "^17.13.0",
+        "typescript-eslint": "^8.71.2"
     },
     "devDependencies": {
         "eslint": "^9.39.5",
-        "prettier": "^3.6.2",
-        "typescript": "^5.9.3"
+        "npm-run-all2": "^9.0.3",
+        "prettier": "^3.9.10",
+        "typescript": "^6.0.3"
     },
     "peerDependencies": {
         "eslint": ">=9",
@@ -77,7 +76,7 @@
         }
     },
     "engines": {
-        "node": ">=22.0.0"
+        "node": ">=24.15.0"
     },
     "publishConfig": {
         "access": "public",

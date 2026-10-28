@@ -3,7 +3,7 @@ import console from "node:console";
 import { type ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { watch } from "chokidar";
 
-import { handleChildProcess } from "./handleChildProcess";
+import { handleChildProcess } from "./handleChildProcess.js";
 
 const waitForExit = (proc: ReturnType<typeof spawn>) => {
     return new Promise<{ code: number | null; signal: NodeJS.Signals | null }>((resolve) => {

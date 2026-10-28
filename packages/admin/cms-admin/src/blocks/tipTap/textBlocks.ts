@@ -40,7 +40,7 @@ export interface TipTapTextBlockStyle {
  * from, or - for one that needs no style choice - through a single `element` of its own. The two
  * exclude each other, and leaving both out renders the plain tag.
  */
-export type TipTapStyling =
+type TipTapStyling =
     | {
           styles: TipTapTextBlockStyle[];
           /**
@@ -54,7 +54,7 @@ export type TipTapStyling =
     | { element: TipTapTextBlockElement; styles?: never; defaultStyle?: never }
     | { styles?: never; element?: never; defaultStyle?: never };
 
-export interface TipTapTextBlockBase {
+interface TipTapTextBlockBase {
     /**
      * Identifies the text block. Stored in the content's `textBlock` attribute, so content can tell
      * two text blocks sharing a tag apart (e.g. a lead paragraph next to a regular one).

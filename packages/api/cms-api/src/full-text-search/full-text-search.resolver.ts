@@ -1,15 +1,15 @@
-import { EntityManager, FilterQuery } from "@mikro-orm/postgresql";
+import { EntityManager, type FilterQuery } from "@mikro-orm/postgresql";
 import { Args, Int, Query, Resolver } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
 
-import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
-import { RequestContext, type RequestContextInterface } from "../common/decorators/request-context.decorator";
-import { EntityInfoObject } from "../entity-info/entity-info.object";
-import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
-import { CurrentUser } from "../user-permissions/dto/current-user";
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { PaginatedEntityInfo } from "./dto/paginated-entity-info";
-import { EntityInfoFullTextObject } from "./entities/entity-info-full-text.object";
+import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator.js";
+import { RequestContext, type RequestContextInterface } from "../common/decorators/request-context.decorator.js";
+import { EntityInfoObject } from "../entity-info/entity-info.object.js";
+import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { CurrentUser } from "../user-permissions/dto/current-user.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { PaginatedEntityInfo } from "./dto/paginated-entity-info.js";
+import { EntityInfoFullTextObject } from "./entities/entity-info-full-text.object.js";
 
 @Resolver(() => EntityInfoObject)
 @RequiredPermission("fullTextSearch", { skipScopeCheck: true })

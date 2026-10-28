@@ -1,6 +1,6 @@
 import { type ApolloError, gql, type TypedDocumentNode, useApolloClient, useQuery } from "@apollo/client";
 import { messages, SaveButton } from "@dextinity/admin";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import {
     type ComponentProps,
     createElement,
@@ -205,7 +205,7 @@ export const createUsePage: CreateUsePage =
 
             try {
                 if (pageState) {
-                    hasChanges = !isEqual(referenceOutput, generateOutput(pageState));
+                    hasChanges = !deepEqual(referenceOutput, generateOutput(pageState));
                 }
             } catch {
                 // Can't generate the output. This is likely to be caused by adding new blocks which have an invalid output upon creation (for instance

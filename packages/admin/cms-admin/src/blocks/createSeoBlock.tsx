@@ -168,7 +168,6 @@ export function createSeoBlock(
                                 generateSeoTag={generateSeoTag}
                                 multiline
                                 rows={3}
-                                rowsMax={5}
                                 component={FinalFormInput}
                                 fullWidth
                             />
@@ -198,7 +197,6 @@ export function createSeoBlock(
                                 generateSeoTag={generateSeoTag}
                                 multiline={true}
                                 rows={3}
-                                rowsMax={5}
                                 component={FinalFormInput}
                                 fullWidth
                             />
@@ -351,8 +349,10 @@ export function createSeoBlock(
 }
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-interface FieldWithContentGenerationProps<FieldValue = any, FieldElement extends HTMLElement = HTMLElement>
-    extends FieldProps<FieldValue, FieldElement> {
+interface FieldWithContentGenerationProps<FieldValue = any, FieldElement extends HTMLElement = HTMLElement> extends FieldProps<
+    FieldValue,
+    FieldElement
+> {
     name: SeoTag;
     generateSeoTag: (tag: SeoTag, currentValue: string | undefined) => Promise<string>;
 }

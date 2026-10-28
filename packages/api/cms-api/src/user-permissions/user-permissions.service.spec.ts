@@ -1,14 +1,13 @@
 import type { DiscoveryService } from "@golevelup/nestjs-discovery";
 import { createMock } from "@golevelup/ts-vitest";
-import type { EntityRepository } from "@mikro-orm/postgresql";
+import type { EntityManager } from "@mikro-orm/postgresql";
 import { describe, expect, it } from "vitest";
 
-import type { UserContentScopes } from "./entities/user-content-scopes.entity";
-import type { UserPermission } from "./entities/user-permission.entity";
-import type { ContentScope } from "./interfaces/content-scope.interface";
-import type { User } from "./interfaces/user";
-import { UserPermissionsService } from "./user-permissions.service";
-import { type AccessControlServiceInterface, UserPermissions, type UserPermissionsOptions } from "./user-permissions.types";
+import type { UserContentScopes } from "./entities/user-content-scopes.entity.js";
+import type { ContentScope } from "./interfaces/content-scope.interface.js";
+import type { User } from "./interfaces/user.js";
+import { UserPermissionsService } from "./user-permissions.service.js";
+import { type AccessControlServiceInterface, UserPermissions, type UserPermissionsOptions } from "./user-permissions.types.js";
 
 const user: User = { id: "1", name: "User", email: "user@example.com" };
 
@@ -23,8 +22,7 @@ function createService(
         options,
         undefined,
         createMock<AccessControlServiceInterface>({ isAllowed: () => true, getContentScopesForUser }),
-        createMock<EntityRepository<UserPermission>>(),
-        createMock<EntityRepository<UserContentScopes>>({
+        createMock<EntityManager>({
             findOne: async () => (manualContentScopes ? ({ userId: user.id, contentScopes: manualContentScopes } as UserContentScopes) : null),
         }),
         createMock<DiscoveryService>(),
@@ -33,7 +31,7 @@ function createService(
 
 describe("UserPermissionsService", () => {
     describe("getAvailableContentScopeDimensions", () => {
-        it("returns the configured dimensions and falls back to the name for missing labels", async () => {
+        it("returns the configured dimensions and humanizes missing labels", async () => {
             const service = createService({
                 availableContentScopeDimensions: [{ name: "domain", label: "Domain" }, { name: "language" }, { name: "product" }],
             });
@@ -42,8 +40,8 @@ describe("UserPermissionsService", () => {
 
             expect(dimensions).toEqual([
                 { name: "domain", label: "Domain" },
-                { name: "language", label: "language" },
-                { name: "product", label: "product" },
+                { name: "language", label: "Language" },
+                { name: "product", label: "Product" },
             ]);
         });
 
@@ -54,7 +52,7 @@ describe("UserPermissionsService", () => {
 
             const dimensions = await service.getAvailableContentScopeDimensions();
 
-            expect(dimensions).toEqual([{ name: "domain", label: "domain" }]);
+            expect(dimensions).toEqual([{ name: "domain", label: "Domain" }]);
         });
 
         it("derives the dimensions from the available content scopes when not configured", async () => {
@@ -68,8 +66,8 @@ describe("UserPermissionsService", () => {
             const dimensions = await service.getAvailableContentScopeDimensions();
 
             expect(dimensions).toEqual([
-                { name: "domain", label: "domain" },
-                { name: "language", label: "language" },
+                { name: "domain", label: "Domain" },
+                { name: "language", label: "Language" },
             ]);
         });
 

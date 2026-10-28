@@ -1,13 +1,12 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, ArgsType, Field, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { IsString } from "class-validator";
 
-import { SkipBuild } from "../builds/skip-build.decorator";
-import { RequiredPermission } from "./decorators/required-permission.decorator";
-import { UserPermissionInput, UserPermissionOverrideContentScopesInput } from "./dto/user-permission.input";
-import { UserPermission, UserPermissionSource } from "./entities/user-permission.entity";
-import { UserPermissionsService } from "./user-permissions.service";
+import { SkipBuild } from "../builds/skip-build.decorator.js";
+import { RequiredPermission } from "./decorators/required-permission.decorator.js";
+import { UserPermissionInput, UserPermissionOverrideContentScopesInput } from "./dto/user-permission.input.js";
+import { UserPermission, UserPermissionSource } from "./entities/user-permission.entity.js";
+import { UserPermissionsService } from "./user-permissions.service.js";
 
 @ArgsType()
 class UserPermissionListArgs {
@@ -21,7 +20,6 @@ class UserPermissionListArgs {
 export class UserPermissionResolver {
     constructor(
         private readonly service: UserPermissionsService,
-        @InjectRepository(UserPermission) private readonly permissionRepository: EntityRepository<UserPermission>,
         private readonly entityManager: EntityManager,
     ) {}
 
@@ -48,7 +46,7 @@ export class UserPermissionResolver {
         await this.service.findUserOrThrow(userId); //validate user exists
         permission.userId = userId;
         permission.assign(input);
-        await this.entityManager.persistAndFlush(permission);
+        await this.entityManager.persist(permission).flush();
         return permission;
     }
 
@@ -65,14 +63,14 @@ export class UserPermissionResolver {
     ): Promise<UserPermission> {
         const permission = await this.getPermission(id);
         permission.assign(input);
-        await this.entityManager.persistAndFlush(permission);
+        await this.entityManager.persist(permission).flush();
         return permission;
     }
 
     @Mutation(() => Boolean)
     @SkipBuild()
     async userPermissionsDeletePermission(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
-        await this.entityManager.removeAndFlush(await this.getPermission(id));
+        await this.entityManager.remove(await this.getPermission(id)).flush();
         return true;
     }
 
@@ -83,12 +81,12 @@ export class UserPermissionResolver {
         const permission = await this.getPermission(input.permissionId);
         permission.overrideContentScopes = input.overrideContentScopes;
         permission.contentScopes = input.contentScopes;
-        await this.entityManager.persistAndFlush(permission);
+        await this.entityManager.persist(permission).flush();
         return permission;
     }
 
     async getPermission(id: string, userId?: string): Promise<UserPermission> {
-        const permission = await this.permissionRepository.findOne(id);
+        const permission = await this.entityManager.findOne(UserPermission, id);
         if (permission) {
             permission.source = UserPermissionSource.MANUAL;
             return permission;

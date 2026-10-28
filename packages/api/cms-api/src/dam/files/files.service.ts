@@ -1,5 +1,4 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, MikroORM, QueryBuilder, raw, Utils } from "@mikro-orm/postgresql";
+import { EntityManager, MikroORM, QueryBuilder, raw, Utils } from "@mikro-orm/postgresql";
 import { forwardRef, Inject, Injectable, Logger, Optional } from "@nestjs/common";
 import { createHmac } from "crypto";
 import exifr from "exifr";
@@ -8,36 +7,43 @@ import { basename, extname } from "path";
 import probe from "probe-image-size";
 import * as rimraf from "rimraf";
 
-import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service";
-import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util";
-import { DextinityEntityNotFoundException } from "../../common/errors/entity-not-found.exception";
-import { DextinityValidationException } from "../../common/errors/validation.exception";
-import { SortDirection } from "../../common/sorting/sort-direction.enum";
-import { FileUploadInput } from "../../file-utils/file-upload.input";
-import { calculateFileHash, slugifyFilename } from "../../file-utils/files.utils";
-import { FocalPoint } from "../../file-utils/focal-point.enum";
-import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
-import { DextinityImageResolutionException } from "../common/errors/image-resolution.exception";
-import { getDamFileCategory } from "../common/mimeTypes/dam-file-category";
-import { DamConfig } from "../dam.config";
-import { DAM_CONFIG, DAM_DOMINANT_COLOR_CALCULATOR } from "../dam.constants";
-import { DominantColorCalculatorInterface } from "../dominant-color-calculator.interface";
-import { ImageCropAreaInput } from "../images/dto/image-crop-area.input";
-import { DamScopeInterface } from "../types";
-import { DamMediaAlternative } from "./dam-media-alternatives/entities/dam-media-alternative.entity";
-import { DamFileListPositionArgs, FileArgsInterface } from "./dto/file.args";
-import { UploadFileBodyInterface } from "./dto/file.body";
-import { CreateFileInput, ImageFileInput, UpdateFileInput } from "./dto/file.input";
-import { FileParams } from "./dto/file.params";
-import { FILE_TABLE_NAME, FileInterface } from "./entities/file.entity";
-import { DamFileImage } from "./entities/file-image.entity";
-import { FolderInterface } from "./entities/folder.entity";
-import { FoldersService } from "./folders.service";
+import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service.js";
+import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util.js";
+import { DextinityEntityNotFoundException } from "../../common/errors/entity-not-found.exception.js";
+import { DextinityValidationException } from "../../common/errors/validation.exception.js";
+import type { WrapperType } from "../../common/helper/wrapper-type.js";
+import type { SortDirection } from "../../common/sorting/sort-direction.enum.js";
+import type { FileUploadInput } from "../../file-utils/file-upload.input.js";
+import { calculateFileHash, slugifyFilename } from "../../file-utils/files.utils.js";
+import { FocalPoint } from "../../file-utils/focal-point.enum.js";
+import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal.js";
+import { DextinityImageResolutionException } from "../common/errors/image-resolution.exception.js";
+import { getDamFileCategory } from "../common/mimeTypes/dam-file-category.js";
+import type { DamConfig } from "../dam.config.js";
+import { DAM_CONFIG, DAM_DOMINANT_COLOR_CALCULATOR } from "../dam.constants.js";
+import type { DominantColorCalculatorInterface } from "../dominant-color-calculator.interface.js";
+import type { ImageCropAreaInput } from "../images/dto/image-crop-area.input.js";
+import type { DamScopeInterface } from "../types.js";
+import { DamMediaAlternative } from "./dam-media-alternatives/entities/dam-media-alternative.entity.js";
+import type { DamFileListPositionArgs, FileArgsInterface } from "./dto/file.args.js";
+import type { UploadFileBodyInterface } from "./dto/file.body.js";
+import type { CreateFileInput, ImageFileInput, UpdateFileInput } from "./dto/file.input.js";
+import type { FileParams } from "./dto/file.params.js";
+import { FILE_TABLE_NAME, type FileInterface } from "./entities/file.entity.js";
+import { DamFileImage } from "./entities/file-image.entity.js";
+import type { FolderInterface } from "./entities/folder.entity.js";
+import { resolveFileEntity } from "./entities/resolve-dam-entity.js";
+import { FoldersService } from "./folders.service.js";
 
 const exifrSupportedMimetypes = ["image/jpeg", "image/tiff", "image/x-iiq", "image/heif", "image/heic", "image/avif", "image/png"];
 
-const withFilesSelect = (
-    qb: QueryBuilder<FileInterface>,
+// The populate hint stays `never` because the QueryBuilder uses it contravariantly, which makes `any` incompatible
+// with every concrete hint.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type FilesQueryBuilder = QueryBuilder<FileInterface, any, never, any, any, any, any>;
+
+const withFilesSelect = <Qb extends FilesQueryBuilder>(
+    qb: Qb,
     args: {
         query?: string;
         id?: string;
@@ -56,7 +62,7 @@ const withFilesSelect = (
         scope?: DamScopeInterface;
         imageCropArea?: ImageCropAreaInput;
     },
-): QueryBuilder<FileInterface> => {
+): Qb => {
     if (args.query) {
         qb.andWhere("file.name ILIKE ANY (ARRAY[?])", [args.query.split(" ").map((term) => `%${term}%`)]);
     }
@@ -118,10 +124,8 @@ export class FilesService {
     private readonly logger = new Logger(FilesService.name);
 
     constructor(
-        @InjectRepository("DamFile") private readonly filesRepository: EntityRepository<FileInterface>,
-        @InjectRepository(DamMediaAlternative) private readonly damMediaAlternativesRepository: EntityRepository<DamMediaAlternative>,
         @Inject(forwardRef(() => BlobStorageBackendService)) private readonly blobStorageBackendService: BlobStorageBackendService,
-        private readonly foldersService: FoldersService,
+        @Inject(forwardRef(() => FoldersService)) private readonly foldersService: WrapperType<FoldersService>,
         @Inject(DAM_CONFIG) private readonly config: DamConfig,
         private readonly orm: MikroORM,
         private readonly entityManager: EntityManager,
@@ -129,8 +133,8 @@ export class FilesService {
     ) {}
 
     private selectQueryBuilder(): QueryBuilder<FileInterface> {
-        return this.filesRepository
-            .createQueryBuilder("file")
+        return this.entityManager
+            .createQueryBuilder(resolveFileEntity(), "file")
             .select("*")
             .leftJoinAndSelect("file.image", "image")
             .leftJoinAndSelect("file.folder", "folder");
@@ -244,7 +248,7 @@ export class FilesService {
     async create({ folderId, ...data }: CreateFileInput & { copyOf?: FileInterface }): Promise<FileInterface> {
         const folder = folderId ? await this.foldersService.findOneById(folderId) : undefined;
         return this.save(
-            this.filesRepository.create({
+            this.entityManager.create(resolveFileEntity(), {
                 ...data,
                 license: { ...data.license },
                 folder: folder?.id,
@@ -288,8 +292,11 @@ export class FilesService {
 
                 // Check if the current file is the only one using the contentHash before deleting from blob storage
                 if (
-                    (await withFilesSelect(this.filesRepository.createQueryBuilder("file"), { contentHash: fileToReplace.contentHash }).getResult())
-                        .length === 1
+                    (
+                        await withFilesSelect(this.entityManager.createQueryBuilder(resolveFileEntity(), "file"), {
+                            contentHash: fileToReplace.contentHash,
+                        }).getResult()
+                    ).length === 1
                 ) {
                     await this.blobStorageBackendService.removeFile(this.config.filesDirectory, createHashedPath(fileToReplace.contentHash));
                 }
@@ -393,12 +400,16 @@ export class FilesService {
             throw new DextinityEntityNotFoundException();
         }
 
-        const result = await this.filesRepository.nativeDelete(id);
+        const result = await this.entityManager.nativeDelete(resolveFileEntity(), id);
         const deleted = result === 1;
 
         if (
             deleted &&
-            (await withFilesSelect(this.filesRepository.createQueryBuilder("file"), { contentHash: file.contentHash }).getResult()).length === 0
+            (
+                await withFilesSelect(this.entityManager.createQueryBuilder(resolveFileEntity(), "file"), {
+                    contentHash: file.contentHash,
+                }).getResult()
+            ).length === 0
         ) {
             await this.blobStorageBackendService.removeFile(this.config.filesDirectory, createHashedPath(file.contentHash));
         }
@@ -407,7 +418,7 @@ export class FilesService {
     }
 
     async save(entity: FileInterface): Promise<FileInterface> {
-        await this.entityManager.persistAndFlush(entity);
+        await this.entityManager.persist(entity).flush();
         return entity;
     }
 
@@ -459,23 +470,20 @@ export class FilesService {
     async getFilePosition(fileId: string, args: Omit<DamFileListPositionArgs, "scope">, scope?: DamScopeInterface): Promise<number> {
         const isSearching = args.filter?.searchText !== undefined && args.filter.searchText.length > 0;
 
-        const subQb = withFilesSelect(
-            this.filesRepository
-                .createQueryBuilder("file")
-                .select(["file.id", raw(`ROW_NUMBER() OVER( ORDER BY file."${args.sortColumnName}" ${args.sortDirection} ) AS row_number`)])
-                .leftJoinAndSelect("file.folder", "folder"),
-            {
-                archived: !args.includeArchived ? false : undefined,
-                folderId: !isSearching ? args.folderId || null : undefined,
-                mimetypes: args.filter?.mimetypes,
-                query: args.filter?.searchText,
-                sortColumnName: args.sortColumnName,
-                sortDirection: args.sortDirection,
-                scope,
-            },
-        );
+        // `select()` narrows the QueryBuilder's type to the selected fields, so it runs after the filters are applied.
+        const subQb = withFilesSelect(this.entityManager.createQueryBuilder(resolveFileEntity(), "file"), {
+            archived: !args.includeArchived ? false : undefined,
+            folderId: !isSearching ? args.folderId || null : undefined,
+            mimetypes: args.filter?.mimetypes,
+            query: args.filter?.searchText,
+            sortColumnName: args.sortColumnName,
+            sortDirection: args.sortDirection,
+            scope,
+        })
+            .leftJoinAndSelect("file.folder", "folder")
+            .select(["file.id", raw(`ROW_NUMBER() OVER( ORDER BY file."${args.sortColumnName}" ${args.sortDirection} ) AS row_number`)]);
 
-        const result: { rows: Array<{ row_number: string }> } = await this.filesRepository.getKnex().raw(
+        const rows = await this.entityManager.execute<Array<{ row_number: string }>>(
             `select "file_with_row_number".row_number
                 from "${FILE_TABLE_NAME}" as "file"
                 join (${subQb.getFormattedQuery()}) as "file_with_row_number" ON file_with_row_number.id = file.id
@@ -484,12 +492,12 @@ export class FilesService {
             [fileId],
         );
 
-        if (result.rows.length === 0) {
+        if (rows.length === 0) {
             throw new Error("File ID does not exist.");
         }
 
         // make the positions start with 0
-        return Number(result.rows[0].row_number) - 1;
+        return Number(rows[0].row_number) - 1;
     }
 
     async createCopyOfFile(file: FileInterface, { inboxFolder }: { inboxFolder: FolderInterface }) {
@@ -534,7 +542,7 @@ export class FilesService {
                 const copiedAlternativeFile = await this.createCopyOfFile(alternativeFile, { inboxFolder });
 
                 const { id: ignoreId, for: ignoreFor, alternative: ignoreAlternative, ...alternativeProps } = alternative;
-                const copiedDamMediaAlternative = this.damMediaAlternativesRepository.create({
+                const copiedDamMediaAlternative = this.entityManager.create(DamMediaAlternative, {
                     ...alternativeProps,
 
                     for: copiedFile,

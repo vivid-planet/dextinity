@@ -1167,7 +1167,8 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "linkBlock": "MailLink"
             }
         ],
         "inputFields": [
@@ -1175,7 +1176,8 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "linkBlock": "MailLink"
             }
         ]
     },
@@ -2072,7 +2074,8 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "linkBlock": "MailLink"
             }
         ],
         "inputFields": [
@@ -2080,7 +2083,8 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "linkBlock": "MailLink"
             }
         ]
     },
@@ -2090,15 +2094,17 @@
         "fields": [
             {
                 "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "MailLink"
             }
         ],
         "inputFields": [
             {
                 "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "MailLink"
             }
         ]
     },
@@ -2110,7 +2116,8 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "linkBlock": "MailLink"
             }
         ],
         "inputFields": [
@@ -2118,7 +2125,8 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "linkBlock": "MailLink"
             }
         ]
     },
@@ -2447,25 +2455,6 @@
                 "name": "id",
                 "kind": "String",
                 "nullable": true
-            }
-        ]
-    },
-    {
-        "name": "NewsletterImage",
-        "fields": [
-            {
-                "name": "image",
-                "kind": "Block",
-                "block": "PixelImage",
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "image",
-                "kind": "Block",
-                "block": "PixelImage",
-                "nullable": false
             }
         ]
     },
@@ -3155,15 +3144,17 @@
         "fields": [
             {
                 "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "MailLink"
             }
         ],
         "inputFields": [
             {
                 "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "MailLink"
             }
         ]
     },
@@ -3173,15 +3164,17 @@
         "fields": [
             {
                 "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "Link"
             }
         ],
         "inputFields": [
             {
                 "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "Link"
             }
         ]
     },
@@ -3480,23 +3473,6 @@
                         }
                     ]
                 },
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "Space",
-        "fields": [
-            {
-                "name": "height",
-                "kind": "Number",
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "height",
-                "kind": "Number",
                 "nullable": false
             }
         ]
@@ -3844,6 +3820,47 @@
     },
     {
         "name": "Table",
+        "fields": [
+            {
+                "name": "table",
+                "kind": "Block",
+                "block": "TableContent",
+                "nullable": false
+            },
+            {
+                "name": "responsiveBehavior",
+                "kind": "Enum",
+                "enum": [
+                    "scrollSideways",
+                    "none",
+                    "listByRow",
+                    "listByColumn"
+                ],
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "table",
+                "kind": "Block",
+                "block": "TableContent",
+                "nullable": false
+            },
+            {
+                "name": "responsiveBehavior",
+                "kind": "Enum",
+                "enum": [
+                    "scrollSideways",
+                    "none",
+                    "listByRow",
+                    "listByColumn"
+                ],
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "TableContent",
         "fields": [
             {
                 "name": "columns",
@@ -4224,7 +4241,8 @@
                 "childBlocks": {
                     "productPrice": "ProductPrice",
                     "productTeaser": "ProductTeaser"
-                }
+                },
+                "linkBlock": "Link"
             }
         ],
         "inputFields": [
@@ -4235,12 +4253,54 @@
                 "childBlocks": {
                     "productPrice": "ProductPrice",
                     "productTeaser": "ProductTeaser"
-                }
+                },
+                "linkBlock": "Link"
             }
         ]
     },
     {
         "name": "TipTapTable",
+        "fields": [
+            {
+                "name": "table",
+                "kind": "Block",
+                "block": "TipTapTableContent",
+                "nullable": false
+            },
+            {
+                "name": "responsiveBehavior",
+                "kind": "Enum",
+                "enum": [
+                    "scrollSideways",
+                    "none",
+                    "listByRow",
+                    "listByColumn"
+                ],
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "table",
+                "kind": "Block",
+                "block": "TipTapTableContent",
+                "nullable": false
+            },
+            {
+                "name": "responsiveBehavior",
+                "kind": "Enum",
+                "enum": [
+                    "scrollSideways",
+                    "none",
+                    "listByRow",
+                    "listByColumn"
+                ],
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "TipTapTableContent",
         "fields": [
             {
                 "name": "columns",

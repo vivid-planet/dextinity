@@ -20,32 +20,32 @@ import {
     PageTreeNodeBase,
     PageTreeNodeCategory,
     PaginatedPageTreeNodesFactory,
-} from "./src";
-import { BuildTemplatesResolver } from "./src/builds/build-templates.resolver";
-import { GenerateAltTextResolver } from "./src/content-generation/generate-alt-text.resolver";
-import { GenerateImageTitleResolver } from "./src/content-generation/generate-image-title.resolver";
-import { GenerateSeoTagsResolver } from "./src/content-generation/generate-seo-tags.resolver";
-import { CronJobsResolver } from "./src/cron-jobs/cron-jobs.resolver";
-import { JobsResolver } from "./src/cron-jobs/jobs.resolver";
-import { DependencyResolver } from "./src/dependencies/dependency.resolver";
-import { createDamItemsResolver } from "./src/dam/files/dam-items.resolver";
-import { createDamMediaAlternativeResolver } from "./src/dam/files/dam-media-alternatives/dam-media-alternative.resolver";
-import { createFileEntity } from "./src/dam/files/entities/file.entity";
-import { createFolderEntity } from "./src/dam/files/entities/folder.entity";
-import { FileLicensesResolver } from "./src/dam/files/file-licenses.resolver";
-import { createFilesResolver } from "./src/dam/files/files.resolver";
-import { createFoldersResolver } from "./src/dam/files/folders.resolver";
-import { FileUploadsResolver } from "./src/file-uploads/file-uploads.resolver";
-import { FullTextSearchResolver } from "./src/full-text-search/full-text-search.resolver";
-import { SitePreviewResolver } from "./src/page-tree/site-preview.resolver";
-import { RedirectInputFactory } from "./src/redirects/dto/redirect-input.factory";
-import { RedirectEntityFactory } from "./src/redirects/entities/redirect-entity.factory";
-import { AzureAiTranslatorResolver } from "./src/translation/azure-ai-translator.resolver";
-import { UserResolver } from "./src/user-permissions/user.resolver";
-import { UserContentScopesResolver } from "./src/user-permissions/user-content-scopes.resolver";
-import { UserPermissionResolver } from "./src/user-permissions/user-permission.resolver";
-import { WarningResolver } from "./src/warnings/warning.resolver";
-import { CombinedPermission } from "./src/user-permissions/user-permissions.types";
+} from "./lib";
+import { BuildTemplatesResolver } from "./lib/builds/build-templates.resolver";
+import { GenerateAltTextResolver } from "./lib/content-generation/generate-alt-text.resolver";
+import { GenerateImageTitleResolver } from "./lib/content-generation/generate-image-title.resolver";
+import { GenerateSeoTagsResolver } from "./lib/content-generation/generate-seo-tags.resolver";
+import { CronJobsResolver } from "./lib/cron-jobs/cron-jobs.resolver";
+import { JobsResolver } from "./lib/cron-jobs/jobs.resolver";
+import { DependencyResolver } from "./lib/dependencies/dependency.resolver";
+import { createDamItemsResolver } from "./lib/dam/files/dam-items.resolver";
+import { createDamMediaAlternativeResolver } from "./lib/dam/files/dam-media-alternatives/dam-media-alternative.resolver";
+import { createFileEntity } from "./lib/dam/files/entities/file.entity";
+import { createFolderEntity } from "./lib/dam/files/entities/folder.entity";
+import { FileLicensesResolver } from "./lib/dam/files/file-licenses.resolver";
+import { createFilesResolver } from "./lib/dam/files/files.resolver";
+import { createFoldersResolver } from "./lib/dam/files/folders.resolver";
+import { FileUploadsResolver } from "./lib/file-uploads/file-uploads.resolver";
+import { FullTextSearchResolver } from "./lib/full-text-search/full-text-search.resolver";
+import { SitePreviewResolver } from "./lib/page-tree/site-preview.resolver";
+import { RedirectInputFactory } from "./lib/redirects/dto/redirect-input.factory";
+import { RedirectEntityFactory } from "./lib/redirects/entities/redirect-entity.factory";
+import { AzureAiTranslatorResolver } from "./lib/translation/azure-ai-translator.resolver";
+import { UserResolver } from "./lib/user-permissions/user.resolver";
+import { UserContentScopesResolver } from "./lib/user-permissions/user-content-scopes.resolver";
+import { UserPermissionResolver } from "./lib/user-permissions/user-permission.resolver";
+import { WarningResolver } from "./lib/warnings/warning.resolver";
+import { CombinedPermission } from "./lib/user-permissions/user-permissions.types";
 
 @ObjectType()
 class PageTreeNode extends PageTreeNodeBase {

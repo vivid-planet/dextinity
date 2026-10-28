@@ -183,6 +183,8 @@ File: `{BlockName}Block.tsx` (PascalCase). Place in the blocks directory found i
 
 For `withPreview`, `OneOfBlock`/`OptionalBlock`, and complete site examples, see [site-patterns.md](references/site-patterns.md).
 
+For a block that renders in a mail with `@dextinity/mail-react`, follow the `dextinity-mail-react` skill instead: its `withPreview` comes from `@dextinity/mail-react` and works differently.
+
 ---
 
 ## Step 6 — Register the block

@@ -1,14 +1,14 @@
 import { type AnyEntity, type EntityManager, type EntityName, Reference, wrap } from "@mikro-orm/postgresql";
 import type { ModuleRef } from "@nestjs/core";
 
-import { isInjectableService } from "../common/helper/is-injectable-service.helper";
+import { isInjectableService } from "../common/helper/is-injectable-service.helper.js";
 import {
     type EntityScopeMapping,
     isEntityScopeMapping,
     type ScopedEntityMeta,
     type SingleEntityScopeMapping,
-} from "./decorators/scoped-entity.decorator";
-import type { ContentScope } from "./interfaces/content-scope.interface";
+} from "./decorators/scoped-entity.decorator.js";
+import type { ContentScope } from "./interfaces/content-scope.interface.js";
 
 /**
  * Resolves the scope of an entity from its `@ScopedEntity` metadata, supporting all variants:
@@ -91,8 +91,7 @@ async function resolvePathValue({
     row: AnyEntity;
     entityManager: EntityManager;
 }): Promise<unknown> {
-    const entityName = typeof entity === "string" ? entity : entity.name;
-    let metadata = entityManager.getMetadata().get(entityName);
+    let metadata = entityManager.getMetadata().get(entity);
     let current: unknown = row;
 
     for (const part of path.split(".")) {

@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { BlockData, BlockInput, blockInputToData, createBlock, transformToBlockSave } from "../block";
-import { BlockField } from "../decorators/field";
-import { applyBlockMigrations } from "./applyMigrations";
-import { BlockMigration } from "./BlockMigration";
-import type { BlockMigrationInterface } from "./types";
-import { typeSafeBlockMigrationPipe } from "./typeSafeBlockMigrationPipe";
+import { BlockData, BlockInput, blockInputToData, createBlock, transformToBlockSave } from "../block.js";
+import { BlockField } from "../decorators/field.js";
+import { applyBlockMigrations } from "./applyMigrations.js";
+import { BlockMigration } from "./BlockMigration.js";
+import type { BlockMigrationInterface } from "./types.js";
+import { typeSafeBlockMigrationPipe } from "./typeSafeBlockMigrationPipe.js";
 
 interface Data {
     vendor?: string[];

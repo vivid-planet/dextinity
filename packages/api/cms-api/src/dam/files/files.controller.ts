@@ -1,4 +1,4 @@
-import { BaseEntity } from "@mikro-orm/postgresql";
+import type { BaseEntity } from "@mikro-orm/postgresql";
 import {
     BadRequestException,
     Body,
@@ -13,39 +13,39 @@ import {
     Param,
     Post,
     Res,
-    Type,
+    type Type,
     UploadedFile,
     UseInterceptors,
 } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { create as createContentDisposition } from "content-disposition";
-import { Response } from "express";
-import { OutgoingHttpHeaders } from "http";
+import type { Response } from "express";
+import type { OutgoingHttpHeaders } from "http";
 import { basename, extname } from "path";
-import { Readable } from "stream";
+import type { Readable } from "stream";
 
-import { DisableDextinityGuards } from "../../auth/decorators/disable-dextinity-guards.decorator";
-import { GetCurrentUser } from "../../auth/decorators/get-current-user.decorator";
-import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service";
-import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util";
-import { DextinityValidationException } from "../../common/errors/validation.exception";
-import { FileUploadInput } from "../../file-utils/file-upload.input";
-import { calculatePartialRanges, slugifyFilename } from "../../file-utils/files.utils";
-import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
-import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
-import { CurrentUser } from "../../user-permissions/dto/current-user";
-import { DamConfig } from "../dam.config";
-import { DAM_CONFIG } from "../dam.constants";
-import { DamScopeAccessControlService } from "../scope-access-control.service";
-import { DamScopeInterface } from "../types";
-import { DamUploadFileInterceptor } from "./dam-upload-file.interceptor";
-import { EmptyDamScope } from "./dto/empty-dam-scope";
-import { createUploadFileBody, ReplaceFileByIdBody, UploadFileBodyInterface } from "./dto/file.body";
-import { FileParams, HashFileParams } from "./dto/file.params";
-import { FileInterface } from "./entities/file.entity";
-import { FilesService } from "./files.service";
-import { FoldersService } from "./folders.service";
+import { DisableDextinityGuards } from "../../auth/decorators/disable-dextinity-guards.decorator.js";
+import { GetCurrentUser } from "../../auth/decorators/get-current-user.decorator.js";
+import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service.js";
+import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util.js";
+import { DextinityValidationException } from "../../common/errors/validation.exception.js";
+import type { FileUploadInput } from "../../file-utils/file-upload.input.js";
+import { calculatePartialRanges, slugifyFilename } from "../../file-utils/files.utils.js";
+import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal.js";
+import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator.js";
+import { CurrentUser } from "../../user-permissions/dto/current-user.js";
+import type { DamConfig } from "../dam.config.js";
+import { DAM_CONFIG } from "../dam.constants.js";
+import { DamScopeAccessControlService } from "../scope-access-control.service.js";
+import type { DamScopeInterface } from "../types.js";
+import { DamUploadFileInterceptor } from "./dam-upload-file.interceptor.js";
+import { EmptyDamScope } from "./dto/empty-dam-scope.js";
+import { createUploadFileBody, ReplaceFileByIdBody, type UploadFileBodyInterface } from "./dto/file.body.js";
+import { FileParams, HashFileParams } from "./dto/file.params.js";
+import type { FileInterface } from "./entities/file.entity.js";
+import { FilesService } from "./files.service.js";
+import { FoldersService } from "./folders.service.js";
 
 const fileUrl = `:fileId/:filename`;
 

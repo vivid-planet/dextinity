@@ -33,7 +33,7 @@ export async function getRandomPicsumImage(): Promise<PicsumImage> {
         const mimeType = image.blob.type;
 
         if (mimeType !== "image/jpeg") {
-            return getRandomPicsumImage();
+            return await getRandomPicsumImage();
         }
 
         const fileName = extractFileNameFromUrl(image.origin);

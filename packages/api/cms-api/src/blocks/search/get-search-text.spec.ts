@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { getSearchTextFromBlock } from "./get-search-text";
-import { ABlock } from "./test/blocks/A/ABlock";
-import { ABlock as InvisibleChildrenBlock } from "./test/blocks/InvisibleChildren/ABlock";
-import { ABlock as NestedInvisibleChildren } from "./test/blocks/NestedInvisibleChildren/ABlock";
+import { getSearchTextFromBlock } from "./get-search-text.js";
+import { ABlock } from "./test/blocks/A/ABlock.js";
+import { ABlock as InvisibleChildrenBlock } from "./test/blocks/InvisibleChildren/ABlock.js";
+import { ABlock as NestedInvisibleChildren } from "./test/blocks/NestedInvisibleChildren/ABlock.js";
 
 describe("Search", () => {
     it("gets SearchData", () => {

@@ -5,14 +5,13 @@ import { css, type Theme, useThemeProps } from "@mui/material/styles";
 import { useRef, useState } from "react";
 import { useIntl } from "react-intl";
 
-export interface DatePickerNavigationProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        selectMonthButton: typeof Button;
-        selectYearButton: typeof Button;
-        selectMonthMenu: typeof Menu;
-        selectYearMenu: typeof Menu;
-    }> {
+export interface DatePickerNavigationProps extends ThemedComponentBaseProps<{
+    root: "div";
+    selectMonthButton: typeof Button;
+    selectYearButton: typeof Button;
+    selectMonthMenu: typeof Menu;
+    selectYearMenu: typeof Menu;
+}> {
     focusedDate: Date;
     changeShownDate: (value: number, mode: "setYear" | "setMonth" | "monthOffset") => void;
     minDate: Date;
@@ -113,13 +112,7 @@ export const DatePickerNavigation = (inProps: DatePickerNavigationProps) => {
 };
 
 export type DatePickerNavigationClassKey =
-    | "root"
-    | "selectButton"
-    | "selectMonthButton"
-    | "selectYearButton"
-    | "selectMenu"
-    | "selectMonthMenu"
-    | "selectYearMenu";
+    "root" | "selectButton" | "selectMonthButton" | "selectYearButton" | "selectMenu" | "selectMonthMenu" | "selectYearMenu";
 
 const Root = createComponentSlot("div")<DatePickerNavigationClassKey>({
     componentName: "DatePickerNavigation",

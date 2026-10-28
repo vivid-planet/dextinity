@@ -4,7 +4,7 @@ import { tmpdir } from "os";
 import { join } from "path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { calculateFileHash, isValidSvg } from "./files.utils";
+import { calculateFileHash, isValidSvg } from "./files.utils.js";
 
 describe("Files Utils", () => {
     describe("calculateFileHash", () => {

@@ -1,6 +1,5 @@
-import { mswResolver } from "@graphql-mocks/network-msw";
-import { GraphQLHandler } from "graphql-mocks";
-import { http } from "msw";
+import { buildSchema, defaultFieldResolver, graphql, type GraphQLFieldResolver } from "graphql";
+import { http, HttpResponse } from "msw";
 
 import { currentUserHandler } from "./currentUserHandler";
 import { fileUploadsHandler } from "./fileUploadsHandler";
@@ -115,22 +114,31 @@ type Query {
 }
 `;
 
-const graphqlHandler = new GraphQLHandler({
-    resolverMap: {
-        Query: {
-            launchesPastResult: launchesPastResultResolver,
-            launchesPastPagePaging: launchesPastPagePagingResolver,
-            currentUser: currentUserHandler,
-            folder: folderHandler,
-            subfolder: subfolderHandler,
-        },
-    },
+const schema = buildSchema(graphqlSchema);
 
-    dependencies: {
-        graphqlSchema,
-    },
+const queryResolvers: Record<string, GraphQLFieldResolver<unknown, unknown>> = {
+    launchesPastResult: launchesPastResultResolver,
+    launchesPastPagePaging: launchesPastPagePagingResolver,
+    currentUser: currentUserHandler,
+    folder: folderHandler,
+    subfolder: subfolderHandler,
+};
+
+const fieldResolver: GraphQLFieldResolver<unknown, unknown> = (source, args, context, info) => {
+    const queryResolver = info.parentType.name === "Query" ? queryResolvers[info.fieldName] : undefined;
+    return (queryResolver ?? defaultFieldResolver)(source, args, context, info);
+};
+
+const graphqlHandler = http.post("/graphql", async ({ request }) => {
+    const { query, variables, operationName } = (await request.json()) as {
+        query: string;
+        variables?: Record<string, unknown>;
+        operationName?: string;
+    };
+    const result = await graphql({ schema, source: query, variableValues: variables, operationName, fieldResolver });
+    return HttpResponse.json(result);
 });
 
 export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const handlers = [http.post("/graphql", mswResolver(graphqlHandler)), fileUploadsHandler, launchesPastRestHandler];
+export const handlers = [graphqlHandler, fileUploadsHandler, launchesPastRestHandler];

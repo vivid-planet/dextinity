@@ -48,4 +48,4 @@ alwaysApply: false
     }
     ```
 
-- GraphQL-exposed enums follow a different rule — see [api-nestjs.instructions.md](api-nestjs.instructions.md#graphql-enums).
+- The same applies to GraphQL-exposed enums, where diverging keys and values cause runtime errors — see [api-nestjs.instructions.md](api-nestjs.instructions.md#graphql-enums).

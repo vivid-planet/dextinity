@@ -6,9 +6,17 @@
         "riskCeiling": "medium",
         "filters": {
             "includeAuthors": ["VPS-Obi", "VPS-thodax", "nsams", "fraxachun", "VPS-Ricky", "vps-manuel-blum"],
-            "excludePaths": ["rules/coding-guidelines/**", "docs/docs/9-coding-guidelines/**"]
+            "excludePaths": [
+                "rules/coding-guidelines/**",
+                "docs/docs/9-coding-guidelines/**",
+                "packages/**/src/index.ts",
+                "packages/site/*/src/server.ts",
+                "packages/site/*/src/persistedQueries/webpackPersistedQueriesLoader.ts",
+                "packages/mail-react/src/*/index.ts"
+            ]
         }
     },
+    "ignoreKeywords": "Merge main\nMerge `main`\nMerge next\nMerge `next`",
     "excludeAuthors": ["vivid-planet-bot", "github-actions[bot]", "renovate[bot]"],
     "ignorePatterns": "pnpm-lock.yaml\n**/CHANGELOG.md\nCHANGELOG.old.md\n**/__snapshots__/**\n**/generated/**\n**/schema.gql\n**/block-meta.json"
 }

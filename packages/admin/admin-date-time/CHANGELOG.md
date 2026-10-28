@@ -1,5 +1,13 @@
 # @comet/admin-date-time
 
+## 10.10.0
+
+### Patch Changes
+
+- Updated dependencies [c6b573b]
+    - @dextinity/admin@10.10.0
+    - @dextinity/admin-icons@10.10.0
+
 ## 10.9.1
 
 ### Patch Changes

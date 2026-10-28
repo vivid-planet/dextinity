@@ -1,14 +1,13 @@
 {
     "compilerOptions": {
-        "baseUrl": "src",
         "outDir": "lib",
         "paths": {
-            "test-utils": ["./utils/test-utils"]
+            "test-utils": ["./src/utils/test-utils"]
         },
         "rootDir": ".",
         "typeRoots": ["node_modules/@types", "node_modules/@testing-library"]
     },
     "exclude": [],
     "extends": "../tsconfig.base.json",
-    "include": ["./src", "./.storybook"]
+    "include": ["./src", "./.storybook", "./vitest.setup.ts"]
 }

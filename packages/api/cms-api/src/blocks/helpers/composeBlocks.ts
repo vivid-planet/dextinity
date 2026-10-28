@@ -1,23 +1,22 @@
 import { Allow, ValidateNested } from "class-validator";
 
 import {
-    Block,
+    type Block,
     BlockData,
-    BlockDataFactory,
-    BlockDataInterface,
-    BlockInputFactory,
-    BlockInputInterface,
+    type BlockDataFactory,
+    type BlockDataInterface,
+    type BlockInputFactory,
+    type BlockInputInterface,
     BlockMetaFieldKind,
-    ChildBlockInfo,
-    ExtractBlockInputFactoryProps,
-    registerBlock,
-    TransformBlockResponse,
-} from "../block";
-import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator";
-import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
-import type { MigrateOptions } from "../migrations/types";
-import { strictBlockDataFactoryDecorator } from "./strictBlockDataFactoryDecorator";
-import { strictBlockInputFactoryDecorator } from "./strictBlockInputFactoryDecorator";
+    type ChildBlockInfo,
+    type ExtractBlockInputFactoryProps,
+    type TransformBlockResponse,
+} from "../block.js";
+import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator.js";
+import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion.js";
+import type { MigrateOptions } from "../migrations/types.js";
+import { strictBlockDataFactoryDecorator } from "./strictBlockDataFactoryDecorator.js";
+import { strictBlockInputFactoryDecorator } from "./strictBlockInputFactoryDecorator.js";
 
 type BaseBlockMap = Record<string, Block>;
 
@@ -153,8 +152,6 @@ export function composeBlocks<BlockMap extends BaseBlockMap>(
             }),
         },
     };
-
-    registerBlock(block);
 
     return block;
 }

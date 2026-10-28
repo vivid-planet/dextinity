@@ -1,8 +1,8 @@
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 
-import { KubernetesJobStatus } from "../../kubernetes/job-status.enum";
-import { LABEL_ANNOTATION } from "../../kubernetes/kubernetes.constants";
-import { toLegacyName } from "../../kubernetes/kubernetes-metadata";
+import { KubernetesJobStatus } from "../../kubernetes/job-status.enum.js";
+import { LABEL_ANNOTATION } from "../../kubernetes/kubernetes.constants.js";
+import { toLegacyName } from "../../kubernetes/kubernetes-metadata.js";
 
 @ObjectType()
 export class Build {

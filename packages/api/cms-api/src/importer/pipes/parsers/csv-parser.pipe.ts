@@ -2,8 +2,8 @@ import type { HeaderArray, ParserOptionsArgs } from "@fast-csv/parse";
 import * as csv from "@fast-csv/parse";
 import { Transform, type TransformCallback } from "stream";
 
-import type { ImportFieldMetadata } from "../../decorators/csv-column.decorator";
-import type { ImporterPipe, PipeMetadata } from "../importer-pipe.type";
+import type { ImportFieldMetadata } from "../../decorators/csv-column.decorator.js";
+import type { ImporterPipe, PipeMetadata } from "../importer-pipe.type.js";
 
 export type CsvParserOptions = Omit<ParserOptionsArgs, "encoding"> & { encoding: BufferEncoding };
 

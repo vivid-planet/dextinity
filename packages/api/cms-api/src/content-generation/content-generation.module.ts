@@ -1,10 +1,10 @@
-import { DynamicModule, Global, Module, ModuleMetadata, Type } from "@nestjs/common";
+import { type DynamicModule, Global, Module, type ModuleMetadata, type Type } from "@nestjs/common";
 
-import { CONTENT_GENERATION_SERVICE } from "./content-generation.constants";
-import { ContentGenerationServiceInterface } from "./content-generation-service.interface";
-import { GenerateAltTextResolver } from "./generate-alt-text.resolver";
-import { GenerateImageTitleResolver } from "./generate-image-title.resolver";
-import { GenerateSeoTagsResolver } from "./generate-seo-tags.resolver";
+import { CONTENT_GENERATION_SERVICE } from "./content-generation.constants.js";
+import type { ContentGenerationServiceInterface } from "./content-generation-service.interface.js";
+import { GenerateAltTextResolver } from "./generate-alt-text.resolver.js";
+import { GenerateImageTitleResolver } from "./generate-image-title.resolver.js";
+import { GenerateSeoTagsResolver } from "./generate-seo-tags.resolver.js";
 
 interface ContentGenerationModuleOptions {
     Service: Type<ContentGenerationServiceInterface>;

@@ -2,8 +2,10 @@ import { getSchema } from "@tiptap/core";
 import { validate } from "class-validator";
 import { describe, expect, it } from "vitest";
 
-import { ExternalLinkBlock } from "../externalLink/external-link.block";
-import { createLinkBlock } from "../factories/createLinkBlock";
+import { BlockMetaFieldKind } from "../block.js";
+import { getBlocksMeta } from "../blocks-meta.js";
+import { ExternalLinkBlock } from "../externalLink/external-link.block.js";
+import { createLinkBlock } from "../factories/createLinkBlock.js";
 import {
     buildExtensions,
     createTipTapRichTextBlock,
@@ -13,7 +15,7 @@ import {
     type TipTapRichTextBlockDataInterface,
     type TipTapRichTextBlockInputInterface,
     type TipTapTextBlock,
-} from "./createTipTapRichTextBlock";
+} from "./createTipTapRichTextBlock.js";
 
 const paragraphOnly: TipTapTextBlock[] = [{ name: "paragraph", tag: "p" }];
 
@@ -1760,5 +1762,222 @@ describe("createTipTapRichTextBlock block typing", () => {
 
         expect(input.tipTapContent.type).toBe("doc");
         expect(blockData.tipTapContent.type).toBe("doc");
+    });
+});
+
+describe("createTipTapRichTextBlock block meta", () => {
+    const LinkBlock = createLinkBlock({ supportedBlocks: { external: ExternalLinkBlock } }, "TestMetaLink");
+    const childBlocks = { externalLink: { block: ExternalLinkBlock, display: "block" as const } };
+
+    it("should include the link block and the child blocks in the block meta", () => {
+        const block = createTipTapRichTextBlock({ link: LinkBlock, childBlocks }, "TestMetaWithLink");
+
+        const expectedFields = [
+            {
+                name: "tipTapContent",
+                kind: BlockMetaFieldKind.TipTapRichTextBlock,
+                childBlocks: { externalLink: ExternalLinkBlock },
+                linkBlock: LinkBlock,
+                nullable: false,
+            },
+        ];
+
+        expect(block.blockMeta.fields).toEqual(expectedFields);
+        expect(block.blockInputMeta.fields).toEqual(expectedFields);
+    });
+
+    it("should include the link block name in the generated block meta", () => {
+        const block = createTipTapRichTextBlock({ link: LinkBlock, childBlocks }, "TestMetaGenerated");
+
+        const blockMeta = getBlocksMeta([block]).find(({ name }) => name === "TestMetaGenerated");
+
+        expect(blockMeta?.fields).toEqual([
+            {
+                name: "tipTapContent",
+                kind: "TipTapRichTextBlock",
+                childBlocks: { externalLink: "ExternalLink" },
+                linkBlock: "TestMetaLink",
+                nullable: false,
+            },
+        ]);
+    });
+
+    it("should omit the link when links are disabled", () => {
+        const block = createTipTapRichTextBlock({}, "TestMetaWithoutLink");
+
+        expect(block.blockMeta.fields).toEqual([
+            { name: "tipTapContent", kind: BlockMetaFieldKind.TipTapRichTextBlock, childBlocks: {}, linkBlock: undefined, nullable: false },
+        ]);
+    });
+});
+
+describe("createTipTapRichTextBlock defaultStyle on read", () => {
+    const listStyles = { styles: [{ name: "list300" }, { name: "list200" }] };
+    const block = createTipTapRichTextBlock(
+        {
+            textBlocks: [
+                { name: "paragraph", tag: "p", styles: [{ name: "copy300" }, { name: "copy200" }], defaultStyle: "copy300" },
+                { name: "heading-2", tag: "h2", styles: [{ name: "headline400" }], defaultStyle: "headline400" },
+                { name: "heading-3", tag: "h3", styles: [{ name: "headline300" }] },
+            ],
+            orderedList: listStyles,
+            unorderedList: { ...listStyles, defaultStyle: "list300" },
+        },
+        "TestDefaultStyleOnRead",
+    );
+
+    function textBlock(attrs: Record<string, unknown>): TipTapRichTextBlockContent {
+        return { type: "textBlock", attrs, content: [{ type: "text", text: "Text" }] };
+    }
+
+    function read(content: TipTapRichTextBlockContent[]): TipTapRichTextBlockContent[] | undefined {
+        return block.blockDataFactory({ tipTapContent: { type: "doc", content } }).tipTapContent.content;
+    }
+
+    it("fills in the text block's defaultStyle where the content carries no style", () => {
+        expect(read([textBlock({ textBlock: "paragraph" }), textBlock({ textBlock: "heading-2", textBlockStyle: null })])).toEqual([
+            textBlock({ textBlock: "paragraph", textBlockStyle: "copy300" }),
+            textBlock({ textBlock: "heading-2", textBlockStyle: "headline400" }),
+        ]);
+    });
+
+    it("keeps a style the content carries", () => {
+        expect(read([textBlock({ textBlock: "paragraph", textBlockStyle: "copy200" })])).toEqual([
+            textBlock({ textBlock: "paragraph", textBlockStyle: "copy200" }),
+        ]);
+    });
+
+    it("leaves a text block without defaultStyle unstyled", () => {
+        expect(read([textBlock({ textBlock: "heading-3" })])).toEqual([textBlock({ textBlock: "heading-3" })]);
+    });
+
+    it("gives a node naming no text block the default text block's defaultStyle", () => {
+        expect(read([{ type: "textBlock", content: [{ type: "text", text: "Text" }] }])).toEqual([textBlock({ textBlockStyle: "copy300" })]);
+    });
+
+    it("takes the innermost list's defaultStyle inside a list item rather than the text block's", () => {
+        expect(
+            read([
+                {
+                    type: "orderedList",
+                    content: [
+                        {
+                            type: "listItem",
+                            content: [
+                                textBlock({ textBlock: "paragraph" }),
+                                { type: "bulletList", content: [{ type: "listItem", content: [textBlock({ textBlock: "paragraph" })] }] },
+                            ],
+                        },
+                    ],
+                },
+            ]),
+        ).toEqual([
+            {
+                type: "orderedList",
+                content: [
+                    {
+                        type: "listItem",
+                        content: [
+                            // The ordered list has no defaultStyle, and inside it the text block's doesn't apply.
+                            textBlock({ textBlock: "paragraph" }),
+                            {
+                                type: "bulletList",
+                                content: [{ type: "listItem", content: [textBlock({ textBlock: "paragraph", textBlockStyle: "list300" })] }],
+                            },
+                        ],
+                    },
+                ],
+            },
+        ]);
+    });
+
+    it("leaves the content untouched where nothing has a defaultStyle", () => {
+        const blockWithoutDefaults = createTipTapRichTextBlock(
+            { textBlocks: [{ name: "paragraph", tag: "p", styles: [{ name: "copy300" }] }] },
+            "TestNoDefaultStyleOnRead",
+        );
+        const content = [textBlock({ textBlock: "paragraph" })];
+
+        expect(blockWithoutDefaults.blockDataFactory({ tipTapContent: { type: "doc", content } }).tipTapContent.content).toEqual(content);
+    });
+});
+
+describe("createTipTapRichTextBlock searchText", () => {
+    const block = createTipTapRichTextBlock({ textBlocks: headingLevels234 }, "TestSearchText");
+
+    function searchText(content: TipTapRichTextBlockContent[]) {
+        return block.blockDataFactory({ tipTapContent: { type: "doc", content } }).searchText();
+    }
+
+    function text(value: string, marks?: TipTapRichTextBlockContent["marks"]): TipTapRichTextBlockContent {
+        return marks ? { type: "text", text: value, marks } : { type: "text", text: value };
+    }
+
+    function textBlock(name: string, content: TipTapRichTextBlockContent[]): TipTapRichTextBlockContent {
+        return { type: "textBlock", attrs: { textBlock: name }, content };
+    }
+
+    it("returns one entry for a paragraph split into several text nodes by marks", () => {
+        expect(
+            searchText([
+                textBlock("paragraph", [
+                    text("Text with "),
+                    text("bold", [{ type: "bold" }]),
+                    text(", "),
+                    text("italic", [{ type: "italic" }]),
+                    text(" and a "),
+                    text("link", [{ type: "link" }]),
+                    text("."),
+                ]),
+            ]),
+        ).toEqual(["Text with bold, italic and a link."]);
+    });
+
+    it("returns one weighted entry for a heading containing a mark", () => {
+        expect(searchText([textBlock("heading-2", [text("A "), text("bold", [{ type: "bold" }]), text(" heading")])])).toEqual([
+            { weight: "h2", text: "A bold heading" },
+        ]);
+    });
+
+    it("returns one entry per text block", () => {
+        expect(searchText([textBlock("paragraph", [text("First")]), textBlock("paragraph", [text("Second")])])).toEqual(["First", "Second"]);
+    });
+
+    it("returns one entry per list item", () => {
+        expect(
+            searchText([
+                {
+                    type: "bulletList",
+                    content: [
+                        { type: "listItem", content: [textBlock("paragraph", [text("First "), text("item", [{ type: "bold" }])])] },
+                        { type: "listItem", content: [textBlock("paragraph", [text("Second item")])] },
+                    ],
+                },
+            ]),
+        ).toEqual(["First item", "Second item"]);
+    });
+
+    it("joins the text around a hard break with a newline", () => {
+        expect(searchText([textBlock("paragraph", [text("First line"), { type: "hardBreak" }, text("Second line")])])).toEqual([
+            "First line\nSecond line",
+        ]);
+    });
+
+    it("joins the text around a non-breaking space with a space", () => {
+        expect(searchText([textBlock("paragraph", [text("First"), { type: "nonBreakingSpace" }, text("Second")])])).toEqual(["First Second"]);
+    });
+
+    it("returns no entry for an empty text block", () => {
+        expect(searchText([textBlock("paragraph", []), textBlock("paragraph", [text("Text")])])).toEqual(["Text"]);
+    });
+
+    it("returns no entries when indexSearchText is disabled", () => {
+        const blockWithoutSearchText = createTipTapRichTextBlock({ indexSearchText: false }, "TestSearchTextDisabled");
+
+        expect(
+            blockWithoutSearchText
+                .blockDataFactory({ tipTapContent: { type: "doc", content: [textBlock("paragraph", [text("Text")])] } })
+                .searchText(),
+        ).toEqual([]);
     });
 });

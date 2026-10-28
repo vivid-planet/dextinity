@@ -1,5 +1,84 @@
 # @comet/cms-admin
 
+## 10.10.0
+
+### Minor Changes
+
+- d44bdd0: Add `isTipTapRichTextEmpty`
+
+    The TipTap counterpart of `isRichTextEmpty`: it returns `true` when the `tipTapContent` of a `createTipTapRichTextBlock` block holds neither text nor a child block.
+    It takes the content rather than the block state, so it works with the block's data and its state alike.
+
+    ```ts
+    if (isTipTapRichTextEmpty(notes.tipTapContent)) {
+        // show a placeholder
+    }
+    ```
+
+- 8ca42f5: Add a preview text to the table block
+- 7a121f1: Rework the content scopes management in the user permissions panel
+
+    The user permissions panel now renders a consistent set of content scope columns for every user based on the content scope dimensions declared in the API (`userPermissionsAvailableContentScopeDimensions`). A dimension whose value is the `"*"` wildcard is shown as "All".
+    - Content scopes are assigned through an "Add scope" dialog that builds a scope from one dropdown per enumerable dimension, cascading so that only existing combinations can be selected. Each dropdown also offers an "All" option to grant every value of that dimension (`*` wildcard). Dimensions that are not part of `availableContentScopes` are entered as a free text value (`*` grants all values).
+    - The assigned content scopes and the permission-specific content scopes (override dialog) use the same paginated grid and add dialog, and show manually assigned scopes first.
+    - Removing a content scope asks for confirmation, consistent with removing a permission.
+    - The assignment type is shown in a consistent way across the permissions and content scopes grids.
+
+- ad1ad05: Show only warnings of visible entities by default in the warnings grid
+
+    The grid has a new "Visible" column, and the default filter shows only warnings whose entity is visible (e.g., a published page).
+    Remove the filter to see warnings of unpublished entities as well.
+
+### Patch Changes
+
+- 7f5eefe: Show the correct error message when a DAM file upload is rejected by the API
+
+    Previously, rejected uploads (e.g., an image exceeding the maximum resolution) were treated as successful, resulting in a generic error like "Variable $id of required type ID! was not provided" instead of the specific validation message.
+
+    Replacing a file now also shows the HTTP status instead of a JSON parse error when the API responds with a non-JSON error.
+
+- bfc162a: Don't read files into memory before uploading them to the DAM
+
+    Previously, every file was fully loaded into the browser's memory before the upload started, which could cause high memory usage and a delay before the upload progress was shown for large files.
+
+- c1ac227: Fix hover marking between a block list and the block preview
+
+    Hovering a block in the block list didn't mark it in the block preview, and hovering a block in the block preview neither marked its entry in the block list nor scrolled the list to it. This affected the entries of `BlocksBlock`, `ListBlock` and `ColumnsBlock` and the child blocks of composite blocks.
+
+- 245faa3: Fix the "Each child in a list should have a unique key prop" warning in `createListBlock` and the TipTap block dialog
+
+    `FormattedMessage` returns an array when a value is a React element. The `itemName`, `itemsName` and `displayName` values are usually a `FormattedMessage` and are now wrapped in a keyed `Fragment`.
+
+- 98499dd: Remove the unsupported `rowsMax` prop from the description fields of `createSeoBlock`
+
+    MUI v5 removed `rowsMax`, so the prop had no effect and only caused the React warning "React does not recognize the `rowsMax` prop on a DOM element". The fields keep their height of three rows.
+
+- 43461dd: Show the folder path of search results in the dialogs for choosing DAM files
+
+    Files with the same name in different folders can now be told apart, as in the DAM search.
+
+- 4bd97fa: Make the content column of `SplitPreview` scrollable
+
+    Previously, when using `SplitPreview` without tabs, content taller than the viewport scrolled the whole page, moving the preview out of view.
+
+- 6683f95: Fix the empty line after a list at the end of a TipTap rich text that couldn't be deleted
+
+    The editor no longer adds an empty text block after a list at the end of the content. Deleting this empty line added it again right away. To continue writing after the list, press Enter in its empty last item.
+
+- a607533: Fix the TipTap rich text block keeping a text block style the new text block doesn't offer when no `defaultStyle` is configured
+
+    Changing a styled paragraph to a heading, e.g. with the `Mod-Alt-1` shortcut, kept the paragraph's style, so the API rejected the content and the block couldn't be saved.
+
+- fdce21f: Separate the lines of a `TipTapRichTextBlock` with a space in the block preview
+
+    Previously, the text of all paragraphs and list items was joined without a space, for example "First lineSecond line".
+
+- Updated dependencies [c6b573b]
+- Updated dependencies [fbb437a]
+    - @dextinity/admin@10.10.0
+    - @dextinity/admin-rte@10.10.0
+    - @dextinity/admin-icons@10.10.0
+
 ## 10.9.1
 
 ### Patch Changes
@@ -1972,9 +2051,7 @@
     const MediaGalleryBlock = createCompositeBlock({
         name: "MediaGallery",
         displayName: "Media Gallery",
-        blocks: {
-            /* ... */
-        },
+        blocks: {/* ... */},
         tags: [defineMessage({ id: "mediaGallery.tag.slider", defaultMessage: "Slider" })],
         /* ... */
     });

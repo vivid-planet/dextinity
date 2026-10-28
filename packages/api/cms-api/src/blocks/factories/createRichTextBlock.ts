@@ -1,26 +1,25 @@
 import { instanceToPlain, plainToInstance } from "class-transformer";
-import { registerDecorator, validate, ValidationArguments, ValidationOptions } from "class-validator";
+import { registerDecorator, validate, type ValidationArguments, type ValidationOptions } from "class-validator";
 import type { DraftBlockType, DraftEntityMutability, DraftInlineStyleType, RawDraftContentState, RawDraftEntityRange } from "draft-js";
 
 import {
-    Block,
+    type Block,
     BlockData,
-    BlockDataFactory,
-    BlockDataInterface,
-    BlockInputFactory,
-    BlockInputInterface,
-    ChildBlockInfo,
-    ExtractBlockInput,
-    registerBlock,
-} from "../block";
-import { AnnotationBlockMeta, BlockField } from "../decorators/field";
-import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFactoryDecorator";
-import { strictBlockInputFactoryDecorator } from "../helpers/strictBlockInputFactoryDecorator";
-import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator";
-import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion";
-import { SearchText } from "../search/get-search-text";
-import { BlockFactoryNameOrOptions } from "./types";
-import { withDefaultDescription } from "./withDefaultDescription";
+    type BlockDataFactory,
+    type BlockDataInterface,
+    type BlockInputFactory,
+    type BlockInputInterface,
+    type ChildBlockInfo,
+    type ExtractBlockInput,
+} from "../block.js";
+import { AnnotationBlockMeta, BlockField } from "../decorators/field.js";
+import { strictBlockDataFactoryDecorator } from "../helpers/strictBlockDataFactoryDecorator.js";
+import { strictBlockInputFactoryDecorator } from "../helpers/strictBlockInputFactoryDecorator.js";
+import { createAppliedMigrationsBlockDataFactoryDecorator } from "../migrations/createAppliedMigrationsBlockDataFactoryDecorator.js";
+import { BlockDataMigrationVersion } from "../migrations/decorators/BlockDataMigrationVersion.js";
+import type { SearchText } from "../search/get-search-text.js";
+import type { BlockFactoryNameOrOptions } from "./types.js";
+import { withDefaultDescription } from "./withDefaultDescription.js";
 
 interface CreateRichTextBlockOptions {
     link: Block;
@@ -64,8 +63,10 @@ interface RichTextBlockDataInterface extends BlockDataInterface {
     draftContent: RawDraftContentState;
 }
 
-interface RichTextBlockInputInterface<LinkBlockInput extends BlockInputInterface>
-    extends BlockInputInterface<BlockDataInterface, { draftContent: DraftJsFactoryProps<LinkBlockInput> }> {
+interface RichTextBlockInputInterface<LinkBlockInput extends BlockInputInterface> extends BlockInputInterface<
+    BlockDataInterface,
+    { draftContent: DraftJsFactoryProps<LinkBlockInput> }
+> {
     draftContent: DraftJsInput<LinkBlockInput>;
 }
 
@@ -85,7 +86,7 @@ export function createRichTextBlock<LinkBlock extends Block>(
 
     @BlockDataMigrationVersion(migrate?.version)
     class RichTextBlockData extends BlockData {
-        @BlockField({ type: "json" })
+        @BlockField({ type: "richTextBlock", linkBlock: LinkBlock })
         draftContent: RawDraftContentState;
 
         searchText(): SearchText[] {
@@ -131,7 +132,7 @@ export function createRichTextBlock<LinkBlock extends Block>(
 
     class RichTextBlockInput implements RichTextBlockInputInterface<ExtractBlockInput<LinkBlock>> {
         @IsDraftContent(LinkBlock)
-        @BlockField({ type: "json" })
+        @BlockField({ type: "richTextBlock", linkBlock: LinkBlock })
         draftContent: DraftJsInput<ExtractBlockInput<LinkBlock>>;
 
         transformToBlockData(): RichTextBlockData {
@@ -212,8 +213,6 @@ export function createRichTextBlock<LinkBlock extends Block>(
         blockInputMeta: new AnnotationBlockMeta(RichTextBlockInput),
     };
 
-    registerBlock(RichTextBlock);
-
     return RichTextBlock;
 }
 
@@ -227,6 +226,9 @@ function IsDraftContent(link: Block, validationOptions?: ValidationOptions) {
             constraints: [link],
             options: validationOptions,
             validator: {
+                defaultMessage(args: ValidationArguments) {
+                    return `${args.property} must be a Draft.js content object with blocks and entityMap, where each entity is a LINK with valid ${(args.constraints[0] as Block).name} data`;
+                },
                 async validate(value: unknown, args: ValidationArguments) {
                     const LinkBlock = args.constraints[0] as Block;
 

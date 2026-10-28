@@ -1,18 +1,19 @@
-import { BaseEntity, Collection, defineConfig, Entity, ManyToOne, MikroORM, OneToMany, PrimaryKey, Property, Ref } from "@mikro-orm/postgresql";
+import { Entity, ManyToOne, OneToMany, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, Collection, defineConfig, MikroORM, type Ref } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
+import { randomUUID } from "crypto";
 import { cp, mkdtemp, rm } from "fs/promises";
 import { tmpdir } from "os";
 import * as path from "path";
-import { v4 as uuid } from "uuid";
 import { describe, expect, it } from "vitest";
 
-import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
-import { generateCrud } from "../generate-crud";
+import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper.js";
+import { generateCrud } from "../generate-crud.js";
 
 @Entity()
 class TestEntityVariant extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     title: string;
@@ -24,7 +25,7 @@ class TestEntityVariant extends BaseEntity {
 @Entity()
 class TestEntityProduct extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     title: string;
@@ -39,8 +40,8 @@ describe("GenerateCrudRelationsNestedOtherDirectory", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityProduct, TestEntityVariant],
                 }),
             );
@@ -52,10 +53,15 @@ describe("GenerateCrudRelationsNestedOtherDirectory", () => {
                 const variantEntityPath = path.join(projectDirectory, "src/variants/entities/test-entity-variant.entity.ts");
                 await cp(__filename, productEntityPath);
                 await cp(__filename, variantEntityPath);
-                orm.em.getMetadata().get("TestEntityProduct").path = productEntityPath;
-                orm.em.getMetadata().get("TestEntityVariant").path = variantEntityPath;
+                const entityPaths: Record<string, string> = { TestEntityProduct: productEntityPath, TestEntityVariant: variantEntityPath };
+                // Relation targets reference their own metadata objects, so their path must be set as well
+                for (const metadata of orm.em.getMetadata()) {
+                    for (const entityMetadata of [metadata, ...metadata.props.flatMap((prop) => (prop.targetMeta ? [prop.targetMeta] : []))]) {
+                        entityMetadata.path = entityPaths[entityMetadata.className] ?? entityMetadata.path;
+                    }
+                }
 
-                const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityProduct"));
+                const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntityProduct"));
                 const formattedOut = await formatGeneratedFiles(out);
 
                 const file = formattedOut.find((file) => file.name === "test-entity-variant.resolver.ts");

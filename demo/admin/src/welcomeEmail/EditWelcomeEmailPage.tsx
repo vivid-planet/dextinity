@@ -29,7 +29,7 @@ import {
 } from "@dextinity/cms-admin";
 import { Snackbar } from "@mui/material";
 import type { WelcomeEmailContentBlockInput } from "@src/blocks.generated";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { type JSX, useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { useRouteMatch } from "react-router";
@@ -129,7 +129,7 @@ export function EditWelcomeEmailPage(): JSX.Element | null {
     }, [data]);
 
     useEffect(() => {
-        const equal = isEqual(referenceContent, welcomeEmailState ? WelcomeEmailContentBlock.state2Output(welcomeEmailState) : null);
+        const equal = deepEqual(referenceContent, welcomeEmailState ? WelcomeEmailContentBlock.state2Output(welcomeEmailState) : null);
         setHasChanges(!equal);
     }, [welcomeEmailState, referenceContent]);
 

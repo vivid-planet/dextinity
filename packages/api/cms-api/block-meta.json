@@ -826,15 +826,17 @@
         "fields": [
             {
                 "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "Link"
             }
         ],
         "inputFields": [
             {
                 "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "Link"
             }
         ]
     },
@@ -1026,23 +1028,6 @@
                         }
                     ]
                 },
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "Space",
-        "fields": [
-            {
-                "name": "height",
-                "kind": "Number",
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "height",
-                "kind": "Number",
                 "nullable": false
             }
         ]
@@ -1361,7 +1346,8 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "linkBlock": "Link"
             }
         ],
         "inputFields": [
@@ -1369,7 +1355,8 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "linkBlock": "Link"
             }
         ]
     },

@@ -1,5 +1,29 @@
 # @comet/brevo-api
 
+## 10.11.0
+
+### Patch Changes
+
+- 97b3b42: Allow `graphql-scalars` v2
+
+    v2 only drops support for `graphql` below v16 and for Node 20, so projects can update to it whenever they want.
+
+- 80298a2: Remove the `uuid` dependency
+
+    Random UUIDs are now generated with `randomUUID()` from Node's `crypto` module.
+
+- Updated dependencies [97b3b42]
+- Updated dependencies [22bd832]
+- Updated dependencies [bc24036]
+- Updated dependencies [79c2746]
+- Updated dependencies [05ea45d]
+- Updated dependencies [79c2746]
+- Updated dependencies [75ebfd4]
+- Updated dependencies [9a5fd29]
+- Updated dependencies [c5f02ac]
+- Updated dependencies [a6050c4]
+    - @dextinity/cms-api@10.11.0
+
 ## 10.10.0
 
 ### Patch Changes

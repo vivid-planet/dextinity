@@ -40,7 +40,7 @@
     "dependencies": {
         "@aws-sdk/client-s3": "^3.1156.0",
         "@aws-sdk/lib-storage": "^3.1156.0",
-        "@azure-rest/ai-translation-text": "^1.0.2",
+        "@azure-rest/ai-translation-text": "^2.0.0",
         "@azure/storage-blob": "^12.34.0",
         "@fast-csv/parse": "^5.0.8",
         "@golevelup/nestjs-discovery": "^5.0.1",

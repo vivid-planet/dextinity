@@ -471,3 +471,59 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
         });
     },
 };
+
+// The lists carry no styles, so without `alwaysShowTextBlockStyleSelect` the styling select would
+// disappear in a list and shift the toolbar buttons to its right.
+const AlwaysShowTextBlockStyleSelectBlock = createTipTapRichTextBlock({
+    undoRedoButtons: false,
+    alwaysShowTextBlockStyleSelect: true,
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p", styles: [introStyle, highlightStyle] },
+        { name: "heading-1", label: "Heading 1", tag: "h1", styles: [largeHeadingStyle, highlightStyle], defaultStyle: "large-heading" },
+        { name: "heading-2", label: "Heading 2", tag: "h2", styles: [largeHeadingStyle, highlightStyle], defaultStyle: "large-heading" },
+        { name: "heading-3", label: "Heading 3", tag: "h3", styles: [highlightStyle], defaultStyle: "highlight" },
+    ],
+});
+
+function AlwaysShowTextBlockStyleSelectStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(AlwaysShowTextBlockStyleSelectBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <AlwaysShowTextBlockStyleSelectBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const AlwaysShowTextBlockStyleSelect: StoryObj<typeof AlwaysShowTextBlockStyleSelectStory> = {
+    render: () => <AlwaysShowTextBlockStyleSelectStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("A paragraph offers its styles", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")[1]).not.toHaveAttribute("aria-disabled");
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("A list without styles keeps the styling select, disabled", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("List item text");
+
+            // TipTap binds list shortcuts to Mod-Shift-{7,8}: Meta on Mac, Control elsewhere
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Shift>}8{/Shift}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("ul")).toBeTruthy();
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveAttribute("aria-disabled", "true");
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Default");
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};

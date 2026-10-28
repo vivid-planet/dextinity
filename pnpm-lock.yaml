@@ -711,7 +711,7 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       filesize:
-        specifier: ^11.0.28
+        specifier: ^11.0.29
         version: 11.0.29
       ioredis:
         specifier: ^5.11.1

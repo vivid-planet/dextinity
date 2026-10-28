@@ -12,75 +12,50 @@ import {
     useTableQueryFilter,
 } from "@dextinity/admin";
 import { Typography } from "@mui/material";
-import queryString from "query-string";
 
-import { apolloRestStoryDecorator } from "../../apollo-rest-story.decorator";
+import type { LaunchesPastResult } from "../../../.storybook/mocks/handlers";
+import { apolloStoryDecorator } from "../../apollo-story.decorator";
 
-const gqlRest = gql;
-
-const query = gqlRest`
-query users(
-    $pathFunction: any
-    $query: String
-) {
-    users(
-        query: $query
-    ) @rest(type: "User", pathBuilder: $pathFunction) {
-        id
-        name
-        username
-        email
-    }
-}
-`;
-function pathFunction({ args }: { args: { [key: string]: any } }) {
-    interface IPathMapping {
-        [arg: string]: string;
-    }
-    const paramMapping: IPathMapping = {
-        query: "q",
-    };
-
-    const q = Object.keys(args).reduce((acc: { [key: string]: any }, key: string): { [key: string]: any } => {
-        if (paramMapping[key] && args[key]) {
-            acc[paramMapping[key]] = args[key];
+const query = gql`
+    query LaunchesPast($filter: LaunchesPastFilter) {
+        launchesPastResult(filter: $filter) {
+            data {
+                id
+                mission_name
+                launch_date_local
+            }
+            result {
+                totalCount
+            }
         }
-        return acc;
-    }, {});
-    return `users?${queryString.stringify(q, { arrayFormat: "bracket" })}`;
-}
+    }
+`;
 
 interface IQueryData {
-    users: Array<{
-        id: number;
-        name: string;
-        username: string;
-        email: string;
-    }>;
+    launchesPastResult: LaunchesPastResult;
 }
 
 interface IFilterValues {
     query?: string;
 }
-interface IVariables extends IFilterValues {
-    pathFunction: any;
+interface IVariables {
+    filter?: { mission_name: { contains: string } };
 }
 
 export default {
     title: "@dextinity/admin/table",
-    decorators: [apolloRestStoryDecorator()],
+    decorators: [apolloStoryDecorator("/graphql")],
 };
 
 export const Filter = () => {
     const filterApi = useTableQueryFilter<IFilterValues>({});
     const { tableData, api, loading, error } = useTableQuery<IQueryData, IVariables>()(query, {
         variables: {
-            ...filterApi.current,
-            pathFunction,
+            filter: filterApi.current.query ? { mission_name: { contains: filterApi.current.query } } : undefined,
         },
         resolveTableData: (data) => ({
-            data: data.users,
-            totalCount: data.users.length,
+            data: data.launchesPastResult.data,
+            totalCount: data.launchesPastResult.result.totalCount,
         }),
     });
 
@@ -103,19 +78,12 @@ export const Filter = () => {
                             {...tableData}
                             columns={[
                                 {
-                                    name: "name",
-                                    header: "Name",
-                                    sortable: true,
+                                    name: "mission_name",
+                                    header: "Mission Name",
                                 },
                                 {
-                                    name: "username",
-                                    header: "Username",
-                                    sortable: true,
-                                },
-                                {
-                                    name: "email",
-                                    header: "E-Mail",
-                                    sortable: true,
+                                    name: "launch_date_local",
+                                    header: "Launch Date",
                                 },
                             ]}
                         />

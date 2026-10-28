@@ -27,7 +27,7 @@ Follow the BEM convention with camelCase blocks. Adapt the block name to the com
 
 ## Column Widths Must Be Inline
 
-Set `disableResponsiveBehavior` on **every** section with more than one column, including sections that are meant to stack. The prop wraps the columns in an `MjmlGroup`, which is what makes MJML write their widths inline. Without it the widths exist only in a `min-width` media query, and clients that drop that query — GMX and Web.de, for example — show the columns stacked.
+Set `disableResponsiveBehavior` on **every** section with more than one column, including sections that are meant to stack. The prop wraps the columns in an `MjmlGroup`, which is what makes MJML write their widths inline. Without it the widths exist only in a `min-width` media query, and clients that drop that query — GMX, Web.de and the Gmail apps with a non-Google account, for example — show the columns stacked.
 
 Two things follow:
 
@@ -35,6 +35,8 @@ Two things follow:
 - Target the column container one level deeper. The group adds a `<div>`, so a flex container is `… > td > div`.
 
 Inside a group, a column without a `width` prop gets `parseInt(100 / siblings)%` — `33%` for three columns, not `33.33%`. Set explicit widths when the count does not divide 100 evenly.
+
+Pixel widths on columns inside `MjmlGroup` work, although MJML's documentation asks for percentages. MJML converts them to percentages inline, but MJML's head CSS keeps the pixel width with `!important` above the mobile breakpoint. So the columns do not shrink between the mobile breakpoint and the body width of the mail (`sizes.bodyWidth`). Override their widths with `registerStyles` in `theme.breakpoints.default.belowMediaQuery`, or use percentages.
 
 ---
 
@@ -404,3 +406,9 @@ Key behaviors:
 - `MjmlWrapper` applies `theme.colors.background.content` as its default background when a theme is present, so the `backgroundColor` prop is only needed when the wrapper should differ from the theme default.
 - An explicit `backgroundColor` on an inner `MjmlSection` still wins — use that only when a single section inside the wrapper needs to stand out.
 - For a region that also needs different default text color or variants, combine `MjmlWrapper` with a scoped `ThemeProvider` (see [`components-and-theme.md`](components-and-theme.md) → Scoped Theming). Text components pick up the scoped theme while the wrapper provides the background.
+
+---
+
+## Fixed-Width Cells in a Row
+
+`MjmlTable` writes `width: 100%` by default. When the cells of a row are narrower than the table together, Apple Mail and Safari spread the free table width over all cells, so fixed-width cells become wider than declared. An empty filler cell at the end of the row does not help. For a row of fixed-width items, such as icons, set `width="auto"` on the table.

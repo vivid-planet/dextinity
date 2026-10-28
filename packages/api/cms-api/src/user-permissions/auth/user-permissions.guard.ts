@@ -1,16 +1,20 @@
-import { CanActivate, ExecutionContext, Inject, Injectable, Logger } from "@nestjs/common";
+import { type CanActivate, type ExecutionContext, Inject, Injectable, Logger } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { GqlContextType, GqlExecutionContext } from "@nestjs/graphql";
+import { type GqlContextType, GqlExecutionContext } from "@nestjs/graphql";
 import { TypeMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/type-metadata.storage.js";
 
-import { DISABLE_DEXTINITY_GUARDS_METADATA_KEY } from "../../auth/decorators/disable-dextinity-guards.decorator";
-import { getRequestFromExecutionContext } from "../../common/decorators/utils";
-import { ContentScopeService } from "../content-scope.service";
-import { DisablePermissionCheck, REQUIRED_PERMISSION_METADATA_KEY, RequiredPermissionMetadata } from "../decorators/required-permission.decorator";
-import { CurrentUser } from "../dto/current-user";
-import { ContentScope } from "../interfaces/content-scope.interface";
-import { ACCESS_CONTROL_SERVICE, USER_PERMISSIONS_OPTIONS } from "../user-permissions.constants";
-import { AccessControlServiceInterface, Permission, SystemUser, UserPermissionsOptions } from "../user-permissions.types";
+import { DISABLE_DEXTINITY_GUARDS_METADATA_KEY } from "../../auth/decorators/disable-dextinity-guards.decorator.js";
+import { getRequestFromExecutionContext } from "../../common/decorators/utils.js";
+import { ContentScopeService } from "../content-scope.service.js";
+import {
+    DisablePermissionCheck,
+    REQUIRED_PERMISSION_METADATA_KEY,
+    type RequiredPermissionMetadata,
+} from "../decorators/required-permission.decorator.js";
+import type { CurrentUser } from "../dto/current-user.js";
+import type { ContentScope } from "../interfaces/content-scope.interface.js";
+import { ACCESS_CONTROL_SERVICE, USER_PERMISSIONS_OPTIONS } from "../user-permissions.constants.js";
+import type { AccessControlServiceInterface, Permission, SystemUser, UserPermissionsOptions } from "../user-permissions.types.js";
 
 @Injectable()
 export class UserPermissionsGuard implements CanActivate {

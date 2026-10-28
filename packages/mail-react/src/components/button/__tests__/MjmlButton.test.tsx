@@ -9,7 +9,7 @@ import { MjmlMailRoot } from "../../mailRoot/MjmlMailRoot.js";
 import { MjmlSection } from "../../section/MjmlSection.js";
 import { generateInlineBackgroundImageCss, generateMjmlButtonStyles, MjmlButton } from "../MjmlButton.js";
 
-function renderInMailRoot(button: ReactNode, theme?: ReturnType<typeof createTheme>) {
+async function renderInMailRoot(button: ReactNode, theme?: ReturnType<typeof createTheme>) {
     return renderMailHtml(
         <MjmlMailRoot theme={theme}>
             <MjmlSection>
@@ -20,7 +20,7 @@ function renderInMailRoot(button: ReactNode, theme?: ReturnType<typeof createThe
 }
 
 describe("MjmlButton", () => {
-    it("produces no MJML warnings for default, variant, and full-width buttons", () => {
+    it("produces no MJML warnings for default, variant, and full-width buttons", async () => {
         const theme = createTheme({
             button: {
                 variants: {
@@ -30,7 +30,7 @@ describe("MjmlButton", () => {
             },
         });
 
-        const { mjmlWarnings } = renderInMailRoot(
+        const { mjmlWarnings } = await renderInMailRoot(
             <>
                 <MjmlButton href="https://example.com">Default</MjmlButton>
                 <MjmlButton href="https://example.com" variant="primary">
@@ -46,8 +46,8 @@ describe("MjmlButton", () => {
         expect(mjmlWarnings).toEqual([]);
     });
 
-    it("renders an anchor with default props when no theme is set", () => {
-        const { html } = renderInMailRoot(<MjmlButton>Click me</MjmlButton>);
+    it("renders an anchor with default props when no theme is set", async () => {
+        const { html } = await renderInMailRoot(<MjmlButton>Click me</MjmlButton>);
 
         expect(html).toContain("mjmlButton");
         expect(html).toContain('href="#"');
@@ -55,8 +55,8 @@ describe("MjmlButton", () => {
         expect(html).toContain("Click me");
     });
 
-    it("applies theme base styles to the button", () => {
-        const { html } = renderInMailRoot(
+    it("applies theme base styles to the button", async () => {
+        const { html } = await renderInMailRoot(
             <MjmlButton href="https://example.com">Click me</MjmlButton>,
             createTheme({ button: { backgroundColor: "#5B4FC7" } }),
         );
@@ -64,8 +64,8 @@ describe("MjmlButton", () => {
         expect(html).toContain("background:#5B4FC7");
     });
 
-    it("applies the variant modifier class", () => {
-        const { html } = renderInMailRoot(
+    it("applies the variant modifier class", async () => {
+        const { html } = await renderInMailRoot(
             <MjmlButton href="https://example.com" variant="primary">
                 Primary
             </MjmlButton>,
@@ -75,8 +75,8 @@ describe("MjmlButton", () => {
         expect(html).toContain("mjmlButton--primary");
     });
 
-    it("inherits base button styles not overridden by a variant", () => {
-        const { html } = renderInMailRoot(
+    it("inherits base button styles not overridden by a variant", async () => {
+        const { html } = await renderInMailRoot(
             <MjmlButton href="https://example.com" variant="primary">
                 Primary
             </MjmlButton>,
@@ -87,8 +87,8 @@ describe("MjmlButton", () => {
         expect(html).toContain("color:#FFFFFF");
     });
 
-    it("applies defaultVariant when no variant prop is specified", () => {
-        const { html } = renderInMailRoot(
+    it("applies defaultVariant when no variant prop is specified", async () => {
+        const { html } = await renderInMailRoot(
             <MjmlButton href="https://example.com">Primary</MjmlButton>,
             createTheme({ button: { defaultVariant: "primary", variants: { primary: { backgroundColor: "#5B4FC7" } } } }),
         );
@@ -97,8 +97,8 @@ describe("MjmlButton", () => {
         expect(html).toContain("background:#5B4FC7");
     });
 
-    it("adds the full-width modifier class when fullWidth is set", () => {
-        const { html } = renderInMailRoot(
+    it("adds the full-width modifier class when fullWidth is set", async () => {
+        const { html } = await renderInMailRoot(
             <MjmlButton href="https://example.com" fullWidth>
                 Full width
             </MjmlButton>,
@@ -107,8 +107,8 @@ describe("MjmlButton", () => {
         expect(html).toContain("mjmlButton--fullWidth");
     });
 
-    it("leaves no full-width rule in a style block, so it survives clients that drop them", () => {
-        const { html } = renderInMailRoot(
+    it("leaves no full-width rule in a style block, so it survives clients that drop them", async () => {
+        const { html } = await renderInMailRoot(
             <MjmlButton href="https://example.com" fullWidth>
                 Full width
             </MjmlButton>,
@@ -117,8 +117,8 @@ describe("MjmlButton", () => {
         expect(html).not.toMatch(/\.mjmlButton--fullWidth a\s*\{/);
     });
 
-    it("renders an icon table passed as children without warnings", () => {
-        const { html, mjmlWarnings } = renderInMailRoot(
+    it("renders an icon table passed as children without warnings", async () => {
+        const { html, mjmlWarnings } = await renderInMailRoot(
             <MjmlButton href="https://example.com">
                 <table role="presentation" cellPadding={0} cellSpacing={0} border={0}>
                     <tbody>

@@ -12,12 +12,14 @@ alwaysApply: false
 - Do **not** include an unrelated bugfix in a feature PR, even as a separate commit. Open a follow-up PR instead.
 - Changes to `api`, `admin`, and `site` in the same PR should **not** be split into separate commits.
 - Keep PRs as small as possible. Avoid unnecessary new dependencies.
+- Don't write in the PR description what the reader can get from the diff: no code copied from it, no account of how the code changes. A usage example of a new API is fine.
 - If the `main` pipeline is red, do not merge anything that does not contribute to fixing it.
 
 ## Commits
 
 - Write commit messages in English, in the imperative, starting with a capital letter: `Add margin to footer` (not `Added margin` or `fix`).
 - Explain **what** and **why**, not **how**: `Add margin to nav items to prevent them from overlapping the logo`.
+- Don't write in the commit body what the reader can get from the diff: no code copied from it, no account of how the code changes. A usage example of a new API is fine.
 - Never use vague messages like `fix`, `polish`, `wip`, `another try` in the final history — clean them up before merging.
 - Commits should be **atomic**: each commit leaves the code in a runnable state.
 - Prefer multiple small commits split by logical change (e.g. separate docs from feature work).

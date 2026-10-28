@@ -1,12 +1,18 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { resolveEntityClass } from "@dextinity/cms-api";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
-import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
-import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
-import { EmailCampaignScopeInterface } from "src/types";
+import {
+    registerDecorator,
+    type ValidationArguments,
+    type ValidationOptions,
+    ValidatorConstraint,
+    type ValidatorConstraintInterface,
+} from "class-validator";
 
-import { BrevoModuleConfig } from "../../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../../config/brevo-module.constants";
+import type { BrevoConfigInterface } from "../../brevo-config/entities/brevo-config-entity.factory.js";
+import type { BrevoModuleConfig } from "../../config/brevo-module.config.js";
+import { BREVO_MODULE_CONFIG } from "../../config/brevo-module.constants.js";
+import type { EmailCampaignScopeInterface } from "../../types.js";
 
 export const IsValidRedirectURL = (scope: EmailCampaignScopeInterface, validationOptions?: ValidationOptions) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,12 +32,12 @@ export const IsValidRedirectURL = (scope: EmailCampaignScopeInterface, validatio
 export class IsValidRedirectURLConstraint implements ValidatorConstraintInterface {
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
-        @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
+        private readonly entityManager: EntityManager,
     ) {}
 
     async validate(urlToValidate: string, args: ValidationArguments): Promise<boolean> {
         const [scope] = args.constraints;
-        const configForScope = await this.brevoConfigRepository.findOneOrFail({ scope });
+        const configForScope = await this.entityManager.findOneOrFail(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"), { scope });
 
         if (!configForScope) {
             throw Error("Scope does not exist");

@@ -44,3 +44,9 @@ You can build two types of applications with Dextinity:
 :::note
 This terms are used throughout the documentation as some concepts heavily differ between this two types.
 :::
+
+## Security policy and supported versions
+
+See our [security policy](https://github.com/vivid-planet/dextinity/security/policy) for the versions that receive security updates.
+
+To report a vulnerability, email [security@vivid-planet.com](mailto:security@vivid-planet.com).

@@ -3,11 +3,11 @@ import { Type } from "class-transformer";
 import { IsEnum, IsOptional, IsString, ValidateNested } from "class-validator";
 import { GraphQLJSONObject } from "graphql-scalars";
 
-import { OffsetBasedPaginationArgs } from "../../common/pagination/offset-based.args";
-import { ContentScope } from "../../user-permissions/interfaces/content-scope.interface";
-import { WarningStatus } from "../entities/warning-status.enum";
-import { WarningFilter } from "./warning.filter";
-import { WarningSort } from "./warning.sort";
+import { OffsetBasedPaginationArgs } from "../../common/pagination/offset-based.args.js";
+import type { ContentScope } from "../../user-permissions/interfaces/content-scope.interface.js";
+import { WarningStatus } from "../entities/warning-status.enum.js";
+import { WarningFilter } from "./warning.filter.js";
+import { WarningSort } from "./warning.sort.js";
 
 @ArgsType()
 export class WarningsArgs extends OffsetBasedPaginationArgs {

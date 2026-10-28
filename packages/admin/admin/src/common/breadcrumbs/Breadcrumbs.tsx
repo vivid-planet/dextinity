@@ -14,28 +14,27 @@ export interface Breadcrumb {
     title: ReactNode;
 }
 
-export interface BreadcrumbsProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        startAdornment: "div";
-        item: typeof Typography;
-        activeItem: typeof Typography;
-        separator: "div";
-        ellipsis: typeof Typography;
-        overflowButton: typeof ButtonBase;
-        overflowMenu: typeof MuiPopover;
-        overflowMenuItem: typeof BreadcrumbLink;
-        menuContainer: "div";
-        toolbarContainer: "div";
-        expandedMenu: "div";
-        expandedMenuItem: typeof Typography;
-        expandedMenuActiveItem: typeof Typography;
-        expandedMenuActiveItemWrapper: "div";
-        pageTreeVerticalLine: "div";
-        expandedMenuSubitemWrapper: typeof BreadcrumbLink;
-        mobileMenuIcon: "div";
-        mobileRootButton: typeof ButtonBase;
-    }> {
+export interface BreadcrumbsProps extends ThemedComponentBaseProps<{
+    root: "div";
+    startAdornment: "div";
+    item: typeof Typography;
+    activeItem: typeof Typography;
+    separator: "div";
+    ellipsis: typeof Typography;
+    overflowButton: typeof ButtonBase;
+    overflowMenu: typeof MuiPopover;
+    overflowMenuItem: typeof BreadcrumbLink;
+    menuContainer: "div";
+    toolbarContainer: "div";
+    expandedMenu: "div";
+    expandedMenuItem: typeof Typography;
+    expandedMenuActiveItem: typeof Typography;
+    expandedMenuActiveItemWrapper: "div";
+    pageTreeVerticalLine: "div";
+    expandedMenuSubitemWrapper: typeof BreadcrumbLink;
+    mobileMenuIcon: "div";
+    mobileRootButton: typeof ButtonBase;
+}> {
     items: Breadcrumb[];
     /**
      * Rendered at the start of the breadcrumbs, before the items, for instance a back button or a scope indicator.

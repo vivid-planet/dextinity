@@ -27,6 +27,13 @@ const theme = createTheme({
 registerStyles(
     (theme) => css`
         ${theme.breakpoints.mobile.belowMediaQuery} {
+            .twoColumnsSection__leftColumn,
+            .twoColumnsSection__rightColumn {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
             .twoColumnsSection__leftColumn > table > tbody > tr > td {
                 padding-right: 0 !important;
             }
@@ -50,7 +57,7 @@ export const Default: StoryObj = {
             const halfGap = columnGap / 2;
 
             return (
-                <MjmlSection indent className="twoColumnsSection">
+                <MjmlSection indent disableResponsiveBehavior className="twoColumnsSection">
                     <MjmlColumn className="twoColumnsSection__leftColumn" paddingRight={halfGap}>
                         <MjmlText variant="subheading" bottomSpacing>
                             Left column

@@ -52,12 +52,11 @@ const BackButtonSeparator = createComponentSlot("div")<StackBreadcrumbsClassKey>
     `,
 );
 
-export interface StackBreadcrumbsProps
-    extends ThemedComponentBaseProps<{
-        root: typeof Breadcrumbs;
-        backButton: typeof MuiIconButton;
-        backButtonSeparator: "div";
-    }> {
+export interface StackBreadcrumbsProps extends ThemedComponentBaseProps<{
+    root: typeof Breadcrumbs;
+    backButton: typeof MuiIconButton;
+    backButtonSeparator: "div";
+}> {
     iconMapping?: BreadcrumbsProps["iconMapping"] & { backButton?: ReactNode };
 }
 

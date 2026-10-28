@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 
-import { BlockTransformerServiceInterface } from "../../blocks/block";
-import { PageTreeReadApiService } from "../page-tree-read-api.service";
-import type { InternalLinkBlockData } from "./internal-link.block";
+import type { BlockTransformerServiceInterface } from "../../blocks/block.js";
+import { PageTreeReadApiService } from "../page-tree-read-api.service.js";
+import type { InternalLinkBlockData } from "./internal-link.block.js";
 
 type TransformResponse = {
     targetPage: {

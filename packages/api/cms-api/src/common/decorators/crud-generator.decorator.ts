@@ -1,8 +1,8 @@
 import type { Type } from "@nestjs/common";
 
-import type { CurrentUser } from "../../user-permissions/dto/current-user";
-import type { Permission } from "../../user-permissions/user-permissions.types";
-import type { MutationError } from "../graphql/mutation-error";
+import type { CurrentUser } from "../../user-permissions/dto/current-user.js";
+import type { Permission } from "../../user-permissions/user-permissions.types.js";
+import type { MutationError } from "../graphql/mutation-error.js";
 
 export interface CrudGeneratorHooksService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

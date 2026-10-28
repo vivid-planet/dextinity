@@ -1,5 +1,18 @@
 import { Alert, RowActionsItem, RowActionsMenu, useSnackbarApi, writeClipboardText } from "@dextinity/admin";
-import { Add, Copy, Delete, DensityStandard, DragIndicator, Duplicate, Paste, PinLeft, PinRight, Remove } from "@dextinity/admin-icons";
+import {
+    Add,
+    ColumnInsertLeft,
+    ColumnInsertRight,
+    ColumnMoveLeft,
+    ColumnMoveRight,
+    Copy,
+    Delete,
+    DensityStandard,
+    DragIndicator,
+    Duplicate,
+    Paste,
+    Remove,
+} from "@dextinity/admin-icons";
 import { ButtonBase, Divider, Snackbar } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { GridColumnHeaderParams } from "@mui/x-data-grid";
@@ -17,6 +30,7 @@ import {
     getDuplicatedColumnInsertData,
     getInsertDataFromColumnById,
     insertColumnDataAtIndex,
+    moveColumnToIndex,
     removeColumnFromState,
     setColumnSize,
     toggleColumnHighlight,
@@ -47,6 +61,8 @@ export const ColumnHeader = ({ columnSize, highlighted, state, updateState, colu
     const blockContext = useBlockContext();
     const intl = useIntl();
     const { RichTextBlock } = useTableBlockContext();
+    const isFirstColumn = columnIndex === 0;
+    const isLastColumn = columnIndex === state.columns.length - 1;
 
     const handleInsertColumnAtIndex = (newColumnIndex: number) => {
         updateState((state) => {
@@ -56,6 +72,14 @@ export const ColumnHeader = ({ columnSize, highlighted, state, updateState, colu
                 cellValues: state.rows.map(() => RichTextBlock.defaultValues()),
             };
             return insertColumnDataAtIndex(state, newColumnInsertData, newColumnIndex, RichTextBlock);
+        });
+    };
+
+    const handleMoveColumn = (direction: "left" | "right") => {
+        updateState((state) => {
+            const currentColumnIndex = state.columns.findIndex(({ id }) => id === columnId);
+            const targetColumnIndex = direction === "left" ? currentColumnIndex - 1 : currentColumnIndex + 1;
+            return moveColumnToIndex({ state, columnId, targetIndex: targetColumnIndex });
         });
     };
 
@@ -181,7 +205,7 @@ export const ColumnHeader = ({ columnSize, highlighted, state, updateState, colu
                     </RowActionsItem>
                     <Divider />
                     <RowActionsItem
-                        icon={<PinLeft />}
+                        icon={<ColumnInsertLeft />}
                         onClick={() => {
                             handleInsertColumnAtIndex(columnIndex);
                         }}
@@ -189,12 +213,31 @@ export const ColumnHeader = ({ columnSize, highlighted, state, updateState, colu
                         <FormattedMessage id="dextinity.tableBlock.insertColumnLeft" defaultMessage="Insert column left" />
                     </RowActionsItem>
                     <RowActionsItem
-                        icon={<PinRight />}
+                        icon={<ColumnInsertRight />}
                         onClick={() => {
                             handleInsertColumnAtIndex(columnIndex + 1);
                         }}
                     >
                         <FormattedMessage id="dextinity.tableBlock.insertColumnRight" defaultMessage="Insert column right" />
+                    </RowActionsItem>
+                    <Divider />
+                    <RowActionsItem
+                        icon={<ColumnMoveLeft />}
+                        disabled={isFirstColumn}
+                        onClick={() => {
+                            handleMoveColumn("left");
+                        }}
+                    >
+                        <FormattedMessage id="dextinity.tableBlock.moveColumnLeft" defaultMessage="Move left" />
+                    </RowActionsItem>
+                    <RowActionsItem
+                        icon={<ColumnMoveRight />}
+                        disabled={isLastColumn}
+                        onClick={() => {
+                            handleMoveColumn("right");
+                        }}
+                    >
+                        <FormattedMessage id="dextinity.tableBlock.moveColumnRight" defaultMessage="Move right" />
                     </RowActionsItem>
                     <Divider />
                     <RowActionsItem icon={<Copy />} onClick={handleCopyColumnToClipboard}>

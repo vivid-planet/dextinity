@@ -97,8 +97,6 @@ export function generateForm(
         { name: "useStackSwitchApi", importPath: "@dextinity/admin" },
         { name: "ArrowLeft", importPath: "@dextinity/admin-icons" },
         { name: "Lock", importPath: "@dextinity/admin-icons" },
-        { name: "DateTimeField", importPath: "@dextinity/admin-date-time" },
-        { name: "FinalFormDatePicker", importPath: "@dextinity/admin-date-time" },
         { name: "BlockState", importPath: "@dextinity/cms-admin" },
         { name: "createFinalFormBlock", importPath: "@dextinity/cms-admin" },
         { name: "queryUpdatedAt", importPath: "@dextinity/cms-admin" },
@@ -433,7 +431,7 @@ export function generateForm(
 
     const code = `
     ${generateImportsCode(imports)}
-    import isEqual from "lodash.isequal";
+    import { deepEqual } from "fast-equals";
 
     ${
         rootBlockFields.length > 0
@@ -589,7 +587,7 @@ export function generateForm(
                 onSubmit={handleSubmit}
                 mode=${mode == "all" ? `{mode}` : editMode ? `"edit"` : `"add"`}
                 initialValues={initialValues}
-                initialValuesEqual={isEqual} //required to compare block data correctly
+                initialValuesEqual={deepEqual} //required to compare block data correctly
                 subscription={{ ${finalFormSubscription.length ? finalFormSubscription.map((field) => `${field}: true`).join(", ") : ``} }}
             >
                 {(${finalFormRenderProps.length ? `{${finalFormRenderProps.join(", ")}}` : ``}) => (

@@ -1,4 +1,4 @@
-import { pascalCase, pascalCaseTransformMerge } from "change-case";
+import { pascalCase } from "change-case";
 import { Presets, SingleBar } from "cli-progress";
 import { XMLBuilder, XMLParser } from "fast-xml-parser";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "fs";
@@ -59,7 +59,7 @@ const main = async () => {
     await writeIndexFile(icons);
 };
 
-const getComponentName = (fileName: string) => pascalCase(fileName.split(/[_.]/)[0], { transform: pascalCaseTransformMerge });
+const getComponentName = (fileName: string) => pascalCase(fileName.split(/[_.]/)[0], { mergeAmbiguousCharacters: true });
 
 const getSVGData = (icon: Icon) => {
     const fileContents = readFileSync(icon.path);

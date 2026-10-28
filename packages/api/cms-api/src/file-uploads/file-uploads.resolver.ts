@@ -1,8 +1,8 @@
 import { Args, Int, Parent, ResolveField, Resolver } from "@nestjs/graphql";
 
-import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
-import { FileUpload } from "./entities/file-upload.entity";
-import { FileUploadsService } from "./file-uploads.service";
+import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { FileUpload } from "./entities/file-upload.entity.js";
+import { FileUploadsService } from "./file-uploads.service.js";
 
 @Resolver(() => FileUpload)
 @RequiredPermission("fileUploads", { skipScopeCheck: true })

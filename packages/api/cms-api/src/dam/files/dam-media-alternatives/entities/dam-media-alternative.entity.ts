@@ -1,9 +1,11 @@
-import { BaseEntity, Entity, Enum, ManyToOne, PrimaryKey, Property, Ref } from "@mikro-orm/core";
+import { BaseEntity, type Ref } from "@mikro-orm/core";
+import { Entity, Enum, ManyToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
-import { ScopedEntity } from "../../../../user-permissions/decorators/scoped-entity.decorator";
-import { FILE_ENTITY, FileInterface } from "../../entities/file.entity";
+import { ScopedEntity } from "../../../../user-permissions/decorators/scoped-entity.decorator.js";
+import type { FileInterface } from "../../entities/file.entity.js";
+import { resolveFileEntity } from "../../entities/resolve-dam-entity.js";
 
 export enum DamMediaAlternativeType {
     captions = "captions",
@@ -19,7 +21,7 @@ registerEnumType(DamMediaAlternativeType, { name: "DamMediaAlternativeType" });
 export class DamMediaAlternative extends BaseEntity {
     @PrimaryKey({ columnType: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ columnType: "text" })
     @Field()
@@ -30,7 +32,7 @@ export class DamMediaAlternative extends BaseEntity {
     type: DamMediaAlternativeType;
 
     @ManyToOne({
-        entity: () => FILE_ENTITY,
+        entity: () => resolveFileEntity(),
         inversedBy: (file: FileInterface) => file.alternativesForThisFile,
         deleteRule: "cascade",
         ref: true,
@@ -38,7 +40,7 @@ export class DamMediaAlternative extends BaseEntity {
     for: Ref<FileInterface>;
 
     @ManyToOne({
-        entity: () => FILE_ENTITY,
+        entity: () => resolveFileEntity(),
         inversedBy: (file: FileInterface) => file.thisFileIsAlternativeFor,
         deleteRule: "cascade",
         ref: true,

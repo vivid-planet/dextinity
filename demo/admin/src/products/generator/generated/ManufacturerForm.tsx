@@ -32,7 +32,7 @@ import { GQLCreateManufacturerMutationVariables } from "./ManufacturerForm.gql.g
 import { updateManufacturerMutation } from "./ManufacturerForm.gql";
 import { GQLUpdateManufacturerMutation } from "./ManufacturerForm.gql.generated";
 import { GQLUpdateManufacturerMutationVariables } from "./ManufacturerForm.gql.generated";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 type FormValues = Omit<GQLManufacturerFormFragment, "address"> & {
     address: GQLManufacturerFormFragment["address"] & {
         alternativeAddressEnabled: boolean;
@@ -124,7 +124,7 @@ export function ManufacturerForm({ onCreate, id }: FormProps) {
             onSubmit={handleSubmit}
             mode={mode}
             initialValues={initialValues}
-            initialValuesEqual={isEqual} //required to compare block data correctly
+            initialValuesEqual={deepEqual} //required to compare block data correctly
             subscription={{}}
         >
             {() => (

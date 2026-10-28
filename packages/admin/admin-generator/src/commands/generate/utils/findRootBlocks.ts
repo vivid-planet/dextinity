@@ -8,7 +8,6 @@ const fallbackLibraryBlocks: { [key: string]: string } = {
     ExternalLinkBlock: "@dextinity/cms-admin",
     InternalLinkBlock: "@dextinity/cms-admin",
     PixelImageBlock: "@dextinity/cms-admin",
-    SpaceBlock: "@dextinity/cms-admin",
     SvgImageBlock: "@dextinity/cms-admin",
     YouTubeVideoBlock: "@dextinity/cms-admin",
 };

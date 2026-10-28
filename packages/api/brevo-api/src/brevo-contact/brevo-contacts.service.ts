@@ -1,32 +1,28 @@
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { resolveEntityClass } from "@dextinity/cms-api";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
-import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 
-import { BlacklistedContactsInterface } from "../blacklisted-contacts/entity/blacklisted-contacts.entity.factory";
-import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
-import { BrevoEmailImportLogService } from "../brevo-email-import-log/brevo-email-import-log.service";
-import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
-import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
-import { TargetGroupsService } from "../target-group/target-groups.service";
-import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "../types";
-import { hashEmail } from "../util/hash.util";
-import { BrevoContactInterface } from "./dto/brevo-contact.factory";
-import { SubscribeInputInterface } from "./dto/subscribe-input.factory";
-import { SubscribeResponse } from "./dto/subscribe-response.enum";
-import { EcgRtrListService } from "./ecg-rtr-list/ecg-rtr-list.service";
+import type { BlacklistedContactsInterface } from "../blacklisted-contacts/entity/blacklisted-contacts.entity.factory.js";
+import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service.js";
+import type { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory.js";
+import { BrevoEmailImportLogService } from "../brevo-email-import-log/brevo-email-import-log.service.js";
+import type { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory.js";
+import type { BrevoModuleConfig } from "../config/brevo-module.config.js";
+import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants.js";
+import { TargetGroupsService } from "../target-group/target-groups.service.js";
+import type { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "../types.js";
+import { hashEmail } from "../util/hash.util.js";
+import type { BrevoContactInterface } from "./dto/brevo-contact.factory.js";
+import type { SubscribeInputInterface } from "./dto/subscribe-input.factory.js";
+import { SubscribeResponse } from "./dto/subscribe-response.enum.js";
+import { EcgRtrListService } from "./ecg-rtr-list/ecg-rtr-list.service.js";
 
 @Injectable()
 export class BrevoContactsService {
     private readonly secretKey?: string;
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
-        @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
-        @Optional()
-        @InjectRepository("BrevoBlacklistedContacts")
-        @Optional()
-        private readonly blacklistedContactsRepository: EntityRepository<BlacklistedContactsInterface>,
+        private readonly entityManager: EntityManager,
         private readonly brevoContactsApiService: BrevoApiContactsService,
         private readonly ecgRtrListService: EcgRtrListService,
         private readonly targetGroupService: TargetGroupsService,
@@ -75,7 +71,12 @@ export class BrevoContactsService {
             }
 
             const hashedEmail = hashEmail(email, this.secretKey);
-            const blacklistedContactAvailable = await this.blacklistedContactsRepository.findOne({ hashedEmail: hashedEmail });
+            const blacklistedContactAvailable = await this.entityManager.findOne(
+                resolveEntityClass<BlacklistedContactsInterface>("BrevoBlacklistedContacts"),
+                {
+                    hashedEmail: hashedEmail,
+                },
+            );
 
             if (blacklistedContactAvailable) {
                 return SubscribeResponse.ERROR_CONTACT_IS_BLACKLISTED;
@@ -160,7 +161,7 @@ export class BrevoContactsService {
             return SubscribeResponse.ERROR_CONTAINED_IN_ECG_RTR_LIST;
         }
 
-        const brevoConfig = await this.brevoConfigRepository.findOneOrFail({ scope });
+        const brevoConfig = await this.entityManager.findOneOrFail(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"), { scope });
 
         const created = await this.createContact({
             ...data,

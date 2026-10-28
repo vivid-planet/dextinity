@@ -1,5 +1,149 @@
 # @comet/brevo-admin
 
+## 10.10.0
+
+### Patch Changes
+
+- Updated dependencies [d44bdd0]
+- Updated dependencies [7f5eefe]
+- Updated dependencies [bfc162a]
+- Updated dependencies [c1ac227]
+- Updated dependencies [245faa3]
+- Updated dependencies [c6b573b]
+- Updated dependencies [98499dd]
+- Updated dependencies [43461dd]
+- Updated dependencies [4bd97fa]
+- Updated dependencies [8ca42f5]
+- Updated dependencies [6683f95]
+- Updated dependencies [a607533]
+- Updated dependencies [fdce21f]
+- Updated dependencies [7a121f1]
+- Updated dependencies [ad1ad05]
+    - @dextinity/cms-admin@10.10.0
+    - @dextinity/admin@10.10.0
+    - @dextinity/admin-icons@10.10.0
+
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/cms-admin@10.9.1
+- @dextinity/admin@10.9.1
+- @dextinity/admin-icons@10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- Updated dependencies [13838dc]
+- Updated dependencies [58aef82]
+- Updated dependencies [f899c6b]
+- Updated dependencies [f486058]
+- Updated dependencies [847b2a0]
+- Updated dependencies [fad8ab4]
+- Updated dependencies [013a03f]
+- Updated dependencies [be674a9]
+- Updated dependencies [e9067c3]
+- Updated dependencies [1c29104]
+- Updated dependencies [e84ba03]
+    - @dextinity/cms-admin@10.9.0
+    - @dextinity/admin@10.9.0
+    - @dextinity/admin-icons@10.9.0
+
+## 10.8.0
+
+### Patch Changes
+
+- 8c41f26: Allow typing the email campaign schedule date
+
+    The schedule field used the deprecated `FinalFormDateTimePicker` from `@dextinity/admin-date-time`, which renders a read-only input, so the date and time could only be picked from the calendar. It now uses `DateTimePickerField` from `@dextinity/admin`, which accepts keyboard input.
+
+    `@dextinity/brevo-admin` no longer depends on `@dextinity/admin-date-time`.
+
+- Updated dependencies [f9ba8df]
+- Updated dependencies [350294d]
+- Updated dependencies [748dd34]
+- Updated dependencies [9109aa3]
+- Updated dependencies [f9ba8df]
+    - @dextinity/cms-admin@10.8.0
+    - @dextinity/admin@10.8.0
+    - @dextinity/admin-icons@10.8.0
+
+## 10.7.0
+
+### Patch Changes
+
+- Updated dependencies [ae93af6]
+- Updated dependencies [33cfcdd]
+- Updated dependencies [320f47a]
+- Updated dependencies [0ba6e01]
+    - @dextinity/cms-admin@10.7.0
+    - @dextinity/admin@10.7.0
+    - @dextinity/admin-date-time@10.7.0
+    - @dextinity/admin-icons@10.7.0
+
+## 10.6.0
+
+### Patch Changes
+
+- Updated dependencies [65d5f1c]
+    - @dextinity/cms-admin@10.6.0
+    - @dextinity/admin@10.6.0
+    - @dextinity/admin-date-time@10.6.0
+    - @dextinity/admin-icons@10.6.0
+
+## 10.5.1
+
+### Patch Changes
+
+- Updated dependencies [d800488]
+- Updated dependencies [9cbbd61]
+- Updated dependencies [97fd75d]
+    - @dextinity/cms-admin@10.5.1
+    - @dextinity/admin@10.5.1
+    - @dextinity/admin-date-time@10.5.1
+    - @dextinity/admin-icons@10.5.1
+
+## 10.5.0
+
+### Patch Changes
+
+- Updated dependencies [0be2f59]
+- Updated dependencies [ceca60a]
+    - @dextinity/cms-admin@10.5.0
+    - @dextinity/admin@10.5.0
+    - @dextinity/admin-date-time@10.5.0
+    - @dextinity/admin-icons@10.5.0
+
+## 10.4.0
+
+### Patch Changes
+
+- Updated dependencies [4b9ead5]
+- Updated dependencies [4b9ead5]
+- Updated dependencies [b6cbbd9]
+- Updated dependencies [a00f0b2]
+    - @dextinity/cms-admin@10.4.0
+    - @dextinity/admin@10.4.0
+    - @dextinity/admin-date-time@10.4.0
+    - @dextinity/admin-icons@10.4.0
+
+## 10.3.0
+
+### Patch Changes
+
+- Updated dependencies [504c97f]
+- Updated dependencies [12be273]
+- Updated dependencies [4d6408f]
+- Updated dependencies [876887b]
+- Updated dependencies [0c211e9]
+- Updated dependencies [ddea65d]
+- Updated dependencies [66cb98a]
+    - @dextinity/cms-admin@10.3.0
+    - @dextinity/admin@10.3.0
+    - @dextinity/admin-date-time@10.3.0
+    - @dextinity/admin-icons@10.3.0
+
 ## 10.2.0
 
 ### Patch Changes

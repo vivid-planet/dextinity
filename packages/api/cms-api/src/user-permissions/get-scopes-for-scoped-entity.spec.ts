@@ -1,23 +1,12 @@
-import {
-    AnyEntity,
-    BaseEntity,
-    defineConfig,
-    Embeddable,
-    Embedded,
-    Entity,
-    ManyToOne,
-    MikroORM,
-    PrimaryKey,
-    Property,
-    Ref,
-} from "@mikro-orm/postgresql";
+import { Embeddable, Embedded, Entity, ManyToOne, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { type AnyEntity, BaseEntity, defineConfig, MikroORM, type Ref } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
-import { ModuleRef } from "@nestjs/core";
+import type { ModuleRef } from "@nestjs/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { EntityScopeServiceInterface } from "./decorators/scoped-entity.decorator";
-import { getScopesForScopedEntity } from "./get-scopes-for-scoped-entity";
-import { ContentScope } from "./interfaces/content-scope.interface";
+import type { EntityScopeServiceInterface } from "./decorators/scoped-entity.decorator.js";
+import { getScopesForScopedEntity } from "./get-scopes-for-scoped-entity.js";
+import type { ContentScope } from "./interfaces/content-scope.interface.js";
 
 @Embeddable()
 class ContentScopeEmbeddable {
@@ -77,8 +66,8 @@ describe("getScopesForScopedEntity", () => {
     beforeAll(async () => {
         orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 allowGlobalContext: true,
                 entities: [Company, News, NewsComment, Product, ContentScopeEmbeddable],
             }),

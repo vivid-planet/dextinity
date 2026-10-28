@@ -1,18 +1,19 @@
-import { BaseEntity, defineConfig, Entity, Filter, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, Filter, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { formatGeneratedFiles, testPermission } from "../../utils/test-helper";
-import type { GeneratedFile } from "../../utils/write-generated-files";
-import { buildOptions } from "../build-options";
-import { generateCrud } from "../generate-crud";
+import { formatGeneratedFiles, testPermission } from "../../utils/test-helper.js";
+import type { GeneratedFile } from "../../utils/write-generated-files.js";
+import { buildOptions } from "../build-options.js";
+import { generateCrud } from "../generate-crud.js";
 
 @Entity()
 @Filter({ name: "deletedAt", cond: { deletedAt: { $ne: null } }, default: true })
 export class TestEntity extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ nullable: true, columnType: "timestamp with time zone", onUpdate: () => new Date() })
     deletedAt?: Date;
@@ -25,13 +26,13 @@ describe("deletedAt soft delete", () => {
         LazyMetadataStorage.load();
         orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [TestEntity],
             }),
         );
 
-        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntity"));
+        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntity"));
         formattedOut = await formatGeneratedFiles(out);
     });
     afterEach(async () => {
@@ -39,7 +40,7 @@ describe("deletedAt soft delete", () => {
     });
 
     it("should detect deletedAt property", () => {
-        const options = buildOptions(orm.em.getMetadata().get("TestEntity"), { requiredPermission: testPermission });
+        const options = buildOptions(orm.em.getMetadata().getByClassName("TestEntity"), { requiredPermission: testPermission });
         expect(options.hasDeletedAtProp).toBe(true);
     });
 

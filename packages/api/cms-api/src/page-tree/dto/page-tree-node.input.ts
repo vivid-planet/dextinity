@@ -2,10 +2,10 @@ import { Field, ID, InputType, Int } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsBoolean, IsEnum, IsInt, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
 
-import { IsSlug } from "../../common/validators/is-slug";
-import { IsUndefinable } from "../../common/validators/is-undefinable";
-import { PageTreeNodeVisibility } from "../types";
-import { AttachedDocumentInput } from "./attached-document.input";
+import { IsSlug } from "../../common/validators/is-slug.js";
+import { IsUndefinable } from "../../common/validators/is-undefinable.js";
+import { PageTreeNodeVisibility } from "../types.js";
+import { AttachedDocumentInput } from "./attached-document.input.js";
 
 @InputType()
 export abstract class PageTreeNodeBaseCreateInput {

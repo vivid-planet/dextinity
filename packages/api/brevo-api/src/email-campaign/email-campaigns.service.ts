@@ -1,28 +1,25 @@
-import { BlocksTransformerService, filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@dextinity/cms-api";
+import { BlocksTransformerService, filtersToMikroOrmQuery, resolveEntityClass, searchToMikroOrmQuery } from "@dextinity/cms-api";
 import { Brevo } from "@getbrevo/brevo";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository, ObjectQuery, wrap } from "@mikro-orm/postgresql";
-import { HttpService } from "@nestjs/axios";
+import { EntityManager, type ObjectQuery, wrap } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
-import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
-import { EmailCampaignScopeInterface } from "src/types";
 
-import { BrevoApiCampaignsService } from "../brevo-api/brevo-api-campaigns.service";
-import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
-import { EcgRtrListService } from "../brevo-contact/ecg-rtr-list/ecg-rtr-list.service";
-import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
-import { EmailCampaignFilter } from "./dto/email-campaign.filter";
-import { EmailCampaignInterface } from "./entities/email-campaign-entity.factory";
-import { SendingState } from "./sending-state.enum";
+import { BrevoApiCampaignsService } from "../brevo-api/brevo-api-campaigns.service.js";
+import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service.js";
+import type { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory.js";
+import { EcgRtrListService } from "../brevo-contact/ecg-rtr-list/ecg-rtr-list.service.js";
+import type { BrevoModuleConfig } from "../config/brevo-module.config.js";
+import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants.js";
+import type { EmailCampaignScopeInterface } from "../types.js";
+import type { EmailCampaignFilter } from "./dto/email-campaign.filter.js";
+import type { EmailCampaignInterface } from "./entities/email-campaign-entity.factory.js";
+import { SendingState } from "./sending-state.enum.js";
+
+const CAMPAIGN_CONTENT_REQUEST_TIMEOUT = 5000;
 
 @Injectable()
 export class EmailCampaignsService {
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
-        @InjectRepository("BrevoEmailCampaign") private readonly repository: EntityRepository<EmailCampaignInterface>,
-        @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
-        private readonly httpService: HttpService,
         private readonly brevoApiCampaignService: BrevoApiCampaignsService,
         private readonly brevoApiContactsService: BrevoApiContactsService,
         private readonly entityManager: EntityManager,
@@ -47,7 +44,9 @@ export class EmailCampaignsService {
     async saveEmailCampaignInBrevo(campaign: EmailCampaignInterface, scheduledAt?: Date): Promise<EmailCampaignInterface> {
         const content = await this.blockTransformerService.transformToPlain(campaign.content, { previewDamUrls: false });
 
-        const brevoConfig = await this.brevoConfigRepository.findOneOrFail({ scope: campaign.scope });
+        const brevoConfig = await this.entityManager.findOneOrFail(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"), {
+            scope: campaign.scope,
+        });
         let campaignConfig;
         if (typeof this.config.emailCampaigns.frontend === "function") {
             campaignConfig = this.config.emailCampaigns.frontend(campaign.scope);
@@ -55,19 +54,25 @@ export class EmailCampaignsService {
             campaignConfig = this.config.emailCampaigns.frontend;
         }
 
-        const { data: htmlContent, status } = await this.httpService.axiosRef.post(
-            campaignConfig.url,
-            { id: campaign.id, title: campaign.title, content, scope: campaign.scope },
-            {
-                headers: { "Content-Type": "application/json" },
-                auth: {
-                    username: campaignConfig.basicAuth.username,
-                    password: campaignConfig.basicAuth.password,
-                },
-            },
-        );
+        const basicAuth = Buffer.from(`${campaignConfig.basicAuth.username}:${campaignConfig.basicAuth.password}`).toString("base64");
 
-        if (!htmlContent || status !== 200) {
+        const response = await fetch(campaignConfig.url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Basic ${basicAuth}`,
+            },
+            body: JSON.stringify({ id: campaign.id, title: campaign.title, content, scope: campaign.scope }),
+            signal: AbortSignal.timeout(CAMPAIGN_CONTENT_REQUEST_TIMEOUT),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Could not generate campaign content: request failed with status code ${response.status}`);
+        }
+
+        const htmlContent = await response.text();
+
+        if (!htmlContent) {
             throw new Error("Could not generate campaign content");
         }
 
@@ -122,7 +127,7 @@ export class EmailCampaignsService {
                     wrap(campaign).assign({ sendingState });
                 }
             }
-            this.entityManager.flush();
+            await this.entityManager.flush();
         }
 
         return campaigns;

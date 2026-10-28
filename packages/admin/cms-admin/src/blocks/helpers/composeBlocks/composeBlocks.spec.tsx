@@ -1,19 +1,31 @@
 import { describe, expect, it } from "vitest";
 
-import { SpaceBlock } from "../../SpaceBlock";
-import type { BlockInputApi, BlockState } from "../../types";
+import type { BlockInputApi, BlockInterface, BlockState } from "../../types";
 import { resolveNewState } from "../../utils";
+import { createBlockSkeleton } from "../createBlockSkeleton";
 import { composeBlocks, type ComposeBlocksApi } from "./composeBlocks";
 import { createCompositeBlockField } from "./createCompositeBlockField";
 import { createCompositeBlockFields } from "./createCompositeBlockFields";
 import type { AdminComponentPropsMap, CompositeBlocksConfig, DataMapState } from "./types";
 
-// TODO: youtube block moved, space block deprecated, update tests
+// TODO: youtube block moved, update tests
+
+interface HeightBlockState {
+    height: number;
+}
+
+const HeightBlock: BlockInterface<HeightBlockState, HeightBlockState, HeightBlockState> = {
+    ...createBlockSkeleton(),
+
+    name: "Height",
+
+    defaultValues: () => ({ height: 100 }),
+};
 
 describe("composeBlocks", () => {
     // it("composes values of 2 BlockInterfaces", () => {
     //     const composedBlock = composeBlocks({
-    //         space: SpaceBlock,
+    //         space: HeightBlock,
     //         video: YouTubeVideoBlock,
     //     });
     //
@@ -46,10 +58,10 @@ describe("composeBlocks", () => {
     //         },
     //     };
     //
-    //     expect(defaultValues()).toStrictEqual({ space: SpaceBlock.defaultValues(), video: YouTubeVideoBlock.defaultValues() });
-    //     expect(input2State(input)).toStrictEqual({ space: SpaceBlock.input2State(input.space), video: YouTubeVideoBlock.input2State(input.video) });
+    //     expect(defaultValues()).toStrictEqual({ space: HeightBlock.defaultValues(), video: YouTubeVideoBlock.defaultValues() });
+    //     expect(input2State(input)).toStrictEqual({ space: HeightBlock.input2State(input.space), video: YouTubeVideoBlock.input2State(input.video) });
     //     expect(state2Output(state)).toStrictEqual({
-    //         space: SpaceBlock.state2Output(state.space),
+    //         space: HeightBlock.state2Output(state.space),
     //         video: YouTubeVideoBlock.state2Output(state.video),
     //     });
     //
@@ -79,7 +91,7 @@ describe("composeBlocks", () => {
             baz?: number;
         }
         const composedBlock = composeBlocks({
-            space1: SpaceBlock,
+            space1: HeightBlock,
             $settings: createCompositeBlockFields<Settings>({
                 defaultValues: {
                     foo: "bar",
@@ -110,9 +122,9 @@ describe("composeBlocks", () => {
             foo: "bar2",
         };
 
-        expect(defaultValues()).toStrictEqual({ space1: SpaceBlock.defaultValues(), foo: "bar", baz: undefined });
-        expect(input2State(input)).toStrictEqual({ space1: SpaceBlock.input2State(input.space1), foo: "bar1", baz: 1 });
-        expect(state2Output(state)).toStrictEqual({ space1: SpaceBlock.state2Output(state.space1), foo: "bar2" });
+        expect(defaultValues()).toStrictEqual({ space1: HeightBlock.defaultValues(), foo: "bar", baz: undefined });
+        expect(input2State(input)).toStrictEqual({ space1: HeightBlock.input2State(input.space1), foo: "bar1", baz: 1 });
+        expect(state2Output(state)).toStrictEqual({ space1: HeightBlock.state2Output(state.space1), foo: "bar2" });
 
         // test update state methods
 
@@ -138,7 +150,7 @@ describe("composeBlocks", () => {
     // it("composes values of 2 BlockInterface and 1 scalar setting", () => {
     //     type Setting = string;
     //     const composedBlock = composeBlocks({
-    //         space: SpaceBlock,
+    //         space: HeightBlock,
     //         video: YouTubeVideoBlock,
     //         foo: createCompositeBlockField<Setting>({
     //             defaultValue: "bar",
@@ -177,14 +189,14 @@ describe("composeBlocks", () => {
     //         foo: "bar2",
     //     };
     //
-    //     expect(defaultValues()).toStrictEqual({ space: SpaceBlock.defaultValues(), video: YouTubeVideoBlock.defaultValues(), foo: "bar" });
+    //     expect(defaultValues()).toStrictEqual({ space: HeightBlock.defaultValues(), video: YouTubeVideoBlock.defaultValues(), foo: "bar" });
     //     expect(input2State(input)).toStrictEqual({
-    //         space: SpaceBlock.input2State(input.space),
+    //         space: HeightBlock.input2State(input.space),
     //         video: YouTubeVideoBlock.input2State(input.video),
     //         foo: "bar1",
     //     });
     //     expect(state2Output(state)).toStrictEqual({
-    //         space: SpaceBlock.state2Output(state.space),
+    //         space: HeightBlock.state2Output(state.space),
     //         video: YouTubeVideoBlock.state2Output(state.video),
     //         foo: "bar2",
     //     });
@@ -219,7 +231,7 @@ describe("composeBlocks", () => {
         type Setting = string | undefined;
 
         const composedBlock = composeBlocks({
-            space1: SpaceBlock,
+            space1: HeightBlock,
             foo: createCompositeBlockField<Setting>({
                 defaultValue: undefined,
                 AdminComponent: () => <>not testing</>,
@@ -250,12 +262,12 @@ describe("composeBlocks", () => {
 
         delete state.foo; // make really undefined
 
-        expect(defaultValues()).toStrictEqual({ space1: SpaceBlock.defaultValues(), foo: undefined });
-        expect(input2State(input)).toStrictEqual({ space1: SpaceBlock.input2State(input.space1), foo: undefined });
-        // expect(input2State(input)).toStrictEqual({ space1: SpaceBlock.input2State(input.space1) }); // should this be expected instead?
+        expect(defaultValues()).toStrictEqual({ space1: HeightBlock.defaultValues(), foo: undefined });
+        expect(input2State(input)).toStrictEqual({ space1: HeightBlock.input2State(input.space1), foo: undefined });
+        // expect(input2State(input)).toStrictEqual({ space1: HeightBlock.input2State(input.space1) }); // should this be expected instead?
 
-        expect(state2Output(state)).toStrictEqual({ space1: SpaceBlock.state2Output(state.space1), foo: undefined });
-        // expect(state2Output(state)).toStrictEqual({ space1: SpaceBlock.state2Output(state.space1) }); // should this be expected instead?
+        expect(state2Output(state)).toStrictEqual({ space1: HeightBlock.state2Output(state.space1), foo: undefined });
+        // expect(state2Output(state)).toStrictEqual({ space1: HeightBlock.state2Output(state.space1) }); // should this be expected instead?
 
         // test update state methods
 

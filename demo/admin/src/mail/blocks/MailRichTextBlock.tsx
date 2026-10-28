@@ -3,7 +3,7 @@ import { Typography } from "@mui/material";
 import { MailLinkBlock } from "@src/mail/blocks/MailLinkBlock";
 import { FormattedMessage } from "react-intl";
 
-export const MailRichTextBlock = createRichTextBlock({
+const baseMailRichTextBlock = createRichTextBlock({
     link: MailLinkBlock,
     rte: {
         supports: [
@@ -38,3 +38,8 @@ export const MailRichTextBlock = createRichTextBlock({
         },
     },
 });
+
+export const MailRichTextBlock = {
+    ...baseMailRichTextBlock,
+    displayName: <FormattedMessage id="mail.richText.displayName" defaultMessage="Rich Text (DraftJS)" />,
+};

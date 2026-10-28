@@ -61,6 +61,13 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
         };
     },
 
+    dependencies: (state) => PixelImageBlock.dependencies?.(state.previewImage) ?? [],
+
+    replaceDependenciesInOutput: (output, replacements) => ({
+        ...output,
+        previewImage: PixelImageBlock.replaceDependenciesInOutput(output.previewImage, replacements),
+    }),
+
     definesOwnPadding: true,
 
     isValid: ({ vimeoIdentifier }) => !vimeoIdentifier || isValidVimeoIdentifier(vimeoIdentifier),

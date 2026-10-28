@@ -47,12 +47,11 @@ const ToolbarItem = createComponentSlot(CommonToolbarItem)<ToolbarBackButtonClas
     align-items: stretch;
 `);
 
-export interface ToolbarBackButtonProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        toolbarItem: typeof ToolbarItem;
-        iconButton: typeof MuiIconButton<typeof Link>;
-    }> {
+export interface ToolbarBackButtonProps extends ThemedComponentBaseProps<{
+    root: "div";
+    toolbarItem: typeof ToolbarItem;
+    iconButton: typeof MuiIconButton<typeof Link>;
+}> {
     backIcon?: ReactNode;
 }
 

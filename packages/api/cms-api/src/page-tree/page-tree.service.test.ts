@@ -1,13 +1,24 @@
+import { Entity, PrimaryKey } from "@mikro-orm/decorators/legacy";
 import { describe, expect, it } from "vitest";
 
-import { PageTreeService } from "./page-tree.service";
-import { type PageTreeNodeInterface, PageTreeNodeVisibility } from "./types";
+import { PageTreeService } from "./page-tree.service.js";
+import { type PageTreeNodeInterface, PageTreeNodeVisibility } from "./types.js";
+
+// Decorating a stand-in entity registers "PageTreeNode" in MikroORM's metadata, which is all `resolvePageTreeNodeEntity()` needs.
+@Entity({ tableName: "PageTreeNode" })
+class PageTreeNode {
+    @PrimaryKey({ columnType: "uuid" })
+    id!: string;
+}
 
 function createServiceWithNodes(nodes: PageTreeNodeInterface[]): { service: PageTreeService; queriedFilters: Array<Record<string, unknown>> } {
     const queriedFilters: Array<Record<string, unknown>> = [];
 
-    const pageTreeRepository = {
-        createQueryBuilder: () => {
+    const entityManager = {
+        createQueryBuilder: (entity: unknown) => {
+            if (entity !== PageTreeNode) {
+                throw new Error("Unexpected entity passed to createQueryBuilder");
+            }
             const filters: Record<string, unknown> = {};
             const queryBuilder = {
                 where: () => queryBuilder,
@@ -35,7 +46,7 @@ function createServiceWithNodes(nodes: PageTreeNodeInterface[]): { service: Page
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const service = new PageTreeService(pageTreeRepository as any, {} as any, {} as any, {} as any, {} as any);
+    const service = new PageTreeService(entityManager as any, {} as any, {} as any);
 
     return { service, queriedFilters };
 }

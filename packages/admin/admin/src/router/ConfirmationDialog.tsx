@@ -20,14 +20,7 @@ import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBasePro
 import { messages } from "../messages";
 
 export type RouterConfirmationDialogClassKey =
-    | "root"
-    | "closeButton"
-    | "messageWrapper"
-    | "messageWarningIcon"
-    | "messageText"
-    | "actionButton"
-    | "saveButton"
-    | "discardButton";
+    "root" | "closeButton" | "messageWrapper" | "messageWarningIcon" | "messageText" | "actionButton" | "saveButton" | "discardButton";
 
 const StyledDialog = createComponentSlot(Dialog)<RouterConfirmationDialogClassKey>({
     componentName: "RouterConfirmationDialog",
@@ -101,16 +94,15 @@ export enum PromptAction {
     Save = "Save",
 }
 
-export interface RouterConfirmationDialogProps
-    extends ThemedComponentBaseProps<{
-        root: typeof Dialog;
-        closeButton: typeof IconButton;
-        messageWrapper: "div";
-        messageWarningIcon: typeof Warning;
-        messageText: typeof Typography;
-        saveButton: typeof Button;
-        discardButton: typeof Button;
-    }> {
+export interface RouterConfirmationDialogProps extends ThemedComponentBaseProps<{
+    root: typeof Dialog;
+    closeButton: typeof IconButton;
+    messageWrapper: "div";
+    messageWarningIcon: typeof Warning;
+    messageText: typeof Typography;
+    saveButton: typeof Button;
+    discardButton: typeof Button;
+}> {
     isOpen: boolean;
     message?: ReactNode; // typically a string or a FormattedMessage (intl) is passed
     handleClose: (action: PromptAction) => void;

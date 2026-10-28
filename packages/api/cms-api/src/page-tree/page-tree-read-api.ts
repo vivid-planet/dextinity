@@ -1,12 +1,13 @@
-import { type EntityRepository, NotFoundError, type QueryBuilder } from "@mikro-orm/postgresql";
+import { type EntityManager, NotFoundError, type QueryBuilder } from "@mikro-orm/postgresql";
 import opentelemetry from "@opentelemetry/api";
 import { compareAsc, compareDesc, isEqual } from "date-fns";
 
-import { SortDirection } from "../common/sorting/sort-direction.enum";
-import { type PageTreeNodeSort, PageTreeNodeSortField } from "./dto/page-tree-node.sort";
-import type { AttachedDocument } from "./entities/attached-document.entity";
-import { type PageTreeNodeCategory, type PageTreeNodeInterface, PageTreeNodeVisibility as Visibility, type ScopeInterface } from "./types";
-import pathBuilder from "./utils/path-builder";
+import { SortDirection } from "../common/sorting/sort-direction.enum.js";
+import { type PageTreeNodeSort, PageTreeNodeSortField } from "./dto/page-tree-node.sort.js";
+import { AttachedDocument } from "./entities/attached-document.entity.js";
+import { resolvePageTreeNodeEntity } from "./entities/resolve-page-tree-node-entity.js";
+import { type PageTreeNodeCategory, type PageTreeNodeInterface, PageTreeNodeVisibility as Visibility, type ScopeInterface } from "./types.js";
+import pathBuilder from "./utils/path-builder.js";
 
 const tracer = opentelemetry.trace.getTracer("@dextinity/cms-api");
 
@@ -54,11 +55,9 @@ function scopeHash(scope: ScopeInterface | undefined): string {
 
 export function createReadApi(
     {
-        pageTreeNodeRepository,
-        attachedDocumentsRepository,
+        entityManager,
     }: {
-        pageTreeNodeRepository: EntityRepository<PageTreeNodeInterface>;
-        attachedDocumentsRepository: EntityRepository<AttachedDocument>;
+        entityManager: EntityManager;
     },
     options: {
         visibility?: Visibility | Visibility[] | "all";
@@ -103,7 +102,7 @@ export function createReadApi(
             return tracer.startActiveSpan("live query PageTree queryNodes", async (span) => {
                 span.setAttribute("scope", JSON.stringify(scope));
                 span.setAttribute("where", JSON.stringify(where));
-                let qb = pageTreeNodeRepository.createQueryBuilder().where({
+                let qb = entityManager.createQueryBuilder(resolvePageTreeNodeEntity()).where({
                     visibility: visibilityFilter,
                 });
 
@@ -193,7 +192,7 @@ export function createReadApi(
             return tracer.startActiveSpan("live query PageTree countNodes", async (span) => {
                 span.setAttribute("scope", JSON.stringify(scope));
                 span.setAttribute("where", JSON.stringify(where));
-                let qb = pageTreeNodeRepository.createQueryBuilder().where({
+                let qb = entityManager.createQueryBuilder(resolvePageTreeNodeEntity()).where({
                     visibility: visibilityFilter,
                 });
 
@@ -269,7 +268,7 @@ export function createReadApi(
                 return tracer.startActiveSpan("live query PageTree getNode", async (span) => {
                     span.setAttribute("where id", id);
                     const queryFilter = { id, visibility: { $in: visibilityFilter } };
-                    const node = await pageTreeNodeRepository.findOne(queryFilter);
+                    const node = await entityManager.findOne(resolvePageTreeNodeEntity(), queryFilter);
                     if (node) {
                         nodesById.set(id, node);
                     }
@@ -302,7 +301,10 @@ export function createReadApi(
             if (missingIds.length > 0) {
                 await tracer.startActiveSpan("live query PageTree getNodesByIds", async (span) => {
                     span.setAttribute("ids count", missingIds.length);
-                    const nodes = await pageTreeNodeRepository.find({ id: { $in: missingIds }, visibility: { $in: visibilityFilter } });
+                    const nodes = await entityManager.find(resolvePageTreeNodeEntity(), {
+                        id: { $in: missingIds },
+                        visibility: { $in: visibilityFilter },
+                    });
                     for (const node of nodes) {
                         nodesById.set(node.id, node);
                     }
@@ -406,7 +408,7 @@ export function createReadApi(
         },
 
         async getFirstNodeByAttachedPageId(pageId: string): Promise<PageTreeNodeInterface | null> {
-            const attachedDocument = await attachedDocumentsRepository.findOne({ documentId: pageId });
+            const attachedDocument = await entityManager.findOne(AttachedDocument, { documentId: pageId });
             if (!attachedDocument) {
                 return null;
             }
@@ -421,8 +423,8 @@ export function createReadApi(
             return tracer.startActiveSpan("preload PageTreeNode", async (span) => {
                 span.setAttribute("scope", JSON.stringify(scope));
                 preloadRunning = true;
-                const qb = pageTreeNodeRepository
-                    .createQueryBuilder()
+                const qb = entityManager
+                    .createQueryBuilder(resolvePageTreeNodeEntity())
                     .where({
                         visibility: visibilityFilter,
                     })

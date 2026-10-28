@@ -1,7 +1,8 @@
-import { CreateRequestContext, MikroORM } from "@mikro-orm/postgresql";
+import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
+import { MikroORM } from "@mikro-orm/postgresql";
 import { Command, CommandRunner, Option } from "nest-commander";
 
-import { DependenciesService } from "../dependencies/dependencies.service";
+import { DependenciesService } from "../dependencies/dependencies.service.js";
 
 @Command({
     name: "refreshBlockIndexViews",

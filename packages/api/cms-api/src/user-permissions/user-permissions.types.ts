@@ -1,11 +1,11 @@
 import type { ModuleMetadata, Type } from "@nestjs/common";
 
-import { CorePermission } from "../common/enum/core-permission.enum";
-import type { CurrentUser } from "./dto/current-user";
-import type { FindUsersArgs } from "./dto/paginated-user-list";
-import type { UserPermission } from "./entities/user-permission.entity";
-import type { ContentScope } from "./interfaces/content-scope.interface";
-import type { User } from "./interfaces/user";
+import { CorePermission } from "../common/enum/core-permission.enum.js";
+import type { CurrentUser } from "./dto/current-user.js";
+import type { FindUsersArgs } from "./dto/paginated-user-list.js";
+import type { UserPermission } from "./entities/user-permission.entity.js";
+import type { ContentScope } from "./interfaces/content-scope.interface.js";
+import type { User } from "./interfaces/user.js";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface PermissionOverrides {} // This interface can be overwritten to add custom permissions
@@ -62,8 +62,20 @@ export type ContentScopeWithLabel = {
 };
 export type AvailableContentScope = ContentScope | ContentScopeWithLabel;
 
+export type ContentScopeDimension = {
+    name: string;
+    label?: string;
+};
+
 export interface UserPermissionsOptions {
     availableContentScopes?: AvailableContentScope[] | (() => Promise<AvailableContentScope[]> | AvailableContentScope[]);
+    /**
+     * Declares the content scope dimensions (e.g. `domain`, `language`) available in the system. Use this to make dimensions
+     * that are not part of `availableContentScopes` (e.g. an optional dimension with too many values to enumerate) known at
+     * runtime, so they are shown in the user permissions admin panel. When omitted, the dimensions are derived from the keys
+     * of `availableContentScopes`.
+     */
+    availableContentScopeDimensions?: ContentScopeDimension[] | (() => Promise<ContentScopeDimension[]> | ContentScopeDimension[]);
     systemUsers?: string[];
 }
 export interface UserPermissionsModuleSyncOptions extends UserPermissionsOptions {

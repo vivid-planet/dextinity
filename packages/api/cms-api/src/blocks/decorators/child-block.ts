@@ -1,7 +1,7 @@
 import { Transform } from "class-transformer";
 
-import { type Block, isBlockDataInterface } from "../block";
-import { BlockField } from "./field";
+import { type Block, isBlockDataInterface } from "../block.js";
+import { BlockField } from "./field.js";
 
 interface ChildBlockOptions {
     /**

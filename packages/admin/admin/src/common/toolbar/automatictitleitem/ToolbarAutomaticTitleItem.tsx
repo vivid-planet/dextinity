@@ -6,11 +6,10 @@ import type { ThemedComponentBaseProps } from "../../../helpers/ThemedComponentB
 import { useStackApi } from "../../../stack/Api";
 import { ToolbarItem } from "../item/ToolbarItem";
 
-export interface ToolbarAutomaticTitleItemProps
-    extends ThemedComponentBaseProps<{
-        root: typeof ToolbarItem;
-        typography: typeof Typography;
-    }> {
+export interface ToolbarAutomaticTitleItemProps extends ThemedComponentBaseProps<{
+    root: typeof ToolbarItem;
+    typography: typeof Typography;
+}> {
     /**
      * @deprecated Use `slotProps` instead.
      */

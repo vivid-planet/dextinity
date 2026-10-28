@@ -9,7 +9,7 @@ import { generateMjmlTextStyles, MjmlText } from "../MjmlText.js";
 
 describe("MjmlText integration", () => {
     // Full render pipeline: mjml2html must report no errors for this MjmlText + theme setup.
-    it("produces no MJML warnings with a variant theme", () => {
+    it("produces no MJML warnings with a variant theme", async () => {
         const theme = createTheme({
             text: {
                 variants: {
@@ -23,7 +23,7 @@ describe("MjmlText integration", () => {
             },
         });
 
-        const { mjmlWarnings } = renderMailHtml(
+        const { mjmlWarnings } = await renderMailHtml(
             <MjmlMailRoot theme={theme}>
                 <MjmlSection>
                     <MjmlColumn>

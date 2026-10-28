@@ -1,7 +1,8 @@
 import { Dialog, OkayButton, useStackApi } from "@dextinity/admin";
 import { DialogActions } from "@mui/material";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
+import { useLocation } from "react-router";
 import { v4 as uuid } from "uuid";
 
 import type { TableBlockData } from "../blocks.generated";
@@ -12,6 +13,8 @@ import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
 import { TableBlockContextProvider } from "./table/TableBlockContext";
 import { TableBlockGrid } from "./table/TableBlockGrid";
+import { createCellRoute, parseCellHash } from "./table/utils/cellRoute";
+import { createTablePreviewText, getPlainTexts } from "./table/utils/createTablePreviewText";
 import {
     BlockCategory,
     type BlockInputApi,
@@ -164,16 +167,30 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
                 ...row,
                 cellValues: row.cellValues.map((cell) => ({
                     ...cell,
-                    value: RichTextBlock.createPreviewState(cell.value, previewCtx),
+                    value: {
+                        ...RichTextBlock.createPreviewState(cell.value, previewCtx),
+                        adminMeta: { route: createCellRoute(previewCtx.parentUrl, { columnId: cell.columnId, rowId: row.id }) },
+                    },
                 })),
             })),
             adminMeta: { route: previewCtx.parentUrl },
         }),
 
+        previewContent: (state: TableBlockState<CellState>, context: BlockContext) => {
+            const previewText = createTablePreviewText(state, (cellState) => getPlainTexts(RichTextBlock.previewContent(cellState, context)));
+
+            return previewText.length > 0 ? [{ type: "text", content: previewText }] : [];
+        },
+
         AdminComponent: ({ state, updateState }) => {
             const stackApi = useStackApi();
             const intl = useIntl();
             const [showDialog, setShowDialog] = useState(true);
+            const [hasDialogOpened, setHasDialogOpened] = useState(false);
+            const location = useLocation();
+            const clickedCell = useMemo(() => parseCellHash(location.hash), [location.hash]);
+
+            const handleDialogOpened = () => setHasDialogOpened(true);
 
             const closeTableBlock = () => {
                 setShowDialog(false);
@@ -191,8 +208,9 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
                                 title={intl.formatMessage({ id: "dextinity.blocks.table.displayName", defaultMessage: "Table" })}
                                 PaperProps={{ sx: { height: "100%", maxHeight: 880 } }}
                                 sx={(theme) => ({ zIndex: theme.zIndex.modal - 2 })}
+                                slotProps={{ root: { slotProps: { transition: { onEntered: handleDialogOpened } } } }}
                             >
-                                <TableBlockGrid state={state} updateState={updateState} />
+                                <TableBlockGrid state={state} updateState={updateState} clickedCell={hasDialogOpened ? clickedCell : undefined} />
                                 <DialogActions>
                                     <OkayButton onClick={closeTableBlock} />
                                 </DialogActions>

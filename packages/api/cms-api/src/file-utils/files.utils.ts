@@ -1,18 +1,24 @@
+import { createHash, randomUUID } from "crypto";
 import type createDOMPurify from "dompurify";
 import fs from "fs";
 import { unlink } from "fs/promises";
-import * as mimedb from "mime-db";
+import mimedb from "mime-db";
 import os from "os";
 import { basename, extname } from "path";
 import slugify from "slugify";
 import stream from "stream";
 import { promisify } from "util";
-import { v4 as uuid } from "uuid";
 
-import type { FileUploadInput } from "./file-upload.input";
-import { FILE_UPLOAD_FIELD } from "./files.constants";
+import type { FileUploadInput } from "./file-upload.input.js";
+import { FILE_UPLOAD_FIELD } from "./files.constants.js";
 
 const pipeline = promisify(stream.pipeline);
+
+export async function calculateFileHash(filePath: string): Promise<string> {
+    const hash = createHash("md5");
+    await pipeline(fs.createReadStream(filePath), hash);
+    return hash.digest("hex");
+}
 
 export function slugifyFilename(filename: string, extension: string): string {
     const extensionWithDot = extension.startsWith(".") ? extension : `.${extension}`;
@@ -109,7 +115,7 @@ export const getValidExtensionsForMimetype = (mimetype: string) => {
 
 export async function createFileUploadInputFromUrl(url: string): Promise<FileUploadInput> {
     const tempDir = fs.mkdtempSync(`${os.tmpdir()}/download`);
-    const fakeName = uuid();
+    const fakeName = randomUUID();
     const tempFile = `${tempDir}/${fakeName}`;
 
     if (url.substring(0, 4) === "http") {

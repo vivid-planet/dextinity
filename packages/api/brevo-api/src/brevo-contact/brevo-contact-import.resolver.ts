@@ -1,17 +1,16 @@
 import { CurrentUser, FileUpload, FileUploadsService, GetCurrentUser, RequiredPermission } from "@dextinity/cms-api";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
-import { Inject, Type } from "@nestjs/common";
+import { EntityManager } from "@mikro-orm/postgresql";
+import { Inject, type Type } from "@nestjs/common";
 import { Args, ArgsType, Mutation, Resolver } from "@nestjs/graphql";
+import { randomUUID } from "crypto";
 import { Readable } from "stream";
-import { v4 as uuid } from "uuid";
 
-import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
-import { EmailCampaignScopeInterface } from "../types";
-import { BrevoContactImportService, CsvImportInformation } from "./brevo-contact-import.service";
-import { BrevoContactInterface } from "./dto/brevo-contact.factory";
-import { BrevoContactImportArgsFactory } from "./dto/brevo-contact-import.args";
+import type { BrevoModuleConfig } from "../config/brevo-module.config.js";
+import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants.js";
+import type { EmailCampaignScopeInterface } from "../types.js";
+import { BrevoContactImportService, CsvImportInformation } from "./brevo-contact-import.service.js";
+import type { BrevoContactInterface } from "./dto/brevo-contact.factory.js";
+import { BrevoContactImportArgsFactory } from "./dto/brevo-contact-import.args.js";
 
 export function createBrevoContactImportResolver({
     Scope,
@@ -29,7 +28,6 @@ export function createBrevoContactImportResolver({
         constructor(
             @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
             @Inject(BrevoContactImportService) private readonly brevoContactImportService: BrevoContactImportService,
-            @InjectRepository(FileUpload) private readonly fileUploadRepository: EntityRepository<FileUpload>,
             private readonly entityManager: EntityManager,
             private readonly fileUploadsService: FileUploadsService,
         ) {}
@@ -39,8 +37,8 @@ export function createBrevoContactImportResolver({
             @Args() { fileId, targetGroupIds, scope, sendDoubleOptIn }: BrevoContactImportArgs,
             @GetCurrentUser() user: CurrentUser,
         ): Promise<CsvImportInformation> {
-            const importId: string = uuid();
-            const fileUpload = await this.fileUploadRepository.findOne(fileId);
+            const importId: string = randomUUID();
+            const fileUpload = await this.entityManager.findOne(FileUpload, fileId);
 
             if (!fileUpload) {
                 throw new Error("File not found");

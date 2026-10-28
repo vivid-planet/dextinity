@@ -1,5 +1,6 @@
 import { IsValidRedirectSource } from "@dextinity/cms-api";
-import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import {
     IsEmail,
@@ -8,15 +9,15 @@ import {
     IsString,
     Length,
     registerDecorator,
-    ValidationOptions,
+    type ValidationOptions,
     ValidatorConstraint,
-    ValidatorConstraintInterface,
+    type ValidatorConstraintInterface,
 } from "class-validator";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 import { describe, expect, it } from "vitest";
 
-import { generateCrud } from "../../generateCrud/generate-crud";
-import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
+import { generateCrud } from "../../generateCrud/generate-crud.js";
+import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper.js";
 
 export const IsTrueAsString = (validationOptions?: ValidationOptions) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,7 +45,7 @@ class IsSlugConstraint implements ValidatorConstraintInterface {
 @Entity()
 export class TestEntityWithEmail extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @IsEmail()
     @IsString()
@@ -55,7 +56,7 @@ export class TestEntityWithEmail extends BaseEntity {
 @Entity()
 export class TestEntityWithCaseSensitiveConstraintName extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @IsISO8601()
     @Property({ columnType: "text" })
@@ -65,7 +66,7 @@ export class TestEntityWithCaseSensitiveConstraintName extends BaseEntity {
 @Entity()
 export class TestEntityWithShortenedDecoratorName extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Length(2, 5)
     @Property({ columnType: "text" })
@@ -75,7 +76,7 @@ export class TestEntityWithShortenedDecoratorName extends BaseEntity {
 @Entity()
 export class TestEntityWithRelativeImportDecorator extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @IsValidRedirectSource()
     @Property({ columnType: "text" })
@@ -85,7 +86,7 @@ export class TestEntityWithRelativeImportDecorator extends BaseEntity {
 @Entity()
 export class TestEntityWithDuplicateDefaultDecorator extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @IsString()
     @IsOptional()
@@ -96,7 +97,7 @@ export class TestEntityWithDuplicateDefaultDecorator extends BaseEntity {
 @Entity()
 export class TestEntityWithValidatorDefinedInFile extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @IsTrueAsString()
     @Property({ columnType: "text" })
@@ -109,13 +110,13 @@ describe("GenerateDefinedValidatorDecorators", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityWithEmail],
                 }),
             );
 
-            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithEmail"));
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntityWithEmail"));
             const formattedOut = await formatGeneratedFiles(out);
             const file = formattedOut.find((file) => file.name === "dto/test-entity-with-email.input.ts");
             if (!file) {
@@ -148,15 +149,15 @@ describe("GenerateDefinedValidatorDecorators", () => {
                 LazyMetadataStorage.load();
                 const orm = await MikroORM.init(
                     defineConfig({
+                        metadataProvider: ReflectMetadataProvider,
                         dbName: "test-db",
-                        connect: false,
                         entities: [TestEntityWithCaseSensitiveConstraintName],
                     }),
                 );
 
                 const out = await generateCrud(
                     { requiredPermission: testPermission },
-                    orm.em.getMetadata().get("TestEntityWithCaseSensitiveConstraintName"),
+                    orm.em.getMetadata().getByClassName("TestEntityWithCaseSensitiveConstraintName"),
                 );
                 const formattedOut = await formatGeneratedFiles(out);
                 const file = formattedOut.find((file) => file.name === "dto/test-entity-with-case-sensitive-constraint-name.input.ts");
@@ -190,15 +191,15 @@ describe("GenerateDefinedValidatorDecorators", () => {
                 LazyMetadataStorage.load();
                 const orm = await MikroORM.init(
                     defineConfig({
+                        metadataProvider: ReflectMetadataProvider,
                         dbName: "test-db",
-                        connect: false,
                         entities: [TestEntityWithShortenedDecoratorName],
                     }),
                 );
 
                 const out = await generateCrud(
                     { requiredPermission: testPermission },
-                    orm.em.getMetadata().get("TestEntityWithShortenedDecoratorName"),
+                    orm.em.getMetadata().getByClassName("TestEntityWithShortenedDecoratorName"),
                 );
                 const formattedOut = await formatGeneratedFiles(out);
                 const file = formattedOut.find((file) => file.name === "dto/test-entity-with-shortened-decorator-name.input.ts");
@@ -232,15 +233,15 @@ describe("GenerateDefinedValidatorDecorators", () => {
                 LazyMetadataStorage.load();
                 const orm = await MikroORM.init(
                     defineConfig({
+                        metadataProvider: ReflectMetadataProvider,
                         dbName: "test-db",
-                        connect: false,
                         entities: [TestEntityWithShortenedDecoratorName],
                     }),
                 );
 
                 const out = await generateCrud(
                     { requiredPermission: testPermission },
-                    orm.em.getMetadata().get("TestEntityWithShortenedDecoratorName"),
+                    orm.em.getMetadata().getByClassName("TestEntityWithShortenedDecoratorName"),
                 );
                 const formattedOut = await formatGeneratedFiles(out);
                 const file = formattedOut.find((file) => file.name === "dto/test-entity-with-shortened-decorator-name.input.ts");
@@ -275,15 +276,15 @@ describe("GenerateDefinedValidatorDecorators", () => {
                 LazyMetadataStorage.load();
                 const orm = await MikroORM.init(
                     defineConfig({
+                        metadataProvider: ReflectMetadataProvider,
                         dbName: "test-db",
-                        connect: false,
                         entities: [TestEntityWithRelativeImportDecorator],
                     }),
                 );
 
                 const out = await generateCrud(
                     { requiredPermission: testPermission },
-                    orm.em.getMetadata().get("TestEntityWithRelativeImportDecorator"),
+                    orm.em.getMetadata().getByClassName("TestEntityWithRelativeImportDecorator"),
                 );
                 const formattedOut = await formatGeneratedFiles(out);
                 const file = formattedOut.find((file) => file.name === "dto/test-entity-with-relative-import-decorator.input.ts");
@@ -318,13 +319,16 @@ describe("GenerateDefinedValidatorDecorators", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityWithValidatorDefinedInFile],
                 }),
             );
 
-            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithValidatorDefinedInFile"));
+            const out = await generateCrud(
+                { requiredPermission: testPermission },
+                orm.em.getMetadata().getByClassName("TestEntityWithValidatorDefinedInFile"),
+            );
             const formattedOut = await formatGeneratedFiles(out);
             const file = formattedOut.find((file) => file.name === "dto/test-entity-with-validator-defined-in-file.input.ts");
             if (!file) {
@@ -357,15 +361,15 @@ describe("GenerateDefinedValidatorDecorators", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntityWithDuplicateDefaultDecorator],
                 }),
             );
 
             const out = await generateCrud(
                 { requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithDuplicateDefaultDecorator"),
+                orm.em.getMetadata().getByClassName("TestEntityWithDuplicateDefaultDecorator"),
             );
             const formattedOut = await formatGeneratedFiles(out);
             const file = formattedOut.find((file) => file.name === "dto/test-entity-with-duplicate-default-decorator.input.ts");

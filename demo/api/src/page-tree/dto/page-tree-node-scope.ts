@@ -1,11 +1,10 @@
-import { Embeddable, Property } from "@mikro-orm/postgresql";
+import { Embeddable, Property } from "@mikro-orm/decorators/legacy";
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { IsString } from "class-validator";
 
 @Embeddable()
-@ObjectType("PageTreeNodeScope") // name must not be changed in the app
-@InputType("PageTreeNodeScopeInput") // name must not be changed in the app
-// @TODO: disguise @ObjectType("PageTreeContentScope") and @InputType("PageTreeContentScopeInput") decorators under a custom decorator: f.i. @PageTreeNodeScope
+@ObjectType("PageTreeNodeScope")
+@InputType("PageTreeNodeScopeInput")
 export class PageTreeNodeScope {
     @Property({ columnType: "text" })
     @Field()

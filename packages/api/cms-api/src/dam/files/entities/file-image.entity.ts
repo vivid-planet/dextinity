@@ -1,17 +1,19 @@
-import { BaseEntity, Embedded, Entity, OneToOne, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Embedded, Entity, OneToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
+import { randomUUID } from "crypto";
 import { GraphQLJSONObject } from "graphql-scalars";
-import { v4 as uuid } from "uuid";
 
-import { ImageCropArea } from "../../images/entities/image-crop-area.entity";
-import { FileInterface } from "./file.entity";
+import { ImageCropArea } from "../../images/entities/image-crop-area.entity.js";
+import type { FileInterface } from "./file.entity.js";
+import { resolveFileEntity } from "./resolve-dam-entity.js";
 
 @Entity({ tableName: "DamFileImage" })
 @ObjectType("DamFileImage")
 export class DamFileImage extends BaseEntity {
     @PrimaryKey({ columnType: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ columnType: "integer" })
     @Field(() => Int)
@@ -33,6 +35,6 @@ export class DamFileImage extends BaseEntity {
     @Field(() => ImageCropArea)
     cropArea: ImageCropArea;
 
-    @OneToOne({ entity: "DamFile", mappedBy: (file: FileInterface) => file.image, deleteRule: "CASCADE" })
+    @OneToOne({ entity: () => resolveFileEntity(), mappedBy: (file: FileInterface) => file.image, deleteRule: "CASCADE" })
     file: FileInterface;
 }

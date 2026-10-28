@@ -9,10 +9,29 @@ All warnings are shown in **one central place** inside a **grid in the admin pan
 
 In this grid, you can:
 
-- See **all warnings that concern you** (meaning you have the necessary scope permissions).
+- See the **warnings of the currently selected scope**. Warnings without a scope (e.g., DAM warnings) and warnings with a partial scope (e.g., only `domain`) are also shown. Switching the scope automatically updates the displayed warnings.
 - Click on an action to **jump directly to the issue** and fix it.
 
 ![Warnings Grid](images/warnings-grid.png)
+
+:::tip
+
+Use the `showAllScopes` prop on `WarningsPage` and `LatestWarningsDashboardWidget` to display the warnings of all scopes the user is allowed to access instead:
+
+```tsx
+<LatestWarningsDashboardWidget showAllScopes />
+```
+
+For `WarningsPage`, the masterMenu entry needs a `render` function instead of `component` to pass the prop:
+
+```tsx
+route: {
+    path: "/system/warnings",
+    render: () => <WarningsPage showAllScopes />,
+}
+```
+
+:::
 
 The Warning Module operates through two main mechanisms:
 
@@ -59,6 +78,15 @@ To make the warnings accessible in the admin panel, add the following entry to t
     },
     requiredPermission: "warnings",
 }
+```
+
+`requiredPermission` hides the entry for users without the `warnings` permission in the currently selected scope.
+Guard `LatestWarningsDashboardWidget` the same way with `useUserPermissionCheck`:
+
+```tsx
+const isAllowed = useUserPermissionCheck();
+
+return isAllowed("warnings") && <LatestWarningsDashboardWidget />;
 ```
 
 ### 3. Schedule the Daily Warning Check
@@ -126,16 +154,13 @@ class NewsBlockData extends BlockData {
 ```typescript
 @Injectable()
 export class NewsBlockWarningsService implements BlockWarningsServiceInterface<NewsBlockData> {
-    constructor(
-        @InjectRepository(NewsRepository)
-        private readonly newsRepository: EntityRepository<NewsRepository>,
-    ) {}
+    constructor(private readonly entityManager: EntityManager) {}
 
     async createWarnings(block: NewsBlockData): Promise<BlockWarning[]> {
         const warnings: BlockWarning[] = [];
 
         if (block.id) {
-            const news = await this.newsRepository.findOne({ id: block.id });
+            const news = await this.entityManager.findOne(News, { id: block.id });
             if (!news) {
                 warnings.push({ severity: "high", message: "invalidNewsTarget" });
             }
@@ -192,16 +217,13 @@ class NewsPageType {
 
 ```typescript
 class NewsWarningService implements CreateWarningsServiceInterface<NewsPageType> {
-    constructor(
-        @InjectRepository(News)
-        private readonly newsRepository: EntityRepository<News>,
-    ) {}
+    constructor(private readonly entityManager: EntityManager) {}
 
     async createWarnings(entity: MyEntity): Promise<EntityWarning[]> {
         const warnings: EntityWarning[] = [];
 
         if (entity.newsId) {
-            const news = await this.newsRepository.findOne(entity.newsId);
+            const news = await this.entityManager.findOne(News, entity.newsId);
             if (!news) {
                 warnings.push({ severity: "high", message: "invalidNewsTarget" });
             }
@@ -222,10 +244,7 @@ Here's how to implement this:
 
 ```typescript
 class NewsWarningService implements CreateWarningsServiceInterface {
-    constructor(
-        @InjectRepository(News)
-        private readonly newsRepository: EntityRepository<News>,
-    ) {}
+    constructor(private readonly entityManager: EntityManager) {}
 
     async *bulkCreateWarnings() {
         let offset = 0;
@@ -233,7 +252,8 @@ class NewsWarningService implements CreateWarningsServiceInterface {
 
         let news = [];
         do {
-            news = await this.newsRepository.find(
+            news = await this.entityManager.find(
+                News,
                 {
                     isArchived: false,
                 },

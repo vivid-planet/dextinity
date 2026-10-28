@@ -1,7 +1,7 @@
 import { IsEmail, IsOptional } from "class-validator";
 
-import { BlockData, BlockInput, blockInputToData, createBlock } from "./block";
-import { BlockField } from "./decorators/field";
+import { BlockData, BlockInput, blockInputToData, createBlock } from "./block.js";
+import { BlockField } from "./decorators/field.js";
 
 class EmailLinkBlockData extends BlockData {
     @BlockField({ nullable: true })

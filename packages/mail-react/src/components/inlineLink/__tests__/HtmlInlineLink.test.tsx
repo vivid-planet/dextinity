@@ -44,8 +44,8 @@ describe("HtmlInlineLink", () => {
         expect(color).not.toBe("inherit");
     });
 
-    it("writes a resolvable color inside MjmlText", () => {
-        const { html } = renderMailHtml(
+    it("writes a resolvable color inside MjmlText", async () => {
+        const { html } = await renderMailHtml(
             <MjmlMailRoot theme={createTheme()}>
                 <MjmlSection>
                     <MjmlColumn>

@@ -9,7 +9,7 @@ import { MjmlSection } from "../../section/MjmlSection.js";
 import { MjmlDivider } from "../MjmlDivider.js";
 
 describe("MjmlDivider integration", () => {
-    it("produces no MJML warnings inside an MjmlMailRoot", () => {
+    it("produces no MJML warnings inside an MjmlMailRoot", async () => {
         const theme = createTheme({
             divider: {
                 variants: {
@@ -19,7 +19,7 @@ describe("MjmlDivider integration", () => {
             },
         });
 
-        const { mjmlWarnings } = renderMailHtml(
+        const { mjmlWarnings } = await renderMailHtml(
             <MjmlMailRoot theme={theme}>
                 <MjmlSection>
                     <MjmlColumn>
@@ -34,7 +34,7 @@ describe("MjmlDivider integration", () => {
         expect(mjmlWarnings).toEqual([]);
     });
 
-    it("applies a variant modifier class to both mjmlDivider and htmlDivider blocks", () => {
+    it("applies a variant modifier class to both mjmlDivider and htmlDivider blocks", async () => {
         const theme = createTheme({
             divider: {
                 variants: {
@@ -43,7 +43,7 @@ describe("MjmlDivider integration", () => {
             },
         });
 
-        const { html } = renderMailHtml(
+        const { html } = await renderMailHtml(
             <MjmlMailRoot theme={theme}>
                 <MjmlSection>
                     <MjmlColumn>

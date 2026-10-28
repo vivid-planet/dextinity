@@ -9,6 +9,7 @@ import { useBlockContext } from "../../context/useBlockContext";
 import { type BlockInterface, type BlockState, isPreviewContentTextRule } from "../../types";
 import { ChildBlocksContext } from "../ChildBlocksContext";
 import { TipTapBlockDialog } from "../TipTapBlockDialog";
+import { jsonDataAttribute } from "./jsonDataAttribute";
 
 declare module "@tiptap/core" {
     interface Commands<ReturnType> {
@@ -141,9 +142,7 @@ const createCmsBlock = ({ inline }: { inline: boolean }) =>
                 blockType: {
                     default: null,
                 },
-                data: {
-                    default: null,
-                },
+                data: jsonDataAttribute,
             };
         },
 

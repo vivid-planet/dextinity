@@ -108,11 +108,18 @@ describe("createTipTapRichTextBlock", () => {
                     resolvedOptions: resolveTipTapOptions(options),
                     inlineStyles: [],
                     placeholders: [],
+                    linkBlock: options.link,
                     childBlocks: options.childBlocks ?? {},
                     maxTextBlocks: options.maxTextBlocks,
                 }),
             });
         }
+
+        const copyAndPasteAll = (editor: Editor) => {
+            const { dom } = editor.view.serializeForClipboard(editor.state.doc.slice(0, editor.state.doc.content.size));
+            editor.commands.setTextSelection(editor.state.doc.content.size - 1);
+            editor.view.pasteHTML(dom.innerHTML);
+        };
 
         const pressKey = (editor: Editor, key: string) =>
             editor.view.someProp("handleKeyDown", (handleKeyDown) => handleKeyDown(editor.view, new KeyboardEvent("keydown", { key })));
@@ -294,6 +301,56 @@ describe("createTipTapRichTextBlock", () => {
             insertChildBlockAtEnd(editor);
 
             expect(editor.getJSON().content?.map((node) => node.type)).toEqual(["textBlock", "cmsBlock", "textBlock"]);
+        });
+
+        it("should keep a child block's data when copying and pasting it", () => {
+            const editor = createEditor({ childBlocks: { child: { block: childBlock, display: "block" } } });
+            const data = { nested: { value: "keep me" } };
+            editor.commands.setContent({
+                type: "doc",
+                content: [{ type: "cmsBlock", attrs: { blockType: "child", data } }, paragraph("after")],
+            });
+
+            copyAndPasteAll(editor);
+
+            const childBlockNodes = editor.getJSON().content?.filter((node) => node.type === "cmsBlock");
+            expect(childBlockNodes).toHaveLength(2);
+            expect(childBlockNodes?.map((node) => node.attrs?.data)).toEqual([data, data]);
+        });
+
+        it("should keep a link's data when copying and pasting it", () => {
+            const linkBlock: BlockInterface & LinkBlockInterface = {
+                ...createBlockSkeleton(),
+                name: "Link",
+                displayName: "Link",
+                category: BlockCategory.Other,
+                defaultValues: () => ({}),
+                AdminComponent: () => null,
+                previewContent: () => [],
+            };
+            const editor = createEditor({ link: linkBlock });
+            const data = { activeType: "internal", attachedBlocks: [{ type: "internal", props: { targetPage: { id: "page-1" } } }] };
+            editor.commands.setContent({
+                type: "doc",
+                content: [
+                    {
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph" },
+                        content: [{ type: "text", text: "a link", marks: [{ type: "link", attrs: { data } }] }],
+                    },
+                ],
+            });
+
+            copyAndPasteAll(editor);
+
+            const linkData: unknown[] = [];
+            editor.state.doc.descendants((node) => {
+                const linkMark = node.marks.find((mark) => mark.type.name === "link");
+                if (linkMark) {
+                    linkData.push(linkMark.attrs.data);
+                }
+            });
+            expect(linkData).toEqual([data, data]);
         });
     });
 

@@ -1,5 +1,7 @@
 import { Mark, mergeAttributes } from "@tiptap/core";
 
+import { jsonDataAttribute } from "./jsonDataAttribute";
+
 declare module "@tiptap/core" {
     interface Commands<ReturnType> {
         cmsLink: {
@@ -17,9 +19,7 @@ export const CmsLink = Mark.create({
 
     addAttributes() {
         return {
-            data: {
-                default: null,
-            },
+            data: jsonDataAttribute,
         };
     },
 

@@ -3,8 +3,6 @@ import { playwright } from "@vitest/browser-playwright";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 
-import { generateScopedName } from "./src/future-ui/cssModules/generateScopedName";
-
 export default defineConfig({
     test: {
         reporters: ["default", "junit"],
@@ -14,22 +12,10 @@ export default defineConfig({
         projects: [
             {
                 plugins: [tsconfigPaths()],
-                css: {
-                    modules: {
-                        generateScopedName,
-                    },
-                },
                 test: {
                     name: "unit",
                     environment: "jsdom",
                     setupFiles: "./vitest.setup.ts",
-                    css: {
-                        include: [/\.module\.scss$/],
-                        modules: {
-                            // "stable" (the default) would override the vite-level generateScopedName above.
-                            classNameStrategy: "scoped",
-                        },
-                    },
                 },
             },
             {

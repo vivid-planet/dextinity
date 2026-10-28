@@ -1,0 +1,93 @@
+{
+    "name": "@dextinity/ui",
+    "version": "10.9.1",
+    "description": "UI-only React component library",
+    "license": "BSD-2-Clause",
+    "type": "module",
+    "repository": {
+        "directory": "packages/ui",
+        "type": "git",
+        "url": "https://github.com/vivid-planet/dextinity"
+    },
+    "exports": {
+        ".": {
+            "types": "./lib/index.d.ts",
+            "import": "./lib/index.js"
+        },
+        "./css": "./lib/style.css"
+    },
+    "sideEffects": [
+        "**/*.css"
+    ],
+    "files": [
+        "lib/*"
+    ],
+    "scripts": {
+        "build": "pnpm run clean && run-p build:vite build:types",
+        "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
+        "build:vite": "vite build",
+        "build-storybook": "storybook build",
+        "clean": "rimraf lib",
+        "dev": "pnpm run clean && run-p dev:vite dev:types",
+        "dev:types": "tsc -p tsconfig.build.json --emitDeclarationOnly --watch --preserveWatchOutput",
+        "dev:vite": "vite build --watch",
+        "lint": "run-p lint:prettier lint:eslint lint:tsc",
+        "lint:ci": "pnpm run lint",
+        "lint:eslint": "eslint --max-warnings 0 src/ '**/*.json' --no-warn-ignored",
+        "lint:fix": "run-p lint:fix:eslint lint:fix:prettier",
+        "lint:fix:eslint": "pnpm run lint:eslint --fix",
+        "lint:fix:prettier": "pnpm run lint:prettier --write",
+        "lint:prettier": "pnpm exec prettier --check '*.{ts,js,json,md,yml,yaml}'",
+        "lint:tsc": "tsc --noEmit",
+        "storybook": "storybook dev -p 26648 --no-open",
+        "test": "pnpm run test:unit && pnpm run test:storybook",
+        "test:storybook": "vitest --run --project storybook --outputFile.junit=./junit-storybook.xml",
+        "test:unit": "vitest --run --project unit --outputFile.junit=./junit-unit.xml",
+        "test:watch": "vitest --watch"
+    },
+    "dependencies": {
+        "clsx": "^2.1.1"
+    },
+    "devDependencies": {
+        "@base-ui/react": "^1.5.0",
+        "@dextinity/eslint-config": "workspace:*",
+        "@storybook/addon-docs": "^10.6.1",
+        "@storybook/addon-vitest": "10.6.1",
+        "@storybook/react-vite": "^10.6.1",
+        "@testing-library/dom": "^10.4.2",
+        "@testing-library/jest-dom": "^6.10.0",
+        "@testing-library/react": "^16.3.3",
+        "@testing-library/user-event": "^14.6.7",
+        "@types/node": "^24.19.1",
+        "@types/react": "^19.3.0",
+        "@types/react-dom": "^19.3.0",
+        "@vitest/browser": "4.1.11",
+        "@vitest/browser-playwright": "4.1.11",
+        "eslint": "^9.39.5",
+        "eslint-plugin-storybook": "^10.6.1",
+        "jsdom": "^28.1.0",
+        "npm-run-all2": "^8.0.4",
+        "playwright": "^1.63.0",
+        "prettier": "^3.6.2",
+        "react": "^19.3.0",
+        "react-dom": "^19.3.0",
+        "rimraf": "^6.1.3",
+        "sass": "^1.93.0",
+        "storybook": "^10.6.1",
+        "typescript": "^5.9.3",
+        "vite": "^7.3.6",
+        "vitest": "^4.1.11"
+    },
+    "peerDependencies": {
+        "@base-ui/react": "^1.5.0",
+        "react": "^18.0.0 || ^19.0.0",
+        "react-dom": "^18.0.0 || ^19.0.0"
+    },
+    "engines": {
+        "node": ">=22.0.0"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org"
+    }
+}

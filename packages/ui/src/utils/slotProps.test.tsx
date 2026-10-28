@@ -1,6 +1,6 @@
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentPropsWithRef } from "react";
-import { cleanup, render, screen } from "test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { resolveSlotProps, type SlotPropsValue } from "./slotProps";

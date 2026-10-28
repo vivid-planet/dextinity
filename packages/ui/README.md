@@ -1,17 +1,25 @@
-# Future UI
+# @dextinity/ui
 
-This sub-package is an **experimental**, UI-only React component library inside `@dextinity/admin`, consumed as `@dextinity/admin/future-ui`. It is self-contained: it keeps its own directory and contains no routing, forms, data fetching, or other non-UI logic. Whether it stays a separate sub-package or later becomes part of `@dextinity/admin`'s own UI layer is still open; the UI-only separation holds either way.
+An **experimental**, UI-only React component library. It contains no routing, forms, data fetching, or other non-UI logic, and it is not specific to the admin: any React application can use it.
 
-Future UI builds from an unstyled foundation rather than evolving the existing MUI-based components; `@base-ui/react` is the chosen foundation.
+It builds on an unstyled foundation rather than evolving the MUI-based components of `@dextinity/admin`; `@base-ui/react` is the chosen foundation.
+
+## Usage
+
+Import the styles once, in the application's entry file:
+
+```ts
+import "@dextinity/ui/css";
+```
 
 ## Experimental
 
-Any export may change or be removed at any time, without deprecation notice. Every export carries the `@experimental` TSDoc tag. Changesets are not created for changes within this sub-package.
+Any export may change or be removed at any time, without deprecation notice. Changesets are not created for changes within this package.
 
 ## Non-goals
 
 - **No non-UI logic.** Forms (`final-form`, `react-hook-form`), routing (`react-router`), data fetching (Apollo), and similar concerns stay out.
-- **No dependency on `@mui/material`, `@mui/system`, Emotion, or any other part of the existing `@dextinity/admin` styling stack.** Future UI is a fresh foundation; cross-imports reintroduce the competing system it removes.
+- **No dependency on `@mui/material`, `@mui/system`, Emotion, or any other part of the existing `@dextinity/admin` styling stack.** This package is a fresh foundation; cross-imports reintroduce the competing system it removes.
 
 ## Folder and file names
 
@@ -74,7 +82,7 @@ A component extends the props of its root element and passes the ones it doesn't
 
 ### Override props
 
-Future UI's exported components share one set of override props; each offers the ones that apply to it. The [styling contract](#styling-contract) is the primary way to style a component; these props do what it can't — place and swap inner parts, and set or vary their props.
+The exported components share one set of override props; each offers the ones that apply to it. The [styling contract](#styling-contract) is the primary way to style a component; these props do what it can't — place and swap inner parts, and set or vary their props.
 
 - **`className`** — a string, merged with the contract classes, never replacing them. It is not a function: every value in `ownerState` already emits a `data-*` attribute, so an `ownerState`-dependent class would add nothing.
 - **`slots`** — sets which element a named inner part renders as. The root is not a slot — it is the component's own outermost element, configured through the component's top-level props directly (`className`, event handlers, ARIA, …).
@@ -102,7 +110,7 @@ The contract has two parts: **structural class names** for a component's element
 
 **Emission.** These attributes cover owner-state values only; parts are class names. How a component emits them depends on its foundation: one rendered through `useRender` passes `state: ownerState` for base-ui to convert; one built on a base-ui primitive lets the primitive emit the state it owns and passes the rest inline (`data-variant={variant}`).
 
-**Composition.** When a Future UI component is used as the root of another component, both root classes appear on the same element — a `CustomButton` rendering through `Button` produces `dextinityButton dextinityCustomButton`. Either layer is targetable.
+**Composition.** When a component of this package is used as the root of another component, both root classes appear on the same element — a `CustomButton` rendering through `Button` produces `dextinityButton dextinityCustomButton`. Either layer is targetable.
 
 **Authoring source.** The SCSS module's local class names match the public part names; the stylesheet's file name is the single source of a component's emitted name. The mapping:
 
@@ -116,7 +124,7 @@ The contract has two parts: **structural class names** for a component's element
 
 ### Stories
 
-Stories live under the "Future UI" section. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`storybook/`](storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it.
+Stories live under the "Components" section. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it.
 
 #### Main story
 
@@ -149,7 +157,7 @@ Each declared prop is exposed as a control through `argTypes`, by kind:
 
 #### Dev story
 
-`__stories__/<name>.dev.stories.tsx`, optional, nests its title under a `Dev` segment (`Future UI/<Component>/Dev/<Name>`) and sets `tags: ["!autodocs"]` in its meta, keeping these out of the consumer docs. A dev story serves any development, testing, or debugging need, so add them freely — e.g. reproduce a bug in a dev story and use it to confirm the fix, rather than reaching for the Dextinity demo or a consuming project.
+`__stories__/<name>.dev.stories.tsx`, optional, nests its title under a `Dev` segment (`Components/<Component>/Dev/<Name>`) and sets `tags: ["!autodocs"]` in its meta, keeping these out of the consumer docs. A dev story serves any development, testing, or debugging need, so add them freely — e.g. reproduce a bug in a dev story and use it to confirm the fix, rather than reaching for the Dextinity demo or a consuming project.
 
 ## Testing
 
@@ -166,9 +174,9 @@ Not worth a test:
 
 - **That a component renders** — every story already runs as a browser test, so a rendering story is the coverage.
 - **Appearance** — colors, sizes, spacing — reviewed visually in the stories, never asserted.
-- **Dev-local tooling** — story-only helpers — a failure is loud and local. Exception: code whose regression is silent or reaches consumers, such as the class-name mapping in `cssModules/`.
+- **Dev-local tooling** — story-only helpers — a failure is loud and local. Exception: code whose regression is silent or reaches consumers, such as the class-name mapping in `src/cssModules/`.
 
-Run from `packages/admin/admin`: `pnpm run test:unit`, `pnpm run test:storybook`, and `pnpm run test:watch`.
+Run from `packages/ui`: `pnpm run test:unit`, `pnpm run test:storybook`, and `pnpm run test:watch`.
 
 ## Theme
 
@@ -176,12 +184,8 @@ Components read their colors and metrics from CSS custom properties (`var(--dext
 
 ### Token layers
 
-The tokens are defined in five SCSS partials under [`theme/`](theme), composed into the provider module with `@use` and wrapped in a single `@layer dextinity`: `_primitives.scss` (raw values, internal), `_brand.scss`, `_responsive.scss`, `_semantic.scss`, and `_components.scss`. The prop-value types live in [`theme/types.ts`](theme/types.ts).
+The tokens are defined in five SCSS partials under [`src/theme/`](src/theme), composed into the provider module with `@use` and wrapped in a single `@layer dextinity`: `_primitives.scss` (raw values, internal), `_brand.scss`, `_responsive.scss`, `_semantic.scss`, and `_components.scss`. The prop-value types live in [`src/theme/types.ts`](src/theme/types.ts).
 
 ### Selecting a color scheme
 
 `Theme` selects the active color scheme. It stays a pure function of its props — reading no `window`, `localStorage`, or `matchMedia` — so it renders the same on server and client; switching, OS-scheme resolution, and preventing the first-paint flash on SSR stay in consumer code.
-
-## Known issues
-
-- Styles are not delivered by the package build yet. The Babel build compiles no CSS Modules, so the class-name mapping applies in Storybook but not in published output.

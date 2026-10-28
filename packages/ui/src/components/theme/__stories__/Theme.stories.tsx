@@ -10,7 +10,7 @@ const colorSchemes = ["light", "dark", "high-contrast"];
 
 const meta: Meta<typeof Theme> = {
     component: Theme,
-    title: "Future UI/Theme",
+    title: "Components/Theme",
     argTypes: {
         colorScheme: { control: "select", options: colorSchemes },
     },

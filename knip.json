@@ -34,10 +34,9 @@
             "project": ["./src/**/*.{ts,tsx}"]
         },
         "packages/admin/admin": {
-            "entry": ["./src/index.ts", "./src/future-ui/index.ts"],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": [".storybook/public/mockServiceWorker.js"],
-            "ignoreDependencies": ["@mui/x-data-grid-premium", "sass"]
+            "ignoreDependencies": ["@mui/x-data-grid-premium"]
         },
         "packages/admin/admin-color-picker": {
             "project": ["./src/**/*.{ts,tsx}"]
@@ -82,6 +81,10 @@
         "packages/mail-react": {
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["./src/**/*.generated.ts"]
+        },
+        "packages/ui": {
+            "project": ["./src/**/*.{ts,tsx}"],
+            "ignoreDependencies": ["sass"]
         },
         "demo/admin": {
             "entry": ["./src/loader.ts", "./src/**/*.dextinityGen.{ts,tsx}"],

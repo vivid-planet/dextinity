@@ -63,7 +63,7 @@ const createCarousel = ({ rootTabIndex }: { rootTabIndex?: number } = {}) => {
     return { root, viewport, slides, buttons, emblaApi, plugin };
 };
 
-const pressKey = (target: Element, key: string, modifiers: KeyboardEventInit = {}) => {
+const pressKey = ({ target, key, modifiers = {} }: { target: Element; key: string; modifiers?: KeyboardEventInit }) => {
     const event = new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true, ...modifiers });
     target.dispatchEvent(event);
     return event;
@@ -81,7 +81,7 @@ describe("CarouselAccessibility", () => {
 
         expect(getInertSlides(slides)).toEqual([2, 3]);
 
-        pressKey(root, "ArrowRight");
+        pressKey({ target: root, key: "ArrowRight" });
 
         expect(getInertSlides(slides)).toEqual([0, 3]);
     });
@@ -89,8 +89,8 @@ describe("CarouselAccessibility", () => {
     it("scrolls to the next and previous snap with the arrow keys", () => {
         const { root, emblaApi } = createCarousel();
 
-        pressKey(root, "ArrowRight");
-        pressKey(root, "ArrowLeft");
+        pressKey({ target: root, key: "ArrowRight" });
+        pressKey({ target: root, key: "ArrowLeft" });
 
         expect(emblaApi.scrollNext).toHaveBeenCalledOnce();
         expect(emblaApi.scrollPrev).toHaveBeenCalledOnce();
@@ -99,7 +99,7 @@ describe("CarouselAccessibility", () => {
     it("ignores other keys", () => {
         const { root, emblaApi } = createCarousel();
 
-        const event = pressKey(root, "ArrowDown");
+        const event = pressKey({ target: root, key: "ArrowDown" });
 
         expect(event.defaultPrevented).toBe(false);
         expect(emblaApi.scrollNext).not.toHaveBeenCalled();
@@ -108,7 +108,7 @@ describe("CarouselAccessibility", () => {
     it.each(["altKey", "ctrlKey", "metaKey", "shiftKey"])("ignores the arrow keys with the %s modifier", (modifier) => {
         const { root, emblaApi } = createCarousel();
 
-        const event = pressKey(root, "ArrowLeft", { [modifier]: true });
+        const event = pressKey({ target: root, key: "ArrowLeft", modifiers: { [modifier]: true } });
 
         expect(event.defaultPrevented).toBe(false);
         expect(emblaApi.scrollPrev).not.toHaveBeenCalled();
@@ -119,7 +119,7 @@ describe("CarouselAccessibility", () => {
         const input = document.createElement("input");
         slides[0].appendChild(input);
 
-        const event = pressKey(input, "ArrowRight");
+        const event = pressKey({ target: input, key: "ArrowRight" });
 
         expect(event.defaultPrevented).toBe(false);
         expect(emblaApi.scrollNext).not.toHaveBeenCalled();
@@ -131,7 +131,7 @@ describe("CarouselAccessibility", () => {
         nestedCarousel.addEventListener("keydown", (event) => event.preventDefault());
         slides[0].appendChild(nestedCarousel);
 
-        pressKey(nestedCarousel, "ArrowRight");
+        pressKey({ target: nestedCarousel, key: "ArrowRight" });
 
         expect(emblaApi.scrollNext).not.toHaveBeenCalled();
     });
@@ -140,7 +140,7 @@ describe("CarouselAccessibility", () => {
         const { root, buttons } = createCarousel();
         buttons[0].focus();
 
-        pressKey(buttons[0], "ArrowRight");
+        pressKey({ target: buttons[0], key: "ArrowRight" });
 
         expect(document.activeElement).toBe(root);
     });
@@ -149,7 +149,7 @@ describe("CarouselAccessibility", () => {
         const { buttons } = createCarousel();
         buttons[1].focus();
 
-        pressKey(buttons[1], "ArrowRight");
+        pressKey({ target: buttons[1], key: "ArrowRight" });
 
         expect(document.activeElement).toBe(buttons[1]);
     });
@@ -191,7 +191,7 @@ describe("CarouselAccessibility", () => {
         const { root, slides, emblaApi, plugin } = createCarousel();
 
         plugin.destroy();
-        pressKey(root, "ArrowRight");
+        pressKey({ target: root, key: "ArrowRight" });
 
         expect(getInertSlides(slides)).toEqual([]);
         expect(emblaApi.scrollNext).not.toHaveBeenCalled();

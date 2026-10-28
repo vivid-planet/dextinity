@@ -14,7 +14,6 @@ export default defineConfig([
     {
         files: ["src/**/*.stories.tsx", "src/**/*.test.ts", "src/**/*.test.tsx"],
         rules: {
-            "@calm/react-intl/missing-formatted-message": "off",
             "react/jsx-no-literals": "off",
         },
     },

@@ -22,15 +22,15 @@ function describeFieldType(field: BlockMetaField): string {
         case BlockMetaFieldKind.NestedObjectList:
             return "a list";
         case BlockMetaFieldKind.Enum:
-            return `one of: ${field.enum.join(", ")}`;
+            return field.array ? `a list of: ${field.enum.join(", ")}` : `one of: ${field.enum.join(", ")}`;
         case BlockMetaFieldKind.String:
-            return "a string";
+            return field.array ? "a list of strings" : "a string";
         case BlockMetaFieldKind.Number:
-            return "a number";
+            return field.array ? "a list of numbers" : "a number";
         case BlockMetaFieldKind.Boolean:
-            return "a boolean";
+            return field.array ? "a list of booleans" : "a boolean";
         case BlockMetaFieldKind.Json:
-            return "a JSON value";
+            return field.array ? "a list of JSON values" : "a JSON value";
         case BlockMetaFieldKind.TipTapRichTextBlock:
             return "rich text";
     }

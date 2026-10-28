@@ -138,6 +138,23 @@ describe("formatValidationErrors", () => {
         expect(errors).toEqual([{ path: "content.blocks[0].props.space.height", message: "height must be an integer number" }]);
     });
 
+    it("should keep the field name of a map in the path", async () => {
+        class Translation {
+            @IsString()
+            title: string;
+        }
+
+        class TranslationsInput {
+            @ValidateNested({ each: true })
+            translations: Map<string, Translation>;
+        }
+
+        const input = new TranslationsInput();
+        input.translations = new Map([["en", Object.assign(new Translation(), { title: 1 })]]);
+
+        expect(formatValidationErrors(await validate(input))).toEqual([{ path: "translations.en.title", message: "title must be a string" }]);
+    });
+
     it("should report errors in an input without blocks", async () => {
         class SortInput {
             @IsString()

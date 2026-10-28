@@ -46,8 +46,8 @@ function collectErrors({
     for (const child of error.children ?? []) {
         let childPath: string;
 
-        if (value instanceof Map) {
-            // composeBlocks keeps its child blocks in a map, while the input has them as fields of the block.
+        if (value instanceof Map && error.property === "_blockMap") {
+            // composeBlocks keeps its child blocks in the map _blockMap, while the input has them as fields of the block.
             childPath = joinPath(removeLastSegment(path), child.property);
         } else if (Array.isArray(value)) {
             childPath = `${path}[${child.property}]`;

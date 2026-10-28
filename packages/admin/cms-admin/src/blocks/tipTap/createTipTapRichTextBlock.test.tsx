@@ -118,7 +118,7 @@ describe("createTipTapRichTextBlock", () => {
         const copyAndPasteAll = (editor: Editor) => {
             const { dom } = editor.view.serializeForClipboard(editor.state.doc.slice(0, editor.state.doc.content.size));
             editor.commands.setTextSelection(editor.state.doc.content.size - 1);
-            editor.view.pasteHTML(dom.innerHTML);
+            editor.view.pasteHTML(dom.innerHTML, new Event("paste") as ClipboardEvent);
         };
 
         const pressKey = (editor: Editor, key: string) =>

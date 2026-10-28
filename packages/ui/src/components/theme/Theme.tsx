@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import type { ComponentPropsWithoutRef } from "react";
+import { type ComponentPropsWithoutRef, forwardRef } from "react";
 
 import type { ThemeColorScheme } from "../../theme/types";
 import styles from "./Theme.module.scss";
@@ -18,10 +18,10 @@ export interface ThemeProps extends ComponentPropsWithoutRef<"div"> {
 /**
  * Scopes the active color scheme to its subtree. Wrap an application, or a section of one.
  */
-export function Theme({ colorScheme = "light", className, children, ...restProps }: ThemeProps) {
+export const Theme = forwardRef<HTMLDivElement, ThemeProps>(function Theme({ colorScheme = "light", className, children, ...restProps }, ref) {
     return (
-        <div {...restProps} data-dextinity-color-scheme={colorScheme} className={clsx(styles.root, className)}>
+        <div {...restProps} ref={ref} data-dextinity-color-scheme={colorScheme} className={clsx(styles.root, className)}>
             {children}
         </div>
     );
-}
+});

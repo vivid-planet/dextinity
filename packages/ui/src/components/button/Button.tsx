@@ -1,6 +1,6 @@
 import { Button as BaseButton } from "@base-ui/react/button";
 import { clsx } from "clsx";
-import type { ElementType, ReactNode } from "react";
+import { type ElementType, type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./Button.module.scss";
@@ -39,7 +39,7 @@ interface ButtonSlotProps<StartIcon extends ElementType, EndIcon extends Element
 
 export interface ButtonProps<StartIcon extends ElementType = "span", EndIcon extends ElementType = "span"> extends Omit<
     BaseButton.Props,
-    "className"
+    "className" | "ref"
 > {
     /**
      * Visual style.
@@ -68,18 +68,23 @@ export interface ButtonProps<StartIcon extends ElementType = "span", EndIcon ext
 /**
  * A button for triggering actions.
  */
-export function Button<StartIcon extends ElementType = "span", EndIcon extends ElementType = "span">({
-    disabled = false,
-    type = "button",
-    variant = "primary",
-    className,
-    slots,
-    slotProps,
-    startIcon,
-    endIcon,
-    children,
-    ...restProps
-}: ButtonProps<StartIcon, EndIcon>) {
+export const Button: <StartIcon extends ElementType = "span", EndIcon extends ElementType = "span">(
+    props: ButtonProps<StartIcon, EndIcon> & RefAttributes<HTMLButtonElement>,
+) => ReactNode = forwardRef(function Button<StartIcon extends ElementType = "span", EndIcon extends ElementType = "span">(
+    {
+        disabled = false,
+        type = "button",
+        variant = "primary",
+        className,
+        slots,
+        slotProps,
+        startIcon,
+        endIcon,
+        children,
+        ...restProps
+    }: ButtonProps<StartIcon, EndIcon>,
+    ref: ForwardedRef<HTMLButtonElement>,
+) {
     const ownerState: ButtonOwnerState = { variant, disabled };
 
     const StartIconSlot: ElementType = slots?.startIcon ?? "span";
@@ -91,6 +96,7 @@ export function Button<StartIcon extends ElementType = "span", EndIcon extends E
     return (
         <BaseButton
             {...restProps}
+            ref={ref}
             type={type}
             disabled={ownerState.disabled}
             data-variant={ownerState.variant}
@@ -101,4 +107,4 @@ export function Button<StartIcon extends ElementType = "span", EndIcon extends E
             {endIcon != null && <EndIconSlot {...endIconProps}>{endIcon}</EndIconSlot>}
         </BaseButton>
     );
-}
+});

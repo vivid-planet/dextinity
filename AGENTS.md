@@ -157,6 +157,7 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 | `@dextinity/eslint-config` | Shared ESLint configurations                                     |
 | `@dextinity/eslint-plugin` | Custom ESLint rules for Dextinity projects                       |
 | `@dextinity/mail-react`    | Utilities for building HTML emails with React (MJML-based)       |
+| `@dextinity/ui`            | UI-only React component library (Base UI, CSS Modules)           |
 
 ### Docs & Storybook
 

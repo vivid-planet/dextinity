@@ -1,0 +1,9 @@
+@use "../../theme/primitives";
+@use "../../theme/brand";
+@use "../../theme/responsive";
+@use "../../theme/semantic";
+@use "../../theme/components";
+
+.root {
+    display: contents;
+}

@@ -1,0 +1,66 @@
+@layer dextinity {
+    :root {
+        --dextinity-brand-radius-control: var(--dextinity-radius-lg);
+        --dextinity-brand-radius-forms: var(--dextinity-radius-md);
+        --dextinity-brand-radius-surface: var(--dextinity-radius-lg);
+        --dextinity-brand-radius-card: var(--dextinity-brand-radius-surface);
+        --dextinity-brand-radius-modal: var(--dextinity-radius-2xl);
+        --dextinity-brand-radius-drawer: var(--dextinity-brand-radius-surface);
+        --dextinity-brand-radius-table: var(--dextinity-brand-radius-surface);
+        --dextinity-brand-radius-tooltip: var(--dextinity-radius-sm);
+        --dextinity-brand-radius-pill: var(--dextinity-radius-full);
+
+        --dextinity-brand-radius-control-small: var(--dextinity-radius-md);
+
+        --dextinity-brand-font-family-sans: var(--dextinity-font-family-inter);
+        --dextinity-brand-font-family-mono: var(--dextinity-font-family-mono);
+
+        --dextinity-brand-color-primary-50: var(--dextinity-color-indigo-50);
+        --dextinity-brand-color-primary-100: var(--dextinity-color-indigo-100);
+        --dextinity-brand-color-primary-200: var(--dextinity-color-indigo-200);
+        --dextinity-brand-color-primary-300: var(--dextinity-color-indigo-300);
+        --dextinity-brand-color-primary-400: var(--dextinity-color-indigo-400);
+        --dextinity-brand-color-primary-500: var(--dextinity-color-indigo-500);
+        --dextinity-brand-color-primary-600: var(--dextinity-color-indigo-600);
+        --dextinity-brand-color-primary-700: var(--dextinity-color-indigo-700);
+        --dextinity-brand-color-primary-800: var(--dextinity-color-indigo-800);
+        --dextinity-brand-color-primary-900: var(--dextinity-color-indigo-900);
+        --dextinity-brand-color-primary-950: var(--dextinity-color-indigo-950);
+
+        --dextinity-brand-color-secondary-50: var(--dextinity-color-grey-50);
+        --dextinity-brand-color-secondary-100: var(--dextinity-color-grey-100);
+        --dextinity-brand-color-secondary-200: var(--dextinity-color-grey-200);
+        --dextinity-brand-color-secondary-300: var(--dextinity-color-grey-300);
+        --dextinity-brand-color-secondary-400: var(--dextinity-color-grey-400);
+        --dextinity-brand-color-secondary-500: var(--dextinity-color-grey-500);
+        --dextinity-brand-color-secondary-600: var(--dextinity-color-grey-600);
+        --dextinity-brand-color-secondary-700: var(--dextinity-color-grey-700);
+        --dextinity-brand-color-secondary-800: var(--dextinity-color-grey-800);
+        --dextinity-brand-color-secondary-900: var(--dextinity-color-grey-900);
+        --dextinity-brand-color-secondary-950: var(--dextinity-color-grey-950);
+
+        --dextinity-brand-color-neutral-50: var(--dextinity-color-grey-50);
+        --dextinity-brand-color-neutral-100: var(--dextinity-color-grey-100);
+        --dextinity-brand-color-neutral-200: var(--dextinity-color-grey-200);
+        --dextinity-brand-color-neutral-300: var(--dextinity-color-grey-300);
+        --dextinity-brand-color-neutral-400: var(--dextinity-color-grey-400);
+        --dextinity-brand-color-neutral-500: var(--dextinity-color-grey-500);
+        --dextinity-brand-color-neutral-600: var(--dextinity-color-grey-600);
+        --dextinity-brand-color-neutral-700: var(--dextinity-color-grey-700);
+        --dextinity-brand-color-neutral-800: var(--dextinity-color-grey-800);
+        --dextinity-brand-color-neutral-900: var(--dextinity-color-grey-900);
+        --dextinity-brand-color-neutral-950: var(--dextinity-color-grey-950);
+
+        --dextinity-brand-color-neutral-tinted-50: var(--dextinity-color-midnight-50);
+        --dextinity-brand-color-neutral-tinted-100: var(--dextinity-color-midnight-100);
+        --dextinity-brand-color-neutral-tinted-200: var(--dextinity-color-midnight-200);
+        --dextinity-brand-color-neutral-tinted-300: var(--dextinity-color-midnight-300);
+        --dextinity-brand-color-neutral-tinted-400: var(--dextinity-color-midnight-400);
+        --dextinity-brand-color-neutral-tinted-500: var(--dextinity-color-midnight-500);
+        --dextinity-brand-color-neutral-tinted-600: var(--dextinity-color-midnight-600);
+        --dextinity-brand-color-neutral-tinted-700: var(--dextinity-color-midnight-700);
+        --dextinity-brand-color-neutral-tinted-800: var(--dextinity-color-midnight-800);
+        --dextinity-brand-color-neutral-tinted-900: var(--dextinity-color-midnight-900);
+        --dextinity-brand-color-neutral-tinted-950: var(--dextinity-color-midnight-950);
+    }
+}

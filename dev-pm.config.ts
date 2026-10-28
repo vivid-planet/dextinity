@@ -140,6 +140,18 @@ export default defineConfig({
             group: ["storybook", "docs"],
         },
 
+        //group dextinity-ui
+        {
+            name: "dextinity-ui",
+            script: "pnpm --filter @dextinity/ui run dev",
+            group: ["dextinity-ui"],
+        },
+        {
+            name: "storybook-dextinity-ui",
+            script: "pnpm --filter @dextinity/ui run storybook",
+            group: ["storybook"],
+        },
+
         //group brevo
         {
             name: "brevo-api",

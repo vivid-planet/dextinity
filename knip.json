@@ -84,6 +84,10 @@
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["./src/**/*.generated.ts"]
         },
+        "packages/ui": {
+            "project": ["./src/**/*.{ts,tsx}"],
+            "ignoreDependencies": ["sass"]
+        },
         "demo/admin": {
             "entry": ["./src/loader.ts", "./src/**/*.dextinityGen.{ts,tsx}"],
             "project": ["./src/**/*.{ts,tsx}"],

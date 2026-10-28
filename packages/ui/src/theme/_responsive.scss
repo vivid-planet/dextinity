@@ -1,0 +1,93 @@
+@layer dextinity {
+    :root {
+        --dextinity-typography-display-size: 32px;
+        --dextinity-typography-display-line-height: 40px;
+
+        --dextinity-typography-h1-size: 24px;
+        --dextinity-typography-h1-line-height: 32px;
+
+        --dextinity-typography-h2-size: 20px;
+        --dextinity-typography-h2-line-height: 28px;
+
+        --dextinity-typography-h3-size: 18px;
+        --dextinity-typography-h3-line-height: 24px;
+
+        --dextinity-typography-h4-size: 16px;
+        --dextinity-typography-h4-line-height: 22px;
+
+        --dextinity-typography-body-lg-size: 16px;
+        --dextinity-typography-body-lg-line-height: 22px;
+
+        --dextinity-typography-body-md-size: 15px;
+        --dextinity-typography-body-md-line-height: 22px;
+
+        --dextinity-typography-body-sm-size: 13px;
+        --dextinity-typography-body-sm-line-height: 20px;
+
+        --dextinity-typography-body-xs-size: 12px;
+        --dextinity-typography-body-xs-line-height: 14px;
+
+        --dextinity-space-layout-xs: var(--dextinity-unit-2);
+        --dextinity-space-layout-sm: var(--dextinity-unit-3);
+        --dextinity-space-layout-md: var(--dextinity-unit-4);
+        --dextinity-space-layout-lg: var(--dextinity-unit-6);
+        --dextinity-space-layout-xl: var(--dextinity-unit-8);
+        --dextinity-space-layout-2xl: var(--dextinity-unit-12);
+
+        --dextinity-typography-label-md-size: 15px;
+        --dextinity-typography-label-md-line-height: 22px;
+
+        --dextinity-typography-label-sm-size: 13px;
+        --dextinity-typography-label-sm-line-height: 20px;
+
+        --dextinity-typography-label-xs-size: 12px;
+        --dextinity-typography-label-xs-line-height: 14px;
+    }
+
+    @media (min-width: 1024px) {
+        :root {
+            --dextinity-typography-display-size: 48px;
+            --dextinity-typography-display-line-height: 56px;
+
+            --dextinity-typography-h1-size: 32px;
+            --dextinity-typography-h1-line-height: 40px;
+
+            --dextinity-typography-h2-size: 24px;
+            --dextinity-typography-h2-line-height: 32px;
+
+            --dextinity-typography-h3-size: 20px;
+            --dextinity-typography-h3-line-height: 28px;
+
+            --dextinity-typography-h4-size: 18px;
+            --dextinity-typography-h4-line-height: 24px;
+
+            --dextinity-typography-body-lg-size: 18px;
+            --dextinity-typography-body-lg-line-height: 24px;
+
+            --dextinity-typography-body-md-size: 16px;
+            --dextinity-typography-body-md-line-height: 24px;
+
+            --dextinity-typography-body-sm-size: 14px;
+            --dextinity-typography-body-sm-line-height: 20px;
+
+            --dextinity-typography-body-xs-size: 12px;
+            --dextinity-typography-body-xs-line-height: 16px;
+
+            --dextinity-space-layout-xs: var(--dextinity-unit-2);
+            --dextinity-space-layout-sm: var(--dextinity-unit-4);
+            --dextinity-space-layout-md: var(--dextinity-unit-6);
+            --dextinity-space-layout-lg: var(--dextinity-unit-8);
+            --dextinity-space-layout-xl: var(--dextinity-unit-12);
+            --dextinity-space-layout-2xl: var(--dextinity-unit-16);
+
+            --dextinity-typography-label-md-size: 16px;
+            --dextinity-typography-label-md-line-height: 24px;
+
+            --dextinity-typography-label-sm-size: 14px;
+            --dextinity-typography-label-sm-line-height: 20px;
+
+            --dextinity-typography-label-xs-size: 12px;
+            --dextinity-typography-label-xs-line-height: 16px;
+        }
+    }
+}

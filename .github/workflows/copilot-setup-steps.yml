@@ -170,6 +170,13 @@ jobs:
                   path: packages/site/site-react/lib
                   key: ${{ runner.os }}-build-site-react-${{ hashFiles('packages/site/site-react/src/**', 'packages/site/site-react/package.json', 'packages/site/site-react/tsconfig*.json', 'pnpm-lock.yaml') }}
 
+            - name: Cache @dextinity/ui build
+              id: cache-ui
+              uses: actions/cache@v4
+              with:
+                  path: packages/ui/lib
+                  key: ${{ runner.os }}-build-ui-${{ hashFiles('packages/ui/src/**', 'packages/ui/package.json', 'packages/ui/tsconfig*.json', 'pnpm-lock.yaml') }}
+
             - uses: ./.github/actions/setup
               with:
                   setup-ci: "false"
@@ -209,6 +216,7 @@ jobs:
                   [ "${{ steps.cache-mail-react.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/mail-react"
                   [ "${{ steps.cache-site-nextjs.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/site-nextjs"
                   [ "${{ steps.cache-site-react.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/site-react"
+                  [ "${{ steps.cache-ui.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/ui"
                   if [ -n "$FILTERS" ]; then
                       pnpm --recursive $FILTERS run build
                   fi

@@ -175,6 +175,44 @@ describe("createTipTapRichTextBlock", () => {
             expect(editor.getJSON()).toEqual({ type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "paragraph" } }] });
         });
 
+        it.each([
+            ["insertSoftHyphen", "softHyphen"],
+            ["insertNonBreakingSpace", "nonBreakingSpace"],
+        ] as const)("should give the node inserted with %s the marks at the cursor", (command, nodeType) => {
+            const editor = createEditor();
+            const bold = [{ type: "bold" }];
+            editor.commands.setContent({
+                type: "doc",
+                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Winterräder", marks: bold }] }],
+            });
+            editor.commands.setTextSelection(7);
+
+            editor.commands[command]();
+
+            expect(editor.getJSON().content?.[0].content).toEqual([
+                { type: "text", text: "Winter", marks: bold },
+                { type: nodeType, marks: bold },
+                { type: "text", text: "räder", marks: bold },
+            ]);
+        });
+
+        it("should insert a soft hyphen without marks into text without marks", () => {
+            const editor = createEditor();
+            editor.commands.setContent({
+                type: "doc",
+                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Winterräder" }] }],
+            });
+            editor.commands.setTextSelection(7);
+
+            editor.commands.insertSoftHyphen();
+
+            expect(editor.getJSON().content?.[0].content).toEqual([
+                { type: "text", text: "Winter" },
+                { type: "softHyphen" },
+                { type: "text", text: "räder" },
+            ]);
+        });
+
         it("should fill an emptied heading-only block with the default text block", () => {
             const editor = createEditor({
                 textBlocks: [

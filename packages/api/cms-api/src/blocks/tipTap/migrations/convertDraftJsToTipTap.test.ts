@@ -990,7 +990,7 @@ describe("convertDraftJsToTipTap", () => {
             expect(result.content?.[0].content).toEqual([{ type: "text", text: "long" }, { type: "softHyphen" }, { type: "text", text: "word" }]);
         });
 
-        it("preserves marks on text fragments adjacent to atom characters", () => {
+        it("keeps the marks of the surrounding text on atom nodes", () => {
             const result = convertDraftJsToTipTap(
                 {
                     blocks: [
@@ -1006,8 +1006,52 @@ describe("convertDraftJsToTipTap", () => {
             );
             expect(result.content?.[0].content).toEqual([
                 { type: "text", text: "a", marks: [{ type: "bold" }] },
-                { type: "nonBreakingSpace" },
+                { type: "nonBreakingSpace", marks: [{ type: "bold" }] },
                 { type: "text", text: "b", marks: [{ type: "bold" }] },
+            ]);
+        });
+
+        it("keeps a bold link across a soft hyphen", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({
+                            type: "unstyled",
+                            text: "Winter­räder",
+                            inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 12 }],
+                            entityRanges: [{ key: 0, offset: 0, length: 12 }],
+                        }),
+                    ],
+                    entityMap: { "0": { type: "LINK", mutability: "MUTABLE", data: { href: "https://example.com" } } },
+                },
+                { resolvedOptions: allEnabled, link: dummyLinkBlock },
+            );
+            const marks = [{ type: "bold" }, { type: "link", attrs: { data: { href: "https://example.com" } } }];
+            expect(result.content?.[0].content).toEqual([
+                { type: "text", text: "Winter", marks },
+                { type: "softHyphen", marks },
+                { type: "text", text: "räder", marks },
+            ]);
+        });
+
+        it("doesn't apply a mark to an atom node outside of its range", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({
+                            type: "unstyled",
+                            text: "ab­c",
+                            inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 2 }],
+                        }),
+                    ],
+                    entityMap: {},
+                },
+                { resolvedOptions: allEnabled },
+            );
+            expect(result.content?.[0].content).toEqual([
+                { type: "text", text: "ab", marks: [{ type: "bold" }] },
+                { type: "softHyphen" },
+                { type: "text", text: "c" },
             ]);
         });
 

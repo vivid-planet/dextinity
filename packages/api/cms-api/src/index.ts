@@ -140,6 +140,7 @@ export { DextinityException } from "./common/errors/dextinity.exception";
 export { DextinityEntityNotFoundException } from "./common/errors/entity-not-found.exception";
 export { ExceptionFilter } from "./common/errors/exception.filter";
 export { ExceptionInterceptor } from "./common/errors/exception.interceptor";
+export { FormattedValidationError, formatValidationErrors } from "./common/errors/format-validation-errors";
 export { DextinityValidationException } from "./common/errors/validation.exception";
 export { ValidationExceptionFactory } from "./common/errors/validation.exception-factory";
 export { BooleanFilter } from "./common/filter/boolean.filter";

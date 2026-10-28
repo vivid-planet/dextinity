@@ -192,7 +192,7 @@ Fix description here
 ## Commit messages
 
 - Do not use Conventional Commits.
-- If a change is scoped to one package, prefix the commit message with the affected package name. Don't include `@dextinity/` in the package name.
+- If a change is scoped to one package or top-level directory, prefix the commit message with its name. Don't include `@dextinity/` in the package name.
 
 ## Pull request descriptions
 

@@ -1,0 +1,274 @@
+@layer dextinity {
+    [data-dextinity-color-scheme="dark"] {
+        --dextinity-color-background-default: var(--dextinity-brand-color-neutral-900);
+        --dextinity-color-background-subtle: var(--dextinity-brand-color-neutral-800);
+        --dextinity-color-background-muted: var(--dextinity-brand-color-neutral-700);
+        --dextinity-color-background-inverse: var(--dextinity-brand-color-neutral-50);
+        --dextinity-color-background-overlay: rgb(0 0 0 / 0.7);
+
+        --dextinity-color-foreground-default: var(--dextinity-brand-color-neutral-100);
+        --dextinity-color-foreground-muted: var(--dextinity-brand-color-neutral-300);
+        --dextinity-color-foreground-subtle: var(--dextinity-brand-color-neutral-500);
+        --dextinity-color-foreground-inverse: var(--dextinity-brand-color-neutral-900);
+
+        --dextinity-color-foreground-on-accent: var(--dextinity-color-grey-900);
+
+        --dextinity-color-border-default: var(--dextinity-brand-color-neutral-700);
+        --dextinity-color-border-subtle: var(--dextinity-brand-color-neutral-800);
+        --dextinity-color-border-muted: var(--dextinity-brand-color-neutral-600);
+        --dextinity-color-border-strong: var(--dextinity-brand-color-neutral-500);
+        --dextinity-color-border-focus: var(--dextinity-brand-color-primary-300);
+
+        --dextinity-color-action-primary-default: var(--dextinity-brand-color-primary-400);
+        --dextinity-color-action-primary-hover: var(--dextinity-brand-color-primary-300);
+        --dextinity-color-action-primary-active: var(--dextinity-brand-color-primary-200);
+        --dextinity-color-action-primary-disabled: var(--dextinity-brand-color-neutral-700);
+        --dextinity-color-action-primary-subtle: var(--dextinity-brand-color-primary-900);
+        --dextinity-color-action-primary-foreground: var(--dextinity-color-grey-900);
+
+        --dextinity-color-action-secondary-default: var(--dextinity-brand-color-secondary-700);
+        --dextinity-color-action-secondary-hover: var(--dextinity-brand-color-secondary-600);
+        --dextinity-color-action-secondary-active: var(--dextinity-brand-color-secondary-500);
+        --dextinity-color-action-secondary-disabled: var(--dextinity-brand-color-secondary-800);
+        --dextinity-color-action-secondary-foreground: var(--dextinity-brand-color-secondary-100);
+        --dextinity-color-action-secondary-subtle: var(--dextinity-brand-color-secondary-800);
+
+        --dextinity-color-action-error-default: var(--dextinity-color-red-300);
+        --dextinity-color-action-error-hover: var(--dextinity-color-red-200);
+        --dextinity-color-action-error-active: var(--dextinity-color-red-100);
+        --dextinity-color-action-error-disabled: var(--dextinity-brand-color-neutral-700);
+        --dextinity-color-action-error-subtle: var(--dextinity-color-red-900);
+        --dextinity-color-action-error-foreground: var(--dextinity-color-grey-950);
+
+        --dextinity-color-feedback-success-default: var(--dextinity-color-green-300);
+        --dextinity-color-feedback-success-subtle: var(--dextinity-color-green-900);
+        --dextinity-color-feedback-success-foreground: var(--dextinity-color-green-200);
+        --dextinity-color-feedback-success-border: var(--dextinity-color-green-700);
+
+        --dextinity-color-feedback-warning-default: var(--dextinity-color-amber-300);
+        --dextinity-color-feedback-warning-subtle: var(--dextinity-color-amber-900);
+        --dextinity-color-feedback-warning-foreground: var(--dextinity-color-amber-200);
+        --dextinity-color-feedback-warning-border: var(--dextinity-color-amber-700);
+
+        --dextinity-color-feedback-danger-default: var(--dextinity-color-red-300);
+        --dextinity-color-feedback-danger-subtle: var(--dextinity-color-red-900);
+        --dextinity-color-feedback-danger-foreground: var(--dextinity-color-red-200);
+        --dextinity-color-feedback-danger-border: var(--dextinity-color-red-700);
+
+        --dextinity-color-feedback-info-default: var(--dextinity-color-sky-300);
+        --dextinity-color-feedback-info-subtle: var(--dextinity-color-sky-900);
+        --dextinity-color-feedback-info-foreground: var(--dextinity-color-sky-200);
+        --dextinity-color-feedback-info-border: var(--dextinity-color-sky-700);
+
+        --dextinity-color-background-tinted-default: var(--dextinity-brand-color-neutral-tinted-950);
+        --dextinity-color-background-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-900);
+        --dextinity-color-background-tinted-muted: var(--dextinity-brand-color-neutral-tinted-800);
+        --dextinity-color-background-tinted-inverse: var(--dextinity-brand-color-neutral-tinted-50);
+        --dextinity-color-background-tinted-overlay: rgb(0 0 0 / 0.7);
+
+        --dextinity-color-foreground-tinted-default: var(--dextinity-brand-color-neutral-tinted-100);
+        --dextinity-color-foreground-tinted-muted: var(--dextinity-brand-color-neutral-tinted-300);
+        --dextinity-color-foreground-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-500);
+        --dextinity-color-foreground-tinted-inverse: var(--dextinity-brand-color-neutral-tinted-900);
+
+        --dextinity-color-foreground-tinted-on-accent: var(--dextinity-brand-color-neutral-tinted-900);
+
+        --dextinity-color-border-tinted-default: var(--dextinity-brand-color-neutral-tinted-700);
+        --dextinity-color-border-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-800);
+        --dextinity-color-border-tinted-muted: var(--dextinity-brand-color-neutral-tinted-600);
+        --dextinity-color-border-tinted-strong: var(--dextinity-brand-color-neutral-tinted-500);
+        --dextinity-color-border-tinted-focus: var(--dextinity-brand-color-primary-300);
+
+        --dextinity-focus-ring-width: 2px;
+        --dextinity-focus-ring-offset: 2px;
+
+        --dextinity-color-action-success-default: var(--dextinity-color-green-400);
+        --dextinity-color-action-success-hover: var(--dextinity-color-green-300);
+        --dextinity-color-action-success-active: var(--dextinity-color-green-200);
+        --dextinity-color-action-success-disabled: var(--dextinity-brand-color-neutral-700);
+        --dextinity-color-action-success-subtle: var(--dextinity-color-green-900);
+        --dextinity-color-action-success-foreground: var(--dextinity-color-green-950);
+    }
+
+    [data-dextinity-color-scheme="high-contrast"] {
+        --dextinity-color-background-default: var(--dextinity-color-black);
+        --dextinity-color-background-subtle: var(--dextinity-brand-color-neutral-900);
+        --dextinity-color-background-muted: var(--dextinity-brand-color-neutral-800);
+        --dextinity-color-background-inverse: var(--dextinity-color-white);
+        --dextinity-color-background-overlay: rgb(0 0 0 / 0.9);
+
+        --dextinity-color-foreground-default: var(--dextinity-color-white);
+        --dextinity-color-foreground-muted: var(--dextinity-brand-color-neutral-100);
+        --dextinity-color-foreground-subtle: var(--dextinity-brand-color-neutral-300);
+        --dextinity-color-foreground-inverse: var(--dextinity-color-black);
+
+        --dextinity-color-foreground-on-accent: var(--dextinity-color-black);
+
+        --dextinity-color-border-default: var(--dextinity-color-white);
+        --dextinity-color-border-subtle: var(--dextinity-brand-color-neutral-300);
+        --dextinity-color-border-muted: var(--dextinity-brand-color-neutral-400);
+        --dextinity-color-border-strong: var(--dextinity-color-white);
+        --dextinity-color-border-focus: var(--dextinity-color-amber-300);
+
+        --dextinity-color-action-primary-default: var(--dextinity-color-white);
+        --dextinity-color-action-primary-hover: var(--dextinity-brand-color-primary-200);
+        --dextinity-color-action-primary-active: var(--dextinity-brand-color-primary-300);
+        --dextinity-color-action-primary-disabled: var(--dextinity-brand-color-neutral-700);
+        --dextinity-color-action-primary-subtle: var(--dextinity-brand-color-neutral-800);
+        --dextinity-color-action-primary-foreground: var(--dextinity-color-black);
+
+        --dextinity-color-action-secondary-default: var(--dextinity-brand-color-secondary-800);
+        --dextinity-color-action-secondary-hover: var(--dextinity-brand-color-secondary-700);
+        --dextinity-color-action-secondary-active: var(--dextinity-brand-color-secondary-600);
+        --dextinity-color-action-secondary-disabled: var(--dextinity-brand-color-secondary-900);
+        --dextinity-color-action-secondary-foreground: var(--dextinity-color-white);
+        --dextinity-color-action-secondary-subtle: var(--dextinity-brand-color-secondary-900);
+
+        --dextinity-color-action-error-default: var(--dextinity-color-red-200);
+        --dextinity-color-action-error-hover: var(--dextinity-color-red-100);
+        --dextinity-color-action-error-active: var(--dextinity-color-red-50);
+        --dextinity-color-action-error-disabled: var(--dextinity-brand-color-neutral-700);
+        --dextinity-color-action-error-subtle: var(--dextinity-brand-color-neutral-900);
+        --dextinity-color-action-error-foreground: var(--dextinity-color-black);
+
+        --dextinity-color-feedback-success-default: var(--dextinity-color-green-200);
+        --dextinity-color-feedback-success-subtle: var(--dextinity-brand-color-neutral-900);
+        --dextinity-color-feedback-success-foreground: var(--dextinity-color-green-100);
+        --dextinity-color-feedback-success-border: var(--dextinity-color-green-300);
+
+        --dextinity-color-feedback-warning-default: var(--dextinity-color-amber-200);
+        --dextinity-color-feedback-warning-subtle: var(--dextinity-brand-color-neutral-900);
+        --dextinity-color-feedback-warning-foreground: var(--dextinity-color-amber-100);
+        --dextinity-color-feedback-warning-border: var(--dextinity-color-amber-300);
+
+        --dextinity-color-feedback-danger-default: var(--dextinity-color-red-200);
+        --dextinity-color-feedback-danger-subtle: var(--dextinity-brand-color-neutral-900);
+        --dextinity-color-feedback-danger-foreground: var(--dextinity-color-red-100);
+        --dextinity-color-feedback-danger-border: var(--dextinity-color-red-300);
+
+        --dextinity-color-feedback-info-default: var(--dextinity-color-sky-200);
+        --dextinity-color-feedback-info-subtle: var(--dextinity-brand-color-neutral-900);
+        --dextinity-color-feedback-info-foreground: var(--dextinity-color-sky-100);
+        --dextinity-color-feedback-info-border: var(--dextinity-color-sky-300);
+
+        --dextinity-color-background-tinted-default: var(--dextinity-brand-color-neutral-tinted-950);
+        --dextinity-color-background-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-900);
+        --dextinity-color-background-tinted-muted: var(--dextinity-brand-color-neutral-tinted-800);
+        --dextinity-color-background-tinted-inverse: var(--dextinity-color-white);
+        --dextinity-color-background-tinted-overlay: rgb(0 0 0 / 0.9);
+
+        --dextinity-color-foreground-tinted-default: var(--dextinity-color-white);
+        --dextinity-color-foreground-tinted-muted: var(--dextinity-brand-color-neutral-tinted-100);
+        --dextinity-color-foreground-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-300);
+        --dextinity-color-foreground-tinted-inverse: var(--dextinity-brand-color-neutral-tinted-950);
+
+        --dextinity-color-foreground-tinted-on-accent: var(--dextinity-brand-color-neutral-tinted-950);
+
+        --dextinity-color-border-tinted-default: var(--dextinity-color-white);
+        --dextinity-color-border-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-300);
+        --dextinity-color-border-tinted-muted: var(--dextinity-brand-color-neutral-tinted-400);
+        --dextinity-color-border-tinted-strong: var(--dextinity-color-white);
+        --dextinity-color-border-tinted-focus: var(--dextinity-color-amber-300);
+
+        --dextinity-focus-ring-width: 3px;
+        --dextinity-focus-ring-offset: 2px;
+
+        --dextinity-color-action-success-default: var(--dextinity-color-green-200);
+        --dextinity-color-action-success-hover: var(--dextinity-color-green-100);
+        --dextinity-color-action-success-active: var(--dextinity-color-green-50);
+        --dextinity-color-action-success-disabled: var(--dextinity-brand-color-neutral-700);
+        --dextinity-color-action-success-subtle: var(--dextinity-brand-color-neutral-900);
+        --dextinity-color-action-success-foreground: var(--dextinity-color-black);
+    }
+
+    [data-dextinity-color-scheme="light"] {
+        --dextinity-color-background-default: var(--dextinity-color-white);
+        --dextinity-color-background-subtle: var(--dextinity-brand-color-neutral-50);
+        --dextinity-color-background-muted: var(--dextinity-brand-color-neutral-100);
+        --dextinity-color-background-inverse: var(--dextinity-brand-color-neutral-900);
+        --dextinity-color-background-overlay: rgb(20 21 23 / 0.5);
+
+        --dextinity-color-foreground-default: var(--dextinity-brand-color-neutral-800);
+        --dextinity-color-foreground-muted: var(--dextinity-brand-color-neutral-600);
+        --dextinity-color-foreground-subtle: var(--dextinity-brand-color-neutral-400);
+        --dextinity-color-foreground-inverse: var(--dextinity-color-white);
+
+        --dextinity-color-foreground-on-accent: var(--dextinity-color-white);
+
+        --dextinity-color-border-default: var(--dextinity-brand-color-neutral-200);
+        --dextinity-color-border-subtle: var(--dextinity-brand-color-neutral-100);
+        --dextinity-color-border-muted: var(--dextinity-brand-color-neutral-200);
+        --dextinity-color-border-strong: var(--dextinity-brand-color-neutral-400);
+        --dextinity-color-border-focus: var(--dextinity-brand-color-primary-500);
+
+        --dextinity-color-action-primary-default: var(--dextinity-brand-color-primary-500);
+        --dextinity-color-action-primary-hover: var(--dextinity-brand-color-primary-600);
+        --dextinity-color-action-primary-active: var(--dextinity-brand-color-primary-700);
+        --dextinity-color-action-primary-disabled: var(--dextinity-brand-color-neutral-200);
+        --dextinity-color-action-primary-subtle: var(--dextinity-brand-color-primary-50);
+        --dextinity-color-action-primary-foreground: var(--dextinity-color-white);
+
+        --dextinity-color-action-secondary-default: var(--dextinity-brand-color-secondary-100);
+        --dextinity-color-action-secondary-hover: var(--dextinity-brand-color-secondary-200);
+        --dextinity-color-action-secondary-active: var(--dextinity-brand-color-secondary-300);
+        --dextinity-color-action-secondary-disabled: var(--dextinity-brand-color-secondary-50);
+        --dextinity-color-action-secondary-foreground: var(--dextinity-brand-color-secondary-800);
+        --dextinity-color-action-secondary-subtle: var(--dextinity-brand-color-secondary-50);
+
+        --dextinity-color-action-error-default: var(--dextinity-color-red-500);
+        --dextinity-color-action-error-hover: var(--dextinity-color-red-600);
+        --dextinity-color-action-error-active: var(--dextinity-color-red-700);
+        --dextinity-color-action-error-disabled: var(--dextinity-brand-color-neutral-200);
+        --dextinity-color-action-error-subtle: var(--dextinity-color-red-50);
+        --dextinity-color-action-error-foreground: var(--dextinity-color-white);
+
+        --dextinity-color-feedback-success-default: var(--dextinity-color-green-400);
+        --dextinity-color-feedback-success-subtle: var(--dextinity-color-green-50);
+        --dextinity-color-feedback-success-foreground: var(--dextinity-color-green-700);
+        --dextinity-color-feedback-success-border: var(--dextinity-color-green-200);
+
+        --dextinity-color-feedback-warning-default: var(--dextinity-color-amber-400);
+        --dextinity-color-feedback-warning-subtle: var(--dextinity-color-amber-50);
+        --dextinity-color-feedback-warning-foreground: var(--dextinity-color-amber-700);
+        --dextinity-color-feedback-warning-border: var(--dextinity-color-amber-200);
+
+        --dextinity-color-feedback-danger-default: var(--dextinity-color-red-500);
+        --dextinity-color-feedback-danger-subtle: var(--dextinity-color-red-50);
+        --dextinity-color-feedback-danger-foreground: var(--dextinity-color-red-700);
+        --dextinity-color-feedback-danger-border: var(--dextinity-color-red-200);
+
+        --dextinity-color-feedback-info-default: var(--dextinity-color-sky-400);
+        --dextinity-color-feedback-info-subtle: var(--dextinity-color-sky-50);
+        --dextinity-color-feedback-info-foreground: var(--dextinity-color-sky-700);
+        --dextinity-color-feedback-info-border: var(--dextinity-color-sky-200);
+
+        --dextinity-color-background-tinted-default: var(--dextinity-color-white);
+        --dextinity-color-background-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-50);
+        --dextinity-color-background-tinted-muted: var(--dextinity-brand-color-neutral-tinted-100);
+        --dextinity-color-background-tinted-inverse: var(--dextinity-brand-color-neutral-tinted-900);
+        --dextinity-color-background-tinted-overlay: rgb(20 21 23 / 0.5);
+
+        --dextinity-color-foreground-tinted-default: var(--dextinity-brand-color-neutral-tinted-800);
+        --dextinity-color-foreground-tinted-muted: var(--dextinity-brand-color-neutral-tinted-600);
+        --dextinity-color-foreground-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-400);
+        --dextinity-color-foreground-tinted-inverse: var(--dextinity-color-white);
+
+        --dextinity-color-foreground-tinted-on-accent: var(--dextinity-color-white);
+
+        --dextinity-color-border-tinted-default: var(--dextinity-brand-color-neutral-tinted-200);
+        --dextinity-color-border-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-100);
+        --dextinity-color-border-tinted-muted: var(--dextinity-brand-color-neutral-tinted-200);
+        --dextinity-color-border-tinted-strong: var(--dextinity-brand-color-neutral-tinted-400);
+        --dextinity-color-border-tinted-focus: var(--dextinity-brand-color-primary-500);
+
+        --dextinity-focus-ring-width: 2px;
+        --dextinity-focus-ring-offset: 2px;
+
+        --dextinity-color-action-success-default: var(--dextinity-color-green-700);
+        --dextinity-color-action-success-hover: var(--dextinity-color-green-800);
+        --dextinity-color-action-success-active: var(--dextinity-color-green-900);
+        --dextinity-color-action-success-disabled: var(--dextinity-brand-color-neutral-200);
+        --dextinity-color-action-success-subtle: var(--dextinity-color-green-50);
+        --dextinity-color-action-success-foreground: var(--dextinity-color-white);
+    }
+}

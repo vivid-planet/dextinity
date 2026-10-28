@@ -1,0 +1,35 @@
+.customRoot {
+    background: linear-gradient(135deg, #ff6b6b, #ffa94d);
+    border-radius: 999px;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+}
+
+.customStartIcon {
+    color: #ffe066;
+    font-size: 1.1em;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    background: #f4f0fa;
+    border-radius: 12px;
+
+    :global(.dextinityButton) {
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    :global(.dextinityButton)[data-variant="primary"] {
+        background: #6750a4;
+    }
+
+    :global(.dextinityButton__startIcon),
+    :global(.dextinityButton__endIcon) {
+        color: #f4af3e;
+    }
+}

@@ -55,7 +55,7 @@
         "cli-progress": "^3.12.0",
         "eslint": "^9.39.5",
         "fast-xml-parser": "^5.11.2",
-        "npm-run-all2": "^9.0.3",
+        "npm-run-all2": "^9.0.4",
         "prettier": "^3.9.10",
         "react": "^19.3.0",
         "react-dom": "^19.3.0",

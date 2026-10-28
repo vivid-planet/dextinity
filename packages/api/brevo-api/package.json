@@ -61,7 +61,7 @@
         "@nestjs/graphql": "^13.4.5",
         "@nestjs/platform-express": "^11.2.7",
         "@nestjs/testing": "^11.2.7",
-        "@swc/core": "^1.16.18",
+        "@swc/core": "^1.16.20",
         "@types/inquirer": "^8.2.13",
         "chokidar-cli": "^3.0.0",
         "eslint": "^9.39.5",

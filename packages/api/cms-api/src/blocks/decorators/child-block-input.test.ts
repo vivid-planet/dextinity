@@ -34,6 +34,9 @@ describe("ChildBlockInput", () => {
         const errors = await validate(HeadlineBlock.blockInputFactory(plain), { whitelist: true, forbidNonWhitelisted: true });
 
         expect(errors).toHaveLength(1);
-        expect(errors[0]).toMatchObject({ property: "headline", constraints: { isDefined: expect.any(String) } });
+        expect(errors[0]).toMatchObject({
+            property: "headline",
+            constraints: { isDefined: "headline is missing. Expected a RichText block with the fields draftContent (a JSON value)." },
+        });
     });
 });

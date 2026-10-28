@@ -1,5 +1,7 @@
 @use "@src/styles/variables" as *;
 
+$navigation-button-size-mobile: 30px;
+
 .pageLayoutContent {
     grid-column: 2 / -2;
 
@@ -18,6 +20,9 @@
 
 .mediaCaption {
     margin-top: 42px;
+
+    // Keeps wrapped captions clear of the navigation buttons, which are below the media on mobile.
+    padding-right: calc(var(--spacing-s600) + $navigation-button-size-mobile + var(--spacing-s300));
     color: var(--text-secondary);
 
     // min-height to show arrows when no caption
@@ -28,6 +33,7 @@
 
     @media (min-width: $breakpoint-sm) {
         margin-top: var(--spacing-s300);
+        padding-right: 0;
         min-height: 22px;
     }
 
@@ -49,8 +55,8 @@
 
 .navigationButton {
     z-index: 10;
-    width: 30px;
-    height: 30px;
+    width: $navigation-button-size-mobile;
+    height: $navigation-button-size-mobile;
     display: flex;
     justify-content: center;
     align-items: center;

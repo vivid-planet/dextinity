@@ -1,12 +1,18 @@
-.slider {
-    position: relative;
-}
+@use "@src/styles/variables" as *;
 
-.swiperContainer {
-    overflow: hidden;
+.carousel {
+    --grid-column-width: calc(min(100vw, 1920px) / 24);
+    --carousel-slide-gap: 20px;
+    --carousel-slide-size: calc((100% - var(--carousel-slide-gap)) / 1.2);
 
-    .swiper {
-        overflow: visible;
+    @media (min-width: $breakpoint-sm) {
+        --carousel-slide-size: calc((100% - 2 * var(--carousel-slide-gap)) / 2.2);
+    }
+
+    @media (min-width: $breakpoint-md) {
+        --carousel-slide-size: calc((100% - 2 * var(--carousel-slide-gap)) / 3);
+
+        margin-inline: var(--grid-column-width);
     }
 }
 
@@ -16,7 +22,112 @@
     gap: 10px;
 }
 
+.text {
+    padding-inline: var(--grid-column-width);
+
+    @media (min-width: $breakpoint-md) {
+        padding-inline: 0;
+    }
+}
+
 .mediaWrapper {
     position: relative;
     height: 200px;
+}
+
+.navigationButton {
+    position: absolute;
+
+    // Centered on the media, which has a fixed height of 200px.
+    top: calc(100px - 20px);
+    z-index: 1;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    background-color: var(--media-gallery-button-hover-bg);
+
+    &::after {
+        content: "";
+        width: var(--spacing-s200);
+        height: var(--spacing-s200);
+        border-top: 2px solid var(--media-gallery-button-default-contrast);
+        border-right: 2px solid var(--media-gallery-button-default-contrast);
+    }
+
+    &:hover::after {
+        border-color: var(--media-gallery-button-hover-contrast);
+    }
+
+    &[aria-disabled="true"] {
+        background-color: var(--media-gallery-button-disabled-bg);
+
+        &::after {
+            border-color: var(--media-gallery-button-disabled-contrast);
+        }
+    }
+
+    &--previous {
+        left: var(--spacing-s200);
+        transform: rotate(225deg);
+
+        @media (min-width: $breakpoint-md) {
+            left: var(--spacing-s400);
+        }
+    }
+
+    &--next {
+        right: var(--spacing-s200);
+        transform: rotate(45deg);
+
+        @media (min-width: $breakpoint-md) {
+            right: var(--spacing-s400);
+        }
+    }
+}
+
+// Announces the slides in view to screen readers, which can't see which slides the dots stand for.
+.status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    white-space: nowrap;
+    clip-path: inset(50%);
+}
+
+.dots {
+    margin-top: var(--spacing-s200);
+}
+
+.dot {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &::after {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--media-gallery-dot-navigation-default);
+    }
+
+    &:hover::after {
+        background-color: var(--media-gallery-dot-navigation-hover);
+    }
+
+    &--selected {
+        &::after {
+            background-color: var(--media-gallery-dot-navigation-active);
+        }
+
+        &:hover::after {
+            background-color: var(--media-gallery-dot-navigation-active-hover);
+        }
+    }
 }

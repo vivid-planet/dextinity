@@ -6,6 +6,9 @@ import { DamItemPositionArgsInterface, DamItemsArgsInterface, DamItemType } from
 import { FilesService } from "./files.service";
 import { FoldersService } from "./folders.service";
 
+// The position queries need a sort column, and the list must use the same one so that the position matches the list
+const defaultSortColumnName = "name";
+
 @Injectable()
 export class DamItemsService {
     constructor(
@@ -14,9 +17,11 @@ export class DamItemsService {
     ) {}
 
     async findAndCount(
-        { folderId, includeArchived, filter, sortColumnName, sortDirection, offset, limit }: Omit<DamItemsArgsInterface, "scope">,
+        { folderId, includeArchived, filter, sortDirection, offset, limit, ...args }: Omit<DamItemsArgsInterface, "scope">,
         scope?: DamScopeInterface,
     ): Promise<[DamItemInterface[], number]> {
+        const sortColumnName = args.sortColumnName ?? defaultSortColumnName;
+
         const [folders, foldersTotalCount] = await this.foldersService.findAndCount(
             {
                 parentId: folderId,
@@ -56,6 +61,8 @@ export class DamItemsService {
     }
 
     async getDamItemPosition({ type, id, ...args }: Omit<DamItemPositionArgsInterface, "scope">, scope?: DamScopeInterface): Promise<number> {
+        const sortColumnName = args.sortColumnName ?? defaultSortColumnName;
+
         if (type === DamItemType.Folder) {
             const folderPosition = await this.foldersService.getFolderPosition(
                 id,
@@ -64,7 +71,7 @@ export class DamItemsService {
                     includeArchived: args.includeArchived,
                     filter: { searchText: args.filter?.searchText },
                     sortDirection: args.sortDirection,
-                    sortColumnName: args.sortColumnName,
+                    sortColumnName,
                 },
                 scope,
             );
@@ -78,7 +85,7 @@ export class DamItemsService {
                 includeArchived: args.includeArchived,
                 filter: { searchText: args.filter?.searchText },
                 sortDirection: args.sortDirection,
-                sortColumnName: args.sortColumnName,
+                sortColumnName,
                 // offset and limit do not matter here
                 offset: 0,
                 limit: 10,
@@ -93,7 +100,7 @@ export class DamItemsService {
                 includeArchived: args.includeArchived,
                 filter: args.filter,
                 sortDirection: args.sortDirection,
-                sortColumnName: args.sortColumnName,
+                sortColumnName,
             },
             scope,
         );

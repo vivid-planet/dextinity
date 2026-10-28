@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsOptional, IsUUID } from "class-validator";
 
 import { BlockData, BlockIndexData, BlockInput, blockInputToData, BlockMetaField, BlockMetaFieldKind, createBlock } from "../../blocks/block";
 import { AnnotationBlockMeta } from "../../blocks/decorators/field";
@@ -30,8 +30,7 @@ class SvgImageBlockData extends BlockData {
 
 class SvgImageBlockInput extends BlockInput {
     @IsOptional()
-    @IsNotEmpty()
-    @IsString()
+    @IsUUID()
     damFileId?: string;
 
     transformToBlockData(): SvgImageBlockData {

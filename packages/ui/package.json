@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/ui",
-    "version": "10.9.1",
+    "version": "10.10.0",
     "description": "UI-only React component library",
     "license": "BSD-2-Clause",
     "type": "module",

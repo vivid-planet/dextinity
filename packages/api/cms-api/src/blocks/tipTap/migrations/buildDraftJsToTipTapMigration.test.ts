@@ -114,8 +114,8 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
                     blocks: [
                         draftBlock({
                             type: "unstyled",
-                            text: "Winter­räder SEAT",
-                            inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 17 }],
+                            text: "Wonder­ful world",
+                            inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 16 }],
                         }),
                     ],
                     entityMap: {},
@@ -128,11 +128,11 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
                         type: "textBlock",
                         attrs: { textBlock: "paragraph" },
                         content: [
-                            { type: "text", text: "Winter", marks: [{ type: "bold" }] },
+                            { type: "text", text: "Wonder", marks: [{ type: "bold" }] },
                             { type: "softHyphen", marks: [{ type: "bold" }] },
-                            { type: "text", text: "räder", marks: [{ type: "bold" }] },
+                            { type: "text", text: "ful", marks: [{ type: "bold" }] },
                             { type: "nonBreakingSpace", marks: [{ type: "bold" }] },
-                            { type: "text", text: "SEAT", marks: [{ type: "bold" }] },
+                            { type: "text", text: "world", marks: [{ type: "bold" }] },
                         ],
                     },
                 ],

@@ -7,11 +7,35 @@ import { GlobalErrorBoundary } from "./GlobalErrorBoundary";
 import type { RscPayload } from "./render";
 import { setBrowserRouter } from "./RouterProvider";
 import { createRscUrl, stripRscPrefix } from "./rscRequest";
+import {
+    createHistoryState,
+    getHistoryKey,
+    getRememberedScrollPosition,
+    loadPersistedScrollPositions,
+    persistScrollPositions,
+    rememberScrollPosition,
+} from "./scrollPositions";
 
-type ScrollTarget = "top" | "hash" | undefined;
+type ScrollTarget = "top" | "hash" | { scrollY: number } | undefined;
 
 let setPayloadFromOutside: ((payload: RscPayload, scrollTarget: ScrollTarget) => void) | undefined;
 let pendingNavigation: AbortController | undefined;
+let currentHistoryKey: string;
+let currentDocumentPath = getDocumentPath(new URL(window.location.href));
+
+function getDocumentPath(url: URL) {
+    return url.pathname + url.search;
+}
+
+function scrollToTarget(scrollTarget: ScrollTarget) {
+    if (scrollTarget === "hash" && window.location.hash) {
+        document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView();
+    } else if (typeof scrollTarget === "object") {
+        window.scrollTo(0, scrollTarget.scrollY);
+    } else if (scrollTarget) {
+        window.scrollTo(0, 0);
+    }
+}
 
 function BrowserRoot({ initialPayload }: { initialPayload: RscPayload }) {
     const [{ payload, scrollTarget }, setState] = useState<{ payload: RscPayload; scrollTarget: ScrollTarget }>({
@@ -24,11 +48,7 @@ function BrowserRoot({ initialPayload }: { initialPayload: RscPayload }) {
     }, []);
 
     useLayoutEffect(() => {
-        if (scrollTarget === "hash" && window.location.hash) {
-            document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView();
-        } else if (scrollTarget) {
-            window.scrollTo(0, 0);
-        }
+        scrollToTarget(scrollTarget);
     }, [payload, scrollTarget]);
 
     return <GlobalErrorBoundary resetKey={payload}>{payload.root}</GlobalErrorBoundary>;
@@ -51,7 +71,8 @@ async function navigate(href: string, scrollTarget: ScrollTarget) {
         if (response.redirected) {
             const redirectedUrl = stripRscPrefix(new URL(response.url));
             if (redirectedUrl) {
-                window.history.replaceState(null, "", redirectedUrl);
+                window.history.replaceState(window.history.state, "", redirectedUrl);
+                currentDocumentPath = getDocumentPath(new URL(redirectedUrl, window.location.href));
             }
         }
         setPayloadFromOutside?.(payload, scrollTarget);
@@ -72,18 +93,67 @@ function getScrollTarget(url: URL, scroll: boolean): ScrollTarget {
     return url.hash ? "hash" : "top";
 }
 
+function replaceWithNewHistoryState() {
+    const state = createHistoryState();
+    window.history.replaceState(state, "");
+    return state.key;
+}
+
 function changeHistory(method: "pushState" | "replaceState", href: string, scroll: boolean) {
     const url = new URL(href, window.location.href);
     if (url.origin !== window.location.origin) {
         window.location.assign(url);
         return;
     }
-    window.history[method](null, "", url);
+    rememberScrollPosition(currentHistoryKey, window.scrollY);
+    const state = createHistoryState();
+    window.history[method](state, "", url);
+    currentHistoryKey = state.key;
+    currentDocumentPath = getDocumentPath(url);
     navigate(url.href, getScrollTarget(url, scroll));
 }
 
 function refresh() {
     navigate(window.location.href, undefined);
+}
+
+function handlePopState(event: PopStateEvent) {
+    // With manual scroll restoration, the browser hasn't scrolled yet, so this is still the position of the left entry
+    rememberScrollPosition(currentHistoryKey, window.scrollY);
+
+    const key = getHistoryKey(event.state);
+    const isNewFragmentEntry = key === undefined; // Created by the browser for a link to a fragment, it scrolls to the fragment itself
+    currentHistoryKey = key ?? replaceWithNewHistoryState();
+
+    const url = new URL(window.location.href);
+    const rememberedScrollY = getRememberedScrollPosition(currentHistoryKey);
+    const scrollTarget = rememberedScrollY !== undefined ? { scrollY: rememberedScrollY } : getScrollTarget(url, true);
+
+    if (getDocumentPath(url) === currentDocumentPath) {
+        if (!isNewFragmentEntry) {
+            scrollToTarget(scrollTarget);
+        }
+        return;
+    }
+    currentDocumentPath = getDocumentPath(url);
+    navigate(url.href, scrollTarget);
+}
+
+function setUpScrollRestoration() {
+    // The browser would restore the position before the new page is rendered
+    window.history.scrollRestoration = "manual";
+    loadPersistedScrollPositions();
+    currentHistoryKey = getHistoryKey(window.history.state) ?? replaceWithNewHistoryState();
+
+    const rememberedScrollY = getRememberedScrollPosition(currentHistoryKey);
+    if (rememberedScrollY !== undefined) {
+        window.scrollTo(0, rememberedScrollY);
+    }
+
+    window.addEventListener("pagehide", () => {
+        rememberScrollPosition(currentHistoryKey, window.scrollY);
+        persistScrollPositions();
+    });
 }
 
 function setUpNavigation() {
@@ -93,10 +163,11 @@ function setUpNavigation() {
         refresh,
     });
 
-    window.addEventListener("popstate", refresh);
+    window.addEventListener("popstate", handlePopState);
 }
 
 async function main() {
+    setUpScrollRestoration();
     const initialPayload = await createFromReadableStream<RscPayload>(rscStream);
     hydrateRoot(document, <BrowserRoot initialPayload={initialPayload} />);
     setUpNavigation();

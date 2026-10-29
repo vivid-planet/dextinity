@@ -20,7 +20,6 @@ import {
 } from "@dextinity/admin";
 import { Time } from "@dextinity/admin-icons";
 import { ActionLogButton, ActionLogsGrid, ContentScopeIndicator } from "@dextinity/cms-admin";
-import type { GQLQuery } from "@src/graphql.generated";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { ProductForm } from "./ProductForm";
@@ -35,7 +34,7 @@ const FormToolbar = ({ id }: { id?: string }) => (
         <ToolbarAutomaticTitleItem />
         <FillSpace />
         <ToolbarActions>
-            {id && <ActionLogButton<GQLQuery> entityId={id} queryName="productActionLogs" />}
+            {id && <ActionLogButton entityId={id} entity="Product" />}
             <SaveBoundarySaveButton />
         </ToolbarActions>
     </StackToolbar>
@@ -168,7 +167,7 @@ const ProductsPage = () => {
                         <ToolbarBackButton />
                         <ToolbarAutomaticTitleItem />
                     </StackToolbar>
-                    <ActionLogsGrid<GQLQuery> queryName="productActionLogs" />
+                    <ActionLogsGrid entity="Product" />
                 </StackPage>
             </ProductsStackSwitch>
         </Stack>

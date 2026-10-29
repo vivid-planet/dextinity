@@ -2002,6 +2002,7 @@ input ProductVariantUpdateInput {
 }
 
 type Query {
+  actionLogs(entity: String!, filter: ActionLogFilter, limit: Int! = 25, offset: Int! = 0, scope: JSONObject!, sort: [ActionLogSort!]): PaginatedActionLogs!
   autoBuildStatus: AutoBuildStatus!
   blockPreviewJwt(includeInvisible: Boolean!, scope: JSONObject!, url: String!): String!
   brevoConfig(scope: EmailCampaignContentScopeInput!): BrevoConfig
@@ -2056,12 +2057,10 @@ type Query {
   mainMenuItem(pageTreeNodeId: ID!): MainMenuItem!
   manuallyAssignedBrevoContacts(email: String, limit: Int! = 25, offset: Int! = 0, targetGroupId: ID!): PaginatedBrevoContacts!
   manufacturer(id: ID!): Manufacturer!
-  manufacturerActionLogs(filter: ActionLogFilter, limit: Int! = 25, offset: Int! = 0, scope: JSONObject!, search: String, sort: [ActionLogSort!]): PaginatedActionLogs!
   manufacturerCountries(filter: ManufacturerCountryFilter, limit: Int! = 25, offset: Int! = 0, search: String): PaginatedManufacturerCountries!
   manufacturers(filter: ManufacturerFilter, limit: Int! = 25, offset: Int! = 0, search: String, sort: [ManufacturerSort!]! = [{direction: ASC, field: id}]): PaginatedManufacturers!
   myFullTextSearch(limit: Int! = 25, offset: Int! = 0, scope: JSONObject, search: String!): PaginatedEntityInfo!
   news(id: ID!): News!
-  newsActionLogs(filter: ActionLogFilter, limit: Int! = 25, offset: Int! = 0, scope: JSONObject!, search: String, sort: [ActionLogSort!]): PaginatedActionLogs!
   newsBySlug(scope: NewsContentScopeInput!, slug: String!): News
   newsList(filter: NewsFilter, limit: Int! = 25, offset: Int! = 0, scope: NewsContentScopeInput!, search: String, sort: [NewsSort!]! = [{direction: ASC, field: createdAt}]): PaginatedNews!
   newsListByIds(ids: [ID!]!): [News!]!
@@ -2075,7 +2074,6 @@ type Query {
   paginatedRedirects(filter: RedirectFilter, limit: Int! = 25, offset: Int! = 0, scope: RedirectScopeInput!, search: String, sort: [RedirectSort!]): PaginatedRedirects!
   predefinedPage(id: ID!): PredefinedPage!
   product(id: ID!): Product!
-  productActionLogs(filter: ActionLogFilter, limit: Int! = 25, offset: Int! = 0, scope: JSONObject!, search: String, sort: [ActionLogSort!]): PaginatedActionLogs!
   productBySlug(slug: String!): Product
   productCategories(filter: ProductCategoryFilter, limit: Int! = 25, offset: Int! = 0, search: String, sort: [ProductCategorySort!]! = [{direction: ASC, field: position}]): PaginatedProductCategories!
   productCategory(id: ID!): ProductCategory!

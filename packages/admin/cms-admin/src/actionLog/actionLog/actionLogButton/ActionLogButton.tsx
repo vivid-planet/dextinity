@@ -3,17 +3,15 @@ import { Time } from "@dextinity/admin-icons";
 import { type PropsWithChildren, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
-import { ActionLogDialog, type ActionLogQueryName } from "../actionLogDialog/ActionLogDialog";
+import { ActionLogDialog } from "../actionLogDialog/ActionLogDialog";
 
-type ActionLogButtonProps<TQuery> = PropsWithChildren<
+type ActionLogButtonProps = PropsWithChildren<
     Omit<ButtonProps, "onClick" | "children"> & {
         entityId: string;
         /**
-         * Name of the top-level entity-scoped action log query field (e.g. `"newsActionLogs"`).
-         *
-         * Pass your app's `GQLQuery` as the generic to constrain this to a real action log query name.
+         * Class name of the logged entity, for instance `"News"`.
          */
-        queryName: ActionLogQueryName<TQuery>;
+        entity: string;
         /**
          * Latest name of the entity, displayed in titles.
          */
@@ -21,15 +19,15 @@ type ActionLogButtonProps<TQuery> = PropsWithChildren<
     }
 >;
 
-export function ActionLogButton<TQuery = Record<string, unknown>>({
+export function ActionLogButton({
     entityId,
-    queryName,
+    entity,
     name,
     children,
     startIcon = <Time />,
     variant = "textDark",
     ...restProps
-}: ActionLogButtonProps<TQuery>) {
+}: ActionLogButtonProps) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -37,7 +35,7 @@ export function ActionLogButton<TQuery = Record<string, unknown>>({
             <Button {...restProps} variant={variant} startIcon={startIcon} onClick={() => setOpen(true)}>
                 {children ?? <FormattedMessage id="dextinity.actionLogButton.title" defaultMessage="Action Log" />}
             </Button>
-            <ActionLogDialog<TQuery> entityId={entityId} queryName={queryName} name={name} open={open} onClose={() => setOpen(false)} />
+            <ActionLogDialog entity={entity} entityId={entityId} name={name} open={open} onClose={() => setOpen(false)} />
         </>
     );
 }

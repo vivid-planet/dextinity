@@ -25,16 +25,14 @@ import { ActionLogTypeChip } from "../../components/actionLogTypeChip/ActionLogT
 import { UserCell } from "../../components/userCell/UserCell";
 import { ActionLogDialog } from "../actionLogDialog/ActionLogDialog";
 import { ActionLogShowVersionDialog } from "../actionLogShowVersionDialog/ActionLogShowVersionDialog";
-import { type ActionLogQueryName, buildActionLogsQuery } from "./ActionLogsGrid.gql";
-import type { GQLActionLogsGridFragment } from "./ActionLogsGrid.gql.generated";
+import { actionLogsGridQuery } from "./ActionLogsGrid.gql";
+import type { GQLActionLogsGridFragment, GQLActionLogsQuery, GQLActionLogsQueryVariables } from "./ActionLogsGrid.gql.generated";
 
-export type ActionLogsGridProps<TQuery> = {
+export type ActionLogsGridProps = {
     /**
-     * Name of the top-level entity-scoped query field, e.g. `newsActionLogs`.
-     *
-     * Pass your app's `GQLQuery` as the generic to constrain this to a real action log query name.
+     * Class name of the logged entity, for instance `"News"`.
      */
-    queryName: ActionLogQueryName<TQuery>;
+    entity: string;
 };
 
 const displayNameFields = ["name", "title", "label", "slug", "description"] as const;
@@ -62,21 +60,15 @@ function ActionLogsGridToolbar() {
     );
 }
 
-type ActionLogsQueryResult = {
-    [key: string]: { nodes: GQLActionLogsGridFragment[]; totalCount: number };
-};
-
-export function ActionLogsGrid<TQuery = Record<string, unknown>>({ queryName }: ActionLogsGridProps<TQuery>) {
+export function ActionLogsGrid({ entity }: ActionLogsGridProps) {
     const intl = useIntl();
     const { scope } = useContentScope();
     const [selectedRow, setSelectedRow] = useState<GQLActionLogsGridFragment | null>(null);
     const [openEntityId, setOpenEntityId] = useState<string | null>(null);
 
-    const actionLogsQuery = useMemo(() => buildActionLogsQuery(queryName), [queryName]);
-
     const dataGridProps = {
         ...useDataGridRemote({ initialSort: [{ field: "createdAt", sort: "desc" }] }),
-        ...usePersistentColumnState(`ActionLogsGrid-${queryName}`),
+        ...usePersistentColumnState(`ActionLogsGrid-${entity}`),
     };
 
     const columns = useMemo<GridColDef<GQLActionLogsGridFragment>[]>(
@@ -164,8 +156,9 @@ export function ActionLogsGrid<TQuery = Record<string, unknown>>({ queryName }: 
 
     const { filter: gqlFilter } = muiGridFilterToGql(columns, dataGridProps.filterModel);
 
-    const { data, loading, error } = useQuery<ActionLogsQueryResult>(actionLogsQuery, {
+    const { data, loading, error } = useQuery<GQLActionLogsQuery, GQLActionLogsQueryVariables>(actionLogsGridQuery, {
         variables: {
+            entity,
             scope: scope as ContentScope,
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
@@ -174,7 +167,7 @@ export function ActionLogsGrid<TQuery = Record<string, unknown>>({ queryName }: 
         },
     });
 
-    const result = data?.[queryName];
+    const result = data?.actionLogs;
     const rowCount = useBufferedRowCount(result?.totalCount);
 
     if (error) {
@@ -195,7 +188,7 @@ export function ActionLogsGrid<TQuery = Record<string, unknown>>({ queryName }: 
                 showToolbar
             />
             <ActionLogShowVersionDialog row={selectedRow} open={selectedRow !== null} onClose={() => setSelectedRow(null)} />
-            {openEntityId !== null && <ActionLogDialog queryName={queryName} entityId={openEntityId} open onClose={() => setOpenEntityId(null)} />}
+            {openEntityId !== null && <ActionLogDialog entity={entity} entityId={openEntityId} open onClose={() => setOpenEntityId(null)} />}
         </MainContent>
     );
 }

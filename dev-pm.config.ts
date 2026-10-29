@@ -149,7 +149,7 @@ export default defineConfig({
         {
             name: "storybook-dextinity-ui",
             script: "pnpm --filter @dextinity/ui run storybook",
-            group: ["storybook"],
+            group: ["storybook", "docs"],
         },
 
         //group brevo
@@ -290,7 +290,7 @@ export default defineConfig({
             name: "storybook",
             script: "pnpm --filter dextinity-storybook run storybook",
             group: ["storybook", "docs"],
-            waitOn: ["tcp:26646", "tcp:26647", "tcp:6066"], // storybook-dextinity-admin, storybook-dextinity-cms-admin, storybook-dextinity-mail-react
+            waitOn: ["tcp:26646", "tcp:26647", "tcp:6066", "tcp:26648"], // storybook-dextinity-admin, storybook-dextinity-cms-admin, storybook-dextinity-mail-react, storybook-dextinity-ui
         },
         {
             name: "docs",

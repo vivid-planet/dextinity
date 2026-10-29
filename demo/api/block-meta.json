@@ -1161,13 +1161,63 @@
     },
     {
         "name": "EmailCampaignTipTapRichText",
-        "description": "Formatted text, edited in the TipTap based rich text editor.",
+        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
         "fields": [
             {
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen",
+                        "placeholder"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "title",
+                                "header",
+                                "small"
+                            ],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "unorderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "inlineStyles": [],
+                    "placeholders": [
+                        "SALUTATION"
+                    ],
+                    "link": "MailLink",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
             }
         ],
         "inputFields": [
@@ -1175,7 +1225,57 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen",
+                        "placeholder"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "title",
+                                "header",
+                                "small"
+                            ],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "unorderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "inlineStyles": [],
+                    "placeholders": [
+                        "SALUTATION"
+                    ],
+                    "link": "MailLink",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
             }
         ]
     },
@@ -2066,13 +2166,60 @@
     },
     {
         "name": "MailTipTapRichText",
-        "description": "Formatted text, edited in the TipTap based rich text editor.",
+        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
         "fields": [
             {
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "title",
+                                "header",
+                                "small"
+                            ],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "unorderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": "MailLink",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
             }
         ],
         "inputFields": [
@@ -2080,7 +2227,54 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "title",
+                                "header",
+                                "small"
+                            ],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "unorderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": "MailLink",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
             }
         ]
     },
@@ -2104,13 +2298,62 @@
     },
     {
         "name": "MailTwoListSizesTipTapRichText",
-        "description": "Formatted text, edited in the TipTap based rich text editor.",
+        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
         "fields": [
             {
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "small"
+                            ],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [
+                            "small"
+                        ],
+                        "defaultStyle": null
+                    },
+                    "unorderedList": {
+                        "styles": [
+                            "small"
+                        ],
+                        "defaultStyle": null
+                    },
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": "MailLink",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
             }
         ],
         "inputFields": [
@@ -2118,7 +2361,56 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "small"
+                            ],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [
+                            "small"
+                        ],
+                        "defaultStyle": null
+                    },
+                    "unorderedList": {
+                        "styles": [
+                            "small"
+                        ],
+                        "defaultStyle": null
+                    },
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": "MailLink",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
             }
         ]
     },
@@ -4256,7 +4548,7 @@
     },
     {
         "name": "TipTapRichText",
-        "description": "Formatted text, edited in the TipTap based rich text editor.",
+        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
         "fields": [
             {
                 "name": "tipTapContent",
@@ -4265,6 +4557,112 @@
                 "childBlocks": {
                     "productPrice": "ProductPrice",
                     "productTeaser": "ProductTeaser"
+                },
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen",
+                        "cmsBlock",
+                        "cmsInlineBlock"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "inlineStyle",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "paragraph300",
+                                "paragraph200",
+                                "eyebrow600",
+                                "eyebrow550",
+                                "eyebrow500",
+                                "eyebrow450"
+                            ],
+                            "defaultStyle": "paragraph300"
+                        },
+                        {
+                            "name": "display",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-1",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-2",
+                            "tag": "h2",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-3",
+                            "tag": "h3",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-4",
+                            "tag": "h4",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-5",
+                            "tag": "h5",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [
+                            "list300",
+                            "list200"
+                        ],
+                        "defaultStyle": "list300"
+                    },
+                    "unorderedList": {
+                        "styles": [
+                            "list300",
+                            "list200"
+                        ],
+                        "defaultStyle": "list300"
+                    },
+                    "inlineStyles": [
+                        {
+                            "name": "highlight",
+                            "appliesTo": null
+                        },
+                        {
+                            "name": "tag",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        }
+                    ],
+                    "placeholders": [],
+                    "link": "Link",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
                 }
             }
         ],
@@ -4276,6 +4674,112 @@
                 "childBlocks": {
                     "productPrice": "ProductPrice",
                     "productTeaser": "ProductTeaser"
+                },
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen",
+                        "cmsBlock",
+                        "cmsInlineBlock"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "inlineStyle",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "paragraph300",
+                                "paragraph200",
+                                "eyebrow600",
+                                "eyebrow550",
+                                "eyebrow500",
+                                "eyebrow450"
+                            ],
+                            "defaultStyle": "paragraph300"
+                        },
+                        {
+                            "name": "display",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-1",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-2",
+                            "tag": "h2",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-3",
+                            "tag": "h3",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-4",
+                            "tag": "h4",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-5",
+                            "tag": "h5",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [
+                            "list300",
+                            "list200"
+                        ],
+                        "defaultStyle": "list300"
+                    },
+                    "unorderedList": {
+                        "styles": [
+                            "list300",
+                            "list200"
+                        ],
+                        "defaultStyle": "list300"
+                    },
+                    "inlineStyles": [
+                        {
+                            "name": "highlight",
+                            "appliesTo": null
+                        },
+                        {
+                            "name": "tag",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        }
+                    ],
+                    "placeholders": [],
+                    "link": "Link",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
                 }
             }
         ]

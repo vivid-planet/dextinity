@@ -85,8 +85,16 @@ export function Button<StartIcon extends ElementType = "span", EndIcon extends E
     const StartIconSlot: ElementType = slots?.startIcon ?? "span";
     const EndIconSlot: ElementType = slots?.endIcon ?? "span";
 
-    const startIconProps = resolveSlotProps<ButtonOwnerState, StartIcon, "span">({ className: styles.startIcon }, slotProps?.startIcon, ownerState);
-    const endIconProps = resolveSlotProps<ButtonOwnerState, EndIcon, "span">({ className: styles.endIcon }, slotProps?.endIcon, ownerState);
+    const startIconProps = resolveSlotProps<ButtonOwnerState, StartIcon, "span">({
+        ownProps: { className: styles.startIcon },
+        slotProps: slotProps?.startIcon,
+        ownerState,
+    });
+    const endIconProps = resolveSlotProps<ButtonOwnerState, EndIcon, "span">({
+        ownProps: { className: styles.endIcon },
+        slotProps: slotProps?.endIcon,
+        ownerState,
+    });
 
     return (
         <BaseButton

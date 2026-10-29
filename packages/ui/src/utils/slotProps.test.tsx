@@ -15,12 +15,12 @@ type ProbeOwnerState = { variant: "primary" | "secondary" };
  * the behavior that is only observable on a real element.
  */
 function SlotProbe({ ownProps, slotProps }: { ownProps: ComponentPropsWithRef<"span">; slotProps?: SlotPropsValue<ProbeOwnerState, "span"> }) {
-    return <span {...resolveSlotProps<ProbeOwnerState, "span", "span">(ownProps, slotProps, { variant: "primary" })}>probe</span>;
+    return <span {...resolveSlotProps<ProbeOwnerState, "span", "span">({ ownProps, slotProps, ownerState: { variant: "primary" } })}>probe</span>;
 }
 
 describe("resolveSlotProps", () => {
     it("keeps the own props when the consumer passes no value", () => {
-        const merged = resolveSlotProps<ProbeOwnerState, "span", "span">({ className: "own" }, undefined, { variant: "primary" });
+        const merged = resolveSlotProps<ProbeOwnerState, "span", "span">({ ownProps: { className: "own" }, ownerState: { variant: "primary" } });
 
         expect(merged).toMatchObject({ className: "own" });
     });
@@ -34,7 +34,11 @@ describe("resolveSlotProps", () => {
     it("resolves a function value with the ownerState and merges its result", () => {
         const consumerValue: SlotPropsValue<ProbeOwnerState, "span"> = (ownerState) => ({ title: ownerState.variant });
 
-        const merged = resolveSlotProps<ProbeOwnerState, "span", "span">({ className: "own" }, consumerValue, { variant: "secondary" });
+        const merged = resolveSlotProps<ProbeOwnerState, "span", "span">({
+            ownProps: { className: "own" },
+            slotProps: consumerValue,
+            ownerState: { variant: "secondary" },
+        });
 
         expect(merged).toMatchObject({ className: "own", title: "secondary" });
     });

@@ -3,6 +3,8 @@ import "@fontsource-variable/inter";
 import "@src/styles/global.scss";
 
 import { CookieApiProvider, useLocalStorageCookieApi, useOneTrustCookieApi as useProductionCookieApi } from "@dextinity/site-react";
+import { ImageConfigProvider } from "@dextinity/site-vite-rsc";
+import dextinityConfig from "@src/dextinity-config.json" with { type: "json" };
 import { NavigationProgress } from "@src/layout/NavigationProgress";
 import animateBoxInOnScrollStyles from "@src/util/animations/AnimateBoxInOnScroll.module.scss";
 import { ErrorHandler } from "@src/util/ErrorHandler";
@@ -24,7 +26,9 @@ export default function RootLayout({ children, lang }: PropsWithChildren<{ lang?
             <body>
                 <NavigationProgress />
                 <CookieApiProvider api={process.env.NODE_ENV === "development" ? useLocalStorageCookieApi : useProductionCookieApi}>
-                    <ErrorHandler>{children}</ErrorHandler>
+                    <ImageConfigProvider config={dextinityConfig.images}>
+                        <ErrorHandler>{children}</ErrorHandler>
+                    </ImageConfigProvider>
                 </CookieApiProvider>
             </body>
         </html>

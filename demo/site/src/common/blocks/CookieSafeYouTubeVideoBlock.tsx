@@ -1,16 +1,16 @@
 "use client";
-import { CookieSafe, useCookieApi, YouTubeVideoBlock } from "@dextinity/site-react";
+import { CookieSafe, useCookieApi } from "@dextinity/site-react";
+import { YouTubeVideoBlock } from "@dextinity/site-vite-rsc";
 import { cookieIds } from "@src/util/cookieIds";
 import type { ComponentProps } from "react";
 
 import { FallbackCookiePlaceholder, LoadingCookiePlaceholder } from "../helpers/CookiePlaceholders";
-import { VideoPreviewImage } from "../helpers/VideoPreviewImage";
 import styles from "./CookieSafeYouTubeVideoBlock.module.scss";
 
 // TODO: use aspect ratio from props
 const aspectRatio = "16x9";
 
-type Props = Omit<ComponentProps<typeof YouTubeVideoBlock>, "renderPreviewImage">;
+type Props = ComponentProps<typeof YouTubeVideoBlock>;
 
 export const CookieSafeYouTubeVideoBlock = (props: Props) => {
     const { consentedCookies } = useCookieApi();
@@ -22,7 +22,7 @@ export const CookieSafeYouTubeVideoBlock = (props: Props) => {
                 fallback={<FallbackCookiePlaceholder />}
                 loading={<LoadingCookiePlaceholder />}
             >
-                <YouTubeVideoBlock aspectRatio={aspectRatio} renderPreviewImage={(props) => <VideoPreviewImage {...props} />} {...props} />
+                <YouTubeVideoBlock aspectRatio={aspectRatio} {...props} />
             </CookieSafe>
         </div>
     );

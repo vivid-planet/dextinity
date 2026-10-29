@@ -1,9 +1,8 @@
 "use client";
 import { PreviewSkeleton, type PropsWithData, SvgImageBlock, withPreview } from "@dextinity/site-react";
+import { PixelImageBlock, type PixelImageBlockProps } from "@dextinity/site-vite-rsc";
 import type { DamImageBlockData, PixelImageBlockData, SvgImageBlockData } from "@src/blocks.generated";
 import { useAiContentAltTextPrefixLabels } from "@src/common/helpers/useAiContentAltTextPrefixLabels";
-
-import { PixelImageBlock, type PixelImageBlockProps } from "./PixelImageBlock";
 
 type DamImageProps = Omit<PixelImageBlockProps, "data" | "aspectRatio" | "aiContentAltTextPrefixLabels"> & {
     aspectRatio: string | "inherit";

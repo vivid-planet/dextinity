@@ -1,19 +1,17 @@
 import {
     type AiContentAltTextPrefixLabels,
-    DamVideoBlock,
     OneOfBlock,
     PreviewSkeleton,
     type PropsWithData,
     type SupportedBlocks,
-    VimeoVideoBlock,
     withPreview,
 } from "@dextinity/site-react";
+import { DamVideoBlock, VimeoVideoBlock } from "@dextinity/site-vite-rsc";
 import type { MediaBlockData } from "@src/blocks.generated";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
 
 import { PlayPauseButton } from "../helpers/PlayPauseButton";
 import { useAiContentAltTextPrefixLabels } from "../helpers/useAiContentAltTextPrefixLabels";
-import { VideoPreviewImage } from "../helpers/VideoPreviewImage";
 import { CookieSafeYouTubeVideoBlock } from "./CookieSafeYouTubeVideoBlock";
 
 const getSupportedBlocks = (
@@ -31,7 +29,6 @@ const getSupportedBlocks = (
                 aspectRatio={aspectRatio}
                 fill={fill}
                 playPauseButton={PlayPauseButton}
-                renderPreviewImage={(props) => <VideoPreviewImage {...props} />}
                 aiContentAltTextPrefixLabels={aiContentAltTextPrefixLabels}
             />
         ),
@@ -45,14 +42,7 @@ const getSupportedBlocks = (
             />
         ),
         vimeoVideo: (data) => (
-            <VimeoVideoBlock
-                data={data}
-                previewImageSizes={sizes}
-                aspectRatio={aspectRatio}
-                fill={fill}
-                playPauseButton={PlayPauseButton}
-                renderPreviewImage={(props) => <VideoPreviewImage {...props} />}
-            />
+            <VimeoVideoBlock data={data} previewImageSizes={sizes} aspectRatio={aspectRatio} fill={fill} playPauseButton={PlayPauseButton} />
         ),
     };
 };

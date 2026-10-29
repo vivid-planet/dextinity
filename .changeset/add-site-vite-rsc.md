@@ -44,6 +44,16 @@ app.onError(handleError);
 - In the site preview of the admin, i.e. when `getSitePreview()` is set, `renderPage()` marks the pages as site preview for the blocks and reports their location to the admin
 - `Metadata` renders the description, robots, canonical, alternate and Open Graph tags of a page and resolves relative URLs, e.g. of DAM images, against `baseUrl`
 
+**Images and videos**
+
+`PixelImageBlock` and `Image` render responsive images with a `srcset`, lazy loading and the dominant color as placeholder. Pass `preload` for the most important image of a page, e.g. a stage image. `DamVideoBlock`, `YouTubeVideoBlock` and `VimeoVideoBlock` render their preview image with `PixelImageBlock`, so `renderPreviewImage` is optional. The widths must be the ones the API resizes images to, set them in the root layout:
+
+```tsx
+import dextinityConfig from "@src/dextinity-config.json" with { type: "json" };
+
+<ImageConfigProvider config={dextinityConfig.images}>{children}</ImageConfigProvider>;
+```
+
 **Middlewares** (`@dextinity/site-vite-rsc/server`)
 
 - `staticFilesMiddleware` serves the client build in production, `_assets` with a long cache duration

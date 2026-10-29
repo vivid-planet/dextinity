@@ -204,9 +204,9 @@ In the admin's site preview, `SitePreviewProvider` marks the page as site previe
 
 ## Library `@dextinity/site-react` (framework-independent, also usable by site-nextjs; needs changesets)
 
-### #33 Add `PixelImageBlock` and a responsive `Image` with srcset
+### #33 Add `PixelImageBlock` and a responsive `Image` with srcset (done, in site-vite-rsc)
 
-Exists twice today (site-nextjs on `next/image`, demo in `src/common/blocks/PixelImageBlock.tsx`); site-react's `Image` has no srcset. Make `VideoPreviewImage` and the video blocks use it by default so `renderPreviewImage` becomes optional again (removes `src/common/helpers/VideoPreviewImage.tsx`). Ref: audi6 `framework/image/Image.tsx` (next/image width algorithm, blur placeholder, `priority`).
+The Next.js site rendered DAM images with site-nextjs' `PixelImageBlock` on `next/image`, which took the widths from `next.config`; site-react's `Image` has no srcset and its video blocks need `renderPreviewImage`, so the Vite demo had its own copies. Added to `@dextinity/site-vite-rsc` instead of site-react, like site-nextjs: `Image` (srcset with next/image's width selection, lazy loading, `placeholderColor`, `fill`, `preload` for the LCP image with React's `preload()`), `PixelImageBlock` on it, `VideoPreviewImage`, and `DamVideoBlock`, `YouTubeVideoBlock` and `VimeoVideoBlock` with an optional `renderPreviewImage`; they replace the site-react exports of the same name. The widths must be the ones the API resizes to, so `ImageConfigProvider` with `images` of `dextinity-config.json` is required in the root layout, without it the images throw. The styles are inline, as the package is built with `tsc`, which can't ship CSS modules. The demo's server-rendered image tags are unchanged apart from the styles. The package now generates its block types like site-nextjs and type-checks with `Bundler` resolution, as site-react's declarations use extensionless imports, which `NodeNext` doesn't resolve, so most site-react types were `any` in the package.
 
 ### #34 Add framework-independent site preview server helpers
 

@@ -1,5 +1,5 @@
 import { parseISO } from "date-fns";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { SortDirection } from "../common/sorting/sort-direction.enum";
 import { getError, NoErrorThrownError } from "../common/test/get-error";
@@ -13,6 +13,74 @@ describe("PageTreeReadApi", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const api = createReadApi({ pageTreeNodeRepository: {} as any, attachedDocumentsRepository: {} as any });
             await expect(api.getNodeByPath("/home")).resolves.toBeNull();
+        });
+    });
+
+    describe("getNode", () => {
+        function createReadApiWithNodes(nodes: PageTreeNodeInterface[]) {
+            const find = vi.fn(async ({ id }: { id: { $in: string[] } }) => nodes.filter((node) => id.$in.includes(node.id)));
+
+            return {
+                find,
+                api: createReadApi({
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    pageTreeNodeRepository: { find } as any,
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    attachedDocumentsRepository: {} as any,
+                }),
+            };
+        }
+
+        const nodes = [
+            { id: "root", slug: "root", parentId: null },
+            { id: "child", slug: "child", parentId: "root" },
+        ] as PageTreeNodeInterface[];
+
+        it("should load concurrently requested nodes with a single query", async () => {
+            const { api, find } = createReadApiWithNodes(nodes);
+
+            const [root, child] = await Promise.all([api.getNode("root"), api.getNode("child")]);
+
+            expect(find).toHaveBeenCalledTimes(1);
+            expect(find).toHaveBeenCalledWith(expect.objectContaining({ id: { $in: ["root", "child"] } }));
+            expect(root).toBe(nodes[0]);
+            expect(child).toBe(nodes[1]);
+        });
+
+        it("should query a node requested multiple times concurrently only once", async () => {
+            const { api, find } = createReadApiWithNodes(nodes);
+
+            const loadedNodes = await Promise.all([api.getNode("root"), api.getNode("root"), api.getNode("root")]);
+
+            expect(find).toHaveBeenCalledTimes(1);
+            expect(loadedNodes).toEqual([nodes[0], nodes[0], nodes[0]]);
+        });
+
+        it("should not query an already loaded node again", async () => {
+            const { api, find } = createReadApiWithNodes(nodes);
+
+            await api.getNode("root");
+            await api.getNode("root");
+
+            expect(find).toHaveBeenCalledTimes(1);
+        });
+
+        it("should not query a node again that doesn't exist", async () => {
+            const { api, find } = createReadApiWithNodes(nodes);
+
+            await expect(api.getNode("unknown")).resolves.toBeNull();
+            await expect(api.getNode("unknown")).resolves.toBeNull();
+
+            expect(find).toHaveBeenCalledTimes(1);
+        });
+
+        it("should load the path of multiple nodes with one query per level", async () => {
+            const { api, find } = createReadApiWithNodes(nodes);
+
+            const paths = await Promise.all([api.nodePathById("child"), api.nodePathById("child"), api.nodePathById("root")]);
+
+            expect(paths).toEqual(["/root/child", "/root/child", "/root"]);
+            expect(find).toHaveBeenCalledTimes(1);
         });
     });
 

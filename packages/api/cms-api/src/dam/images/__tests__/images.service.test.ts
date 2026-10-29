@@ -40,6 +40,15 @@ describe("ImagesService.createUrlTemplate", () => {
         expect(imagesService.createUrlTemplate({ file }, {})).toMatch(new RegExp(`/resize:\\$resizeWidth:\\$resizeHeight/${filename}$`));
     });
 
+    it("uses the crop area of the file when the crop area is null", () => {
+        const file = createImageFile({ name: "photo.png", mimetype: "image/png" });
+        const imagesService = createImagesService();
+
+        expect(imagesService.createUrlTemplate({ file, cropArea: null as unknown as undefined }, {})).toBe(
+            imagesService.createUrlTemplate({ file }, {}),
+        );
+    });
+
     it("adds the extension to preview URLs", () => {
         const file = createImageFile({ name: "photo.png", mimetype: "image/png" });
         const imagesService = createImagesService({ includeFormatExtensionInImageUrls: true });

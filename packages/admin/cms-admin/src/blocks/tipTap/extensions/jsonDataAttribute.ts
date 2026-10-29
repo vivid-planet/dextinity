@@ -1,7 +1,6 @@
 import type { Attribute } from "@tiptap/core";
 
-export function parseJsonData(element: HTMLElement): unknown {
-    const json = element.getAttribute("data-json");
+export function parseJsonData(json: string | null): unknown {
     if (json === null) {
         return null;
     }
@@ -12,8 +11,10 @@ export function parseJsonData(element: HTMLElement): unknown {
     }
 }
 
-export const jsonDataAttribute: Attribute = {
-    default: null,
-    parseHTML: parseJsonData,
-    renderHTML: ({ data }) => (data === null || data === undefined ? {} : { "data-json": JSON.stringify(data) }),
-};
+export function createJsonDataAttribute(htmlAttributeName: string): Attribute {
+    return {
+        default: null,
+        parseHTML: (element) => parseJsonData(element.getAttribute(htmlAttributeName)),
+        renderHTML: ({ data }) => ({ [htmlAttributeName]: data === null || data === undefined ? "" : JSON.stringify(data) }),
+    };
+}

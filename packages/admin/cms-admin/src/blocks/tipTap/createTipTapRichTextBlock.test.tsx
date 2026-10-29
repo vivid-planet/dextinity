@@ -361,7 +361,7 @@ describe("createTipTapRichTextBlock", () => {
         it("should paste a link with invalid data as plain text", () => {
             const editor = createEditor({ link: linkBlock });
 
-            editor.view.pasteHTML('<p><a data-cms-link="" data-json="invalid">pasted</a></p>', new Event("paste") as ClipboardEvent);
+            editor.view.pasteHTML('<p><a data-cms-link="invalid">pasted</a></p>', new Event("paste") as ClipboardEvent);
 
             expect(editor.getText()).toBe("pasted");
             expect(collectLinkData(editor)).toEqual([]);

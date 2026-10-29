@@ -1,14 +1,12 @@
 import { gql } from "@dextinity/site-react";
 import { notFound } from "@dextinity/site-vite-rsc";
-import { createGraphQLFetch } from "@src/util/graphQLClient";
+import { graphQLFetch } from "@src/util/graphQLClient";
 
 import { Content, productDetailContentFragment } from "./Content";
 import type { GQLProductDetailPageQuery, GQLProductDetailPageQueryVariables } from "./page.generated";
 
 export default async function ProductDetailPage({ slug }: { slug: string }) {
-    const graphqlFetch = createGraphQLFetch();
-
-    const data = await graphqlFetch<GQLProductDetailPageQuery, GQLProductDetailPageQueryVariables>(
+    const data = await graphQLFetch<GQLProductDetailPageQuery, GQLProductDetailPageQueryVariables>(
         gql`
             query ProductDetailPage($slug: String!) {
                 productBySlug(slug: $slug) {

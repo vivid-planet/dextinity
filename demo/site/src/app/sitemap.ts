@@ -1,6 +1,6 @@
 import { gql } from "@dextinity/site-react";
 import { createSitePath } from "@src/util/createSitePath";
-import { createGraphQLFetch } from "@src/util/graphQLClient";
+import { graphQLFetch } from "@src/util/graphQLClient";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { getSiteContext } from "@src/util/siteContext";
 import type { Context } from "hono";
@@ -28,8 +28,6 @@ function renderSitemapXml(sitemap: SitemapEntry[]) {
 
 export async function sitemapRoute(c: Context) {
     const sitemap: SitemapEntry[] = [];
-    const graphqlFetch = createGraphQLFetch();
-
     const siteConfig = getSiteConfigForDomain(getSiteContext().domain);
 
     for (const language of siteConfig.scope.languages) {
@@ -40,7 +38,7 @@ export async function sitemapRoute(c: Context) {
         let currentCount = 0;
 
         do {
-            const { paginatedPageTreeNodes } = await graphqlFetch<GQLPrebuildPageDataListSitemapQuery, GQLPrebuildPageDataListSitemapQueryVariables>(
+            const { paginatedPageTreeNodes } = await graphQLFetch<GQLPrebuildPageDataListSitemapQuery, GQLPrebuildPageDataListSitemapQueryVariables>(
                 pageDataListQuery,
                 {
                     scope,

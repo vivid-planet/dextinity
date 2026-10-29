@@ -8,6 +8,7 @@ export {
     type FetchCacheEntry,
     type FetchCacheStore,
 } from "./fetchCacheStore.js";
+export { createServerGraphQLFetch } from "./graphQLFetch.js";
 export { handleError } from "./handleError.js";
 export { renderPage } from "./render.js";
 export {

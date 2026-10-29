@@ -61,6 +61,18 @@ const cachingFetch = createCachingFetch(fetch, {
 });
 ```
 
+**GraphQL** (`@dextinity/site-vite-rsc/server`)
+
+`createServerGraphQLFetch({ url, headers, cache })` creates the GraphQL fetch for server components, one instance for the whole site. In the site preview and the block preview, it sends the preview headers to the API and bypasses the cache:
+
+```ts
+export const graphQLFetch = createServerGraphQLFetch({
+    url: `${process.env.API_URL_INTERNAL}/graphql`,
+    headers: { authorization: `Basic ${credentials}` },
+    cache: { revalidateInSeconds: 450, store },
+});
+```
+
 **Server** (`@dextinity/site-vite-rsc/node`)
 
 `createRequestListener({ dev, server })` handles the requests with Vite during development and with the build in production. The project's server adds what its operation needs, e.g. tracing and metrics:

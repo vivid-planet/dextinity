@@ -7,7 +7,7 @@ import { TopNavigation } from "@src/layout/topNavigation/TopNavigation";
 import { topMenuPageTreeNodeFragment } from "@src/layout/topNavigation/TopNavigation.fragment";
 import { OrganizationJsonLd } from "@src/organization/OrganizationJsonLd";
 import type { ContentScope } from "@src/site-configs";
-import { createGraphQLFetch } from "@src/util/graphQLClient";
+import { graphQLFetch } from "@src/util/graphQLClient";
 import { IntlProvider } from "@src/util/IntlProvider";
 import { loadMessages } from "@src/util/loadMessages";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
@@ -27,8 +27,6 @@ export default async function Layout({ children, ...params }: PropsWithChildren<
     const { domain } = params;
     const siteConfig = getSiteConfigForDomain(domain);
     const language = getLayoutLanguage(params);
-
-    const graphQLFetch = createGraphQLFetch();
 
     const { footer, header, topMenu } = await graphQLFetch<GQLLayoutQuery, GQLLayoutQueryVariables>(
         gql`

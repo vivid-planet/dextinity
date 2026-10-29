@@ -3,7 +3,7 @@ import { notFound } from "@dextinity/site-vite-rsc";
 import type { GQLNewsContentScopeInput } from "@src/graphql.generated";
 import { NewsArticleJsonLd } from "@src/news/NewsArticleJsonLd";
 import type { ContentScope } from "@src/site-configs";
-import { createGraphQLFetch } from "@src/util/graphQLClient";
+import { graphQLFetch } from "@src/util/graphQLClient";
 
 import { Content } from "./content";
 import { fragment } from "./fragment";
@@ -11,9 +11,7 @@ import type { GQLNewsDetailPageQuery, GQLNewsDetailPageQueryVariables } from "./
 
 export default async function NewsDetailPage({ domain, language, slug }: ContentScope & { slug: string }) {
     const scope = { domain, language };
-    const graphqlFetch = createGraphQLFetch();
-
-    const data = await graphqlFetch<GQLNewsDetailPageQuery, GQLNewsDetailPageQueryVariables>(
+    const data = await graphQLFetch<GQLNewsDetailPageQuery, GQLNewsDetailPageQueryVariables>(
         gql`
             query NewsDetailPage($slug: String!, $scope: NewsContentScopeInput!) {
                 newsBySlug(slug: $slug, scope: $scope) {

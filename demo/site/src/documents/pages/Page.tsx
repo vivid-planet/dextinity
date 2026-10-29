@@ -3,7 +3,7 @@ import { Metadata, notFound } from "@dextinity/site-vite-rsc";
 import { Breadcrumbs } from "@src/common/components/breadcrumbs/Breadcrumbs";
 import { breadcrumbsFragment } from "@src/common/components/breadcrumbs/Breadcrumbs.fragment";
 import type { GQLPageTreeNodeScopeInput } from "@src/graphql.generated";
-import { createGraphQLFetch } from "@src/util/graphQLClient";
+import { graphQLFetch } from "@src/util/graphQLClient";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import type { Thing, WithContext } from "schema-dts";
@@ -35,8 +35,6 @@ const pageQuery = gql`
 type Props = { pageTreeNodeId: string; scope: GQLPageTreeNodeScopeInput };
 
 async function fetchData({ pageTreeNodeId, scope }: Props) {
-    const graphQLFetch = createGraphQLFetch();
-
     const props = await graphQLFetch<GQLPageQuery, GQLPageQueryVariables>(
         pageQuery,
         {
@@ -66,8 +64,6 @@ async function fetchData({ pageTreeNodeId, scope }: Props) {
 }
 
 export async function Page({ pageTreeNodeId, scope }: { pageTreeNodeId: string; scope: GQLPageTreeNodeScopeInput }) {
-    const graphQLFetch = createGraphQLFetch();
-
     const data = await fetchData({ pageTreeNodeId, scope });
     const document = data?.pageContent?.document;
     if (!document) {

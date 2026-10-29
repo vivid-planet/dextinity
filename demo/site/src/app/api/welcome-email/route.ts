@@ -1,5 +1,5 @@
 import type { WelcomeEmailContentBlockData } from "@src/blocks.generated";
-import { createGraphQLFetch } from "@src/util/graphQLClient";
+import { graphQLFetch } from "@src/util/graphQLClient";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
 import type { Context } from "hono";
 import { z } from "zod";
@@ -32,7 +32,6 @@ export async function welcomeEmailRoute(c: Context) {
     }
     const scope = validationResult.data;
 
-    const graphQLFetch = createGraphQLFetch();
     const { welcomeEmail } = await graphQLFetch<{ welcomeEmail: { content: WelcomeEmailContentBlockData } | null }, { scope: typeof scope }>(
         welcomeEmailQuery,
         { scope },

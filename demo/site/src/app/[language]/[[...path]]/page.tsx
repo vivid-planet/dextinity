@@ -5,7 +5,7 @@ import { documentTypes } from "@src/documents";
 import type { GQLPageTreeNodeScope } from "@src/graphql.generated";
 import type { ContentScope } from "@src/site-configs";
 import { createSitePath } from "@src/util/createSitePath";
-import { createGraphQLFetch } from "@src/util/graphQLClient";
+import { graphQLFetch } from "@src/util/graphQLClient";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 
 import type { GQLDocumentTypeQuery, GQLDocumentTypeQueryVariables } from "./page.generated";
@@ -40,8 +40,6 @@ async function fetchPageTreeNode({ domain, language, path: pathParam }: Params) 
 
     const path = `/${pathParam.join("/")}`;
     const { scope } = { scope: { domain, language } };
-    const graphQLFetch = createGraphQLFetch();
-
     return graphQLFetch<GQLDocumentTypeQuery, GQLDocumentTypeQueryVariables>(
         documentTypeQuery,
         {

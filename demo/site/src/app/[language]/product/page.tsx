@@ -1,19 +1,18 @@
 import { gql } from "@dextinity/site-react";
 import { Link } from "@dextinity/site-vite-rsc";
 import { createSitePath } from "@src/util/createSitePath";
-import { createGraphQLFetch } from "@src/util/graphQLClient";
+import { graphQLFetch } from "@src/util/graphQLClient";
 
 import type { GQLProductListPageQuery, GQLProductListPageQueryVariables } from "./page.generated";
 
 const productsPerRequest = 100;
 
 async function fetchAllPublishedProducts() {
-    const graphqlFetch = createGraphQLFetch();
     const products: GQLProductListPageQuery["products"]["nodes"] = [];
     let hasMoreProducts: boolean;
 
     do {
-        const data = await graphqlFetch<GQLProductListPageQuery, GQLProductListPageQueryVariables>(
+        const data = await graphQLFetch<GQLProductListPageQuery, GQLProductListPageQueryVariables>(
             gql`
                 query ProductListPage($offset: Int!, $limit: Int!) {
                     products(

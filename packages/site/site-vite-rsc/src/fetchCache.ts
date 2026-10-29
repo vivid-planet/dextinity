@@ -11,6 +11,17 @@ function createCacheKey(request: Request, body: string) {
         .digest("hex");
 }
 
+const nullBodyStatuses = [204, 205, 304];
+
+// Binary responses would be changed by storing them as text, so they aren't cached
+function hasTextBody(response: Response) {
+    if (nullBodyStatuses.includes(response.status)) {
+        return true;
+    }
+    const contentType = response.headers.get("content-type") ?? "";
+    return /^(text\/|application\/([\w.-]+\+)?(json|xml)\b)/.test(contentType);
+}
+
 function isCacheable(response: Response, body: string) {
     if (!response.ok) {
         return false;
@@ -27,17 +38,21 @@ function isCacheable(response: Response, body: string) {
 }
 
 /**
- * Creates a fetch that caches successful responses in `store` for `revalidateInSeconds`.
- * Stale responses are served while they are refreshed in the background (stale-while-revalidate).
+ * Creates a fetch that caches successful text responses, e.g. of a GraphQL API, in `store` for `revalidateInSeconds`.
+ * Stale responses are served while they are refreshed in the background (stale-while-revalidate). Other responses, e.g. images,
+ * are passed through without caching.
  */
 export function createCachingFetch(baseFetch: Fetch, { revalidateInSeconds, store }: { revalidateInSeconds: number; store: FetchCacheStore }): Fetch {
-    const inFlightRequests = new Map<string, Promise<CachedResponse>>();
+    const inFlightRequests = new Map<string, Promise<CachedResponse | Response>>();
 
-    function fetchAndCache(key: string, request: Request, body: string): Promise<CachedResponse> {
+    function fetchAndCache(key: string, request: Request, body: string): Promise<CachedResponse | Response> {
         let inFlightRequest = inFlightRequests.get(key);
         if (!inFlightRequest) {
             inFlightRequest = (async () => {
                 const response = await baseFetch(request.url, { method: request.method, headers: request.headers, body: body || undefined });
+                if (!hasTextBody(response)) {
+                    return response;
+                }
                 const cachedResponse: CachedResponse = {
                     status: response.status,
                     // The body has already been decoded
@@ -66,7 +81,7 @@ export function createCachingFetch(baseFetch: Fetch, { revalidateInSeconds, stor
         const key = createCacheKey(request, body);
 
         const cacheEntry = await store.get(key);
-        let cachedResponse: CachedResponse;
+        let cachedResponse: CachedResponse | Response;
         if (cacheEntry) {
             if (Date.now() - cacheEntry.lastModified > revalidateInSeconds * 1000) {
                 fetchAndCache(key, request, body).catch((error) => {
@@ -78,6 +93,11 @@ export function createCachingFetch(baseFetch: Fetch, { revalidateInSeconds, stor
             cachedResponse = await fetchAndCache(key, request, body);
         }
 
-        return new Response(cachedResponse.body, { status: cachedResponse.status, headers: cachedResponse.headers });
+        if (cachedResponse instanceof Response) {
+            // Concurrent identical requests share the response
+            return cachedResponse.clone();
+        }
+        const responseBody = nullBodyStatuses.includes(cachedResponse.status) ? null : cachedResponse.body;
+        return new Response(responseBody, { status: cachedResponse.status, headers: cachedResponse.headers });
     };
 }

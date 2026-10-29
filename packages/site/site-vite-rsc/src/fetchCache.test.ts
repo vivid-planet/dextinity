@@ -102,6 +102,33 @@ describe("createCachingFetch", () => {
         expect(await response.text()).toBe("content");
     });
 
+    it("passes binary responses through unchanged without caching them", async () => {
+        const bytes = new Uint8Array([0xff, 0xd8, 0xff, 0x00, 0x80]);
+        const baseFetch = createBaseFetch(() => new Response(bytes, { headers: { "content-type": "image/jpeg" } }));
+        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });
+
+        const [first, second] = await Promise.all([
+            cachingFetch("https://api.example.com/image.jpg"),
+            cachingFetch("https://api.example.com/image.jpg"),
+        ]);
+
+        expect(new Uint8Array(await first.arrayBuffer())).toEqual(bytes);
+        expect(new Uint8Array(await second.arrayBuffer())).toEqual(bytes);
+        expect(cacheEntries.size).toBe(0);
+    });
+
+    it("caches responses without a body", async () => {
+        const baseFetch = createBaseFetch(() => new Response(null, { status: 204 }));
+        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });
+
+        await cachingFetch("https://api.example.com/ping");
+        const cached = await cachingFetch("https://api.example.com/ping");
+
+        expect(cached.status).toBe(204);
+        expect(cached.body).toBeNull();
+        expect(baseFetch).toHaveBeenCalledTimes(1);
+    });
+
     it("sends a single request for concurrent identical requests", async () => {
         const baseFetch = createBaseFetch();
         const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });

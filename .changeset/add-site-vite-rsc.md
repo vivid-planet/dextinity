@@ -62,7 +62,7 @@ import dextinityConfig from "@src/dextinity-config.json" with { type: "json" };
 
 **Fetch cache** (`@dextinity/site-vite-rsc/server`)
 
-`createCachingFetch(fetch, { revalidateInSeconds, store })` caches successful responses and serves stale ones while refreshing them in the background. `createMemoryFetchCacheStore()` keeps the entries in memory, `createValkeyFetchCacheStore({ connection, fallback })` shares them between the instances of the site and uses `fallback` while Valkey is unavailable:
+`createCachingFetch(fetch, { revalidateInSeconds, store })` caches successful text responses, e.g. of the API, and serves stale ones while refreshing them in the background. Other responses, e.g. images, are passed through. `createMemoryFetchCacheStore()` keeps the entries in memory, `createValkeyFetchCacheStore({ connection, fallback })` shares them between the instances of the site and uses `fallback` while Valkey is unavailable:
 
 ```ts
 const memoryStore = createMemoryFetchCacheStore();

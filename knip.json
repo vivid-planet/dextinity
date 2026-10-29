@@ -81,7 +81,7 @@
             "ignore": ["./src/**/*.generated.ts"]
         },
         "packages/site/site-vite-rsc": {
-            "entry": ["./src/index.ts", "./src/server.ts", "./src/vite/index.ts", "./src/entry.*.tsx", "./e2e/fixture/handler.tsx"],
+            "entry": ["./src/index.ts", "./src/server.ts", "./src/node.ts", "./src/vite/index.ts", "./src/entry.*.tsx", "./e2e/fixture/handler.tsx"],
             "project": ["./src/**/*.{ts,tsx}", "./e2e/**/*.{ts,tsx}"]
         },
         "packages/mail-react": {

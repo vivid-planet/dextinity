@@ -1,9 +1,9 @@
 // @vitest-environment node
-import { noStoreCacheControl } from "@dextinity/site-vite-rsc/server";
 import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
 
-import { errorResponseCacheControlMiddleware } from "./errorResponseCacheControl";
+import { noStoreCacheControl } from "./cacheControl.js";
+import { errorResponseCacheControlMiddleware } from "./errorResponseCacheControl.js";
 
 const app = new Hono();
 app.use(errorResponseCacheControlMiddleware);

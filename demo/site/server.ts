@@ -1,11 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { createRequire } from "node:module";
-import { resolve } from "node:path";
-import { pathToFileURL } from "node:url";
 
-import { getRequestListener } from "@hono/node-server";
-import { Hono } from "hono";
-import { compress } from "hono/compress";
+import { createRequestListener } from "@dextinity/site-vite-rsc/node";
 
 import { withMetrics } from "./opentelemetry-metrics.js";
 
@@ -13,19 +9,6 @@ const dev = process.env.NODE_ENV !== "production";
 const host = process.env.SERVER_HOST ?? "localhost";
 const port = parseInt(process.env.SITE_PORT || "3000", 10);
 const cdnOriginCheckSecret = process.env.CDN_ORIGIN_CHECK_SECRET;
-
-async function createProductionHandler() {
-    const { default: rscHandler } = (await import(pathToFileURL(resolve("dist/rsc/index.js")).href)) as {
-        default: { fetch: (request: Request) => Promise<Response> };
-    };
-
-    // Headers and static files are handled by the site's Hono app, see src/handler.ts
-    const app = new Hono();
-    app.use(compress());
-    app.all("*", (c) => rscHandler.fetch(c.req.raw));
-
-    return getRequestListener(app.fetch);
-}
 
 async function main() {
     process.on("unhandledRejection", (reason) => {
@@ -42,14 +25,7 @@ async function main() {
     const { createServer } = createRequire(import.meta.url)("node:http") as typeof import("node:http");
     const server = createServer();
 
-    let handle: (req: IncomingMessage, res: ServerResponse) => unknown;
-    if (dev) {
-        const { createServer: createViteServer } = await import("vite");
-        const vite = await createViteServer({ server: { middlewareMode: true, hmr: { server } } });
-        handle = vite.middlewares;
-    } else {
-        handle = await createProductionHandler();
-    }
+    const handle = await createRequestListener({ dev, server });
     const handleWithMetrics = withMetrics(async (req, res) => {
         await handle(req, res);
     });

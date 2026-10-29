@@ -1,4 +1,9 @@
-import { handleError, trailingSlashRedirectMiddleware } from "@dextinity/site-vite-rsc/server";
+import {
+    errorResponseCacheControlMiddleware,
+    handleError,
+    staticFilesMiddleware,
+    trailingSlashRedirectMiddleware,
+} from "@dextinity/site-vite-rsc/server";
 import { adminRoute } from "@src/app/admin/route";
 import { statusRoute } from "@src/app/api/status/route";
 import { damRoute } from "@src/app/dam/route";
@@ -8,13 +13,11 @@ import { sitePreviewRoute } from "@src/app/site-preview/route";
 import { Hono } from "hono";
 
 import { contentSecurityPolicyHeadersMiddleware } from "./middleware/contentSecurityPolicyHeaders";
-import { errorResponseCacheControlMiddleware } from "./middleware/errorResponseCacheControl";
 import { predefinedPagesMiddleware } from "./middleware/predefinedPages";
 import { previewDomainMiddleware } from "./middleware/preview";
 import { redirectToMainHostMiddleware } from "./middleware/redirectToMainHost";
 import { securityHeadersMiddleware } from "./middleware/securityHeaders";
 import { siteContextMiddleware } from "./middleware/siteContext";
-import { staticFilesMiddleware } from "./middleware/staticFiles";
 
 // Middlewares only apply to the routes registered after them, a route that responds skips the rest
 export const app = new Hono();

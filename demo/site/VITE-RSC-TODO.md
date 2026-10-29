@@ -157,6 +157,10 @@ The entries import almost all of `src/framework`, and the demo must use the same
 
 `Metadata` (`@dextinity/site-vite-rsc`) renders description, robots, canonical, alternate links and the Open Graph tags with flat props named like the CMS SEO block, and resolves relative URLs against `baseUrl`, as crawlers and share previews need absolute URLs (replaces `src/util/absoluteUrl.ts` from #7). The `<title>` stays separate. Only the CMS pages (`Page.tsx`) use it; their head tags are unchanged.
 
+### #28 Move the server into the package (done)
+
+`createRequestListener({ dev, server })` (`@dextinity/site-vite-rsc/node`), the counterpart to Next.js' `getRequestHandler()`: Vite in middleware mode with HMR on the project's server during development, the build in `dist/rsc` with compression in production. Like the Next.js site, the project keeps its `server.ts` with tracing (loaded before `node:http`), metrics, the CDN origin check and `listen`. `staticFilesMiddleware` (cache durations tied to the preset's `_assets`) and `errorResponseCacheControlMiddleware` moved into `@dextinity/site-vite-rsc/server`, the security headers stay in the project, their values are project-specific.
+
 ### #44 Make error reporting configurable
 
 `reportError()` (now in the package) only logs; projects used to edit it to report to an error tracking service (e.g. Sentry). Add a way to set the reporter, e.g. an option or `setErrorReporter()`, used by `renderPage`, `handleError`, `GlobalErrorBoundary` and the SSR entry. The fallback texts of `GlobalErrorBoundary` are English, as it replaces the document outside of the site's providers.
@@ -172,7 +176,7 @@ The entries import almost all of `src/framework`, and the demo must use the same
 | 25  | Router hooks + `Link` + `useRouter`                                                                                                                  | `src/framework/RouterProvider.tsx`, `Link.tsx`                      | done (#21)                                   |
 | 26  | Error boundary, error and not found handling                                                                                                         | (from #2)                                                           | done (#21), see #44                          |
 | 27  | `Metadata` component with base URL resolution, replaces `absoluteUrl`                                                                                | inline in `src/documents/pages/Page.tsx`, `src/util/absoluteUrl.ts` | done (#27)                                   |
-| 28  | Production and dev server (`createServer({ staticDir, securityHeaders, cdnOriginCheckSecret })`, Vite middleware mode in dev, metrics/tracing hooks) | `server.ts`                                                         | #20, #11                                     |
+| 28  | Production and dev server (`createServer({ staticDir, securityHeaders, cdnOriginCheckSecret })`, Vite middleware mode in dev, metrics/tracing hooks) | `server.ts`                                                         | done (#28)                                   |
 | 29  | Fetch cache (store interface, Valkey/LRU, stale-while-revalidate, metrics)                                                                           | `src/util/fetchCache.ts`, `fetchCacheStore.ts`                      | #20, #12                                     |
 | 30  | `createServerGraphQLFetch({ url, headers })` reading visibility from the context                                                                     | `src/util/graphQLClient.ts`                                         | #29                                          |
 | 31  | Persisted queries Vite plugin (counterpart to site-react's webpack loader)                                                                           | `vitePersistedQueriesPlugin.ts`                                     | #20, #17                                     |

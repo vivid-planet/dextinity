@@ -1,4 +1,5 @@
 export { noStoreCacheControl } from "./cacheControl.js";
+export { errorResponseCacheControlMiddleware } from "./errorResponseCacheControl.js";
 export { handleError } from "./handleError.js";
 export { renderPage } from "./render.js";
 export {
@@ -15,4 +16,5 @@ export {
     type SitePreview,
     type Visibility,
 } from "./requestContext.js";
+export { staticFilesMiddleware } from "./staticFiles.js";
 export { trailingSlashRedirectMiddleware } from "./trailingSlashRedirect.js";

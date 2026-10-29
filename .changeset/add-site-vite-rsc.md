@@ -43,6 +43,22 @@ app.onError(handleError);
 - `usePathname()`, `useSearchParams()`, `useParams()` and `useNavigationPending()`
 - `Metadata` renders the description, robots, canonical, alternate and Open Graph tags of a page and resolves relative URLs, e.g. of DAM images, against `baseUrl`
 
+**Middlewares** (`@dextinity/site-vite-rsc/server`)
+
+- `staticFilesMiddleware` serves the client build in production, `_assets` with a long cache duration
+- `errorResponseCacheControlMiddleware` prevents caching of error responses
+- `trailingSlashRedirectMiddleware` redirects URLs with a trailing slash
+
+**Server** (`@dextinity/site-vite-rsc/node`)
+
+`createRequestListener({ dev, server })` handles the requests with Vite during development and with the build in production. The project's server adds what its operation needs, e.g. tracing and metrics:
+
+```ts
+const server = createServer();
+server.on("request", await createRequestListener({ dev: process.env.NODE_ENV !== "production", server }));
+server.listen(3000);
+```
+
 **Request context** (`@dextinity/site-vite-rsc/server`)
 
 `getRequest()`, `isRscRequest()`, `getCookie()`, `getVisibility()` and `getSitePreview()` are available while handling a request. The project's data of the request, e.g. the scope of the site, is set with `setRequestData()` and typed with module augmentation:

@@ -689,9 +689,6 @@ importers:
       '@google-cloud/recaptcha-enterprise':
         specifier: ^5.13.0
         version: 5.13.0(supports-color@8.1.1)
-      '@hono/node-server':
-        specifier: ^2.1.5
-        version: 2.1.5(hono@4.13.14)
       '@opentelemetry/api':
         specifier: ^1.9.1
         version: 1.9.1
@@ -2857,6 +2854,9 @@ importers:
       '@dextinity/site-react':
         specifier: workspace:*
         version: link:../site-react
+      '@hono/node-server':
+        specifier: ^2.1.5
+        version: 2.1.5(hono@4.13.14)
       '@vitejs/plugin-react':
         specifier: ^6.1.2
         version: 6.1.2(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.105.1)(terser@5.51.2)(yaml@2.9.1))

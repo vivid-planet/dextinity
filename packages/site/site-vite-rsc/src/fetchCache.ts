@@ -1,10 +1,8 @@
 import { createHash } from "node:crypto";
 
-import { type CachedResponse, getFetchCacheEntry, setFetchCacheEntry } from "./fetchCacheStore";
+import type { CachedResponse, FetchCacheStore } from "./fetchCacheStore.js";
 
 type Fetch = typeof fetch;
-
-const inFlightRequests = new Map<string, Promise<CachedResponse>>();
 
 function createCacheKey(request: Request, body: string) {
     const headers = [...request.headers.entries()].sort(([a], [b]) => a.localeCompare(b));
@@ -29,10 +27,12 @@ function isCacheable(response: Response, body: string) {
 }
 
 /**
- * Creates a fetch that caches successful responses for `revalidateInSeconds`.
+ * Creates a fetch that caches successful responses in `store` for `revalidateInSeconds`.
  * Stale responses are served while they are refreshed in the background (stale-while-revalidate).
  */
-export function createCachingFetch(baseFetch: Fetch, { revalidateInSeconds }: { revalidateInSeconds: number }): Fetch {
+export function createCachingFetch(baseFetch: Fetch, { revalidateInSeconds, store }: { revalidateInSeconds: number; store: FetchCacheStore }): Fetch {
+    const inFlightRequests = new Map<string, Promise<CachedResponse>>();
+
     function fetchAndCache(key: string, request: Request, body: string): Promise<CachedResponse> {
         let inFlightRequest = inFlightRequests.get(key);
         if (!inFlightRequest) {
@@ -47,7 +47,7 @@ export function createCachingFetch(baseFetch: Fetch, { revalidateInSeconds }: { 
                     body: await response.text(),
                 };
                 if (isCacheable(response, cachedResponse.body)) {
-                    await setFetchCacheEntry(key, cachedResponse);
+                    await store.set(key, { lastModified: Date.now(), value: cachedResponse });
                 } else {
                     console.error("FetchCache: not caching failed response", request.url, cachedResponse.status, cachedResponse.body);
                 }
@@ -65,7 +65,7 @@ export function createCachingFetch(baseFetch: Fetch, { revalidateInSeconds }: { 
         const body = await request.text();
         const key = createCacheKey(request, body);
 
-        const cacheEntry = await getFetchCacheEntry(key);
+        const cacheEntry = await store.get(key);
         let cachedResponse: CachedResponse;
         if (cacheEntry) {
             if (Date.now() - cacheEntry.lastModified > revalidateInSeconds * 1000) {

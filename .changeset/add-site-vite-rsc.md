@@ -49,6 +49,18 @@ app.onError(handleError);
 - `errorResponseCacheControlMiddleware` prevents caching of error responses
 - `trailingSlashRedirectMiddleware` redirects URLs with a trailing slash
 
+**Fetch cache** (`@dextinity/site-vite-rsc/server`)
+
+`createCachingFetch(fetch, { revalidateInSeconds, store })` caches successful responses and serves stale ones while refreshing them in the background. `createMemoryFetchCacheStore()` keeps the entries in memory, `createValkeyFetchCacheStore({ connection, fallback })` shares them between the instances of the site and uses `fallback` while Valkey is unavailable:
+
+```ts
+const memoryStore = createMemoryFetchCacheStore();
+const cachingFetch = createCachingFetch(fetch, {
+    revalidateInSeconds: 450,
+    store: createValkeyFetchCacheStore({ connection: { host, port, password }, fallback: memoryStore }),
+});
+```
+
 **Server** (`@dextinity/site-vite-rsc/node`)
 
 `createRequestListener({ dev, server })` handles the requests with Vite during development and with the build in production. The project's server adds what its operation needs, e.g. tracing and metrics:

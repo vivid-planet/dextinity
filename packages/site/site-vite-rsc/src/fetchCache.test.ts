@@ -1,17 +1,17 @@
 // @vitest-environment node
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createCachingFetch } from "./fetchCache";
-import type { FetchCacheEntry } from "./fetchCacheStore";
+import { createCachingFetch } from "./fetchCache.js";
+import type { FetchCacheEntry, FetchCacheStore } from "./fetchCacheStore.js";
 
 const cacheEntries = new Map<string, FetchCacheEntry>();
 
-vi.mock("./fetchCacheStore", () => ({
-    getFetchCacheEntry: async (key: string) => cacheEntries.get(key) ?? null,
-    setFetchCacheEntry: async (key: string, value: FetchCacheEntry["value"]) => {
-        cacheEntries.set(key, { lastModified: Date.now(), value });
+const store: FetchCacheStore = {
+    get: async (key) => cacheEntries.get(key) ?? null,
+    set: async (key, entry) => {
+        cacheEntries.set(key, entry);
     },
-}));
+};
 
 const revalidateInSeconds = 60;
 
@@ -33,7 +33,7 @@ describe("createCachingFetch", () => {
 
     it("serves successful responses from the cache", async () => {
         const baseFetch = createBaseFetch();
-        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds });
+        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });
 
         const first = await cachingFetch("https://api.example.com/graphql", { method: "POST", body: "query" });
         const second = await cachingFetch("https://api.example.com/graphql", { method: "POST", body: "query" });
@@ -47,7 +47,7 @@ describe("createCachingFetch", () => {
 
     it("distinguishes requests by method, URL, headers and body", async () => {
         const baseFetch = createBaseFetch();
-        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds });
+        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });
 
         await cachingFetch("https://api.example.com/graphql", { method: "POST", body: "a" });
         await cachingFetch("https://api.example.com/graphql", { method: "POST", body: "b" });
@@ -60,7 +60,7 @@ describe("createCachingFetch", () => {
 
     it("doesn't cache failed responses", async () => {
         const baseFetch = createBaseFetch(() => new Response("Bad Gateway", { status: 502 }));
-        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds });
+        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });
 
         const response = await cachingFetch("https://api.example.com/graphql");
         await cachingFetch("https://api.example.com/graphql");
@@ -71,7 +71,7 @@ describe("createCachingFetch", () => {
 
     it("doesn't cache GraphQL errors", async () => {
         const baseFetch = createBaseFetch(() => Response.json({ errors: [{ message: "Failed" }] }));
-        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds });
+        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });
 
         await cachingFetch("https://api.example.com/graphql");
         await cachingFetch("https://api.example.com/graphql");
@@ -81,7 +81,7 @@ describe("createCachingFetch", () => {
 
     it("doesn't cache invalid JSON", async () => {
         const baseFetch = createBaseFetch(() => new Response("{", { headers: { "content-type": "application/json" } }));
-        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds });
+        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });
 
         await cachingFetch("https://api.example.com/graphql");
         await cachingFetch("https://api.example.com/graphql");
@@ -93,7 +93,7 @@ describe("createCachingFetch", () => {
         const baseFetch = createBaseFetch(
             () => new Response("content", { headers: { "content-encoding": "gzip", "content-length": "7", "x-custom": "kept" } }),
         );
-        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds });
+        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });
 
         const response = await cachingFetch("https://api.example.com/file");
 
@@ -104,7 +104,7 @@ describe("createCachingFetch", () => {
 
     it("sends a single request for concurrent identical requests", async () => {
         const baseFetch = createBaseFetch();
-        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds });
+        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });
 
         const responses = await Promise.all([cachingFetch("https://api.example.com/graphql"), cachingFetch("https://api.example.com/graphql")]);
 
@@ -118,7 +118,7 @@ describe("createCachingFetch", () => {
     it("serves stale responses while revalidating them in the background", async () => {
         let version = 1;
         const baseFetch = createBaseFetch(() => Response.json({ version }));
-        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds });
+        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });
 
         await cachingFetch("https://api.example.com/graphql");
         version = 2;
@@ -144,7 +144,7 @@ describe("createCachingFetch", () => {
             }
             return Response.json({ version: 1 });
         });
-        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds });
+        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });
 
         await cachingFetch("https://api.example.com/graphql");
         isApiDown = true;

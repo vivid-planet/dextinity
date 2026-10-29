@@ -4,15 +4,15 @@ import {
     createGraphQLFetch as createGraphQLFetchLibrary,
     type GraphQLFetch,
 } from "@dextinity/site-react";
-import { getVisibility } from "@dextinity/site-vite-rsc/server";
+import { createCachingFetch, getVisibility } from "@dextinity/site-vite-rsc/server";
 import { SYSTEM_USER_NAME } from "@src/auth/constants";
 
-import { createCachingFetch } from "./fetchCache";
+import { createFetchCacheStore } from "./fetchCacheStore";
 
 type Fetch = typeof fetch;
 
 // Cache for 7.5 minutes to get an effective cache duration of 15 minutes if a CDN cache is enabled
-const cachingFetch = createCachingFetch(fetch, { revalidateInSeconds: 7.5 * 60 });
+const cachingFetch = createCachingFetch(fetch, { revalidateInSeconds: 7.5 * 60, store: createFetchCacheStore() });
 
 /**
  * Creates a GraphQL fetch for server-side rendering. Use `createBrowserGraphQLFetch` in the browser.

@@ -78,6 +78,8 @@ export const Item = createComponentSlot(Typography)<BreadcrumbsClassKey>({
     ({ theme }) => css`
         color: ${theme.palette.grey[900]};
         white-space: nowrap;
+        font-size: 14px;
+        line-height: 16px;
 
         &:not(:last-child):hover {
             color: ${theme.palette.primary.main};
@@ -102,12 +104,6 @@ export const ActiveItem = createComponentSlot(Typography)<BreadcrumbsClassKey>({
         font-size: 14px;
         line-height: 16px;
         font-weight: 600;
-
-        ${theme.breakpoints.up("sm")} {
-            font-size: 16px;
-            line-height: 20px;
-            font-weight: bold;
-        }
     `,
 ) as typeof Typography;
 
@@ -134,11 +130,6 @@ export const Ellipsis = createComponentSlot(Typography)<BreadcrumbsClassKey>({
         color: inherit;
         font-size: 14px;
         line-height: 16px;
-
-        ${theme.breakpoints.up("sm")} {
-            font-size: 16px;
-            line-height: 20px;
-        }
     `,
 );
 
@@ -285,9 +276,8 @@ export const ExpandedMenuActiveItemWrapper = createComponentSlot("div")<Breadcru
         display: flex;
         align-items: center;
         gap: 5px;
-        height: 45px;
-        padding-left: ${wrapperPaddingLeft(theme, ownerState.indentation)};
-        padding-right: ${theme.spacing(3)};
+        min-height: 45px;
+        padding: ${theme.spacing(1)} ${theme.spacing(3)} ${theme.spacing(1)} ${wrapperPaddingLeft(theme, ownerState.indentation)};
         background-color: ${alpha(theme.palette.primary.main, 0.1)};
 
         // The row has nothing to activate, so it does not take the pointer cursor the surrounding mobile bar sets.
@@ -303,9 +293,8 @@ export const ExpandedMenuSubitemWrapper = createComponentSlot(BreadcrumbLink)<Br
         display: flex;
         align-items: center;
         gap: 5px;
-        height: 45px;
-        padding-left: ${wrapperPaddingLeft(theme, ownerState.indentation)};
-        padding-right: ${theme.spacing(3)};
+        min-height: 45px;
+        padding: ${theme.spacing(1)} ${theme.spacing(3)} ${theme.spacing(1)} ${wrapperPaddingLeft(theme, ownerState.indentation)};
         text-decoration: none;
     `,
 );

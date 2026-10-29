@@ -1,7 +1,7 @@
 import { Editor, type JSONContent } from "@tiptap/core";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { render } from "../../testing/test-utils";
+import { act, cleanup, fireEvent, render } from "../../testing/test-utils";
 import type { BlockContext } from "../context/BlockContext";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "../types";
@@ -390,6 +390,118 @@ describe("createTipTapRichTextBlock", () => {
 
             expect(editor.getJSON().content).toEqual([paragraph("first"), paragraph("second")]);
             expect(updateState).toHaveBeenLastCalledWith({ tipTapContent: { type: "doc", content: [paragraph("first"), paragraph("second")] } });
+        });
+    });
+
+    describe("textAlign", () => {
+        afterEach(cleanup);
+
+        const alignedParagraph = (textAlign: string | null): JSONContent => ({
+            type: "textBlock",
+            attrs: { textBlock: "paragraph", textAlign },
+            content: [{ type: "text", text: "Aligned" }],
+        });
+
+        function renderEditor(
+            textAlign: string | null | (string | null)[],
+            enabledTextAlign: NonNullable<Parameters<typeof createTipTapRichTextBlock>[0]>["textAlign"] = true,
+        ) {
+            const block = createTipTapRichTextBlock({ textAlign: enabledTextAlign });
+            const updateState = vi.fn();
+            const content = [textAlign].flat().map(alignedParagraph);
+            const result = render(<block.AdminComponent state={{ tipTapContent: { type: "doc", content } }} updateState={updateState} />);
+            const editor = (result.container.querySelector(".tiptap") as (HTMLElement & { editor?: Editor }) | null)?.editor;
+            if (!editor) {
+                throw new Error("Expected the editor to be rendered");
+            }
+            editor.commands.setTextSelection(1);
+            return { ...result, editor, updateState };
+        }
+
+        it("should not offer the alignment buttons by default", () => {
+            const block = createTipTapRichTextBlock({});
+            const { queryByLabelText } = render(<block.AdminComponent state={block.defaultValues()} updateState={vi.fn()} />);
+
+            expect(queryByLabelText("Align center")).toBeNull();
+        });
+
+        it("should align the text block of the selection", () => {
+            const { getByLabelText, updateState } = renderEditor(null);
+
+            fireEvent.mouseDown(getByLabelText("Align center"));
+
+            expect(updateState).toHaveBeenLastCalledWith({ tipTapContent: { type: "doc", content: [alignedParagraph("center")] } });
+        });
+
+        it("should switch from another alignment to left", () => {
+            const { getByLabelText, updateState } = renderEditor("center");
+
+            fireEvent.mouseDown(getByLabelText("Align left"));
+
+            expect(updateState).toHaveBeenLastCalledWith({ tipTapContent: { type: "doc", content: [alignedParagraph("left")] } });
+        });
+
+        it.each([
+            ["right", "Align right"],
+            [null, "Align left"],
+        ])("should keep the alignment %s when clicking the active button %s", (textAlign, buttonLabel) => {
+            const { getByLabelText, updateState } = renderEditor(textAlign);
+            updateState.mockClear();
+
+            fireEvent.mouseDown(getByLabelText(buttonLabel));
+
+            expect(updateState).not.toHaveBeenCalled();
+        });
+
+        it("should align every text block of a selection with mixed alignments", () => {
+            const { editor, getByLabelText, updateState } = renderEditor(["center", "right"]);
+            act(() => {
+                editor.commands.setTextSelection({ from: 1, to: editor.state.doc.content.size - 1 });
+            });
+
+            fireEvent.mouseDown(getByLabelText("Align right"));
+
+            expect(updateState).toHaveBeenLastCalledWith({
+                tipTapContent: { type: "doc", content: [alignedParagraph("right"), alignedParagraph("right")] },
+            });
+        });
+
+        it("should render the alignment as the text block's text-align", () => {
+            const { container } = renderEditor("justify");
+
+            expect(container.querySelector<HTMLElement>(".tiptap p")?.style.textAlign).toBe("justify");
+        });
+
+        it.each([
+            ["center", "center"],
+            ["start", null],
+        ])("should parse a pasted text-align: %s as %s", (pastedTextAlign, textAlign) => {
+            const { editor } = renderEditor(null);
+
+            editor.commands.setContent(`<p style="text-align: ${pastedTextAlign}">Aligned</p>`);
+
+            expect(editor.getJSON().content).toEqual([alignedParagraph(textAlign)]);
+        });
+
+        describe("enabled for some alignments", () => {
+            const someTextAlign = { left: true, center: true, right: false };
+
+            it("should only offer the enabled alignment buttons", () => {
+                const { queryByLabelText } = renderEditor(null, someTextAlign);
+
+                expect(queryByLabelText("Align left")).not.toBeNull();
+                expect(queryByLabelText("Align center")).not.toBeNull();
+                expect(queryByLabelText("Align right")).toBeNull();
+                expect(queryByLabelText("Justify")).toBeNull();
+            });
+
+            it("should parse a pasted alignment that isn't enabled as null", () => {
+                const { editor } = renderEditor(null, someTextAlign);
+
+                editor.commands.setContent(`<p style="text-align: right">Aligned</p>`);
+
+                expect(editor.getJSON().content).toEqual([alignedParagraph(null)]);
+            });
         });
     });
 

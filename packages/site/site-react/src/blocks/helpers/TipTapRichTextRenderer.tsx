@@ -1,4 +1,4 @@
-import { cloneElement, isValidElement, type ReactNode } from "react";
+import { cloneElement, type CSSProperties, isValidElement, type ReactNode } from "react";
 
 import type { TipTapMark, TipTapNode } from "../../blocks.generated";
 
@@ -43,7 +43,8 @@ const defaultTextBlockTags: Record<string, "h1" | "h2" | "h3" | "h4" | "h5" | "h
 const defaultTipTapNodeMapping: Record<string, TipTapNodeHandler> = {
     textBlock: ({ node, children }) => {
         const Tag = defaultTextBlockTags[node.attrs?.textBlock as string] ?? "p";
-        return <Tag>{children}</Tag>;
+        const textAlign = node.attrs?.textAlign as CSSProperties["textAlign"] | null | undefined;
+        return <Tag style={textAlign ? { textAlign } : undefined}>{children}</Tag>;
     },
     bulletList: ({ children }) => <ul>{children}</ul>,
     orderedList: ({ children }) => <ol>{children}</ol>,

@@ -19,7 +19,7 @@ type LaunchesPastFilter = {
     and?: LaunchesPastFilter[];
 };
 
-type Launch = {
+export type Launch = {
     id: string;
     mission_name: string;
     launch_date_local: Date;
@@ -53,22 +53,23 @@ for (let i = 0; i < 100; i += 1) {
 export const launchesPastResultResolver: GraphQLFieldResolver<
     unknown,
     unknown,
-    { limit?: number; offset?: number; sort?: string; order?: "asc" | "desc"; filter?: LaunchesPastFilter }
+    { limit?: number; offset?: number; sort?: string; order?: string; filter?: LaunchesPastFilter }
 > = (parent, args) => {
     const { limit, offset, sort, order, filter } = args;
 
     let launches = [...allLaunches];
 
     if (sort && order) {
+        const isAscending = order.toLowerCase() === "asc";
         launches = launches.sort((a, b) => {
             if (sort === "mission_name") {
-                if (order === "asc") {
+                if (isAscending) {
                     return a.mission_name.localeCompare(b.mission_name);
                 } else {
                     return b.mission_name.localeCompare(a.mission_name);
                 }
             } else {
-                if (order === "asc") {
+                if (isAscending) {
                     return compareAsc(a.launch_date_local, b.launch_date_local);
                 } else {
                     return compareDesc(a.launch_date_local, b.launch_date_local);

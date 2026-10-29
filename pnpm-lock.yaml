@@ -2884,9 +2884,6 @@ importers:
       '@types/node':
         specifier: ^24.19.2
         version: 24.19.2
-      apollo-link-rest:
-        specifier: ^0.9.0
-        version: 0.9.0(@apollo/client@3.14.1(@types/react@19.3.0)(graphql-ws@6.3.0(graphql@16.14.2)(ws@8.22.0))(graphql@16.14.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(subscriptions-transport-ws@0.11.0(graphql@16.14.2)))(graphql@16.14.2)(qs@6.17.0)
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0
@@ -2899,12 +2896,6 @@ importers:
       history:
         specifier: ^4.10.1
         version: 4.10.1
-      qs:
-        specifier: ^6.16.1
-        version: 6.17.0
-      query-string:
-        specifier: ^9.5.1
-        version: 9.5.1
       react:
         specifier: ^19.3.1
         version: 19.3.1
@@ -10546,13 +10537,6 @@ packages:
   apache-arrow@21.2.0:
     resolution: {integrity: sha512-Hxe6Agq26gQOM954qpzYSllJBPJl+e16U5CkfuMUhLrNba+5nKkttIVlflaovN6oaTratqMGAO8H5u/aNhmHWQ==}
     hasBin: true
-
-  apollo-link-rest@0.9.0:
-    resolution: {integrity: sha512-kuXjR56Y12w0TZcqwVaONKlipB6g3Ya1dAy4NMCaylPpNXq6tO+qzQFPUyDJC7B0JoJPIFjxPV2rAet4uGM4UQ==}
-    peerDependencies:
-      '@apollo/client': '>=3'
-      graphql: '>=0.11'
-      qs: '>=6'
 
   append-field@1.0.0:
     resolution: {integrity: sha512-klpgFSWLW1ZEs8svjfb7g4qWY0YS5imI82dTg+QahUvJ8YqAY0P10Uk8tTyh9ZGuYEZEMaeJYCF5BFuX552hsw==}
@@ -28539,12 +28523,6 @@ snapshots:
       flatbuffers: 25.9.23
       json-with-bigint: 3.5.12
       tslib: 2.8.1
-
-  apollo-link-rest@0.9.0(@apollo/client@3.14.1(@types/react@19.3.0)(graphql-ws@6.3.0(graphql@16.14.2)(ws@8.22.0))(graphql@16.14.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(subscriptions-transport-ws@0.11.0(graphql@16.14.2)))(graphql@16.14.2)(qs@6.17.0):
-    dependencies:
-      '@apollo/client': 3.14.1(@types/react@19.3.0)(graphql-ws@6.3.0(graphql@16.14.2)(ws@8.22.0))(graphql@16.14.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(subscriptions-transport-ws@0.11.0(graphql@16.14.2))
-      graphql: 16.14.2
-      qs: 6.17.0
 
   append-field@1.0.0: {}
 

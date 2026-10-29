@@ -182,6 +182,10 @@ The entries import almost all of `src/framework`, and the demo must use the same
 | 31  | Persisted queries Vite plugin (counterpart to site-react's webpack loader)                                                                           | `vitePersistedQueriesPlugin.ts`                                     | #20, #17                                     |
 | 32  | `SitePreviewProvider`                                                                                                                                | `src/util/SitePreviewProvider.tsx`                                  | #25                                          |
 
+### #45 Move the CDN origin check into a middleware
+
+`server.ts` still compares the `x-cdn-origin-check` header with `CDN_ORIGIN_CHECK_SECRET` itself (403 without the right header, copied from the Next.js site), so every project copies it. Move it into a Hono middleware in `@dextinity/site-vite-rsc/server`, e.g. `cdnOriginCheckMiddleware({ secret })`, registered first in the project's app so it also covers the static files served by `staticFilesMiddleware` in production (during development Vite serves its files before the app, where the check isn't needed). Compare in constant time (`crypto.timingSafeEqual`) instead of `!==`. Then `server.ts` only keeps tracing, metrics and `listen`.
+
 ## Library `@dextinity/site-react` (framework-independent, also usable by site-nextjs; needs changesets)
 
 ### #33 Add `PixelImageBlock` and a responsive `Image` with srcset

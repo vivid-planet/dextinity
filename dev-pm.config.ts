@@ -12,6 +12,7 @@ const packageFolderMapping = {
     "@dextinity/brevo-api": "packages/api/brevo-api",
     "@dextinity/site-nextjs": "packages/site/site-nextjs",
     "@dextinity/site-react": "packages/site/site-react",
+    "@dextinity/site-vite-rsc": "packages/site/site-vite-rsc",
 };
 
 const waitOnPackages = (...packages: (keyof typeof packageFolderMapping)[]) => {
@@ -113,6 +114,14 @@ export default defineConfig({
             name: "site-nextjs-codegen-block-types",
             script: "pnpm --filter @dextinity/site-nextjs run generate-block-types:watch",
             group: ["site-nextjs", "cms"],
+            waitOn: [...waitOnPackages("@dextinity/site-react")],
+        },
+
+        //group site-vite-rsc
+        {
+            name: "site-vite-rsc",
+            script: "pnpm --filter @dextinity/site-vite-rsc run dev",
+            group: ["site-vite-rsc", "cms"],
             waitOn: [...waitOnPackages("@dextinity/site-react")],
         },
 
@@ -253,7 +262,7 @@ export default defineConfig({
             name: "demo-site",
             script: "pnpm --filter dextinity-demo-site run dev",
             group: ["demo-site", "demo"],
-            waitOn: [...waitOnPackages("@dextinity/site-react"), "tcp:$API_PORT"],
+            waitOn: [...waitOnPackages("@dextinity/site-react", "@dextinity/site-vite-rsc"), "tcp:$API_PORT"],
         },
         {
             name: "demo-site-codegen",

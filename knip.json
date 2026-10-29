@@ -80,6 +80,9 @@
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["./src/**/*.generated.ts"]
         },
+        "packages/site/site-vite-rsc": {
+            "project": ["./src/**/*.{ts,tsx}"]
+        },
         "packages/mail-react": {
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["./src/**/*.generated.ts"]

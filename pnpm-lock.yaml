@@ -2607,8 +2607,8 @@ importers:
         specifier: ^5.0.5
         version: 5.0.5
       '@types/mjml':
-        specifier: ^4.7.4
-        version: 4.7.4
+        specifier: ^4.18.1
+        version: 4.18.2
       '@types/mjml-browser':
         specifier: ^4.15.0
         version: 4.15.0
@@ -9877,8 +9877,8 @@ packages:
   '@types/mjml-core@4.15.2':
     resolution: {integrity: sha512-Q7SxFXgoX979HP57DEVsRI50TV8x1V4lfCA4Up9AvfINDM5oD/X9ARgfoyX1qS987JCnDLv85JjkqAjt3hZSiQ==}
 
-  '@types/mjml@4.7.4':
-    resolution: {integrity: sha512-vyi1vzWgMzFMwZY7GSZYX0GU0dmtC8vLHwpgk+NWmwbwRSrlieVyJ9sn5elodwUfklJM7yGl0zQeet1brKTWaQ==}
+  '@types/mjml@4.18.2':
+    resolution: {integrity: sha512-lqV9xLRNB0D4u5gCKtBVZG+nbf2KuU41YOO3G/3+cFf7dDhD7k8UowXAk+9kaivfbL/9EFx68ryaVijZYzPwSw==}
 
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
@@ -27711,7 +27711,7 @@ snapshots:
 
   '@types/mjml-core@4.15.2': {}
 
-  '@types/mjml@4.7.4':
+  '@types/mjml@4.18.2':
     dependencies:
       '@types/mjml-core': 4.15.2
 

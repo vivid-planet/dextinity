@@ -34,7 +34,7 @@ Any export may change or be removed at any time, without deprecation notice. Cha
 
 - Props are exported as an interface named `<ComponentName>Props`, never a type alias.
 - The resolved configuration is exported as a type named `<ComponentName>OwnerState`.
-- The component is exported as `<ComponentName>`.
+- The component is exported as `<ComponentName>`, wrapped in `forwardRef`.
 
 ### TSDoc
 
@@ -46,9 +46,9 @@ Keep each comment as close as possible to what it describes: the component comme
 /**
  * Buttons allow users to take actions, and make choices, with a single tap.
  */
-export function Button(props: ButtonProps) {
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(props, ref) {
     // ...
-}
+});
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.

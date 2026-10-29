@@ -1,6 +1,6 @@
 import { useRender } from "@base-ui/react/use-render";
 import { clsx } from "clsx";
-import type { HTMLAttributes, Ref } from "react";
+import { forwardRef, type HTMLAttributes } from "react";
 
 import styles from "./Typography.module.scss";
 
@@ -34,8 +34,6 @@ export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "clas
     element?: TypographyElement;
     /** Added alongside the component's own classes. */
     className?: string;
-    /** Ref forwarded to the root element. */
-    ref?: Ref<HTMLElement>;
     /**
      * Render a custom root element instead of the variant's default.
      *
@@ -51,7 +49,10 @@ export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "clas
  * Renders a single block of text in one of several visual variants, each
  * mapping to a default semantic element.
  */
-export function Typography({ variant = "body", element, className, children, ref, render, ...restProps }: TypographyProps) {
+export const Typography = forwardRef<HTMLElement, TypographyProps>(function Typography(
+    { variant = "body", element, className, children, render, ...restProps },
+    ref,
+) {
     const ownerState: TypographyOwnerState = { variant };
     const tagName = element ?? variantElement[ownerState.variant];
 
@@ -62,4 +63,4 @@ export function Typography({ variant = "body", element, className, children, ref
         defaultTagName: tagName,
         props: { ...restProps, className: clsx(styles.root, className), children },
     });
-}
+});

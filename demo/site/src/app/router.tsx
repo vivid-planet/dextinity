@@ -2,29 +2,29 @@ import { handleError, noStoreCacheControl, renderPage } from "@dextinity/site-vi
 import type { ContentScope } from "@src/site-configs";
 import { getSiteContext } from "@src/util/siteContext";
 import { type Context, Hono } from "hono";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 
-import PagePage from "./[language]/[[...path]]/page";
-import LanguageLayout, { getLayoutLanguage } from "./[language]/layout";
-import NewsDetailPage from "./[language]/news/[slug]/page";
-import NewsIndexPage from "./[language]/news/page";
-import SiteNotFound from "./[language]/not-found";
-import ProductDetailPage from "./[language]/product/[slug]/page";
-import ProductListPage from "./[language]/product/page";
+import { DocumentPage } from "./[language]/[[...path]]/DocumentPage";
+import { getLayoutLanguage, LanguageLayout } from "./[language]/LanguageLayout";
+import { NewsDetailPage } from "./[language]/news/[slug]/NewsDetailPage";
+import { NewsIndexPage } from "./[language]/news/NewsIndexPage";
+import { ProductDetailPage } from "./[language]/product/[slug]/ProductDetailPage";
+import { ProductListPage } from "./[language]/product/ProductListPage";
+import { SiteNotFound } from "./[language]/SiteNotFound";
 import { loadMailsEntry } from "./api/loadMailsEntry";
 import { welcomeEmailRoute } from "./api/welcome-email/route";
-import BrevoEmailCampaignBlockPreviewPage from "./block-preview/[domain]/[language]/brevo-email-campaign/page";
-import FooterBlockPreviewPage from "./block-preview/[domain]/[language]/footer/page";
-import BlockPreviewLanguageLayout from "./block-preview/[domain]/[language]/layout";
-import MainMenuBlockPreviewPage from "./block-preview/[domain]/[language]/main-menu/page";
-import PageBlockPreviewPage from "./block-preview/[domain]/[language]/page/page";
-import StageBlockPreviewPage from "./block-preview/[domain]/[language]/stage/page";
-import WelcomeEmailBlockPreviewPage from "./block-preview/[domain]/[language]/welcome-email/page";
-import BlockPreviewLayout from "./block-preview/[domain]/layout";
-import ErrorPage from "./error";
+import { BlockPreviewLanguageLayout } from "./block-preview/[domain]/[language]/BlockPreviewLanguageLayout";
+import { BrevoEmailCampaignBlockPreviewPage } from "./block-preview/[domain]/[language]/brevo-email-campaign/BrevoEmailCampaignBlockPreviewPage";
+import { FooterBlockPreviewPage } from "./block-preview/[domain]/[language]/footer/FooterBlockPreviewPage";
+import { MainMenuBlockPreviewPage } from "./block-preview/[domain]/[language]/main-menu/MainMenuBlockPreviewPage";
+import { PageBlockPreviewPage } from "./block-preview/[domain]/[language]/page/PageBlockPreviewPage";
+import { StageBlockPreviewPage } from "./block-preview/[domain]/[language]/stage/StageBlockPreviewPage";
+import { WelcomeEmailBlockPreviewPage } from "./block-preview/[domain]/[language]/welcome-email/WelcomeEmailBlockPreviewPage";
+import { BlockPreviewLayout } from "./block-preview/[domain]/BlockPreviewLayout";
+import { ErrorPage } from "./ErrorPage";
 import { graphQLRoute } from "./graphql/route";
-import RootLayout from "./layout";
-import RootNotFound from "./not-found";
+import { RootLayout } from "./RootLayout";
+import { RootNotFound } from "./RootNotFound";
 import { sitemapRoute } from "./sitemap";
 
 // Same as Next.js for pages revalidated every 7.5 minutes
@@ -41,8 +41,9 @@ async function renderSitePage(c: Context, renderContent: (params: ContentScope) 
     return renderPage(c, {
         root: (
             <RootLayout lang={getLayoutLanguage(params)}>
-                <LanguageLayout domain={domain} language={language}>
-                    {renderContent(params)}
+                {/* Like Next.js, the layout remounts when the language changes and the page on each path change, so that they don't keep the state of the previous page */}
+                <LanguageLayout key={language} domain={domain} language={language}>
+                    <Fragment key={c.req.path}>{renderContent(params)}</Fragment>
                 </LanguageLayout>
             </RootLayout>
         ),
@@ -141,7 +142,7 @@ siteRoutes.get("/:language/product/:slug", (c) => renderSitePage(c, (scope) => <
 siteRoutes.get("/:language/*", (c) => {
     const [, , ...segments] = c.req.path.split("/");
     const path = segments.filter((segment) => segment !== "").map((segment) => decodeURIComponent(segment));
-    return renderSitePage(c, (params) => <PagePage {...params} path={path} />);
+    return renderSitePage(c, (params) => <DocumentPage {...params} path={path} />);
 });
 
 siteRoutes.notFound(renderRootNotFoundPage);

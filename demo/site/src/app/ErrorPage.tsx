@@ -1,5 +1,5 @@
 // Doesn't use the language layout, its data may be what failed to load
-export default function ErrorPage() {
+export function ErrorPage() {
     return (
         <>
             <title>Something went wrong</title>

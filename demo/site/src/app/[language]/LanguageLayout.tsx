@@ -15,13 +15,13 @@ import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { SiteConfigProvider } from "@src/util/SiteConfigProvider";
 import type { PropsWithChildren } from "react";
 
-import type { GQLLayoutQuery, GQLLayoutQueryVariables } from "./layout.generated";
+import type { GQLLayoutQuery, GQLLayoutQueryVariables } from "./LanguageLayout.generated";
 
 export function getLayoutLanguage({ domain, language }: ContentScope) {
     return getSiteConfigForDomain(domain).scope.languages.includes(language) ? language : "en";
 }
 
-export default async function Layout({ children, ...params }: PropsWithChildren<ContentScope>) {
+export async function LanguageLayout({ children, ...params }: PropsWithChildren<ContentScope>) {
     const { domain } = params;
     const siteConfig = getSiteConfigForDomain(domain);
     const language = getLayoutLanguage(params);

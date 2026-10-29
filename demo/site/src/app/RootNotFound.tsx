@@ -1,6 +1,6 @@
 import { Link } from "@dextinity/site-vite-rsc";
 
-export default function NotFound404() {
+export function RootNotFound() {
     return (
         <>
             <title>Page not found</title>

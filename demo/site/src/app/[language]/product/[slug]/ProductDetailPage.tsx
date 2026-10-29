@@ -5,9 +5,9 @@ import type { ContentScope } from "@src/site-configs";
 import { graphQLFetch } from "@src/util/graphQLClient";
 
 import { Content, productDetailContentFragment } from "./Content";
-import type { GQLProductDetailPageQuery, GQLProductDetailPageQueryVariables } from "./page.generated";
+import type { GQLProductDetailPageQuery, GQLProductDetailPageQueryVariables } from "./ProductDetailPage.generated";
 
-export default async function ProductDetailPage({ scope, slug }: { scope: ContentScope; slug: string }) {
+export async function ProductDetailPage({ scope, slug }: { scope: ContentScope; slug: string }) {
     const data = await graphQLFetch<GQLProductDetailPageQuery, GQLProductDetailPageQueryVariables>(
         gql`
             query ProductDetailPage($slug: String!) {

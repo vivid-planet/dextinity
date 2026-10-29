@@ -8,7 +8,7 @@ import { createSitePath } from "@src/util/createSitePath";
 import { graphQLFetch } from "@src/util/graphQLClient";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 
-import type { GQLDocumentTypeQuery, GQLDocumentTypeQueryVariables } from "./page.generated";
+import type { GQLDocumentTypeQuery, GQLDocumentTypeQueryVariables } from "./DocumentPage.generated";
 
 const documentTypeQuery = gql`
     query DocumentType(
@@ -53,7 +53,7 @@ async function fetchPageTreeNode({ domain, language, path: pathParam }: Params) 
     );
 }
 
-export default async function Page(params: Params) {
+export async function DocumentPage(params: Params) {
     const { domain, language } = params;
     const scope = { domain, language };
     const data = await fetchPageTreeNode(params);

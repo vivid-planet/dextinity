@@ -4,7 +4,7 @@ import { fetchNewsList } from "@src/news/NewsPage.loader";
 import type { ContentScope } from "@src/site-configs";
 import { graphQLFetch } from "@src/util/graphQLClient";
 
-export default async function NewsIndexPage({ domain, language }: ContentScope) {
+export async function NewsIndexPage({ domain, language }: ContentScope) {
     const initialData = await fetchNewsList({ graphQLFetch, scope: { domain, language }, limit: 2 });
 
     return (

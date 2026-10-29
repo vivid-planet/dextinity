@@ -7,9 +7,9 @@ import { graphQLFetch } from "@src/util/graphQLClient";
 
 import { Content } from "./content";
 import { fragment } from "./fragment";
-import type { GQLNewsDetailPageQuery, GQLNewsDetailPageQueryVariables } from "./page.generated";
+import type { GQLNewsDetailPageQuery, GQLNewsDetailPageQueryVariables } from "./NewsDetailPage.generated";
 
-export default async function NewsDetailPage({ domain, language, slug }: ContentScope & { slug: string }) {
+export async function NewsDetailPage({ domain, language, slug }: ContentScope & { slug: string }) {
     const scope = { domain, language };
     const data = await graphQLFetch<GQLNewsDetailPageQuery, GQLNewsDetailPageQueryVariables>(
         gql`

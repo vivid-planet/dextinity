@@ -3,7 +3,7 @@ import { Link } from "@dextinity/site-vite-rsc";
 import { createSitePath } from "@src/util/createSitePath";
 import { graphQLFetch } from "@src/util/graphQLClient";
 
-import type { GQLProductListPageQuery, GQLProductListPageQueryVariables } from "./page.generated";
+import type { GQLProductListPageQuery, GQLProductListPageQueryVariables } from "./ProductListPage.generated";
 
 const productsPerRequest = 100;
 
@@ -38,7 +38,7 @@ async function fetchAllPublishedProducts() {
     return products;
 }
 
-export default async function ProductListPage({ language }: { language: string }) {
+export async function ProductListPage({ language }: { language: string }) {
     const products = await fetchAllPublishedProducts();
 
     return (

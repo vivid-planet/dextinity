@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 
 const cachingFetch = createFetchInMemoryCache(fetch);
 
-export default withBlockPreview(() => {
+export const PageBlockPreviewPage = withBlockPreview(() => {
     const iFrameBridge = useIFrameBridge();
 
     const [blockData, setBlockData] = useState<PageContentBlockData>();

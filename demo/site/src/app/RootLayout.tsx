@@ -10,7 +10,7 @@ import animateBoxInOnScrollStyles from "@src/util/animations/AnimateBoxInOnScrol
 import { ErrorHandler } from "@src/util/ErrorHandler";
 import type { PropsWithChildren } from "react";
 
-export default function RootLayout({ children, lang }: PropsWithChildren<{ lang?: string }>) {
+export function RootLayout({ children, lang }: PropsWithChildren<{ lang?: string }>) {
     return (
         <html lang={lang}>
             <head>

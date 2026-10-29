@@ -105,9 +105,18 @@ server.on("request", await createRequestListener({ dev: process.env.NODE_ENV !==
 server.listen(3000);
 ```
 
+**Site preview** (`@dextinity/site-vite-rsc/server`)
+
+`sitePreviewRoute` starts the site preview of the admin, `sitePreviewMiddleware` reads the site preview and the block preview of each request and sets the visibility. Both use the `SITE_PREVIEW_SECRET` environment variable. In the preview, the project resolves its site from `getPreviewScope()` instead of the host:
+
+```ts
+app.get("/site-preview", sitePreviewRoute);
+app.use(sitePreviewMiddleware, siteMiddleware);
+```
+
 **Request context** (`@dextinity/site-vite-rsc/server`)
 
-`getRequest()`, `isRscRequest()`, `getCookie()`, `getVisibility()` and `getSitePreview()` are available while handling a request. The project's data of the request, e.g. the scope of the site, is set with `setRequestData()` and typed with module augmentation:
+`getRequest()`, `isRscRequest()`, `getCookie()`, `getVisibility()`, `getSitePreview()` and `getPreviewScope()` are available while handling a request. The project's data of the request, e.g. the scope of the site, is set with `setRequestData()` and typed with module augmentation:
 
 ```ts
 declare module "@dextinity/site-vite-rsc/server" {

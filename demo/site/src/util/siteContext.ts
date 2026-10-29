@@ -1,12 +1,4 @@
-import {
-    getRequestData,
-    getSitePreview,
-    getVisibility,
-    setPreview,
-    setRequestData,
-    type SitePreview,
-    type Visibility,
-} from "@dextinity/site-vite-rsc/server";
+import { getRequestData, getSitePreview, getVisibility, setRequestData, type SitePreview, type Visibility } from "@dextinity/site-vite-rsc/server";
 
 declare module "@dextinity/site-vite-rsc/server" {
     interface RequestContextData {
@@ -23,9 +15,8 @@ type SiteContext = {
     sitePreview?: SitePreview;
 };
 
-export function setSiteContext({ domain, visibility, sitePreview }: SiteContext) {
+export function setSiteContext({ domain }: Pick<SiteContext, "domain">) {
     setRequestData("domain", domain);
-    setPreview({ visibility, sitePreview });
 }
 
 export function hasSiteContext() {

@@ -56,6 +56,7 @@
         "@vitejs/plugin-react": "^6.1.2",
         "@vitejs/plugin-rsc": "0.5.38",
         "ioredis": "^5.11.1",
+        "jose": "^5.10.0",
         "lru-cache": "^11.5.3",
         "rsc-html-stream": "^0.0.8"
     },

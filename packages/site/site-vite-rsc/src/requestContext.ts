@@ -29,6 +29,9 @@ type RequestContext = {
     visibility?: Visibility;
     /** Set while the site is opened in the site preview of the admin */
     sitePreview?: SitePreview;
+    /** Scope of the block preview or the site preview */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    previewScope?: Record<string, any>;
     data: Partial<RequestContextData>;
 };
 
@@ -58,10 +61,20 @@ export function getCookie(name: string): string | undefined {
     return parse(getRequest().headers.get("cookie") ?? "", name)[name];
 }
 
-export function setPreview({ visibility, sitePreview }: { visibility: Visibility; sitePreview?: SitePreview }) {
+export function setPreview({
+    visibility,
+    sitePreview,
+    scope,
+}: {
+    visibility: Visibility;
+    sitePreview?: SitePreview;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    scope?: Record<string, any>;
+}) {
     const context = getRequestContext();
     context.visibility = visibility;
     context.sitePreview = sitePreview;
+    context.previewScope = scope;
 }
 
 // Falls back to "default" outside of requests, e.g. in the SSR environment, which has its own module instance
@@ -71,6 +84,14 @@ export function getVisibility(): Visibility {
 
 export function getSitePreview(): SitePreview | undefined {
     return getRequestContext().sitePreview;
+}
+
+/**
+ * In the block preview and the site preview, the site is defined by this scope instead of the host
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getPreviewScope(): Record<string, any> | undefined {
+    return getRequestContext().previewScope;
 }
 
 export function setRequestData<Key extends keyof RequestContextData>(key: Key, value: RequestContextData[Key]) {

@@ -13,6 +13,7 @@ export { handleError } from "./handleError.js";
 export { renderPage } from "./render.js";
 export {
     getCookie,
+    getPreviewScope,
     getRequest,
     getRequestData,
     getSitePreview,
@@ -25,5 +26,6 @@ export {
     type SitePreview,
     type Visibility,
 } from "./requestContext.js";
+export { sitePreviewMiddleware, sitePreviewRoute } from "./sitePreview.js";
 export { staticFilesMiddleware } from "./staticFiles.js";
 export { trailingSlashRedirectMiddleware } from "./trailingSlashRedirect.js";

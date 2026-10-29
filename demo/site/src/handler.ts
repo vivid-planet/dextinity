@@ -1,6 +1,8 @@
 import {
     errorResponseCacheControlMiddleware,
     handleError,
+    sitePreviewMiddleware,
+    sitePreviewRoute,
     staticFilesMiddleware,
     trailingSlashRedirectMiddleware,
 } from "@dextinity/site-vite-rsc/server";
@@ -9,7 +11,6 @@ import { statusRoute } from "@src/app/api/status/route";
 import { damRoute } from "@src/app/dam/route";
 import { robotsRoute } from "@src/app/robots";
 import { blockPreviewRoutes, mailRoutes, renderRootNotFoundPage, siteRoutes } from "@src/app/router";
-import { sitePreviewRoute } from "@src/app/site-preview/route";
 import { Hono } from "hono";
 
 import { contentSecurityPolicyHeadersMiddleware } from "./middleware/contentSecurityPolicyHeaders";
@@ -41,7 +42,7 @@ app.get("/site-preview", sitePreviewRoute);
 app.route("/block-preview", blockPreviewRoutes);
 app.all("/block-preview/*", renderRootNotFoundPage);
 
-app.use(siteContextMiddleware, previewDomainMiddleware, redirectToMainHostMiddleware);
+app.use(sitePreviewMiddleware, siteContextMiddleware, previewDomainMiddleware, redirectToMainHostMiddleware);
 
 // The site context is available from here on
 app.get("/admin", adminRoute);

@@ -1,7 +1,5 @@
 import type { PublicSiteConfig } from "@src/site-configs";
 
-import type { PreviewParams } from "./sitePreview";
-
 export function getHostByHeaders(headers: Headers) {
     const host = headers.get("x-forwarded-host") ?? headers.get("host");
     if (!host) {
@@ -19,11 +17,12 @@ export function getSiteConfigForDomain(domain: string) {
 }
 
 /**
- * @param previewParams In the preview, the site is defined by the scope of the preview instead of the host
+ * @param previewScope In the preview, the site is defined by the scope of the preview instead of the host
  */
-export function getSiteConfigForHost(host: string, previewParams: PreviewParams | null) {
-    if (previewParams?.scope) {
-        const siteConfig = getSiteConfigs().find((siteConfig) => siteConfig.scope.domain === previewParams.scope.domain);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getSiteConfigForHost(host: string, previewScope?: Record<string, any>) {
+    if (previewScope) {
+        const siteConfig = getSiteConfigs().find((siteConfig) => siteConfig.scope.domain === previewScope.domain);
         if (siteConfig) {
             return siteConfig;
         }

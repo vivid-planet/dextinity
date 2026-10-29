@@ -47,8 +47,12 @@
     },
     "dependencies": {
         "@dextinity/site-react": "workspace:*",
+        "clsx": "^2.1.1",
+        "fast-equals": "^6.2.1",
         "jose": "^5.10.0",
-        "server-only": "^0.0.1"
+        "scroll-into-view-if-needed": "^3.1.0",
+        "server-only": "^0.0.1",
+        "usehooks-ts": "^3.1.1"
     },
     "devDependencies": {
         "@dextinity/cli": "workspace:*",

@@ -1,0 +1,35 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Intro" />
+
+# @dextinity/ui
+
+`@dextinity/ui` is a UI-only React component library, built on `@base-ui/react` and CSS Modules.
+
+## Experimental
+
+This package is experimental. Any component, prop, or other export may change or be removed at any time, without notice.
+
+## Installation and setup
+
+Install the package:
+
+```sh
+npm install @dextinity/ui
+```
+
+Import the styles once, wrap the application in `Theme`, and import the components from the package root:
+
+```tsx
+import "@dextinity/ui/css";
+
+import { Button, Theme } from "@dextinity/ui";
+
+export function App() {
+    return (
+        <Theme>
+            <Button>Save</Button>
+        </Theme>
+    );
+}
+```

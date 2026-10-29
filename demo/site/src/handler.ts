@@ -1,11 +1,10 @@
+import { handleError, trailingSlashRedirectMiddleware } from "@dextinity/site-vite-rsc/server";
 import { adminRoute } from "@src/app/admin/route";
 import { statusRoute } from "@src/app/api/status/route";
 import { damRoute } from "@src/app/dam/route";
 import { robotsRoute } from "@src/app/robots";
 import { blockPreviewRoutes, mailRoutes, renderRootNotFoundPage, siteRoutes } from "@src/app/router";
 import { sitePreviewRoute } from "@src/app/site-preview/route";
-import { handleError } from "@src/framework/handleError";
-import { trailingSlashRedirectMiddleware } from "@src/framework/trailingSlashRedirect";
 import { Hono } from "hono";
 
 import { contentSecurityPolicyHeadersMiddleware } from "./middleware/contentSecurityPolicyHeaders";

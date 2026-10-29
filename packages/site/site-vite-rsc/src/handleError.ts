@@ -1,7 +1,7 @@
 import type { ErrorHandler } from "hono";
 
-import { getNavigationErrorDigest, parseRedirectDigest } from "./navigation";
-import { reportError } from "./reportError";
+import { getNavigationErrorDigest, parseRedirectDigest } from "./navigation.js";
+import { reportError } from "./reportError.js";
 
 export const handleError: ErrorHandler = (error, c) => {
     const digest = getNavigationErrorDigest(error);

@@ -1,11 +1,11 @@
 import { gql } from "@dextinity/site-react";
 import type { ExternalLinkBlockData, InternalLinkBlockData, NewsLinkBlockData, RedirectsLinkBlockData } from "@src/blocks.generated";
-import { hasSiteContext } from "@src/framework/requestContext";
 import type { GQLPageTreeNodeScope, GQLRedirectScopeInput } from "@src/graphql.generated";
 import type { PublicSiteConfig } from "@src/site-configs";
 import { createSitePath } from "@src/util/createSitePath";
 import { createGraphQLFetchMiddleware } from "@src/util/graphQLClientMiddleware";
 import { getHostByHeaders, getSiteConfigs } from "@src/util/siteConfig";
+import { hasSiteContext } from "@src/util/siteContext";
 import { createMiddleware } from "hono/factory";
 
 import { memoryCache } from "./cache";

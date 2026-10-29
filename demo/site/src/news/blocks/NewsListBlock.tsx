@@ -1,6 +1,6 @@
 import { type PropsWithData, withPreview } from "@dextinity/site-react";
+import { Link } from "@dextinity/site-vite-rsc";
 import type { NewsListBlockData } from "@src/blocks.generated";
-import { Link } from "@src/framework/Link";
 import { createSitePath } from "@src/util/createSitePath";
 
 import type { LoadedData } from "./NewsListBlock.loader";

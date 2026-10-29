@@ -1,6 +1,6 @@
 import { gql } from "@dextinity/site-react";
+import { notFound, redirect } from "@dextinity/site-vite-rsc";
 import type { DamFileDownloadLinkBlockData, ExternalLinkBlockData, InternalLinkBlockData } from "@src/blocks.generated";
-import { notFound, redirect } from "@src/framework/navigation";
 import type { GQLPageTreeNodeScopeInput } from "@src/graphql.generated";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import type { JSX } from "react";

@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
 
-import { getNavigationErrorDigest, isNotFoundDigest, notFound, parseRedirectDigest, redirect } from "./navigation";
+import { getNavigationErrorDigest, isNotFoundDigest, notFound, parseRedirectDigest, redirect } from "./navigation.js";
 
 function getThrownDigest(callback: () => unknown) {
     try {

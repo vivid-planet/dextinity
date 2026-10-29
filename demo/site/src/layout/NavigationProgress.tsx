@@ -1,6 +1,6 @@
 "use client";
 
-import { useNavigationPending } from "@src/framework/RouterProvider";
+import { useNavigationPending } from "@dextinity/site-vite-rsc";
 
 import styles from "./NavigationProgress.module.scss";
 

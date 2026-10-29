@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { isClientNavigationClick } from "./isClientNavigationClick";
+import { isClientNavigationClick } from "./isClientNavigationClick.js";
 
 function createLink(href: string, attributes: Record<string, string> = {}) {
     const link = document.createElement("a");

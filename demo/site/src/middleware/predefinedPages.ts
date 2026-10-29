@@ -1,9 +1,9 @@
 import { gql } from "@dextinity/site-react";
 import { siteRoutes } from "@src/app/router";
 import { predefinedPagePaths } from "@src/documents/predefinedPages/predefinedPagePaths";
-import { getSiteContext } from "@src/framework/requestContext";
 import { createGraphQLFetchMiddleware } from "@src/util/graphQLClientMiddleware";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
+import { getSiteContext } from "@src/util/siteContext";
 import { createMiddleware } from "hono/factory";
 
 import { memoryCache } from "./cache";

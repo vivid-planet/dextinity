@@ -1,6 +1,6 @@
 import { type PropsWithData, withPreview } from "@dextinity/site-react";
+import { Link } from "@dextinity/site-vite-rsc";
 import type { PageTreeIndexBlockData } from "@src/blocks.generated";
-import { Link } from "@src/framework/Link";
 import { PageLayout } from "@src/layout/PageLayout";
 import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import { createSitePath } from "@src/util/createSitePath";

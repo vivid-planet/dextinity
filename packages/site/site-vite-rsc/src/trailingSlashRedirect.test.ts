@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
 
-import { getPathnameWithoutTrailingSlash } from "./trailingSlashRedirect";
+import { getPathnameWithoutTrailingSlash } from "./trailingSlashRedirect.js";
 
 describe("getPathnameWithoutTrailingSlash", () => {
     it("removes trailing slashes", () => {

@@ -1,4 +1,4 @@
-import { Link } from "@src/framework/Link";
+import { Link } from "@dextinity/site-vite-rsc";
 import type { ContentScope } from "@src/site-configs";
 
 export default function NotFound404({ scope }: { scope: ContentScope }) {

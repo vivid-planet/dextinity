@@ -1,4 +1,4 @@
-import { noStoreCacheControl } from "@src/framework/cacheControl";
+import { noStoreCacheControl } from "@dextinity/site-vite-rsc/server";
 import { createMiddleware } from "hono/factory";
 
 export const errorResponseCacheControlMiddleware = createMiddleware(async (c, next) => {

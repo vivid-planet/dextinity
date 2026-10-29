@@ -1,7 +1,6 @@
 "use client";
+import { Link, usePathname } from "@dextinity/site-vite-rsc";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
-import { Link } from "@src/framework/Link";
-import { usePathname } from "@src/framework/RouterProvider";
 import { createSitePath } from "@src/util/createSitePath";
 import type { JSX, PropsWithChildren } from "react";
 

@@ -5,7 +5,7 @@ import {
     type SitePreviewIFrameLocationMessage,
     SitePreviewIFrameMessageType,
 } from "@dextinity/site-react";
-import { usePathname, useSearchParams } from "@src/framework/RouterProvider";
+import { usePathname, useSearchParams } from "@dextinity/site-vite-rsc";
 import { type PropsWithChildren, useEffect } from "react";
 
 export function SitePreviewProvider({ children }: PropsWithChildren) {

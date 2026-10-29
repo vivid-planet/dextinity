@@ -1,5 +1,5 @@
 import { gql } from "@dextinity/site-react";
-import { Link } from "@src/framework/Link";
+import { Link } from "@dextinity/site-vite-rsc";
 import { createSitePath } from "@src/util/createSitePath";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 

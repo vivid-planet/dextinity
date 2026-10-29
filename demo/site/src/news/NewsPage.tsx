@@ -1,7 +1,6 @@
 "use client";
+import { Link, usePathname } from "@dextinity/site-vite-rsc";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
-import { Link } from "@src/framework/Link";
-import { usePathname } from "@src/framework/RouterProvider";
 import { createBrowserGraphQLFetch } from "@src/util/browserGraphQLClient";
 import { useState } from "react";
 import { FormattedDate } from "react-intl";

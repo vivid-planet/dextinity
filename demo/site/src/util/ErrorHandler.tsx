@@ -1,7 +1,7 @@
 "use client";
 
 import { ErrorHandlerProvider } from "@dextinity/site-react";
-import { reportError } from "@src/framework/reportError";
+import { reportError } from "@dextinity/site-vite-rsc";
 import type { ErrorInfo, PropsWithChildren } from "react";
 
 export function ErrorHandler({ children }: PropsWithChildren) {

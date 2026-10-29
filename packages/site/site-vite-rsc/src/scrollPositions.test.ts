@@ -7,7 +7,7 @@ import {
     loadPersistedScrollPositions,
     persistScrollPositions,
     rememberScrollPosition,
-} from "./scrollPositions";
+} from "./scrollPositions.js";
 
 describe("getHistoryKey", () => {
     it("returns the key of a history state", () => {

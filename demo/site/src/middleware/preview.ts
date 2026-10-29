@@ -1,5 +1,5 @@
-import { hasSiteContext } from "@src/framework/requestContext";
 import { getHostByHeaders } from "@src/util/siteConfig";
+import { hasSiteContext } from "@src/util/siteContext";
 import { createMiddleware } from "hono/factory";
 
 export const previewDomainMiddleware = createMiddleware(async (c, next) => {

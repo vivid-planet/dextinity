@@ -7,9 +7,6 @@ export default defineConfig([
     globalIgnores([
         "**/**/*.generated.ts",
         "dist/**",
-        "e2e/fixture/dist/**",
-        "test-results/**",
-        "playwright-report/**",
         "lang/**",
         "lang-compiled/**",
         "lang-extracted/**",

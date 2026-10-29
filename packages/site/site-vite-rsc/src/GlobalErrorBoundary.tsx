@@ -1,9 +1,10 @@
 "use client";
+/* eslint-disable @calm/react-intl/missing-formatted-message, react/jsx-no-literals -- Replaces the whole document, outside of the site's providers like react-intl */
 
 import { Component, type PropsWithChildren } from "react";
 
-import { getNavigationErrorDigest, isNotFoundDigest, parseRedirectDigest } from "./navigation";
-import { reportError } from "./reportError";
+import { getNavigationErrorDigest, isNotFoundDigest, parseRedirectDigest } from "./navigation.js";
+import { reportError } from "./reportError.js";
 
 type Props = PropsWithChildren<{
     /** The boundary is reset when the key changes, e.g. after navigating to another page */

@@ -1,7 +1,7 @@
 "use client";
 import type { PropsWithData } from "@dextinity/site-react";
+import { Link } from "@dextinity/site-vite-rsc";
 import type { InternalLinkBlockData } from "@src/blocks.generated";
-import { Link } from "@src/framework/Link";
 import type { GQLPageTreeNodeScope } from "@src/graphql.generated";
 import { createSitePath } from "@src/util/createSitePath";
 import type { AnchorHTMLAttributes, PropsWithChildren } from "react";

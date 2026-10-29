@@ -7,9 +7,6 @@
 
 # testing
 /coverage
-/test-results
-/playwright-report
-/e2e/fixture/dist
 
 # production
 /build

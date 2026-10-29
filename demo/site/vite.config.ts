@@ -7,13 +7,7 @@ import { persistedQueriesPlugin } from "./vitePersistedQueriesPlugin.ts";
 
 export default defineConfig({
     plugins: [
-        dextinitySite({
-            entries: {
-                rsc: "./src/framework/entry.rsc.tsx",
-                ssr: "./src/framework/entry.ssr.tsx",
-                client: "./src/framework/entry.browser.tsx",
-            },
-        }),
+        dextinitySite({ app: "./src/handler.ts" }),
         persistedQueriesPlugin({ persistedQueriesPath: "dist/persisted-queries.json", include: resolve(import.meta.dirname, "src") }),
     ],
     resolve: {

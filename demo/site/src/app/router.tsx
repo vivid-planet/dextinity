@@ -1,8 +1,6 @@
-import { noStoreCacheControl } from "@src/framework/cacheControl";
-import { handleError } from "@src/framework/handleError";
-import { renderPage } from "@src/framework/render";
-import { getSiteContext } from "@src/framework/requestContext";
+import { handleError, noStoreCacheControl, renderPage } from "@dextinity/site-vite-rsc/server";
 import type { ContentScope } from "@src/site-configs";
+import { getSiteContext } from "@src/util/siteContext";
 import { type Context, Hono } from "hono";
 import type { ReactNode } from "react";
 

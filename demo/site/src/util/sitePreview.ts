@@ -1,5 +1,5 @@
 import type { PreviewData } from "@dextinity/site-react";
-import { getCookie, getRequest } from "@src/framework/requestContext";
+import { getCookie, getRequest } from "@dextinity/site-vite-rsc/server";
 import { errors, jwtVerify, SignJWT } from "jose";
 
 export type PreviewParams = {

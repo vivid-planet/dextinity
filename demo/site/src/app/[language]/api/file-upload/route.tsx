@@ -1,7 +1,7 @@
-import { getSiteContext } from "@src/framework/requestContext";
 import { acceptedFileTypes, maxFileSizeBytes } from "@src/util/fileUpload";
 import { assessRecaptchaToken } from "@src/util/recaptcha/assessRecaptchaToken";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
+import { getSiteContext } from "@src/util/siteContext";
 import type { Context } from "hono";
 
 export async function fileUploadRoute(c: Context) {

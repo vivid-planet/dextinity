@@ -1,6 +1,6 @@
 import { persistedQueryRoute } from "@dextinity/site-react/server";
 import { SYSTEM_USER_NAME } from "@src/auth/constants";
-import { getSiteContext } from "@src/framework/requestContext";
+import { getSiteContext } from "@src/util/siteContext";
 import type { Context } from "hono";
 
 export async function graphQLRoute(c: Context) {

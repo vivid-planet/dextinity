@@ -1,5 +1,5 @@
 import { gql } from "@dextinity/site-react";
-import { notFound } from "@src/framework/navigation";
+import { notFound } from "@dextinity/site-vite-rsc";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 
 import { Content, productDetailContentFragment } from "./Content";

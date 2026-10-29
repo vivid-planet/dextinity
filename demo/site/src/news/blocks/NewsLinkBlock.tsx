@@ -1,6 +1,6 @@
 import type { PropsWithData } from "@dextinity/site-react";
+import { Link } from "@dextinity/site-vite-rsc";
 import type { NewsLinkBlockData } from "@src/blocks.generated";
-import { Link } from "@src/framework/Link";
 import { createSitePath } from "@src/util/createSitePath";
 import type { AnchorHTMLAttributes, JSX, PropsWithChildren } from "react";
 

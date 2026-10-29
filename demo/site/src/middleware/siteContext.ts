@@ -1,5 +1,6 @@
-import { setSiteContext, type Visibility } from "@src/framework/requestContext";
+import type { Visibility } from "@dextinity/site-vite-rsc/server";
 import { getHostByHeaders, getSiteConfigForHost } from "@src/util/siteConfig";
+import { setSiteContext } from "@src/util/siteContext";
 import { getPreviewParams } from "@src/util/sitePreview";
 import { createMiddleware } from "hono/factory";
 

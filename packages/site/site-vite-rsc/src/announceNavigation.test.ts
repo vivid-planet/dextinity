@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { announceNavigation, setUpNavigationAnnouncer } from "./announceNavigation";
+import { announceNavigation, setUpNavigationAnnouncer } from "./announceNavigation.js";
 
 function getAnnouncement() {
     return document.querySelector("[aria-live]")?.textContent;

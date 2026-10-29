@@ -2,8 +2,8 @@
 
 import type { ComponentProps, MouseEvent } from "react";
 
-import { isClientNavigationClick } from "./isClientNavigationClick";
-import { useRouter } from "./RouterProvider";
+import { isClientNavigationClick } from "./isClientNavigationClick.js";
+import { useRouter } from "./RouterProvider.js";
 
 type LinkProps = ComponentProps<"a"> & {
     href: string;

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { requestTypes } from "./helpers";
+import { requestTypes } from "./helpers.js";
 
 for (const { name, prefix } of requestTypes) {
     test.describe(name, () => {

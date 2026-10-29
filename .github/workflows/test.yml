@@ -55,6 +55,10 @@ jobs:
 
             - uses: ./.github/actions/setup
 
+            # The test app of @dextinity/site-vite-rsc runs the package's build
+            - name: Build packages for the e2e tests
+              run: pnpm --filter '@dextinity/site-vite-rsc...' run build
+
             - name: Test (e2e)
               run: pnpm run test:e2e
 

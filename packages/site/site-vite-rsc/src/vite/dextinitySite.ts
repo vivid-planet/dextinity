@@ -1,19 +1,49 @@
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import react from "@vitejs/plugin-react";
 import rsc from "@vitejs/plugin-rsc";
 import type { Plugin, PluginOption } from "vite";
 
 const packageName = "@dextinity/site-vite-rsc";
+const appModuleId = "virtual:dextinity-site/app";
 
 export type DextinitySiteOptions = {
-    /** The RSC, SSR and browser entries of the site */
-    entries: { rsc: string; ssr: string; client: string };
+    /** The module exporting the Hono app of the site as `app`, relative to the Vite root */
+    app: string;
 };
 
 /**
  * Vite plugins for a Dextinity site with React Server Components
  */
-export function dextinitySite({ entries }: DextinitySiteOptions): PluginOption[] {
-    return [rsc({ entries }), react(), dextinitySiteConfig()];
+export function dextinitySite({ app }: DextinitySiteOptions): PluginOption[] {
+    return [
+        rsc({
+            entries: {
+                rsc: fileURLToPath(new URL("../entry.rsc.js", import.meta.url)),
+                ssr: fileURLToPath(new URL("../entry.ssr.js", import.meta.url)),
+                client: fileURLToPath(new URL("../entry.browser.js", import.meta.url)),
+            },
+        }),
+        react(),
+        dextinitySiteConfig(),
+        dextinitySiteApp(app),
+    ];
+}
+
+function dextinitySiteApp(app: string): Plugin {
+    let root: string;
+    return {
+        name: `${packageName}:app`,
+        configResolved(config) {
+            root = config.root;
+        },
+        resolveId(source) {
+            if (source === appModuleId) {
+                return resolve(root, app);
+            }
+        },
+    };
 }
 
 function dextinitySiteConfig(): Plugin {

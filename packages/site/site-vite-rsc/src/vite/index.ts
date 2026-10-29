@@ -1,1 +1,1 @@
-export { dextinitySite, type DextinitySiteOptions } from "./dextinitySite";
+export { dextinitySite, type DextinitySiteOptions } from "./dextinitySite.js";

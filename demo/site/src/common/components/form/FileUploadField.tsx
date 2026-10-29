@@ -1,4 +1,4 @@
-import { useParams } from "@src/framework/RouterProvider";
+import { useParams } from "@dextinity/site-vite-rsc";
 import { getRecaptchaToken } from "@src/util/recaptcha/getRecaptchaToken";
 import { useSiteConfig } from "@src/util/SiteConfigProvider";
 import { type ChangeEvent, type ReactNode, useId, useRef } from "react";

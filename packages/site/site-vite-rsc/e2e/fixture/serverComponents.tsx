@@ -1,5 +1,5 @@
-import { notFound, redirect } from "@src/framework/navigation";
-import { getRequest, isRscRequest } from "@src/framework/requestContext";
+import { notFound, redirect } from "@dextinity/site-vite-rsc";
+import { getRequest, isRscRequest } from "@dextinity/site-vite-rsc/server";
 import type { PropsWithChildren } from "react";
 
 async function delay() {

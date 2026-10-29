@@ -1,7 +1,7 @@
 import { gql } from "@dextinity/site-react";
+import { notFound, redirect } from "@dextinity/site-vite-rsc";
 import type { ExternalLinkBlockData, InternalLinkBlockData, NewsLinkBlockData, RedirectsLinkBlockData } from "@src/blocks.generated";
 import { documentTypes } from "@src/documents";
-import { notFound, redirect } from "@src/framework/navigation";
 import type { GQLPageTreeNodeScope } from "@src/graphql.generated";
 import type { ContentScope } from "@src/site-configs";
 import { createSitePath } from "@src/util/createSitePath";

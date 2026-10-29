@@ -1,7 +1,6 @@
 "use client";
 
-import { notFound } from "@src/framework/navigation";
-import { usePathname, useSearchParams } from "@src/framework/RouterProvider";
+import { notFound, usePathname, useSearchParams } from "@dextinity/site-vite-rsc";
 
 export function ClientRouterInfo() {
     const pathname = usePathname();

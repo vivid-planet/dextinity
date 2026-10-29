@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { noStoreCacheControl } from "@src/framework/cacheControl";
+import { noStoreCacheControl } from "@dextinity/site-vite-rsc/server";
 import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
 

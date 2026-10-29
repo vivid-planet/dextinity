@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it, vi } from "vitest";
 
-import { createTitleCountCheck } from "./titleCountCheck";
+import { createTitleCountCheck } from "./titleCountCheck.js";
 
 async function check(chunks: string[]) {
     const onTitleCount = vi.fn();

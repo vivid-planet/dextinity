@@ -1,7 +1,23 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
 
-import { getCookie, getRequest, getSiteContext, getVisibility, isRscRequest, runWithRequestContext, setSiteContext } from "./requestContext";
+import {
+    getCookie,
+    getRequest,
+    getRequestData,
+    getSitePreview,
+    getVisibility,
+    isRscRequest,
+    runWithRequestContext,
+    setPreview,
+    setRequestData,
+} from "./requestContext.js";
+
+declare module "./requestContext.js" {
+    interface RequestContextData {
+        domain: string;
+    }
+}
 
 function runWithRequest<T>(callback: () => T, { headers }: { headers?: HeadersInit } = {}) {
     return runWithRequestContext({ request: new Request("https://example.com/en", { headers }), isRscRequest: true }, callback);
@@ -51,15 +67,33 @@ describe("requestContext", () => {
         );
     });
 
-    it("provides the site context once it's set", () => {
+    it("provides the preview once it's set", () => {
         runWithRequest(() => {
-            expect(() => getSiteContext()).toThrow("Site context is only available for site requests");
             expect(getVisibility()).toBe("default");
+            expect(getSitePreview()).toBeUndefined();
 
-            setSiteContext({ domain: "main", visibility: "invisiblePages" });
+            setPreview({ visibility: "invisiblePages", sitePreview: { previewData: { includeInvisible: true } } });
 
-            expect(getSiteContext()).toEqual({ domain: "main", visibility: "invisiblePages" });
             expect(getVisibility()).toBe("invisiblePages");
+            expect(getSitePreview()).toEqual({ previewData: { includeInvisible: true } });
+        });
+    });
+
+    it("provides the project's data once it's set", () => {
+        runWithRequest(() => {
+            expect(getRequestData("domain")).toBeUndefined();
+
+            setRequestData("domain", "main");
+
+            expect(getRequestData("domain")).toBe("main");
+        });
+    });
+
+    it("doesn't share the project's data between requests", async () => {
+        await runWithRequest(() => setRequestData("domain", "main"));
+
+        runWithRequest(() => {
+            expect(getRequestData("domain")).toBeUndefined();
         });
     });
 

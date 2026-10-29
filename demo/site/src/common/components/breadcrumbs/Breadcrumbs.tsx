@@ -1,7 +1,7 @@
 "use client";
 import { JsonLd } from "@dextinity/site-react";
+import { Link } from "@dextinity/site-vite-rsc";
 import { SvgUse } from "@src/common/helpers/SvgUse";
-import { Link } from "@src/framework/Link";
 import { PageLayout } from "@src/layout/PageLayout";
 import { createSitePath } from "@src/util/createSitePath";
 import { useSiteConfig } from "@src/util/SiteConfigProvider";

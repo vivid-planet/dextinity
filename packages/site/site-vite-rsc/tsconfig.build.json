@@ -1,4 +1,8 @@
 {
-    "exclude": ["**/*.test.tsx", "**/*.test.ts", "**/*.spec.tsx", "**/*.spec.ts", "**/__tests__/**"],
-    "extends": "./tsconfig.json"
+    "compilerOptions": {
+        "rootDir": "src"
+    },
+    "exclude": ["node_modules", "lib", "**/*.test.ts", "**/*.test.tsx"],
+    "extends": "./tsconfig.json",
+    "include": ["src"]
 }

@@ -1,7 +1,7 @@
-import { app } from "@src/handler";
+import { app } from "virtual:dextinity-site/app";
 
-import { runWithRequestContext } from "./requestContext";
-import { addRscPrefix, stripRscPrefix } from "./rscRequest";
+import { runWithRequestContext } from "./requestContext.js";
+import { addRscPrefix, stripRscPrefix } from "./rscRequest.js";
 
 async function handler(request: Request): Promise<Response> {
     const strippedUrl = stripRscPrefix(new URL(request.url));

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { publicCacheControl, requestTypes } from "./helpers";
+import { publicCacheControl, requestTypes } from "./helpers.js";
 
 for (const { name, prefix, contentType } of requestTypes) {
     test.describe(name, () => {

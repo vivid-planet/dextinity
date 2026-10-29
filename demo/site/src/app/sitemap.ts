@@ -1,8 +1,8 @@
 import { gql } from "@dextinity/site-react";
-import { getSiteContext } from "@src/framework/requestContext";
 import { createSitePath } from "@src/util/createSitePath";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
+import { getSiteContext } from "@src/util/siteContext";
 import type { Context } from "hono";
 
 import type { GQLPrebuildPageDataListSitemapQuery, GQLPrebuildPageDataListSitemapQueryVariables } from "./sitemap.generated";

@@ -3,11 +3,11 @@ import { startTransition, type TransitionStartFunction, useEffect, useLayoutEffe
 import { hydrateRoot } from "react-dom/client";
 import { rscStream } from "rsc-html-stream/client";
 
-import { announceNavigation, setUpNavigationAnnouncer } from "./announceNavigation";
-import { GlobalErrorBoundary } from "./GlobalErrorBoundary";
-import type { RscPayload } from "./render";
-import { NavigationProvider, type Router } from "./RouterProvider";
-import { createRscUrl, stripRscPrefix } from "./rscRequest";
+import { announceNavigation, setUpNavigationAnnouncer } from "./announceNavigation.js";
+import { GlobalErrorBoundary } from "./GlobalErrorBoundary.js";
+import type { RscPayload } from "./render.js";
+import { NavigationProvider, type Router } from "./RouterProvider.js";
+import { createRscUrl, stripRscPrefix } from "./rscRequest.js";
 import {
     createHistoryState,
     getHistoryKey,
@@ -15,7 +15,7 @@ import {
     loadPersistedScrollPositions,
     persistScrollPositions,
     rememberScrollPosition,
-} from "./scrollPositions";
+} from "./scrollPositions.js";
 
 type ScrollTarget = "top" | "hash" | { scrollY: number } | undefined;
 

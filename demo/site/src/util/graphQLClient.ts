@@ -4,8 +4,8 @@ import {
     createGraphQLFetch as createGraphQLFetchLibrary,
     type GraphQLFetch,
 } from "@dextinity/site-react";
+import { getVisibility } from "@dextinity/site-vite-rsc/server";
 import { SYSTEM_USER_NAME } from "@src/auth/constants";
-import { getVisibility } from "@src/framework/requestContext";
 
 import { createCachingFetch } from "./fetchCache";
 

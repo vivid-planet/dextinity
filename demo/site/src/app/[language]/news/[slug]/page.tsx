@@ -1,5 +1,5 @@
 import { gql } from "@dextinity/site-react";
-import { notFound } from "@src/framework/navigation";
+import { notFound } from "@dextinity/site-vite-rsc";
 import type { GQLNewsContentScopeInput } from "@src/graphql.generated";
 import { NewsArticleJsonLd } from "@src/news/NewsArticleJsonLd";
 import type { ContentScope } from "@src/site-configs";

@@ -1,5 +1,4 @@
 import { gql } from "@dextinity/site-react";
-import { getSiteContext } from "@src/framework/requestContext";
 import { Footer } from "@src/layout/footer/Footer";
 import { footerFragment } from "@src/layout/footer/Footer.fragment";
 import { Header } from "@src/layout/header/Header";
@@ -14,6 +13,7 @@ import { loadMessages } from "@src/util/loadMessages";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { SiteConfigProvider } from "@src/util/SiteConfigProvider";
+import { getSiteContext } from "@src/util/siteContext";
 import { SitePreviewProvider } from "@src/util/SitePreviewProvider";
 import type { PropsWithChildren } from "react";
 

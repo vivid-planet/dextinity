@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { addRscPrefix, createRscUrl, stripRscPrefix } from "./rscRequest";
+import { addRscPrefix, createRscUrl, stripRscPrefix } from "./rscRequest.js";
 
 describe("addRscPrefix", () => {
     it("prefixes the pathname", () => {

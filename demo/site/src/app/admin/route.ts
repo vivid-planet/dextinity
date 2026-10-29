@@ -1,5 +1,5 @@
-import { getSiteContext } from "@src/framework/requestContext";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
+import { getSiteContext } from "@src/util/siteContext";
 import type { Context, Next } from "hono";
 
 /**

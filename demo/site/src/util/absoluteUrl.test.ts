@@ -1,5 +1,6 @@
 // @vitest-environment node
-import { runWithRequestContext, setSiteContext } from "@src/framework/requestContext";
+import { runWithRequestContext } from "@dextinity/site-vite-rsc/server";
+import { setSiteContext } from "@src/util/siteContext";
 import { describe, expect, it, vi } from "vitest";
 
 import { absoluteUrl } from "./absoluteUrl";

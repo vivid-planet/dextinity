@@ -3,9 +3,9 @@ import { use } from "react";
 import { renderToReadableStream } from "react-dom/server.edge";
 import { injectRSCPayload } from "rsc-html-stream/server";
 
-import { getNavigationErrorDigest } from "./navigation";
-import type { RscPayload } from "./render";
-import { reportError } from "./reportError";
+import { getNavigationErrorDigest } from "./navigation.js";
+import type { RscPayload } from "./render.js";
+import { reportError } from "./reportError.js";
 
 type RenderHtmlResult =
     | { stream: ReadableStream<Uint8Array> }

@@ -1,4 +1,4 @@
-import { Link } from "@src/framework/Link";
+import { Link } from "@dextinity/site-vite-rsc";
 
 export default function NotFound404() {
     return (

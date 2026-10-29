@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { noStoreCacheControl } from "./helpers";
+import { noStoreCacheControl } from "./helpers.js";
 
 test.describe("HTML request", () => {
     test("renders the error page with status 500 when a server component fails", async ({ request }) => {

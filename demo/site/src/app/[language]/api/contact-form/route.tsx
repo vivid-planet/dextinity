@@ -1,7 +1,7 @@
-import { getSiteContext } from "@src/framework/requestContext";
 import { mailerTransport } from "@src/util/mailer";
 import { assessRecaptchaToken } from "@src/util/recaptcha/assessRecaptchaToken";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
+import { getSiteContext } from "@src/util/siteContext";
 import type { Context } from "hono";
 import { z } from "zod";
 

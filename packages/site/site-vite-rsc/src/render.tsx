@@ -1,13 +1,12 @@
-import { renderToReadableStream } from "@vitejs/plugin-rsc/rsc/server";
 import type { Context } from "hono";
 import type { ReactNode } from "react";
 
-import { noStoreCacheControl } from "./cacheControl";
-import { getNavigationErrorDigest, isNotFoundDigest, parseRedirectDigest } from "./navigation";
-import { reportError } from "./reportError";
-import { getRequest, isRscRequest } from "./requestContext";
-import { RouterProvider } from "./RouterProvider";
-import { createTitleCountCheck } from "./titleCountCheck";
+import { noStoreCacheControl } from "./cacheControl.js";
+import { getNavigationErrorDigest, isNotFoundDigest, parseRedirectDigest } from "./navigation.js";
+import { reportError } from "./reportError.js";
+import { getRequest, isRscRequest } from "./requestContext.js";
+import { RouterProvider } from "./RouterProvider.js";
+import { createTitleCountCheck } from "./titleCountCheck.js";
 
 export type RscPayload = {
     root: ReactNode;
@@ -62,6 +61,8 @@ export async function renderPage(c: Context, options: RenderPageOptions): Promis
 async function renderRscPayload(root: ReactNode) {
     let navigationDigest: string | undefined;
     let hasError = false;
+    // Only works in Vite's RSC environment, loaded on use so that this package's other server code works anywhere, e.g. in unit tests
+    const { renderToReadableStream } = await import("@vitejs/plugin-rsc/rsc/server");
     const stream = renderToReadableStream<RscPayload>(
         { root },
         {
@@ -135,7 +136,7 @@ async function respond(
         };
     }
 
-    const ssrEntry = await import.meta.viteRsc.loadModule<typeof import("./entry.ssr")>("ssr", "index");
+    const ssrEntry = await import.meta.viteRsc.loadModule<typeof import("./entry.ssr.js")>("ssr", "index");
     const html = await ssrEntry.renderHtml(createStream(rscChunks));
     if (!("stream" in html)) {
         return html;

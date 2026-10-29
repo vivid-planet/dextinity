@@ -1,7 +1,7 @@
 "use client";
 import { type PropsWithData, withPreview } from "@dextinity/site-react";
+import { useParams } from "@dextinity/site-vite-rsc";
 import type { ContactFormBlockData } from "@src/blocks.generated";
-import { useParams } from "@src/framework/RouterProvider";
 import { PageLayout } from "@src/layout/PageLayout";
 import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import { acceptedFileTypes, maxFileSizeBytes } from "@src/util/fileUpload";

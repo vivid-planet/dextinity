@@ -1,5 +1,6 @@
 // @vitest-environment node
-import { getSiteContext, hasSiteContext, runWithRequestContext } from "@src/framework/requestContext";
+import { runWithRequestContext } from "@dextinity/site-vite-rsc/server";
+import { getSiteContext, hasSiteContext } from "@src/util/siteContext";
 import { createSitePreviewJwt, sitePreviewCookieName } from "@src/util/sitePreview";
 import { Hono } from "hono";
 import { beforeAll, describe, expect, it, vi } from "vitest";

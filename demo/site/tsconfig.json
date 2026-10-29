@@ -22,14 +22,5 @@
         "types": ["node", "vite/client", "@vitejs/plugin-rsc/types"]
     },
     "exclude": ["node_modules"],
-    "include": [
-        "src/**/*.ts",
-        "src/**/*.tsx",
-        "e2e/**/*.ts",
-        "e2e/**/*.tsx",
-        "playwright.config.ts",
-        "vite.config.ts",
-        "vitePersistedQueriesPlugin.ts",
-        "vitest.config.ts"
-    ]
+    "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "vitePersistedQueriesPlugin.ts", "vitest.config.ts"]
 }

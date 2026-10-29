@@ -1,7 +1,7 @@
 import { generateImageUrl, gql, JsonLd } from "@dextinity/site-react";
+import { notFound } from "@dextinity/site-vite-rsc";
 import { Breadcrumbs } from "@src/common/components/breadcrumbs/Breadcrumbs";
 import { breadcrumbsFragment } from "@src/common/components/breadcrumbs/Breadcrumbs.fragment";
-import { notFound } from "@src/framework/navigation";
 import type { GQLPageTreeNodeScopeInput } from "@src/graphql.generated";
 import { absoluteUrl } from "@src/util/absoluteUrl";
 import { createGraphQLFetch } from "@src/util/graphQLClient";

@@ -1,4 +1,4 @@
-import { getSiteContext } from "@src/framework/requestContext";
+import { getSiteContext } from "@src/util/siteContext";
 
 import { getSiteConfigForDomain } from "./siteConfig";
 

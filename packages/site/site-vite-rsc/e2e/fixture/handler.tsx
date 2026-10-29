@@ -1,14 +1,12 @@
-import { handleError } from "@src/framework/handleError";
-import { redirect } from "@src/framework/navigation";
-import { renderPage } from "@src/framework/render";
-import { trailingSlashRedirectMiddleware } from "@src/framework/trailingSlashRedirect";
+import { redirect } from "@dextinity/site-vite-rsc";
+import { handleError, renderPage, trailingSlashRedirectMiddleware } from "@dextinity/site-vite-rsc/server";
 import { type Context, Hono } from "hono";
 import { type ReactNode, Suspense } from "react";
 
-import { publicCacheControl } from "../helpers";
-import { ClientError, ClientNotFound, ClientRouterInfo } from "./clientComponents";
-import { Layout } from "./Layout";
-import { Nested, RequestInfo, ServerError, ServerNotFound, ServerRedirect } from "./serverComponents";
+import { publicCacheControl } from "../helpers.js";
+import { ClientError, ClientNotFound, ClientRouterInfo } from "./clientComponents.js";
+import { Layout } from "./Layout.js";
+import { Nested, RequestInfo, ServerError, ServerNotFound, ServerRedirect } from "./serverComponents.js";
 
 type TestPageOptions = {
     notFound?: () => ReactNode;

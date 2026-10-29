@@ -41,6 +41,7 @@ app.onError(handleError);
 - `notFound()` and `redirect()` can be called anywhere in server and client components
 - `Link` navigates on the client, `useRouter()` offers `push()`, `replace()` and `refresh()`
 - `usePathname()`, `useSearchParams()`, `useParams()` and `useNavigationPending()`
+- `Metadata` renders the description, robots, canonical, alternate and Open Graph tags of a page and resolves relative URLs, e.g. of DAM images, against `baseUrl`
 
 **Request context** (`@dextinity/site-vite-rsc/server`)
 

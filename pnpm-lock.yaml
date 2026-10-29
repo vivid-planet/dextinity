@@ -2165,8 +2165,8 @@ importers:
         specifier: ^3.1156.0
         version: 3.1156.0(@aws-sdk/client-s3@3.1156.0)
       '@azure-rest/ai-translation-text':
-        specifier: ^1.0.2
-        version: 1.0.2(supports-color@8.1.1)
+        specifier: ^2.0.0
+        version: 2.0.0(supports-color@8.1.1)
       '@azure/storage-blob':
         specifier: ^12.34.0
         version: 12.34.0(supports-color@8.1.1)
@@ -3416,10 +3416,9 @@ packages:
     resolution: {integrity: sha512-sl4Bm6yiMNYrZKkqqDFWN0UfnWhlS8ivKxrYl+6t0gCLrqr8y3B2IqZZbFRkfaVVp7C/baApyh71P+LeE1A2sQ==}
     engines: {node: '>=18.0.0'}
 
-  '@azure-rest/ai-translation-text@1.0.2':
-    resolution: {integrity: sha512-gSzg0XIYqCHYQdc+i1E/eKBv2eEw61IrY0nYfOveCgqhvSgVCYsrXCiFd4dKq7h2+G9BafNWcrGyrVIV/Jbsng==}
+  '@azure-rest/ai-translation-text@2.0.0':
+    resolution: {integrity: sha512-Zp8zYFZsCuUSHvhU/tj43ho5nio9inLXYzxG2cLOQhNh5B2nhOh2BWovjFpJGrFUMmci7ML0ATWX4dgxf6D0qQ==}
     engines: {node: '>=20.0.0'}
-    deprecated: Unplanned Release
 
   '@azure-rest/core-client@2.9.0':
     resolution: {integrity: sha512-6933vNLqh06RR7rumnrq3UZIeBtRLeBHDPMrieDPIljiCaMMwt0nRw++nd3TOxiohtasNtm29rC+b/9ZVKCOqg==}
@@ -19751,7 +19750,7 @@ snapshots:
 
   '@aws/lambda-invoke-store@0.3.0': {}
 
-  '@azure-rest/ai-translation-text@1.0.2(supports-color@8.1.1)':
+  '@azure-rest/ai-translation-text@2.0.0(supports-color@8.1.1)':
     dependencies:
       '@azure-rest/core-client': 2.9.0(supports-color@8.1.1)
       '@azure/core-auth': 1.11.0(supports-color@8.1.1)

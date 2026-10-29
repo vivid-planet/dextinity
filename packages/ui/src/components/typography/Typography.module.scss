@@ -2,16 +2,96 @@
     margin: 0;
     color: var(--dextinity-color-foreground-default);
     font-family: var(--dextinity-brand-font-family-sans);
+    letter-spacing: var(--dextinity-font-letter-spacing-normal);
 
-    &[data-variant="headline"] {
+    &[data-variant="display"] {
+        font-size: var(--dextinity-typography-display-size);
+        font-weight: var(--dextinity-font-weight-regular);
+        line-height: var(--dextinity-typography-display-line-height);
+    }
+
+    &[data-variant="h1"] {
         font-size: var(--dextinity-typography-h1-size);
-        font-weight: var(--dextinity-font-weight-semibold);
+        font-weight: var(--dextinity-font-weight-regular);
         line-height: var(--dextinity-typography-h1-line-height);
     }
 
-    &[data-variant="body"] {
+    &[data-variant="h2"] {
+        font-size: var(--dextinity-typography-h2-size);
+        font-weight: var(--dextinity-font-weight-regular);
+        line-height: var(--dextinity-typography-h2-line-height);
+    }
+
+    &[data-variant="h3"] {
+        font-size: var(--dextinity-typography-h3-size);
+        font-weight: var(--dextinity-font-weight-regular);
+        line-height: var(--dextinity-typography-h3-line-height);
+    }
+
+    &[data-variant="h4"] {
+        font-size: var(--dextinity-typography-h4-size);
+        font-weight: var(--dextinity-font-weight-regular);
+        line-height: var(--dextinity-typography-h4-line-height);
+    }
+
+    &[data-variant="bodyL"] {
+        font-size: var(--dextinity-typography-body-lg-size);
+        font-weight: var(--dextinity-font-weight-regular);
+        line-height: var(--dextinity-typography-body-lg-line-height);
+    }
+
+    &[data-variant="bodyM"] {
         font-size: var(--dextinity-typography-body-md-size);
         font-weight: var(--dextinity-font-weight-regular);
         line-height: var(--dextinity-typography-body-md-line-height);
+    }
+
+    &[data-variant="bodyS"] {
+        font-size: var(--dextinity-typography-body-sm-size);
+        font-weight: var(--dextinity-font-weight-regular);
+        line-height: var(--dextinity-typography-body-sm-line-height);
+    }
+
+    &[data-variant="bodyXs"] {
+        font-size: var(--dextinity-typography-body-xs-size);
+        font-weight: var(--dextinity-font-weight-regular);
+        line-height: var(--dextinity-typography-body-xs-line-height);
+    }
+
+    &[data-variant="caption"] {
+        color: var(--dextinity-color-foreground-muted);
+        font-size: var(--dextinity-typography-body-xs-size);
+        font-weight: var(--dextinity-font-weight-regular);
+        line-height: var(--dextinity-typography-body-xs-line-height);
+    }
+
+    &[data-variant="labelM"] {
+        font-size: var(--dextinity-typography-label-md-size);
+        font-weight: var(--dextinity-font-weight-medium);
+        line-height: var(--dextinity-typography-label-md-line-height);
+    }
+
+    &[data-variant="labelS"] {
+        font-size: var(--dextinity-typography-label-sm-size);
+        font-weight: var(--dextinity-font-weight-medium);
+        line-height: var(--dextinity-typography-label-sm-line-height);
+    }
+
+    &[data-variant="labelXs"] {
+        font-size: var(--dextinity-typography-label-xs-size);
+        font-weight: var(--dextinity-font-weight-medium);
+        line-height: var(--dextinity-typography-label-xs-line-height);
+    }
+
+    &[data-variant="dataM"] {
+        font-size: var(--dextinity-typography-body-md-size);
+        font-weight: var(--dextinity-font-weight-regular);
+        line-height: var(--dextinity-typography-body-md-line-height);
+    }
+
+    &[data-variant="dataS"] {
+        font-size: var(--dextinity-typography-body-sm-size);
+        font-weight: var(--dextinity-font-weight-regular);
+        line-height: var(--dextinity-typography-body-sm-line-height);
     }
 }

@@ -35,8 +35,8 @@ function ExampleContent() {
                 backgroundColor: "var(--dextinity-color-background-default)",
             }}
         >
-            <Typography variant="headline">Themed headline</Typography>
-            <Typography variant="body">Body text follows the active theme.</Typography>
+            <Typography variant="h1">Themed headline</Typography>
+            <Typography variant="bodyM">Body text follows the active theme.</Typography>
             <div style={{ display: "flex", gap: "1rem" }}>
                 <Button variant="primary">Primary</Button>
                 <Button variant="secondary">Secondary</Button>

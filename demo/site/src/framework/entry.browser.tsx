@@ -3,6 +3,7 @@ import { startTransition, type TransitionStartFunction, useEffect, useLayoutEffe
 import { hydrateRoot } from "react-dom/client";
 import { rscStream } from "rsc-html-stream/client";
 
+import { announceNavigation, setUpNavigationAnnouncer } from "./announceNavigation";
 import { GlobalErrorBoundary } from "./GlobalErrorBoundary";
 import type { RscPayload } from "./render";
 import { NavigationProvider, type Router } from "./RouterProvider";
@@ -23,6 +24,7 @@ let startNavigationTransition: TransitionStartFunction = startTransition; // Rep
 let pendingNavigation: AbortController | undefined;
 let currentHistoryKey: string;
 let currentDocumentPath = getDocumentPath(new URL(window.location.href));
+let announcedPathname = window.location.pathname;
 
 function getDocumentPath(url: URL) {
     return url.pathname + url.search;
@@ -50,11 +52,19 @@ function BrowserRoot({ initialPayload }: { initialPayload: RscPayload }) {
         // State updates after an await of the transition have to be marked as transition again
         setPayloadFromOutside = (payload, scrollTarget) => startTransition(() => setState({ payload, scrollTarget }));
         startNavigationTransition = startPendingTransition;
+        setUpNavigationAnnouncer();
     }, []);
 
     useLayoutEffect(() => {
         scrollToTarget(scrollTarget);
     }, [payload, scrollTarget]);
+
+    useEffect(() => {
+        if (window.location.pathname !== announcedPathname) {
+            announcedPathname = window.location.pathname;
+            announceNavigation();
+        }
+    }, [payload]);
 
     return (
         <NavigationProvider router={browserRouter} isPending={isPending}>

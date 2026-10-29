@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/site-vite-rsc",
-    "version": "10.10.0",
+    "version": "10.11.0",
     "description": "Dextinity Site package for Vite with React Server Components",
     "repository": {
         "type": "git",

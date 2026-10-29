@@ -102,9 +102,9 @@ React doesn't de-duplicate `<title>`, so each page has to render its own (`src/l
 
 The old Next.js demo had the identical CSP with `'unsafe-inline'` (Next.js writes its payload as inline `self.__next_f.push()` scripts too). Measured inline scripts: the bootstrap `import()` (`bootstrapScriptContent`) and 9–13 RSC payload chunks (`rsc-html-stream`) per page; JSON-LD data blocks aren't subject to CSP, no React Suspense scripts. A nonce per response (React `nonce`, `injectRSCPayload(…, { nonce })`) conflicts with the CDN caching of public pages (the same nonce would be served to every visitor, the spec requires one per response); hashes need the whole HTML buffered. Preferred: no executable inline scripts, i.e. the browser entry via `bootstrapModules` and the RSC payload as JSON data blocks (`<` escaped) read by the browser entry after `DOMContentLoaded`, then `script-src-elem 'self'` plus the reCAPTCHA hosts. Once #37 streams Suspense boundaries, React's inline `$RC()` scripts need a nonce again.
 
-### #17 Pick up new persisted queries in dev without restart
+### #17 Pick up changed persisted queries in dev without restart (separate PR against `main`)
 
-`persistedQueryRoute` (site-react) loads `dist/persisted-queries.json` once; queries added while the dev server runs are unknown until restart. Reload on file change or skip persisted queries in dev. Files: `vitePersistedQueriesPlugin.ts`, `src/app/graphql/route.ts`.
+`persistedQueryRoute` (site-react) loads `dist/persisted-queries.json` once per process. Reproduced: a changed query answers `PersistedQueryNotFound` until restart, a changed fragment is silently sent in its old version. Not caused by the migration, `@dextinity/site-nextjs/server` re-exports the same route. Fixed in site-react in a separate pull request against `main` (reload when the file's modification time changes, outside production); pick it up here with the next merge of `main`.
 
 ### #18 Add unit tests and HTTP tests against a test app for the framework code (done)
 

@@ -1,6 +1,7 @@
 [
     {
         "name": "Accordion",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -58,6 +59,7 @@
     },
     {
         "name": "AccordionContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -406,6 +408,7 @@
     },
     {
         "name": "CallToActionList",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -530,6 +533,7 @@
     },
     {
         "name": "ColumnsContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -662,6 +666,7 @@
     },
     {
         "name": "ContentGroupContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -836,6 +841,7 @@
     },
     {
         "name": "DamImage",
+        "description": "One of several blocks. `attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field. `activeType` names the entry in use, so an entry with that `type` must be in the list. Entries of other types may stay in the list and aren't shown. The block can't be empty, so `activeType` must be set.",
         "fields": [
             {
                 "name": "attachedBlocks",
@@ -1068,6 +1074,7 @@
     },
     {
         "name": "EmailCampaignContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -1442,6 +1449,7 @@
     },
     {
         "name": "KeyFacts",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -1633,6 +1641,7 @@
     },
     {
         "name": "Link",
+        "description": "A link to one of several targets. `attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field. `activeType` names the entry in use, so an entry with that `type` must be in the list. Entries of other types may stay in the list and aren't shown. The block can't be empty, so `activeType` must be set.",
         "fields": [
             {
                 "name": "title",
@@ -1741,6 +1750,7 @@
     },
     {
         "name": "LinkList",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -1943,6 +1953,7 @@
     },
     {
         "name": "MailLink",
+        "description": "A link to one of several targets. `attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field. `activeType` names the entry in use, so an entry with that `type` must be in the list. Entries of other types may stay in the list and aren't shown. The block can't be empty, so `activeType` must be set.",
         "fields": [
             {
                 "name": "title",
@@ -2124,6 +2135,7 @@
     },
     {
         "name": "Media",
+        "description": "One of several blocks. `attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field. `activeType` names the entry in use, so an entry with that `type` must be in the list. Entries of other types may stay in the list and aren't shown. `activeType` `null` means the block is empty, e.g. `{\"attachedBlocks\":[],\"activeType\":null}`.",
         "fields": [
             {
                 "name": "attachedBlocks",
@@ -2300,6 +2312,7 @@
     },
     {
         "name": "MediaGalleryList",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -2357,6 +2370,7 @@
     },
     {
         "name": "NewsContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -2546,6 +2560,7 @@
     },
     {
         "name": "OptionalPixelImage",
+        "description": "A block that can be turned off. `block` holds the props of the wrapped block, `visible` `false` hides it on the site. An empty block is `{\"visible\":false}` without `block`.",
         "fields": [
             {
                 "name": "block",
@@ -2575,6 +2590,7 @@
     },
     {
         "name": "OptionalRichText",
+        "description": "A block that can be turned off. `block` holds the props of the wrapped block, `visible` `false` hides it on the site. An empty block is `{\"visible\":false}` without `block`.",
         "fields": [
             {
                 "name": "block",
@@ -2604,6 +2620,7 @@
     },
     {
         "name": "PageContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -3429,6 +3446,7 @@
     },
     {
         "name": "SliderList",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -3544,6 +3562,7 @@
     },
     {
         "name": "Stage",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -4032,6 +4051,7 @@
     },
     {
         "name": "Teaser",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -4529,6 +4549,7 @@
     },
     {
         "name": "WelcomeEmailContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",

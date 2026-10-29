@@ -17,6 +17,16 @@ import type { Launch, LaunchesPastResult } from "../../../.storybook/mocks/handl
 import { apolloStoryDecorator } from "../../apollo-story.decorator";
 import { storyRouterDecorator } from "../../story-router.decorator";
 
+const launchFormFragment = gql`
+    fragment LaunchForm on Launch {
+        mission_name
+    }
+`;
+
+interface ILaunchFormFragment {
+    mission_name: string;
+}
+
 const query = gql`
     query LaunchesPast {
         launchesPastResult {
@@ -24,12 +34,14 @@ const query = gql`
                 id
                 mission_name
                 launch_date_local
+                ...LaunchForm
             }
             result {
                 totalCount
             }
         }
     }
+    ${launchFormFragment}
 `;
 
 interface IQueryData {
@@ -62,7 +74,7 @@ function ExampleTable(props: IExampleTableProps) {
 }
 
 interface IExampleFormProps {
-    launch: Launch;
+    launch: ILaunchFormFragment;
     mode: "add" | "edit";
 }
 function ExampleForm(props: IExampleFormProps) {

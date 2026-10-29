@@ -2,9 +2,21 @@ import { gql } from "@apollo/client";
 import { Field, FinalForm, FinalFormInput, Selected, Table, TableQuery, useSelectionRoute, useTableQuery } from "@dextinity/admin";
 import { Grid } from "@mui/material";
 
-import type { Launch, LaunchesPastResult } from "../../../../.storybook/mocks/handlers";
+import type { LaunchesPastResult } from "../../../../.storybook/mocks/handlers";
 import { apolloStoryDecorator } from "../../../apollo-story.decorator";
 import { storyRouterDecorator } from "../../../story-router.decorator";
+
+const launchFormFragment = gql`
+    fragment LaunchForm on Launch {
+        mission_name
+        launch_date_local
+    }
+`;
+
+interface LaunchFormFragment {
+    mission_name: string;
+    launch_date_local: Date;
+}
 
 const launchesQuery = gql`
     query LaunchesPast {
@@ -13,12 +25,14 @@ const launchesQuery = gql`
                 id
                 mission_name
                 launch_date_local
+                ...LaunchForm
             }
             result {
                 totalCount
             }
         }
     }
+    ${launchFormFragment}
 `;
 
 interface LaunchesQueryData {
@@ -26,7 +40,7 @@ interface LaunchesQueryData {
 }
 
 interface ExampleFormProps {
-    launch: Launch;
+    launch: LaunchFormFragment;
     mode: "add" | "edit";
 }
 

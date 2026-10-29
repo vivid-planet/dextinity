@@ -75,6 +75,17 @@ describe("persistedQueriesPlugin", () => {
         expect(readPersistedQueries()).toEqual({ earlier: "query Earlier { page }", [hash(query)]: query });
     });
 
+    it("replaces earlier versions of a changed fragment during development", () => {
+        const earlierFragment = "\n    fragment PageContent on Page { id title }\n";
+        writePersistedQueries({ [hash(earlierFragment)]: earlierFragment, [hash(query)]: query });
+        const plugin = createPlugin("dev");
+        plugin.buildStart();
+
+        plugin.transform(`const pageContentFragment = gql\`${fragment}\`;`);
+
+        expect(readPersistedQueries()).toEqual({ [hash(query)]: query, [hash(fragment)]: fragment });
+    });
+
     it("writes only the documents of the build at its end", () => {
         writePersistedQueries({ stale: "query Stale { page }" });
         const plugin = createPlugin("build");

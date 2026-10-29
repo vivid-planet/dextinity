@@ -4,6 +4,10 @@ import { dirname } from "node:path";
 
 import type { Plugin } from "vite";
 
+function getFragmentName(query: string): string | undefined {
+    return query.match(/^\s*fragment\s+(\w+)\s+on\s+\w+/)?.[1];
+}
+
 // This regex matches gql`...` template literals, including multiline queries
 const gqlTagRegex = /gql`([\s\S]*?)`/gm;
 
@@ -42,11 +46,20 @@ export function persistedQueriesPlugin({ persistedQueriesPath, include }: { pers
 
             const transformedSource = source.replace(gqlTagRegex, (_match, query: string) => {
                 const hash = createHash("sha256").update(query).digest("hex");
+                const fragmentName = getFragmentName(query);
+                if (fragmentName) {
+                    // persistedQueryRoute resolves fragments by name, so a previous version (e.g. before an undo) must not shadow this one
+                    for (const [existingHash, existingQuery] of Object.entries(hashMap)) {
+                        if (existingHash !== hash && getFragmentName(existingQuery) === fragmentName) {
+                            delete hashMap[existingHash];
+                        }
+                    }
+                }
                 hashMap[hash] = query;
                 const fragmentVariables = Array.from(query.matchAll(/\${.*?}/g))
                     .map((m) => m[0])
                     .join(" ");
-                if (query.match(/^\s*fragment\s+(\w+)\s+on\s+\w+/)) {
+                if (fragmentName) {
                     return `{ fragment: true, fragmentVariables: \`${fragmentVariables}\` }`;
                 }
                 return `{ hash: "${hash}", fragmentVariables: \`${fragmentVariables}\` }`;

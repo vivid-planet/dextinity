@@ -48,8 +48,8 @@
     },
     "devDependencies": {
         "@apollo/client": "^3.14.1",
-        "@babel/cli": "^7.29.7",
-        "@babel/core": "^7.29.7",
+        "@babel/cli": "^8.0.6",
+        "@babel/core": "^8.0.9",
         "@dextinity/admin-babel-preset": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
         "@emotion/react": "^11.14.0",

@@ -1,5 +1,7 @@
 # @comet/cli
 
+## 10.12.0
+
 ## 10.11.0
 
 ### Patch Changes

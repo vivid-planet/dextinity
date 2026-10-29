@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { grey as muiGreyPalette } from "@mui/material/colors";
-import { mergeAttributes, Node } from "@tiptap/core";
+import { Node } from "@tiptap/core";
 import { NodeViewWrapper, type ReactNodeViewProps, ReactNodeViewRenderer } from "@tiptap/react";
 import { useContext, useState } from "react";
 
@@ -9,6 +9,7 @@ import { useBlockContext } from "../../context/useBlockContext";
 import { type BlockInterface, type BlockState, isPreviewContentTextRule } from "../../types";
 import { ChildBlocksContext } from "../ChildBlocksContext";
 import { TipTapBlockDialog } from "../TipTapBlockDialog";
+import { createJsonDataAttribute } from "./jsonDataAttribute";
 
 declare module "@tiptap/core" {
     interface Commands<ReturnType> {
@@ -141,9 +142,7 @@ const createCmsBlock = ({ inline }: { inline: boolean }) =>
                 blockType: {
                     default: null,
                 },
-                data: {
-                    default: null,
-                },
+                data: createJsonDataAttribute("data-cms-block"),
             };
         },
 
@@ -152,7 +151,7 @@ const createCmsBlock = ({ inline }: { inline: boolean }) =>
         },
 
         renderHTML({ HTMLAttributes }) {
-            return [inline ? "span" : "div", mergeAttributes(HTMLAttributes, { "data-cms-block": "" })];
+            return [inline ? "span" : "div", HTMLAttributes];
         },
 
         addNodeView() {

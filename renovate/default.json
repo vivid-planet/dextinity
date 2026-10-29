@@ -42,7 +42,7 @@
             "groupName": "@apollo/server"
         },
         {
-            "matchPackageNames": ["@apollo/client", "apollo-link-rest", "graphql-tag"],
+            "matchPackageNames": ["@apollo/client", "graphql-tag"],
             "groupName": "@apollo/client and related dependencies"
         },
         {
@@ -61,11 +61,6 @@
         {
             "matchUpdateTypes": ["major"],
             "labels": ["major", "dependencies"]
-        },
-        {
-            "matchDepTypes": ["peerDependencies"],
-            "matchUpdateTypes": ["major"],
-            "baseBranches": ["next"]
         },
         {
             "groupName": "SWC",

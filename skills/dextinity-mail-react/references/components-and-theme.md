@@ -341,6 +341,8 @@ The base spacing value comes from `theme.text.bottomSpacing`. Variants can overr
 
 Outlook Desktop ignores `<style>` blocks and applies its own "Hyperlink" style to `<a>` tags, overriding inherited CSS. `HtmlInlineLink` counters this by setting explicit inline styles for font properties (sourced from the parent text component's context). On modern clients, a responsive CSS reset ensures the link adapts when responsive variant overrides apply.
 
+This works only inside `MjmlText` or `HtmlText` with a theme, and only for the properties that the theme or the text's props set. Properties that the theme or the text's props do not set fall back to `inherit`. Classic Outlook ignores `inherit`, and shows the link in its own blue and in Times New Roman.
+
 ### Custom Color
 
 Use `!important` when setting a custom link color — the responsive reset uses `inherit !important`, which would otherwise take precedence:
@@ -380,6 +382,8 @@ Themed button, styled from `theme.button` (base styles plus variants). Falls bac
 - **`HtmlButton`** — inside ending tags (`MjmlRaw`) or any non-MJML context. Classes `.htmlButton`, `.htmlButton--{variant}`, `.htmlButton--fullWidth`.
 
 `theme.button.padding` is the inner spacing around the label; `MjmlButton`'s `padding` prop is the outer spacing. `fullWidth` makes the button span its container. A gradient `backgroundImage` overlays the solid `backgroundColor`, which stays the fallback for clients that drop `background-image` (Outlook). Outlook ignores `border-radius`, so rounded buttons render with square corners there.
+
+For a hand-written full-width button, `display: block` on the `<a>` makes it fill its `<td>`. Do not add `width: 100%` and `box-sizing: border-box`: Yahoo Mail does not support `box-sizing`, so it adds the padding to the full width and the anchor overflows its container.
 
 ```tsx
 <MjmlButton variant="primary" fullWidth href="https://example.com">

@@ -186,7 +186,7 @@ export { SearchHeaderItem } from "./fullTextSearch/SearchHeaderItem";
 export { ChooseDamFileDialog as ChooseFileDialog } from "./form/file/chooseFile/ChooseDamFileDialog";
 export { ChooseDamFilesDialog } from "./form/file/chooseFile/ChooseDamFilesDialog";
 export { FileField, type GQLDamFileFieldFileFragment } from "./form/file/FileField";
-export { damFileFieldFragment } from "./form/file/FileField.gql";
+export { damFileFieldFragment } from "./form/file/FileField.fragment";
 export { FileUploadField, type FileUploadFieldProps } from "./form/file/FileUploadField";
 export {
     FinalFormFileUpload,

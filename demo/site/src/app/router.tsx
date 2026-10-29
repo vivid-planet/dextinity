@@ -137,7 +137,7 @@ siteRoutes.post("/:language/api/file-upload", async (c) => (await import("./[lan
 siteRoutes.get("/:language/news", (c) => renderSitePage(c, (params) => <NewsIndexPage {...params} />));
 siteRoutes.get("/:language/news/:slug", (c) => renderSitePage(c, (params) => <NewsDetailPage {...params} slug={c.req.param("slug")} />));
 siteRoutes.get("/:language/product", (c) => renderSitePage(c, ({ language }) => <ProductListPage language={language} />));
-siteRoutes.get("/:language/product/:slug", (c) => renderSitePage(c, () => <ProductDetailPage slug={c.req.param("slug")} />));
+siteRoutes.get("/:language/product/:slug", (c) => renderSitePage(c, (scope) => <ProductDetailPage scope={scope} slug={c.req.param("slug")} />));
 siteRoutes.get("/:language/*", (c) => {
     const [, , ...segments] = c.req.path.split("/");
     const path = segments.filter((segment) => segment !== "").map((segment) => decodeURIComponent(segment));

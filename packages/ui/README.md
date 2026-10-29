@@ -6,9 +6,10 @@ It builds on an unstyled foundation rather than evolving the MUI-based component
 
 ## Usage
 
-Import the styles once, in the application's entry file:
+Load the Inter font and import the styles once, in the application's entry file:
 
 ```ts
+import "@fontsource-variable/inter";
 import "@dextinity/ui/css";
 ```
 
@@ -180,7 +181,7 @@ Run from `packages/ui`: `pnpm run test:unit`, `pnpm run test:storybook`, and `pn
 
 ## Theme
 
-Components read their colors and metrics from CSS custom properties (`var(--dextinity-button-…)`, `var(--dextinity-color-…)`, `var(--dextinity-typography-…)`) with **no fallback** — an unthemed component renders visibly unstyled rather than silently drifting to a default. There is no runtime JS theme object.
+Components read their colors, metrics, and font family from CSS custom properties (`var(--dextinity-button-…)`, `var(--dextinity-color-…)`, `var(--dextinity-typography-…)`, `var(--dextinity-brand-font-family-sans)`) with **no fallback** — an unthemed component renders visibly unstyled rather than silently drifting to a default. There is no runtime JS theme object.
 
 ### Token layers
 

@@ -1,7 +1,7 @@
 .root {
     margin: 0;
     color: var(--dextinity-color-foreground-default);
-    font-family: inherit;
+    font-family: var(--dextinity-brand-font-family-sans);
 
     &[data-variant="headline"] {
         font-size: var(--dextinity-typography-h1-size);

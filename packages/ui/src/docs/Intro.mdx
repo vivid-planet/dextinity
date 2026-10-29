@@ -12,15 +12,16 @@ This package is experimental. Any component, prop, or other export may change or
 
 ## Installation and setup
 
-Install the package:
+Install the package and the Inter font:
 
 ```sh
-npm install @dextinity/ui
+npm install @dextinity/ui @fontsource-variable/inter
 ```
 
-Import the styles once, wrap the application in `Theme`, and import the components from the package root:
+Import the font and the styles once, wrap the application in `Theme`, and import the components from the package root:
 
 ```tsx
+import "@fontsource-variable/inter";
 import "@dextinity/ui/css";
 
 import { Button, Theme } from "@dextinity/ui";

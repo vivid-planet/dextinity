@@ -1,3 +1,5 @@
+import "@fontsource-variable/inter";
+
 import type { Preview } from "@storybook/react-vite";
 
 import { colorSchemeBackgroundDecorator } from "../src/storybook/colorSchemeBackgroundDecorator";

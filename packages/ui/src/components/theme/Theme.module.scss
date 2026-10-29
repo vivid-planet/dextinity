@@ -7,3 +7,10 @@
 .root {
     display: contents;
 }
+
+@layer dextinity {
+    :root {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}

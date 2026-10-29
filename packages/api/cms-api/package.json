@@ -63,7 +63,7 @@
         "graphql-parse-resolve-info": "^4.14.1",
         "graphql-scalars": "^1.26.0 || ^2.0.0",
         "html-to-text": "^10.0.1",
-        "jose": "^5.10.0",
+        "jose": "^6.2.13",
         "jsdom": "^28.1.0",
         "jszip": "^3.10.2",
         "jwks-rsa": "^4.1.0",

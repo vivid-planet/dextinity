@@ -1,7 +1,6 @@
 import { gql } from "@dextinity/site-react";
 import { notFound } from "@src/framework/navigation";
 import type { GQLNewsContentScopeInput } from "@src/graphql.generated";
-import { DefaultTitle } from "@src/layout/DefaultTitle";
 import { NewsArticleJsonLd } from "@src/news/NewsArticleJsonLd";
 import type { ContentScope } from "@src/site-configs";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
@@ -33,7 +32,7 @@ export default async function NewsDetailPage({ domain, language, slug }: Content
 
     return (
         <>
-            <DefaultTitle />
+            <title>{data.newsBySlug.title}</title>
             <NewsArticleJsonLd news={data.newsBySlug} scope={scope} />
             <Content news={data.newsBySlug} />
         </>

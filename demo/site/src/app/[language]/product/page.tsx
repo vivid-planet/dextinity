@@ -1,6 +1,5 @@
 import { gql } from "@dextinity/site-react";
 import { Link } from "@src/framework/Link";
-import { DefaultTitle } from "@src/layout/DefaultTitle";
 import { createSitePath } from "@src/util/createSitePath";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 
@@ -45,7 +44,7 @@ export default async function ProductListPage({ language }: { language: string }
 
     return (
         <div>
-            <DefaultTitle />
+            <title>Products</title>
             <h1>Products</h1>
             <ul>
                 {products.map((product) => (

@@ -94,9 +94,9 @@ Like React Router (`useScrollRestoration`) and TanStack Router (`setupScrollRest
 
 ## Other
 
-### #15 Replace `DefaultTitle` on every page with a central title fallback
+### #15 Make missing or duplicate titles visible instead of a central title fallback (done)
 
-React doesn't de-duplicate `<title>`, so `src/layout/DefaultTitle.tsx` is rendered by each page without own title (easy to forget). Let the route declare its title/fallback centrally, e.g. in `renderSitePage`.
+React doesn't de-duplicate `<title>`, so each page has to render its own (`src/layout/DefaultTitle.tsx` for pages without one), which is easy to forget. A central fallback isn't possible cleanly: React writes server-rendered titles in the order it encounters them and inserts client-rendered ones before the existing title, so a fallback would only lose against the page's title when rendered after the content, and every page's HTML would contain two `<title>` elements (invalid HTML). Next.js, React Router and TanStack declare titles at route level with loader data, which doesn't fit pages loading their data inside the server component (see #27). Now `renderPage` reports pages whose HTML doesn't contain exactly one `<title>` during development (`framework/titleCountCheck.ts`), and the pages with data render a real title (news and product detail, product list, not found, error); `DefaultTitle` remains for the news index and the block preview.
 
 ### #16 Use a CSP nonce instead of `'unsafe-inline'` for scripts
 

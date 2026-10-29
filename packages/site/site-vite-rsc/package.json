@@ -32,10 +32,11 @@
         "lib/*"
     ],
     "scripts": {
-        "build": "pnpm run clean && tsc -p tsconfig.build.json",
-        "clean": "rimraf lib",
-        "dev": "pnpm run clean && tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-        "lint": "run-p lint:prettier lint:eslint lint:tsc",
+        "build": "pnpm run clean && pnpm run generate-block-types && tsc -p tsconfig.build.json",
+        "clean": "rimraf lib 'src/**/*.generated.ts'",
+        "dev": "pnpm run clean && pnpm run generate-block-types && tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+        "generate-block-types": "dextinity generate-block-types",
+        "lint": "pnpm run generate-block-types && run-p lint:prettier lint:eslint lint:tsc",
         "lint:ci": "pnpm run lint",
         "lint:eslint": "eslint --max-warnings 0 src/ e2e/ playwright.config.ts '**/*.json' --no-warn-ignored",
         "lint:fix": "run-p lint:fix:eslint lint:fix:prettier",
@@ -59,6 +60,7 @@
         "rsc-html-stream": "^0.0.8"
     },
     "devDependencies": {
+        "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
         "@playwright/test": "^1.64.1",
         "@types/node": "^24.19.2",

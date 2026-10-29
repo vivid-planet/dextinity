@@ -20,7 +20,7 @@ const files = [
           ]),
     {
         file: "packages/api/cms-api/block-meta.json",
-        targetDir: ["packages/admin/cms-admin", "packages/site/site-nextjs", "packages/site/site-react"],
+        targetDir: ["packages/admin/cms-admin", "packages/site/site-nextjs", "packages/site/site-react", "packages/site/site-vite-rsc"],
     },
     {
         file: "packages/api/cms-api/schema.gql",

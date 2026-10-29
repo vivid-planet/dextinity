@@ -2,7 +2,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import eslintConfigReact from "@dextinity/eslint-config/future/react.js";
 
 export default defineConfig([
-    globalIgnores(["lib/**", "e2e/fixture/dist/**", "test-results/**", "playwright-report/**"]),
+    globalIgnores(["lib/**", "**/*.generated.ts", "block-meta.json", "e2e/fixture/dist/**", "test-results/**", "playwright-report/**"]),
     ...eslintConfigReact,
     {
         files: ["e2e/**"],

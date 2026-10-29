@@ -2870,6 +2870,9 @@ importers:
         specifier: ^0.0.8
         version: 0.0.8
     devDependencies:
+      '@dextinity/cli':
+        specifier: workspace:*
+        version: link:../../cli
       '@dextinity/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config

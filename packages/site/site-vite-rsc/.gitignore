@@ -1,3 +1,5 @@
 /test-results
 /playwright-report
 /e2e/fixture/dist
+block-meta.json
+src/blocks.generated.ts

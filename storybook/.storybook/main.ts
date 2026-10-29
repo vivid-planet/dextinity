@@ -39,6 +39,10 @@ const config: StorybookConfig = {
                 title: "@dextinity/mail-react",
                 url: configType === "DEVELOPMENT" ? "http://localhost:6066/" : chromaticUrl("69df33e9280a36be495d6521"),
             },
+            "@dextinity/ui": {
+                title: "@dextinity/ui",
+                url: configType === "DEVELOPMENT" ? "http://localhost:26648/" : chromaticUrl("6adb09e1f667e1e0e9a4a772"),
+            },
         };
     },
 };

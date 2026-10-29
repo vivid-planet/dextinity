@@ -43,3 +43,9 @@ jobs:
               with:
                   projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_MAIL_REACT }}
                   workingDir: packages/mail-react
+
+            - name: Publish dextinity-ui to Chromatic
+              uses: chromaui/action@v18
+              with:
+                  projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_UI }}
+                  workingDir: packages/ui

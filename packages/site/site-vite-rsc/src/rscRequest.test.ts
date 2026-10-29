@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { addRscPrefix, createRscUrl, stripRscPrefix } from "./rscRequest.js";
+import { addRscPrefix, createRscUrl, getRedirectedPageUrl, stripRscPrefix } from "./rscRequest.js";
 
 describe("addRscPrefix", () => {
     it("prefixes the pathname", () => {
@@ -39,5 +39,20 @@ describe("createRscUrl", () => {
 
         expect(createRscUrl("detail?page=2#comments").href).toBe(`${window.location.origin}/_rsc/en/detail?page=2`);
         expect(createRscUrl("/de").href).toBe(`${window.location.origin}/_rsc/de`);
+    });
+});
+
+describe("getRedirectedPageUrl", () => {
+    it("keeps the requested fragment", () => {
+        expect(getRedirectedPageUrl("https://example.com/_rsc/en/page", new URL("https://example.com/en/page/#details"))?.href).toBe(
+            "https://example.com/en/page#details",
+        );
+        expect(getRedirectedPageUrl("https://example.com/_rsc/en/page", new URL("https://example.com/en/page/"))?.href).toBe(
+            "https://example.com/en/page",
+        );
+    });
+
+    it("returns null for redirects without the prefix", () => {
+        expect(getRedirectedPageUrl("https://other.example.com/en", new URL("https://example.com/en#details"))).toBeNull();
     });
 });

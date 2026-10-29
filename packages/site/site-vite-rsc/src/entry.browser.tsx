@@ -7,7 +7,7 @@ import { announceNavigation, setUpNavigationAnnouncer } from "./announceNavigati
 import { GlobalErrorBoundary } from "./GlobalErrorBoundary.js";
 import type { RscPayload } from "./render.js";
 import { NavigationProvider, type Router } from "./RouterProvider.js";
-import { createRscUrl, stripRscPrefix } from "./rscRequest.js";
+import { createRscUrl, getRedirectedPageUrl } from "./rscRequest.js";
 import {
     createHistoryState,
     getHistoryKey,
@@ -89,7 +89,7 @@ function navigate(href: string, scrollTarget: ScrollTarget) {
             }
             pendingNavigation = undefined; // The response may still be streaming, aborting it would break the displayed page
             if (response.redirected) {
-                const redirectedUrl = stripRscPrefix(new URL(response.url));
+                const redirectedUrl = getRedirectedPageUrl(response.url, new URL(href, window.location.href));
                 if (redirectedUrl) {
                     window.history.replaceState(window.history.state, "", redirectedUrl);
                     currentDocumentPath = getDocumentPath(new URL(redirectedUrl, window.location.href));

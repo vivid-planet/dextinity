@@ -20,3 +20,15 @@ export function stripRscPrefix(url: URL) {
     strippedUrl.pathname = url.pathname.slice(rscPathnamePrefix.length) || "/";
     return strippedUrl;
 }
+
+/**
+ * The page URL of a redirected RSC response. `response.url` never contains a fragment, browsers keep the requested one
+ * across redirects.
+ */
+export function getRedirectedPageUrl(responseUrl: string, requestedUrl: URL) {
+    const redirectedUrl = stripRscPrefix(new URL(responseUrl));
+    if (redirectedUrl) {
+        redirectedUrl.hash = requestedUrl.hash;
+    }
+    return redirectedUrl;
+}

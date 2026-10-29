@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import type { BlockContext } from "../context/BlockContext";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory } from "../types";
 import { createOneOfBlock } from "./createOneOfBlock";
@@ -27,5 +28,20 @@ describe("createOneOfBlock", () => {
             },
         );
         expect(block.name).toBe(nameOverride);
+    });
+
+    it("should name the attached types when activeType has no entry in attachedBlocks", () => {
+        const block = createOneOfBlock({
+            name: "testOneOfBlock",
+            displayName: "Test One Of Block",
+            supportedBlocks: { internal: TestBlock, external: TestBlock },
+        });
+
+        expect(() => block.previewContent({ attachedBlocks: [{ type: "internal", props: {} }], activeType: "external" }, {} as BlockContext)).toThrow(
+            'activeType "external" has no entry in attachedBlocks, which holds: "internal".',
+        );
+        expect(() => block.previewContent({ attachedBlocks: [], activeType: "external" }, {} as BlockContext)).toThrow(
+            'activeType "external" has no entry in attachedBlocks, which is empty.',
+        );
     });
 });

@@ -26,7 +26,7 @@ export class ImagesService {
     }
 
     createUrlTemplate({ file, cropArea }: ImageInterface, { previewDamUrls = false }: { previewDamUrls?: boolean }): string {
-        const imageCropArea = cropArea !== undefined && isUsableCropArea(cropArea) ? cropArea : file.image!.cropArea;
+        const imageCropArea = cropArea && isUsableCropArea(cropArea) ? cropArea : file.image!.cropArea;
         const filename = this.createFilename(file);
 
         const baseUrl = [`/${this.config.basePath}/images`];

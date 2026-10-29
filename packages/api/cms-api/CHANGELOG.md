@@ -1,5 +1,13 @@
 # @comet/cms-api
 
+## 8.32.3
+
+### Patch Changes
+
+- f6bf5b7: Validate `damFileId` as UUID in `PixelImageBlock` and `SvgImageBlock`
+
+    Previously, any non-empty string was accepted and saved, resulting in a broken image.
+
 ## 8.32.2
 
 ## 8.32.1

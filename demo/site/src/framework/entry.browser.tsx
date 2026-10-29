@@ -11,7 +11,7 @@ import { createRscUrl, stripRscPrefix } from "./rscRequest";
 type ScrollTarget = "top" | "hash" | undefined;
 
 let setPayloadFromOutside: ((payload: RscPayload, scrollTarget: ScrollTarget) => void) | undefined;
-let latestNavigationId = 0;
+let pendingNavigation: AbortController | undefined;
 
 function BrowserRoot({ initialPayload }: { initialPayload: RscPayload }) {
     const [{ payload, scrollTarget }, setState] = useState<{ payload: RscPayload; scrollTarget: ScrollTarget }>({
@@ -35,16 +35,19 @@ function BrowserRoot({ initialPayload }: { initialPayload: RscPayload }) {
 }
 
 async function navigate(href: string, scrollTarget: ScrollTarget) {
-    const navigationId = ++latestNavigationId;
+    pendingNavigation?.abort();
+    const navigation = new AbortController();
+    pendingNavigation = navigation;
     try {
-        const response = await fetch(createRscUrl(href));
+        const response = await fetch(createRscUrl(href), { signal: navigation.signal });
         if (!response.headers.get("Content-Type")?.startsWith("text/x-component")) {
             throw new Error(`Unexpected response for ${href}`);
         }
         const payload = await createFromFetch<RscPayload>(Promise.resolve(response));
-        if (navigationId !== latestNavigationId) {
+        if (navigation.signal.aborted) {
             return;
         }
+        pendingNavigation = undefined; // The response may still be streaming, aborting it would break the displayed page
         if (response.redirected) {
             const redirectedUrl = stripRscPrefix(new URL(response.url));
             if (redirectedUrl) {
@@ -53,6 +56,9 @@ async function navigate(href: string, scrollTarget: ScrollTarget) {
         }
         setPayloadFromOutside?.(payload, scrollTarget);
     } catch (error) {
+        if (navigation.signal.aborted) {
+            return;
+        }
         // Fall back to a full page load, e.g., for redirects to other origins or non-page responses
         console.error(error);
         window.location.assign(href);

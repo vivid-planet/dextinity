@@ -57,54 +57,71 @@ export class BrevoContactsService {
         contactSource?: ContactSource;
     }): Promise<SubscribeResponse> {
         const existingContact = await this.brevoContactsApiService.getContactInfoByEmail(email, scope);
-        if (existingContact) {
+        const mainTargetGroupForScope = await this.targetGroupService.createIfNotExistMainTargetGroupForScope(scope);
+
+        if (existingContact?.listIds.includes(mainTargetGroupForScope.brevoId)) {
             return SubscribeResponse.ERROR_CONTACT_ALREADY_EXISTS;
         }
 
-        const mainTargetGroupForScope = await this.targetGroupService.createIfNotExistMainTargetGroupForScope(scope);
         const targetGroupIds = await this.getTargetGroupIdsForNewContact({ scope, contactAttributes: attributes });
-        const brevoIds = [mainTargetGroupForScope.brevoId, ...targetGroupIds];
+        const brevoIds = [mainTargetGroupForScope.brevoId, ...targetGroupIds, ...(listIds ?? [])];
 
-        if (listIds) {
-            brevoIds.push(...listIds);
-        }
-
-        if (!sendDoubleOptIn && responsibleUserId) {
-            if (!this.secretKey) {
-                throw new Error("There is no `emailHashKey` defined in the environment variables.");
-            }
-
-            const hashedEmail = hashEmail(email, this.secretKey);
-            const blacklistedContactAvailable = await this.blacklistedContactsRepository.findOne({ hashedEmail: hashedEmail });
-
-            if (blacklistedContactAvailable) {
-                return SubscribeResponse.ERROR_CONTACT_IS_BLACKLISTED;
-            }
-
-            if (contactSource) {
-                const created = await this.brevoContactsApiService.createBrevoContactWithoutDoubleOptIn({ email, attributes }, brevoIds, scope);
-                if (created) {
-                    await this.brevoEmailImportLogService.addContactToLogs(email, responsibleUserId, scope, contactSource);
-                    return SubscribeResponse.SUCCESSFUL;
-                } else {
-                    return SubscribeResponse.ERROR_UNKNOWN;
-                }
-            }
-        } else {
+        if (sendDoubleOptIn || !responsibleUserId) {
             const created = await this.brevoContactsApiService.createDoubleOptInBrevoContact(
                 { email, redirectionUrl, attributes },
                 brevoIds,
                 templateId,
                 scope,
             );
-            if (created) {
-                return SubscribeResponse.SUCCESSFUL;
-            } else {
+            return created ? SubscribeResponse.SUCCESSFUL : SubscribeResponse.ERROR_UNKNOWN;
+        }
+
+        return this.addContactWithoutDoubleOptIn({ email, attributes, scope, brevoIds, existingContact, responsibleUserId, contactSource });
+    }
+
+    private async addContactWithoutDoubleOptIn({
+        email,
+        attributes,
+        scope,
+        brevoIds,
+        existingContact,
+        responsibleUserId,
+        contactSource,
+    }: {
+        email: string;
+        attributes?: BrevoContactAttributesInterface;
+        scope: EmailCampaignScopeInterface;
+        brevoIds: number[];
+        existingContact: BrevoContactInterface | null;
+        responsibleUserId: string;
+        contactSource?: ContactSource;
+    }): Promise<SubscribeResponse> {
+        if (!this.secretKey) {
+            throw new Error("There is no `emailHashKey` defined in the environment variables.");
+        }
+
+        const hashedEmail = hashEmail(email, this.secretKey);
+        const blacklistedContactAvailable = await this.blacklistedContactsRepository.findOne({ hashedEmail: hashedEmail });
+
+        if (blacklistedContactAvailable) {
+            return SubscribeResponse.ERROR_CONTACT_IS_BLACKLISTED;
+        }
+
+        if (!contactSource) {
+            return SubscribeResponse.ERROR_UNKNOWN;
+        }
+
+        if (existingContact) {
+            await this.brevoContactsApiService.updateContact(existingContact.id, { listIds: brevoIds, attributes }, scope);
+        } else {
+            const created = await this.brevoContactsApiService.createBrevoContactWithoutDoubleOptIn({ email, attributes }, brevoIds, scope);
+            if (!created) {
                 return SubscribeResponse.ERROR_UNKNOWN;
             }
         }
 
-        return SubscribeResponse.ERROR_UNKNOWN;
+        await this.brevoEmailImportLogService.addContactToLogs(email, responsibleUserId, scope, contactSource);
+        return SubscribeResponse.SUCCESSFUL;
     }
 
     public async createTestContact({

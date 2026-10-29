@@ -84,6 +84,14 @@ TODO in `framework/render.tsx` (`renderRscPayload`). Needed once pages use Suspe
 
 Today RSC requests get a 3xx that `fetch` follows; `entry.rsc.tsx` rewrites `Location` to keep `/_rsc`. External targets fail with CORS → console error → full page load (target requested twice). Turn every 3xx of an RSC request (renderPage, middlewares, Hono handlers) into status 202 + payload `{ type: "redirect", location, status }` with `no-store`; `RscPayload` becomes a union; the browser entry navigates (same origin client-side with `replaceState`, else `location.assign`). Makes #4 obsolete. Depends on #39. Ref: React Router `generateRedirectResponse` / `routeRSCServerRequest`.
 
+### #42 Switch the scroll restoration back to `"auto"` on `pagehide`
+
+Like React Router (`useScrollRestoration`) and TanStack Router (`setupScrollRestoration`): set `history.scrollRestoration = "auto"` on `pagehide` and `"manual"` again on `pageshow` with `persisted`, so the browser restores reloads and returns from other sites natively (it retries until the page is loaded) instead of the early `window.scrollTo()` in `setUpScrollRestoration()`, which can be capped while images or CSS are still loading. Keep the `sessionStorage` positions: after a reload, back to an entry created before it is a same-document traversal that `"manual"` doesn't restore (measured in Chromium).
+
+### #43 Replace the scroll restoration with the Navigation API (revisit 2027)
+
+`navigateEvent.intercept({ handler, scroll: "after-transition" })` lets the browser restore its own positions after the handler's promise resolves, including reloads and fragments, and `focusReset` covers the focus part of `announceNavigation`. That would remove `framework/scrollPositions.ts`, the history keys and the fragment special case. Baseline since January 2026 (Chrome 102, Firefox 147, Safari 26.2), but about 88% of all users in Europe in October 2026 (`caniuse-lite`; iOS Safari < 26.2 is the largest gap) and known WebKit scroll bugs with `intercept`. Revisit when it reaches 93% (browser support rule); a fallback would keep today's code, so adopting it earlier doesn't simplify anything. Neither Next.js, React Router nor TanStack use it yet. Next.js keeps `"auto"` and renders back/forward from its client cache, which fails on cache misses (vercel/next.js#49087, #50105).
+
 ## Other
 
 ### #15 Replace `DefaultTitle` on every page with a central title fallback

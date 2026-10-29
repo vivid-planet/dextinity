@@ -73,6 +73,17 @@ export const graphQLFetch = createServerGraphQLFetch({
 });
 ```
 
+**Persisted queries** (`@dextinity/site-vite-rsc/vite`)
+
+`persistedQueriesPlugin({ persistedQueriesPath, include })` replaces the GraphQL queries in client code with their hashes and writes the hashes to `persistedQueriesPath`, which the BFF route of the site (`persistedQueryRoute()` from `@dextinity/site-react`) reads:
+
+```ts
+plugins: [
+    dextinitySite({ app: "./src/handler.ts" }),
+    persistedQueriesPlugin({ persistedQueriesPath: "dist/persisted-queries.json", include: resolve(import.meta.dirname, "src") }),
+],
+```
+
 **Server** (`@dextinity/site-vite-rsc/node`)
 
 `createRequestListener({ dev, server })` handles the requests with Vite during development and with the build in production. The project's server adds what its operation needs, e.g. tracing and metrics:

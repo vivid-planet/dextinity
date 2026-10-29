@@ -147,7 +147,7 @@ To be checked against audi6 (second consumer, not reachable from the session tha
 
 ### #20 Create the package with a Vite plugin preset (done)
 
-`packages/site/site-vite-rsc`, set up like `site-nextjs`; since #21 built with `tsc` like `mail-react`, as Vite's library mode replaces `import.meta.env.DEV` and removes `import.meta.hot`. Published from the start (changeset), re-exports `@dextinity/site-react` and exports `dextinitySite({ entries })` from `@dextinity/site-vite-rsc/vite`: `rsc()`, `react()`, `envDir: false`, client `assetsDir: "_assets"`, the `optimizeDeps.include` remapping for plugin-rsc, the package excluded from `optimizeDeps` and in `noExternal` of the server environments (unit tests with Vite's `resolveConfig`). `entries` is temporary, #21 replaces it with `app`. The demo and the test app use the preset; their own settings (alias, mails entry, `prop-types`/`swiper`, persisted queries plugin until #31) stay in their configs.
+`packages/site/site-vite-rsc`, set up like `site-nextjs`; since #21 built with `tsc` like `mail-react`, as Vite's library mode replaces `import.meta.env.DEV` and removes `import.meta.hot`. Published from the start (changeset), re-exports `@dextinity/site-react` and exports `dextinitySite({ entries })` from `@dextinity/site-vite-rsc/vite`: `rsc()`, `react()`, `envDir: false`, client `assetsDir: "_assets"`, the `optimizeDeps.include` remapping for plugin-rsc, the package excluded from `optimizeDeps` and in `noExternal` of the server environments (unit tests with Vite's `resolveConfig`). `entries` is temporary, #21 replaces it with `app`. The demo and the test app use the preset; their own settings (alias, mails entry, `prop-types`/`swiper`, persisted queries plugin, see #31) stay in their configs.
 
 ### #21 Move the entries and the framework core into the package (done, covers #22, #24, #25, #26 and the core of #23)
 
@@ -169,6 +169,10 @@ The Next.js site cached with Next.js and attached Valkey through a project-level
 
 `createServerGraphQLFetch({ url, headers, cache })` (`@dextinity/site-vite-rsc/server`) creates one GraphQL fetch for the whole site. Each query reads the visibility of the current request, sends the API's preview headers in the site and block preview (`invisiblePages` → `Pages:Unpublished`, `invisibleBlocks` → also `Blocks:Invisible`) and bypasses the fetch cache there, so editors always see the current content (the Next.js site rendered the site preview in draft mode); published content goes through `createCachingFetch()`. The demo exports the instance as `graphQLFetch` from `src/util/graphQLClient.ts` instead of the `createGraphQLFetch()` factory called in every component. The middlewares keep `createGraphQLFetchMiddleware()` without preview and fetch cache, they cache their results themselves.
 
+### #31 Move the persisted queries Vite plugin into the package (done)
+
+`persistedQueriesPlugin({ persistedQueriesPath, include })` (`@dextinity/site-vite-rsc/vite`) replaces the queries in client code with their hashes and writes the hash file for the BFF route (`persistedQueryRoute()` from `@dextinity/site-react`). It's a separate plugin instead of part of `dextinitySite()`, as not every site uses persisted queries. Its logic stays separate from site-react's webpack loader, which is bound to webpack's loader API. #17 changes the route, not the plugin, so it applies unchanged.
+
 ### #44 Make error reporting configurable
 
 `reportError()` (now in the package) only logs; projects used to edit it to report to an error tracking service (e.g. Sentry). Add a way to set the reporter, e.g. an option or `setErrorReporter()`, used by `renderPage`, `handleError`, `GlobalErrorBoundary` and the SSR entry. The fallback texts of `GlobalErrorBoundary` are English, as it replaces the document outside of the site's providers.
@@ -187,7 +191,7 @@ The Next.js site cached with Next.js and attached Valkey through a project-level
 | 28  | Production and dev server (`createServer({ staticDir, securityHeaders, cdnOriginCheckSecret })`, Vite middleware mode in dev, metrics/tracing hooks) | `server.ts`                                                         | done (#28)                                   |
 | 29  | Fetch cache (store interface, Valkey/LRU, stale-while-revalidate, metrics)                                                                           | `src/util/fetchCache.ts`, `fetchCacheStore.ts`                      | done (#29)                                   |
 | 30  | `createServerGraphQLFetch({ url, headers })` reading visibility from the context                                                                     | `src/util/graphQLClient.ts`                                         | done (#30)                                   |
-| 31  | Persisted queries Vite plugin (counterpart to site-react's webpack loader)                                                                           | `vitePersistedQueriesPlugin.ts`                                     | #20, #17                                     |
+| 31  | Persisted queries Vite plugin (counterpart to site-react's webpack loader)                                                                           | `vitePersistedQueriesPlugin.ts`                                     | done (#31)                                   |
 | 32  | `SitePreviewProvider`                                                                                                                                | `src/util/SitePreviewProvider.tsx`                                  | #25                                          |
 
 ### #45 Move the CDN origin check into a middleware

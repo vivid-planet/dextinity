@@ -22,7 +22,7 @@ export function persistedQueriesPlugin({ persistedQueriesPath, include }: { pers
     }
 
     return {
-        name: "persisted-queries",
+        name: "@dextinity/site-vite-rsc:persisted-queries",
         applyToEnvironment: (environment) => environment.name === "client",
         buildStart() {
             if (this.environment.mode === "dev") {

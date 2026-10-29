@@ -1,9 +1,7 @@
 import { resolve } from "node:path";
 
-import { dextinitySite } from "@dextinity/site-vite-rsc/vite";
+import { dextinitySite, persistedQueriesPlugin } from "@dextinity/site-vite-rsc/vite";
 import { defineConfig } from "vite";
-
-import { persistedQueriesPlugin } from "./vitePersistedQueriesPlugin.ts";
 
 export default defineConfig({
     plugins: [

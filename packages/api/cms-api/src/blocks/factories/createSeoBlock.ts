@@ -1,26 +1,26 @@
 import { Type } from "class-transformer";
 import { IsBoolean, IsEnum, IsJSON, IsOptional, IsString, IsUrl, ValidateNested } from "class-validator";
 
-import { PixelImageBlock } from "../../dam/blocks/pixel-image.block";
+import { PixelImageBlock } from "../../dam/blocks/pixel-image.block.js";
 import {
-    Block,
+    type Block,
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockInput,
-    BlockInputInterface,
+    type BlockInputInterface,
     blockInputToData,
-    BlockMetaField,
+    type BlockMetaField,
     BlockMetaFieldKind,
-    BlockWarning,
+    type BlockWarning,
     createBlock,
-    ExtractBlockInput,
-    SimpleBlockInputInterface,
-    TraversableTransformBlockResponse,
-} from "../block";
-import { ChildBlock } from "../decorators/child-block";
-import { ChildBlockInput } from "../decorators/child-block-input";
-import { AnnotationBlockMeta, BlockField } from "../decorators/field";
-import { createOptionalBlock, OptionalBlockInputInterface } from "./createOptionalBlock";
+    type ExtractBlockInput,
+    type SimpleBlockInputInterface,
+    type TraversableTransformBlockResponse,
+} from "../block.js";
+import { ChildBlock } from "../decorators/child-block.js";
+import { ChildBlockInput } from "../decorators/child-block-input.js";
+import { AnnotationBlockMeta, BlockField } from "../decorators/field.js";
+import { createOptionalBlock, type OptionalBlockInputInterface } from "./createOptionalBlock.js";
 
 export enum SitemapPagePriority {
     _0_0 = "0_0",
@@ -37,13 +37,13 @@ export enum SitemapPagePriority {
 }
 
 export enum SitemapPageChangeFrequency {
-    "always" = "always",
-    "hourly" = "hourly",
-    "daily" = "daily",
-    "weekly" = "weekly",
-    "monthly" = "monthly",
-    "yearly" = "yearly",
-    "never" = "never",
+    always = "always",
+    hourly = "hourly",
+    daily = "daily",
+    weekly = "weekly",
+    monthly = "monthly",
+    yearly = "yearly",
+    never = "never",
 }
 
 interface CreateSeoBlockOptions<ImageBlock extends Block> {
@@ -168,8 +168,6 @@ export function createSeoBlock<ImageBlock extends Block = typeof PixelImageBlock
         @BlockField({ nullable: true })
         openGraphDescription?: string;
 
-        @ValidateNested()
-        @IsOptional() // @TODO: Should not be optional as the image-block is already optional itself
         @ChildBlockInput(OptionalImageBlock)
         openGraphImage: OptionalBlockInputInterface<ExtractBlockInput<ImageBlock>>;
 
@@ -208,7 +206,13 @@ export function createSeoBlock<ImageBlock extends Block = typeof PixelImageBlock
         }
     }
 
-    return createBlock(SeoBlockData, SeoBlockInput, { name: "Seo", blockMeta: new Meta(SeoBlockData), blockInputMeta: new InputMeta(SeoBlockData) });
+    return createBlock(SeoBlockData, SeoBlockInput, {
+        name: "Seo",
+        description:
+            "The metadata of a page for search engines and social networks: title, description, preview image, sitemap settings and canonical URL.",
+        blockMeta: new Meta(SeoBlockData),
+        blockInputMeta: new InputMeta(SeoBlockData),
+    });
 }
 
 class AlternativeLink {

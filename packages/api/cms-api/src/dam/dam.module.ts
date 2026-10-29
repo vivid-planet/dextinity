@@ -1,13 +1,13 @@
-import { DynamicModule, Global, Module, Type } from "@nestjs/common";
+import { type DynamicModule, Global, Module, type Type } from "@nestjs/common";
 
-import { DamConfig, damDefaultBasePath } from "./dam.config";
-import { DamBlocksModule } from "./dam-blocks.module";
-import { DamDependentsModule } from "./dam-dependents.module";
-import { DamFilesModule } from "./dam-files.module";
-import { DamImagesModule } from "./dam-images.module";
-import { createFileEntity, FileInterface } from "./files/entities/file.entity";
-import { createFolderEntity, FolderInterface } from "./files/entities/folder.entity";
-import { DamScopeInterface } from "./types";
+import { type DamConfig, damDefaultBasePath } from "./dam.config.js";
+import { DamBlocksModule } from "./dam-blocks.module.js";
+import { DamDependentsModule } from "./dam-dependents.module.js";
+import { DamFilesModule } from "./dam-files.module.js";
+import { DamImagesModule } from "./dam-images.module.js";
+import { createFileEntity, type FileInterface } from "./files/entities/file.entity.js";
+import { createFolderEntity, type FolderInterface } from "./files/entities/folder.entity.js";
+import type { DamScopeInterface } from "./types.js";
 
 interface DamModuleOptions {
     damConfig: Omit<DamConfig, "basePath"> & { basePath?: string };

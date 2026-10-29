@@ -3,6 +3,7 @@
     "extends": ["config:recommended", ":semanticCommitsDisabled"],
     "minimumReleaseAge": "3 days",
     "internalChecksFilter": "strict",
+    "recreateWhen": "never",
     "packageRules": [
         {
             "groupName": "babel",
@@ -77,10 +78,6 @@
         {
             "groupName": "lodash",
             "matchPackageNames": ["/^lodash.*/", "/^@types/lodash.*/"]
-        },
-        {
-            "groupName": "msw",
-            "matchPackageNames": ["msw", "@graphql-mocks/network-msw"]
         },
         {
             "groupName": "node",

@@ -14,7 +14,7 @@ import {
     useSiteConfig,
 } from "@dextinity/cms-admin";
 import type { FooterContentBlockInput } from "@src/blocks.generated";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { type JSX, useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { useRouteMatch } from "react-router";
@@ -89,7 +89,7 @@ export function EditFooterPage(): JSX.Element | null {
     }, [data]);
 
     useEffect(() => {
-        const equal = isEqual(referenceContent, footerState ? FooterContentBlock.state2Output(footerState) : null);
+        const equal = deepEqual(referenceContent, footerState ? FooterContentBlock.state2Output(footerState) : null);
         setHasChanges(!equal);
     }, [footerState, referenceContent]);
 

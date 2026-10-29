@@ -1,10 +1,11 @@
-import { Connection, EntityManager } from "@mikro-orm/postgresql";
-import { Injectable } from "@nestjs/common";
-import isEqual from "lodash.isequal";
+import { isDeepStrictEqual } from "node:util";
 
-import { DiscoverService } from "../dependencies/discover.service";
-import { transformToBlockSave } from "./block";
-import { transformToBlockSaveIndex } from "./transformToBlockSaveIndex/transformToBlockSaveIndex";
+import { type Connection, EntityManager } from "@mikro-orm/postgresql";
+import { Injectable } from "@nestjs/common";
+
+import { DiscoverService } from "../dependencies/discover.service.js";
+import { transformToBlockSave } from "./block.js";
+import { transformToBlockSaveIndex } from "./transformToBlockSaveIndex/transformToBlockSaveIndex.js";
 
 @Injectable()
 export class BlockMigrateService {
@@ -64,10 +65,10 @@ export class BlockMigrateService {
                     statistics.blocks += blockIndex.length;
 
                     let needsUpdate = false;
-                    if (!isEqual(blockDataJson, row[column].data)) {
+                    if (!isDeepStrictEqual(blockDataJson, row[column].data)) {
                         statistics.rootBlocksDataUpdated++;
                         needsUpdate = true;
-                    } else if (!isEqual(blockIndex, row[column].index)) {
+                    } else if (!isDeepStrictEqual(blockIndex, row[column].index)) {
                         statistics.rootBlocksIndexUpdated++;
                         needsUpdate = true;
                     }

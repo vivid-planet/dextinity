@@ -48,12 +48,17 @@ type ContentScopeWithLabel {
   label: JSONObject!
 }
 
+type ContentScopeDimension {
+  name: String!
+  label: String!
+}
+
 type UserPermissionsUser {
   id: String!
   name: String!
   email: String!
-  permissionsCount: Int!
-  contentScopesCount: Int!
+  permissionsCount: Int! @deprecated(reason: "The Permissions column was removed from the users list. Will be removed in the next version.")
+  contentScopesCount: Int! @deprecated(reason: "The Scopes column was removed from the users list. Will be removed in the next version.")
   impersonationAllowed: Boolean!
 }
 
@@ -79,6 +84,7 @@ type EntityInfo {
   entityName: String!
   name: String!
   secondaryInformation: String
+  visible: Boolean!
 }
 
 type Dependency {
@@ -91,6 +97,11 @@ type Dependency {
   targetId: String!
   name: String
   secondaryInformation: String
+
+  """
+  Scope of the root entity for dependents, of the target entity for dependencies. Entities with multiple scopes return their first.
+  """
+  scope: JSONObject
 }
 
 type PaginatedDependencies {
@@ -567,6 +578,7 @@ type Query {
   userPermissionsAvailablePermissions: [String!]!
   userPermissionsContentScopes(userId: String!, skipManual: Boolean): [JSONObject!]!
   userPermissionsAvailableContentScopes: [ContentScopeWithLabel!]!
+  userPermissionsAvailableContentScopeDimensions: [ContentScopeDimension!]!
   fileUploadForTypesGenerationDoNotUse: FileUpload!
   azureAiTranslate(input: AzureAiTranslationInput!): String!
   azureAiTranslateBatch(input: AzureAiTranslationBatchInput!): [String!]!
@@ -731,6 +743,7 @@ input WarningFilter {
   type: StringFilter
   name: StringFilter
   secondaryInformation: StringFilter
+  visible: BooleanFilter
   severity: WarningSeverityEnumFilter
   status: WarningStatusEnumFilter
   scope: ScopeFilter
@@ -767,6 +780,7 @@ enum WarningSortField {
   message
   type
   name
+  visible
   severity
   status
 }

@@ -11,13 +11,11 @@ export default {
 };
 
 export const PagingClientside = () => {
-    const data = Array.from(Array(100).keys()).map(
-        (i): IExampleRow => ({
-            id: i,
-            foo1: `blub1 ${i}`,
-            foo2: `blub2 ${i}`,
-        }),
-    );
+    const data = Array.from(Array(100).keys()).map((i): IExampleRow => ({
+        id: i,
+        foo1: `blub1 ${i}`,
+        foo2: `blub2 ${i}`,
+    }));
 
     const pagingApi = useTableQueryPaging(1);
 

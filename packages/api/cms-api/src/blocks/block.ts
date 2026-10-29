@@ -1,14 +1,16 @@
 import type { Type } from "@nestjs/common";
 import { type ClassConstructor, instanceToPlain, plainToInstance } from "class-transformer";
-import type { WarningSeverity as WarningSeverityEnum } from "src/warnings/entities/warning-severity.enum";
+import { Equals } from "class-validator";
 
-import { AnnotationBlockMeta, getBlockFieldData, getFieldKeys } from "./decorators/field";
-import { strictBlockDataFactoryDecorator } from "./helpers/strictBlockDataFactoryDecorator";
-import { strictBlockInputFactoryDecorator } from "./helpers/strictBlockInputFactoryDecorator";
-import { createAppliedMigrationsBlockDataFactoryDecorator } from "./migrations/createAppliedMigrationsBlockDataFactoryDecorator";
-import { BlockDataMigrationVersion } from "./migrations/decorators/BlockDataMigrationVersion";
-import type { BlockMigrationInterface } from "./migrations/types";
-import type { SearchText } from "./search/get-search-text";
+import type { WarningSeverity as WarningSeverityEnum } from "../warnings/entities/warning-severity.enum.js";
+import { AnnotationBlockMeta, getBlockFieldData, getFieldKeys } from "./decorators/field.js";
+import { strictBlockDataFactoryDecorator } from "./helpers/strictBlockDataFactoryDecorator.js";
+import { strictBlockInputFactoryDecorator } from "./helpers/strictBlockInputFactoryDecorator.js";
+import { getBlockDataMigrateVendor, setBlockDataMigrateVendor } from "./migrations/blockDataMigrateVendor.js";
+import { createAppliedMigrationsBlockDataFactoryDecorator } from "./migrations/createAppliedMigrationsBlockDataFactoryDecorator.js";
+import { BlockDataMigrationVersion } from "./migrations/decorators/BlockDataMigrationVersion.js";
+import type { MigrateOptions, MigrateVendorOptions } from "./migrations/types.js";
+import type { SearchText } from "./search/get-search-text.js";
 
 export interface BlockTransformerServiceInterface<
     Block extends BlockDataInterface = BlockDataInterface,
@@ -158,9 +160,11 @@ type Unpacked<T> = T extends (infer U)[] ? U : T extends (...args: any[]) => inf
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NestedToPlainReturn<T extends Record<string, any>> = WithoutBlockInputMethods<{
-    [Key in keyof T]: T[Key] extends BlockInputInterface | undefined // value is a BlockInputInterface
+    [Key in keyof T]: T[Key] extends
+        BlockInputInterface | undefined // value is a BlockInputInterface
         ? ReturnType<NonNullable<T[Key]>["toPlain"]>
-        : T[Key] extends BlockInputInterface[] | undefined // value is an array of BlockInputInterfaces
+        : T[Key] extends
+                BlockInputInterface[] | undefined // value is an array of BlockInputInterfaces
           ? ReturnType<NonNullable<Unpacked<T[Key]>>["toPlain"]>[]
           : T[Key];
 }>;
@@ -179,6 +183,14 @@ export interface BlockInputInterface<
 
 export type SimpleBlockInputInterface<BlockType extends BlockDataInterface = BlockDataInterface> = BlockInputInterface<BlockType, undefined>;
 export abstract class BlockInput<BlockType extends BlockDataInterface = BlockDataInterface> implements BlockInputInterface<BlockType, undefined> {
+    // class-validator rejects classes without any validation metadata, as `forbidUnknownValues` is enabled by default
+    // since v0.14. Block inputs that don't validate a single field (e.g. a block without fields) would therefore always
+    // fail to validate. This property exists so that every block input has at least one validation metadata.
+    // It must never be set: a validated property is whitelisted, so without `@Equals(undefined)` it could be sent by a
+    // client and would end up in the saved block data. As it is never set, it shows up in neither `toPlain()` nor the block meta.
+    @Equals(undefined)
+    thisBlockInputNeedsValidationMetadata____?: never;
+
     abstract transformToBlockData(): BlockType;
 
     toPlain(): CreateToPlainReturn<this> {
@@ -221,6 +233,7 @@ export enum BlockMetaFieldKind {
     OneOfBlocks = "OneOfBlocks",
     NestedObject = "NestedObject",
     NestedObjectList = "NestedObjectList",
+    RichTextBlock = "RichTextBlock",
     TipTapRichTextBlock = "TipTapRichTextBlock",
 }
 
@@ -240,12 +253,25 @@ export type BlockMetaField =
     | { name: string; kind: BlockMetaFieldKind.OneOfBlocks; blocks: Record<string, Block>; nullable: boolean }
     | {
           name: string;
+          kind: BlockMetaFieldKind.RichTextBlock;
+          /**
+           * The link block used for links in the rich text content.
+           */
+          linkBlock: Block;
+          nullable: boolean;
+      }
+    | {
+          name: string;
           kind: BlockMetaFieldKind.TipTapRichTextBlock;
           /**
            * The child blocks the rich text content may contain, keyed by their stable config key.
            * Lets consumers like the block loader process blocks embedded in the content.
            */
           childBlocks: Record<string, Block>;
+          /**
+           * The link block used for links in the rich text content. Undefined if links are disabled.
+           */
+          linkBlock?: Block;
           nullable: boolean;
       };
 
@@ -255,23 +281,20 @@ export interface BlockMetaInterface {
 
 export type Block<BlockType extends BlockDataInterface = BlockDataInterface, BlockInputType extends BlockInputInterface = BlockInputInterface> = {
     name: string;
+    description?: string;
     blockDataFactory: BlockDataFactory<BlockType>;
     blockInputFactory: BlockInputFactory<BlockInputType>;
     blockMeta: BlockMetaInterface;
     blockInputMeta: BlockMetaInterface;
 };
 
-const blocks: Block[] = [];
-
-export interface MigrateOptions {
-    migrations: ClassConstructor<BlockMigrationInterface>[];
-    version: number;
-}
 interface CreateBlockOptions {
     name: string;
+    description?: string;
     blockMeta?: BlockMetaInterface;
     blockInputMeta?: BlockMetaInterface;
     migrate?: MigrateOptions;
+    migrateVendor?: MigrateVendorOptions;
 }
 
 export function createBlock<BlockType extends BlockDataInterface, BlockInputType extends BlockInputInterface>(
@@ -290,11 +313,25 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
     const options: CreateBlockOptions =
         typeof nameOrOptions !== "string"
             ? nameOrOptions
-            : { blockMeta: undefined, blockInputMeta: undefined, name: nameOrOptions, migrate: undefined };
+            : { blockMeta: undefined, blockInputMeta: undefined, name: nameOrOptions, migrate: undefined, migrateVendor: undefined };
 
-    if (options.migrate && options.migrate.version > 0) {
-        // Overwrite the transformToSave of BlockDate to append the version number
-        BlockDataMigrationVersion(options.migrate.version)(BlockData);
+    // A block extending another block's data inherits its vendor migrations
+    const inheritedMigrateVendor = getBlockDataMigrateVendor(BlockData);
+
+    if (options.migrateVendor && inheritedMigrateVendor && inheritedMigrateVendor !== options.migrateVendor) {
+        throw new Error(
+            `Block ${options.name} declares vendor migrations although the block it extends has them as well. Both chains would count in $$vendorVersion, so the vendor migrations of a block can only come from one library. Declare them in migrate instead.`,
+        );
+    }
+
+    if (options.migrateVendor) {
+        setBlockDataMigrateVendor(BlockData, options.migrateVendor);
+    }
+    const migrateVendor = options.migrateVendor ?? inheritedMigrateVendor;
+
+    if (options.migrate || migrateVendor) {
+        // Overwrite the transformToSave of BlockDate to append the version numbers
+        BlockDataMigrationVersion(options.migrate?.version, migrateVendor?.version)(BlockData);
     }
 
     const blockDataFactory: BlockDataFactory<BlockType> = (o) => {
@@ -305,8 +342,12 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
 
     // Decorate BlockDataFactory
     let decorateBlockDataFactory = blockDataFactory;
-    if (options.migrate) {
-        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator(options.migrate.migrations, options.name);
+    if (options.migrate || migrateVendor) {
+        const blockDataFactoryDecorator1 = createAppliedMigrationsBlockDataFactoryDecorator({
+            migrate: options.migrate,
+            migrateVendor,
+            blockName: options.name,
+        });
         decorateBlockDataFactory = blockDataFactoryDecorator1(decorateBlockDataFactory);
     }
     decorateBlockDataFactory = strictBlockDataFactoryDecorator(decorateBlockDataFactory);
@@ -316,24 +357,14 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
 
     const block: Block<BlockType, BlockInputType> = {
         name: typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name,
+        description: options.description,
         blockDataFactory: decorateBlockDataFactory,
         blockInputFactory: decorateBlockInputFactory,
         blockMeta: options.blockMeta ? options.blockMeta : new AnnotationBlockMeta(BlockData),
         blockInputMeta: options.blockInputMeta ? options.blockInputMeta : new AnnotationBlockMeta(BlockInput),
     };
 
-    const finalBlock = overwrite(block);
-    registerBlock(finalBlock);
-
-    return finalBlock;
-}
-
-export function registerBlock(block: Block): void {
-    blocks.push(block);
-}
-
-export function getRegisteredBlocks(): Block[] {
-    return blocks;
+    return overwrite(block);
 }
 
 export interface BlockContext {

@@ -3,10 +3,10 @@ import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Test, type TestingModule } from "@nestjs/testing";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { SendingState } from "../email-campaign/sending-state.enum";
-import { BrevoApiCampaignsService } from "./brevo-api-campaigns.service";
-import { BrevoApiClientFactory } from "./brevo-api-client.factory";
-import type { BrevoApiCampaign } from "./dto/brevo-api-campaign";
+import { SendingState } from "../email-campaign/sending-state.enum.js";
+import { BrevoApiCampaignsService } from "./brevo-api-campaigns.service.js";
+import { BrevoApiClientFactory } from "./brevo-api-client.factory.js";
+import type { BrevoApiCampaign } from "./dto/brevo-api-campaign.js";
 
 function campaignWithStatus(status: Brevo.GetEmailCampaignResponse.Status): BrevoApiCampaign {
     return { status } as unknown as BrevoApiCampaign;

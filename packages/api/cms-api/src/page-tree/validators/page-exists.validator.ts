@@ -1,7 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
+import {
+    registerDecorator,
+    type ValidationArguments,
+    type ValidationOptions,
+    ValidatorConstraint,
+    type ValidatorConstraintInterface,
+} from "class-validator";
 
-import { PageTreeService } from "../page-tree.service";
+import { PageTreeService } from "../page-tree.service.js";
 
 export const PageExists = (validationOptions?: ValidationOptions) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

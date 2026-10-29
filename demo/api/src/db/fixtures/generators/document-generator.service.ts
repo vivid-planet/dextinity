@@ -59,16 +59,18 @@ export class DocumentGeneratorService {
         );
         await this.pageTreeService.updateNodeVisibility(node.id, PageTreeNodeVisibility.Published);
 
-        await this.entityManager.persistAndFlush(
-            this.entityManager.create(Page, {
-                id,
-                content: PageContentBlock.blockInputFactory(
-                    await this.pageContentBlockFixtureService.generateBlockInput(blockCategory),
-                ).transformToBlockData(),
-                seo: SeoBlock.blockInputFactory(await this.seoBlockFixtureService.generateBlockInput()).transformToBlockData(),
-                stage: StageBlock.blockInputFactory(await this.stageBlockFixtureService.generateBlockInput()).transformToBlockData(),
-            }),
-        );
+        await this.entityManager
+            .persist(
+                this.entityManager.create(Page, {
+                    id,
+                    content: PageContentBlock.blockInputFactory(
+                        await this.pageContentBlockFixtureService.generateBlockInput(blockCategory),
+                    ).transformToBlockData(),
+                    seo: SeoBlock.blockInputFactory(await this.seoBlockFixtureService.generateBlockInput()).transformToBlockData(),
+                    stage: StageBlock.blockInputFactory(await this.stageBlockFixtureService.generateBlockInput()).transformToBlockData(),
+                }),
+            )
+            .flush();
 
         return node;
     }

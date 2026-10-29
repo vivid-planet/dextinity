@@ -9,7 +9,7 @@ Follow the coding guidelines at https://cms-docs.dextinity.com/docs/coding-guide
 ### General
 
 - Use descriptive naming. Avoid non-obvious abbreviations (exceptions: obvious, conventional abbreviations whose meaning is unambiguous in context such as `i` for an index, well-known abbreviations such as HTML, CSS, API, …, or abbreviations from a 3rd party).
-- Name booleans with a prefix (is/has/should, e.g., `isLoading`, `hasError`).
+- Name booleans so they read as a yes/no question or a flag: prefer is/has/should (e.g., `isLoading`, `hasError`); verb-phrase flags (e.g., `showDetails`, `disablePadding`) and well-known adjectives (`loading`, `disabled`, `open`) are fine too.
 - Name variables in affirmative form (avoid negative naming, e.g., use `isComplete` instead of `isNotComplete`).
 - Don't use exceptions as flow control.
 

@@ -152,6 +152,29 @@
         ],
         "inputFields": [
             {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "pixelImage": "PixelImage",
+                                "svgImage": "SvgImage"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
                 "name": "activeType",
                 "kind": "String",
                 "nullable": false
@@ -480,6 +503,31 @@
         ],
         "inputFields": [
             {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "internal": "InternalLink",
+                                "external": "ExternalLink",
+                                "email": "EmailLink",
+                                "phone": "PhoneLink"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
                 "name": "activeType",
                 "kind": "String",
                 "nullable": false
@@ -774,23 +822,27 @@
     },
     {
         "name": "RichText",
+        "description": "Formatted text, edited in the Draft.js based rich text editor.",
         "fields": [
             {
                 "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "Link"
             }
         ],
         "inputFields": [
             {
                 "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "Link"
             }
         ]
     },
     {
         "name": "Seo",
+        "description": "The metadata of a page for search engines and social networks: title, description, preview image, sitemap settings and canonical URL.",
         "fields": [
             {
                 "name": "htmlTitle",
@@ -976,23 +1028,6 @@
                         }
                     ]
                 },
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "Space",
-        "fields": [
-            {
-                "name": "height",
-                "kind": "Number",
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "height",
-                "kind": "Number",
                 "nullable": false
             }
         ]
@@ -1305,12 +1340,14 @@
     },
     {
         "name": "TipTapRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor.",
         "fields": [
             {
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "linkBlock": "Link"
             }
         ],
         "inputFields": [
@@ -1318,7 +1355,8 @@
                 "name": "tipTapContent",
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
-                "childBlocks": {}
+                "childBlocks": {},
+                "linkBlock": "Link"
             }
         ]
     },

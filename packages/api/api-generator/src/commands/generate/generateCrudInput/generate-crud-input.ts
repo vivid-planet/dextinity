@@ -3,10 +3,11 @@ import type { EntityMetadata } from "@mikro-orm/postgresql";
 import { getMetadataStorage } from "class-validator";
 import { SyntaxKind } from "ts-morph";
 
-import { buildOptions } from "../generateCrud/build-options";
-import { buildNameVariants } from "../utils/build-name-variants";
-import { integerTypes, numberTypes } from "../utils/constants";
-import { generateImportsCode, type Imports } from "../utils/generate-imports-code";
+import { buildOptions } from "../generateCrud/build-options.js";
+import { buildNameVariants } from "../utils/build-name-variants.js";
+import { integerTypes, numberTypes } from "../utils/constants.js";
+import { isArrayProp, isEnumArrayProp, isJsonProp } from "../utils/entity-property-type.js";
+import { generateImportsCode, type Imports } from "../utils/generate-imports-code.js";
 import {
     findBlockImportPath,
     findBlockName,
@@ -17,8 +18,8 @@ import {
     findValidatorImportPath,
     getFieldDecoratorClassName,
     morphTsProperty,
-} from "../utils/ts-morph-helper";
-import type { GeneratedFile } from "../utils/write-generated-files";
+} from "../utils/ts-morph-helper.js";
+import type { GeneratedFile } from "../utils/write-generated-files.js";
 
 function tsCodeRecordToString(object: Record<string, string | undefined>) {
     const filteredEntries = Object.entries(object).filter(([key, value]) => value !== undefined);
@@ -82,7 +83,7 @@ export async function generateCrudInput(
         { name: "RootBlockInputScalar", importPath: "@dextinity/cms-api" },
         { name: "IsNullable", importPath: "@dextinity/cms-api" },
         { name: "PartialType", importPath: "@dextinity/cms-api" },
-        { name: "BlockInputInterface", importPath: "@dextinity/cms-api" },
+        { name: "BlockInputInterface", importPath: "@dextinity/cms-api", isTypeOnly: true },
         { name: "isBlockInputInterface", importPath: "@dextinity/cms-api" },
         { name: "IsString", importPath: "class-validator" },
         { name: "IsNotEmpty", importPath: "class-validator" },
@@ -137,7 +138,7 @@ export async function generateCrudInput(
             decorators.push(`@IsEnum(${enumName})`);
             decorators.push(`@Field(() => ${enumName}, ${fieldOptions})`);
             type = enumName;
-        } else if (prop.type === "EnumArrayType") {
+        } else if (isEnumArrayProp(prop)) {
             if (prop.nullable) {
                 console.warn(`${prop.name}: Nullable enum arrays are not supported`);
             }
@@ -251,7 +252,9 @@ export async function generateCrudInput(
                 }
                 const inputNameClassName = `${metadata.className}Nested${prop.targetMeta.className}Input`;
                 {
-                    const excludeFields = prop.targetMeta.props.filter((p) => p.kind == "m:1" && p.targetMeta == metadata).map((p) => p.name);
+                    const excludeFields = prop.targetMeta.props
+                        .filter((p) => p.kind == "m:1" && p.targetMeta?.class == metadata.class)
+                        .map((p) => p.name);
 
                     const { fileNameSingular } = buildNameVariants(metadata);
                     const { fileNameSingular: targetFileNameSingular } = buildNameVariants(prop.targetMeta);
@@ -326,7 +329,9 @@ export async function generateCrudInput(
             }
             const inputNameClassName = `${metadata.className}Nested${prop.targetMeta.className}Input`;
             {
-                const excludeFields = prop.targetMeta.props.filter((p) => p.kind == "1:1" && p.targetMeta == metadata).map((p) => p.name);
+                const excludeFields = prop.targetMeta.props
+                    .filter((p) => p.kind == "1:1" && p.targetMeta?.class == metadata.class)
+                    .map((p) => p.name);
                 const { fileNameSingular } = buildNameVariants(metadata);
                 const { fileNameSingular: targetFileNameSingular } = buildNameVariants(prop.targetMeta);
                 const fileName = `dto/${fileNameSingular}-nested-${targetFileNameSingular}.input.ts`;
@@ -346,7 +351,7 @@ export async function generateCrudInput(
             decorators.push(`@Type(() => ${inputNameClassName})`);
             decorators.push("@ValidateNested()");
             type = `${inputNameClassName}`;
-        } else if (prop.type == "JsonType" || prop.embeddable || prop.type == "ArrayType") {
+        } else if (isJsonProp(prop) || prop.embeddable || isArrayProp(prop)) {
             const tsProp = morphTsProperty(prop.name, metadata);
 
             let tsType = tsProp.getType();

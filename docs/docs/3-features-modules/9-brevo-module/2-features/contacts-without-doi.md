@@ -5,7 +5,7 @@ title: Add contacts without sending double opt-in
 Contacts added to a newsletter are legally obliged to give their consent (usually via double opt-in). There may be scenarios, in which a contact already gave their permission. In this case, this feature allows adding or importing contacts without sending a double opt-in message.
 
 :::caution
-Make sure that your project uses Brevo Module v3.1.0 or later.
+This feature requires the `BlacklistedContacts` and `BrevoEmailImportLog` entities, see [Optional entities](../1-setup.md#optional-entities).
 :::
 
 ## Allow adding contacts without sending a double opt-in mail
@@ -64,7 +64,7 @@ Make sure that your project uses Brevo Module v3.1.0 or later.
             scopeParts: ["domain", "language"],
             apiUrl: config.apiUrl,
             resolvePreviewUrlForScope: (scope: ContentScope) => {
-                return `${config.campaignUrl}/block-preview/${scope.domain}/${scope.language}`;
+                return `${config.campaignUrl}/block-preview/${scope.domain}/${scope.language}/brevo-email-campaign`;
             },
 +           allowAddingContactsWithoutDoi: config.allowAddingContactsWithoutDoi,
         }}

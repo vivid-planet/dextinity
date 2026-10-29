@@ -5,28 +5,20 @@ import { type ReactNode, useState } from "react";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 
-export interface CopyToClipboardButtonProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        copyButtonContainer: "div";
-        successButtonContainer: "div";
-        copyButton: typeof IconButton;
-        successButton: typeof IconButton;
-    }> {
+export interface CopyToClipboardButtonProps extends ThemedComponentBaseProps<{
+    root: "div";
+    copyButtonContainer: "div";
+    successButtonContainer: "div";
+    copyButton: typeof IconButton;
+    successButton: typeof IconButton;
+}> {
     copyText: string;
     copyIcon?: ReactNode;
     successIcon?: ReactNode;
 }
 
 export type CopyToClipboardButtonClassKey =
-    | "root"
-    | "showSuccess"
-    | "buttonContainer"
-    | "copyButtonContainer"
-    | "successButtonContainer"
-    | "button"
-    | "copyButton"
-    | "successButton";
+    "root" | "showSuccess" | "buttonContainer" | "copyButtonContainer" | "successButtonContainer" | "button" | "copyButton" | "successButton";
 
 type OwnerState = {
     showSuccess: boolean;

@@ -1,7 +1,7 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { GraphQLJSONObject } from "graphql-scalars";
 
-import { ContentScope } from "../interfaces/content-scope.interface";
+import type { ContentScope } from "../interfaces/content-scope.interface.js";
 
 @ObjectType()
 export class ContentScopeWithLabel {
@@ -10,4 +10,13 @@ export class ContentScopeWithLabel {
 
     @Field(() => GraphQLJSONObject)
     label: { [key in keyof ContentScope]: string };
+}
+
+@ObjectType()
+export class ContentScopeDimension {
+    @Field()
+    name: string;
+
+    @Field()
+    label: string;
 }

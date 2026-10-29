@@ -1,7 +1,7 @@
 import { Command } from "commander";
 
-import { generateFiles } from "./generateFiles";
-import { watchMode } from "./watchMode/watchMode";
+import { generateFiles } from "./generateFiles.js";
+import { watchMode } from "./watchMode/watchMode.js";
 
 type GenerateOptions = {
     watch: boolean;

@@ -10,7 +10,8 @@ import { AppHeaderButton, type AppHeaderButtonProps } from "../button/AppHeaderB
 export type AppHeaderDropdownClassKey = "root" | "popover" | "button";
 
 export interface AppHeaderDropdownProps
-    extends Omit<AppHeaderButtonProps, "children" | "slotProps">,
+    extends
+        Omit<AppHeaderButtonProps, "children" | "slotProps">,
         ThemedComponentBaseProps<{
             root: "div";
             popover: typeof Popover;

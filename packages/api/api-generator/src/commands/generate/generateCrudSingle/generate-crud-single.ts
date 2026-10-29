@@ -2,9 +2,9 @@ import { type CrudSingleGeneratorOptions, hasCrudFieldFeature, REQUIRED_PERMISSI
 import type { EntityMetadata } from "@mikro-orm/postgresql";
 import * as path from "path";
 
-import { buildOptions } from "../generateCrud/build-options";
-import { generateCrudInput } from "../generateCrudInput/generate-crud-input";
-import type { GeneratedFile } from "../utils/write-generated-files";
+import { buildOptions } from "../generateCrud/build-options.js";
+import { generateCrudInput } from "../generateCrudInput/generate-crud-input.js";
+import type { GeneratedFile } from "../utils/write-generated-files.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function generateCrudSingle(generatorOptions: CrudSingleGeneratorOptions, metadata: EntityMetadata<any>): Promise<GeneratedFile[]> {
@@ -29,7 +29,7 @@ export async function generateCrudSingle(generatorOptions: CrudSingleGeneratorOp
             return hasCrudFieldFeature(metadata.class, prop.name, "input") && prop.type === "RootBlockType";
         });
 
-        const serviceOut = `import { ObjectQuery } from "@mikro-orm/postgresql";
+        const serviceOut = `import type { ObjectQuery } from "@mikro-orm/postgresql";
     import { Injectable } from "@nestjs/common";
     import { ${metadata.className} } from "${path.relative(targetDirectory, metadata.path).replace(/\.ts$/, "")}";
     
@@ -40,7 +40,7 @@ export async function generateCrudSingle(generatorOptions: CrudSingleGeneratorOp
     `;
         generatedFiles.push({ name: `${fileNamePlural}.service.ts`, content: serviceOut, type: "service" });
 
-        const resolverOut = `import { FindOptions, EntityManager } from "@mikro-orm/postgresql";
+        const resolverOut = `import { type FindOptions, EntityManager } from "@mikro-orm/postgresql";
     import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
     import { ${entityHasRequiredPermission ? "" : "RequiredPermission, "}SortDirection, validateNotModified } from "@dextinity/cms-api";
     

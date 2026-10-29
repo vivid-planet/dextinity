@@ -1,16 +1,13 @@
 import { EntityManager } from "@mikro-orm/core";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { subDays } from "date-fns";
 import { htmlToText } from "html-to-text";
-import { Transporter } from "nodemailer";
-import Mail, { Address, Options as MailOptions } from "nodemailer/lib/mailer";
+import type { Address, SendMailOptions as MailOptions, SentMessageInfo, Transporter } from "nodemailer";
 
-import { MailerLog } from "./entities/mailer-log.entity";
-import { MailerLogStatus } from "./entities/mailer-log-status.enum";
-import { MAILER_MODULE_TRANSPORT, MAILER_SERVICE_CONFIG } from "./mailer.constants";
-import { MailerModuleConfig } from "./mailer.module";
+import { MailerLog } from "./entities/mailer-log.entity.js";
+import { MailerLogStatus } from "./entities/mailer-log-status.enum.js";
+import { MAILER_MODULE_TRANSPORT, MAILER_SERVICE_CONFIG } from "./mailer.constants.js";
+import type { MailerModuleConfig } from "./mailer.module.js";
 
 type MailerServiceConfig = Omit<MailerModuleConfig, "transport">;
 
@@ -28,7 +25,6 @@ export class MailerService {
         @Inject(MAILER_SERVICE_CONFIG) private readonly mailerConfig: MailerServiceConfig,
         @Inject(MAILER_MODULE_TRANSPORT) private readonly mailerTransport: Transporter,
         private readonly entityManager: EntityManager,
-        @InjectRepository(MailerLog) private readonly mailerLogRepository: EntityRepository<MailerLog<unknown>>,
     ) {}
 
     private fillMailOptionsDefaults(originMailOptions: MailOptions): MailOptions {
@@ -57,13 +53,13 @@ export class MailerService {
      * @param originMailOptions `from` defaults to this.config.mailer.defaultFrom, sendAllMailsBcc is always added to `bcc`
      * @param logMail When set to false, the email will not be logged to the database.
      */
-    async sendMail({ mailTypeForLogging, additionalData, logMail = true, ...originMailOptions }: SendMailParams): Promise<Mail> {
+    async sendMail({ mailTypeForLogging, additionalData, logMail = true, ...originMailOptions }: SendMailParams): Promise<SentMessageInfo> {
         const mailOptionsWithDefaults = this.fillMailOptionsDefaults(originMailOptions);
 
         let logEntryId: string | undefined;
         if (logMail && !this.mailerConfig.disableMailLog) {
             await this.entityManager.fork().transactional((em) => {
-                const logEntry = em.getRepository(MailerLog).create({
+                const logEntry = em.create(MailerLog, {
                     status: MailerLogStatus.error,
                     to: this.normalizeToArray(originMailOptions.to).map<string>(this.convertAddressToString),
                     subject: originMailOptions.subject,
@@ -87,7 +83,7 @@ export class MailerService {
                 if (!logEntryId) {
                     return;
                 }
-                const logEntry = await em.getRepository(MailerLog).findOne({ id: logEntryId });
+                const logEntry = await em.findOne(MailerLog, { id: logEntryId });
                 if (!logEntry) {
                     return;
                 }
@@ -103,16 +99,27 @@ export class MailerService {
         }
 
         // Delete outdated logs, purposely not using await because it is not important for the mail sending process
-        this.mailerLogRepository.nativeDelete({ createdAt: { $lt: subDays(new Date(), this.mailerConfig.daysToKeepMailLog ?? 90) } });
+        void this.deleteOutdatedMailLogs();
 
         return result;
     }
 
-    private convertAddressToString(item: string | Mail.Address) {
+    private async deleteOutdatedMailLogs(): Promise<void> {
+        try {
+            await this.entityManager.nativeDelete(MailerLog, { createdAt: { $lt: subDays(new Date(), this.mailerConfig.daysToKeepMailLog ?? 90) } });
+        } catch (error) {
+            this.logger.error("Failed to delete outdated mail logs", error);
+        }
+    }
+
+    private convertAddressToString(item: string | Address) {
         return typeof item === "string" ? item : `${item.name} <${item.address}>`;
     }
 
-    private normalizeToArray(item: string | Address | Array<string | Address> | undefined): Array<string | Address> {
-        return item ? (Array.isArray(item) ? item : [item]) : [];
+    private normalizeToArray(item: MailOptions["to"]): Array<string | Address> {
+        if (!item) {
+            return [];
+        }
+        return Array.isArray(item) ? item.flatMap((nestedItem) => this.normalizeToArray(nestedItem)) : [item];
     }
 }

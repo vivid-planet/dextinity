@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { EmailCampaignScopeInterface } from "src/types";
 
-import { handleBrevoError } from "./brevo-api.utils";
-import { BrevoApiClientFactory } from "./brevo-api-client.factory";
-import { BrevoApiSender } from "./dto/brevo-api-sender";
+import type { EmailCampaignScopeInterface } from "../types.js";
+import { handleBrevoError } from "./brevo-api.utils.js";
+import { BrevoApiClientFactory } from "./brevo-api-client.factory.js";
+import type { BrevoApiSender } from "./dto/brevo-api-sender.js";
 
 @Injectable()
 export class BrevoApiSenderService {

@@ -12,7 +12,7 @@ export default defineConfig({
         setupFiles: ["./vitest.setup.ts"],
         reporters: ["default", "junit"],
         outputFile: {
-            junit: "./junit.xml",
+            junit: "./junit-unit.xml",
         },
         testTimeout: 20000,
         hookTimeout: 20000,

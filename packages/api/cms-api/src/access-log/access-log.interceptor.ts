@@ -1,13 +1,13 @@
-import { CallHandler, ExecutionContext, Inject, Injectable, Logger, NestInterceptor, Optional } from "@nestjs/common";
+import { type CallHandler, type ExecutionContext, Inject, Injectable, Logger, type NestInterceptor, Optional } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import { Request } from "express";
-import { GraphQLResolveInfo } from "graphql";
+import type { Request } from "express";
+import type { GraphQLResolveInfo } from "graphql";
 import { getClientIp } from "request-ip";
 
-import { CurrentUser } from "../user-permissions/dto/current-user";
-import { User } from "../user-permissions/interfaces/user";
-import { ACCESS_LOG_CONFIG } from "./access-log.constants";
-import { AccessLogConfig } from "./access-log.module";
+import type { CurrentUser } from "../user-permissions/dto/current-user.js";
+import type { User } from "../user-permissions/interfaces/user.js";
+import { ACCESS_LOG_CONFIG } from "./access-log.constants.js";
+import type { AccessLogConfig } from "./access-log.module.js";
 
 @Injectable()
 export class AccessLogInterceptor implements NestInterceptor {

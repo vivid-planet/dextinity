@@ -19,7 +19,7 @@ import {
     Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import type { ChangeEvent } from "react";
 import { Form } from "react-final-form";
 import { FormattedMessage } from "react-intl";
@@ -117,7 +117,7 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                     y: initialValues.cropArea?.y ?? 0,
                 },
             }}
-            initialValuesEqual={isEqual}
+            initialValuesEqual={deepEqual}
         >
             {({ handleSubmit, values }) => (
                 <Dialog open onClose={onClose} maxWidth={false}>

@@ -4,8 +4,8 @@ import type { SdkError } from "@aws-sdk/types";
 import { createReadStream } from "fs";
 import { Readable } from "stream";
 
-import type { BlobStorageBackendInterface, CreateFileOptions, StorageMetaData } from "../blob-storage-backend.interface";
-import type { BlobStorageS3Config } from "./blob-storage-s3.config";
+import type { BlobStorageBackendInterface, CreateFileOptions, StorageMetaData } from "../blob-storage-backend.interface.js";
+import type { BlobStorageS3Config } from "./blob-storage-s3.config.js";
 
 export class BlobStorageS3Storage implements BlobStorageBackendInterface {
     private readonly client: AWS.S3Client;

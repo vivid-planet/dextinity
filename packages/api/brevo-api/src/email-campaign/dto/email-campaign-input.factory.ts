@@ -1,5 +1,5 @@
-import { Block, BlockInputInterface, isBlockInputInterface, IsNullable, IsUndefinable, RootBlockInputScalar } from "@dextinity/cms-api";
-import { Type } from "@nestjs/common";
+import { type Block, type BlockInputInterface, isBlockInputInterface, IsNullable, IsUndefinable, RootBlockInputScalar } from "@dextinity/cms-api";
+import type { Type } from "@nestjs/common";
 import { Field, ID, InputType, PartialType } from "@nestjs/graphql";
 import { Transform } from "class-transformer";
 import { IsDate, IsNotEmpty, IsString, IsUUID, MinDate, ValidateNested } from "class-validator";

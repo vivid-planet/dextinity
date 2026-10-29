@@ -2,10 +2,10 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { v5 } from "uuid";
 
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { WarningData } from "./dto/warning-data";
-import { WarningSourceInfo } from "./dto/warning-source-info";
-import { Warning } from "./entities/warning.entity";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import type { WarningData } from "./dto/warning-data.js";
+import type { WarningSourceInfo } from "./dto/warning-source-info.js";
+import { Warning } from "./entities/warning.entity.js";
 
 @Injectable()
 export class WarningService {

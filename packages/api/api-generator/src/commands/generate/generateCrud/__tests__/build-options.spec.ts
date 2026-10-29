@@ -1,16 +1,17 @@
-import { BaseEntity, defineConfig, Entity, ManyToOne, MikroORM, OneToOne, PrimaryKey, Property, Ref } from "@mikro-orm/postgresql";
+import { Entity, ManyToOne, OneToOne, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM, type Ref } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 import { describe, expect, it } from "vitest";
 
-import { testPermission } from "../../utils/test-helper";
-import { buildSortProps } from "../build-options";
-import { generateSortDto } from "../generate-crud";
+import { testPermission } from "../../utils/test-helper.js";
+import { buildSortProps } from "../build-options.js";
+import { generateSortDto } from "../generate-crud.js";
 
 @Entity()
 export class TestEntity1 extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     foo: string;
@@ -19,7 +20,7 @@ export class TestEntity1 extends BaseEntity {
 @Entity()
 export class TestEntity2 extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @ManyToOne(() => TestEntityTarget, { nullable: true, index: true, ref: true })
     nested?: Ref<TestEntityTarget> = undefined;
@@ -28,7 +29,7 @@ export class TestEntity2 extends BaseEntity {
 @Entity()
 export class TestEntity3 extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @OneToOne(() => TestEntityTarget, { nullable: true, index: true, ref: true })
     nested?: Ref<TestEntityTarget> = undefined;
@@ -37,7 +38,7 @@ export class TestEntity3 extends BaseEntity {
 @Entity()
 export class TestEntityTarget extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     foo: string;
@@ -49,13 +50,13 @@ describe("buildOptions", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntity1],
                 }),
             );
 
-            const sortProps = buildSortProps(orm.em.getMetadata().get("TestEntity1"));
+            const sortProps = buildSortProps(orm.em.getMetadata().getByClassName("TestEntity1"));
             expect(sortProps).toEqual(["foo", "id"]);
 
             await orm.close();
@@ -65,13 +66,13 @@ describe("buildOptions", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntity2, TestEntityTarget],
                 }),
             );
 
-            const metadata = orm.em.getMetadata().get("TestEntity2");
+            const metadata = orm.em.getMetadata().getByClassName("TestEntity2");
 
             const sortProps = buildSortProps(metadata);
             expect(sortProps).toEqual(["nested", "id", "nested.foo"]);
@@ -86,13 +87,13 @@ describe("buildOptions", () => {
             LazyMetadataStorage.load();
             const orm = await MikroORM.init(
                 defineConfig({
+                    metadataProvider: ReflectMetadataProvider,
                     dbName: "test-db",
-                    connect: false,
                     entities: [TestEntity3, TestEntityTarget],
                 }),
             );
 
-            const sortProps = buildSortProps(orm.em.getMetadata().get("TestEntity3"));
+            const sortProps = buildSortProps(orm.em.getMetadata().getByClassName("TestEntity3"));
             expect(sortProps).toEqual(["id", "nested.foo"]);
 
             await orm.close();

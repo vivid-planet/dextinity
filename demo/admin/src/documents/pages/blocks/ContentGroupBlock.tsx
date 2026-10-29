@@ -50,6 +50,7 @@ export const ContentGroupBlock = createCompositeBlock(
                     label: <FormattedMessage id="contentGroupBlock.overlay" defaultMessage="Background Color" />,
                     defaultValue: "default",
                     options: backgroundColorOptions,
+                    required: true,
                 }),
                 hiddenInSubroute: true,
             },

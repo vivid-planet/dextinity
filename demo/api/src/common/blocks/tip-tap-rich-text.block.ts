@@ -3,7 +3,9 @@ import { ProductPriceBlock } from "@src/products/blocks/product-price.block";
 import { ProductTeaserBlock } from "@src/products/blocks/product-teaser.block";
 
 import { LinkBlock } from "./link.block";
-import { Heading1ToHeading2Migration } from "./tip-tap-rich-text/migrations/2-heading-1-to-heading-2.migration";
+import { Heading1ToHeading2Migration } from "./tip-tap-rich-text/migrations/1-heading-1-to-heading-2.migration";
+
+const listStyles = [{ name: "list300" }, { name: "list200" }];
 
 export const TipTapRichTextBlock = createTipTapRichTextBlock(
     {
@@ -12,28 +14,52 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
             productPrice: { block: ProductPriceBlock, display: "inline" },
             productTeaser: { block: ProductTeaserBlock, display: "block" },
         },
-        textBlockStyles: [
-            { name: "paragraph300", appliesTo: ["paragraph"] },
-            { name: "paragraph200", appliesTo: ["paragraph"] },
-            { name: "eyebrow600", appliesTo: ["paragraph"] },
-            { name: "eyebrow550", appliesTo: ["paragraph"] },
-            { name: "eyebrow500", appliesTo: ["paragraph"] },
-            { name: "eyebrow450", appliesTo: ["paragraph"] },
-            { name: "list300", appliesTo: ["ordered-list", "unordered-list"] },
-            { name: "list200", appliesTo: ["ordered-list", "unordered-list"] },
+        // "Display" and "Heading 1" are both stored as an h1 and told apart by the node's textBlock
+        // attribute, which the site reads to pick the typography.
+        textBlocks: [
+            {
+                name: "paragraph",
+                tag: "p",
+                styles: [
+                    { name: "paragraph300" },
+                    { name: "paragraph200" },
+                    { name: "eyebrow600" },
+                    { name: "eyebrow550" },
+                    { name: "eyebrow500" },
+                    { name: "eyebrow450" },
+                ],
+                defaultStyle: "paragraph300",
+            },
+            { name: "display", tag: "h1" },
+            { name: "heading-1", tag: "h1" },
+            { name: "heading-2", tag: "h2" },
+            { name: "heading-3", tag: "h3" },
+            { name: "heading-4", tag: "h4" },
+            { name: "heading-5", tag: "h5" },
         ],
+        orderedList: { styles: listStyles, defaultStyle: "list300" },
+        unorderedList: { styles: listStyles, defaultStyle: "list300" },
         inlineStyles: [{ name: "highlight" }, { name: "tag", appliesTo: ["paragraph"] }],
         migrateFromDraftJs: {
-            // Map the DraftJS `blocktypeMap` entry `paragraph-small` (configured in the admin RichTextBlock)
-            // to the equivalent TipTap textBlockStyle so legacy content keeps its smaller paragraph variant.
-            textBlockStyleMap: { "paragraph-small": "paragraph200" },
+            textBlockMap: {
+                // The DraftJS `blocktypeMap` entry `paragraph-small` (configured in the admin RichTextBlock)
+                // maps to the equivalent TipTap textBlockStyle, so legacy content keeps its smaller paragraph variant.
+                "paragraph-small": { textBlock: "paragraph", textBlockStyle: "paragraph200" },
+                // "Display" and "Heading 1" are both stored as an h1, so the conversion has to be told
+                // which of them a DraftJS heading becomes.
+                "header-one": { textBlock: "heading-1" },
+            },
+            listItemMap: {
+                "unordered-list-item-small": { list: "unordered", textBlockStyle: "list200" },
+                "ordered-list-item-small": { list: "ordered", textBlockStyle: "list200" },
+            },
         },
     },
     {
         name: "TipTapRichText",
         migrate: {
             migrations: typeSafeBlockMigrationPipe([Heading1ToHeading2Migration]),
-            version: 2,
+            version: 1,
         },
     },
 );

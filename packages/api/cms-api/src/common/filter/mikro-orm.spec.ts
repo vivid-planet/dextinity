@@ -1,11 +1,11 @@
 import { raw } from "@mikro-orm/postgresql";
 import { describe, expect, it, vi } from "vitest";
 
-import { BooleanFilter } from "./boolean.filter";
-import { DateTimeFilter } from "./date-time.filter";
-import { filtersToMikroOrmQuery, filterToMikroOrmQuery, searchToMikroOrmQuery, splitSearchString } from "./mikro-orm";
-import { NumberFilter } from "./number.filter";
-import { StringFilter } from "./string.filter";
+import { BooleanFilter } from "./boolean.filter.js";
+import { DateTimeFilter } from "./date-time.filter.js";
+import { filtersToMikroOrmQuery, filterToMikroOrmQuery, searchToMikroOrmQuery, splitSearchString } from "./mikro-orm.js";
+import { NumberFilter } from "./number.filter.js";
+import { StringFilter } from "./string.filter.js";
 
 // Mock the raw helper to workaround different indices in the keys.
 // See https://github.com/mikro-orm/mikro-orm/blob/master/packages/core/src/utils/RawQueryFragment.ts#L21.

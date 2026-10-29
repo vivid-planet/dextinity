@@ -1,16 +1,17 @@
-import { Embedded, Entity, Enum, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import { Embedded, Entity, Enum, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { OptionalProps } from "@mikro-orm/postgresql";
+import type { Type } from "@nestjs/common";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { randomUUID } from "crypto";
 import { GraphQLJSONObject } from "graphql-scalars";
-import { v4 as uuid } from "uuid";
 
-import { Block, BlockDataInterface } from "../../blocks/block";
-import { RootBlock } from "../../blocks/decorators/root-block";
-import { RootBlockEntity } from "../../blocks/decorators/root-block-entity";
-import { RootBlockType } from "../../blocks/root-block-type";
-import { EntityInfo } from "../../entity-info/entity-info.decorator";
-import { RedirectGenerationType, RedirectSourceType } from "../redirects.enum";
-import { RedirectScopeInterface } from "../types";
+import type { Block, BlockDataInterface } from "../../blocks/block.js";
+import { RootBlock } from "../../blocks/decorators/root-block.js";
+import { RootBlockEntity } from "../../blocks/decorators/root-block-entity.js";
+import { RootBlockType } from "../../blocks/root-block-type.js";
+import { EntityInfo } from "../../entity-info/entity-info.decorator.js";
+import { RedirectGenerationType, RedirectSourceType } from "../redirects.enum.js";
+import type { RedirectScopeInterface } from "../types.js";
 
 export interface RedirectInterface {
     [OptionalProps]?: "createdAt" | "updatedAt" | "active";
@@ -37,7 +38,7 @@ export class RedirectEntityFactory {
 
             @PrimaryKey({ columnType: "uuid" })
             @Field(() => ID)
-            id: string = uuid();
+            id: string = randomUUID();
 
             @Enum(() => RedirectSourceType)
             @Field(() => RedirectSourceType)

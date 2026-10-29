@@ -8,7 +8,6 @@ export default defineConfig([
     ...storybook.configs["flat/recommended"],
     {
         rules: {
-            "@calm/react-intl/missing-formatted-message": "off",
             "@typescript-eslint/no-empty-function": "off",
             "@typescript-eslint/no-explicit-any": "off",
             "@typescript-eslint/no-non-null-assertion": "off",
@@ -16,6 +15,8 @@ export default defineConfig([
             "@dextinity/no-other-module-relative-import": "off",
             "react/react-in-jsx-scope": "off",
             "react/jsx-no-literals": "off",
+            // The dependencies can only list the package `@dextinity/mail-react`, while the rule looks for the addon name with the `/storybook` subpath.
+            "storybook/no-uninstalled-addons": ["error", { ignore: ["@dextinity/mail-react/storybook"] }],
         },
     },
 ]);

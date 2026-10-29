@@ -5,9 +5,10 @@ import type { ReactNode } from "react";
 import { registerStyles } from "../../styles/registerStyles.js";
 import { getDefaultOrUndefined } from "../../theme/responsiveValue.js";
 import { useOptionalTheme } from "../../theme/ThemeProvider.js";
-import type { TextVariantStyles, Theme, VariantName } from "../../theme/themeTypes.js";
+import type { Theme, VariantName } from "../../theme/themeTypes.js";
 import { generateResponsiveTextCss } from "./generateResponsiveTextCss.js";
 import { OutlookTextStyleProvider, type OutlookTextStyleValues } from "./OutlookTextStyleContext.js";
+import { resolveTextVariant } from "./textVariantStyles.js";
 
 export type MjmlTextProps = IMjmlTextProps & {
     /**
@@ -84,11 +85,7 @@ function getThemedProps(
         return { activeVariant: undefined, baseProps: {}, outlookTextStyleValues: null };
     }
 
-    const { defaultVariant, variants, ...baseStyles } = theme.text;
-    const activeVariant = variantProp ?? defaultVariant;
-    const variantStyles = activeVariant ? variants?.[activeVariant] : undefined;
-
-    const mergedStyles: TextVariantStyles = variantStyles ? { ...baseStyles, ...variantStyles } : baseStyles;
+    const { activeVariant, mergedStyles } = resolveTextVariant(theme.text, variantProp);
 
     const fontWeightDefault = getDefaultOrUndefined(mergedStyles.fontWeight);
 

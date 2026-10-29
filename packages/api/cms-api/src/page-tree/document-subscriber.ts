@@ -1,10 +1,10 @@
-import { ChangeSetType, EntityManager, EntityName, EventSubscriber, FlushEventArgs } from "@mikro-orm/postgresql";
-import { Injectable, Type } from "@nestjs/common";
+import { ChangeSetType, EntityManager, type EntityName, type EventSubscriber, type FlushEventArgs } from "@mikro-orm/postgresql";
+import { Injectable, type Type } from "@nestjs/common";
 
-import { DocumentInterface } from "../document/dto/document-interface";
-import { AttachedDocument } from "./entities/attached-document.entity";
-import { PageTreeService } from "./page-tree.service";
-import { PageTreeNodeInterface } from "./types";
+import type { DocumentInterface } from "../document/dto/document-interface.js";
+import { AttachedDocument } from "./entities/attached-document.entity.js";
+import { PageTreeService } from "./page-tree.service.js";
+import type { PageTreeNodeInterface } from "./types.js";
 
 export class DocumentSubscriberFactory {
     static create({ Documents }: { Documents: Type<DocumentInterface>[] }): Type<EventSubscriber> {

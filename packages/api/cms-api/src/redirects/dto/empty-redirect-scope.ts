@@ -1,6 +1,6 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 
-import { RedirectScopeInterface } from "../types";
+import type { RedirectScopeInterface } from "../types.js";
 
 @ObjectType("RedirectScope")
 @InputType("RedirectScopeInput")

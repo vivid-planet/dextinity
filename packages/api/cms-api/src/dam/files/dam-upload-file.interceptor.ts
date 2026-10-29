@@ -1,17 +1,17 @@
-import { CallHandler, ExecutionContext, HttpException, Inject, Injectable, mixin, NestInterceptor, Type } from "@nestjs/common";
+import { type CallHandler, type ExecutionContext, HttpException, Inject, Injectable, mixin, type NestInterceptor, type Type } from "@nestjs/common";
 import { FileInterceptor as NestFileInterceptor } from "@nestjs/platform-express";
-import { MulterOptions } from "@nestjs/platform-express/multer/interfaces/multer-options.interface";
+import type { MulterOptions } from "@nestjs/platform-express/multer/interfaces/multer-options.interface";
+import { randomUUID } from "crypto";
 import fs from "fs";
 import * as multer from "multer";
 import os from "os";
-import { Observable, throwError } from "rxjs";
-import { v4 as uuid } from "uuid";
+import { type Observable, throwError } from "rxjs";
 
-import { DextinityValidationException } from "../../common/errors/validation.exception";
-import { FileValidationService } from "../../file-utils/file-validation.service";
-import { FILE_UPLOAD_FIELD } from "../../file-utils/files.constants";
-import { removeMulterTempFile } from "../../file-utils/files.utils";
-import { DAM_FILE_VALIDATION_SERVICE } from "../dam.constants";
+import { DextinityValidationException } from "../../common/errors/validation.exception.js";
+import { FileValidationService } from "../../file-utils/file-validation.service.js";
+import { FILE_UPLOAD_FIELD } from "../../file-utils/files.constants.js";
+import { removeMulterTempFile } from "../../file-utils/files.utils.js";
+import { DAM_FILE_VALIDATION_SERVICE } from "../dam.constants.js";
 
 export function DamUploadFileInterceptor(fieldName: string = FILE_UPLOAD_FIELD): Type<NestInterceptor> {
     @Injectable()
@@ -36,7 +36,7 @@ export function DamUploadFileInterceptor(fieldName: string = FILE_UPLOAD_FIELD):
                     filename: function (req, file, cb) {
                         // otherwise special characters aren't decoded properly (https://github.com/expressjs/multer/issues/836#issuecomment-1264338996)
                         file.originalname = Buffer.from(file.originalname, "latin1").toString("utf8");
-                        cb(null, uuid());
+                        cb(null, randomUUID());
                     },
                 }),
                 limits: {

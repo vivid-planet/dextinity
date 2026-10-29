@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { describe, expect, it } from "vitest";
 
-import { type EntityScopeServiceInterface, isEntityScopeMapping } from "./scoped-entity.decorator";
+import { type EntityScopeServiceInterface, isEntityScopeMapping } from "./scoped-entity.decorator.js";
 
 @Injectable()
 class SomeScopeService implements EntityScopeServiceInterface {

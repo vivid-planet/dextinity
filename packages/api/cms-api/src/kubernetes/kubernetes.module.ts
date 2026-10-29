@@ -1,7 +1,7 @@
-import { DynamicModule, Global, Module } from "@nestjs/common";
+import { type DynamicModule, Global, Module } from "@nestjs/common";
 
-import { KUBERNETES_CONFIG } from "./kubernetes.constants";
-import { KubernetesService } from "./kubernetes.service";
+import { KUBERNETES_CONFIG } from "./kubernetes.constants.js";
+import { KubernetesService } from "./kubernetes.service.js";
 
 type ClusterKubernetesConfig = {
     helmRelease: string;

@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { useDragLayer, type XYCoord } from "react-dnd";
-import { FormattedMessage } from "react-intl/lib";
+import { FormattedMessage } from "react-intl";
 
 import PageLabel from "./PageLabel";
 import * as sc from "./PageTreeDragLayer.sc";

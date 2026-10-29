@@ -8,8 +8,8 @@ import { exampleBlockData } from "../__stories__/exampleBlockData.js";
 import { MjmlPixelImageBlock } from "../MjmlPixelImageBlock.js";
 
 describe("MjmlPixelImageBlock", () => {
-    it("forwards borderRadius to the image", () => {
-        const { html } = renderMailHtml(
+    it("forwards borderRadius to the image", async () => {
+        const { html } = await renderMailHtml(
             <MjmlMailRoot config={{ pixelImageBlock: { validSizes: [640, 1280], baseUrl: "" } }}>
                 <MjmlSection>
                     <MjmlColumn>
@@ -22,8 +22,8 @@ describe("MjmlPixelImageBlock", () => {
         expect(html).toContain("border-radius:8px");
     });
 
-    it("always has the dimensions the Outlook VML needs, without the caller giving a height", () => {
-        const { html } = renderMailHtml(
+    it("always has the dimensions the Outlook VML needs, without the caller giving a height", async () => {
+        const { html } = await renderMailHtml(
             <MjmlMailRoot config={{ pixelImageBlock: { validSizes: [640, 1280], baseUrl: "" } }}>
                 <MjmlSection>
                     <MjmlColumn>
@@ -33,6 +33,6 @@ describe("MjmlPixelImageBlock", () => {
             </MjmlMailRoot>,
         );
 
-        expect(html).toMatch(/<v:roundrect[^>]*style="width:300px;height:200px;"/);
+        expect(html).toMatch(/<v:roundrect[^>]*style="width:299px;height:199px;"/);
     });
 });

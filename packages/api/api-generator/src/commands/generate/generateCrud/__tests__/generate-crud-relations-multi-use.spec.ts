@@ -1,15 +1,16 @@
-import { BaseEntity, Collection, defineConfig, Entity, ManyToOne, MikroORM, OneToMany, PrimaryKey, Ref } from "@mikro-orm/postgresql";
+import { Entity, ManyToOne, OneToMany, PrimaryKey, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, Collection, defineConfig, MikroORM, type Ref } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 import { describe, expect, it } from "vitest";
 
-import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
-import { generateCrud } from "../generate-crud";
+import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper.js";
+import { generateCrud } from "../generate-crud.js";
 
 @Entity()
 class TestEntitiyProduct extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @OneToMany(() => TestEntityCategory, (filters) => filters.product1)
     categories1 = new Collection<TestEntityCategory>(this);
@@ -21,7 +22,7 @@ class TestEntitiyProduct extends BaseEntity {
 @Entity()
 class TestEntityCategory extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @ManyToOne(() => TestEntitiyProduct, { nullable: true, ref: true })
     product1?: Ref<TestEntitiyProduct>;
@@ -37,13 +38,13 @@ describe("GenerateCrudRelationsMultiUse", () => {
         LazyMetadataStorage.load();
         const orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [TestEntityCategory, TestEntitiyProduct],
             }),
         );
 
-        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntitiyProduct"));
+        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().getByClassName("TestEntitiyProduct"));
         const formattedOut = await formatGeneratedFiles(out);
         const file = formattedOut.find((file) => file.name === "test-entitiy-product.resolver.ts");
         if (!file) {

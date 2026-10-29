@@ -1,10 +1,12 @@
-import { BaseEntity, Entity, Enum, FullTextType, Index, ManyToOne, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, Enum, Index, ManyToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, FullTextType, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
-import { EntityInfo } from "../../entity-info/entity-info.decorator";
-import { PAGE_TREE_ENTITY } from "../page-tree.constants";
-import { PageTreeNodeCategory, PageTreeNodeInterface, PageTreeNodeVisibility } from "../types";
+import { EntityInfo } from "../../entity-info/entity-info.decorator.js";
+import { PAGE_TREE_ENTITY } from "../page-tree.constants.js";
+import { type PageTreeNodeCategory, type PageTreeNodeInterface, PageTreeNodeVisibility } from "../types.js";
+import { resolvePageTreeNodeEntity } from "./resolve-page-tree-node-entity.js";
 
 @EntityInfo({
     sql: `SELECT "name", "secondaryInformation", "visible", "id", 'PageTreeNode' AS "entityName" FROM "PageTreeNodeEntityInfo"`,
@@ -17,13 +19,13 @@ export abstract class PageTreeNodeBase extends BaseEntity {
 
     @PrimaryKey({ columnType: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ columnType: "uuid", nullable: true, persist: false })
     @Field(() => String, { nullable: true })
     parentId: string | null;
 
-    @ManyToOne(() => PAGE_TREE_ENTITY, { nullable: true, joinColumn: "parentId" })
+    @ManyToOne(() => resolvePageTreeNodeEntity(), { nullable: true, joinColumn: "parentId" })
     @Index()
     parent?: PageTreeNodeInterface;
 

@@ -22,8 +22,8 @@ export class TipTapTableBlockFixtureService extends TableBlockFixtureBase<TipTap
                 type: "doc",
                 content: [
                     {
-                        type: "paragraph",
-                        attrs: { textBlockStyle: standardParagraphStyle },
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph", textBlockStyle: standardParagraphStyle },
                         content: [{ type: "text", text }],
                     },
                 ],
@@ -43,13 +43,13 @@ export class TipTapTableBlockFixtureService extends TableBlockFixtureBase<TipTap
                 type: "doc",
                 content: [
                     {
-                        type: "paragraph",
-                        attrs: { textBlockStyle: standardParagraphStyle },
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph", textBlockStyle: standardParagraphStyle },
                         content: [{ type: "text", text: jobTitle }],
                     },
                     {
-                        type: "paragraph",
-                        attrs: { textBlockStyle: smallParagraphStyle },
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph", textBlockStyle: smallParagraphStyle },
                         content: [
                             { type: "text", text: textBeforeLink },
                             { type: "text", marks: [{ type: "link", attrs: { data: link } }], text: linkText },

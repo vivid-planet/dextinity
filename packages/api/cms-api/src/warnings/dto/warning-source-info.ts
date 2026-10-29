@@ -1,4 +1,4 @@
-import { Property } from "@mikro-orm/core";
+import { Property } from "@mikro-orm/decorators/legacy";
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()

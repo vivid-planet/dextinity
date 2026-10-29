@@ -130,7 +130,7 @@ MAILER_SEND_ALL_MAILS_BCC=mail-archive@dextinity.com,mail-backup@dextinity.com
 
 ## Deleting Old Mail Logs
 
-This is done automatically after creating a new mail log entry. For any custom cleanup you should use the MailLog Repository in your application.
+This is done automatically after creating a new mail log entry. For any custom cleanup you should use the `EntityManager` with the `MailerLog` entity in your application.
 
 ---
 

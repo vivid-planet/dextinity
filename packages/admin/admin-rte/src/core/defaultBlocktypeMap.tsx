@@ -4,7 +4,7 @@ import { defineMessage, FormattedMessage } from "react-intl";
 import { BlockElement } from "./BlockElement";
 import type { IBlocktypeConfig, IBlocktypeMap } from "./types";
 
-const headerMessage = defineMessage({ id: "dextinity.rte.controls.blockType.heading", defaultMessage: "Heading {level}" });
+const headerMessage = defineMessage<{ level: number }>({ id: "dextinity.rte.controls.blockType.heading", defaultMessage: "Heading {level}" });
 
 const defaultBlocktypeMap: IBlocktypeMap = {
     // "unstyled" is special: only the value for renderConfig and label is considered,

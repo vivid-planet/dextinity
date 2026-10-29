@@ -23,8 +23,6 @@ import { useFormApiRef } from "@dextinity/admin";
 import { useStackSwitchApi } from "@dextinity/admin";
 import { ArrowLeft } from "@dextinity/admin-icons";
 import { Lock } from "@dextinity/admin-icons";
-import { DateTimeField } from "@dextinity/admin-date-time";
-import { FinalFormDatePicker } from "@dextinity/admin-date-time";
 import { BlockState } from "@dextinity/cms-admin";
 import { createFinalFormBlock } from "@dextinity/cms-admin";
 import { queryUpdatedAt } from "@dextinity/cms-admin";
@@ -48,7 +46,7 @@ import { GQLCreateProductMutationVariables } from "./ProductForm.gql.generated";
 import { updateProductMutation } from "./ProductForm.gql";
 import { GQLUpdateProductMutation } from "./ProductForm.gql.generated";
 import { GQLUpdateProductMutationVariables } from "./ProductForm.gql.generated";
-    import isEqual from "lodash.isequal";
+    import { deepEqual } from "fast-equals";
 
     
 
@@ -151,7 +149,7 @@ scope: GQLProductScope;
                 onSubmit={handleSubmit}
                 mode={mode}
                 initialValues={initialValues}
-                initialValuesEqual={isEqual} //required to compare block data correctly
+                initialValuesEqual={deepEqual} //required to compare block data correctly
                 subscription={{  }}
             >
                 {() => (
@@ -204,8 +202,6 @@ import { useFormApiRef } from "@dextinity/admin";
 import { useStackSwitchApi } from "@dextinity/admin";
 import { ArrowLeft } from "@dextinity/admin-icons";
 import { Lock } from "@dextinity/admin-icons";
-import { DateTimeField } from "@dextinity/admin-date-time";
-import { FinalFormDatePicker } from "@dextinity/admin-date-time";
 import { BlockState } from "@dextinity/cms-admin";
 import { createFinalFormBlock } from "@dextinity/cms-admin";
 import { queryUpdatedAt } from "@dextinity/cms-admin";
@@ -230,7 +226,7 @@ import { GQLCreateProductMutationVariables } from "./ProductForm.gql.generated";
 import { updateProductMutation } from "./ProductForm.gql";
 import { GQLUpdateProductMutation } from "./ProductForm.gql.generated";
 import { GQLUpdateProductMutationVariables } from "./ProductForm.gql.generated";
-    import isEqual from "lodash.isequal";
+    import { deepEqual } from "fast-equals";
 
     
 
@@ -332,7 +328,7 @@ id?: string;
                 onSubmit={handleSubmit}
                 mode={mode}
                 initialValues={initialValues}
-                initialValuesEqual={isEqual} //required to compare block data correctly
+                initialValuesEqual={deepEqual} //required to compare block data correctly
                 subscription={{  }}
             >
                 {() => (
@@ -385,8 +381,6 @@ import { useFormApiRef } from "@dextinity/admin";
 import { useStackSwitchApi } from "@dextinity/admin";
 import { ArrowLeft } from "@dextinity/admin-icons";
 import { Lock } from "@dextinity/admin-icons";
-import { DateTimeField } from "@dextinity/admin-date-time";
-import { FinalFormDatePicker } from "@dextinity/admin-date-time";
 import { BlockState } from "@dextinity/cms-admin";
 import { createFinalFormBlock } from "@dextinity/cms-admin";
 import { queryUpdatedAt } from "@dextinity/cms-admin";
@@ -411,7 +405,7 @@ import { GQLCreateProductMutationVariables } from "./ProductForm.gql.generated";
 import { updateProductMutation } from "./ProductForm.gql";
 import { GQLUpdateProductMutation } from "./ProductForm.gql.generated";
 import { GQLUpdateProductMutationVariables } from "./ProductForm.gql.generated";
-    import isEqual from "lodash.isequal";
+    import { deepEqual } from "fast-equals";
 
     
 
@@ -513,7 +507,7 @@ id?: string;
                 onSubmit={handleSubmit}
                 mode={mode}
                 initialValues={initialValues}
-                initialValuesEqual={isEqual} //required to compare block data correctly
+                initialValuesEqual={deepEqual} //required to compare block data correctly
                 subscription={{  }}
             >
                 {() => (

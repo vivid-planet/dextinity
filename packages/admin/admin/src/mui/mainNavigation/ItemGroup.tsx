@@ -44,11 +44,13 @@ const TitleContainer = createComponentSlot("div")<MainNavigationItemGroupClassKe
         align-items: center;
         gap: ${theme.spacing(1)};
 
-        ${!ownerState.open &&
-        css`
-            padding-left: 0;
-            padding-right: 0;
-        `}
+        ${
+            !ownerState.open &&
+            css`
+                padding-left: 0;
+                padding-right: 0;
+            `
+        }
     `,
 );
 
@@ -62,10 +64,12 @@ const Title = createComponentSlot(Typography)<MainNavigationItemGroupClassKey, O
         text-overflow: ellipsis;
         white-space: nowrap;
 
-        ${!ownerState.open &&
-        css`
-            display: none;
-        `}
+        ${
+            !ownerState.open &&
+            css`
+                display: none;
+            `
+        }
     `,
 );
 
@@ -81,21 +85,22 @@ const ShortTitle = createComponentSlot(Typography)<MainNavigationItemGroupClassK
         margin-left: 20px;
         margin-right: auto;
 
-        ${ownerState.open &&
-        css`
-            display: none;
-        `}
+        ${
+            ownerState.open &&
+            css`
+                display: none;
+            `
+        }
     `,
 );
 
-export interface MainNavigationItemGroupProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        tooltip: typeof CommonTooltip;
-        titleContainer: "div";
-        title: typeof Typography;
-        shortTitle: typeof Typography;
-    }> {
+export interface MainNavigationItemGroupProps extends ThemedComponentBaseProps<{
+    root: "div";
+    tooltip: typeof CommonTooltip;
+    titleContainer: "div";
+    title: typeof Typography;
+    shortTitle: typeof Typography;
+}> {
     title: ReactNode;
     shortTitle?: ReactNode;
     helperIcon?: ReactNode;

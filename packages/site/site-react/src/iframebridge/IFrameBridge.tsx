@@ -1,19 +1,26 @@
 "use client";
 
+import { deepEqual } from "fast-equals";
 import { decodeJwt } from "jose";
-import isEqual from "lodash.isequal";
 import { createContext, type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 
 import styles from "./IFrameBridge.module.scss";
 import { type AdminMessage, AdminMessageType, type IFrameMessage, IFrameMessageType } from "./IFrameMessage";
 import { PreviewOverlay } from "./PreviewOverlay";
-import { getCombinedPositioningOfElements, getRecursiveChildrenOfPreviewElement, PREVIEW_ELEMENT_SCROLLED_INTO_VIEW_EVENT } from "./utils";
+import {
+    getCombinedPositioningOfElements,
+    getRecursiveChildrenOfPreviewElement,
+    PREVIEW_ELEMENT_SCROLLED_INTO_VIEW_EVENT,
+    removePreviewElementFromList,
+} from "./utils";
 
-type PreviewElement = {
+export type PreviewElement = {
     element: HTMLElement;
     adminRoute: string;
     label: string;
+    /** `"element"` measures the element's own box, for a block without a `display: contents` wrapper, such as an element found by its class names. */
+    measurementTarget?: "element" | "children";
 };
 
 export type OverlayElementData = {
@@ -98,19 +105,28 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
     const [previewElementsData, setPreviewElementsData] = useState<OverlayElementData[]>([]);
 
     const childrenWrapperRef = useRef<HTMLDivElement>(null);
-    const childrenWrapperWidth = childrenWrapperRef.current?.offsetWidth;
 
     const recalculatePreviewElementsData = useCallback(() => {
-        if (!childrenWrapperWidth) {
+        const childrenWrapper = childrenWrapperRef.current;
+
+        if (!childrenWrapper?.offsetWidth) {
             return;
         }
 
+        // The comparisons below are in document coordinates, so they need the wrapper's right edge in those coordinates, not its width,
+        // which is that edge only while the wrapper starts at `x = 0`. Measured here and not during render because the observers recompute
+        // without a render in between.
+        const childrenWrapperRight = childrenWrapper.getBoundingClientRect().right + window.scrollX;
+
         const newPreviewElementsData = previewElements
             .map((previewElement) => {
-                const childNodes = getRecursiveChildrenOfPreviewElement(previewElement.element);
-                const positioning = getCombinedPositioningOfElements(childNodes);
+                const measuredElements =
+                    previewElement.measurementTarget === "element"
+                        ? [previewElement.element]
+                        : getRecursiveChildrenOfPreviewElement(previewElement.element);
+                const positioning = getCombinedPositioningOfElements(measuredElements);
 
-                const isRenderedOutsideOfViewportWidth = positioning.left > childrenWrapperWidth;
+                const isRenderedOutsideOfViewportWidth = positioning.left > childrenWrapperRight;
 
                 if (isRenderedOutsideOfViewportWidth) {
                     // TODO: Simply return `null` here after updating to typescript 5+
@@ -126,7 +142,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
                     };
                 }
 
-                const spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport = positioning.left + positioning.width - childrenWrapperWidth;
+                const spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport = positioning.left + positioning.width - childrenWrapperRight;
                 const tooWideForPreviewViewportByPixels =
                     spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport > 0 ? spaceBetweenRightEdgeOfElementAndRightEdgeOfViewport : 0;
 
@@ -158,7 +174,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
             });
 
         setPreviewElementsData((previousElementsData) => {
-            const dataDidNotChange = isEqual(previousElementsData, newPreviewElementsData);
+            const dataDidNotChange = deepEqual(previousElementsData, newPreviewElementsData);
 
             if (dataDidNotChange) {
                 // Returning the previous object (same reference) prevents the state-update from triggering a re-render
@@ -167,7 +183,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
 
             return newPreviewElementsData;
         });
-    }, [previewElements, childrenWrapperWidth]);
+    }, [previewElements]);
 
     useEffect(() => {
         if (childrenWrapperRef.current) {
@@ -278,7 +294,7 @@ export const IFrameBridgeProvider = ({ children }: PropsWithChildren) => {
 
     const removePreviewElement = useCallback(
         (element: PreviewElement) => {
-            setPreviewElements((prev) => prev.filter((el) => el.adminRoute !== element.adminRoute));
+            setPreviewElements((prev) => removePreviewElementFromList(prev, element));
         },
         [setPreviewElements],
     );

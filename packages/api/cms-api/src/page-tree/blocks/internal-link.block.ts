@@ -1,11 +1,19 @@
 import { IsOptional, IsString, IsUUID } from "class-validator";
 
-import { BlockData, BlockIndexData, BlockInput, blockInputToData, BlockMetaField, BlockMetaFieldKind, createBlock } from "../../blocks/block";
-import { AnnotationBlockMeta, BlockField } from "../../blocks/decorators/field";
-import { PAGE_TREE_ENTITY } from "../page-tree.constants";
-import { PageExists } from "../validators/page-exists.validator";
-import { InternalLinkBlockTransformerService } from "./internal-link-block-transformer.service";
-import { InternalLinkBlockWarningsService } from "./internal-link-block-warnings.service";
+import {
+    BlockData,
+    type BlockIndexData,
+    BlockInput,
+    blockInputToData,
+    type BlockMetaField,
+    BlockMetaFieldKind,
+    createBlock,
+} from "../../blocks/block.js";
+import { AnnotationBlockMeta, BlockField } from "../../blocks/decorators/field.js";
+import { PAGE_TREE_ENTITY } from "../page-tree.constants.js";
+import { PageExists } from "../validators/page-exists.validator.js";
+import { InternalLinkBlockTransformerService } from "./internal-link-block-transformer.service.js";
+import { InternalLinkBlockWarningsService } from "./internal-link-block-warnings.service.js";
 
 class InternalLinkBlockData extends BlockData {
     targetPageId?: string;

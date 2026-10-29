@@ -2,10 +2,10 @@ import { ArgsType, Field, InputType, registerEnumType } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsEnum, IsOptional, IsString, ValidateNested } from "class-validator";
 
-import { StringFilter } from "../../common/filter/string.filter";
-import { OffsetBasedPaginationArgs } from "../../common/pagination/offset-based.args";
-import { SortDirection } from "../../common/sorting/sort-direction.enum";
-import { CombinedPermission, Permission } from "../user-permissions.types";
+import { StringFilter } from "../../common/filter/string.filter.js";
+import { OffsetBasedPaginationArgs } from "../../common/pagination/offset-based.args.js";
+import { SortDirection } from "../../common/sorting/sort-direction.enum.js";
+import { CombinedPermission, type Permission } from "../user-permissions.types.js";
 
 @InputType()
 export class PermissionFilter {

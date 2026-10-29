@@ -3,8 +3,8 @@ import type { EntityMetadata } from "@mikro-orm/core";
 import * as path from "path";
 import { Node, ts, type Type } from "ts-morph";
 
-import type { Imports } from "./generate-imports-code";
-import { findImportPath, morphTsClass } from "./ts-morph-helper";
+import type { Imports } from "./generate-imports-code.js";
+import { findImportPath, morphTsClass } from "./ts-morph-helper.js";
 
 function findReturnTypeImport(type: Type, serviceSourceFile: Node, targetDirectory: string): { name: string; importPath: string } | null {
     const symbol = type.getSymbol() ?? type.getAliasSymbol();

@@ -1,9 +1,9 @@
 import { type ArgumentsHost, BadRequestException, HttpException, InternalServerErrorException } from "@nestjs/common";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 
-import { DextinityEntityNotFoundException } from "./entity-not-found.exception";
-import { ExceptionFilter } from "./exception.filter";
-import { DextinityValidationException } from "./validation.exception";
+import { DextinityEntityNotFoundException } from "./entity-not-found.exception.js";
+import { ExceptionFilter } from "./exception.filter.js";
+import { DextinityValidationException } from "./validation.exception.js";
 
 const graphQLHost = {
     getType: () => "graphql",

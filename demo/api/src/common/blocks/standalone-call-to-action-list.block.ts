@@ -39,6 +39,8 @@ class StandaloneCallToActionListBlockInput extends BlockInput {
     }
 }
 
-export const StandaloneCallToActionListBlock = createBlock(StandaloneCallToActionListBlockData, StandaloneCallToActionListBlockInput, {
-    name: "StandaloneCallToActionList",
-});
+export const StandaloneCallToActionListBlock = createBlock(
+    StandaloneCallToActionListBlockData,
+    StandaloneCallToActionListBlockInput,
+    "StandaloneCallToActionList",
+);

@@ -1,4 +1,4 @@
-import { Embeddable, Enum, Property } from "@mikro-orm/postgresql";
+import { Embeddable, Enum, Property } from "@mikro-orm/decorators/legacy";
 import { Field, ObjectType, registerEnumType } from "@nestjs/graphql";
 
 export enum LicenseType {

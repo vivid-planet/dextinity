@@ -9,16 +9,15 @@ import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBasePro
 
 export type SectionHeadlineClassKey = "root" | "header" | "titleContainer" | "headline" | "divider" | "supportText" | "infoTooltip";
 
-export interface SectionHeadlineProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        header: "div";
-        titleContainer: "div";
-        headline: typeof Typography;
-        infoTooltip: typeof Tooltip;
-        supportText: typeof Typography;
-        divider: typeof Divider;
-    }> {
+export interface SectionHeadlineProps extends ThemedComponentBaseProps<{
+    root: "div";
+    header: "div";
+    titleContainer: "div";
+    headline: typeof Typography;
+    infoTooltip: typeof Tooltip;
+    supportText: typeof Typography;
+    divider: typeof Divider;
+}> {
     children: ReactNode;
     divider?: boolean;
     supportText?: ReactNode;

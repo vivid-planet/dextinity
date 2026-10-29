@@ -1,6 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 
-import { BaseDependencyInterface } from "./base-dependency.interface";
+import type { BaseDependencyInterface } from "./base-dependency.interface.js";
 
 @ObjectType()
 export class Dependency implements BaseDependencyInterface {
@@ -44,4 +44,6 @@ export class Dependency implements BaseDependencyInterface {
 
     @Field({ nullable: true })
     secondaryInformation?: string;
+
+    context: "dependencies" | "dependents";
 }

@@ -1,28 +1,17 @@
-import {
-    BaseEntity,
-    Collection,
-    defineConfig,
-    Entity,
-    ManyToOne,
-    MikroORM,
-    OneToMany,
-    PrimaryKey,
-    Property,
-    Ref,
-    types,
-} from "@mikro-orm/postgresql";
+import { Entity, ManyToOne, OneToMany, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, Collection, defineConfig, MikroORM, type Ref, types } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
-import { GeneratedFile } from "../../utils/write-generated-files";
-import { generateCrud } from "../generate-crud";
+import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper.js";
+import type { GeneratedFile } from "../../utils/write-generated-files.js";
+import { generateCrud } from "../generate-crud.js";
 
 @Entity()
 export class Product extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @OneToMany(() => ProductToCategory, (productCategory) => productCategory.product, { orphanRemoval: true })
     productCategories = new Collection<ProductToCategory>(this);
@@ -31,7 +20,7 @@ export class Product extends BaseEntity {
 @Entity()
 export class ProductToCategory extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @ManyToOne(() => Product, { deleteRule: "cascade", ref: true })
     product: Ref<Product>;
@@ -46,7 +35,7 @@ export class ProductToCategory extends BaseEntity {
 @Entity()
 export class Category extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @OneToMany(() => ProductToCategory, (productCategory) => productCategory.category, { orphanRemoval: true })
     productCategories = new Collection<ProductToCategory>(this);
@@ -59,15 +48,15 @@ describe("GenerateCrud Relation n:m with additional column", () => {
         LazyMetadataStorage.load();
         orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [Product, ProductToCategory, Category],
             }),
         );
 
         const out = await generateCrud(
             { requiredPermission: testPermission, create: false, update: true, delete: false },
-            orm.em.getMetadata().get("Product"),
+            orm.em.getMetadata().getByClassName("Product"),
         );
         const formattedOut = await formatGeneratedFiles(out);
         const foundFile = formattedOut.find((file) => file.name === "product.resolver.ts");

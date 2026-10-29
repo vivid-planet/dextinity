@@ -2,8 +2,8 @@ import { useApolloClient, useQuery } from "@apollo/client";
 import { Field, filterByFragment, FinalForm, FinalFormInput, type FinalFormSubmitEvent, useFormApiRef } from "@dextinity/admin";
 import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { CircularProgress } from "@mui/material";
+import { deepEqual } from "fast-equals";
 import type { FormApi } from "final-form";
-import isEqual from "lodash.isequal";
 import { FormattedMessage } from "react-intl";
 
 import { productPriceFormFragment, productPriceFormQuery, updateProductPriceFormMutation } from "./ProductPriceForm.gql";
@@ -77,7 +77,7 @@ export function ProductPriceForm({ id }: FormProps) {
             onSubmit={handleSubmit}
             mode="edit"
             initialValues={initialValues}
-            initialValuesEqual={isEqual} //required to compare block data correctly
+            initialValuesEqual={deepEqual} //required to compare block data correctly
             onAfterSubmit={(values, form) => {
                 //don't go back automatically TODO remove this automatismn
             }}

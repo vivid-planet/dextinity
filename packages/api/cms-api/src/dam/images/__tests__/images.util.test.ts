@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { FocalPoint } from "../../../file-utils/focal-point.enum";
-import type { DamFileImage } from "../../files/entities/file-image.entity";
-import type { ImageCropArea } from "../entities/image-crop-area.entity";
-import { calculateInheritAspectRatio } from "../images.util";
+import { FocalPoint } from "../../../file-utils/focal-point.enum.js";
+import type { DamFileImage } from "../../files/entities/file-image.entity.js";
+import type { ImageCropArea } from "../entities/image-crop-area.entity.js";
+import { calculateInheritAspectRatio } from "../images.util.js";
 
 function makeImage(width: number, height: number): DamFileImage {
     return { width, height } as DamFileImage;

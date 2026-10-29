@@ -18,7 +18,7 @@ import {
 import { Chip } from "@mui/material";
 import type { GridFilterModel } from "@mui/x-data-grid";
 import { capitalCase } from "change-case";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { useContentScope } from "../contentScope/Provider";
@@ -47,6 +47,7 @@ const warningsFragment = gql`
         entityInfo {
             name
             secondaryInformation
+            visible
         }
         scope
     }
@@ -77,16 +78,20 @@ function WarningsGridToolbar() {
     );
 }
 
-export function WarningsGrid() {
+export interface WarningsGridProps {
+    showAllScopes?: boolean;
+}
+
+export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
     const intl = useIntl();
     const dataGridProps = {
-        ...useDataGridRemote({ initialFilter: { items: [{ field: "status", operator: "is", value: "open" }] } }),
+        ...useDataGridRemote({ initialFilter: { items: [{ field: "visible", operator: "is", value: true }] } }),
         ...usePersistentColumnState("WarningsGrid"),
     };
     const { messages: warningMessages } = useWarningsConfig();
     const { entityDependencyMap } = useDependenciesConfig();
-    const { values: scopeValues } = useContentScope();
-    const scopes = scopeValues.map((item) => item.scope);
+    const { scope: currentScope, values: scopeValues } = useContentScope();
+    const scopes = showAllScopes ? scopeValues.map((item) => item.scope) : [currentScope];
 
     const scopeValueOptions = scopeValues.map((item) => {
         const label: string[] = [];
@@ -144,6 +149,14 @@ export function WarningsGrid() {
             valueGetter: (params, row) => row.entityInfo?.secondaryInformation,
         },
         {
+            field: "visible",
+            headerName: intl.formatMessage({ id: "dextinity.warning.visible", defaultMessage: "Visible" }),
+            type: "boolean",
+            width: 100,
+            // Matches the API: warnings of entities without an EntityInfo count as visible.
+            valueGetter: (params, row) => row.entityInfo?.visible ?? true,
+        },
+        {
             field: "type",
             headerName: intl.formatMessage({ id: "dextinity.warning.type", defaultMessage: "Type" }),
             type: "singleSelect",
@@ -168,12 +181,14 @@ export function WarningsGrid() {
             headerName: intl.formatMessage({ id: "dextinity.warning.scope", defaultMessage: "Scope" }),
             type: "singleSelect",
             sortable: false,
+            // Only the current scope is queried, so filtering by any other scope would return an empty grid.
+            filterable: showAllScopes,
             valueOptions: scopeValueOptions,
             valueFormatter: (value) => {
                 if (typeof value === "object" && value !== null) {
                     // Check if there is a scope value in the options, if so, return the label
                     const scope = scopeValueOptions.find((scope) => {
-                        return isEqual(JSON.parse(scope.value), value);
+                        return deepEqual(JSON.parse(scope.value), value);
                     });
                     if (scope) {
                         return scope.label;
@@ -202,8 +217,11 @@ export function WarningsGrid() {
         // Create a custom filter model by transforming the filterModel's items
         const customFilterModel = {
             ...filterModel,
-            items:
-                filterModel?.items.map((item) => {
+            items: (filterModel?.items ?? [])
+                // `filterable` only hides the column from the filter panel. The filter model is read from the URL,
+                // so a scope filter from an existing link would still reach the query and empty the grid.
+                .filter((item) => showAllScopes || item.field !== "scope")
+                .map((item) => {
                     if (item.field === "scope") {
                         if (typeof item.value === "string") {
                             return { ...item, value: JSON.parse(item.value) };
@@ -215,7 +233,7 @@ export function WarningsGrid() {
                     }
 
                     return item;
-                }) ?? [],
+                }),
         };
 
         return muiGridFilterToGql(columns, customFilterModel);

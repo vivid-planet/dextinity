@@ -227,30 +227,162 @@ export const FullWidthImageBlock = createCompositeBlock({
 });
 ```
 
-## DamVideoBlock (Admin only)
+## DamVideoBlock
 
 The DamVideoBlock factory creates a block for a video from the DAM.
-Use `supports` to restrict what editors can set besides the video file itself:
+It has one option for each thing it offers besides the video file itself:
 
-- `"controls"`: The playback options autoplay, loop and show controls.
-- `"previewImage"`: The poster image shown before playback.
+- `controls`: The playback options autoplay, loop and show controls.
+- `previewImage`: The poster image shown before playback.
 
-Both are supported by default.
-`@dextinity/cms-admin` exports a ready-made `DamVideoBlock` created with those defaults, use the `createDamVideoBlock` factory to change them:
+Both are enabled by default and disabled by passing `false`.
+`@dextinity/cms-api` and `@dextinity/cms-admin` export a ready-made `DamVideoBlock` created with those defaults.
+Use the `createDamVideoBlock` factory when a site doesn't need all of them, for instance an app integration that only reads the video's URL.
 
-```tsx title="DamVideoBlock.tsx"
-import { createDamVideoBlock } from "@dextinity/cms-admin";
+Give the block a name of its own — `DamVideo` is taken by the exported `DamVideoBlock` — and use that same name and the same options in both the API and the Admin.
 
-// For a site that renders no poster image
-export const DamVideoBlock = createDamVideoBlock({ supports: ["controls"] });
+### API
+
+Use the `createDamVideoBlock` factory:
+
+```ts title="teaser-video.block.ts"
+import { createDamVideoBlock } from "@dextinity/cms-api";
+
+// For a site that only reads the video's URL
+export const TeaserVideoBlock = createDamVideoBlock({ controls: false, previewImage: false }, "TeaserVideo");
 ```
 
-:::note
+Disabled options are part of neither the block's data nor its input, so they don't show up in `blocks.generated.ts` and aren't stored for new content.
 
-Leaving out an option only hides it from the editor.
-Values that are already stored are kept as they are.
-The preview image in particular stays part of the block's data either way, since the API's child block is non-nullable.
+Values that were stored before an option was disabled survive reading: the block loads them unchanged, and `migrateBlocks` writes them back as they are.
+They don't survive editing, though — saving a block in the Admin rebuilds its data from the input, which no longer carries the disabled options.
+So disabling an option leaves existing content untouched until an editor saves that block, and drops the values from then on.
+Note that such a value is no longer treated as a child block, so a preview image kept this way isn't part of the block index either.
+
+:::warning
+
+Disabling an option is therefore not reversible for content that is edited in the meantime.
+Enabling it again only brings back the values of blocks that nobody saved while the option was disabled.
+
 :::
+
+#### Preview image of existing content
+
+A block that supports the preview image defaults a missing one to an empty preview image when it loads content.
+So replacing a block a project already has works without a migration: content stored before the preview image existed loads as a child block instead of leaving the field undefined.
+
+The default applies on read, which also covers content that no migration reaches — for instance content stored while the preview image was disabled, before it was enabled again.
+
+Run `migrateBlocks` to write the defaulted data back:
+
+```bash
+pnpm console migrateBlocks
+```
+
+Without it the default still applies whenever a block is loaded, it just isn't persisted until the content is saved.
+
+Own migrations are passed via `migrate` and start with version 1, like for any other block:
+
+```ts title="teaser-video.block.ts"
+import { createDamVideoBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
+
+export const TeaserVideoBlock = createDamVideoBlock(
+    { previewImage: false },
+    { name: "TeaserVideo", migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([AddSomethingMigration]) } },
+);
+```
+
+#### Replacing the DamVideoBlock
+
+A project replacing the exported `DamVideoBlock` with a block that disables options keeps their stored values, as described above.
+To remove them, add a migration.
+
+Content the `DamVideoBlock` saved before its preview image migration moved into its [vendor chain](./5-migrations.mdx#vendor-migrations) carries that migration as `$$version: 1`.
+The new block reads that counter as its own version, so a migration to version 1 would take this content for migrated and skip it.
+Start the chain with a migration that mirrors the preview image migration instead, and remove the options in version 2:
+
+```ts title="video.block.ts"
+import { BlockMigration, type BlockMigrationInterface, createDamVideoBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
+
+interface WithoutPreviewImage {
+    damFileId?: string;
+    autoplay?: boolean;
+    showControls?: boolean;
+    loop?: boolean;
+}
+
+interface WithPreviewImage extends WithoutPreviewImage {
+    previewImage: unknown;
+}
+
+// Mirrors the DamVideoBlock's former version 1
+class AddPreviewImageMigration extends BlockMigration<(from: WithoutPreviewImage) => WithPreviewImage> implements BlockMigrationInterface {
+    public readonly toVersion = 1;
+
+    protected migrate(props: WithoutPreviewImage): WithPreviewImage {
+        return { ...props, previewImage: {} };
+    }
+}
+
+class RemoveControlsAndPreviewImageMigration extends BlockMigration<(from: WithPreviewImage) => { damFileId?: string }> implements BlockMigrationInterface {
+    public readonly toVersion = 2;
+
+    protected migrate({ damFileId }: WithPreviewImage) {
+        return { damFileId };
+    }
+}
+
+export const VideoBlock = createDamVideoBlock(
+    { controls: false, previewImage: false },
+    {
+        name: "Video",
+        migrate: {
+            version: 2,
+            migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration, RemoveControlsAndPreviewImageMigration]),
+        },
+    },
+);
+```
+
+Use the new block wherever the `DamVideoBlock` was used, for instance under the same key in a `BlocksBlock`, and run `migrateBlocks` to write the migrated data back.
+
+### Admin
+
+Use the `createDamVideoBlock` factory:
+
+```tsx title="TeaserVideoBlock.tsx"
+import { createDamVideoBlock } from "@dextinity/cms-admin";
+
+export const TeaserVideoBlock = createDamVideoBlock({ name: "TeaserVideo", controls: false, previewImage: false });
+```
+
+Disabled options are hidden from the editor.
+As long as the API block still has them, their stored values are kept — the Admin passes them through unchanged — so enabling them again shows them in the editor.
+Once the API block disables them too, they are dropped as described above.
+
+The `supports` array the Admin factory took before is deprecated. Replace it with the options:
+
+```diff
+-createDamVideoBlock({ name: "TeaserVideo", supports: ["controls"] });
++createDamVideoBlock({ name: "TeaserVideo", previewImage: false });
+```
+
+### Site
+
+Render the video with the fields the block supports:
+
+```tsx title="TeaserVideoBlock.tsx"
+import { PropsWithData } from "@dextinity/site-nextjs";
+import { TeaserVideoBlockData } from "@src/blocks.generated";
+
+export function TeaserVideoBlock({ data: { damFile } }: PropsWithData<TeaserVideoBlockData>) {
+    if (!damFile) {
+        return null;
+    }
+
+    return <video src={damFile.fileUrl} />;
+}
+```
 
 ## FinalFormBlock (Admin only)
 

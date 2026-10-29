@@ -82,7 +82,8 @@
         },
         "packages/site/site-vite-rsc": {
             "entry": ["./src/index.ts", "./src/server.ts", "./src/node.ts", "./src/vite/index.ts", "./src/entry.*.tsx", "./e2e/fixture/handler.tsx"],
-            "project": ["./src/**/*.{ts,tsx}", "./e2e/**/*.{ts,tsx}"]
+            "project": ["./src/**/*.{ts,tsx}", "./e2e/**/*.{ts,tsx}"],
+            "ignore": ["./src/**/*.generated.ts"]
         },
         "packages/mail-react": {
             "project": ["./src/**/*.{ts,tsx}"],

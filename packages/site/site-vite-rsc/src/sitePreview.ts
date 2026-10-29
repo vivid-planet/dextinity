@@ -4,6 +4,7 @@ import { setCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 import { errors, jwtVerify, SignJWT } from "jose";
 
+import { noStoreCacheControl } from "./cacheControl.js";
 import { getCookie, getRequest, setPreview, type Visibility } from "./requestContext.js";
 
 type PreviewParams = {
@@ -75,6 +76,8 @@ export const sitePreviewMiddleware = createMiddleware(async (_c, next) => {
  * Starts the site preview: the admin opens it with a JWT of the API, it's stored in a cookie for the following requests
  */
 export async function sitePreviewRoute(c: Context) {
+    // The redirect sets the preview cookie, the errors are only for this JWT
+    c.header("Cache-Control", noStoreCacheControl);
     const jwt = c.req.query("jwt");
     if (!jwt) {
         return c.json({ error: "JWT-Parameter is missing." }, 400);

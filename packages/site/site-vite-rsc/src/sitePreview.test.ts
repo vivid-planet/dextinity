@@ -95,6 +95,7 @@ describe("sitePreviewRoute", () => {
         expect(cookie).toMatch(new RegExp(`^${sitePreviewCookieName}=ey`));
         expect(cookie).toContain("HttpOnly");
         expect(cookie).toContain("SameSite=Lax");
+        expect(response.headers.get("cache-control")).toBe("private, no-cache, no-store, max-age=0, must-revalidate");
 
         expect(await requestPreview({ cookie: cookie.split(";")[0] })).toEqual({
             visibility: "invisiblePages",
@@ -108,6 +109,7 @@ describe("sitePreviewRoute", () => {
 
         expect(response.status).toBe(400);
         expect(response.headers.get("set-cookie")).toBeNull();
+        expect(response.headers.get("cache-control")).toBe("private, no-cache, no-store, max-age=0, must-revalidate");
     });
 
     it("refuses a missing or invalid JWT", async () => {

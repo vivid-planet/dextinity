@@ -2,8 +2,8 @@
     "compilerOptions": {
         "jsx": "react-jsx",
         "lib": ["dom", "dom.iterable", "esnext"],
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
         "outDir": "lib",
         "rootDir": ".",
         "target": "ES2022",

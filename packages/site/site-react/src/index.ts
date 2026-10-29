@@ -31,6 +31,8 @@ export type { PropsWithData } from "./blocks/PropsWithData";
 export { SvgImageBlock } from "./blocks/SvgImageBlock";
 export { VimeoVideoBlock } from "./blocks/VimeoVideoBlock";
 export { YouTubeVideoBlock } from "./blocks/YouTubeVideoBlock";
+export { CarouselAccessibility, type CarouselAccessibilityOptions, type CarouselAccessibilityType } from "./carousel/CarouselAccessibility";
+export { type CarouselState, useCarouselState } from "./carousel/useCarouselState";
 export { type CookieApi, CookieApiProvider, useCookieApi } from "./cookies/CookieApiContext";
 export { CookieSafe } from "./cookies/CookieSafe";
 export { useCookieBotCookieApi } from "./cookies/useCookieBotCookieApi";

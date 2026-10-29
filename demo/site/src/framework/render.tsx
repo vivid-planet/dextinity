@@ -7,6 +7,7 @@ import { getNavigationErrorDigest, isNotFoundDigest, parseRedirectDigest } from 
 import { reportError } from "./reportError";
 import { getRequest, isRscRequest } from "./requestContext";
 import { RouterProvider } from "./RouterProvider";
+import { createTitleCountCheck } from "./titleCountCheck";
 
 export type RscPayload = {
     root: ReactNode;
@@ -102,6 +103,20 @@ function createStream(chunks: Uint8Array[]) {
     });
 }
 
+/**
+ * React doesn't deduplicate titles, so every page has to render exactly one, e.g., `<DefaultTitle />`
+ */
+function checkTitleCount(html: ReadableStream<Uint8Array>) {
+    const { url } = getRequest(); // The stream is read after the request context ended
+    return html.pipeThrough(
+        createTitleCountCheck((titleCount) => {
+            if (titleCount !== 1) {
+                console.error(`${url} renders ${titleCount} <title> elements instead of one`);
+            }
+        }),
+    );
+}
+
 async function respond(
     rscChunks: Uint8Array[],
     { status, cacheControl }: { status: number; cacheControl: string },
@@ -127,7 +142,7 @@ async function respond(
     }
 
     return {
-        response: new Response(html.stream, {
+        response: new Response(import.meta.env.DEV ? checkTitleCount(html.stream) : html.stream, {
             status,
             headers: { "Content-Type": "text/html;charset=utf-8", "Cache-Control": cacheControl },
         }),

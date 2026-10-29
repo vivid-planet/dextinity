@@ -1,3 +1,6 @@
+import { noStoreCacheControl } from "./cacheControl.js";
+import { getVisibility } from "./requestContext.js";
+
 const defaultCacheControl = "public, max-age=900";
 
 type SitemapVideo = {
@@ -167,10 +170,11 @@ function renderRobots({ rules, sitemap, host }: Robots): string {
 }
 
 /**
- * Renders the `sitemap.xml` of the site, like a `sitemap.ts` of Next.js
+ * Renders the `sitemap.xml` of the site, like a `sitemap.ts` of Next.js. In a preview, it isn't cached, as it may contain unpublished pages.
  */
 export function sitemapResponse(sitemap: Sitemap, { cacheControl = defaultCacheControl }: { cacheControl?: string } = {}): Response {
-    return new Response(renderSitemap(sitemap), { headers: { "Content-Type": "application/xml", "Cache-Control": cacheControl } });
+    const usedCacheControl = getVisibility() === "default" ? cacheControl : noStoreCacheControl;
+    return new Response(renderSitemap(sitemap), { headers: { "Content-Type": "application/xml", "Cache-Control": usedCacheControl } });
 }
 
 /**

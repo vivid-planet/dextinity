@@ -2,6 +2,7 @@
 import { describe, expect, it } from "vitest";
 
 import { robotsResponse, sitemapResponse } from "./metadataRoutes.js";
+import { runWithRequestContext, setPreview } from "./requestContext.js";
 
 describe("sitemapResponse", () => {
     it("renders the pages of the sitemap", async () => {
@@ -48,6 +49,15 @@ describe("sitemapResponse", () => {
         expect(xml).toContain('<xhtml:link rel="alternate" hreflang="de" href="https://www.example.com/de" />');
         expect(xml).toContain("<image:image>\n<image:loc>https://www.example.com/image.jpg</image:loc>\n</image:image>");
         expect(xml).toContain("<video:description>A &lt;video&gt;</video:description>\n<video:duration>60</video:duration>\n</video:video>");
+    });
+
+    it("isn't cached in a preview, as it may contain unpublished pages", () => {
+        const response = runWithRequestContext({ request: new Request("https://www.example.com/sitemap.xml"), isRscRequest: false }, () => {
+            setPreview({ visibility: "invisiblePages", sitePreview: {} });
+            return sitemapResponse([], { cacheControl: "public, max-age=60" });
+        });
+
+        expect(response.headers.get("cache-control")).toBe("private, no-cache, no-store, max-age=0, must-revalidate");
     });
 
     it("uses the given cache control", () => {

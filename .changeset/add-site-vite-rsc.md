@@ -107,7 +107,7 @@ server.listen(3000);
 
 **Sitemap and robots.txt** (`@dextinity/site-vite-rsc/server`)
 
-`sitemapResponse()` and `robotsResponse()` render a sitemap and robots rules in the shapes of Next.js' `MetadataRoute.Sitemap` and `MetadataRoute.Robots`, so the `sitemap()` and `robots()` functions of a Next.js site can be reused:
+`sitemapResponse()` and `robotsResponse()` render a sitemap and robots rules in the shapes of Next.js' `MetadataRoute.Sitemap` and `MetadataRoute.Robots`, so the `sitemap()` and `robots()` functions of a Next.js site can be reused. In a preview, the sitemap isn't cached, as it may contain unpublished pages:
 
 ```ts
 app.get("/sitemap.xml", async () => sitemapResponse(await sitemap()));

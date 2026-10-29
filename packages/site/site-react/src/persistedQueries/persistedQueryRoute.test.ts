@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { mkdtemp, rm, writeFile } from "fs/promises";
+import { mkdtemp, rm, utimes, writeFile } from "fs/promises";
 import { tmpdir } from "os";
 import { join } from "path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -34,9 +34,9 @@ describe("persistedQueryRoute", () => {
         fetchMock.mockReset();
     });
 
-    function createGetRequest(headers: Record<string, string> = {}) {
+    function createGetRequest(headers: Record<string, string> = {}, queryHash = hash) {
         const url = new URL("http://site.test/graphql");
-        url.searchParams.set("extensions.persistedQuery.sha256Hash", hash);
+        url.searchParams.set("extensions.persistedQuery.sha256Hash", queryHash);
         return new Request(url, { method: "GET", headers: { "Apollo-Require-Preflight": "true", ...headers } });
     }
 
@@ -93,5 +93,76 @@ describe("persistedQueryRoute", () => {
         });
 
         expect(response.headers.get("Cache-Control")).toBe("private, no-store");
+    });
+
+    describe("during development", () => {
+        let reloadedQueriesPath: string;
+        let modifiedAt = 0;
+
+        beforeAll(() => {
+            reloadedQueriesPath = join(tempDir, "reloaded-queries.json");
+        });
+
+        async function writePersistedQueries(content: string) {
+            await writeFile(reloadedQueriesPath, content);
+            modifiedAt += 1000;
+            await utimes(reloadedQueriesPath, modifiedAt / 1000, modifiedAt / 1000);
+        }
+
+        async function requestQuery(queryHash = hash) {
+            fetchMock.mockClear();
+            return persistedQueryRoute(createGetRequest({}, queryHash), {
+                graphqlTarget,
+                persistedQueriesPath: reloadedQueriesPath,
+                cacheMaxAge: undefined,
+            });
+        }
+
+        function getUpstreamQuery() {
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+            return JSON.parse(fetchMock.mock.calls[0][1]?.body as string).query as string;
+        }
+
+        it("finds a query added after the first request", async () => {
+            await writePersistedQueries(JSON.stringify({ [hash]: "query Test { test }" }));
+            await requestQuery();
+
+            await writePersistedQueries(JSON.stringify({ [hash]: "query Test { test }", def456: "query Added { added }" }));
+            const response = await requestQuery("def456");
+
+            expect(response.status).toBe(200);
+            expect(getUpstreamQuery()).toBe("query Added { added }");
+        });
+
+        it("uses a changed fragment", async () => {
+            await writePersistedQueries(
+                JSON.stringify({ [hash]: "query Test { ...TestFragment }", fragment: "fragment TestFragment on Test { a }" }),
+            );
+            await requestQuery();
+            expect(getUpstreamQuery()).toContain("fragment TestFragment on Test { a }");
+
+            await writePersistedQueries(
+                JSON.stringify({ [hash]: "query Test { ...TestFragment }", fragment: "fragment TestFragment on Test { a b }" }),
+            );
+            await requestQuery();
+
+            expect(getUpstreamQuery()).toContain("fragment TestFragment on Test { a b }");
+        });
+
+        it("keeps the previous queries when the file is half-written", async () => {
+            await writePersistedQueries(JSON.stringify({ [hash]: "query Test { test }" }));
+            await requestQuery();
+
+            await writePersistedQueries(`{"${hash}": "query Te`);
+            const response = await requestQuery();
+
+            expect(response.status).toBe(200);
+            expect(getUpstreamQuery()).toBe("query Test { test }");
+
+            await writePersistedQueries(JSON.stringify({ [hash]: "query Test { test changed }" }));
+            await requestQuery();
+
+            expect(getUpstreamQuery()).toBe("query Test { test changed }");
+        });
     });
 });

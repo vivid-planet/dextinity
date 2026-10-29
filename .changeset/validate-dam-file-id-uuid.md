@@ -1,5 +1,5 @@
 ---
-"@dextinity/cms-api": patch
+"@comet/cms-api": patch
 ---
 
 Validate `damFileId` as UUID in `PixelImageBlock` and `SvgImageBlock`

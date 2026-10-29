@@ -63,7 +63,7 @@
         "uuid": "^14.0.3"
     },
     "devDependencies": {
-        "@babel/core": "^7.29.7",
+        "@babel/core": "^8.0.9",
         "@dextinity/admin-generator": "workspace:*",
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",

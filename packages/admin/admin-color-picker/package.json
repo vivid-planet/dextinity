@@ -44,8 +44,8 @@
         "use-debounce": "^10.1.1"
     },
     "devDependencies": {
-        "@babel/cli": "^7.29.7",
-        "@babel/core": "^7.29.7",
+        "@babel/cli": "^8.0.6",
+        "@babel/core": "^8.0.9",
         "@dextinity/admin-babel-preset": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
         "@mui/material": "^7.3.11",

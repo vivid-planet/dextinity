@@ -33,6 +33,15 @@ const graphQLFetch = createGraphQLFetchMiddleware();
 type Redirect = GQLDomainRedirectsQuery["paginatedRedirects"]["nodes"][number];
 
 async function fetchDomainRedirects(scope: GQLRedirectScopeInput) {
+    try {
+        return await fetchCachedDomainRedirects(scope);
+    } catch (error) {
+        console.error(`Could not load the domain redirects for ${scope.domain}`, error);
+        return [];
+    }
+}
+
+async function fetchCachedDomainRedirects(scope: GQLRedirectScopeInput) {
     const key = `domainRedirects-${scope.domain}`;
     return memoryCache.wrap(key, async () => {
         const limit = 50;

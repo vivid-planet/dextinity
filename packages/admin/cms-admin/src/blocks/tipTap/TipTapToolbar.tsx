@@ -680,7 +680,7 @@ export const TipTapToolbar = ({
                                     defaultMessage="Insert a non-breaking space"
                                 />
                             }
-                            onToggle={() => editor.chain().focus().insertContent({ type: "nonBreakingSpace" }).run()}
+                            onToggle={() => editor.chain().focus().insertNonBreakingSpace().run()}
                         />
                     )}
                     {resolvedOptions.softHyphen && (
@@ -690,7 +690,7 @@ export const TipTapToolbar = ({
                             tooltip={
                                 <FormattedMessage id="dextinity.blocks.tipTapRichText.softHyphen.tooltip" defaultMessage="Insert a soft hyphen" />
                             }
-                            onToggle={() => editor.chain().focus().insertContent({ type: "softHyphen" }).run()}
+                            onToggle={() => editor.chain().focus().insertSoftHyphen().run()}
                         />
                     )}
                 </ToolbarGroup>

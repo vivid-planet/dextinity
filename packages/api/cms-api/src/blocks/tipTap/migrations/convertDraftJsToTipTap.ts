@@ -276,6 +276,14 @@ function makeTextNode(text: string, marks: NonNullable<JSONContent["marks"]>): J
     return node;
 }
 
+function makeAtomNode(type: "nonBreakingSpace" | "softHyphen", marks: NonNullable<JSONContent["marks"]>): JSONContent {
+    const node: JSONContent = { type };
+    if (marks.length > 0) {
+        node.marks = marks;
+    }
+    return node;
+}
+
 // Splits a text segment so each newline becomes a hardBreak node, and each U+00A0/U+00AD
 // character (the way the DraftJS RTE persists non-breaking-spaces and soft-hyphens) becomes a
 // dedicated TipTap atom node when the corresponding feature is supported. Otherwise the
@@ -305,10 +313,10 @@ function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, 
             nodes.push({ type: "hardBreak" });
         } else if (char === NBSP_CHAR && nonBreakingSpace) {
             flushBuffer();
-            nodes.push({ type: "nonBreakingSpace" });
+            nodes.push(makeAtomNode("nonBreakingSpace", marks));
         } else if (char === SOFT_HYPHEN_CHAR && softHyphen) {
             flushBuffer();
-            nodes.push({ type: "softHyphen" });
+            nodes.push(makeAtomNode("softHyphen", marks));
         } else {
             buffer += char;
         }

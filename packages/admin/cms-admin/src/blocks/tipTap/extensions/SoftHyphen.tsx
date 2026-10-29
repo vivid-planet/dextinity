@@ -2,6 +2,8 @@ import { RteSoftHyphen } from "@dextinity/admin-icons";
 import { mergeAttributes, Node } from "@tiptap/core";
 import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 
+import { getMarksAtSelection } from "./getMarksAtSelection";
+
 declare module "@tiptap/core" {
     interface Commands<ReturnType> {
         softHyphen: {
@@ -35,8 +37,8 @@ export const SoftHyphen = Node.create({
         return {
             insertSoftHyphen:
                 () =>
-                ({ commands }) =>
-                    commands.insertContent({ type: this.name }),
+                ({ state, commands }) =>
+                    commands.insertContent({ type: this.name, marks: getMarksAtSelection(state) }),
         };
     },
 

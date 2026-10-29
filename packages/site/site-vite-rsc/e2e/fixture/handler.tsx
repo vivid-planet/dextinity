@@ -1,5 +1,5 @@
 import { redirect } from "@dextinity/site-vite-rsc";
-import { handleError, renderPage, trailingSlashRedirectMiddleware } from "@dextinity/site-vite-rsc/server";
+import { handleError, renderPage, setPreview, trailingSlashRedirectMiddleware } from "@dextinity/site-vite-rsc/server";
 import { type Context, Hono } from "hono";
 import { type ReactNode, Suspense } from "react";
 
@@ -37,6 +37,13 @@ function renderTestPage(c: Context, root: ReactNode, options: TestPageOptions = 
 export const app = new Hono();
 
 app.use(trailingSlashRedirectMiddleware);
+
+app.use(async (c, next) => {
+    if (c.req.query("sitePreview") !== undefined) {
+        setPreview({ visibility: "invisiblePages", sitePreview: {} });
+    }
+    await next();
+});
 
 app.get("/", (c) => renderTestPage(c, <p>Home page</p>));
 

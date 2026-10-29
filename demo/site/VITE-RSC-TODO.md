@@ -173,6 +173,10 @@ The Next.js site cached with Next.js and attached Valkey through a project-level
 
 `persistedQueriesPlugin({ persistedQueriesPath, include })` (`@dextinity/site-vite-rsc/vite`) replaces the queries in client code with their hashes and writes the hash file for the BFF route (`persistedQueryRoute()` from `@dextinity/site-react`). It's a separate plugin instead of part of `dextinitySite()`, as not every site uses persisted queries. Its logic stays separate from site-react's webpack loader, which is bound to webpack's loader API. #17 changes the route, not the plugin, so it applies unchanged.
 
+### #32 Render `SitePreviewProvider` in `renderPage()` (done)
+
+In the admin's site preview, `SitePreviewProvider` marks the page as site preview for the blocks (`ExternalLinkBlock` sends external links to the admin, `CookieSafe` shows embeds without consent) and reports the location to the admin on each navigation. The old Next.js demo rendered `SitePreviewProvider` from site-nextjs in its domain layout in draft mode; through the middleware rewrite, that covered every page and its 404, but not Next.js' error page. The Vite demo had a copy, rendered in `LanguageLayout`, so the root 404 (e.g. `/de`) lost it. Now `renderPage()` wraps every page it renders (page, 404, 500) when `getSitePreview()` is set; the provider isn't exported, and projects only set the site preview in their middleware (#34). Copied from site-nextjs instead of shared through site-react, as only the router hooks differ.
+
 ### #44 Make error reporting configurable
 
 `reportError()` (now in the package) only logs; projects used to edit it to report to an error tracking service (e.g. Sentry). Add a way to set the reporter, e.g. an option or `setErrorReporter()`, used by `renderPage`, `handleError`, `GlobalErrorBoundary` and the SSR entry. The fallback texts of `GlobalErrorBoundary` are English, as it replaces the document outside of the site's providers.
@@ -192,7 +196,7 @@ The Next.js site cached with Next.js and attached Valkey through a project-level
 | 29  | Fetch cache (store interface, Valkey/LRU, stale-while-revalidate, metrics)                                                                           | `src/util/fetchCache.ts`, `fetchCacheStore.ts`                      | done (#29)                                   |
 | 30  | `createServerGraphQLFetch({ url, headers })` reading visibility from the context                                                                     | `src/util/graphQLClient.ts`                                         | done (#30)                                   |
 | 31  | Persisted queries Vite plugin (counterpart to site-react's webpack loader)                                                                           | `vitePersistedQueriesPlugin.ts`                                     | done (#31)                                   |
-| 32  | `SitePreviewProvider`                                                                                                                                | `src/util/SitePreviewProvider.tsx`                                  | #25                                          |
+| 32  | `SitePreviewProvider`                                                                                                                                | `src/util/SitePreviewProvider.tsx`                                  | done (#32)                                   |
 
 ### #45 Move the CDN origin check into a middleware
 

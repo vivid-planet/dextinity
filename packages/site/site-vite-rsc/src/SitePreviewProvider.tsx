@@ -5,9 +5,13 @@ import {
     type SitePreviewIFrameLocationMessage,
     SitePreviewIFrameMessageType,
 } from "@dextinity/site-react";
-import { usePathname, useSearchParams } from "@dextinity/site-vite-rsc";
 import { type PropsWithChildren, useEffect } from "react";
 
+import { usePathname, useSearchParams } from "./RouterProvider.js";
+
+/**
+ * Marks the page as site preview for the blocks and reports the location to the admin, which shows the site in an iframe
+ */
 export function SitePreviewProvider({ children }: PropsWithChildren) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -27,14 +31,5 @@ export function SitePreviewProvider({ children }: PropsWithChildren) {
         };
     }, [pathname, searchParams]);
 
-    return (
-        <PreviewContext.Provider
-            value={{
-                previewType: "SitePreview",
-                showPreviewSkeletons: false,
-            }}
-        >
-            {children}
-        </PreviewContext.Provider>
-    );
+    return <PreviewContext.Provider value={{ previewType: "SitePreview", showPreviewSkeletons: false }}>{children}</PreviewContext.Provider>;
 }

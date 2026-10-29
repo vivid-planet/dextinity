@@ -4,8 +4,9 @@ import type { ReactNode } from "react";
 import { noStoreCacheControl } from "./cacheControl.js";
 import { getNavigationErrorDigest, isNotFoundDigest, parseRedirectDigest } from "./navigation.js";
 import { reportError } from "./reportError.js";
-import { getRequest, isRscRequest } from "./requestContext.js";
+import { getRequest, getSitePreview, isRscRequest } from "./requestContext.js";
 import { RouterProvider } from "./RouterProvider.js";
+import { SitePreviewProvider } from "./SitePreviewProvider.js";
 import { createTitleCountCheck } from "./titleCountCheck.js";
 
 export type RscPayload = {
@@ -28,7 +29,7 @@ export async function renderPage(c: Context, options: RenderPageOptions): Promis
     const url = new URL(getRequest().url);
     const rscPayload = await renderRscPayload(
         <RouterProvider pathname={url.pathname} search={url.search} params={c.req.param()}>
-            {root}
+            {getSitePreview() ? <SitePreviewProvider>{root}</SitePreviewProvider> : root}
         </RouterProvider>,
     );
     // Also when an error boundary in the browser handles the errors, they must not be cached

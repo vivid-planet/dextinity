@@ -41,6 +41,7 @@ app.onError(handleError);
 - `notFound()` and `redirect()` can be called anywhere in server and client components
 - `Link` navigates on the client, `useRouter()` offers `push()`, `replace()` and `refresh()`
 - `usePathname()`, `useSearchParams()`, `useParams()` and `useNavigationPending()`
+- In the site preview of the admin, i.e. when `getSitePreview()` is set, `renderPage()` marks the pages as site preview for the blocks and reports their location to the admin
 - `Metadata` renders the description, robots, canonical, alternate and Open Graph tags of a page and resolves relative URLs, e.g. of DAM images, against `baseUrl`
 
 **Middlewares** (`@dextinity/site-vite-rsc/server`)

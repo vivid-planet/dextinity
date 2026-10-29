@@ -25,7 +25,16 @@ type Story = StoryObj<typeof Theme>;
 
 function ExampleContent() {
     return (
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", alignItems: "flex-start" }}>
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1rem",
+                alignItems: "flex-start",
+                padding: "1rem",
+                backgroundColor: "var(--dextinity-color-background-default)",
+            }}
+        >
             <Typography variant="headline">Themed headline</Typography>
             <Typography variant="body">Body text follows the active theme.</Typography>
             <div style={{ display: "flex", gap: "1rem" }}>

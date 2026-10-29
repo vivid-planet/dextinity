@@ -12,9 +12,9 @@ import {
     Select,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { type JSX, memo, useCallback, useMemo, useRef, useState } from "react";
+import { type JSX, useCallback, useMemo, useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
-import { FixedSizeList as List, type ListChildComponentProps } from "react-window";
+import { List, type ListImperativeAPI, type RowComponentProps } from "react-window";
 
 import type { ContentScope } from "../../contentScope/Provider";
 import type { Maybe } from "../../graphql.generated";
@@ -82,7 +82,7 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
     const { categories, additionalPageTreeNodeFragment } = usePageTreeConfig();
     const scope = usePageTreeScope();
     const [category, setCategory] = useState<string>(defaultCategory);
-    const refList = useRef<List>(null);
+    const refList = useRef<ListImperativeAPI>(null);
     const [height, setHeight] = useState(200);
     const refDialogContent = useRef<HTMLDivElement>(null);
     const selectedPageId = value?.id;
@@ -129,7 +129,7 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
             const index = pagesToRender.findIndex((c) => c.id === pageId);
 
             if (index !== -1) {
-                refList.current?.scrollToItem(index, "smart");
+                refList.current?.scrollToRow({ index, align: "smart" });
             }
         },
     });
@@ -157,7 +157,7 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
         if (selectedPageId) {
             const index = pagesToRender.findIndex((c) => c.id === selectedPageId);
             if (index) {
-                refList.current?.scrollToItem(index, "smart");
+                refList.current?.scrollToRow({ index, align: "smart" });
             }
         }
     }, [selectedPageId, pagesToRender]);
@@ -172,16 +172,6 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
             onClose();
         },
         [onChange, onClose, scope],
-    );
-
-    const itemData = useMemo<ItemData>(
-        () => ({
-            pages: pagesToRenderWithMatches,
-            toggleExpand,
-            onSelect: handleSelect,
-            selectedPage: value,
-        }),
-        [pagesToRenderWithMatches, toggleExpand, handleSelect, value],
     );
 
     return (
@@ -238,16 +228,13 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
                     }}
                 >
                     <List
-                        ref={refList}
-                        height={height}
-                        itemCount={pagesToRenderWithMatches.length}
-                        itemData={itemData}
-                        width="100%"
-                        itemSize={listItemSize}
-                        style={{ background: "white" }}
-                    >
-                        {Row}
-                    </List>
+                        listRef={refList}
+                        rowCount={pagesToRenderWithMatches.length}
+                        rowComponent={Row}
+                        rowProps={{ pages: pagesToRenderWithMatches, toggleExpand, onSelect: handleSelect, selectedPage: value }}
+                        rowHeight={listItemSize}
+                        style={{ background: "white", height }}
+                    />
                 </PageTreeContext.Provider>
             </DialogContent>
             <StyledDialogAction>
@@ -276,14 +263,14 @@ const PageVisibility = styled("div")`
     align-items: center;
 `;
 
-interface ItemData {
+interface RowProps {
     pages: PageTreePage[];
     toggleExpand: (pageId: string) => void;
     selectedPage?: Maybe<GQLSelectedPageFragment>;
     onSelect: (page: PageTreePage) => void;
 }
 
-const Row = memo(({ index, style, data: { pages, selectedPage, toggleExpand, onSelect } }: ListChildComponentProps<ItemData>) => {
+function Row({ index, style, pages, selectedPage, toggleExpand, onSelect }: RowComponentProps<RowProps>) {
     const [hover, setHover] = useState(false);
 
     const page = pages[index];
@@ -338,4 +325,4 @@ const Row = memo(({ index, style, data: { pages, selectedPage, toggleExpand, onS
             <PageTreeRowDivider align="bottom" leftSpacing={0} highlight={false} />
         </PageTreeTableRow>
     );
-});
+}

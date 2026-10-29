@@ -46,7 +46,9 @@ class PixelImageBlockData extends BlockData {
             return undefined;
         }
 
-        return imagesService.createUrlTemplate({ file, cropArea: this.cropArea }, { previewDamUrls });
+        const image = await filesService.findImageToDeliver({ file, cropArea: this.cropArea }, { previewDamUrls });
+
+        return image ? imagesService.createUrlTemplate(image, { previewDamUrls }) : undefined;
     }
 
     indexData(): BlockIndexData {

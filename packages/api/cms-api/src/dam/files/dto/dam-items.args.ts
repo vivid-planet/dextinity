@@ -8,6 +8,9 @@ import { SortArgs } from "../../../common/sorting/sort.args";
 import { DamScopeInterface } from "../../types";
 import { EmptyDamScope } from "./empty-dam-scope";
 
+// The position queries need a sort column, and the list must use the same one so that the position matches the list
+export const defaultDamItemSortColumnName = "name";
+
 export enum DamItemType {
     File = "File",
     Folder = "Folder",
@@ -59,6 +62,11 @@ export function createDamItemArgs({ Scope }: { Scope: Type<DamScopeInterface> })
         @IsOptional()
         @ValidateNested()
         filter?: DamItemFilterInput;
+
+        @Field({ nullable: true })
+        @IsString()
+        @IsOptional()
+        sortColumnName?: string = defaultDamItemSortColumnName;
     }
 
     return DamItemsArgs;
@@ -104,6 +112,11 @@ export function createDamItemPositionArgs({ Scope }: { Scope: Type<DamScopeInter
         @IsOptional()
         @ValidateNested()
         filter?: DamItemFilterInput;
+
+        @Field({ nullable: true })
+        @IsString()
+        @IsOptional()
+        sortColumnName?: string = defaultDamItemSortColumnName;
     }
 
     return DamItemPositionArgs;

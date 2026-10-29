@@ -294,6 +294,7 @@ export function buildExtensions({
             blockquote: false,
             code: false,
             codeBlock: false,
+            horizontalRule: false,
             link: false,
         }),
         createTextBlock({ ...resolvedOptions, hasTextBlockStyles: hasStyles }),

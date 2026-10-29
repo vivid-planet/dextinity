@@ -3,9 +3,11 @@ import { type IEditDialogApi, UndoSnackbar, useSnackbarApi } from "@dextinity/ad
 import { styled } from "@mui/material/styles";
 import isEqual from "lodash.isequal";
 import {
+    type ComponentProps,
     type Dispatch,
     forwardRef,
     type ForwardRefRenderFunction,
+    type RefObject,
     type SetStateAction,
     useCallback,
     useEffect,
@@ -14,8 +16,7 @@ import {
     useRef,
 } from "react";
 import { FormattedMessage } from "react-intl";
-import { AutoSizer } from "react-virtualized-auto-sizer";
-import { type Align, FixedSizeList as List } from "react-window";
+import { type Align, List, type ListImperativeAPI, type RowComponentProps } from "react-window";
 import { useDebouncedCallback } from "use-debounce";
 
 import { usePageTreeScope } from "../config/usePageTreeScope";
@@ -43,7 +44,7 @@ interface PageTreeProps {
     siteUrl: string;
 }
 
-type PageTreeRefApi = { scrollToItem: List["scrollToItem"] };
+type PageTreeRefApi = { scrollToItem: (index: number, align?: Align) => void };
 
 const movePageTreeNodesByPositionMutation = gql`
     mutation MovePageTreeNodesByPos($ids: [ID!]!, $input: MovePageTreeNodesByPosInput!) {
@@ -126,7 +127,7 @@ const PageTree: ForwardRefRenderFunction<PageTreeRefApi, PageTreeProps> = (
     useEffect(() => {
         if (newPageIds.current.length > 0) {
             const index = pages.findIndex((page) => newPageIds.current.includes(page.id));
-            refList.current?.scrollToItem(index, "smart");
+            refList.current?.scrollToRow({ index, align: "smart" });
         }
     }, [pages]);
 
@@ -311,88 +312,85 @@ const PageTree: ForwardRefRenderFunction<PageTreeRefApi, PageTreeProps> = (
         [selectedPages, pageTreeService, pages, moveByPosRequest, snackbarApi, client, moveByNeighbourRequest],
     );
 
-    const refList = useRef<List>(null);
+    const refList = useRef<ListImperativeAPI>(null);
     // expose this method to the public
     useImperativeHandle(ref, () => ({
         scrollToItem: (index: number, align?: Align) => {
-            refList.current?.scrollToItem(index, align);
+            refList.current?.scrollToRow({ index, align });
         },
     }));
 
-    const propsForVirtualList = useDndWindowScroll();
+    useDndWindowScroll(refList);
 
     return (
         <>
             <PageTreeDragLayer numberSelectedPages={selectedPages.length} />
             <Root>
                 <Table>
-                    <AutoSizer
-                        style={{ height: 0, width: 0, overflow: "visible" }}
-                        renderProp={({ height, width }) => {
-                            if (height === undefined || width === undefined) {
-                                return null;
-                            }
-
-                            return (
-                                // @TODO: adjust itemSize for smaller screens
-                                <List
-                                    ref={refList}
-                                    height={height}
-                                    itemCount={pages.length}
-                                    width={width}
-                                    itemSize={51}
-                                    overscanCount={1} // do not increase this for performance reasons
-                                    style={{ scrollBehavior: "smooth" }}
-                                    innerElementType={VirtualListPadder}
-                                    {...propsForVirtualList}
-                                >
-                                    {({ index, style }) => {
-                                        const [prevPage, page, nextPage] = getLinkedPages(pages, index);
-                                        return (
-                                            <PageTreeRow
-                                                key={page.id}
-                                                virtualizedStyle={{
-                                                    ...style,
-                                                    top: `${parseFloat(String(style?.top)) + VIRTUAL_LIST_PADDING_SIZE}px`,
-                                                }}
-                                                slideIn={newPageIds.current.includes(page.id)}
-                                                page={page}
-                                                prevPage={prevPage}
-                                                nextPage={nextPage}
-                                                editDialogApi={editDialogApi}
-                                                toggleExpand={toggleExpand}
-                                                onDrop={onDrop}
-                                                onSelectChanged={onSelectChanged}
-                                                pageTreeService={pageTreeService}
-                                                debouncedSetHoverState={debouncedSetHoverState}
-                                                siteUrl={siteUrl}
-                                                selectedPages={selectedPages}
-                                            />
-                                        );
-                                    }}
-                                </List>
-                            );
+                    {/* @TODO: adjust rowHeight for smaller screens */}
+                    <List
+                        listRef={refList}
+                        rowCount={pages.length}
+                        rowHeight={ROW_HEIGHT}
+                        rowComponent={VirtualPageTreeRow}
+                        rowKey={getPageTreeRowKey}
+                        rowProps={{
+                            pages,
+                            newPageIds,
+                            editDialogApi,
+                            toggleExpand,
+                            onDrop,
+                            onSelectChanged,
+                            pageTreeService,
+                            debouncedSetHoverState,
+                            siteUrl,
+                            selectedPages,
                         }}
-                    />
+                        overscanCount={1} // do not increase this for performance reasons
+                        style={{ position: "absolute", inset: 0, scrollBehavior: "smooth" }}
+                    >
+                        <VirtualListBottomPadding />
+                    </List>
                 </Table>
             </Root>
         </>
     );
 };
 
+const ROW_HEIGHT = 51;
 const VIRTUAL_LIST_PADDING_SIZE = 24;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const VirtualListPadder = forwardRef<any, any>(({ style, ...rest }, ref) => (
-    <div
-        ref={ref}
-        style={{
-            ...style,
-            height: `${parseFloat(String(style?.height)) + VIRTUAL_LIST_PADDING_SIZE * 2}px`,
-        }}
-        {...rest}
-    />
-));
+type VirtualPageTreeRowProps = Pick<
+    ComponentProps<typeof PageTreeRow>,
+    "editDialogApi" | "toggleExpand" | "onDrop" | "onSelectChanged" | "pageTreeService" | "debouncedSetHoverState" | "siteUrl" | "selectedPages"
+> & {
+    pages: PageTreePage[];
+    newPageIds: RefObject<string[]>;
+};
+
+// PageTreeRow recreates its row element when it gets another page but connects react-dnd only once, so rows must be keyed by page
+function getPageTreeRowKey(index: number, { pages }: VirtualPageTreeRowProps) {
+    return pages[index].id;
+}
+
+function VirtualPageTreeRow({ index, style, pages, newPageIds, ...pageTreeRowProps }: RowComponentProps<VirtualPageTreeRowProps>) {
+    const [prevPage, page, nextPage] = getLinkedPages(pages, index);
+    return (
+        <PageTreeRow
+            {...pageTreeRowProps}
+            virtualizedStyle={{
+                ...style,
+                // Position via top instead of react-window's transform, which would be overridden by the slide-in animation
+                transform: undefined,
+                top: index * ROW_HEIGHT + VIRTUAL_LIST_PADDING_SIZE,
+            }}
+            slideIn={newPageIds.current.includes(page.id)}
+            page={page}
+            prevPage={prevPage}
+            nextPage={nextPage}
+        />
+    );
+}
 
 function getLinkedPages(pages: PageTreePage[], index: number): [PageTreePage | undefined, PageTreePage, PageTreePage | undefined] {
     const prevPage = index > 0 ? pages[index - 1] : undefined;
@@ -412,4 +410,9 @@ const Root = styled("div")`
 
 const Table = styled("div")`
     flex: 1;
+    position: relative;
+`;
+
+const VirtualListBottomPadding = styled("div")`
+    height: ${VIRTUAL_LIST_PADDING_SIZE * 2}px;
 `;

@@ -15,75 +15,65 @@ import {
 } from "@dextinity/admin";
 import { Typography } from "@mui/material";
 
-import { apolloRestStoryDecorator } from "../../apollo-rest-story.decorator";
+import type { Launch, LaunchesPastResult } from "../../../.storybook/mocks/handlers";
+import { apolloStoryDecorator } from "../../apollo-story.decorator";
 
-const gqlRest = gql;
-
-const query = gqlRest`
-query users(
-    $query: String
-    $start : Int
-    $limit : Int
-) {
-    photos(
-        query: $query
-        start: $start
-        limit: $limit
-    ) @rest(type: "Photos", path: "photos?_start={args.start}&_limit={args.limit}") {
-        id
-        albumId
-        title
-        thumbnailUrl
+const query = gql`
+    query LaunchesPast($offset: Int, $limit: Int) {
+        launchesPastResult(offset: $offset, limit: $limit) {
+            data {
+                id
+                mission_name
+                launch_date_local
+            }
+            result {
+                totalCount
+            }
+        }
     }
-}
 `;
-interface IPhoto {
-    id: number;
-    albumId: number;
-    title: string;
-    thumbnailUrl: string;
-}
-
 interface IQueryData {
-    photos: IPhoto[];
+    launchesPastResult: LaunchesPastResult;
 }
 
 interface IVariables {
-    start: number;
+    offset: number;
     limit: number;
 }
 
 export default {
     title: "@dextinity/admin/table",
-    decorators: [apolloRestStoryDecorator()],
+    decorators: [apolloStoryDecorator("/graphql")],
 };
 
 export const ExportAllPages = () => {
-    const totalCount = 5000;
-    const loadLimit = 50;
+    const loadLimit = 10;
     const pagingApi = useTableQueryPaging(0);
 
     const { tableData, api, loading, error } = useTableQuery<IQueryData, IVariables>()(query, {
         variables: {
-            start: pagingApi.current,
+            offset: pagingApi.current,
             limit: loadLimit,
         },
-        resolveTableData: (data) => ({
-            data: data.photos,
-            totalCount,
-            pagingInfo: createRestStartLimitPagingActions(pagingApi, {
-                totalPages: Math.ceil(totalCount / loadLimit), // Don't calculate this in a real application
-                loadLimit,
-            }),
-        }),
+        resolveTableData: (data) => {
+            const totalCount = data.launchesPastResult.result.totalCount;
+            return {
+                data: data.launchesPastResult.data,
+                totalCount,
+                pagingInfo: createRestStartLimitPagingActions(pagingApi, {
+                    totalPages: Math.ceil(totalCount / loadLimit),
+                    loadLimit,
+                }),
+            };
+        },
     });
 
     const exportApi = useExportPagedTableQuery<IVariables>(api, {
         fromPage: 0,
-        toPage: totalCount / loadLimit,
+        toPage: (tableData?.pagingInfo?.totalPages ?? 1) - 1,
         variablesForPage: (page) => {
             return {
-                start: page * loadLimit,
+                offset: page * loadLimit,
                 limit: loadLimit,
             };
         },
@@ -108,20 +98,20 @@ export const ExportAllPages = () => {
                             {...tableData}
                             columns={[
                                 {
-                                    name: "thumbnailUrl",
-                                    header: "Thumbnail",
+                                    name: "launch_date_local",
+                                    header: "Launch Date",
                                     sortable: true,
-                                    render: (row: IPhoto) => {
-                                        return <img src={row.thumbnailUrl} />;
+                                    render: (row: Launch) => {
+                                        return new Date(row.launch_date_local).toLocaleDateString();
                                     },
-                                    headerExcel: "Thumbnail Url",
-                                    renderExcel: (row: IPhoto) => {
-                                        return row.thumbnailUrl;
+                                    headerExcel: "Launch Date (ISO)",
+                                    renderExcel: (row: Launch) => {
+                                        return new Date(row.launch_date_local).toISOString();
                                     },
                                 },
                                 {
-                                    name: "title",
-                                    header: "Title",
+                                    name: "mission_name",
+                                    header: "Mission Name",
                                     sortable: true,
                                 },
                             ]}

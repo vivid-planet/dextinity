@@ -94,7 +94,7 @@ const halfGap = columnGap / 2;
 
 On mobile, reset the gap padding so content stretches full-width, and add a vertical margin between the stacked columns. Column padding compiles to an inner `<td>`, so target it via `.className > table > tbody > tr > td`.
 
-Set `disableResponsiveBehavior` on **every** section with more than one column. It wraps the columns in an `MjmlGroup`, which is what makes MJML write their widths inline; without it the widths exist only in a `min-width` media query, and clients that drop that query — GMX and Web.de, for example — show the columns stacked. The group never stacks by itself, so write the mobile stacking into `registerStyles`, and target the column container one level deeper (`… > td > div`).
+Set `disableResponsiveBehavior` on **every** section with more than one column. It wraps the columns in an `MjmlGroup`, which is what makes MJML write their widths inline; without it the widths exist only in a `min-width` media query, and clients that drop that query — GMX, Web.de and the Gmail apps with a non-Google account, for example — show the columns stacked. The group never stacks by itself, so write the mobile stacking into `registerStyles`, and target the column container one level deeper (`… > td > div`).
 
 → For complete patterns — two columns, three or more, fixed+fluid — with responsive styles, CSS targeting rules, the stacking strategies, and the `direction="rtl"` technique for controlling mobile stack order, read [`references/layout-patterns.md`](references/layout-patterns.md).
 
@@ -120,7 +120,7 @@ Email styling follows a **desktop-first** approach:
 
 Never rely on `<style>` blocks for base/desktop layout. Set all default styles inline via MJML component props.
 
-MJML breaks this rule for column widths: it puts them in a `min-width` media query, so a multi-column section stacks in any client that drops that query — GMX and Web.de, for example. See [Multi-Column Layouts](#multi-column-layouts).
+MJML breaks this rule for column widths: it puts them in a `min-width` media query, so a multi-column section stacks in any client that drops that query — GMX, Web.de and the Gmail apps with a non-Google account, for example. See [Multi-Column Layouts](#multi-column-layouts).
 
 ### Prefer Theme Breakpoints
 
@@ -168,6 +168,13 @@ Don't use `<p>`, `<h1>`, `<h2>`, or other block-level HTML elements inside endin
 
 Outlook calculates line-height using its own rules, causing unexpected vertical spacing. **Every time** you set `line-height` on a raw HTML element inside an ending tag (`MjmlRaw`, `MjmlText`, etc.), you must also set `mso-line-height-rule: exactly` as an inline style on the same element. This applies to `<span>`, `<td>`, `<div>`, or any other element where you manually control line height. `HtmlText` and built-in MJML components handle this automatically — but any hand-written HTML needs it explicitly.
 
+### Do Not Set `line-height: 0` Around Images
+
+Classic Outlook cuts off the top of an image when `line-height: 0` is set on the `<td>` that holds the image, or on its `<table>`: about `3px` with `font-size: 0`, about `20px` with the default font size. A `line-height: 0` on a `<span>` or link inside that `<td>` does not prevent it.
+
+- Use `1px` instead of `0`, or leave `line-height` unset. Without `mso-line-height-rule: exactly`, any other `line-height` smaller than the image does not cut it: classic Outlook treats the value as a minimum. `MjmlTable` has a default `line-height` of `22px`, and that value does no harm. Do not set `lineHeight={0}` on `MjmlTable`.
+- With `mso-line-height-rule: exactly`, a `line-height` smaller than the image cuts the image to that height. `HtmlText` sets the theme `line-height` (`20px` by default) with `mso-line-height-rule: exactly`, so do not put images in it.
+
 ### No CSS `background-image` in Outlook
 
 Classic Outlook ignores `background-image` entirely. Use a VML-based workaround for Outlook support, or provide a `background-color` fallback for graceful degradation. See [Bulletproof Backgrounds](https://www.backgrounds.cm/).
@@ -182,13 +189,19 @@ Everything else, buttons and containers included, needs a VML `v:roundrect` writ
 
 ```html
 <!--[if mso]>
-    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="18%" stroked="f" style="width:200px;height:44px;">
+    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="19%" stroked="f" style="width:199px;height:43px;">
         <center>Button label</center>
     </v:roundrect>
 <![endif]-->
 ```
 
-Set `arcsize` to the corner radius divided by the shorter side, capped at `50%` — `8px` on a `44px`-high button gives `18%`. Do not take the value from the VML specification; it is twice what Outlook needs.
+Set `arcsize` to the corner radius divided by the shorter declared side, capped at `50%` — `8px` on a `44px`-high button, declared `43px`, gives `19%`. Do not take the value from the VML specification; it is twice what Outlook needs.
+
+More rules for a hand-written VML shape:
+
+- Declare a `v:roundrect` or `v:oval` `1px` smaller in `width` and `height` than the size it must have, and compute `arcsize` from that declared size. Classic Outlook draws the shape `1px` larger, even with `stroked="f"`.
+- Copy the link (`href` on the shape), the alignment and the padding from the HTML element that the shape replaces, and hide that element from classic Outlook with `<!--[if !mso]><!-->…<!--<![endif]-->`.
+- Give the shape a width that fits its column. Classic Outlook does not shrink VML to its container, so a wider shape makes the whole mail wider.
 
 See the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
 
@@ -213,6 +226,50 @@ Yahoo Mail rewrites `height` into `min-height`, which is only a lower limit — 
 
 - An `<img>` that a media query shrinks with `height` keeps its original size — use `max-height`.
 - A row whose height comes only from `height` on a `<td>` collapses to nothing, and the cell's background disappears with it — put the height on a `<div>` inside the cell, or use padding.
+
+### Keep `}}` Out of the Head CSS
+
+Outlook on the web (Outlook.com) and the Outlook iOS and Android apps drop everything after the first `}}` in a `<style>` tag. Minified `@media` blocks end in `}}`. mail-react separates the braces in the registered styles, but not in CSS that you add through the `head` slot of `MjmlMailRoot`; write `} }` there. See [email-bugs#92](https://github.com/hteumeuleu/email-bugs/issues/92).
+
+### Gmail Drops Head CSS Past 16 kB
+
+Gmail counts the content of all `<style>` tags together, MJML's own included. Past `16 kB` (`16,384` characters), Gmail removes the `<style>` tag that passes the limit. mail-react puts the registered styles and the CSS from the `head` slot of `MjmlMailRoot` in one `<style>` tag, placed last, so the mail loses all of that CSS. `registerStyles` emits the CSS of every imported module, used or not; mail-react minifies the registered CSS. Keep unused variants and modules out of the mail, and check the size: count the characters in all `<style>` tags of a full rendered mail. See [email-bugs#90](https://github.com/hteumeuleu/email-bugs/issues/90).
+
+### MJML Sets `word-break: break-word` on Column Content
+
+MJML writes `word-break: break-word` on the `<td>` around each child of a column, except `MjmlRaw`, and nested cells inherit it. In Outlook on the web, this breaks short content onto several lines when its cell sits next to a `width="100%"` cell, such as the marker cell of a list item. Set `word-break: normal` inline on the cell of the short content, together with `white-space: nowrap`. `white-space: nowrap` alone does not help: Outlook on the web removes it from inline styles, and it also removes the `nowrap` attribute. Resetting `overflow-wrap` does not help either.
+
+### Style the Links That Mail Clients Create
+
+Clients turn plain-text mail addresses, URLs and phone numbers into links of their own, without the mail's inline styles:
+
+- Gmail (iOS and web), Outlook iOS, Apple Mail iOS: a CSS rule in the mail head for links inside text components restores the text style: `.mjmlText a, .htmlText a { color: inherit !important; font-family: inherit !important; font-size: inherit !important; line-height: inherit !important; font-weight: inherit !important; text-decoration: underline !important; }`. The rule also changes links you write yourself, because `inherit !important` wins over their inline styles. To keep a custom color, font or `text-decoration` on such a link, set it with `!important` (see `HtmlInlineLink` → Custom Color in [`references/components-and-theme.md`](references/components-and-theme.md)).
+- Classic Outlook: colors these links blue, and accepts only one color for them in the whole mail. Set the color in the mail head, inside `<!--[if mso]><style>…</style><![endif]-->`, and choose a color with enough contrast on every background of the mail (`#767677` is an example):
+
+    ```css
+    a:link,
+    span.MsoHyperlink {
+        mso-style-priority: 99;
+        color: #767677;
+        text-decoration: underline;
+    }
+    a:visited,
+    span.MsoHyperlinkFollowed {
+        mso-style-priority: 99;
+        color: #767677;
+        text-decoration: underline;
+    }
+    ```
+
+### Dark Mode Repaints Colors, Not Most Images
+
+In dark mode, Gmail iOS, Yahoo Mail on the web, classic Outlook, Outlook on the web, Outlook iOS and Outlook Mac change the colors of the mail but leave most images alone. So a color that must stay is safest inside an image. Gmail Android is the exception: it inverts images with few colors that it shows at about `64px` or less.
+
+- Keep a background color: set `background-color` and a `background-image` of a `100×100` px solid PNG in the same color. Use this technique behind images only, not behind text: some clients keep the background but still change the text color, so the text disappears.
+- Keep a logo readable: put a light background into the image file of the logo, not behind it. Some Gmail Android phones invert only the logo or only a separate background; in one image, both change together. On a dark section, put a background image in the section color behind the logo only, not behind the whole section (Gmail iOS, Outlook on the web).
+- Classic Outlook ignores CSS background images; use a VML shape with `fillcolor` there.
+
+→ For per-client behavior, placement rules and size limits, read [`references/dark-mode.md`](references/dark-mode.md).
 
 ---
 

@@ -133,8 +133,9 @@ const PageTreeRow = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const [, dropTarget] = useDrop({
+    const [{ isOver }, dropTarget] = useDrop<PageTreeDragObject, unknown, { isOver: boolean }>({
         accept: "row",
+        collect: (monitor) => ({ isOver: monitor.isOver() }),
         drop: async (dragObject: PageTreeDragObject, monitor) => {
             const dropTargetPage = page;
             const dropInfo = getDropInfo(monitor);
@@ -183,8 +184,10 @@ const PageTreeRow = ({
 
     const insertInBetweenTopPosition = pageTreeService.calcInsertInBetweenPosition(prevPage, page);
     const insertInBetweenBottomPosition = pageTreeService.calcInsertInBetweenPosition(page, nextPage);
-    const topDividerHighlighted = hoverState?.dropTarget === "ADD_BEFORE" || topInBetweenButtonHovered;
-    const bottomDividerHighlighted = hoverState?.dropTarget === "ADD_AFTER" || bottomInBetweenButtonHovered;
+    // Debounced hover updates can arrive after the drag has ended, so the drop indicators are only shown while the row is hovered
+    const dropIndicator = isOver ? hoverState : undefined;
+    const topDividerHighlighted = dropIndicator?.dropTarget === "ADD_BEFORE" || topInBetweenButtonHovered;
+    const bottomDividerHighlighted = dropIndicator?.dropTarget === "ADD_AFTER" || bottomInBetweenButtonHovered;
 
     const onRowClick = () => {
         if (isEditable) {
@@ -198,7 +201,7 @@ const PageTreeRow = ({
 
     return (
         <PageTreeTableRow
-            isDragHovered={hoverState?.dropTarget === "ADD_AS_CHILD"}
+            isDragHovered={dropIndicator?.dropTarget === "ADD_AS_CHILD"}
             isMouseHovered={hover}
             isArchived={page.visibility === "Archived"}
             isSelected={page.selected}
@@ -224,7 +227,7 @@ const PageTreeRow = ({
         >
             <PageTreeRowDivider
                 align="top"
-                leftSpacing={(hoverState?.targetLevel || 0) * pageTreeService.levelOffsetPx}
+                leftSpacing={(dropIndicator?.targetLevel || 0) * pageTreeService.levelOffsetPx}
                 highlight={topDividerHighlighted}
             />
             <sc.SelectPageCell component="div">
@@ -270,7 +273,7 @@ const PageTreeRow = ({
             )}
             <PageTreeRowDivider
                 align="bottom"
-                leftSpacing={(hoverState?.targetLevel || 0) * pageTreeService.levelOffsetPx}
+                leftSpacing={(dropIndicator?.targetLevel || 0) * pageTreeService.levelOffsetPx}
                 highlight={bottomDividerHighlighted}
             />
         </PageTreeTableRow>

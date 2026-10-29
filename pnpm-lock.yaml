@@ -2669,12 +2669,24 @@ importers:
       '@dextinity/site-react':
         specifier: workspace:*
         version: link:../site-react
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      fast-equals:
+        specifier: ^6.2.1
+        version: 6.2.1
       jose:
         specifier: ^5.10.0
         version: 5.10.0
+      scroll-into-view-if-needed:
+        specifier: ^3.1.0
+        version: 3.1.0
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
+      usehooks-ts:
+        specifier: ^3.1.1
+        version: 3.1.1(react@19.3.1)
     devDependencies:
       '@dextinity/cli':
         specifier: workspace:*

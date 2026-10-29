@@ -1,33 +1,18 @@
 import { gql } from "@dextinity/site-react";
+import { type Sitemap, sitemapResponse } from "@dextinity/site-vite-rsc/server";
 import { createSitePath } from "@src/util/createSitePath";
 import { graphQLFetch } from "@src/util/graphQLClient";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { getSiteContext } from "@src/util/siteContext";
-import type { Context } from "hono";
 
 import type { GQLPrebuildPageDataListSitemapQuery, GQLPrebuildPageDataListSitemapQueryVariables } from "./sitemap.generated";
 
-type SitemapEntry = {
-    url: string;
-    lastModified: string;
-    changeFrequency: string;
-    priority: number;
-};
-
-function escapeXml(value: string) {
-    return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+export async function sitemapRoute() {
+    return sitemapResponse(await sitemap());
 }
 
-function renderSitemapXml(sitemap: SitemapEntry[]) {
-    const urls = sitemap.map(
-        (entry) =>
-            `<url>\n<loc>${escapeXml(entry.url)}</loc>\n<lastmod>${escapeXml(entry.lastModified)}</lastmod>\n<changefreq>${entry.changeFrequency}</changefreq>\n<priority>${entry.priority}</priority>\n</url>`,
-    );
-    return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`;
-}
-
-export async function sitemapRoute(c: Context) {
-    const sitemap: SitemapEntry[] = [];
+async function sitemap(): Promise<Sitemap> {
+    const sitemap: Sitemap = [];
     const siteConfig = getSiteConfigForDomain(getSiteContext().domain);
 
     for (const language of siteConfig.scope.languages) {
@@ -74,7 +59,7 @@ export async function sitemapRoute(c: Context) {
         } while (totalCount > currentCount);
     }
 
-    return c.body(renderSitemapXml(sitemap), 200, { "Content-Type": "application/xml", "Cache-Control": "public, max-age=900" });
+    return sitemap;
 }
 
 const pageDataListQuery = gql`

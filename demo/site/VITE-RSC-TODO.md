@@ -212,6 +212,6 @@ The Next.js site rendered DAM images with site-nextjs' `PixelImageBlock` on `nex
 
 The demo had a Hono port of site-nextjs' `sitePreviewRoute` and `previewParams()` (`src/util/sitePreview.ts`, `src/app/site-preview/route.ts`): JWT verification with `SITE_PREVIEW_SECRET`, the `__dextinity_site_preview` cookie, the open-redirect check and reading the `x-block-preview` header. Added to `@dextinity/site-vite-rsc/server` instead of site-react, like #33: `sitePreviewRoute` starts the site preview, `sitePreviewMiddleware` sets the visibility, the site preview and the preview scope of each request, `getPreviewScope()` returns the scope. The secret stays in `SITE_PREVIEW_SECRET`, like site-nextjs. The project only resolves its site from the scope (`siteContextMiddleware`), `jose` moved from the demo into the package.
 
-### #35 Add sitemap and robots helpers
+### #35 Add sitemap and robots helpers (done, in site-vite-rsc)
 
-From `src/app/sitemap.ts` and `src/app/robots.ts`: generate `sitemap.xml`/`robots.txt` as `Response`. Ref: audi6 `framework/metadataRoutes.ts`.
+The Next.js site returned `MetadataRoute.Sitemap`/`Robots` objects from `sitemap.ts`/`robots.ts` and Next.js rendered them; the Vite demo rendered them itself, without hreflang alternates, images, videos or `Date` values. `sitemapResponse()` and `robotsResponse()` (`@dextinity/site-vite-rsc/server`) take the same shapes and render them like Next.js (output compared with Next.js' `resolveSitemap`/`resolveRobots`), but escape the values, which Next.js doesn't. The demo's `sitemap()` is the old Next.js function again; querying the page tree stays in the project, as it depends on its documents.

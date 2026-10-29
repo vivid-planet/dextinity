@@ -105,6 +105,15 @@ server.on("request", await createRequestListener({ dev: process.env.NODE_ENV !==
 server.listen(3000);
 ```
 
+**Sitemap and robots.txt** (`@dextinity/site-vite-rsc/server`)
+
+`sitemapResponse()` and `robotsResponse()` render a sitemap and robots rules in the shapes of Next.js' `MetadataRoute.Sitemap` and `MetadataRoute.Robots`, so the `sitemap()` and `robots()` functions of a Next.js site can be reused:
+
+```ts
+app.get("/sitemap.xml", async () => sitemapResponse(await sitemap()));
+app.get("/robots.txt", () => robotsResponse({ rules: { userAgent: "*", allow: "/" }, sitemap: "https://www.example.com/sitemap.xml" }));
+```
+
 **Site preview** (`@dextinity/site-vite-rsc/server`)
 
 `sitePreviewRoute` starts the site preview of the admin, `sitePreviewMiddleware` reads the site preview and the block preview of each request and sets the visibility. Both use the `SITE_PREVIEW_SECRET` environment variable. In the preview, the project resolves its site from `getPreviewScope()` instead of the host:

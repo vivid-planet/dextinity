@@ -10,6 +10,7 @@ export {
 } from "./fetchCacheStore.js";
 export { createServerGraphQLFetch } from "./graphQLFetch.js";
 export { handleError } from "./handleError.js";
+export { type Robots, robotsResponse, type Sitemap, sitemapResponse } from "./metadataRoutes.js";
 export { renderPage } from "./render.js";
 export {
     getCookie,

@@ -4,6 +4,7 @@ import { hydrateRoot } from "react-dom/client";
 import { rscStream } from "rsc-html-stream/client";
 
 import { announceNavigation, setUpNavigationAnnouncer } from "./announceNavigation.js";
+import { getFragmentTarget } from "./fragmentTarget.js";
 import { GlobalErrorBoundary } from "./GlobalErrorBoundary.js";
 import type { RscPayload } from "./render.js";
 import { NavigationProvider, type Router } from "./RouterProvider.js";
@@ -32,7 +33,7 @@ function getDocumentPath(url: URL) {
 
 function scrollToTarget(scrollTarget: ScrollTarget) {
     if (scrollTarget === "hash" && window.location.hash) {
-        document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView();
+        getFragmentTarget(window.location.hash.slice(1))?.scrollIntoView();
     } else if (typeof scrollTarget === "object") {
         window.scrollTo(0, scrollTarget.scrollY);
     } else if (scrollTarget) {

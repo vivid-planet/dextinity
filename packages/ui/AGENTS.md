@@ -20,7 +20,7 @@ The `@dextinity-ui` group starts `dextinity-ui`. Start `storybook-dextinity-ui` 
 
 ## Storybook
 
-Storybook runs on a fixed port: `http://localhost:26648`.
+Storybook runs on a fixed port, `http://localhost:26648`, and serves an MCP server at `http://localhost:26648/mcp`.
 
 List the stories from the story index at `http://localhost:26648/index.json`, and open a story in isolation with its `id` from the index:
 

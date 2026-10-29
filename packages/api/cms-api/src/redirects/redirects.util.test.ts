@@ -146,6 +146,9 @@ describe("redirectMatchesFilter", () => {
 
         expect(redirectMatchesFilter(redirect, { source: { contains: "our" }, active: { equal: true } })).toBe(true);
         expect(redirectMatchesFilter(redirect, { source: { contains: "our" }, active: { equal: false } })).toBe(false);
+        expect(redirectMatchesFilter(redirect, { source: { contains: "arg" }, active: { equal: true } })).toBe(false);
+        expect(redirectMatchesFilter(redirect, { sourceType: { equal: RedirectSourceType.path }, active: { equal: true } })).toBe(true);
+        expect(redirectMatchesFilter(redirect, { active: { equal: false }, sourceType: { equal: RedirectSourceType.path } })).toBe(false);
     });
 
     it("should match for and filters", () => {

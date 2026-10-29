@@ -1,5 +1,36 @@
 # @comet/cms-admin
 
+## 10.12.0
+
+### Patch Changes
+
+- 1b288ab: Copy referenced DAM assets to the target scope when pasting blocks
+
+    Previously, only pasting pages in the page tree copied the referenced DAM assets. Blocks pasted into another scope kept referencing the assets of the source scope, so deleting an asset in the source scope broke the page it was pasted into.
+
+    Pasting blocks now behaves like pasting pages: assets that don't live in the target DAM scope are copied into an inbox folder of the target scope (reusing an existing copy if there is one) and the pasted blocks reference the copies. Pasting within the same scope is unchanged.
+
+    Like when pasting pages, dependencies that can't be carried over to another scope are removed when pasting blocks into another content scope, e.g., links to pages of the source scope.
+
+- 2735896: TipTap Rich Text Block: disable the horizontal rule
+
+    The schema contained StarterKit's `horizontalRule` node, so the editor inserted one when typing `---`, `___ ` or `*** ` at the start of a text block. Neither the site nor the mail renderer renders it, so it silently disappeared on the site. The API now rejects content containing a `horizontalRule`, and the editor no longer creates one.
+
+    Remove horizontal rules from existing content before saving it again, as saving fails otherwise.
+
+- eb77fc2: Clarify the error thrown by `createOneOfBlock` when `activeType` has no entry in `attachedBlocks`
+
+    The message now names the active type and the types that `attachedBlocks` holds.
+    A missing `x-include-invisible-content` HTTP header is mentioned only as one possible cause, since the state can also come from malformed input to `output2State`.
+
+- 3d1fb7c: Keep the target of links and the data of child blocks when copying and pasting in `createTipTapRichTextBlock`
+
+    The editor wrote the data of links and child blocks into the clipboard as `[object Object]`, so a pasted link had no target and a pasted child block lost its content.
+    Saving a rich text with such a link failed.
+    - @dextinity/admin@10.12.0
+    - @dextinity/admin-icons@10.12.0
+    - @dextinity/admin-rte@10.12.0
+
 ## 10.11.0
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @comet/api-generator
 
+## 10.12.0
+
+### Patch Changes
+
+- Updated dependencies [2735896]
+- Updated dependencies [a3ba4c9]
+- Updated dependencies [6d552f0]
+    - @dextinity/cms-api@10.12.0
+
 ## 10.11.0
 
 ### Patch Changes

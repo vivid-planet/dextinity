@@ -1,0 +1,32 @@
+# Routes by how the host name starts, so that it does not need to know the deploy preview host.
+
+{
+	admin off
+	auto_https off
+	persist_config off
+}
+
+# Unprivileged, so no port below 1024.
+:8080 {
+	# upgrade-insecure-requests of admin and site would turn every request over http into https.
+	header >Content-Security-Policy ";?\s*upgrade-insecure-requests" ""
+
+	@admin header_regexp Host ^admin--
+	handle @admin {
+		reverse_proxy oauth2-proxy:4180
+	}
+
+	@idp header_regexp Host ^idp--
+	handle @idp {
+		reverse_proxy idp:8080
+	}
+
+	@mail header_regexp Host ^mail--
+	handle @mail {
+		reverse_proxy mailpit:8025
+	}
+
+	handle {
+		reverse_proxy site:3000
+	}
+}

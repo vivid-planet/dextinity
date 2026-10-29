@@ -67,7 +67,7 @@ jobs:
               if: success() || failure()
               with:
                   name: test-results-e2e
-                  path: demo/*/junit-e2e.xml
+                  path: packages/site/site-vite-rsc/junit-e2e.xml
                   overwrite: true
 
     test-storybook:

@@ -1,16 +1,16 @@
 import {
-    Attributes,
-    Counter,
-    Histogram,
-    MetricOptions,
+    type Attributes,
+    type Counter,
+    type Histogram,
+    type MetricOptions,
     metrics,
-    ObservableCounter,
-    ObservableGauge,
-    ObservableUpDownCounter,
-    UpDownCounter,
+    type ObservableCounter,
+    type ObservableGauge,
+    type ObservableUpDownCounter,
+    type UpDownCounter,
 } from "@opentelemetry/api";
-import { IncomingMessage, ServerResponse } from "http";
-import { NextUrlWithParsedQuery } from "next/dist/server/request-meta";
+import type { IncomingMessage, ServerResponse } from "http";
+import type { NextUrlWithParsedQuery } from "next/dist/server/request-meta";
 
 export type MetricType = "Counter" | "UpDownCounter" | "Histogram" | "ObservableGauge" | "ObservableCounter" | "ObservableUpDownCounter";
 export type GenericMetric = Counter | UpDownCounter | Histogram | ObservableGauge | ObservableCounter | ObservableUpDownCounter;

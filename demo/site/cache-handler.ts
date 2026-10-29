@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import { Redis } from "ioredis";
 import { LRUCache } from "lru-cache";
-import { CacheHandler as NextCacheHandler, CacheHandlerValue } from "next/dist/server/lib/incremental-cache";
+import type { CacheHandler as NextCacheHandler, CacheHandlerValue } from "next/dist/server/lib/incremental-cache";
 
-import { getOrCreateCounter, getOrCreateHistogram } from "./opentelemetry-metrics";
+import { getOrCreateCounter, getOrCreateHistogram } from "./opentelemetry-metrics.ts";
 
 const VALKEY_HOST = process.env.VALKEY_HOST;
 if (!VALKEY_HOST) {

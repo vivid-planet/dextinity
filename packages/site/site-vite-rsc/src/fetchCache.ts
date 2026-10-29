@@ -4,10 +4,11 @@ import type { CachedResponse, FetchCacheStore } from "./fetchCacheStore.js";
 
 type Fetch = typeof fetch;
 
-function createCacheKey(request: Request, body: string) {
+function createCacheKey(request: Request, body: Uint8Array<ArrayBuffer>) {
     const headers = [...request.headers.entries()].sort(([a], [b]) => a.localeCompare(b));
     return createHash("sha256")
-        .update(JSON.stringify([request.method, request.url, headers, body]))
+        .update(JSON.stringify([request.method, request.url, headers]))
+        .update(body)
         .digest("hex");
 }
 
@@ -45,11 +46,15 @@ function isCacheable(response: Response, body: string) {
 export function createCachingFetch(baseFetch: Fetch, { revalidateInSeconds, store }: { revalidateInSeconds: number; store: FetchCacheStore }): Fetch {
     const inFlightRequests = new Map<string, Promise<CachedResponse | Response>>();
 
-    function fetchAndCache(key: string, request: Request, body: string): Promise<CachedResponse | Response> {
+    function fetchAndCache(key: string, request: Request, body: Uint8Array<ArrayBuffer>): Promise<CachedResponse | Response> {
         let inFlightRequest = inFlightRequests.get(key);
         if (!inFlightRequest) {
             inFlightRequest = (async () => {
-                const response = await baseFetch(request.url, { method: request.method, headers: request.headers, body: body || undefined });
+                const response = await baseFetch(request.url, {
+                    method: request.method,
+                    headers: request.headers,
+                    body: body.byteLength ? body : undefined,
+                });
                 if (!hasTextBody(response)) {
                     return response;
                 }
@@ -77,7 +82,8 @@ export function createCachingFetch(baseFetch: Fetch, { revalidateInSeconds, stor
 
     return async function (input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
         const request = new Request(input, init);
-        const body = await request.text();
+        // As bytes, so that binary request bodies are sent unchanged
+        const body = new Uint8Array(await request.arrayBuffer());
         const key = createCacheKey(request, body);
 
         const cacheEntry = await store.get(key);

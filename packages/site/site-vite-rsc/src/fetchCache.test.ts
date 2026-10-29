@@ -117,6 +117,16 @@ describe("createCachingFetch", () => {
         expect(cacheEntries.size).toBe(0);
     });
 
+    it("sends binary request bodies unchanged", async () => {
+        const bytes = new Uint8Array([0xff, 0xd8, 0x00, 0x80]);
+        const baseFetch = createBaseFetch();
+        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });
+
+        await cachingFetch("https://api.example.com/upload", { method: "POST", body: bytes });
+
+        expect(new Uint8Array(await new Response(baseFetch.mock.calls[0][1]?.body).arrayBuffer())).toEqual(bytes);
+    });
+
     it("caches responses without a body", async () => {
         const baseFetch = createBaseFetch(() => new Response(null, { status: 204 }));
         const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });

@@ -41,25 +41,25 @@ export type Router = {
     refresh: () => void;
 };
 
-let browserRouter: Router | undefined;
-
-export function setBrowserRouter(router: Router) {
-    browserRouter = router;
+function throwOutsideBrowser(): never {
+    throw new Error("The router can only navigate in the browser");
 }
 
-function getBrowserRouter() {
-    if (!browserRouter) {
-        throw new Error("The router can only navigate in the browser");
-    }
-    return browserRouter;
-}
+const NavigationContext = createContext<{ router: Router; isPending: boolean }>({
+    router: { push: throwOutsideBrowser, replace: throwOutsideBrowser, refresh: throwOutsideBrowser },
+    isPending: false,
+});
 
-const router: Router = {
-    push: (href, options) => getBrowserRouter().push(href, options),
-    replace: (href, options) => getBrowserRouter().replace(href, options),
-    refresh: () => getBrowserRouter().refresh(),
-};
+export function NavigationProvider({ router, isPending, children }: PropsWithChildren<{ router: Router; isPending: boolean }>) {
+    const value = useMemo(() => ({ router, isPending }), [router, isPending]);
+    return <NavigationContext.Provider value={value}>{children}</NavigationContext.Provider>;
+}
 
 export function useRouter() {
-    return router;
+    return useContext(NavigationContext).router;
+}
+
+/** Whether a client navigation is loading the next page */
+export function useNavigationPending() {
+    return useContext(NavigationContext).isPending;
 }

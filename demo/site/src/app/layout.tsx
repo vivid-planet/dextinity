@@ -3,6 +3,7 @@ import "@fontsource-variable/inter";
 import "@src/styles/global.scss";
 
 import { CookieApiProvider, useLocalStorageCookieApi, useOneTrustCookieApi as useProductionCookieApi } from "@dextinity/site-react";
+import { NavigationProgress } from "@src/layout/NavigationProgress";
 import animateBoxInOnScrollStyles from "@src/util/animations/AnimateBoxInOnScroll.module.scss";
 import { ErrorHandler } from "@src/util/ErrorHandler";
 import type { PropsWithChildren } from "react";
@@ -21,6 +22,7 @@ export default function RootLayout({ children, lang }: PropsWithChildren<{ lang?
                 </noscript>
             </head>
             <body>
+                <NavigationProgress />
                 <CookieApiProvider api={process.env.NODE_ENV === "development" ? useLocalStorageCookieApi : useProductionCookieApi}>
                     <ErrorHandler>{children}</ErrorHandler>
                 </CookieApiProvider>

@@ -139,9 +139,9 @@ A few tests against the real demo site (needs Docker and the API, so run manuall
 
 With an empty Vite cache, the first page in dev is loaded twice: the scanner only crawls `entry.browser.js`, client components are loaded at runtime through the RSC payload, so their dependencies are found late ("optimized dependencies changed. reloading"). Measured in the demo: `react-intl`, `react-hook-form`, `swiper`, `@base-ui/react`, `react-focus-lock`, `redraft`, `filesize` and the dependencies of `@dextinity/site-react`. Adding the project's `"use client"` files to `optimizeDeps.entries` removed the reload (measured), installed packages would also need `@dextinity/site-vite-rsc > @dextinity/site-react` in `optimizeDeps.include`, as the scanner doesn't follow the excluded package. Decision: accepted, as it's dev only and once per new cache; noted in the changeset. The test app includes `@dextinity/site-vite-rsc > @dextinity/site-react`, so that the browser tests see one document load.
 
-### #41 Fix back navigation to a full page load in dev
+### #41 Fix back navigation to a full page load in dev (done)
 
-In dev, back to a page that was left with a full page load (e.g. a plain `<a>`) breaks the page: Chrome takes the response of the SSR stylesheet `<link>` for `*.module.scss` from the cache for the JS module import of the same URL ("Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "text/css""), a client component fails to load, and the error boundary renders. Pre-existing, dev only, production works. Check which URLs plugin-rsc injects for CSS in dev (Vite itself requests CSS links with `?direct`) and whether a `Vary: Accept` or a distinct URL fixes it.
+In dev, plugin-rsc renders the CSS of client components as `<link>` with the URL the client component imports as JS module, e.g. `/Header.module.scss`. Vite answers it with CSS or JS depending on the `Accept` header, without `Vary`, so on back navigation Chrome took whichever response it had cached last for both: an empty stylesheet, or CSS for the module import and the error boundary. `dextinitySite()` adds `Vary: Accept` to CSS responses of the dev server. Production serves hashed CSS files, which aren't imported as modules.
 
 ### #39 Only allow http(s), mailto, tel and relative redirect targets (done)
 

@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { Button } from "./Button";
 
@@ -38,6 +38,42 @@ export function ButtonSlotPropsTypeContract() {
         </>
     );
 }
+
+afterEach(cleanup);
+
+describe("Button owner state", () => {
+    it("emits the variant, color, and size as data attributes, with their defaults when unset", () => {
+        render(
+            <>
+                <Button>Save</Button>
+                <Button variant="outlined" color="error" size="small">
+                    Delete
+                </Button>
+            </>,
+        );
+
+        const save = screen.getByRole("button", { name: "Save" });
+        expect([save.dataset.variant, save.dataset.color, save.dataset.size]).toStrictEqual(["contained", "primary", "default"]);
+        const remove = screen.getByRole("button", { name: "Delete" });
+        expect([remove.dataset.variant, remove.dataset.color, remove.dataset.size]).toStrictEqual(["outlined", "error", "small"]);
+    });
+});
+
+describe("Button loading", () => {
+    it("marks the button as busy only while loading", () => {
+        render(
+            <>
+                <Button>Save</Button>
+                <Button loading>Saving</Button>
+            </>,
+        );
+
+        const save = screen.getByRole("button", { name: "Save" });
+        expect([save.hasAttribute("data-loading"), save.getAttribute("aria-busy")]).toStrictEqual([false, null]);
+        const saving = screen.getByRole("button", { name: "Saving" });
+        expect([saving.dataset.loading, saving.getAttribute("aria-busy")]).toStrictEqual(["", "true"]);
+    });
+});
 
 describe("Button slots", () => {
     it("renders a slot as the element chosen in `slots`, merging the contract class with consumer props", () => {

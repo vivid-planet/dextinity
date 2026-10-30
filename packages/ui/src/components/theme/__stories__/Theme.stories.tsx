@@ -38,8 +38,8 @@ function ExampleContent() {
             <Typography variant="headline">Themed headline</Typography>
             <Typography variant="body">Body text follows the active theme.</Typography>
             <div style={{ display: "flex", gap: "1rem" }}>
-                <Button variant="primary">Primary</Button>
-                <Button variant="secondary">Secondary</Button>
+                <Button>Primary</Button>
+                <Button color="secondary">Secondary</Button>
             </div>
         </div>
     );

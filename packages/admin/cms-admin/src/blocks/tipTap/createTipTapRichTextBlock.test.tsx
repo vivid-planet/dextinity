@@ -1,7 +1,7 @@
 import { Editor, type JSONContent } from "@tiptap/core";
 import { describe, expect, it, vi } from "vitest";
 
-import { render } from "../../testing/test-utils";
+import { render, within } from "../../testing/test-utils";
 import type { BlockContext } from "../context/BlockContext";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "../types";
@@ -390,6 +390,39 @@ describe("createTipTapRichTextBlock", () => {
 
             expect(editor.getJSON().content).toEqual([paragraph("first"), paragraph("second")]);
             expect(updateState).toHaveBeenLastCalledWith({ tipTapContent: { type: "doc", content: [paragraph("first"), paragraph("second")] } });
+        });
+    });
+
+    describe("text block style select", () => {
+        const style = { name: "copy100", label: "Copy 100", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
+        const textBlocks: TipTapTextBlock[] = [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [style] }];
+        const listContent: JSONContent = {
+            type: "doc",
+            content: [
+                {
+                    type: "bulletList",
+                    content: [
+                        {
+                            type: "listItem",
+                            content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "item" }] }],
+                        },
+                    ],
+                },
+            ],
+        };
+
+        it("should keep the style select disabled in a list without styles", () => {
+            const block = createTipTapRichTextBlock({ textBlocks });
+            const { container } = render(<block.AdminComponent state={{ tipTapContent: listContent }} updateState={vi.fn()} />);
+
+            expect(within(container).queryByRole("combobox")?.getAttribute("aria-disabled")).toBe("true");
+        });
+
+        it("should not show a style select when nothing has styles", () => {
+            const block = createTipTapRichTextBlock({ textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }] });
+            const { container } = render(<block.AdminComponent state={{ tipTapContent: listContent }} updateState={vi.fn()} />);
+
+            expect(within(container).queryByRole("combobox")).toBeNull();
         });
     });
 

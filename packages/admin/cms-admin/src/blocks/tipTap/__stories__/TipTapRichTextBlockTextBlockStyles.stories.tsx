@@ -288,10 +288,10 @@ function TextBlockElementStory() {
 export const TextBlockElement: StoryObj<typeof TextBlockElementStory> = {
     render: () => <TextBlockElementStory />,
     play: async ({ canvas, userEvent, step }) => {
-        await step("A text block without styles shows no styling select", async () => {
+        await step("A text block without styles disables the styling select", async () => {
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")).toHaveLength(1);
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveAttribute("aria-disabled", "true");
                 },
                 { timeout: 5000 },
             );
@@ -304,7 +304,7 @@ export const TextBlockElement: StoryObj<typeof TextBlockElementStory> = {
             await waitFor(
                 () => {
                     expect(canvas.getByRole("heading", { level: 1 })).toHaveStyle({ fontSize: "64px" });
-                    expect(canvas.getAllByRole("combobox")).toHaveLength(1);
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveAttribute("aria-disabled", "true");
                 },
                 { timeout: 3000 },
             );
@@ -316,7 +316,7 @@ export const TextBlockElement: StoryObj<typeof TextBlockElementStory> = {
 
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")).toHaveLength(2);
+                    expect(canvas.getAllByRole("combobox")[1]).not.toHaveAttribute("aria-disabled");
                 },
                 { timeout: 3000 },
             );
@@ -465,6 +465,119 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
                 () => {
                     expect(canvas.getByRole("heading", { level: 1 })).toHaveAttribute("data-text-block-style", "large-heading");
                     expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Large Heading");
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};
+
+const TextBlockStyleSelectDisabledInListBlock = createTipTapRichTextBlock({
+    undoRedoButtons: false,
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p", styles: [introStyle, highlightStyle] },
+        { name: "heading-1", label: "Heading 1", tag: "h1", styles: [largeHeadingStyle, highlightStyle], defaultStyle: "large-heading" },
+        { name: "heading-2", label: "Heading 2", tag: "h2", styles: [largeHeadingStyle, highlightStyle], defaultStyle: "large-heading" },
+        { name: "heading-3", label: "Heading 3", tag: "h3", styles: [highlightStyle], defaultStyle: "highlight" },
+    ],
+});
+
+function TextBlockStyleSelectDisabledInListStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(TextBlockStyleSelectDisabledInListBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <TextBlockStyleSelectDisabledInListBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const TextBlockStyleSelectDisabledInList: StoryObj<typeof TextBlockStyleSelectDisabledInListStory> = {
+    render: () => <TextBlockStyleSelectDisabledInListStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("A paragraph offers its styles", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")[1]).not.toHaveAttribute("aria-disabled");
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("A list without styles keeps the styling select, disabled", async () => {
+            const editor = canvas.getByRole("textbox");
+            await userEvent.click(editor);
+            await userEvent.keyboard("List item text");
+
+            // TipTap binds list shortcuts to Mod-Shift-{7,8}: Meta on Mac, Control elsewhere
+            const mod = /Mac/i.test(navigator.platform) ? "Meta" : "Control";
+            await userEvent.keyboard(`{${mod}>}{Shift>}8{/Shift}{/${mod}}`);
+
+            await waitFor(
+                () => {
+                    expect(editor.querySelector("ul")).toBeTruthy();
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveAttribute("aria-disabled", "true");
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Default");
+                },
+                { timeout: 3000 },
+            );
+        });
+    },
+};
+
+const TextBlockStyleSelectDisabledInHeadingBlock = createTipTapRichTextBlock({
+    undoRedoButtons: false,
+    textBlocks: [
+        { name: "paragraph", label: "Paragraph", tag: "p", styles: [introStyle, highlightStyle] },
+        { name: "heading-1", label: "Heading 1", tag: "h1" },
+        { name: "heading-2", label: "Heading 2", tag: "h2" },
+        { name: "heading-3", label: "Heading 3", tag: "h3" },
+    ],
+});
+
+function TextBlockStyleSelectDisabledInHeadingStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(TextBlockStyleSelectDisabledInHeadingBlock.defaultValues());
+
+    return (
+        <StoryWrapper state={state}>
+            <TextBlockStyleSelectDisabledInHeadingBlock.AdminComponent state={state} updateState={setState} />
+        </StoryWrapper>
+    );
+}
+
+export const TextBlockStyleSelectDisabledInHeading: StoryObj<typeof TextBlockStyleSelectDisabledInHeadingStory> = {
+    render: () => <TextBlockStyleSelectDisabledInHeadingStory />,
+    play: async ({ canvas, userEvent, step }) => {
+        await step("A paragraph offers its styles", async () => {
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")[1]).not.toHaveAttribute("aria-disabled");
+                },
+                { timeout: 5000 },
+            );
+        });
+
+        await step("A heading without styles keeps the styling select, disabled", async () => {
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 1" }));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")[0]).toHaveTextContent("Heading 1");
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveAttribute("aria-disabled", "true");
+                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Default");
+                },
+                { timeout: 3000 },
+            );
+        });
+
+        await step("Back in a paragraph, the styling select is enabled again", async () => {
+            await userEvent.click(canvas.getAllByRole("combobox")[0]);
+            await userEvent.click(within(document.body).getByRole("option", { name: "Paragraph" }));
+
+            await waitFor(
+                () => {
+                    expect(canvas.getAllByRole("combobox")[1]).not.toHaveAttribute("aria-disabled");
                 },
                 { timeout: 3000 },
             );

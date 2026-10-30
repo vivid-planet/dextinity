@@ -6,6 +6,7 @@ import { SortDirection } from "../../common/sorting/sort-direction.enum";
 enum ActionLogSortField {
     version = "version",
     createdAt = "createdAt",
+    entityName = "entityName",
 }
 registerEnumType(ActionLogSortField, {
     name: "ActionLogSortField",

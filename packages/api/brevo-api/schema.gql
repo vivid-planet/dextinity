@@ -63,6 +63,7 @@ enum Permission {
   sitePreview
   blockPreview
   fullTextSearch
+  actionLog
   brevoNewsletterConfig
   brevoNewsletter
 }

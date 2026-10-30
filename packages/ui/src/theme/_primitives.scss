@@ -142,10 +142,24 @@
         --dextinity-font-weight-semibold: 600;
         --dextinity-font-weight-bold: 700;
 
+        --dextinity-font-weight-regular-style: regular;
+
+        --dextinity-font-weight-medium-style: medium;
+
+        --dextinity-font-weight-semibold-style: semi-bold;
+
+        --dextinity-font-weight-bold-style: bold;
+
         --dextinity-font-letter-spacing-tighter: -0.5px;
         --dextinity-font-letter-spacing-tight: -0.25px;
         --dextinity-font-letter-spacing-normal: 0px;
         --dextinity-font-letter-spacing-wide: 0.25px;
+
+        --dextinity-motion-easing-linear: cubic-bezier(0, 0, 1, 1);
+        --dextinity-motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+        --dextinity-motion-easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+        --dextinity-motion-easing-accelerate: cubic-bezier(0.4, 0, 1, 1);
+        --dextinity-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
 
         --dextinity-color-violet-50: rgb(249 250 255);
         --dextinity-color-violet-100: rgb(239 241 255);
@@ -170,5 +184,156 @@
         --dextinity-color-coral-800: rgb(104 0 0);
         --dextinity-color-coral-900: rgb(69 0 0);
         --dextinity-color-coral-950: rgb(43 1 0);
+
+        --dextinity-color-ocean-50: rgb(230 244 252);
+        --dextinity-color-ocean-100: rgb(192 225 243);
+        --dextinity-color-ocean-200: rgb(144 208 241);
+        --dextinity-color-ocean-300: rgb(85 189 238);
+        --dextinity-color-ocean-400: rgb(11 166 222);
+        --dextinity-color-ocean-500: rgb(0 135 203);
+        --dextinity-color-ocean-600: rgb(0 103 168);
+        --dextinity-color-ocean-700: rgb(0 74 144);
+        --dextinity-color-ocean-800: rgb(5 48 113);
+        --dextinity-color-ocean-900: rgb(11 27 77);
+        --dextinity-color-ocean-950: rgb(5 15 43);
+
+        --dextinity-color-cyan-50: rgb(230 245 245);
+        --dextinity-color-cyan-100: rgb(197 233 233);
+        --dextinity-color-cyan-200: rgb(154 222 223);
+        --dextinity-color-cyan-300: rgb(102 212 213);
+        --dextinity-color-cyan-400: rgb(18 199 228);
+        --dextinity-color-cyan-500: rgb(0 175 204);
+        --dextinity-color-cyan-600: rgb(0 145 168);
+        --dextinity-color-cyan-700: rgb(0 111 130);
+        --dextinity-color-cyan-800: rgb(0 78 91);
+        --dextinity-color-cyan-900: rgb(3 47 55);
+        --dextinity-color-cyan-950: rgb(1 21 25);
+
+        --dextinity-color-mint-50: rgb(218 250 243);
+        --dextinity-color-mint-100: rgb(168 245 228);
+        --dextinity-color-mint-200: rgb(147 231 212);
+        --dextinity-color-mint-300: rgb(84 226 196);
+        --dextinity-color-mint-400: rgb(0 214 176);
+        --dextinity-color-mint-500: rgb(0 190 153);
+        --dextinity-color-mint-600: rgb(0 157 126);
+        --dextinity-color-mint-700: rgb(0 121 97);
+        --dextinity-color-mint-800: rgb(0 84 67);
+        --dextinity-color-mint-900: rgb(0 50 40);
+        --dextinity-color-mint-950: rgb(0 22 16);
+
+        --dextinity-color-purple-50: rgb(242 238 255);
+        --dextinity-color-purple-100: rgb(219 207 255);
+        --dextinity-color-purple-200: rgb(197 174 255);
+        --dextinity-color-purple-300: rgb(177 140 255);
+        --dextinity-color-purple-400: rgb(158 102 255);
+        --dextinity-color-purple-500: rgb(137 64 252);
+        --dextinity-color-purple-600: rgb(110 51 204);
+        --dextinity-color-purple-700: rgb(79 31 160);
+        --dextinity-color-purple-800: rgb(52 17 115);
+        --dextinity-color-purple-900: rgb(33 17 72);
+        --dextinity-color-purple-950: rgb(18 10 41);
+
+        --dextinity-color-fuchsia-50: rgb(255 234 248);
+        --dextinity-color-fuchsia-100: rgb(240 185 219);
+        --dextinity-color-fuchsia-200: rgb(227 130 194);
+        --dextinity-color-fuchsia-300: rgb(219 76 178);
+        --dextinity-color-fuchsia-400: rgb(175 75 206);
+        --dextinity-color-fuchsia-500: rgb(156 53 187);
+        --dextinity-color-fuchsia-600: rgb(129 45 154);
+        --dextinity-color-fuchsia-700: rgb(101 36 121);
+        --dextinity-color-fuchsia-800: rgb(74 28 88);
+        --dextinity-color-fuchsia-900: rgb(48 20 57);
+        --dextinity-color-fuchsia-950: rgb(26 9 31);
+
+        --dextinity-color-rose-50: rgb(255 235 229);
+        --dextinity-color-rose-100: rgb(255 202 198);
+        --dextinity-color-rose-200: rgb(255 166 173);
+        --dextinity-color-rose-300: rgb(253 123 152);
+        --dextinity-color-rose-400: rgb(235 84 140);
+        --dextinity-color-rose-500: rgb(208 55 117);
+        --dextinity-color-rose-600: rgb(169 45 95);
+        --dextinity-color-rose-700: rgb(132 35 73);
+        --dextinity-color-rose-800: rgb(96 27 53);
+        --dextinity-color-rose-900: rgb(61 19 34);
+        --dextinity-color-rose-950: rgb(32 8 16);
+
+        --dextinity-color-ruby-50: rgb(255 235 237);
+        --dextinity-color-ruby-100: rgb(249 196 201);
+        --dextinity-color-ruby-200: rgb(243 152 161);
+        --dextinity-color-ruby-300: rgb(235 104 124);
+        --dextinity-color-ruby-400: rgb(215 62 94);
+        --dextinity-color-ruby-500: rgb(190 30 73);
+        --dextinity-color-ruby-600: rgb(168 1 57);
+        --dextinity-color-ruby-700: rgb(147 0 46);
+        --dextinity-color-ruby-800: rgb(119 0 35);
+        --dextinity-color-ruby-900: rgb(76 10 24);
+        --dextinity-color-ruby-950: rgb(38 3 8);
+
+        --dextinity-color-orange-50: rgb(252 239 226);
+        --dextinity-color-orange-100: rgb(248 218 187);
+        --dextinity-color-orange-200: rgb(249 194 135);
+        --dextinity-color-orange-300: rgb(247 166 69);
+        --dextinity-color-orange-400: rgb(239 122 50);
+        --dextinity-color-orange-500: rgb(222 84 44);
+        --dextinity-color-orange-600: rgb(181 69 36);
+        --dextinity-color-orange-700: rgb(141 53 28);
+        --dextinity-color-orange-800: rgb(101 38 21);
+        --dextinity-color-orange-900: rgb(64 25 14);
+        --dextinity-color-orange-950: rgb(32 10 5);
+
+        --dextinity-color-yellow-50: rgb(244 243 223);
+        --dextinity-color-yellow-100: rgb(234 229 181);
+        --dextinity-color-yellow-200: rgb(226 216 121);
+        --dextinity-color-yellow-300: rgb(220 200 39);
+        --dextinity-color-yellow-400: rgb(222 177 38);
+        --dextinity-color-yellow-500: rgb(198 153 0);
+        --dextinity-color-yellow-600: rgb(163 127 0);
+        --dextinity-color-yellow-700: rgb(126 97 0);
+        --dextinity-color-yellow-800: rgb(88 68 1);
+        --dextinity-color-yellow-900: rgb(53 40 4);
+        --dextinity-color-yellow-950: rgb(23 16 1);
+
+        --dextinity-color-emerald-50: rgb(231 246 235);
+        --dextinity-color-emerald-100: rgb(198 235 209);
+        --dextinity-color-emerald-200: rgb(157 227 181);
+        --dextinity-color-emerald-300: rgb(107 219 151);
+        --dextinity-color-emerald-400: rgb(61 204 126);
+        --dextinity-color-emerald-500: rgb(18 183 106);
+        --dextinity-color-emerald-600: rgb(28 153 90);
+        --dextinity-color-emerald-700: rgb(23 119 70);
+        --dextinity-color-emerald-800: rgb(18 84 49);
+        --dextinity-color-emerald-900: rgb(12 50 29);
+        --dextinity-color-emerald-950: rgb(3 22 10);
+
+        --dextinity-color-lime-50: rgb(236 246 227);
+        --dextinity-color-lime-100: rgb(214 237 191);
+        --dextinity-color-lime-200: rgb(190 231 144);
+        --dextinity-color-lime-300: rgb(163 222 84);
+        --dextinity-color-lime-400: rgb(140 207 3);
+        --dextinity-color-lime-500: rgb(117 183 0);
+        --dextinity-color-lime-600: rgb(97 151 0);
+        --dextinity-color-lime-700: rgb(74 116 0);
+        --dextinity-color-lime-800: rgb(51 81 0);
+        --dextinity-color-lime-900: rgb(30 49 1);
+        --dextinity-color-lime-950: rgb(10 21 0);
+
+        --dextinity-color-forest-50: rgb(235 245 236);
+        --dextinity-color-forest-100: rgb(202 224 203);
+        --dextinity-color-forest-200: rgb(164 205 167);
+        --dextinity-color-forest-300: rgb(126 187 132);
+        --dextinity-color-forest-400: rgb(94 166 103);
+        --dextinity-color-forest-500: rgb(70 143 80);
+        --dextinity-color-forest-600: rgb(58 117 66);
+        --dextinity-color-forest-700: rgb(46 92 52);
+        --dextinity-color-forest-800: rgb(34 67 38);
+        --dextinity-color-forest-900: rgb(22 42 25);
+        --dextinity-color-forest-950: rgb(9 21 10);
+
+        --dextinity-motion-duration-xs: 100ms;
+        --dextinity-motion-duration-sm: 160ms;
+        --dextinity-motion-duration-md: 200ms;
+        --dextinity-motion-duration-lg: 240ms;
+        --dextinity-motion-duration-xl: 300ms;
+        --dextinity-motion-duration-2xl: 400ms;
     }
 }

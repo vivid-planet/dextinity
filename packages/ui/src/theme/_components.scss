@@ -24,302 +24,190 @@
         --dextinity-button-type-icon-button-small-padding-horizontal: var(--dextinity-unit-2);
         --dextinity-button-type-icon-button-small-padding-vertical: var(--dextinity-unit-2);
 
-        --dextinity-main-navigation-item-height: var(--dextinity-unit-12);
-        --dextinity-main-navigation-item-gap: var(--dextinity-unit-2);
-        --dextinity-main-navigation-item-radius: var(--dextinity-radius-md);
+        --dextinity-checkbox-size: 20px;
+        --dextinity-checkbox-radius: var(--dextinity-radius-sm);
+        --dextinity-checkbox-gap: var(--dextinity-unit-2);
 
-        --dextinity-main-navigation-item-padding-horizontal: var(--dextinity-unit-3);
+        --dextinity-checkbox-border-width: 1px;
 
-        --dextinity-main-navigation-item-icon-size: 16px;
+        --dextinity-checkbox-icon-size: 14px;
 
-        --dextinity-main-navigation-item-indicator-width: 3px;
-        --dextinity-main-navigation-item-indicator-height: 24px;
+        --dextinity-checkbox-touch-target: var(--dextinity-unit-6);
 
-        --dextinity-main-navigation-item-indent-level-1: var(--dextinity-unit-3);
-        --dextinity-main-navigation-item-indent-level-2: var(--dextinity-unit-9);
-        --dextinity-main-navigation-item-indent-level-3: var(--dextinity-unit-15);
+        --dextinity-checkbox-label-font-size: var(--dextinity-typography-body-md-size);
+        --dextinity-checkbox-label-font-line-height: var(--dextinity-typography-body-md-line-height);
+        --dextinity-checkbox-label-font-weight: var(--dextinity-font-weight-regular);
 
-        --dextinity-main-navigation-item-font-size: var(--dextinity-typography-body-md-size);
-        --dextinity-main-navigation-item-font-line-height: var(--dextinity-typography-body-md-line-height);
-        --dextinity-main-navigation-item-font-weight: var(--dextinity-font-weight-medium);
+        --dextinity-checkbox-label-font-weight-style: var(--dextinity-font-weight-regular-style);
 
-        --dextinity-main-navigation-item-font-weight-style: var(--dextinity-font-weight-medium-style);
+        --dextinity-checkbox-unchecked-default-background: var(--dextinity-color-background-default);
+        --dextinity-checkbox-unchecked-default-border: var(--dextinity-color-border-strong);
 
-        --dextinity-main-navigation-item-default-background: var(--dextinity-color-transparent);
-        --dextinity-main-navigation-item-default-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-main-navigation-item-default-icon: var(--dextinity-color-foreground-default);
-        --dextinity-main-navigation-item-default-indicator: var(--dextinity-color-transparent);
+        --dextinity-checkbox-unchecked-hover-background: var(--dextinity-color-action-primary-subtle);
+        --dextinity-checkbox-unchecked-hover-border: var(--dextinity-color-action-primary-default);
 
-        --dextinity-main-navigation-item-hover-background: var(--dextinity-color-background-subtle);
-        --dextinity-main-navigation-item-hover-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-main-navigation-item-hover-icon: var(--dextinity-color-foreground-default);
-        --dextinity-main-navigation-item-hover-indicator: var(--dextinity-color-transparent);
+        --dextinity-checkbox-unchecked-error-background: var(--dextinity-color-background-default);
+        --dextinity-checkbox-unchecked-error-border: var(--dextinity-color-feedback-danger-default);
 
-        --dextinity-main-navigation-item-active-background: var(--dextinity-color-action-primary-subtle);
-        --dextinity-main-navigation-item-active-foreground: var(--dextinity-color-action-primary-default);
-        --dextinity-main-navigation-item-active-icon: var(--dextinity-color-action-primary-default);
-        --dextinity-main-navigation-item-active-indicator: var(--dextinity-color-action-primary-default);
+        --dextinity-checkbox-unchecked-disabled-background: var(--dextinity-color-background-muted);
+        --dextinity-checkbox-unchecked-disabled-border: var(--dextinity-color-border-subtle);
 
-        --dextinity-main-navigation-section-header-padding-horizontal: var(--dextinity-unit-3);
-        --dextinity-main-navigation-section-header-padding-vertical: var(--dextinity-unit-2);
+        --dextinity-checkbox-unchecked-read-only-background: var(--dextinity-color-background-subtle);
+        --dextinity-checkbox-unchecked-read-only-border: var(--dextinity-color-border-strong);
 
-        --dextinity-main-navigation-section-header-gap: var(--dextinity-unit-1);
+        --dextinity-checkbox-checked-default-background: var(--dextinity-color-action-primary-default);
+        --dextinity-checkbox-checked-default-border: var(--dextinity-color-action-primary-default);
+        --dextinity-checkbox-checked-default-check: var(--dextinity-color-action-primary-foreground);
 
-        --dextinity-main-navigation-section-header-font-size: var(--dextinity-typography-body-sm-size);
-        --dextinity-main-navigation-section-header-font-line-height: var(--dextinity-typography-body-sm-line-height);
-        --dextinity-main-navigation-section-header-font-weight: var(--dextinity-font-weight-bold);
+        --dextinity-checkbox-checked-hover-background: var(--dextinity-color-action-primary-hover);
+        --dextinity-checkbox-checked-hover-border: var(--dextinity-color-action-primary-hover);
+        --dextinity-checkbox-checked-hover-check: var(--dextinity-color-action-primary-foreground);
 
-        --dextinity-main-navigation-section-header-font-weight-style: var(--dextinity-font-weight-bold-style);
+        --dextinity-checkbox-checked-error-background: var(--dextinity-color-feedback-danger-strong);
+        --dextinity-checkbox-checked-error-border: var(--dextinity-color-feedback-danger-strong);
+        --dextinity-checkbox-checked-error-check: var(--dextinity-color-feedback-danger-on-strong);
 
-        --dextinity-main-navigation-section-header-default-foreground: var(--dextinity-color-foreground-subtle);
-        --dextinity-main-navigation-section-header-default-icon: var(--dextinity-color-foreground-subtle);
+        --dextinity-checkbox-checked-disabled-background: var(--dextinity-color-action-primary-disabled);
+        --dextinity-checkbox-checked-disabled-border: var(--dextinity-color-action-primary-disabled);
+        --dextinity-checkbox-checked-disabled-check: var(--dextinity-color-foreground-subtle);
 
-        --dextinity-main-navigation-section-header-hover-foreground: var(--dextinity-color-foreground-muted);
-        --dextinity-main-navigation-section-header-hover-icon: var(--dextinity-color-foreground-muted);
+        --dextinity-checkbox-checked-read-only-background: var(--dextinity-color-background-subtle);
+        --dextinity-checkbox-checked-read-only-border: var(--dextinity-color-border-strong);
+        --dextinity-checkbox-checked-read-only-check: var(--dextinity-color-foreground-subtle);
 
-        --dextinity-button-type-button-small-font-size: var(--dextinity-typography-body-sm-size);
-        --dextinity-button-type-button-small-font-line-height: var(--dextinity-typography-body-sm-line-height);
-        --dextinity-button-type-button-small-font-weight: var(--dextinity-font-weight-medium);
+        --dextinity-checkbox-label-foreground-default: var(--dextinity-color-foreground-default);
+        --dextinity-checkbox-label-foreground-disabled: var(--dextinity-color-foreground-subtle);
 
-        --dextinity-button-type-button-small-gap: var(--dextinity-unit-1);
-        --dextinity-button-type-button-small-height: var(--dextinity-unit-8);
-        --dextinity-button-type-button-small-radius: var(--dextinity-brand-radius-control-small);
+        --dextinity-chip-border-width: 1px;
 
-        --dextinity-button-type-button-small-font-weight-style: var(--dextinity-font-weight-medium-style);
+        --dextinity-dialog-background: var(--dextinity-color-background-default);
+        --dextinity-dialog-border: var(--dextinity-color-border-default);
+        --dextinity-dialog-radius: var(--dextinity-brand-radius-modal);
+        --dextinity-dialog-overlay: var(--dextinity-color-background-overlay);
+        --dextinity-dialog-divider: var(--dextinity-color-border-subtle);
 
-        --dextinity-button-type-button-default-icon-size: 16px;
+        --dextinity-dialog-overlay-padding: var(--dextinity-unit-12);
 
-        --dextinity-button-type-button-small-icon-size: 16px;
+        --dextinity-dialog-header-padding-horizontal: var(--dextinity-unit-8);
+        --dextinity-dialog-header-padding-vertical: var(--dextinity-unit-5);
 
-        --dextinity-button-type-icon-button-default-height: var(--dextinity-unit-10);
-        --dextinity-button-type-icon-button-default-radius: var(--dextinity-brand-radius-control);
+        --dextinity-dialog-header-gap: var(--dextinity-unit-3);
 
-        --dextinity-button-type-icon-button-default-icon-size: 16px;
+        --dextinity-dialog-header-title-color: var(--dextinity-color-foreground-default);
 
-        --dextinity-button-type-icon-button-small-height: var(--dextinity-unit-8);
-        --dextinity-button-type-icon-button-small-radius: var(--dextinity-brand-radius-control-small);
+        --dextinity-dialog-header-icon-background: var(--dextinity-brand-color-primary-400);
+        --dextinity-dialog-header-icon-ring: var(--dextinity-brand-color-primary-300);
+        --dextinity-dialog-header-icon-foreground: var(--dextinity-color-foreground-on-accent);
 
-        --dextinity-button-type-icon-button-small-icon-size: 16px;
+        --dextinity-dialog-actions-padding-horizontal: var(--dextinity-unit-8);
+        --dextinity-dialog-actions-padding-vertical: var(--dextinity-unit-6);
 
-        --dextinity-input-height: var(--dextinity-unit-10);
-        --dextinity-input-radius: var(--dextinity-brand-radius-forms);
-        --dextinity-input-gap: var(--dextinity-unit-2);
+        --dextinity-dialog-actions-gap: var(--dextinity-unit-4);
 
-        --dextinity-input-border-width: 1px;
+        --dextinity-dialog-size-sm-width: 640px;
 
-        --dextinity-input-padding-horizontal: var(--dextinity-unit-3);
-        --dextinity-input-padding-vertical: var(--dextinity-unit-2);
+        --dextinity-dialog-size-md-width: 1024px;
 
-        --dextinity-input-icon-size: 16px;
+        --dextinity-dialog-size-lg-width: 1280px;
 
-        --dextinity-input-font-size: var(--dextinity-typography-body-md-size);
-        --dextinity-input-font-line-height: var(--dextinity-typography-body-md-line-height);
-        --dextinity-input-font-weight: var(--dextinity-font-weight-regular);
+        --dextinity-chip-variant-contained-primary-default-background: var(--dextinity-color-action-primary-default);
+        --dextinity-chip-variant-contained-primary-default-foreground: var(--dextinity-color-action-primary-foreground);
+        --dextinity-chip-variant-contained-primary-default-border: var(--dextinity-color-action-primary-default);
 
-        --dextinity-input-font-weight-style: var(--dextinity-font-weight-regular-style);
+        --dextinity-chip-variant-contained-primary-hover-background: var(--dextinity-color-action-primary-hover);
+        --dextinity-chip-variant-contained-primary-hover-foreground: var(--dextinity-color-action-primary-foreground);
+        --dextinity-chip-variant-contained-primary-hover-border: var(--dextinity-color-action-primary-hover);
 
-        --dextinity-input-state-default-background: var(--dextinity-color-background-default);
-        --dextinity-input-state-default-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-input-state-default-border: var(--dextinity-color-border-default);
+        --dextinity-chip-variant-contained-primary-focus-background: var(--dextinity-color-action-primary-default);
+        --dextinity-chip-variant-contained-primary-focus-foreground: var(--dextinity-color-action-primary-foreground);
+        --dextinity-chip-variant-contained-primary-focus-border: var(--dextinity-color-action-primary-default);
 
-        --dextinity-input-state-default-foreground-placeholder: var(--dextinity-color-foreground-subtle);
-
-        --dextinity-input-state-hover-background: var(--dextinity-color-background-default);
-        --dextinity-input-state-hover-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-input-state-hover-border: var(--dextinity-color-border-strong);
-
-        --dextinity-input-state-hover-foreground-placeholder: var(--dextinity-color-foreground-subtle);
-
-        --dextinity-input-state-focus-background: var(--dextinity-color-background-default);
-        --dextinity-input-state-focus-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-input-state-focus-border: var(--dextinity-color-border-focus);
-
-        --dextinity-input-state-focus-foreground-placeholder: var(--dextinity-color-foreground-subtle);
-
-        --dextinity-input-state-error-background: var(--dextinity-color-background-default);
-        --dextinity-input-state-error-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-input-state-error-border: var(--dextinity-color-feedback-danger-border);
-
-        --dextinity-input-state-error-foreground-placeholder: var(--dextinity-color-foreground-subtle);
-
-        --dextinity-input-state-success-background: var(--dextinity-color-background-default);
-        --dextinity-input-state-success-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-input-state-success-border: var(--dextinity-color-feedback-success-border);
-
-        --dextinity-input-state-success-foreground-placeholder: var(--dextinity-color-foreground-subtle);
-
-        --dextinity-input-state-warning-background: var(--dextinity-color-background-default);
-        --dextinity-input-state-warning-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-input-state-warning-border: var(--dextinity-color-feedback-warning-border);
-
-        --dextinity-input-state-warning-foreground-placeholder: var(--dextinity-color-foreground-subtle);
-
-        --dextinity-input-state-loading-background: var(--dextinity-color-background-default);
-        --dextinity-input-state-loading-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-input-state-loading-border: var(--dextinity-color-border-default);
-        --dextinity-input-state-loading-spinner: var(--dextinity-color-foreground-muted);
-
-        --dextinity-input-state-loading-foreground-placeholder: var(--dextinity-color-foreground-subtle);
-
-        --dextinity-input-adornment-foreground: var(--dextinity-color-foreground-muted);
-
-        --dextinity-input-label-gap: var(--dextinity-unit-1);
-
-        --dextinity-input-label-font-size: var(--dextinity-typography-body-sm-size);
-        --dextinity-input-label-font-line-height: var(--dextinity-typography-body-sm-line-height);
-        --dextinity-input-label-font-weight: var(--dextinity-font-weight-medium);
-
-        --dextinity-input-label-font-weight-style: var(--dextinity-font-weight-medium-style);
-
-        --dextinity-input-label-default-foreground: var(--dextinity-color-foreground-default);
-
-        --dextinity-input-label-error-foreground: var(--dextinity-color-feedback-danger-default);
-
-        --dextinity-input-label-mandatory-color: var(--dextinity-color-feedback-danger-default);
-
-        --dextinity-input-label-helper-icon-color: var(--dextinity-color-foreground-muted);
-        --dextinity-input-label-helper-icon-size: 16px;
-
-        --dextinity-input-helper-text-gap: var(--dextinity-unit-1);
-
-        --dextinity-input-helper-text-font-size: var(--dextinity-typography-body-sm-size);
-        --dextinity-input-helper-text-font-line-height: var(--dextinity-typography-body-sm-line-height);
-        --dextinity-input-helper-text-font-weight: var(--dextinity-font-weight-regular);
-
-        --dextinity-input-helper-text-font-weight-style: var(--dextinity-font-weight-regular-style);
-
-        --dextinity-input-helper-text-type-hint-foreground: var(--dextinity-color-foreground-muted);
-
-        --dextinity-input-helper-text-type-error-foreground: var(--dextinity-color-feedback-danger-default);
-
-        --dextinity-input-helper-text-count-foreground: var(--dextinity-color-foreground-subtle);
-
-        --dextinity-input-state-disabled-background: var(--dextinity-color-background-muted);
-        --dextinity-input-state-disabled-foreground: var(--dextinity-color-foreground-subtle);
-        --dextinity-input-state-disabled-border: var(--dextinity-color-border-subtle);
-
-        --dextinity-input-state-disabled-foreground-placeholder: var(--dextinity-color-foreground-subtle);
-
-        --dextinity-input-state-read-only-background: var(--dextinity-color-background-subtle);
-        --dextinity-input-state-read-only-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-input-state-read-only-border: var(--dextinity-color-border-subtle);
-
-        --dextinity-input-state-read-only-foreground-placeholder: var(--dextinity-color-foreground-subtle);
-
-        --dextinity-chip-variant-filled-default-default-background: var(--dextinity-color-background-muted);
-        --dextinity-chip-variant-filled-default-default-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-chip-variant-filled-default-default-border: var(--dextinity-color-background-muted);
-
-        --dextinity-chip-variant-filled-default-hover-background: var(--dextinity-color-border-default);
-        --dextinity-chip-variant-filled-default-hover-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-chip-variant-filled-default-hover-border: var(--dextinity-color-border-default);
-
-        --dextinity-chip-variant-filled-default-focus-background: var(--dextinity-color-background-muted);
-        --dextinity-chip-variant-filled-default-focus-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-chip-variant-filled-default-focus-border: var(--dextinity-color-background-muted);
-
-        --dextinity-chip-variant-filled-default-disabled-background: var(--dextinity-color-background-muted);
-        --dextinity-chip-variant-filled-default-disabled-foreground: var(--dextinity-color-foreground-subtle);
-        --dextinity-chip-variant-filled-default-disabled-border: var(--dextinity-color-background-muted);
-
-        --dextinity-chip-variant-filled-primary-default-background: var(--dextinity-color-action-primary-default);
-        --dextinity-chip-variant-filled-primary-default-foreground: var(--dextinity-color-action-primary-foreground);
-        --dextinity-chip-variant-filled-primary-default-border: var(--dextinity-color-action-primary-default);
-
-        --dextinity-chip-variant-filled-primary-hover-background: var(--dextinity-color-action-primary-hover);
-        --dextinity-chip-variant-filled-primary-hover-foreground: var(--dextinity-color-action-primary-foreground);
-        --dextinity-chip-variant-filled-primary-hover-border: var(--dextinity-color-action-primary-hover);
-
-        --dextinity-chip-variant-filled-primary-focus-background: var(--dextinity-color-action-primary-default);
-        --dextinity-chip-variant-filled-primary-focus-foreground: var(--dextinity-color-action-primary-foreground);
-        --dextinity-chip-variant-filled-primary-focus-border: var(--dextinity-color-action-primary-default);
-
-        --dextinity-chip-variant-filled-primary-disabled-background: var(--dextinity-color-action-primary-disabled);
-        --dextinity-chip-variant-filled-primary-disabled-foreground: var(--dextinity-color-foreground-subtle);
-        --dextinity-chip-variant-filled-primary-disabled-border: var(--dextinity-color-action-primary-disabled);
-
-        --dextinity-chip-variant-filled-error-default-background: var(--dextinity-color-feedback-danger-default);
-        --dextinity-chip-variant-filled-error-default-foreground: var(--dextinity-color-action-error-foreground);
-        --dextinity-chip-variant-filled-error-default-border: var(--dextinity-color-feedback-danger-default);
-
-        --dextinity-chip-variant-filled-error-hover-background: var(--dextinity-color-action-error-hover);
-        --dextinity-chip-variant-filled-error-hover-foreground: var(--dextinity-color-action-error-foreground);
-        --dextinity-chip-variant-filled-error-hover-border: var(--dextinity-color-action-error-hover);
-
-        --dextinity-chip-variant-filled-error-focus-background: var(--dextinity-color-feedback-danger-default);
-        --dextinity-chip-variant-filled-error-focus-foreground: var(--dextinity-color-action-error-foreground);
-        --dextinity-chip-variant-filled-error-focus-border: var(--dextinity-color-feedback-danger-default);
-
-        --dextinity-chip-variant-filled-error-disabled-background: var(--dextinity-color-action-error-disabled);
-        --dextinity-chip-variant-filled-error-disabled-foreground: var(--dextinity-color-foreground-subtle);
-        --dextinity-chip-variant-filled-error-disabled-border: var(--dextinity-color-action-error-disabled);
-
-        --dextinity-chip-variant-filled-info-default-background: var(--dextinity-color-feedback-info-default);
-        --dextinity-chip-variant-filled-info-default-foreground: var(--dextinity-color-foreground-on-accent);
-        --dextinity-chip-variant-filled-info-default-border: var(--dextinity-color-feedback-info-default);
-
-        --dextinity-chip-variant-filled-info-hover-background: var(--dextinity-color-feedback-info-foreground);
-        --dextinity-chip-variant-filled-info-hover-foreground: var(--dextinity-color-foreground-on-accent);
-        --dextinity-chip-variant-filled-info-hover-border: var(--dextinity-color-feedback-info-foreground);
-
-        --dextinity-chip-variant-filled-info-focus-background: var(--dextinity-color-feedback-info-default);
-        --dextinity-chip-variant-filled-info-focus-foreground: var(--dextinity-color-foreground-on-accent);
-        --dextinity-chip-variant-filled-info-focus-border: var(--dextinity-color-feedback-info-default);
-
-        --dextinity-chip-variant-filled-info-disabled-background: var(--dextinity-color-feedback-info-subtle);
-        --dextinity-chip-variant-filled-info-disabled-foreground: var(--dextinity-color-foreground-subtle);
-        --dextinity-chip-variant-filled-info-disabled-border: var(--dextinity-color-feedback-info-subtle);
-
-        --dextinity-chip-variant-filled-success-default-background: var(--dextinity-color-feedback-success-default);
-        --dextinity-chip-variant-filled-success-default-foreground: var(--dextinity-color-foreground-on-accent);
-        --dextinity-chip-variant-filled-success-default-border: var(--dextinity-color-feedback-success-default);
-
-        --dextinity-chip-variant-filled-success-hover-background: var(--dextinity-color-feedback-success-foreground);
-        --dextinity-chip-variant-filled-success-hover-foreground: var(--dextinity-color-foreground-on-accent);
-        --dextinity-chip-variant-filled-success-hover-border: var(--dextinity-color-feedback-success-foreground);
-
-        --dextinity-chip-variant-filled-success-focus-background: var(--dextinity-color-feedback-success-default);
-        --dextinity-chip-variant-filled-success-focus-foreground: var(--dextinity-color-foreground-on-accent);
-        --dextinity-chip-variant-filled-success-focus-border: var(--dextinity-color-feedback-success-default);
-
-        --dextinity-chip-variant-filled-success-disabled-background: var(--dextinity-color-feedback-success-subtle);
-        --dextinity-chip-variant-filled-success-disabled-foreground: var(--dextinity-color-foreground-subtle);
-        --dextinity-chip-variant-filled-success-disabled-border: var(--dextinity-color-feedback-success-subtle);
-
-        --dextinity-chip-variant-filled-warning-default-background: var(--dextinity-color-feedback-warning-default);
-        --dextinity-chip-variant-filled-warning-default-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-chip-variant-filled-warning-default-border: var(--dextinity-color-feedback-warning-default);
-
-        --dextinity-chip-variant-filled-warning-hover-background: var(--dextinity-color-feedback-warning-foreground);
-        --dextinity-chip-variant-filled-warning-hover-foreground: var(--dextinity-color-foreground-on-accent);
-        --dextinity-chip-variant-filled-warning-hover-border: var(--dextinity-color-feedback-warning-foreground);
-
-        --dextinity-chip-variant-filled-warning-focus-background: var(--dextinity-color-feedback-warning-default);
-        --dextinity-chip-variant-filled-warning-focus-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-chip-variant-filled-warning-focus-border: var(--dextinity-color-feedback-warning-default);
-
-        --dextinity-chip-variant-filled-warning-disabled-background: var(--dextinity-color-feedback-warning-subtle);
-        --dextinity-chip-variant-filled-warning-disabled-foreground: var(--dextinity-color-foreground-subtle);
-        --dextinity-chip-variant-filled-warning-disabled-border: var(--dextinity-color-feedback-warning-subtle);
-
-        --dextinity-chip-variant-outlined-default-default-background: var(--dextinity-color-transparent);
-        --dextinity-chip-variant-outlined-default-default-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-chip-variant-outlined-default-default-border: var(--dextinity-color-border-default);
-
-        --dextinity-chip-variant-outlined-default-hover-background: var(--dextinity-color-background-muted);
-        --dextinity-chip-variant-outlined-default-hover-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-chip-variant-outlined-default-hover-border: var(--dextinity-color-border-strong);
-
-        --dextinity-chip-variant-outlined-default-focus-background: var(--dextinity-color-transparent);
-        --dextinity-chip-variant-outlined-default-focus-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-chip-variant-outlined-default-focus-border: var(--dextinity-color-border-default);
-
-        --dextinity-chip-variant-outlined-default-disabled-background: var(--dextinity-color-transparent);
-        --dextinity-chip-variant-outlined-default-disabled-foreground: var(--dextinity-color-foreground-subtle);
-        --dextinity-chip-variant-outlined-default-disabled-border: var(--dextinity-color-border-subtle);
+        --dextinity-chip-variant-contained-primary-disabled-background: var(--dextinity-color-action-primary-disabled);
+        --dextinity-chip-variant-contained-primary-disabled-foreground: var(--dextinity-color-foreground-subtle);
+        --dextinity-chip-variant-contained-primary-disabled-border: var(--dextinity-color-action-primary-disabled);
+
+        --dextinity-chip-variant-contained-secondary-default-background: var(--dextinity-color-background-muted);
+        --dextinity-chip-variant-contained-secondary-default-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-chip-variant-contained-secondary-default-border: var(--dextinity-color-background-muted);
+
+        --dextinity-chip-variant-contained-secondary-hover-background: var(--dextinity-color-border-default);
+        --dextinity-chip-variant-contained-secondary-hover-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-chip-variant-contained-secondary-hover-border: var(--dextinity-color-border-default);
+
+        --dextinity-chip-variant-contained-secondary-focus-background: var(--dextinity-color-background-muted);
+        --dextinity-chip-variant-contained-secondary-focus-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-chip-variant-contained-secondary-focus-border: var(--dextinity-color-background-muted);
+
+        --dextinity-chip-variant-contained-secondary-disabled-background: var(--dextinity-color-background-muted);
+        --dextinity-chip-variant-contained-secondary-disabled-foreground: var(--dextinity-color-foreground-subtle);
+        --dextinity-chip-variant-contained-secondary-disabled-border: var(--dextinity-color-background-muted);
+
+        --dextinity-chip-variant-contained-error-default-background: var(--dextinity-color-feedback-danger-strong);
+        --dextinity-chip-variant-contained-error-default-foreground: var(--dextinity-color-feedback-danger-on-strong);
+        --dextinity-chip-variant-contained-error-default-border: var(--dextinity-color-feedback-danger-strong);
+
+        --dextinity-chip-variant-contained-error-hover-background: var(--dextinity-color-feedback-danger-strong-hover);
+        --dextinity-chip-variant-contained-error-hover-foreground: var(--dextinity-color-feedback-danger-on-strong);
+        --dextinity-chip-variant-contained-error-hover-border: var(--dextinity-color-feedback-danger-strong-hover);
+
+        --dextinity-chip-variant-contained-error-focus-background: var(--dextinity-color-feedback-danger-strong);
+        --dextinity-chip-variant-contained-error-focus-foreground: var(--dextinity-color-feedback-danger-on-strong);
+        --dextinity-chip-variant-contained-error-focus-border: var(--dextinity-color-feedback-danger-strong);
+
+        --dextinity-chip-variant-contained-error-disabled-background: var(--dextinity-color-action-error-disabled);
+        --dextinity-chip-variant-contained-error-disabled-foreground: var(--dextinity-color-foreground-subtle);
+        --dextinity-chip-variant-contained-error-disabled-border: var(--dextinity-color-action-error-disabled);
+
+        --dextinity-chip-variant-contained-info-default-background: var(--dextinity-color-feedback-info-strong);
+        --dextinity-chip-variant-contained-info-default-foreground: var(--dextinity-color-feedback-info-on-strong);
+        --dextinity-chip-variant-contained-info-default-border: var(--dextinity-color-feedback-info-strong);
+
+        --dextinity-chip-variant-contained-info-hover-background: var(--dextinity-color-feedback-info-strong-hover);
+        --dextinity-chip-variant-contained-info-hover-foreground: var(--dextinity-color-feedback-info-on-strong);
+        --dextinity-chip-variant-contained-info-hover-border: var(--dextinity-color-feedback-info-strong-hover);
+
+        --dextinity-chip-variant-contained-info-focus-background: var(--dextinity-color-feedback-info-strong);
+        --dextinity-chip-variant-contained-info-focus-foreground: var(--dextinity-color-feedback-info-on-strong);
+        --dextinity-chip-variant-contained-info-focus-border: var(--dextinity-color-feedback-info-strong);
+
+        --dextinity-chip-variant-contained-info-disabled-background: var(--dextinity-color-feedback-info-subtle);
+        --dextinity-chip-variant-contained-info-disabled-foreground: var(--dextinity-color-foreground-subtle);
+        --dextinity-chip-variant-contained-info-disabled-border: var(--dextinity-color-feedback-info-subtle);
+
+        --dextinity-chip-variant-contained-success-default-background: var(--dextinity-color-feedback-success-strong);
+        --dextinity-chip-variant-contained-success-default-foreground: var(--dextinity-color-feedback-success-on-strong);
+        --dextinity-chip-variant-contained-success-default-border: var(--dextinity-color-feedback-success-strong);
+
+        --dextinity-chip-variant-contained-success-hover-background: var(--dextinity-color-feedback-success-strong-hover);
+        --dextinity-chip-variant-contained-success-hover-foreground: var(--dextinity-color-feedback-success-on-strong);
+        --dextinity-chip-variant-contained-success-hover-border: var(--dextinity-color-feedback-success-strong-hover);
+
+        --dextinity-chip-variant-contained-success-focus-background: var(--dextinity-color-feedback-success-strong);
+        --dextinity-chip-variant-contained-success-focus-foreground: var(--dextinity-color-feedback-success-on-strong);
+        --dextinity-chip-variant-contained-success-focus-border: var(--dextinity-color-feedback-success-strong);
+
+        --dextinity-chip-variant-contained-success-disabled-background: var(--dextinity-color-feedback-success-subtle);
+        --dextinity-chip-variant-contained-success-disabled-foreground: var(--dextinity-color-foreground-subtle);
+        --dextinity-chip-variant-contained-success-disabled-border: var(--dextinity-color-feedback-success-subtle);
+
+        --dextinity-chip-variant-contained-warning-default-background: var(--dextinity-color-feedback-warning-strong);
+        --dextinity-chip-variant-contained-warning-default-foreground: var(--dextinity-color-feedback-warning-on-strong);
+        --dextinity-chip-variant-contained-warning-default-border: var(--dextinity-color-feedback-warning-strong);
+
+        --dextinity-chip-variant-contained-warning-hover-background: var(--dextinity-color-feedback-warning-strong-hover);
+        --dextinity-chip-variant-contained-warning-hover-foreground: var(--dextinity-color-feedback-warning-on-strong);
+        --dextinity-chip-variant-contained-warning-hover-border: var(--dextinity-color-feedback-warning-strong-hover);
+
+        --dextinity-chip-variant-contained-warning-focus-background: var(--dextinity-color-feedback-warning-strong);
+        --dextinity-chip-variant-contained-warning-focus-foreground: var(--dextinity-color-feedback-warning-on-strong);
+        --dextinity-chip-variant-contained-warning-focus-border: var(--dextinity-color-feedback-warning-strong);
+
+        --dextinity-chip-variant-contained-warning-disabled-background: var(--dextinity-color-feedback-warning-subtle);
+        --dextinity-chip-variant-contained-warning-disabled-foreground: var(--dextinity-color-foreground-subtle);
+        --dextinity-chip-variant-contained-warning-disabled-border: var(--dextinity-color-feedback-warning-subtle);
 
         --dextinity-chip-variant-outlined-primary-default-background: var(--dextinity-color-transparent);
-        --dextinity-chip-variant-outlined-primary-default-foreground: var(--dextinity-color-action-primary-default);
+        --dextinity-chip-variant-outlined-primary-default-foreground: var(--dextinity-color-action-primary-standalone);
         --dextinity-chip-variant-outlined-primary-default-border: var(--dextinity-color-action-primary-default);
 
         --dextinity-chip-variant-outlined-primary-hover-background: var(--dextinity-color-action-primary-subtle);
@@ -327,12 +215,28 @@
         --dextinity-chip-variant-outlined-primary-hover-border: var(--dextinity-color-action-primary-hover);
 
         --dextinity-chip-variant-outlined-primary-focus-background: var(--dextinity-color-transparent);
-        --dextinity-chip-variant-outlined-primary-focus-foreground: var(--dextinity-color-action-primary-default);
+        --dextinity-chip-variant-outlined-primary-focus-foreground: var(--dextinity-color-action-primary-standalone);
         --dextinity-chip-variant-outlined-primary-focus-border: var(--dextinity-color-action-primary-default);
 
         --dextinity-chip-variant-outlined-primary-disabled-background: var(--dextinity-color-transparent);
         --dextinity-chip-variant-outlined-primary-disabled-foreground: var(--dextinity-color-foreground-subtle);
         --dextinity-chip-variant-outlined-primary-disabled-border: var(--dextinity-color-action-primary-disabled);
+
+        --dextinity-chip-variant-outlined-secondary-default-background: var(--dextinity-color-transparent);
+        --dextinity-chip-variant-outlined-secondary-default-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-chip-variant-outlined-secondary-default-border: var(--dextinity-color-border-default);
+
+        --dextinity-chip-variant-outlined-secondary-hover-background: var(--dextinity-color-background-muted);
+        --dextinity-chip-variant-outlined-secondary-hover-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-chip-variant-outlined-secondary-hover-border: var(--dextinity-color-border-strong);
+
+        --dextinity-chip-variant-outlined-secondary-focus-background: var(--dextinity-color-transparent);
+        --dextinity-chip-variant-outlined-secondary-focus-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-chip-variant-outlined-secondary-focus-border: var(--dextinity-color-border-default);
+
+        --dextinity-chip-variant-outlined-secondary-disabled-background: var(--dextinity-color-transparent);
+        --dextinity-chip-variant-outlined-secondary-disabled-foreground: var(--dextinity-color-foreground-subtle);
+        --dextinity-chip-variant-outlined-secondary-disabled-border: var(--dextinity-color-border-subtle);
 
         --dextinity-chip-variant-outlined-error-default-background: var(--dextinity-color-transparent);
         --dextinity-chip-variant-outlined-error-default-foreground: var(--dextinity-color-feedback-danger-foreground);
@@ -398,21 +302,19 @@
         --dextinity-chip-variant-outlined-warning-disabled-foreground: var(--dextinity-color-foreground-subtle);
         --dextinity-chip-variant-outlined-warning-disabled-border: var(--dextinity-color-feedback-warning-subtle);
 
-        --dextinity-chip-border-width: 1px;
+        --dextinity-chip-size-default-height: var(--dextinity-unit-8);
+        --dextinity-chip-size-default-radius: var(--dextinity-brand-radius-pill);
+        --dextinity-chip-size-default-gap: var(--dextinity-unit-1-5);
 
-        --dextinity-chip-size-medium-height: var(--dextinity-unit-8);
-        --dextinity-chip-size-medium-radius: var(--dextinity-brand-radius-pill);
-        --dextinity-chip-size-medium-gap: var(--dextinity-unit-1-5);
+        --dextinity-chip-size-default-padding-horizontal: var(--dextinity-unit-3);
 
-        --dextinity-chip-size-medium-padding-horizontal: var(--dextinity-unit-3);
+        --dextinity-chip-size-default-icon-size: 16px;
 
-        --dextinity-chip-size-medium-icon-size: 16px;
+        --dextinity-chip-size-default-font-size: var(--dextinity-typography-body-sm-size);
+        --dextinity-chip-size-default-font-line-height: var(--dextinity-typography-body-sm-line-height);
+        --dextinity-chip-size-default-font-weight: var(--dextinity-font-weight-medium);
 
-        --dextinity-chip-size-medium-font-size: var(--dextinity-typography-body-sm-size);
-        --dextinity-chip-size-medium-font-line-height: var(--dextinity-typography-body-sm-line-height);
-        --dextinity-chip-size-medium-font-weight: var(--dextinity-font-weight-medium);
-
-        --dextinity-chip-size-medium-font-weight-style: var(--dextinity-font-weight-medium-style);
+        --dextinity-chip-size-default-font-weight-style: var(--dextinity-font-weight-medium-style);
 
         --dextinity-chip-size-small-height: var(--dextinity-unit-6);
         --dextinity-chip-size-small-radius: var(--dextinity-brand-radius-pill);
@@ -427,6 +329,30 @@
         --dextinity-chip-size-small-font-weight: var(--dextinity-font-weight-medium);
 
         --dextinity-chip-size-small-font-weight-style: var(--dextinity-font-weight-medium-style);
+
+        --dextinity-button-type-button-small-font-size: var(--dextinity-typography-body-sm-size);
+        --dextinity-button-type-button-small-font-line-height: var(--dextinity-typography-body-sm-line-height);
+        --dextinity-button-type-button-small-font-weight: var(--dextinity-font-weight-medium);
+
+        --dextinity-button-type-button-small-gap: var(--dextinity-unit-1);
+        --dextinity-button-type-button-small-height: var(--dextinity-unit-8);
+        --dextinity-button-type-button-small-radius: var(--dextinity-brand-radius-control-small);
+
+        --dextinity-button-type-button-small-font-weight-style: var(--dextinity-font-weight-medium-style);
+
+        --dextinity-button-type-button-default-icon-size: 16px;
+
+        --dextinity-button-type-button-small-icon-size: 16px;
+
+        --dextinity-button-type-icon-button-default-height: var(--dextinity-unit-10);
+        --dextinity-button-type-icon-button-default-radius: var(--dextinity-brand-radius-control);
+
+        --dextinity-button-type-icon-button-default-icon-size: 16px;
+
+        --dextinity-button-type-icon-button-small-height: var(--dextinity-unit-8);
+        --dextinity-button-type-icon-button-small-radius: var(--dextinity-brand-radius-control-small);
+
+        --dextinity-button-type-icon-button-small-icon-size: 16px;
 
         --dextinity-button-color-primary-contained-default-background: var(--dextinity-color-action-primary-default);
         --dextinity-button-color-primary-contained-default-foreground: var(--dextinity-color-action-primary-foreground);
@@ -715,5 +641,454 @@
         --dextinity-button-color-success-text-loading-background: var(--dextinity-color-transparent);
         --dextinity-button-color-success-text-loading-foreground: var(--dextinity-color-action-success-default);
         --dextinity-button-color-success-text-loading-border: var(--dextinity-color-transparent);
+
+        --dextinity-form-helper-text-gap: var(--dextinity-unit-1);
+
+        --dextinity-form-label-gap: var(--dextinity-unit-1);
+
+        --dextinity-form-label-font-size: var(--dextinity-typography-label-sm-size);
+        --dextinity-form-label-font-line-height: var(--dextinity-typography-label-sm-line-height);
+        --dextinity-form-label-font-weight: var(--dextinity-font-weight-medium);
+
+        --dextinity-form-label-font-weight-style: var(--dextinity-font-weight-medium-style);
+
+        --dextinity-form-label-default-foreground: var(--dextinity-color-foreground-default);
+
+        --dextinity-form-label-error-foreground: var(--dextinity-color-feedback-danger-default);
+
+        --dextinity-form-label-mandatory-color: var(--dextinity-color-feedback-danger-default);
+
+        --dextinity-form-label-helper-icon-color: var(--dextinity-color-foreground-muted);
+        --dextinity-form-label-helper-icon-size: 16px;
+
+        --dextinity-input-height: var(--dextinity-unit-10);
+        --dextinity-input-radius: var(--dextinity-brand-radius-forms);
+        --dextinity-input-gap: var(--dextinity-unit-2);
+
+        --dextinity-main-navigation-item-height: var(--dextinity-unit-12);
+        --dextinity-main-navigation-item-gap: var(--dextinity-unit-2);
+        --dextinity-main-navigation-item-radius: var(--dextinity-radius-md);
+
+        --dextinity-main-navigation-item-padding-horizontal: var(--dextinity-unit-3);
+
+        --dextinity-main-navigation-item-icon-size: 16px;
+
+        --dextinity-main-navigation-item-indicator-width: 3px;
+        --dextinity-main-navigation-item-indicator-height: 24px;
+
+        --dextinity-main-navigation-item-indent-level-1: var(--dextinity-unit-3);
+        --dextinity-main-navigation-item-indent-level-2: var(--dextinity-unit-9);
+        --dextinity-main-navigation-item-indent-level-3: var(--dextinity-unit-15);
+
+        --dextinity-main-navigation-item-font-size: var(--dextinity-typography-body-md-size);
+        --dextinity-main-navigation-item-font-line-height: var(--dextinity-typography-body-md-line-height);
+        --dextinity-main-navigation-item-font-weight: var(--dextinity-font-weight-medium);
+
+        --dextinity-main-navigation-item-font-weight-style: var(--dextinity-font-weight-medium-style);
+
+        --dextinity-main-navigation-item-default-background: var(--dextinity-color-transparent);
+        --dextinity-main-navigation-item-default-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-main-navigation-item-default-icon: var(--dextinity-color-foreground-default);
+        --dextinity-main-navigation-item-default-indicator: var(--dextinity-color-transparent);
+
+        --dextinity-main-navigation-item-hover-background: var(--dextinity-color-background-subtle);
+        --dextinity-main-navigation-item-hover-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-main-navigation-item-hover-icon: var(--dextinity-color-foreground-default);
+        --dextinity-main-navigation-item-hover-indicator: var(--dextinity-color-transparent);
+
+        --dextinity-main-navigation-item-active-background: var(--dextinity-color-action-primary-subtle);
+        --dextinity-main-navigation-item-active-foreground: var(--dextinity-color-action-primary-default);
+        --dextinity-main-navigation-item-active-icon: var(--dextinity-color-action-primary-default);
+        --dextinity-main-navigation-item-active-indicator: var(--dextinity-color-action-primary-default);
+
+        --dextinity-main-navigation-section-header-padding-horizontal: var(--dextinity-unit-3);
+        --dextinity-main-navigation-section-header-padding-vertical: var(--dextinity-unit-2);
+
+        --dextinity-main-navigation-section-header-gap: var(--dextinity-unit-1);
+
+        --dextinity-main-navigation-section-header-font-size: var(--dextinity-typography-body-sm-size);
+        --dextinity-main-navigation-section-header-font-line-height: var(--dextinity-typography-body-sm-line-height);
+        --dextinity-main-navigation-section-header-font-weight: var(--dextinity-font-weight-semibold);
+
+        --dextinity-main-navigation-section-header-font-weight-style: var(--dextinity-font-weight-bold-style);
+
+        --dextinity-main-navigation-section-header-default-foreground: var(--dextinity-color-foreground-subtle);
+        --dextinity-main-navigation-section-header-default-icon: var(--dextinity-color-foreground-subtle);
+
+        --dextinity-main-navigation-section-header-hover-foreground: var(--dextinity-color-foreground-muted);
+        --dextinity-main-navigation-section-header-hover-icon: var(--dextinity-color-foreground-muted);
+
+        --dextinity-input-border-width: 1px;
+
+        --dextinity-input-padding-horizontal: var(--dextinity-unit-3);
+        --dextinity-input-padding-vertical: var(--dextinity-unit-2);
+
+        --dextinity-input-icon-size: 16px;
+
+        --dextinity-input-font-size: var(--dextinity-typography-body-md-size);
+        --dextinity-input-font-line-height: var(--dextinity-typography-body-md-line-height);
+        --dextinity-input-font-weight: var(--dextinity-font-weight-regular);
+
+        --dextinity-input-font-weight-style: var(--dextinity-font-weight-regular-style);
+
+        --dextinity-input-state-default-background: var(--dextinity-color-background-default);
+        --dextinity-input-state-default-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-input-state-default-border: var(--dextinity-color-border-field);
+
+        --dextinity-input-state-default-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-input-state-hover-background: var(--dextinity-color-background-default);
+        --dextinity-input-state-hover-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-input-state-hover-border: var(--dextinity-color-border-strong);
+
+        --dextinity-input-state-hover-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-input-state-focus-background: var(--dextinity-color-background-default);
+        --dextinity-input-state-focus-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-input-state-focus-border: var(--dextinity-color-border-focus);
+
+        --dextinity-input-state-focus-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-input-state-error-background: var(--dextinity-color-background-default);
+        --dextinity-input-state-error-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-input-state-error-border: var(--dextinity-color-feedback-danger-border-strong);
+
+        --dextinity-input-state-error-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-input-state-success-background: var(--dextinity-color-background-default);
+        --dextinity-input-state-success-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-input-state-success-border: var(--dextinity-color-feedback-success-border-strong);
+
+        --dextinity-input-state-success-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-input-state-warning-background: var(--dextinity-color-background-default);
+        --dextinity-input-state-warning-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-input-state-warning-border: var(--dextinity-color-feedback-warning-border-strong);
+
+        --dextinity-input-state-warning-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-input-state-loading-background: var(--dextinity-color-background-default);
+        --dextinity-input-state-loading-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-input-state-loading-border: var(--dextinity-color-border-field);
+        --dextinity-input-state-loading-spinner: var(--dextinity-color-foreground-muted);
+
+        --dextinity-input-state-loading-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-input-state-disabled-background: var(--dextinity-color-background-muted);
+        --dextinity-input-state-disabled-foreground: var(--dextinity-color-foreground-subtle);
+        --dextinity-input-state-disabled-border: var(--dextinity-color-border-subtle);
+
+        --dextinity-input-state-disabled-foreground-placeholder: var(--dextinity-color-foreground-subtle);
+
+        --dextinity-input-state-read-only-background: var(--dextinity-color-background-subtle);
+        --dextinity-input-state-read-only-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-input-state-read-only-border: var(--dextinity-color-border-subtle);
+
+        --dextinity-input-state-read-only-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-input-adornment-foreground: var(--dextinity-color-foreground-muted);
+
+        --dextinity-radio-button-size: 20px;
+        --dextinity-radio-button-gap: var(--dextinity-unit-2);
+
+        --dextinity-radio-button-dot-size: 10px;
+
+        --dextinity-radio-button-border-width: 1px;
+
+        --dextinity-radio-button-touch-target: var(--dextinity-unit-6);
+
+        --dextinity-radio-button-label-font-size: var(--dextinity-typography-body-md-size);
+        --dextinity-radio-button-label-font-line-height: var(--dextinity-typography-body-md-line-height);
+        --dextinity-radio-button-label-font-weight: var(--dextinity-font-weight-regular);
+
+        --dextinity-radio-button-label-font-weight-style: var(--dextinity-font-weight-regular-style);
+
+        --dextinity-radio-button-unchecked-default-background: var(--dextinity-color-background-default);
+        --dextinity-radio-button-unchecked-default-border: var(--dextinity-color-border-strong);
+
+        --dextinity-radio-button-unchecked-hover-background: var(--dextinity-color-action-primary-subtle);
+        --dextinity-radio-button-unchecked-hover-border: var(--dextinity-color-action-primary-default);
+
+        --dextinity-radio-button-unchecked-error-background: var(--dextinity-color-background-default);
+        --dextinity-radio-button-unchecked-error-border: var(--dextinity-color-feedback-danger-default);
+
+        --dextinity-radio-button-unchecked-disabled-background: var(--dextinity-color-background-muted);
+        --dextinity-radio-button-unchecked-disabled-border: var(--dextinity-color-border-subtle);
+
+        --dextinity-radio-button-unchecked-read-only-background: var(--dextinity-color-background-subtle);
+        --dextinity-radio-button-unchecked-read-only-border: var(--dextinity-color-border-strong);
+
+        --dextinity-radio-button-checked-default-background: var(--dextinity-color-background-default);
+        --dextinity-radio-button-checked-default-border: var(--dextinity-color-action-primary-default);
+        --dextinity-radio-button-checked-default-dot: var(--dextinity-color-action-primary-default);
+
+        --dextinity-radio-button-checked-hover-background: var(--dextinity-color-action-primary-subtle);
+        --dextinity-radio-button-checked-hover-border: var(--dextinity-color-action-primary-hover);
+        --dextinity-radio-button-checked-hover-dot: var(--dextinity-color-action-primary-hover);
+
+        --dextinity-radio-button-checked-error-background: var(--dextinity-color-background-default);
+        --dextinity-radio-button-checked-error-border: var(--dextinity-color-feedback-danger-default);
+        --dextinity-radio-button-checked-error-dot: var(--dextinity-color-feedback-danger-default);
+
+        --dextinity-radio-button-checked-disabled-background: var(--dextinity-color-background-muted);
+        --dextinity-radio-button-checked-disabled-border: var(--dextinity-color-border-subtle);
+        --dextinity-radio-button-checked-disabled-dot: var(--dextinity-color-foreground-subtle);
+
+        --dextinity-radio-button-checked-read-only-background: var(--dextinity-color-background-subtle);
+        --dextinity-radio-button-checked-read-only-border: var(--dextinity-color-border-strong);
+        --dextinity-radio-button-checked-read-only-dot: var(--dextinity-color-foreground-subtle);
+
+        --dextinity-radio-button-label-foreground-default: var(--dextinity-color-foreground-default);
+        --dextinity-radio-button-label-foreground-disabled: var(--dextinity-color-foreground-subtle);
+
+        --dextinity-search-height: var(--dextinity-unit-10);
+        --dextinity-search-radius: var(--dextinity-brand-radius-forms);
+        --dextinity-search-gap: var(--dextinity-unit-2);
+
+        --dextinity-search-border-width: 1px;
+
+        --dextinity-search-padding-horizontal: var(--dextinity-unit-3);
+
+        --dextinity-search-icon-size: 16px;
+
+        --dextinity-search-font-size: var(--dextinity-typography-body-md-size);
+        --dextinity-search-font-line-height: var(--dextinity-typography-body-md-line-height);
+        --dextinity-search-font-weight: var(--dextinity-font-weight-regular);
+
+        --dextinity-search-font-weight-style: var(--dextinity-font-weight-regular-style);
+
+        --dextinity-search-state-default-background: var(--dextinity-color-background-default);
+        --dextinity-search-state-default-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-search-state-default-border: var(--dextinity-color-border-field);
+
+        --dextinity-search-state-default-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-search-state-hover-background: var(--dextinity-color-background-default);
+        --dextinity-search-state-hover-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-search-state-hover-border: var(--dextinity-color-border-strong);
+
+        --dextinity-search-state-hover-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-search-state-focus-background: var(--dextinity-color-background-default);
+        --dextinity-search-state-focus-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-search-state-focus-border: var(--dextinity-color-border-focus);
+
+        --dextinity-search-state-focus-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-search-state-loading-background: var(--dextinity-color-background-default);
+        --dextinity-search-state-loading-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-search-state-loading-border: var(--dextinity-color-border-field);
+        --dextinity-search-state-loading-spinner: var(--dextinity-color-foreground-muted);
+
+        --dextinity-search-state-loading-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-search-state-disabled-background: var(--dextinity-color-background-muted);
+        --dextinity-search-state-disabled-foreground: var(--dextinity-color-foreground-subtle);
+        --dextinity-search-state-disabled-border: var(--dextinity-color-border-subtle);
+
+        --dextinity-search-state-disabled-foreground-placeholder: var(--dextinity-color-foreground-subtle);
+
+        --dextinity-search-search-icon-color: var(--dextinity-color-foreground-muted);
+
+        --dextinity-search-clear-color: var(--dextinity-color-foreground-muted);
+
+        --dextinity-search-clear-hit-area: var(--dextinity-unit-6);
+
+        --dextinity-select-height: var(--dextinity-unit-10);
+        --dextinity-select-radius: var(--dextinity-brand-radius-forms);
+        --dextinity-select-gap: var(--dextinity-unit-2);
+
+        --dextinity-select-border-width: 1px;
+
+        --dextinity-select-padding-horizontal: var(--dextinity-unit-3);
+
+        --dextinity-select-icon-size: 16px;
+
+        --dextinity-select-font-size: var(--dextinity-typography-body-md-size);
+        --dextinity-select-font-line-height: var(--dextinity-typography-body-md-line-height);
+        --dextinity-select-font-weight: var(--dextinity-font-weight-regular);
+
+        --dextinity-select-font-weight-style: var(--dextinity-font-weight-regular-style);
+
+        --dextinity-select-state-default-background: var(--dextinity-color-background-default);
+        --dextinity-select-state-default-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-select-state-default-border: var(--dextinity-color-border-field);
+
+        --dextinity-select-state-default-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-select-state-hover-background: var(--dextinity-color-background-default);
+        --dextinity-select-state-hover-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-select-state-hover-border: var(--dextinity-color-border-strong);
+
+        --dextinity-select-state-hover-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-select-state-focus-background: var(--dextinity-color-background-default);
+        --dextinity-select-state-focus-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-select-state-focus-border: var(--dextinity-color-border-focus);
+
+        --dextinity-select-state-focus-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-select-state-error-background: var(--dextinity-color-background-default);
+        --dextinity-select-state-error-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-select-state-error-border: var(--dextinity-color-feedback-danger-border-strong);
+
+        --dextinity-select-state-error-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-select-state-success-background: var(--dextinity-color-background-default);
+        --dextinity-select-state-success-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-select-state-success-border: var(--dextinity-color-feedback-success-border-strong);
+
+        --dextinity-select-state-success-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-select-state-warning-background: var(--dextinity-color-background-default);
+        --dextinity-select-state-warning-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-select-state-warning-border: var(--dextinity-color-feedback-warning-border-strong);
+
+        --dextinity-select-state-warning-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-select-state-loading-background: var(--dextinity-color-background-default);
+        --dextinity-select-state-loading-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-select-state-loading-border: var(--dextinity-color-border-field);
+        --dextinity-select-state-loading-spinner: var(--dextinity-color-foreground-muted);
+
+        --dextinity-select-state-loading-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-select-state-disabled-background: var(--dextinity-color-background-muted);
+        --dextinity-select-state-disabled-foreground: var(--dextinity-color-foreground-subtle);
+        --dextinity-select-state-disabled-border: var(--dextinity-color-border-subtle);
+
+        --dextinity-select-state-disabled-foreground-placeholder: var(--dextinity-color-foreground-subtle);
+
+        --dextinity-select-state-read-only-background: var(--dextinity-color-background-subtle);
+        --dextinity-select-state-read-only-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-select-state-read-only-border: var(--dextinity-color-border-subtle);
+
+        --dextinity-select-state-read-only-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+
+        --dextinity-select-chevron-color: var(--dextinity-color-foreground-muted);
+
+        --dextinity-select-chevron-color-disabled: var(--dextinity-color-foreground-subtle);
+
+        --dextinity-select-menu-background: var(--dextinity-color-background-default);
+        --dextinity-select-menu-border: var(--dextinity-color-border-subtle);
+        --dextinity-select-menu-radius: var(--dextinity-brand-radius-control);
+        --dextinity-select-menu-padding: var(--dextinity-unit-1);
+        --dextinity-select-menu-gap: var(--dextinity-unit-0-5);
+
+        --dextinity-select-option-height: var(--dextinity-unit-9);
+        --dextinity-select-option-radius: var(--dextinity-radius-sm);
+        --dextinity-select-option-gap: var(--dextinity-unit-2);
+
+        --dextinity-select-option-padding-horizontal: var(--dextinity-unit-2);
+
+        --dextinity-select-option-state-default-background: var(--dextinity-color-transparent);
+        --dextinity-select-option-state-default-foreground: var(--dextinity-color-foreground-default);
+
+        --dextinity-select-option-state-hover-background: var(--dextinity-color-background-muted);
+        --dextinity-select-option-state-hover-foreground: var(--dextinity-color-foreground-default);
+
+        --dextinity-select-option-state-selected-background: var(--dextinity-color-action-primary-subtle);
+        --dextinity-select-option-state-selected-foreground: var(--dextinity-color-foreground-default);
+        --dextinity-select-option-state-selected-check: var(--dextinity-color-action-primary-standalone);
+
+        --dextinity-select-option-state-disabled-background: var(--dextinity-color-transparent);
+        --dextinity-select-option-state-disabled-foreground: var(--dextinity-color-foreground-subtle);
+
+        --dextinity-form-helper-text-gap-internal: var(--dextinity-unit-1-5);
+
+        --dextinity-form-helper-text-font-size: var(--dextinity-typography-body-sm-size);
+        --dextinity-form-helper-text-font-line-height: var(--dextinity-typography-body-sm-line-height);
+        --dextinity-form-helper-text-font-weight: var(--dextinity-font-weight-regular);
+
+        --dextinity-form-helper-text-font-weight-style: var(--dextinity-font-weight-regular-style);
+
+        --dextinity-form-helper-text-type-hint-foreground: var(--dextinity-color-foreground-muted);
+
+        --dextinity-form-helper-text-type-error-foreground: var(--dextinity-color-feedback-danger-default);
+
+        --dextinity-form-helper-text-count-foreground: var(--dextinity-color-foreground-muted);
+
+        --dextinity-snackbar-radius: var(--dextinity-brand-radius-surface);
+        --dextinity-snackbar-gap: var(--dextinity-unit-3);
+        --dextinity-snackbar-foreground: var(--dextinity-color-foreground-default);
+
+        --dextinity-snackbar-padding-horizontal: var(--dextinity-unit-4);
+        --dextinity-snackbar-padding-vertical: var(--dextinity-unit-3);
+
+        --dextinity-snackbar-content-gap: var(--dextinity-unit-1);
+
+        --dextinity-snackbar-actions-gap: var(--dextinity-unit-1);
+
+        --dextinity-snackbar-icon-size: var(--dextinity-unit-4);
+
+        --dextinity-snackbar-min-width: 320px;
+
+        --dextinity-snackbar-max-width: 560px;
+
+        --dextinity-snackbar-border-width: 1px;
+
+        --dextinity-snackbar-color-default-background: var(--dextinity-color-background-default);
+        --dextinity-snackbar-color-default-border: var(--dextinity-color-border-default);
+        --dextinity-snackbar-color-default-icon: var(--dextinity-color-foreground-muted);
+
+        --dextinity-snackbar-color-info-background: var(--dextinity-color-feedback-info-subtle);
+        --dextinity-snackbar-color-info-border: var(--dextinity-color-feedback-info-border);
+        --dextinity-snackbar-color-info-icon: var(--dextinity-color-feedback-info-default);
+
+        --dextinity-snackbar-color-success-background: var(--dextinity-color-feedback-success-subtle);
+        --dextinity-snackbar-color-success-border: var(--dextinity-color-feedback-success-border);
+        --dextinity-snackbar-color-success-icon: var(--dextinity-color-feedback-success-default);
+
+        --dextinity-snackbar-color-warning-background: var(--dextinity-color-feedback-warning-subtle);
+        --dextinity-snackbar-color-warning-border: var(--dextinity-color-feedback-warning-border);
+        --dextinity-snackbar-color-warning-icon: var(--dextinity-color-feedback-warning-default);
+
+        --dextinity-snackbar-color-error-background: var(--dextinity-color-feedback-danger-subtle);
+        --dextinity-snackbar-color-error-border: var(--dextinity-color-feedback-danger-border);
+        --dextinity-snackbar-color-error-icon: var(--dextinity-color-feedback-danger-default);
+
+        --dextinity-switch-track-width: 36px;
+        --dextinity-switch-track-height: 20px;
+
+        --dextinity-switch-radius: var(--dextinity-radius-full);
+        --dextinity-switch-gap: var(--dextinity-unit-2);
+
+        --dextinity-switch-thumb-size: 16px;
+        --dextinity-switch-thumb-inset: 2px;
+
+        --dextinity-switch-touch-target: var(--dextinity-unit-6);
+
+        --dextinity-switch-label-font-size: var(--dextinity-typography-body-md-size);
+        --dextinity-switch-label-font-line-height: var(--dextinity-typography-body-md-line-height);
+        --dextinity-switch-label-font-weight: var(--dextinity-font-weight-regular);
+
+        --dextinity-switch-label-font-weight-style: var(--dextinity-font-weight-regular-style);
+
+        --dextinity-switch-off-default-track: var(--dextinity-color-border-strong);
+        --dextinity-switch-off-default-thumb: var(--dextinity-color-background-default);
+
+        --dextinity-switch-off-hover-track: var(--dextinity-color-foreground-muted);
+        --dextinity-switch-off-hover-thumb: var(--dextinity-color-background-default);
+
+        --dextinity-switch-off-disabled-track: var(--dextinity-color-border-subtle);
+        --dextinity-switch-off-disabled-thumb: var(--dextinity-color-background-subtle);
+
+        --dextinity-switch-on-default-track: var(--dextinity-color-action-primary-default);
+        --dextinity-switch-on-default-thumb: var(--dextinity-color-action-primary-foreground);
+
+        --dextinity-switch-on-hover-track: var(--dextinity-color-action-primary-hover);
+        --dextinity-switch-on-hover-thumb: var(--dextinity-color-action-primary-foreground);
+
+        --dextinity-switch-on-disabled-track: var(--dextinity-color-action-primary-disabled);
+        --dextinity-switch-on-disabled-thumb: var(--dextinity-color-background-subtle);
+
+        --dextinity-switch-label-foreground-default: var(--dextinity-color-foreground-default);
+        --dextinity-switch-label-foreground-disabled: var(--dextinity-color-foreground-subtle);
+
+        --dextinity-switch-off-read-only-track: var(--dextinity-color-border-strong);
+        --dextinity-switch-off-read-only-thumb: var(--dextinity-color-background-subtle);
+
+        --dextinity-switch-on-read-only-track: var(--dextinity-color-foreground-muted);
+        --dextinity-switch-on-read-only-thumb: var(--dextinity-color-background-subtle);
     }
 }

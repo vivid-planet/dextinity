@@ -1,3 +1,4 @@
+export { type BlockPreviewDefinition, createBlockPreview, defineBlockPreview } from "./blockPreview.js";
 export { DamVideoBlock } from "./blocks/DamVideoBlock.js";
 export { PixelImageBlock, type PixelImageBlockProps } from "./blocks/PixelImageBlock.js";
 export { VideoPreviewImage } from "./blocks/VideoPreviewImage.js";

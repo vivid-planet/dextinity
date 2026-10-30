@@ -4,6 +4,7 @@ import { type Context, Hono } from "hono";
 import { type ReactNode, Suspense } from "react";
 
 import { publicCacheControl } from "../helpers.js";
+import { BlockPreview } from "./blockPreview.js";
 import { ClientError, ClientNotFound, ClientRouterInfo } from "./clientComponents.js";
 import { Layout } from "./Layout.js";
 import { Nested, RequestInfo, ServerError, ServerNotFound, ServerRedirect } from "./serverComponents.js";
@@ -48,6 +49,8 @@ app.use(async (c, next) => {
 });
 
 app.get("/", (c) => renderTestPage(c, <p>Home page</p>));
+
+app.get("/block-preview/:type", (c) => renderTestPage(c, <BlockPreview type={c.req.param("type")} />));
 
 app.get("/favicon.ico", (c) => c.body(null, 204)); // Browsers request it, a 404 would be an error in the browser tests
 

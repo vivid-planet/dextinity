@@ -6,7 +6,6 @@ import { Fragment, type ReactNode } from "react";
 
 import { BlockPreview } from "./blockPreview/BlockPreview";
 import { BlockPreviewLayout } from "./blockPreview/BlockPreviewLayout";
-import { isBlockPreviewType } from "./blockPreview/blockPreviewTypes";
 import { DocumentPage } from "./DocumentPage";
 import { ErrorPage } from "./ErrorPage";
 import { graphQLRoute } from "./graphQLRoute";
@@ -56,10 +55,7 @@ async function renderSitePage(c: Context, renderContent: (params: ContentScope) 
 }
 
 function renderBlockPreviewPage(c: Context) {
-    const { domain, language, type } = c.req.param();
-    if (!domain || !language || !type || !isBlockPreviewType(type)) {
-        return renderRootNotFoundPage(c);
-    }
+    const { domain, language, type } = c.req.param() as ContentScope & { type: string };
 
     return renderPage(c, {
         root: (

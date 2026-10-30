@@ -57,6 +57,34 @@ import dextinityConfig from "@src/dextinity-config.json" with { type: "json" };
 <ImageConfigProvider config={dextinityConfig.images}>{children}</ImageConfigProvider>;
 ```
 
+**Block preview**
+
+`createBlockPreview()` creates the component for the block preview of the admin, one route for all previews. It renders the block the admin sends, with the data of `loadBlockData`, and the not found page for unknown types. Create it in a client component module:
+
+```tsx
+"use client";
+
+export const BlockPreview = createBlockPreview<AllBlockNames>({
+    previews: {
+        page: defineBlockPreview({ blockType: "PageContent", render: (data: PageContentBlockData) => <PageContentBlock data={data} /> }),
+        stage: defineBlockPreview({ blockType: "Stage", render: (data: StageBlockData) => <StageBlock data={data} /> }),
+    },
+    loadBlockData: ({ blockType, block, contentScope }) => recursivelyLoadBlockData({ blockType, blockData: block, scope: contentScope /* … */ }),
+});
+```
+
+```tsx
+app.get("/block-preview/:domain/:language/:type", (c) =>
+    renderPage(c, {
+        root: (
+            <Layout>
+                <BlockPreview type={c.req.param("type")} />
+            </Layout>
+        ) /* … */,
+    }),
+);
+```
+
 **Middlewares** (`@dextinity/site-vite-rsc/server`)
 
 - `staticFilesMiddleware` serves the client build in production, `_assets` with a long cache duration

@@ -7,13 +7,13 @@ import { type ContentScope, useContentScope } from "../../../contentScope/Provid
 import { ActionLogCompare } from "../../components/actionLogCompare/ActionLogCompare";
 import { ActionLogShowVersion } from "../../components/actionLogShowVersion/ActionLogShowVersion";
 import { ActionLogVersionGrid } from "../actionLogVersionGrid/ActionLogVersionGrid";
-import { actionLogDialogQuery, allActionLogsDialogQuery } from "./ActionLogDialog.gql";
+import { actionLogDialogQuery, myActionLogsDialogQuery } from "./ActionLogDialog.gql";
 import type {
     GQLActionLogDialogFragment,
     GQLActionLogDialogQuery,
     GQLActionLogDialogQueryVariables,
-    GQLAllActionLogsDialogQuery,
-    GQLAllActionLogsDialogQueryVariables,
+    GQLMyActionLogsDialogQuery,
+    GQLMyActionLogsDialogQueryVariables,
 } from "./ActionLogDialog.gql.generated";
 
 type ActionLogDialogView =
@@ -32,7 +32,7 @@ export type ActionLogDialogProps = {
      */
     name?: string;
     /**
-     * Reads the versions of the entity in every scope the user may read, through `allActionLogs`, instead of the
+     * Reads the versions of the entity in every scope the user may read, through `myActionLogs`, instead of the
      * current content scope. Requires the `actionLog` permission. Use it when the dialog is opened from the action
      * log of all entities, whose rows can belong to any scope.
      */
@@ -67,13 +67,13 @@ export function ActionLogDialog({ entity, entityId, name, showAllScopes, open, o
         skip: !open || showAllScopes,
     });
 
-    const allScopesQuery = useQuery<GQLAllActionLogsDialogQuery, GQLAllActionLogsDialogQueryVariables>(allActionLogsDialogQuery, {
+    const allScopesQuery = useQuery<GQLMyActionLogsDialogQuery, GQLMyActionLogsDialogQueryVariables>(myActionLogsDialogQuery, {
         variables: { filter: { ...filter, entityName: { equal: entity } }, ...pagination },
         skip: !open || !showAllScopes,
     });
 
     const { loading, error } = showAllScopes ? allScopesQuery : scopedQuery;
-    const result = showAllScopes ? allScopesQuery.data?.allActionLogs : scopedQuery.data?.actionLogs;
+    const result = showAllScopes ? allScopesQuery.data?.myActionLogs : scopedQuery.data?.actionLogs;
     const rows = result?.nodes ?? [];
 
     return (

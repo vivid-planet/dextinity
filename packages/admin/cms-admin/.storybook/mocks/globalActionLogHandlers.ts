@@ -104,7 +104,7 @@ export const globalActionLogHandlers = [
             },
         }),
     ),
-    graphql.query("AllActionLogsDialog", ({ variables }) =>
+    graphql.query("MyActionLogsDialog", ({ variables }) =>
         HttpResponse.json({
             data: {
                 myActionLogs: buildResponse(variables.filter as MockFilter | undefined),

@@ -4,8 +4,10 @@ const heading = (page: import("@playwright/test").Page) => page.getByRole("headi
 
 const getMaxScrollY = (page: import("@playwright/test").Page) => page.evaluate(() => document.documentElement.scrollHeight - window.innerHeight);
 
-// A different origin than localhost, like a link to another site
-const getOtherSiteUrl = (baseURL: string | undefined, path: string) => new URL(path, baseURL?.replace("localhost", "127.0.0.1")).href;
+async function goToOtherSite(page: import("@playwright/test").Page) {
+    await page.route("https://example.com/**", (route) => route.fulfill({ contentType: "text/html", body: "<title>Other site</title>" }));
+    await page.goto("https://example.com/");
+}
 
 test("scrolls to the top after navigating", async ({ page }) => {
     await openPage(page, "/pages/first");
@@ -71,12 +73,12 @@ test("restores the scroll position after a reload when the page grows until it's
     await expect.poll(() => getScrollY(page)).toBe(scrollY);
 });
 
-test("restores the scroll position when returning from another site", async ({ page, baseURL }) => {
+test("restores the scroll position when returning from another site", async ({ page }) => {
     await openPage(page, "/pages/first?imageDelay=1000");
     await page.waitForLoadState("load");
     await scrollTo(page, await getMaxScrollY(page));
     const scrollY = await getScrollY(page);
-    await page.goto(getOtherSiteUrl(baseURL, "/pages/other"));
+    await goToOtherSite(page);
 
     await page.goBack();
 
@@ -84,16 +86,30 @@ test("restores the scroll position when returning from another site", async ({ p
     await expect.poll(() => getScrollY(page)).toBe(scrollY);
 });
 
-test("restores the scroll position of an entry left by a client navigation when returning from another site", async ({ page, baseURL }) => {
+test("restores the scroll position of an entry left by a client navigation when returning from another site", async ({ page }) => {
     await openPage(page, "/pages/first");
     await scrollTo(page, 1500);
     await clickInPlace(page, "Second");
     await expect(heading(page)).toHaveText("second");
-    await page.goto(getOtherSiteUrl(baseURL, "/pages/other"));
+    await goToOtherSite(page);
 
     await page.evaluate(() => window.history.go(-2));
 
     await expect(heading(page)).toHaveText("first");
+    await expect.poll(() => getScrollY(page)).toBe(1500);
+});
+
+test("keeps the browser from restoring entries left by a client navigation before the page is loaded", async ({ page }) => {
+    await page.goto("/pages/first?imageDelay=10000", { waitUntil: "commit" });
+    await page.locator("html[data-hydrated]").waitFor({ state: "attached" });
+    await scrollTo(page, 1500);
+    await clickInPlace(page, "Second");
+    await expect(heading(page)).toHaveText("second");
+
+    await page.goBack({ waitUntil: "commit" });
+
+    await expect(heading(page)).toHaveText("first");
+    expect(await page.evaluate(() => window.history.scrollRestoration)).toBe("manual");
     await expect.poll(() => getScrollY(page)).toBe(1500);
 });
 

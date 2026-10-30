@@ -27,13 +27,17 @@ describe("ExceptionFilter", () => {
                     message: "Not found",
                     error: "DextinityEntityNotFoundException",
                     validationErrors: [],
+                    formattedValidationErrors: [],
                 });
             });
 
             it("returns BadRequestException for DextinityValidationException", () => {
                 const exceptionFilter = new ExceptionFilter(false);
 
-                const returnError = exceptionFilter.catch(new DextinityValidationException("Invalid", [{ property: "prop1" }]), graphQLHost);
+                const returnError = exceptionFilter.catch(
+                    new DextinityValidationException("Invalid", [{ property: "prop1", constraints: { isDefined: "prop1 is missing" } }]),
+                    graphQLHost,
+                );
 
                 expect(returnError).toBeInstanceOf(BadRequestException);
                 expect((returnError as BadRequestException).getResponse()).toEqual({
@@ -43,8 +47,10 @@ describe("ExceptionFilter", () => {
                     validationErrors: [
                         {
                             property: "prop1",
+                            constraints: { isDefined: "prop1 is missing" },
                         },
                     ],
+                    formattedValidationErrors: [{ path: "prop1", message: "prop1 is missing" }],
                 });
             });
 
@@ -111,13 +117,17 @@ describe("ExceptionFilter", () => {
                     message: "Not found",
                     error: "DextinityEntityNotFoundException",
                     validationErrors: [],
+                    formattedValidationErrors: [],
                 });
             });
 
             it("response status is 400 and json is correct for DextinityValidationException", () => {
                 const exceptionFilter = new ExceptionFilter(false);
 
-                exceptionFilter.catch(new DextinityValidationException("Invalid", [{ property: "prop1" }]), httpHost);
+                exceptionFilter.catch(
+                    new DextinityValidationException("Invalid", [{ property: "prop1", constraints: { isDefined: "prop1 is missing" } }]),
+                    httpHost,
+                );
 
                 const responseMock = httpHost.switchToHttp().getResponse();
                 expect(responseMock.status).toHaveBeenCalledWith(400);
@@ -128,8 +138,10 @@ describe("ExceptionFilter", () => {
                     validationErrors: [
                         {
                             property: "prop1",
+                            constraints: { isDefined: "prop1 is missing" },
                         },
                     ],
+                    formattedValidationErrors: [{ path: "prop1", message: "prop1 is missing" }],
                 });
             });
 

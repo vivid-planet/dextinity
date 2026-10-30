@@ -4,6 +4,7 @@ import { getSiteContext } from "@src/util/siteContext";
 import { type Context, Hono } from "hono";
 import { Fragment, type ReactNode } from "react";
 
+import { adminRoute } from "./adminRoute";
 import { BlockPreview } from "./blockPreview/BlockPreview";
 import { BlockPreviewLayout } from "./blockPreview/BlockPreviewLayout";
 import { DocumentPage } from "./DocumentPage";
@@ -16,6 +17,7 @@ import { NewsDetailPage } from "./news/NewsDetailPage";
 import { NewsIndexPage } from "./news/NewsIndexPage";
 import { ProductDetailPage } from "./product/ProductDetailPage";
 import { ProductListPage } from "./product/ProductListPage";
+import { robotsRoute } from "./robotsRoute";
 import { RootLayout } from "./RootLayout";
 import { RootNotFound } from "./RootNotFound";
 import { sitemapRoute } from "./sitemapRoute";
@@ -113,7 +115,9 @@ blockPreviewRoutes.get("/:domain/:language/:type", renderBlockPreviewPage);
 export const siteRoutes = new Hono();
 
 siteRoutes.on(["GET", "POST"], "/graphql", graphQLRoute);
+siteRoutes.get("/robots.txt", robotsRoute);
 siteRoutes.get("/sitemap.xml", sitemapRoute);
+siteRoutes.get("/admin", adminRoute);
 siteRoutes.get("/", (c) => c.redirect("/en", 307));
 
 // Loaded on demand, so that missing environment variables of these routes don't break the whole site

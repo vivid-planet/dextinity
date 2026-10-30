@@ -6,10 +6,8 @@ import {
     staticFilesMiddleware,
     trailingSlashRedirectMiddleware,
 } from "@dextinity/site-vite-rsc/server";
-import { adminRoute } from "@src/routes/adminRoute";
 import { statusRoute } from "@src/routes/api/statusRoute";
 import { damRoute } from "@src/routes/damRoute";
-import { robotsRoute } from "@src/routes/robotsRoute";
 import { blockPreviewRoutes, mailRoutes, renderRootNotFoundPage, siteRoutes } from "@src/routes/router";
 import { Hono } from "hono";
 
@@ -45,10 +43,6 @@ app.all("/block-preview/*", renderRootNotFoundPage);
 app.use(sitePreviewMiddleware, siteContextMiddleware, previewDomainMiddleware, redirectToMainHostMiddleware);
 
 // The site context is available from here on
-app.get("/admin", adminRoute);
-// May only be served after the main host redirect
-app.get("/robots.txt", robotsRoute);
-
 app.use(predefinedPagesMiddleware);
 
 app.route("/", siteRoutes);

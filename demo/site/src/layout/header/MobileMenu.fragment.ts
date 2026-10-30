@@ -1,4 +1,4 @@
-import { gql } from "@dextinity/site-react";
+import { gql } from "@dextinity/site-nextjs";
 
 export const mobileMenuFragment = gql`
     fragment MobileMenu on MainMenu {

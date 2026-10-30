@@ -1,4 +1,4 @@
-import { createFetchWithDefaults, createGraphQLFetch } from "@dextinity/site-react";
+import { createFetchWithDefaults, createGraphQLFetch } from "@dextinity/site-nextjs";
 import { SYSTEM_USER_NAME } from "@src/auth/constants";
 
 export function createGraphQLFetchMiddleware() {

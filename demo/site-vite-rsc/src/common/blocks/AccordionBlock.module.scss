@@ -1,0 +1,9 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid var(--brand-grey-300);
+}
+
+.pageLayoutContent {
+    grid-column: 3 / -3;
+}

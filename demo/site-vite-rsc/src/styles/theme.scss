@@ -1,0 +1,220 @@
+@mixin global-theme-default {
+    --brand-primary-light: #4f99dc;
+    --brand-primary-main: #166dba;
+    --brand-primary-dark: #0e4c82;
+    --brand-primary-contrast: #fff;
+
+    --brand-grey-050: #f5f5f5;
+    --brand-grey-100: #ececec;
+    --brand-grey-200: #d8d8d8;
+    --brand-grey-300: #c5c5c5;
+    --brand-grey-400: #b1b1b1;
+    --brand-grey-500: #9e9e9e;
+    --brand-grey-600: #7e7e7e;
+    --brand-grey-700: #5f5f5f;
+    --brand-grey-800: #3f3f3f;
+    --brand-grey-900: #202020;
+
+    --functional-error-main: #bc3520;
+    --functional-error-light: #c6523f;
+    --functional-error-dark: #832617;
+    --functional-error-contrast: #fff;
+
+    --functional-warning-main: #f3b346;
+    --functional-warning-light: #f5c15f;
+    --functional-warning-dark: #a87d32;
+    --functional-warning-contrast: #000;
+
+    --functional-info-main: #5cb4f0;
+    --functional-info-light: #73c1f2;
+    --functional-info-dark: #417da6;
+    --functional-info-contrast: #090909;
+
+    --functional-success-main: #66c54f;
+    --functional-success-light: #77d06a;
+    --functional-success-dark: #488938;
+    --functional-success-contrast: #000;
+
+    --functional-focus-main: #d817fa;
+    --accessibility-focus-border: var(--functional-focus-main);
+    --accessibility-focus-contrast: #fff;
+
+    --accordion-border: var(--brand-grey-200);
+    --accordion-default-text: var(--brand-grey-900);
+    --accordion-default-icon: var(--brand-primary-light);
+    --accordion-default-iconBg: rgb(255 255 255 / 0%);
+    --accordion-hover-text: var(--brand-primary-main);
+    --accordion-hover-icon: #fff;
+    --accordion-hover-iconBg: var(--brand-primary-main);
+
+    --contact-form-border-border: var(--brand-grey-300);
+    --contact-form-border-hover: var(--brand-grey-800);
+    --contact-form-border-focus: var(--brand-primary-main);
+    --contact-form-border-error: var(--functional-error-main);
+
+    --contact-form-checkbox-bg-default: #fff;
+    --contact-form-checkbox-bg-hover: var(--brand-grey-050);
+    --contact-form-checkbox-bg-selected: var(--brand-grey-700);
+    --contact-form-checkbox-bg-selected-hover: var(--brand-grey-900);
+    --contact-form-checkbox-border: var(--brand-grey-300);
+    --contact-form-checkbox-border-hover: var(--brand-grey-800);
+    --contact-form-checkbox-border-focus: var(--brand-primary-main);
+    --contact-form-checkbox-border-error: var(--functional-error-main);
+
+    --contact-form-dropdown-text-default: var(--text-primary);
+    --contact-form-dropdown-text-selected: var(--text-primary);
+    --contact-form-dropdown-bg-default: #fff;
+    --contact-form-dropdown-bg-hover: var(--brand-grey-050);
+    --contact-form-dropdown-bg-selected: var(--brand-grey-100);
+    --contact-form-dropdown-bg-selected-hover: var(--brand-grey-100);
+
+    --contact-form-icon-default: var(--brand-grey-700);
+    --contact-form-icon-hover: var(--brand-grey-800);
+    --contact-form-icon-inverse: #fff;
+
+    --contact-form-text-label: var(--brand-grey-800);
+    --contact-form-text-placeholder: var(--brand-grey-500);
+    --contact-form-text-input-text: var(--text-primary);
+    --contact-form-helper-text: var(--brand-grey-600);
+    --contact-form-text-error: var(--functional-error-main);
+
+    --cta-contained-default-bg: var(--brand-primary-main);
+    --cta-contained-default-border: var(--brand-primary-main);
+    --cta-contained-default-text: #fff;
+    --cta-contained-hover-bg: #fff;
+    --cta-contained-hover-border: var(--brand-primary-main);
+    --cta-contained-hover-text: var(--brand-primary-main);
+    --cta-contained-disabled-bg: var(--brand-grey-200);
+    --cta-contained-disabled-border: var(--brand-grey-200);
+    --cta-contained-disabled-text: var(--brand-grey-400);
+
+    --cta-outlined-default-bg: rgb(255 255 255 / 0%);
+    --cta-outlined-default-border: var(--brand-primary-main);
+    --cta-outlined-default-text: var(--brand-primary-main);
+    --cta-outlined-hover-bg: var(--brand-primary-dark);
+    --cta-outlined-hover-border: var(--brand-primary-dark);
+    --cta-outlined-hover-text: #fff;
+    --cta-outlined-disabled-bg: rgb(255 255 255 / 0%);
+    --cta-outlined-disabled-border: var(--brand-grey-300);
+    --cta-outlined-disabled-text: var(--brand-grey-400);
+
+    --cta-text-default: var(--brand-primary-main);
+    --cta-text-hover: var(--brand-primary-dark);
+    --cta-text-disabled: var(--brand-grey-400);
+
+    --cta-inline-link-default: var(--brand-primary-main);
+    --cta-inline-link-hover: var(--brand-primary-dark);
+
+    --media-gallery-button-default-bg: rgb(250 250 250 / 0%);
+    --media-gallery-button-default-contrast: var(--brand-grey-700);
+    --media-gallery-button-hover-bg: var(--brand-grey-100);
+    --media-gallery-button-hover-contrast: var(--brand-grey-900);
+    --media-gallery-button-disabled-bg: var(--brand-grey-100);
+    --media-gallery-button-disabled-contrast: var(--brand-grey-300);
+    --media-gallery-dot-navigation-default: var(--brand-grey-300);
+    --media-gallery-dot-navigation-hover: var(--brand-grey-400);
+    --media-gallery-dot-navigation-active: var(--brand-primary-main);
+    --media-gallery-dot-navigation-active-hover: var(--brand-primary-dark);
+
+    --table-border: var(--brand-grey-300);
+    --table-default-bg: #fff;
+    --table-default-text: var(--brand-grey-900);
+    --table-highlight-bg: var(--brand-grey-200);
+    --table-highlight-text: var(--brand-grey-900);
+
+    --text-primary: var(--brand-grey-900);
+    --text-secondary: var(--brand-grey-600);
+    --text-disabled: var(--brand-grey-400);
+}
+
+@mixin global-theme-inverted {
+    --accessibility-focus-border: var(--functional-focus-main);
+    --accessibility-focus-contrast: #000;
+
+    --accordion-border: var(--brand-grey-700);
+    --accordion-default-text: #fff;
+    --accordion-default-icon: var(--brand-primary-light);
+    --accordion-default-iconBg: rgb(0 0 0 / 0%);
+    --accordion-hover-text: var(--brand-primary-main);
+    --accordion-hover-icon: #fff;
+    --accordion-hover-iconBg: var(--brand-primary-main);
+
+    --contact-form-border-border: var(--brand-grey-700);
+    --contact-form-border-hover: var(--brand-grey-200);
+    --contact-form-border-focus: var(--brand-primary-main);
+    --contact-form-border-error: var(--functional-error-light);
+
+    --contact-form-checkbox-bg-default: var(--brand-grey-900);
+    --contact-form-checkbox-bg-hover: var(--brand-grey-800);
+    --contact-form-checkbox-bg-selected: var(--brand-grey-500);
+    --contact-form-checkbox-bg-selected-hover: var(--brand-grey-200);
+    --contact-form-checkbox-border: var(--brand-grey-700);
+    --contact-form-checkbox-border-hover: var(--brand-grey-200);
+    --contact-form-checkbox-border-focus: var(--brand-primary-main);
+    --contact-form-checkbox-border-error: var(--functional-error-light);
+
+    --contact-form-dropdown-text-default: var(--text-primary);
+    --contact-form-dropdown-text-selected: var(--text-primary);
+    --contact-form-dropdown-bg-default: var(--brand-grey-900);
+    --contact-form-dropdown-bg-hover: var(--brand-grey-800);
+    --contact-form-dropdown-bg-selected: var(--brand-grey-700);
+    --contact-form-dropdown-bg-selected-hover: var(--brand-grey-700);
+
+    --contact-form-icon-default: var(--brand-grey-300);
+    --contact-form-icon-hover: var(--brand-grey-050);
+    --contact-form-icon-inverse: #000;
+
+    --contact-form-text-label: var(--brand-grey-100);
+    --contact-form-text-placeholder: var(--brand-grey-500);
+    --contact-form-text-input-text: var(--text-primary);
+    --contact-form-helper-text: var(--brand-grey-400);
+    --contact-form-text-error: var(--functional-error-light);
+
+    --cta-contained-default-bg: var(--brand-primary-main);
+    --cta-contained-default-border: var(--brand-primary-main);
+    --cta-contained-default-text: #fff;
+    --cta-contained-hover-bg: #fff;
+    --cta-contained-hover-border: var(--brand-primary-main);
+    --cta-contained-hover-text: var(--brand-primary-main);
+    --cta-contained-disabled-bg: var(--brand-grey-800);
+    --cta-contained-disabled-border: var(--brand-grey-800);
+    --cta-contained-disabled-text: var(--brand-grey-600);
+
+    --cta-outlined-default-bg: rgb(255 255 255 / 0%);
+    --cta-outlined-default-border: #fff;
+    --cta-outlined-default-text: #fff;
+    --cta-outlined-hover-bg: #fff;
+    --cta-outlined-hover-border: #fff;
+    --cta-outlined-hover-text: var(--brand-primary-main);
+    --cta-outlined-disabled-bg: rgb(255 255 255 / 0%);
+    --cta-outlined-disabled-border: var(--brand-grey-800);
+    --cta-outlined-disabled-text: var(--brand-grey-600);
+
+    --cta-text-default: #fff;
+    --cta-text-hover: var(--brand-grey-200);
+    --cta-text-disabled: var(--brand-grey-600);
+
+    --cta-inline-link-default: #fff;
+    --cta-inline-link-hover: var(--brand-primary-main);
+
+    --media-gallery-button-default-bg: rgb(255 255 255 / 0%);
+    --media-gallery-button-default-contrast: var(--brand-grey-400);
+    --media-gallery-button-hover-bg: var(--brand-grey-800);
+    --media-gallery-button-hover-contrast: var(--brand-grey-050);
+    --media-gallery-button-disabled-bg: var(--brand-grey-800);
+    --media-gallery-button-disabled-contrast: var(--brand-grey-700);
+    --media-gallery-dot-navi-default: #fff;
+    --media-gallery-dot-navi-hover: var(--brand-grey-100);
+    --media-gallery-dot-navi-active: var(--brand-primary-main);
+    --media-gallery-dot-navi-active-hover: var(--brand-primary-light);
+
+    --table-border: var(--brand-grey-700);
+    --table-default-bg: var(--brand-grey-900);
+    --table-default-text: #fff;
+    --table-highlight-bg: var(--brand-grey-800);
+    --table-highlight-text: #fff;
+
+    --text-primary: #fff;
+    --text-secondary: var(--brand-grey-400);
+    --text-disabled: var(--brand-grey-700);
+}

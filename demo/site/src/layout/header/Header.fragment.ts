@@ -1,4 +1,4 @@
-import { gql } from "@dextinity/site-react";
+import { gql } from "@dextinity/site-nextjs";
 
 import { desktopMenuFragment } from "./DesktopMenu.fragment";
 import { mobileMenuFragment } from "./MobileMenu.fragment";

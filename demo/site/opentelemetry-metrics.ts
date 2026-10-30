@@ -10,6 +10,7 @@ import {
     UpDownCounter,
 } from "@opentelemetry/api";
 import { IncomingMessage, ServerResponse } from "http";
+import { NextUrlWithParsedQuery } from "next/dist/server/request-meta";
 
 export type MetricType = "Counter" | "UpDownCounter" | "Histogram" | "ObservableGauge" | "ObservableCounter" | "ObservableUpDownCounter";
 export type GenericMetric = Counter | UpDownCounter | Histogram | ObservableGauge | ObservableCounter | ObservableUpDownCounter;
@@ -59,7 +60,7 @@ function getStatusCodeClass(code: number): string {
     return "server_error";
 }
 
-export function withMetrics(handle: (req: IncomingMessage, res: ServerResponse) => Promise<void>) {
+export function withMetrics(handle: (req: IncomingMessage, res: ServerResponse, parsedUrl?: NextUrlWithParsedQuery | undefined) => Promise<void>) {
     // Semantic Convention
     const httpServerRequestCount = getOrCreateCounter("http.server.request.count", {
         description: "Total number of HTTP requests",
@@ -85,10 +86,10 @@ export function withMetrics(handle: (req: IncomingMessage, res: ServerResponse) 
         description: "Total number of client error requests",
     });
 
-    return async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
+    return async (req: IncomingMessage, res: ServerResponse, parsedUrl?: NextUrlWithParsedQuery | undefined): Promise<void> => {
         const start = performance.now();
-        await handle(req, res);
-        if (req.url?.match(/^\/(_assets|@)/)) {
+        await handle(req, res, parsedUrl);
+        if (parsedUrl?.pathname?.match(/^\/_next\//)) {
             // skip metrics
             return;
         }

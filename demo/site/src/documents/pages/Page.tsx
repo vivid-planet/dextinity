@@ -1,11 +1,12 @@
-import { generateImageUrl, gql, JsonLd } from "@dextinity/site-react";
-import { Metadata, notFound } from "@dextinity/site-vite-rsc";
+import { generateImageUrl, gql, JsonLd } from "@dextinity/site-nextjs";
 import { Breadcrumbs } from "@src/common/components/breadcrumbs/Breadcrumbs";
 import { breadcrumbsFragment } from "@src/common/components/breadcrumbs/Breadcrumbs.fragment";
 import type { GQLPageTreeNodeScopeInput } from "@src/graphql.generated";
-import { graphQLFetch } from "@src/util/graphQLClient";
+import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
+import type { Metadata, ResolvingMetadata } from "next";
+import { notFound } from "next/navigation";
 import type { Thing, WithContext } from "schema-dts";
 
 import { PageContentBlock } from "./blocks/PageContentBlock";
@@ -35,12 +36,14 @@ const pageQuery = gql`
 type Props = { pageTreeNodeId: string; scope: GQLPageTreeNodeScopeInput };
 
 async function fetchData({ pageTreeNodeId, scope }: Props) {
+    const graphQLFetch = createGraphQLFetch();
+
     const props = await graphQLFetch<GQLPageQuery, GQLPageQueryVariables>(
         pageQuery,
         {
             pageTreeNodeId,
         },
-        { method: "GET" },
+        { method: "GET" }, //for request memoization
     );
 
     if (!props.pageContent) {
@@ -63,7 +66,52 @@ async function fetchData({ pageTreeNodeId, scope }: Props) {
     };
 }
 
+export async function generateMetadata({ pageTreeNodeId, scope }: Props, parent: ResolvingMetadata): Promise<Metadata> {
+    const data = await fetchData({ pageTreeNodeId, scope });
+    const siteConfig = getSiteConfigForDomain(scope.domain);
+
+    const document = data?.pageContent?.document;
+    if (!document) {
+        return {};
+    }
+
+    const siteUrl = siteConfig.url;
+    const canonicalUrl = (document.seo.canonicalUrl || `${siteUrl}/${scope.language}${data.pageContent.path}`).replace(/\/$/, ""); // Remove trailing slash for "home"
+
+    // TODO move into library
+    return {
+        title: document.seo.htmlTitle || data.pageContent.name,
+        description: document.seo.metaDescription,
+        openGraph: {
+            title: document.seo.openGraphTitle,
+            description: document.seo.openGraphDescription,
+            type: "website",
+            url: canonicalUrl,
+            images: document.seo.openGraphImage.block?.urlTemplate
+                ? generateImageUrl({ src: document.seo.openGraphImage.block?.urlTemplate, width: 1200 }, 1200 / 630)
+                : undefined,
+        },
+        robots: {
+            index: !document.seo.noIndex,
+        },
+        alternates: {
+            canonical: canonicalUrl,
+            languages: document.seo.alternativeLinks.reduce(
+                (acc, link) => {
+                    if (link.code && link.url) {
+                        acc[link.code] = link.url;
+                    }
+                    return acc;
+                },
+                { [scope.language]: canonicalUrl } as Record<string, string>,
+            ),
+        },
+    };
+}
+
 export async function Page({ pageTreeNodeId, scope }: { pageTreeNodeId: string; scope: GQLPageTreeNodeScopeInput }) {
+    const graphQLFetch = createGraphQLFetch();
+
     const data = await fetchData({ pageTreeNodeId, scope });
     const document = data?.pageContent?.document;
     if (!document) {
@@ -98,11 +146,6 @@ export async function Page({ pageTreeNodeId, scope }: { pageTreeNodeId: string; 
         }),
     ]);
 
-    const siteConfig = getSiteConfigForDomain(scope.domain);
-    const canonicalUrl = (document.seo.canonicalUrl || `${siteConfig.url}/${scope.language}${data.pageContent.path}`).replace(/\/$/, ""); // Remove trailing slash for "home"
-    const alternativeLinks = document.seo.alternativeLinks.filter((link): link is { code: string; url: string } => Boolean(link.code && link.url));
-    const openGraphImageUrlTemplate = document.seo.openGraphImage.block?.urlTemplate;
-
     let structuredData: WithContext<Thing> | undefined;
     if (document.seo.structuredData && document.seo.structuredData.length > 0) {
         try {
@@ -113,23 +156,8 @@ export async function Page({ pageTreeNodeId, scope }: { pageTreeNodeId: string; 
         }
     }
 
-    // React hoists these elements into the <head>
     return (
         <>
-            <title>{document.seo.htmlTitle || data.pageContent.name}</title>
-            <Metadata
-                baseUrl={siteConfig.url}
-                description={document.seo.metaDescription}
-                noIndex={document.seo.noIndex}
-                canonicalUrl={canonicalUrl}
-                alternateLinks={[
-                    { hrefLang: scope.language, url: canonicalUrl },
-                    ...alternativeLinks.map((link) => ({ hrefLang: link.code, url: link.url })),
-                ]}
-                openGraphTitle={document.seo.openGraphTitle}
-                openGraphDescription={document.seo.openGraphDescription}
-                openGraphImageUrl={openGraphImageUrlTemplate && generateImageUrl({ src: openGraphImageUrlTemplate, width: 1200 }, 1200 / 630)}
-            />
             {structuredData && <JsonLd<Thing> data={structuredData} />}
             <Breadcrumbs {...data.pageContent} scope={scope} />
             {/* ID is used for skip link */}

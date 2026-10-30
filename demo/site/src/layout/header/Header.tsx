@@ -1,7 +1,7 @@
 "use client";
 
-import { Link } from "@dextinity/site-vite-rsc";
 import { SvgUse } from "@src/common/helpers/SvgUse";
+import Link from "next/link";
 import { useIntl } from "react-intl";
 
 import { PageLayout } from "../PageLayout";

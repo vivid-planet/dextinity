@@ -1,4 +1,4 @@
-import { type BlockLoaderOptions, gql } from "@dextinity/site-react";
+import { type BlockLoaderOptions, gql } from "@dextinity/site-nextjs";
 import type { ProductTeaserBlockData } from "@src/blocks.generated";
 
 import type { GQLProductTeaserBlockQuery, GQLProductTeaserBlockQueryVariables } from "./ProductTeaserBlock.loader.generated";

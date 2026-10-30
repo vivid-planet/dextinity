@@ -1,0 +1,123 @@
+@use "@src/styles/variables" as *;
+
+.root {
+    position: relative;
+}
+
+.pageLayoutContent {
+    grid-column: 2 / -2;
+
+    @media (min-width: $breakpoint-sm) {
+        grid-column: 5 / -5;
+    }
+
+    @media (min-width: $breakpoint-lg) {
+        grid-column: 6 / -6;
+    }
+
+    @media (min-width: $breakpoint-xl) {
+        grid-column: 7 / -7;
+    }
+}
+
+.mediaCaption {
+    margin-top: 42px;
+    padding-right: calc(var(--swiper-button-size) * 2 + var(--spacing-s300) + var(--spacing-s500));
+    color: var(--text-secondary);
+
+    // min-height to show arrows when no caption
+    min-height: 20px;
+
+    @media (min-width: $breakpoint-sm) {
+        margin-top: var(--spacing-s300);
+        min-height: 22px;
+    }
+}
+
+.swiper {
+    .mediaCaption {
+        opacity: 0;
+        transition: opacity 0.3s linear 0s;
+    }
+
+    :global(.swiper-slide-active) {
+        .mediaCaption {
+            opacity: 1;
+            transition: opacity 0.3s linear 0.2s;
+        }
+    }
+}
+
+.navigationButton {
+    z-index: 10;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: var(--spacing-s500);
+    border-radius: 100%;
+
+    &::after {
+        content: "";
+        width: var(--spacing-s200);
+        height: var(--spacing-s200);
+        border-top: 2px solid var(--media-gallery-button-default-contrast);
+        border-right: 2px solid var(--media-gallery-button-default-contrast);
+    }
+
+    &:hover {
+        background-color: var(--media-gallery-button-hover-bg);
+
+        &::after {
+            border-top: 2px solid var(--media-gallery-button-hover-contrast);
+            border-right: 2px solid var(--media-gallery-button-hover-contrast);
+        }
+    }
+
+    &:disabled {
+        background-color: var(--media-gallery-button-disabled-bg);
+
+        &::after {
+            border-top: 2px solid var(--media-gallery-button-disabled-contrast);
+            border-right: 2px solid var(--media-gallery-button-disabled-contrast);
+        }
+    }
+
+    &--previous {
+        transform: rotate(225deg);
+        right: var(--spacing-s600);
+    }
+
+    &--next {
+        transform: rotate(45deg);
+        right: 0;
+    }
+
+    @media (min-width: $breakpoint-sm) {
+        top: calc(50% - var(--spacing-s300) - 24px);
+        width: 40px;
+        height: 40px;
+
+        &--previous {
+            left: -48px;
+        }
+
+        &--next {
+            right: -48px;
+        }
+    }
+}
+
+.customPagination {
+    position: absolute;
+    bottom: 35px;
+    left: 0;
+
+    @media (min-width: $breakpoint-sm) {
+        bottom: var(--spacing-s100);
+        left: auto;
+        right: 0;
+    }
+}

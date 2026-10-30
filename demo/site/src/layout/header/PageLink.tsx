@@ -1,7 +1,8 @@
 "use client";
-import { Link, usePathname } from "@dextinity/site-vite-rsc";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
 import { createSitePath } from "@src/util/createSitePath";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { JSX, PropsWithChildren } from "react";
 
 import type { GQLPageLinkFragment } from "./PageLink.fragment.generated";

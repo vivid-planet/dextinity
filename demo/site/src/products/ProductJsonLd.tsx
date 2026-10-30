@@ -1,4 +1,4 @@
-import { generateImageUrl, gql, JsonLd } from "@dextinity/site-react";
+import { generateImageUrl, gql, JsonLd } from "@dextinity/site-nextjs";
 import type { DamImageBlockData } from "@src/blocks.generated";
 import type { ContentScope } from "@src/site-configs";
 import { createSitePath } from "@src/util/createSitePath";

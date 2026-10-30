@@ -1,4 +1,4 @@
-import { gql } from "@dextinity/site-react";
+import { gql } from "@dextinity/site-nextjs";
 
 export const topMenuPageTreeNodeFragment = gql`
     fragment TopMenuPageTreeNode on PageTreeNode {

@@ -1,4 +1,4 @@
-import { JsonLd } from "@dextinity/site-react";
+import { JsonLd } from "@dextinity/site-nextjs";
 import type { PublicSiteConfig } from "@src/site-configs";
 import type { Organization, WithContext } from "schema-dts";
 

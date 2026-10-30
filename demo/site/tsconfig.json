@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "allowImportingTsExtensions": true,
         "allowJs": true,
         "baseUrl": "./",
         "esModuleInterop": true,
@@ -15,12 +14,21 @@
         "paths": {
             "@src/*": ["src/*"]
         },
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ],
         "resolveJsonModule": true,
         "skipLibCheck": true,
         "strict": true,
-        "target": "es2022",
-        "types": ["node", "vite/client", "@vitejs/plugin-rsc/types"]
+        "target": "es5"
     },
     "exclude": ["node_modules"],
-    "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "vitest.config.ts"]
+    "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
+    "ts-node": {
+        "compilerOptions": {
+            "module": "commonjs"
+        }
+    }
 }

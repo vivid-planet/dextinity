@@ -1,5 +1,5 @@
 "use client";
-import { ListBlock, type PropsWithData } from "@dextinity/site-react";
+import { ListBlock, type PropsWithData } from "@dextinity/site-nextjs";
 import type { StageBlockData } from "@src/blocks.generated";
 
 import { BasicStageBlock } from "./BasicStageBlock";

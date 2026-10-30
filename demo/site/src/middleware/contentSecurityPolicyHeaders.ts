@@ -1,4 +1,6 @@
-import { createMiddleware } from "hono/factory";
+import type { NextRequest } from "next/server";
+
+import type { CustomMiddleware } from "./chain";
 
 type ContentSecurityPolicyDirective = {
     directive: string;
@@ -31,12 +33,16 @@ const contentSecurityPolicy = contentSecurityPolicyDirectives
     .map((directive) => `${directive.directive} ${directive.values.filter((value) => value !== undefined).join(" ")}`)
     .join("; ");
 
-export const contentSecurityPolicyHeadersMiddleware = createMiddleware(async (c, next) => {
-    await next();
+export function withContentSecurityPolicyHeadersMiddleware(middleware: CustomMiddleware) {
+    return async (request: NextRequest) => {
+        const response = await middleware(request);
 
-    c.header("Content-Security-Policy", contentSecurityPolicy);
+        response.headers.set("Content-Security-Policy", contentSecurityPolicy);
 
-    if (process.env.ADMIN_URL) {
-        c.header("Access-Control-Allow-Origin", process.env.ADMIN_URL);
-    }
-});
+        if (process.env.ADMIN_URL) {
+            response.headers.set("Access-Control-Allow-Origin", process.env.ADMIN_URL);
+        }
+
+        return response;
+    };
+}

@@ -7,11 +7,11 @@ const files = [
         : [
               {
                   file: ".env",
-                  targetDir: ["demo/admin", "demo/api", "demo/site"],
+                  targetDir: ["demo/admin", "demo/api", "demo/site", "demo/site-vite-rsc"],
               },
               {
                   file: ".env.local",
-                  targetDir: ["demo/admin", "demo/api", "demo/site", "storybook"],
+                  targetDir: ["demo/admin", "demo/api", "demo/site", "demo/site-vite-rsc", "storybook"],
               },
               {
                   file: "demo/.env.site-configs",
@@ -36,19 +36,19 @@ const files = [
     },
     {
         file: "demo/api/block-meta.json",
-        targetDir: ["demo/admin", "demo/site"],
+        targetDir: ["demo/admin", "demo/site", "demo/site-vite-rsc"],
     },
     {
         file: "demo/api/schema.gql",
-        targetDir: ["demo/admin", "demo/site"],
+        targetDir: ["demo/admin", "demo/site", "demo/site-vite-rsc"],
     },
     {
         file: "demo/api/src/dextinity-config.json",
-        targetDir: ["demo/admin/src", "demo/site/src"],
+        targetDir: ["demo/admin/src", "demo/site/src", "demo/site-vite-rsc/src"],
     },
     {
         file: "demo/site-configs/site-configs.d.ts",
-        targetDir: ["demo/admin/src", "demo/api/src", "demo/site/src"],
+        targetDir: ["demo/admin/src", "demo/api/src", "demo/site/src", "demo/site-vite-rsc/src"],
     },
 ];
 

@@ -1,5 +1,5 @@
 "use client";
-import { type PropsWithData, withPreview } from "@dextinity/site-react";
+import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { ProductPriceBlockData } from "@src/blocks.generated";
 
 export const ProductPriceBlock = withPreview(

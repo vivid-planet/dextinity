@@ -1,7 +1,6 @@
 "use client";
 
-import { ErrorHandlerProvider } from "@dextinity/site-react";
-import { reportError } from "@dextinity/site-vite-rsc";
+import { ErrorHandlerProvider } from "@dextinity/site-nextjs";
 import type { ErrorInfo, PropsWithChildren } from "react";
 
 export function ErrorHandler({ children }: PropsWithChildren) {
@@ -10,7 +9,7 @@ export function ErrorHandler({ children }: PropsWithChildren) {
             console.error("Error caught by error handler", error, errorInfo.componentStack);
             throw error;
         } else {
-            reportError(error);
+            // Log the error to an error tracking service
         }
     }
 

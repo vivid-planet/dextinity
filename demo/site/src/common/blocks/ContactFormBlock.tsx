@@ -1,12 +1,13 @@
 "use client";
-import { type PropsWithData, withPreview } from "@dextinity/site-react";
-import { useParams } from "@dextinity/site-vite-rsc";
+import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { ContactFormBlockData } from "@src/blocks.generated";
 import { PageLayout } from "@src/layout/PageLayout";
 import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import { acceptedFileTypes, maxFileSizeBytes } from "@src/util/fileUpload";
 import { getRecaptchaToken } from "@src/util/recaptcha/getRecaptchaToken";
 import { useSiteConfig } from "@src/util/SiteConfigProvider";
+import { useParams } from "next/navigation";
+import Script from "next/script";
 import { useForm, useWatch } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -39,7 +40,7 @@ interface ContactFormValues {
 export const ContactFormBlock = withPreview(
     ({ data }: PropsWithData<ContactFormBlockData>) => {
         const intl = useIntl();
-        const params = useParams<{ language: string }>();
+        const params = useParams<{ visibility: string; domain: string; language: string }>();
         const language = params?.language;
 
         const { recaptchaSiteKey } = useSiteConfig();
@@ -122,7 +123,7 @@ export const ContactFormBlock = withPreview(
 
         return (
             <PageLayout grid>
-                <script src={`https://www.google.com/recaptcha/enterprise.js?render=${recaptchaSiteKey}`} async />
+                <Script src={`https://www.google.com/recaptcha/enterprise.js?render=${recaptchaSiteKey}`} />
                 <AnimateBoxInOnScroll direction="bottom" offset={300} className={styles.formWrapper}>
                     <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
                         <TextField

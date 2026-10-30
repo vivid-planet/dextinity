@@ -262,7 +262,7 @@ export default defineConfig({
             name: "demo-site",
             script: "pnpm --filter dextinity-demo-site run dev",
             group: ["demo-site", "demo"],
-            waitOn: [...waitOnPackages("@dextinity/site-react", "@dextinity/site-vite-rsc"), "tcp:$API_PORT"],
+            waitOn: [...waitOnPackages("@dextinity/site-nextjs"), "tcp:$API_PORT"],
         },
         {
             name: "demo-site-codegen",
@@ -280,6 +280,31 @@ export default defineConfig({
             name: "demo-site-css-types",
             script: "pnpm --filter dextinity-demo-site run css:types:watch",
             group: ["demo-site", "demo"],
+        },
+
+        //group demo site vite rsc, not part of "demo", it runs next to the Next.js demo site on SITE_VITE_RSC_PORT
+        {
+            name: "demo-site-vite-rsc",
+            script: "pnpm --filter dextinity-demo-site-vite-rsc run dev",
+            group: ["demo-site-vite-rsc"],
+            waitOn: [...waitOnPackages("@dextinity/site-react", "@dextinity/site-vite-rsc"), "tcp:$API_PORT"],
+        },
+        {
+            name: "demo-site-vite-rsc-codegen",
+            script: "pnpm --filter dextinity-demo-site-vite-rsc run gql:watch",
+            group: ["demo-site-vite-rsc"],
+            waitOn: ["tcp:$API_PORT"],
+        },
+        {
+            name: "demo-site-vite-rsc-block-codegen",
+            script: "pnpm --filter dextinity-demo-site-vite-rsc run generate-block-types:watch",
+            group: ["demo-site-vite-rsc"],
+            waitOn: ["tcp:$API_PORT"],
+        },
+        {
+            name: "demo-site-vite-rsc-css-types",
+            script: "pnpm --filter dextinity-demo-site-vite-rsc run css:types:watch",
+            group: ["demo-site-vite-rsc"],
         },
 
         // group docs

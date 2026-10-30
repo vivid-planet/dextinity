@@ -1,11 +1,15 @@
 "use client";
-import { PreviewSkeleton, type PropsWithData, SvgImageBlock, withPreview } from "@dextinity/site-react";
-import { PixelImageBlock, type PixelImageBlockProps } from "@dextinity/site-vite-rsc";
+import { PixelImageBlock, PreviewSkeleton, type PropsWithData, SvgImageBlock, withPreview } from "@dextinity/site-nextjs";
 import type { DamImageBlockData, PixelImageBlockData, SvgImageBlockData } from "@src/blocks.generated";
 import { useAiContentAltTextPrefixLabels } from "@src/common/helpers/useAiContentAltTextPrefixLabels";
+import type { ImageProps as NextImageProps } from "next/image";
 
-type DamImageProps = Omit<PixelImageBlockProps, "data" | "aspectRatio" | "aiContentAltTextPrefixLabels"> & {
+type DamImageProps = Omit<NextImageProps, "src" | "width" | "height" | "alt"> & {
     aspectRatio: string | "inherit";
+    /**
+     * Do not set an `alt` attribute. The alt text is set in the DAM.
+     */
+    alt?: never;
 };
 
 export const DamImageBlock = withPreview(

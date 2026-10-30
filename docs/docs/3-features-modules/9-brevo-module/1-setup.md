@@ -1015,7 +1015,7 @@ See [Pixel-image blocks](../13-building-html-emails/3-blocks.md#configuration) f
 Your site must provide two endpoints:
 
 - **The render endpoint**, configured as `emailCampaigns.frontend.url` in the API. The API sends the campaign's `id`, `title`, `content` and `scope` to it via `POST` and expects the final email HTML in return. Protect it with the basic auth credentials configured in `emailCampaigns.frontend.basicAuth`.
-  See [`demo/site/src/app/api/render-brevo-email-campaign.tsx`](https://github.com/vivid-planet/dextinity/blob/main/demo/site/src/app/api/render-brevo-email-campaign.tsx).
+  See [`demo/site/src/pages/api/render-brevo-email-campaign.tsx`](https://github.com/vivid-planet/dextinity/blob/main/demo/site/src/pages/api/render-brevo-email-campaign.tsx).
 - **The block preview**, configured as `resolvePreviewUrlForScope` in the `BrevoConfigProvider`. It renders the campaign preview shown in the admin.
   See [`demo/site/src/app/block-preview/[domain]/[language]/brevo-email-campaign`](https://github.com/vivid-planet/dextinity/tree/main/demo/site/src/app/block-preview/%5Bdomain%5D/%5Blanguage%5D/brevo-email-campaign).
 

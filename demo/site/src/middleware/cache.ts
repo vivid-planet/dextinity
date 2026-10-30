@@ -1,6 +1,6 @@
 import { createCache, memoryStore } from "cache-manager";
 
-// The middlewares' GraphQL fetch doesn't go through the fetch cache, so without this cache
+// Next.js' data cache doesn't apply to fetch calls in middleware, so without this cache
 // every request would query the API for redirects and predefined pages
 export const memoryCache = createCache(
     memoryStore({

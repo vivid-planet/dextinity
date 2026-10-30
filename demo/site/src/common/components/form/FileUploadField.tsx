@@ -1,6 +1,6 @@
-import { useParams } from "@dextinity/site-vite-rsc";
 import { getRecaptchaToken } from "@src/util/recaptcha/getRecaptchaToken";
 import { useSiteConfig } from "@src/util/SiteConfigProvider";
+import { useParams } from "next/navigation";
 import { type ChangeEvent, type ReactNode, useId, useRef } from "react";
 import { type ControllerProps, type FieldValues, useController } from "react-hook-form";
 import { useIntl } from "react-intl";

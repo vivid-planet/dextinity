@@ -15,8 +15,5 @@ export const createSitePath = ({ path, scope }: CreateSitePathOptions) => {
         throw new Error("Path must start with a `/`.");
     }
 
-    if (path === "/") {
-        return `/${scope.language}`;
-    }
     return `/${scope.language}${path}`;
 };

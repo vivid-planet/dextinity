@@ -1,5 +1,5 @@
 "use client";
-import { hasRichTextBlockContent, PreviewSkeleton, type PropsWithData, withPreview } from "@dextinity/site-react";
+import { hasRichTextBlockContent, PreviewSkeleton, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { HeadingBlockData } from "@src/blocks.generated";
 import { Typography } from "@src/common/components/Typography";
 import type { Renderers } from "redraft";

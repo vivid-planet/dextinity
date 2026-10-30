@@ -1,4 +1,4 @@
-import { usePreview } from "@dextinity/site-react";
+import { usePreview } from "@dextinity/site-nextjs";
 import type {
     DamFileDownloadLinkBlockData,
     EmailLinkBlockData,

@@ -1,8 +1,8 @@
-import { gql } from "@dextinity/site-react";
-import { notFound, redirect } from "@dextinity/site-vite-rsc";
+import { gql } from "@dextinity/site-nextjs";
 import type { DamFileDownloadLinkBlockData, ExternalLinkBlockData, InternalLinkBlockData } from "@src/blocks.generated";
 import type { GQLPageTreeNodeScopeInput } from "@src/graphql.generated";
-import { graphQLFetch } from "@src/util/graphQLClient";
+import { createGraphQLFetch } from "@src/util/graphQLClient";
+import { notFound, redirect } from "next/navigation";
 import type { JSX } from "react";
 
 import type { GQLLinkRedirectQuery, GQLLinkRedirectQueryVariables } from "./Link.generated";
@@ -26,7 +26,9 @@ interface Props {
 }
 
 export async function Link({ pageTreeNodeId }: Props): Promise<JSX.Element> {
-    const { pageTreeNode } = await graphQLFetch<GQLLinkRedirectQuery, GQLLinkRedirectQueryVariables>(linkRedirectQuery, {
+    const graphqlFetch = createGraphQLFetch();
+
+    const { pageTreeNode } = await graphqlFetch<GQLLinkRedirectQuery, GQLLinkRedirectQueryVariables>(linkRedirectQuery, {
         id: pageTreeNodeId,
     });
 

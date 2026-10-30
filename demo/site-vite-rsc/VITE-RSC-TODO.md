@@ -1,6 +1,6 @@
 # Demo site on Vite + `@vitejs/plugin-rsc` + Hono: open tasks
 
-Follow-ups for [vivid-planet/dextinity#6779](https://github.com/vivid-planet/dextinity/pull/6779) (PoC: demo site migrated from Next.js). Task numbers match the session task list. Paths are relative to `demo/site/` unless stated otherwise.
+Follow-ups for [vivid-planet/dextinity#6779](https://github.com/vivid-planet/dextinity/pull/6779) (PoC: the demo site migrated from Next.js, as a copy in `demo/site-vite-rsc` next to the Next.js demo site in `demo/site`). Task numbers match the session task list. Paths are relative to `demo/site/` unless stated otherwise.
 
 ## References
 
@@ -93,6 +93,10 @@ If a project needs it: decide status and headers when React DOM reports the SSR 
 ### #47 Send an explicit `Cache-Control` with all redirects
 
 HTML redirects without `Cache-Control` leave caching to the defaults of CDNs and browsers (a 301 is cached by browsers indefinitely), RSC requests turn them into `no-store` (#38). `trailingSlashRedirectMiddleware` could take a `cacheControl` option, as its redirects never change. The demo's redirects (`/` → `/en`, `predefinedPages`, `redirectToMainHost`, `/admin`) should set one (`rules/coding-guidelines/cdn.instructions.md`).
+
+### #51 Keep the Next.js demo site next to this one (done)
+
+The Next.js demo site stays in `demo/site` (port `SITE_PORT`, 3000), this one moved to `demo/site-vite-rsc` (package `dextinity-demo-site-vite-rsc`, port `SITE_VITE_RSC_PORT`, 3001, dev-pm group `@demo-site-vite-rsc`, not part of `@demo`), so both can run at the same time. `.env.vite-rsc` sets `SITE_PORT` to its port before the other env files, and `pnpm run site-configs` generates its own `.env.site-configs`, as the site resolves its domain from the host including the port. Translations are shared with `demo/site` (`../site/lang`). No inspector and no Prometheus exporter. Open: the admin's site preview and block preview (`PREVIEW_URL`) still open the Next.js site.
 
 ### #42 Switch the scroll restoration back to `"auto"` on `pagehide`
 

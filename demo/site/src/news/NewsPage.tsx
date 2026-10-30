@@ -1,7 +1,7 @@
 "use client";
-import { Link, usePathname } from "@dextinity/site-vite-rsc";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
-import { createBrowserGraphQLFetch } from "@src/util/browserGraphQLClient";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { FormattedDate } from "react-intl";
 
@@ -39,7 +39,6 @@ export function NewsPage({ initialData, scope }: { initialData: GQLNewsIndexPage
                             setError(null);
                             try {
                                 const response = await fetchNewsList({
-                                    graphQLFetch: createBrowserGraphQLFetch(),
                                     scope,
                                     offset: newsList.length,
                                     limit: 2,

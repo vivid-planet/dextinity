@@ -1,12 +1,13 @@
 import {
     type AiContentAltTextPrefixLabels,
+    DamVideoBlock,
     OneOfBlock,
     PreviewSkeleton,
     type PropsWithData,
     type SupportedBlocks,
+    VimeoVideoBlock,
     withPreview,
-} from "@dextinity/site-react";
-import { DamVideoBlock, VimeoVideoBlock } from "@dextinity/site-vite-rsc";
+} from "@dextinity/site-nextjs";
 import type { MediaBlockData } from "@src/blocks.generated";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
 

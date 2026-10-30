@@ -1,5 +1,5 @@
 import { useRefToRegisterMailBlocksForPreview } from "@dextinity/mail-react";
-import { useIFrameBridge } from "@dextinity/site-react";
+import { useIFrameBridge } from "@dextinity/site-nextjs";
 import { type FC, type ReactElement, useEffect, useState } from "react";
 
 interface Props {

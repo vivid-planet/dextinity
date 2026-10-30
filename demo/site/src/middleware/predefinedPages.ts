@@ -1,12 +1,11 @@
-import { gql } from "@dextinity/site-react";
+import { gql } from "@dextinity/site-nextjs";
 import { predefinedPagePaths } from "@src/documents/predefinedPages/predefinedPagePaths";
-import { siteRoutes } from "@src/routes/router";
 import { createGraphQLFetchMiddleware } from "@src/util/graphQLClientMiddleware";
-import { getSiteConfigForDomain } from "@src/util/siteConfig";
-import { getSiteContext } from "@src/util/siteContext";
-import { createMiddleware } from "hono/factory";
+import { getHostByHeaders, getSiteConfigForDomain, getSiteConfigForHost } from "@src/util/siteConfig";
+import { type NextRequest, NextResponse } from "next/server";
 
 import { memoryCache } from "./cache";
+import type { CustomMiddleware } from "./chain";
 import type { GQLPredefinedPagesQuery, GQLPredefinedPagesQueryVariables } from "./predefinedPages.generated";
 
 async function getPredefinedPageRedirect(domain: string, pathname: string): Promise<string | undefined> {
@@ -77,24 +76,29 @@ async function fetchPredefinedPages(domain: string) {
     });
 }
 
-export const predefinedPagesMiddleware = createMiddleware(async (c, next) => {
-    const { domain } = getSiteContext();
+export function withPredefinedPagesMiddleware(middleware: CustomMiddleware) {
+    return async (request: NextRequest) => {
+        const headers = request.headers;
+        const host = getHostByHeaders(headers);
+        const siteConfig = await getSiteConfigForHost(host);
+        if (!siteConfig) {
+            throw new Error(`Cannot get siteConfig for host ${host}`);
+        }
 
-    const predefinedPageRedirect = await getPredefinedPageRedirect(domain, c.req.path);
+        const { pathname } = new URL(request.url);
 
-    if (predefinedPageRedirect) {
-        return c.redirect(predefinedPageRedirect, 307);
-    }
+        const predefinedPageRedirect = await getPredefinedPageRedirect(siteConfig.scope.domain, pathname);
 
-    // Predefined pages are only rendered, so other methods don't need to be rewritten (and their request body forwarded)
-    const predefinedPageRewrite = c.req.method === "GET" || c.req.method === "HEAD" ? await getPredefinedPageRewrite(domain, c.req.path) : undefined;
+        if (predefinedPageRedirect) {
+            return NextResponse.redirect(new URL(predefinedPageRedirect, request.url), 307);
+        }
 
-    if (predefinedPageRewrite) {
-        // Hono routes by the original path, so the rewritten request is handed to the site routes directly
-        const url = new URL(c.req.url);
-        url.pathname = predefinedPageRewrite;
-        return siteRoutes.fetch(new Request(url, c.req.raw));
-    }
+        const predefinedPageRewrite = await getPredefinedPageRewrite(siteConfig.scope.domain, pathname);
 
-    await next();
-});
+        if (predefinedPageRewrite) {
+            request.nextUrl.pathname = predefinedPageRewrite; //don't use NextResponse.rewrite, as domainRewrite middleware does this (and uses the modified pathname)
+        }
+
+        return middleware(request);
+    };
+}

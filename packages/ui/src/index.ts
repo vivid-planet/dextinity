@@ -1,6 +1,7 @@
 export { Button, type ButtonOwnerState, type ButtonProps } from "./components/button/Button";
 export { Chip, type ChipOwnerState, type ChipProps } from "./components/chip/Chip";
 export { FormHelperText, type FormHelperTextOwnerState, type FormHelperTextProps } from "./components/formHelperText/FormHelperText";
+export { FormLabel, type FormLabelOwnerState, type FormLabelProps } from "./components/formLabel/FormLabel";
 export { Icon, type IconProps } from "./components/icon/Icon";
 export type { DefaultIconName, DefaultIconRegistry, IconName, IconRegistry } from "./components/icon/iconRegistry";
 export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";

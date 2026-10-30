@@ -7,15 +7,17 @@ import { publicCacheControl } from "../helpers.js";
 import { ClientError, ClientNotFound, ClientRouterInfo } from "./clientComponents.js";
 import { Layout } from "./Layout.js";
 import { Nested, RequestInfo, ServerError, ServerNotFound, ServerRedirect } from "./serverComponents.js";
+import { TestPage } from "./TestPage.js";
 
 type TestPageOptions = {
+    title?: string;
     notFound?: () => ReactNode;
     error?: () => ReactNode;
 };
 
 function renderTestPage(c: Context, root: ReactNode, options: TestPageOptions = {}) {
     return renderPage(c, {
-        root: <Layout>{root}</Layout>,
+        root: <Layout title={options.title}>{root}</Layout>,
         notFound:
             options.notFound ??
             (() => (
@@ -46,6 +48,14 @@ app.use(async (c, next) => {
 });
 
 app.get("/", (c) => renderTestPage(c, <p>Home page</p>));
+
+app.get("/favicon.ico", (c) => c.body(null, 204)); // Browsers request it, a 404 would be an error in the browser tests
+
+app.get("/pages/:name", async (c) => {
+    await new Promise((resolve) => setTimeout(resolve, Number(c.req.query("delay") ?? 0)));
+    const name = c.req.param("name");
+    return renderTestPage(c, <TestPage name={name} />, { title: name });
+});
 
 app.get("/request", (c) =>
     renderTestPage(
@@ -98,6 +108,8 @@ app.get("/redirect", (c) => {
 app.get("/redirect-in-handler", () => redirect("/request"));
 
 app.get("/raw-redirect", (c) => c.redirect(c.req.query("location") ?? "/request"));
+
+app.get("/redirect-loop", (c) => c.redirect("/redirect-loop"));
 
 app.get("/redirect-with-cookie", (c) => {
     c.header("Set-Cookie", "redirected=1; Path=/");

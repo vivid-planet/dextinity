@@ -11,6 +11,13 @@ export async function Nested({ children }: PropsWithChildren) {
     return <section>{children}</section>;
 }
 
+let renderCount = 0;
+
+export function RenderCount() {
+    renderCount += 1;
+    return <p>{`Server render ${renderCount}`}</p>;
+}
+
 export function RequestInfo() {
     const url = new URL(getRequest().url);
     return <p>{`Server pathname: ${url.pathname}, search: ${url.search}, RSC request: ${isRscRequest()}`}</p>;

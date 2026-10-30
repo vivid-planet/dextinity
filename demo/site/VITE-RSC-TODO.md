@@ -123,9 +123,13 @@ The old Next.js demo had the identical CSP with `'unsafe-inline'` (Next.js write
 - Still open: router path splitting and sitemap/robots output (need the demo's API), see also #40.
 - Ref: plugin-rsc `e2e/fixture.ts` (`useFixture` with dev/build modes).
 
-### #40 Add browser tests against the test app
+### #40 Add browser tests against the test app (done)
 
-Playwright with a browser against the same test app (`e2e/fixture/`): client navigation without full reload, title/meta update, back/forward, hydration without console errors, navigation to a 404/redirect (full load, final URL, #1/#4/#38), `GlobalErrorBoundary` fallback and reset (#2). `Link` vs. plain `<a>` (#13), abort, scroll restoration incl. fragments and reload, pending state, announcement and focus (#14, scenarios as measured there) and later CSP violations (#16). CI needs `playwright install chromium-headless-shell` like the Storybook job. Optionally also a few smoke tests against the real demo (needs Docker + API, run manually or nightly). With an empty Vite cache (always in CI), dev discovers dependencies of client components late and reloads the page ("Outdated Optimize Dep"); if that makes the tests flaky, add the `"use client"` files to `environments.client.optimizeDeps.entries` (measured during #10: removes the reload).
+Playwright with Chromium against the test app (`e2e/fixture/`, `/pages/:name` with links, router controls and long content), in dev and in the production build, in the CI job "Test (e2e)": hydration, `Link` vs. plain `<a>`, modifier clicks and `target`, `useRouter()`, title, announcement and focus, back/forward, pending state and abort, not found page (#1/#13/#14), redirects including other origins, cookies and loops (#38), `GlobalErrorBoundary` fallback and reset (#2), scroll restoration including `scroll={false}`, fragments and reload (#14). Every error in the browser fails a test unless it allows it. No reloads by late dependency discovery in dev with an empty Vite cache (measured twice), so no `optimizeDeps.entries`. Firefox and WebKit later, once the tests are stable; CSP violations with #16.
+
+### #48 Add browser smoke tests against the demo
+
+A few tests against the real demo site (needs Docker and the API, so run manually or nightly, not in the regular CI job): pages render without errors, client navigation, site preview in the admin.
 
 ### #41 Fix back navigation to a full page load in dev
 

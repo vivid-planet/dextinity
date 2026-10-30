@@ -1,14 +1,15 @@
 import type { PropsWithChildren } from "react";
 
-import { ClientPreviewInfo } from "./clientComponents.js";
+import { ClientPreviewInfo, HydrationMarker } from "./clientComponents.js";
 
-export function Layout({ children }: PropsWithChildren) {
+export function Layout({ title = "Fixture", children }: PropsWithChildren<{ title?: string }>) {
     return (
         <html lang="en">
             <head>
-                <title>Fixture</title>
+                <title>{title}</title>
             </head>
             <body>
+                <HydrationMarker />
                 <ClientPreviewInfo />
                 {children}
             </body>

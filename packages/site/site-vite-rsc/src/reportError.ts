@@ -14,5 +14,11 @@ export function setErrorReporter(reporter: ErrorReporter) {
  * see the `reportError` option of `dextinitySite()`
  */
 export function reportError(error: unknown) {
-    reportErrorOfSite(error);
+    try {
+        reportErrorOfSite(error);
+    } catch (reporterError) {
+        // The callers recover after reporting, e.g. by responding with an error page or by a full page load
+        console.error(error);
+        console.error(reporterError);
+    }
 }

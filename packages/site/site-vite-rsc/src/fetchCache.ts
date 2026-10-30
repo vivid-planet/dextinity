@@ -46,7 +46,15 @@ function isCacheable(response: Response, body: string) {
 export function createCachingFetch(baseFetch: Fetch, { revalidateInSeconds, store }: { revalidateInSeconds: number; store: FetchCacheStore }): Fetch {
     const inFlightRequests = new Map<string, Promise<CachedResponse | Response>>();
 
-    function fetchAndCache(key: string, request: Request, body: Uint8Array<ArrayBuffer>): Promise<CachedResponse | Response> {
+    function fetchAndCache({
+        key,
+        request,
+        body,
+    }: {
+        key: string;
+        request: Request;
+        body: Uint8Array<ArrayBuffer>;
+    }): Promise<CachedResponse | Response> {
         let inFlightRequest = inFlightRequests.get(key);
         if (!inFlightRequest) {
             inFlightRequest = (async () => {
@@ -90,13 +98,13 @@ export function createCachingFetch(baseFetch: Fetch, { revalidateInSeconds, stor
         let cachedResponse: CachedResponse | Response;
         if (cacheEntry) {
             if (Date.now() - cacheEntry.lastModified > revalidateInSeconds * 1000) {
-                fetchAndCache(key, request, body).catch((error) => {
+                fetchAndCache({ key, request, body }).catch((error) => {
                     console.error("FetchCache: background revalidation failed", request.url, error);
                 });
             }
             cachedResponse = cacheEntry.value;
         } else {
-            cachedResponse = await fetchAndCache(key, request, body);
+            cachedResponse = await fetchAndCache({ key, request, body });
         }
 
         if (cachedResponse instanceof Response) {

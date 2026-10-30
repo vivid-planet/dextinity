@@ -16,5 +16,10 @@ export const BlockPreview = createBlockPreview({
             render: (data: TextBlockData) => <p>{`Wrapped preview: ${data.text} (${data.loadedAs})`}</p>,
         }),
     },
-    loadBlockData: async ({ blockType, block }) => ({ ...(block as TextBlockData), loadedAs: blockType }),
+    loadBlockData: async ({ blockType, block }) => {
+        if ((block as TextBlockData).text === "Failing") {
+            throw new Error("Loading the block data failed");
+        }
+        return { ...(block as TextBlockData), loadedAs: blockType };
+    },
 });

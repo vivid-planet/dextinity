@@ -8,7 +8,8 @@ import type { RscPayload } from "./render.js";
 import { reportError } from "./reportError.js";
 
 type RenderHtmlResult =
-    | { stream: ReadableStream<Uint8Array> }
+    /** `hasError` when a Suspense boundary is rendered by the browser instead, as its content failed */
+    | { stream: ReadableStream<Uint8Array>; hasError: boolean }
     /** `notFound()` or `redirect()` was called by a client component */
     | { navigationDigest: string }
     /** Rendering the shell failed */
@@ -24,15 +25,19 @@ export async function renderHtml(rscStream: ReadableStream<Uint8Array>): Promise
         return use(payload).root;
     }
 
-    let htmlStream: ReadableStream<Uint8Array>;
+    let navigationDigest: string | undefined;
+    let hasError = false;
+    let htmlStream: Awaited<ReturnType<typeof renderToReadableStream>>;
     try {
         htmlStream = await renderToReadableStream(<SsrRoot />, {
             bootstrapScriptContent: `import(${JSON.stringify(getClientEntryUrl())})`,
             onError(error: unknown) {
                 const digest = getNavigationErrorDigest(error);
                 if (digest) {
+                    navigationDigest ??= digest;
                     return digest;
                 }
+                hasError = true;
                 reportError(error);
                 return undefined;
             },
@@ -46,8 +51,15 @@ export async function renderHtml(rscStream: ReadableStream<Uint8Array>): Promise
         return { hasFailed: true };
     }
 
+    // Errors inside Suspense boundaries don't fail the shell, so the status is only known when everything is rendered
+    await htmlStream.allReady;
+    if (navigationDigest) {
+        await Promise.all([htmlStream.cancel(), browserRscStream.cancel()]);
+        return { navigationDigest };
+    }
+
     // The RSC payload is embedded into the HTML for hydration
-    return { stream: htmlStream.pipeThrough(injectRSCPayload(browserRscStream)) };
+    return { stream: htmlStream.pipeThrough(injectRSCPayload(browserRscStream)), hasError };
 }
 
 if (import.meta.hot) {

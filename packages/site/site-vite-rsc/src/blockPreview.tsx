@@ -4,6 +4,7 @@ import { BlockPreviewProvider, IFrameBridgeProvider, useIFrameBridge } from "@de
 import { type ReactNode, useEffect, useState } from "react";
 
 import { notFound } from "./navigation.js";
+import { reportError } from "./reportError.js";
 
 export type BlockPreviewDefinition<BlockType extends string = string> = {
     /** Passed to `loadBlockData`, e.g. to run the loaders of the block and its child blocks */
@@ -55,7 +56,13 @@ export function createBlockPreview<BlockType extends string>({ previews, loadBlo
                     setData(loadedData);
                 }
             }
-            load();
+            load().catch((error: unknown) => {
+                reportError(error);
+                // Rather than the previous block, which the editor would take for the changed one
+                if (isCurrent) {
+                    setData(undefined);
+                }
+            });
             return () => {
                 isCurrent = false;
             };

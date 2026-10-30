@@ -13,6 +13,8 @@ import {
     BlockDataInterface,
     BlockInputFactory,
     BlockInputInterface,
+    type BlockMetaTipTap,
+    type BlockMetaTipTapStyledNode,
     ChildBlockInfo,
     registerBlock,
 } from "../block";
@@ -49,6 +51,7 @@ import {
     resolveTextBlocks,
     type TipTapListOptions,
     type TipTapResolvedList,
+    type TipTapResolvedStyledNode,
     type TipTapResolvedTextBlock,
     type TipTapTextBlock,
     unorderedListName,
@@ -309,6 +312,43 @@ export function buildExtensions({
         ...(hasBlockChildBlocks ? [CmsBlock] : []),
         ...(hasInlineChildBlocks ? [CmsInlineBlock] : []),
     ];
+}
+
+const getStyledNodeMeta = ({ styles, defaultStyle }: TipTapResolvedStyledNode): BlockMetaTipTapStyledNode => ({
+    styles: styles.map((style) => style.name),
+    defaultStyle,
+});
+
+function buildTipTapBlockMeta({
+    schema,
+    resolvedOptions,
+    inlineStyles,
+    placeholders,
+    linkBlock,
+    maxTextBlocks,
+    listLevelMax,
+}: {
+    schema: Schema;
+    resolvedOptions: TipTapResolvedOptions;
+    inlineStyles: TipTapInlineStyle[];
+    placeholders: TipTapPlaceholder[];
+    linkBlock?: Block;
+    maxTextBlocks?: number;
+    listLevelMax?: number;
+}): BlockMetaTipTap {
+    return {
+        nodes: Object.keys(schema.nodes),
+        marks: Object.keys(schema.marks),
+        textBlocks: resolvedOptions.textBlocks.map((textBlock) => ({ name: textBlock.name, tag: textBlock.tag, ...getStyledNodeMeta(textBlock) })),
+        defaultTextBlock: resolvedOptions.defaultTextBlock.name,
+        orderedList: resolvedOptions.orderedList ? getStyledNodeMeta(resolvedOptions.orderedList) : null,
+        unorderedList: resolvedOptions.unorderedList ? getStyledNodeMeta(resolvedOptions.unorderedList) : null,
+        inlineStyles: inlineStyles.map(({ name, appliesTo }) => ({ name, appliesTo: appliesTo ?? null })),
+        placeholders: placeholders.map((placeholder) => placeholder.name),
+        link: linkBlock?.name ?? null,
+        maxTextBlocks: maxTextBlocks ?? null,
+        listLevelMax: listLevelMax ?? null,
+    };
 }
 
 // checks the raw JSON for mark types that don't exist in the schema.
@@ -672,7 +712,19 @@ export function createTipTapRichTextBlock(
     } = options;
     const { name: blockName, description: blockDescription } = withDefaultDescription(
         nameOrOptions,
-        "Formatted text, edited in the TipTap based rich text editor.",
+        [
+            "Formatted text, edited in the TipTap based rich text editor.",
+            "`tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected:",
+            "use only the node and mark types in `nodes` and `marks`.",
+            "Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`.",
+            "Without a `textBlock` attribute, a node becomes the `defaultTextBlock`.",
+            "Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`.",
+            "An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`.",
+            "A `placeholder` node's `name` names one of `placeholders`.",
+            "A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta).",
+            "A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta).",
+            "Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
+        ].join(" "),
     );
     const migrate = typeof nameOrOptions !== "string" ? nameOrOptions.migrate : undefined;
 
@@ -690,6 +742,7 @@ export function createTipTapRichTextBlock(
         hasInlineChildBlocks,
     });
     const schema = getSchema(extensions);
+    const tipTap = buildTipTapBlockMeta({ schema, resolvedOptions, inlineStyles, placeholders, linkBlock: LinkBlock, maxTextBlocks, listLevelMax });
 
     const draftJsTextBlockMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.textBlockMap : undefined;
     const draftJsListItemMap = typeof migrateFromDraftJs === "object" ? migrateFromDraftJs.listItemMap : undefined;
@@ -728,7 +781,7 @@ export function createTipTapRichTextBlock(
 
     @BlockDataMigrationVersion(migrate?.version, migrateVendor?.version)
     class TipTapRichTextBlockData extends BlockData implements TipTapRichTextBlockDataInterface {
-        @BlockField({ type: "tipTapRichTextBlock", childBlocks })
+        @BlockField({ type: "tipTapRichTextBlock", childBlocks, tipTap })
         tipTapContent: JSONContent;
 
         searchText(): SearchText[] {
@@ -792,7 +845,7 @@ export function createTipTapRichTextBlock(
             orderedList: resolvedOptions.orderedList,
             unorderedList: resolvedOptions.unorderedList,
         })
-        @BlockField({ type: "tipTapRichTextBlock", childBlocks })
+        @BlockField({ type: "tipTapRichTextBlock", childBlocks, tipTap })
         tipTapContent: JSONContent;
 
         transformToBlockData(): TipTapRichTextBlockData {

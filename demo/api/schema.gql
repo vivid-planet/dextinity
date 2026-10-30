@@ -2005,11 +2005,6 @@ input ProductVariantUpdateInput {
 
 type Query {
   actionLogs(entity: String!, filter: ActionLogFilter, limit: Int! = 25, offset: Int! = 0, scope: JSONObject!, sort: [ActionLogSort!]): PaginatedActionLogs!
-
-  """
-  Returns the action log of all entities, restricted to the entries the user could read in the action log of each entity.
-  """
-  allActionLogs(filter: ActionLogFilter, limit: Int! = 25, offset: Int! = 0, sort: [ActionLogSort!]): PaginatedActionLogs!
   autoBuildStatus: AutoBuildStatus!
   blockPreviewJwt(includeInvisible: Boolean!, scope: JSONObject!, url: String!): String!
   brevoConfig(scope: EmailCampaignContentScopeInput!): BrevoConfig
@@ -2066,6 +2061,11 @@ type Query {
   manufacturer(id: ID!): Manufacturer!
   manufacturerCountries(filter: ManufacturerCountryFilter, limit: Int! = 25, offset: Int! = 0, search: String): PaginatedManufacturerCountries!
   manufacturers(filter: ManufacturerFilter, limit: Int! = 25, offset: Int! = 0, search: String, sort: [ManufacturerSort!]! = [{direction: ASC, field: id}]): PaginatedManufacturers!
+
+  """
+  Returns the action log of all entities, restricted to the entries the current user could read in the action log of each entity.
+  """
+  myActionLogs(filter: ActionLogFilter, limit: Int! = 25, offset: Int! = 0, sort: [ActionLogSort!]): PaginatedActionLogs!
   myFullTextSearch(limit: Int! = 25, offset: Int! = 0, scope: JSONObject, search: String!): PaginatedEntityInfo!
   news(id: ID!): News!
   newsBySlug(scope: NewsContentScopeInput!, slug: String!): News

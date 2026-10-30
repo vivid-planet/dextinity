@@ -158,7 +158,7 @@ describe("ActionLogsResolver", () => {
 
     it("returns an empty page of all action logs when the user can read no entity", async () => {
         await expect(
-            resolver.allActionLogs({ offset: 0, limit: 25 }, user("actionLog" as Permission, [{ domain: "main", language: "en" }])),
+            resolver.myActionLogs({ offset: 0, limit: 25 }, user("actionLog" as Permission, [{ domain: "main", language: "en" }])),
         ).resolves.toMatchObject({ nodes: [], totalCount: 0 });
     });
 

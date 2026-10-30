@@ -87,7 +87,7 @@ export const globalActionLogHandlers = [
     graphql.query("GlobalActionLogGrid", () =>
         HttpResponse.json({
             data: {
-                allActionLogs: { __typename: "PaginatedActionLogs", nodes: mockNodes, totalCount: mockNodes.length },
+                myActionLogs: { __typename: "PaginatedActionLogs", nodes: mockNodes, totalCount: mockNodes.length },
             },
         }),
     ),

@@ -93,7 +93,7 @@ export function GlobalActionLogGrid() {
         },
     });
 
-    const rowCount = useBufferedRowCount(data?.allActionLogs.totalCount);
+    const rowCount = useBufferedRowCount(data?.myActionLogs.totalCount);
 
     if (error) {
         throw error;
@@ -104,7 +104,7 @@ export function GlobalActionLogGrid() {
             <DataGrid
                 {...dataGridProps}
                 columns={columns}
-                rows={data?.allActionLogs.nodes ?? []}
+                rows={data?.myActionLogs.nodes ?? []}
                 rowCount={rowCount}
                 loading={loading}
                 disableRowSelectionOnClick

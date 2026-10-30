@@ -22,7 +22,7 @@ import { containsAllScopes } from "./contains-all-scopes";
 import { ActionLogType } from "./dto/action-log-type.enum";
 import { ActionLogsArgs } from "./dto/action-logs.args";
 import { ActionLogsUser } from "./dto/action-logs-user";
-import { AllActionLogsArgs } from "./dto/all-action-logs.args";
+import { MyActionLogsArgs } from "./dto/my-action-logs.args";
 import { PaginatedActionLogs } from "./dto/paginated-action-logs";
 import { ActionLog } from "./entities/action-log.entity";
 import { PreviousActionLogLoaderService } from "./previous-action-log-loader.service";
@@ -89,11 +89,12 @@ export class ActionLogsResolver {
     }
 
     @Query(() => PaginatedActionLogs, {
-        description: "Returns the action log of all entities, restricted to the entries the user could read in the action log of each entity.",
+        description:
+            "Returns the action log of all entities, restricted to the entries the current user could read in the action log of each entity.",
     })
     @RequiredPermission("actionLog", { skipScopeCheck: true })
-    async allActionLogs(
-        @Args() { filter, offset, limit, sort }: AllActionLogsArgs,
+    async myActionLogs(
+        @Args() { filter, offset, limit, sort }: MyActionLogsArgs,
         @GetCurrentUser() user: CurrentUser | SystemUser,
     ): Promise<PaginatedActionLogs> {
         const readableActionLogsFilter = await this.actionLogsAclService.getReadableActionLogsFilter(user);

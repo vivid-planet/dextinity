@@ -8,7 +8,7 @@ import { ActionLogFilter } from "./action-log.filter";
 import { ActionLogSort } from "./action-log.sort";
 
 @ArgsType()
-export class AllActionLogsArgs extends OffsetBasedPaginationArgs {
+export class MyActionLogsArgs extends OffsetBasedPaginationArgs {
     @Field(() => ActionLogFilter, { nullable: true })
     @ValidateNested()
     @Type(() => ActionLogFilter)

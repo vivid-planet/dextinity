@@ -558,9 +558,9 @@ type Query {
   actionLogs(offset: Int! = 0, limit: Int! = 25, entity: String!, scope: JSONObject!, filter: ActionLogFilter, sort: [ActionLogSort!]): PaginatedActionLogs!
 
   """
-  Returns the action log of all entities, restricted to the entries the user could read in the action log of each entity.
+  Returns the action log of all entities, restricted to the entries the current user could read in the action log of each entity.
   """
-  allActionLogs(offset: Int! = 0, limit: Int! = 25, filter: ActionLogFilter, sort: [ActionLogSort!]): PaginatedActionLogs!
+  myActionLogs(offset: Int! = 0, limit: Int! = 25, filter: ActionLogFilter, sort: [ActionLogSort!]): PaginatedActionLogs!
   builds(limit: Float): [Build!]!
   autoBuildStatus: AutoBuildStatus!
   buildTemplates: [BuildTemplate!]!

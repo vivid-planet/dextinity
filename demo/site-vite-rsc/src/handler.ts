@@ -31,8 +31,8 @@ app.use(trailingSlashRedirectMiddleware);
 app.get("/api/status", statusRoute);
 app.all("/dam/*", damRoute);
 app.route("/api", mailRoutes);
-// Unknown API routes and missing static files don't need the site middlewares
-app.on("ALL", ["/api/*", "/assets/*", "/_assets/*", "/favicon.ico", "/apple-icon.png", "/icon.svg", "/manifest.json"], renderRootNotFoundPage);
+// Unknown API routes and missing build files and icons don't need the site middlewares, missing files in /assets render the site's not found page
+app.on("ALL", ["/api/*", "/_assets/*", "/favicon.ico", "/apple-icon.png", "/icon.svg", "/manifest.json"], renderRootNotFoundPage);
 
 app.use(contentSecurityPolicyHeadersMiddleware);
 

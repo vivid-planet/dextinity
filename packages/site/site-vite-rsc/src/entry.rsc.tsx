@@ -1,11 +1,14 @@
 import { app } from "virtual:dextinity-site/app";
+import { reportError as reportErrorOfSite } from "virtual:dextinity-site/report-error";
 
 import { noStoreCacheControl } from "./cacheControl.js";
 import { isAllowedRedirectTarget } from "./redirectTarget.js";
 import { renderRedirectPayload } from "./render.js";
-import { reportError } from "./reportError.js";
+import { reportError, setErrorReporter } from "./reportError.js";
 import { runWithRequestContext } from "./requestContext.js";
 import { stripRscPrefix } from "./rscRequest.js";
+
+setErrorReporter(reportErrorOfSite);
 
 const redirectStatuses = [301, 302, 303, 307, 308];
 

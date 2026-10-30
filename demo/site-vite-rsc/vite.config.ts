@@ -5,7 +5,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
     plugins: [
-        dextinitySite({ app: "./src/handler.ts" }),
+        dextinitySite({ app: "./src/handler.ts", reportError: "./src/util/reportError.ts" }),
         persistedQueriesPlugin({ persistedQueriesPath: "dist/persisted-queries.json", include: resolve(import.meta.dirname, "src") }),
     ],
     resolve: {

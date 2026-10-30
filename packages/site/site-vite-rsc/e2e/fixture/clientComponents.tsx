@@ -46,6 +46,6 @@ export function ClientNotFound(): never {
     notFound();
 }
 
-export function ClientError(): never {
-    throw new Error("Client component failed");
+export function ClientError({ id = "" }: { id?: string }): never {
+    throw new Error(`Client component failed${id}`);
 }

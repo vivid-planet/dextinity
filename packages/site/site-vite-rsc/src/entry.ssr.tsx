@@ -2,10 +2,13 @@ import { createFromReadableStream, getClientEntryUrl } from "@vitejs/plugin-rsc/
 import { use } from "react";
 import { renderToReadableStream } from "react-dom/server.edge";
 import { injectRSCPayload } from "rsc-html-stream/server";
+import { reportError as reportErrorOfSite } from "virtual:dextinity-site/report-error";
 
 import { getNavigationErrorDigest } from "./navigation.js";
 import type { RscPayload } from "./render.js";
-import { reportError } from "./reportError.js";
+import { reportError, setErrorReporter } from "./reportError.js";
+
+setErrorReporter(reportErrorOfSite);
 
 type RenderHtmlResult =
     /** `hasError` when a Suspense boundary is rendered by the browser instead, as its content failed */

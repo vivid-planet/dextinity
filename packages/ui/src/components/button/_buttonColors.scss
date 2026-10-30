@@ -1,0 +1,38 @@
+$colors: primary, secondary, error, success;
+$variants: contained, outlined, text;
+
+@mixin _stateColors($color, $variant, $state) {
+    background: var(--dextinity-button-color-#{$color}-#{$variant}-#{$state}-background);
+    border-color: var(--dextinity-button-color-#{$color}-#{$variant}-#{$state}-border);
+    color: var(--dextinity-button-color-#{$color}-#{$variant}-#{$state}-foreground);
+}
+
+@mixin colors {
+    @each $color in $colors {
+        @each $variant in $variants {
+            &[data-color="#{$color}"][data-variant="#{$variant}"] {
+                @include _stateColors($color, $variant, default);
+
+                &:hover:not([data-loading], [data-disabled]) {
+                    @include _stateColors($color, $variant, hover);
+                }
+
+                &:focus-visible:not([data-loading], [data-disabled]) {
+                    @include _stateColors($color, $variant, focus);
+                }
+
+                &:active:not([data-loading], [data-disabled]) {
+                    @include _stateColors($color, $variant, active);
+                }
+
+                &[data-loading] {
+                    @include _stateColors($color, $variant, loading);
+                }
+
+                &[data-disabled] {
+                    @include _stateColors($color, $variant, disabled);
+                }
+            }
+        }
+    }
+}

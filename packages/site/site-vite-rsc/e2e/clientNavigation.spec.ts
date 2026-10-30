@@ -43,6 +43,23 @@ test("leaves plain links to the browser", async ({ page, documentRequests, rscRe
     expect(rscRequests).toEqual([]);
 });
 
+test("loads the stylesheets when going back to a page left with a full page load", async ({ page }) => {
+    await openPage(page, "/pages/first");
+    await page.getByRole("link", { name: "Plain link to second", exact: true }).click();
+    await expect(heading(page)).toHaveText("second");
+    await page.locator("html[data-hydrated]").waitFor({ state: "attached" });
+
+    await page.goBack();
+
+    await expect(heading(page)).toHaveText("first");
+    // In dev, the client component also imports the CSS as JS module, which styles the text even if the stylesheet is broken
+    const stylesheetsHaveRules = await page.evaluate(() =>
+        [...document.querySelectorAll<HTMLLinkElement>("link[rel=stylesheet]")].map((link) => (link.sheet?.cssRules.length ?? 0) > 0),
+    );
+    expect(stylesheetsHaveRules).toEqual([true]);
+    await expect(page.getByText("Styled text")).toHaveCSS("color", "rgb(0, 128, 0)");
+});
+
 test("leaves clicks with modifier keys and links to other targets to the browser", async ({ page, context, rscRequests }) => {
     await openPage(page, "/pages/first");
 

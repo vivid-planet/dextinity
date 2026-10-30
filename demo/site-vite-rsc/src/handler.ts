@@ -1,4 +1,5 @@
 import {
+    cdnOriginCheckMiddleware,
     errorResponseCacheControlMiddleware,
     handleError,
     sitePreviewMiddleware,
@@ -21,6 +22,9 @@ import { siteContextMiddleware } from "./middleware/siteContext";
 // Middlewares only apply to the routes registered after them, a route that responds skips the rest
 export const app = new Hono();
 
+if (process.env.CDN_ORIGIN_CHECK_SECRET) {
+    app.use(cdnOriginCheckMiddleware({ secret: process.env.CDN_ORIGIN_CHECK_SECRET }));
+}
 app.use(securityHeadersMiddleware, errorResponseCacheControlMiddleware);
 if (import.meta.env.PROD) {
     app.use(staticFilesMiddleware);

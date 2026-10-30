@@ -6,7 +6,6 @@ import { createRequestListener } from "@dextinity/site-vite-rsc/node";
 const dev = process.env.NODE_ENV !== "production";
 const host = process.env.SERVER_HOST ?? "localhost";
 const port = parseInt(process.env.SITE_PORT || "3000", 10);
-const cdnOriginCheckSecret = process.env.CDN_ORIGIN_CHECK_SECRET;
 
 async function main() {
     process.on("unhandledRejection", (reason) => {
@@ -26,14 +25,6 @@ async function main() {
     server
         .on("request", async (req: IncomingMessage, res: ServerResponse) => {
             try {
-                if (cdnOriginCheckSecret) {
-                    if (req.headers["x-cdn-origin-check"] !== cdnOriginCheckSecret) {
-                        res.statusCode = 403;
-                        res.end();
-                        return;
-                    }
-                }
-
                 await handle(req, res);
             } catch (err) {
                 console.error("Error occurred handling", req.url, err);

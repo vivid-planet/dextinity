@@ -224,9 +224,9 @@ In the admin's site preview, `SitePreviewProvider` marks the page as site previe
 | 31  | Persisted queries Vite plugin (counterpart to site-react's webpack loader)                                                                           | `vitePersistedQueriesPlugin.ts`                                     | done (#31)          |
 | 32  | `SitePreviewProvider`                                                                                                                                | `src/util/SitePreviewProvider.tsx`                                  | done (#32)          |
 
-### #45 Move the CDN origin check into a middleware
+### #45 Move the CDN origin check into a middleware (done)
 
-`server.ts` still compares the `x-cdn-origin-check` header with `CDN_ORIGIN_CHECK_SECRET` itself (403 without the right header, copied from the Next.js site), so every project copies it. Move it into a Hono middleware in `@dextinity/site-vite-rsc/server`, e.g. `cdnOriginCheckMiddleware({ secret })`, registered first in the project's app so it also covers the static files served by `staticFilesMiddleware` in production (during development Vite serves its files before the app, where the check isn't needed). Compare in constant time (`crypto.timingSafeEqual`) instead of `!==`. Then `server.ts` only keeps tracing, metrics and `listen`.
+`server.ts` compared the `x-cdn-origin-check` header with `CDN_ORIGIN_CHECK_SECRET` itself with `!==` (403 without the right header, copied from the Next.js site), so every project copied it. Added `cdnOriginCheckMiddleware({ secret })` to `@dextinity/site-vite-rsc/server`: it answers requests without the right header with 403 and `Cache-Control: no-store` and compares SHA-256 hashes of both values with `timingSafeEqual`, so neither the secret nor its length leaks through timing. The demo registers it first in `handler.ts` when `CDN_ORIGIN_CHECK_SECRET` is set, so it also covers the static files of `staticFilesMiddleware` in production (during development Vite serves its files before the app, where the check isn't needed). `server.ts` only keeps tracing, error handling and `listen`.
 
 ## Library `@dextinity/site-react` (framework-independent, also usable by site-nextjs; needs changesets)
 

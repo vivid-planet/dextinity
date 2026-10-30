@@ -90,6 +90,13 @@ app.get("/block-preview/:domain/:language/:type", (c) =>
 - `staticFilesMiddleware` serves the client build in production, `_assets` with a long cache duration
 - `errorResponseCacheControlMiddleware` prevents caching of error responses
 - `trailingSlashRedirectMiddleware` redirects URLs with a trailing slash
+- `cdnOriginCheckMiddleware({ secret })` answers requests without the `x-cdn-origin-check` header set to `secret` with 403, so the site is only reachable via the CDN. Register it first, so it also covers the static files:
+
+```ts
+if (process.env.CDN_ORIGIN_CHECK_SECRET) {
+    app.use(cdnOriginCheckMiddleware({ secret: process.env.CDN_ORIGIN_CHECK_SECRET }));
+}
+```
 
 **Fetch cache** (`@dextinity/site-vite-rsc/server`)
 

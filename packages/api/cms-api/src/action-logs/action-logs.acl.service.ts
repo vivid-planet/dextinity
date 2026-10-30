@@ -76,10 +76,10 @@ export class ActionLogsAclService {
                 permissions.some((permission) => this.accessControlService.isAllowed(user, permission, contentScope));
 
             const allowedRowScopes = (rowScopesByEntity.get(entityName) ?? []).filter(isAllowedInScope);
-            const canReadUnscopedRows = allowedRowScopes.length > 0 || requestableContentScopes.some(isAllowedInScope);
+            const isAllowedToReadUnscopedRows = allowedRowScopes.length > 0 || requestableContentScopes.some(isAllowedInScope);
 
             const scopeConditions: ObjectQuery<ActionLog>[] = [];
-            if (canReadUnscopedRows) {
+            if (isAllowedToReadUnscopedRows) {
                 scopeConditions.push({ scope: null });
             }
             if (allowedRowScopes.length > 0) {

@@ -1,5 +1,6 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import eslintConfigNextJs from "@dextinity/eslint-config/future/nextjs.js";
+import storybook from "eslint-plugin-storybook";
 
 const docsLink = "https://cms-docs.dextinity.com/docs/faqs/environment-variables-in-site";
 
@@ -12,12 +13,14 @@ export default defineConfig([
         "lang-extracted/**",
         ".next/**",
         "public/**",
+        "storybook-static/**",
         "block-meta.json",
         "lang/**",
         "lang-compiled/**",
         "lang-extracted/**",
     ]),
     ...eslintConfigNextJs,
+    ...storybook.configs["flat/recommended"],
     {
         rules: {
             "no-restricted-syntax": [
@@ -27,6 +30,17 @@ export default defineConfig([
                     message: `Usage of process.env.NEXT_PUBLIC_* is not allowed. Use site configs or a custom provider instead. See ${docsLink}`,
                 },
             ],
+        },
+    },
+    {
+        // The storybook config files live outside tsconfig.json's `include`, in their own project.
+        files: [".storybook/**/*.{ts,tsx}", "vitest.config.ts"],
+        languageOptions: {
+            parserOptions: {
+                projectService: false,
+                project: ["./tsconfig.storybook.json"],
+                tsconfigRootDir: import.meta.dirname,
+            },
         },
     },
     {

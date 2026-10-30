@@ -1,11 +1,13 @@
 @use "../components/button/Button.tokens" as button;
 @use "../components/chip/Chip.tokens" as chip;
+@use "../components/formHelperText/FormHelperText.tokens" as formHelperText;
 @use "../components/iconButton/IconButton.tokens" as iconButton;
 
 @layer dextinity {
     [data-dextinity-color-scheme] {
         @include button.tokens;
         @include chip.tokens;
+        @include formHelperText.tokens;
         @include iconButton.tokens;
 
         --dextinity-checkbox-size: 20px;
@@ -91,8 +93,6 @@
         --dextinity-dialog-size-md-width: 1024px;
 
         --dextinity-dialog-size-lg-width: 1280px;
-
-        --dextinity-form-helper-text-gap: var(--dextinity-unit-1);
 
         --dextinity-form-label-gap: var(--dextinity-unit-1);
 
@@ -443,20 +443,6 @@
 
         --dextinity-select-option-state-disabled-background: var(--dextinity-color-transparent);
         --dextinity-select-option-state-disabled-foreground: var(--dextinity-color-foreground-subtle);
-
-        --dextinity-form-helper-text-gap-internal: var(--dextinity-unit-1-5);
-
-        --dextinity-form-helper-text-font-size: var(--dextinity-typography-body-sm-size);
-        --dextinity-form-helper-text-font-line-height: var(--dextinity-typography-body-sm-line-height);
-        --dextinity-form-helper-text-font-weight: var(--dextinity-font-weight-regular);
-
-        --dextinity-form-helper-text-font-weight-style: var(--dextinity-font-weight-regular-style);
-
-        --dextinity-form-helper-text-type-hint-foreground: var(--dextinity-color-foreground-muted);
-
-        --dextinity-form-helper-text-type-error-foreground: var(--dextinity-color-feedback-danger-default);
-
-        --dextinity-form-helper-text-count-foreground: var(--dextinity-color-foreground-muted);
 
         --dextinity-snackbar-radius: var(--dextinity-brand-radius-surface);
         --dextinity-snackbar-gap: var(--dextinity-unit-3);

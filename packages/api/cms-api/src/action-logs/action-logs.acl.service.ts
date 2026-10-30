@@ -26,7 +26,8 @@ export class ActionLogsAclService {
     /**
      * Restricts the action log of all entities to the rows the user could also read through the log of each entity.
      * That log asks `isAllowed` for one requested scope and returns the rows of exactly that scope. `isAllowed` cannot
-     * be translated into SQL, so it is asked here for each scope that occurs in the rows of a scoped entity.     *
+     * be translated into SQL, so it is asked here for each scope that occurs in the rows of a scoped entity.
+     *
      * @returns `null` when the user can read no row.
      */
     async getReadableActionLogsFilter(user: CurrentUser | SystemUser): Promise<ObjectQuery<ActionLog> | null> {

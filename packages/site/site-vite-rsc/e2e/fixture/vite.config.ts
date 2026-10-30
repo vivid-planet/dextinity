@@ -8,4 +8,10 @@ export default defineConfig({
     root: import.meta.dirname,
     cacheDir: resolve(import.meta.dirname, "../../node_modules/.vite-e2e"),
     plugins: [dextinitySite({ app: "./handler.tsx" })],
+    environments: {
+        client: {
+            // Client components are only loaded at runtime, so Vite would discover their dependencies late and reload the page
+            optimizeDeps: { include: ["@dextinity/site-vite-rsc > @dextinity/site-react"] },
+        },
+    },
 });

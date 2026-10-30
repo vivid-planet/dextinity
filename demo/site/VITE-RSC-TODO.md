@@ -125,11 +125,15 @@ The old Next.js demo had the identical CSP with `'unsafe-inline'` (Next.js write
 
 ### #40 Add browser tests against the test app (done)
 
-Playwright with Chromium against the test app (`e2e/fixture/`, `/pages/:name` with links, router controls and long content), in dev and in the production build, in the CI job "Test (e2e)": hydration, `Link` vs. plain `<a>`, modifier clicks and `target`, `useRouter()`, title, announcement and focus, back/forward, pending state and abort, not found page (#1/#13/#14), redirects including other origins, cookies and loops (#38), `GlobalErrorBoundary` fallback and reset (#2), scroll restoration including `scroll={false}`, fragments and reload (#14). Every error in the browser fails a test unless it allows it. No reloads by late dependency discovery in dev with an empty Vite cache (measured twice), so no `optimizeDeps.entries`. Firefox and WebKit later, once the tests are stable; CSP violations with #16.
+Playwright with Chromium against the test app (`e2e/fixture/`, `/pages/:name` with links, router controls and long content), in dev and in the production build, in the CI job "Test (e2e)": hydration, `Link` vs. plain `<a>`, modifier clicks and `target`, `useRouter()`, title, announcement and focus, back/forward, pending state and abort, not found page (#1/#13/#14), redirects including other origins, cookies and loops (#38), `GlobalErrorBoundary` fallback and reset (#2), scroll restoration including `scroll={false}`, fragments and reload (#14). Every error in the browser fails a test unless it allows it. With an empty Vite cache (always in CI), dev discovered the dependencies of `@dextinity/site-react` only after the first page load and reloaded it, the test app pre-bundles `site-react` (`optimizeDeps.include`, see #50). Firefox and WebKit later, once the tests are stable; CSP violations with #16.
 
 ### #48 Add browser smoke tests against the demo
 
 A few tests against the real demo site (needs Docker and the API, so run manually or nightly, not in the regular CI job): pages render without errors, client navigation, site preview in the admin.
+
+### #50 Avoid the reload after the first page load in dev
+
+With an empty Vite cache, the first page in dev is loaded twice: the scanner only crawls `entry.browser.js`, client components are loaded at runtime through the RSC payload, and as `dextinitySite()` excludes `@dextinity/site-vite-rsc` from pre-bundling (plugin-rsc has to transform its `"use client"` files), the dependencies of `@dextinity/site-react` are found late ("optimized dependencies changed. reloading"). The test app includes `@dextinity/site-vite-rsc > @dextinity/site-react` in `optimizeDeps`. For projects, `dextinitySite()` could do the same for the client environment, but in this monorepo the linked `site-react` would then be pre-bundled and stale while working on it with the demo running. Decide whether to do it only for installed packages, or to add the project's `"use client"` files to `optimizeDeps.entries` (measured during #10 in the demo).
 
 ### #41 Fix back navigation to a full page load in dev
 

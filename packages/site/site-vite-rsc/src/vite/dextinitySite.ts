@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 
 import react from "@vitejs/plugin-react";
 import rsc from "@vitejs/plugin-rsc";
-import type { Plugin, PluginOption } from "vite";
+import { isCSSRequest, type Plugin, type PluginOption } from "vite";
 
 const packageName = "@dextinity/site-vite-rsc";
 const appModuleId = "virtual:dextinity-site/app";
@@ -28,6 +28,7 @@ export function dextinitySite({ app }: DextinitySiteOptions): PluginOption[] {
         react(),
         dextinitySiteConfig(),
         dextinitySiteApp(app),
+        dextinitySiteDevCss(),
     ];
 }
 
@@ -42,6 +43,25 @@ function dextinitySiteApp(app: string): Plugin {
             if (source === appModuleId) {
                 return resolve(root, app);
             }
+        },
+    };
+}
+
+/**
+ * In dev, plugin-rsc renders the CSS of client components as `<link>` with the same URL that the client component imports as JS module.
+ * Vite answers with CSS or JS depending on the `Accept` header, so without `Vary: Accept` the browser uses the cached response of one for the other on back navigation.
+ */
+function dextinitySiteDevCss(): Plugin {
+    return {
+        name: `${packageName}:dev-css`,
+        apply: "serve",
+        configureServer(server) {
+            server.middlewares.use((req, res, next) => {
+                if (req.url && isCSSRequest(req.url)) {
+                    res.appendHeader("Vary", "Accept");
+                }
+                next();
+            });
         },
     };
 }

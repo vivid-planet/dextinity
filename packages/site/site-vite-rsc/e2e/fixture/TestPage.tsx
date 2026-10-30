@@ -2,6 +2,7 @@ import { Link } from "@dextinity/site-vite-rsc";
 
 import { ClientRouterInfo, RouterControls } from "./clientComponents.js";
 import { RenderCount } from "./serverComponents.js";
+import { StyledText } from "./StyledText.js";
 
 const paragraphNumbers = Array.from({ length: 60 }, (_, index) => index + 1);
 
@@ -19,6 +20,7 @@ export function TestPage({ name }: { name: string }) {
             <RenderCount />
             <ClientRouterInfo />
             <RouterControls />
+            <StyledText />
             <nav>
                 <Link href="/pages/second">Second</Link>
                 <Link href="/pages/second?page=2">Second with search</Link>

@@ -7,6 +7,7 @@ enum ActionLogSortField {
     version = "version",
     createdAt = "createdAt",
     entityName = "entityName",
+    scope = "scope",
 }
 registerEnumType(ActionLogSortField, {
     name: "ActionLogSortField",

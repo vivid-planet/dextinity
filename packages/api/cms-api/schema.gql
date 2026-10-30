@@ -626,8 +626,10 @@ type Query {
 input ActionLogFilter {
   userId: StringFilter
   entityId: IdFilter
+  entityName: StringFilter
   version: NumberFilter
   createdAt: DateTimeFilter
+  scope: ActionLogScopeFilter
   and: [ActionLogFilter!]
   or: [ActionLogFilter!]
 }
@@ -661,6 +663,13 @@ input DateTimeFilter {
   isNotEmpty: Boolean
 }
 
+input ActionLogScopeFilter {
+  isAnyOf: [JSONObject!]
+  equal: JSONObject
+  notEqual: JSONObject
+  isGlobal: Boolean
+}
+
 input ActionLogSort {
   field: ActionLogSortField!
   direction: SortDirection! = ASC
@@ -670,6 +679,7 @@ enum ActionLogSortField {
   version
   createdAt
   entityName
+  scope
 }
 
 input RedirectScopeInput {

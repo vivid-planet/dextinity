@@ -3,8 +3,9 @@ import { mergeConfig } from "vite";
 
 const config: StorybookConfig = {
     stories: ["../src/**/*.mdx", "../src/**/__stories__/*.stories.tsx"],
-    addons: ["@storybook/addon-docs", "@storybook/addon-vitest"],
+    addons: ["@storybook/addon-docs", "@storybook/addon-mcp", "@storybook/addon-vitest"],
     framework: "@storybook/react-vite",
+    features: { componentsManifest: true },
     viteFinal: (viteConfig) =>
         mergeConfig(viteConfig, {
             build: {

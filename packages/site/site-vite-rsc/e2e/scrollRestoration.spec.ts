@@ -2,6 +2,11 @@ import { clickInPlace, expect, getScrollY, openPage, scrollTo, test } from "./br
 
 const heading = (page: import("@playwright/test").Page) => page.getByRole("heading", { level: 1 });
 
+const getMaxScrollY = (page: import("@playwright/test").Page) => page.evaluate(() => document.documentElement.scrollHeight - window.innerHeight);
+
+// A different origin than localhost, like a link to another site
+const getOtherSiteUrl = (baseURL: string | undefined, path: string) => new URL(path, baseURL?.replace("localhost", "127.0.0.1")).href;
+
 test("scrolls to the top after navigating", async ({ page }) => {
     await openPage(page, "/pages/first");
     await scrollTo(page, 1500);
@@ -50,6 +55,44 @@ test("restores the scroll positions after a reload", async ({ page }) => {
     await expect.poll(() => getScrollY(page)).toBe(800);
 
     await page.goBack();
+    await expect(heading(page)).toHaveText("first");
+    await expect.poll(() => getScrollY(page)).toBe(1500);
+});
+
+test("restores the scroll position after a reload when the page grows until it's loaded", async ({ page }) => {
+    await openPage(page, "/pages/first?imageDelay=1000");
+    await page.waitForLoadState("load");
+    await scrollTo(page, await getMaxScrollY(page));
+    const scrollY = await getScrollY(page);
+
+    await page.reload();
+
+    await page.waitForLoadState("load");
+    await expect.poll(() => getScrollY(page)).toBe(scrollY);
+});
+
+test("restores the scroll position when returning from another site", async ({ page, baseURL }) => {
+    await openPage(page, "/pages/first?imageDelay=1000");
+    await page.waitForLoadState("load");
+    await scrollTo(page, await getMaxScrollY(page));
+    const scrollY = await getScrollY(page);
+    await page.goto(getOtherSiteUrl(baseURL, "/pages/other"));
+
+    await page.goBack();
+
+    await expect(heading(page)).toHaveText("first");
+    await expect.poll(() => getScrollY(page)).toBe(scrollY);
+});
+
+test("restores the scroll position of an entry left by a client navigation when returning from another site", async ({ page, baseURL }) => {
+    await openPage(page, "/pages/first");
+    await scrollTo(page, 1500);
+    await clickInPlace(page, "Second");
+    await expect(heading(page)).toHaveText("second");
+    await page.goto(getOtherSiteUrl(baseURL, "/pages/other"));
+
+    await page.evaluate(() => window.history.go(-2));
+
     await expect(heading(page)).toHaveText("first");
     await expect.poll(() => getScrollY(page)).toBe(1500);
 });

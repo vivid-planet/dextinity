@@ -12,7 +12,7 @@ function Paragraphs() {
 /**
  * A long page with links for the browser tests, available as `/pages/:name`
  */
-export function TestPage({ name }: { name: string }) {
+export function TestPage({ name, imageDelay }: { name: string; imageDelay?: number }) {
     return (
         <main>
             <h1>{name}</h1>
@@ -46,6 +46,7 @@ export function TestPage({ name }: { name: string }) {
             <Paragraphs />
             <h2 id="section">Section</h2>
             <Paragraphs />
+            {imageDelay !== undefined && <img src={`/tall-image?delay=${imageDelay}`} alt="" />}
         </main>
     );
 }

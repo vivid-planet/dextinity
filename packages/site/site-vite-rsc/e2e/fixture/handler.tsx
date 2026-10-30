@@ -57,7 +57,15 @@ app.get("/favicon.ico", (c) => c.body(null, 204)); // Browsers request it, a 404
 app.get("/pages/:name", async (c) => {
     await new Promise((resolve) => setTimeout(resolve, Number(c.req.query("delay") ?? 0)));
     const name = c.req.param("name");
-    return renderTestPage(c, <TestPage name={name} />, { title: name });
+    const imageDelay = c.req.query("imageDelay");
+    return renderTestPage(c, <TestPage name={name} imageDelay={imageDelay ? Number(imageDelay) : undefined} />, { title: name });
+});
+
+app.get("/tall-image", async (c) => {
+    await new Promise((resolve) => setTimeout(resolve, Number(c.req.query("delay") ?? 0)));
+    c.header("Content-Type", "image/svg+xml");
+    c.header("Cache-Control", "no-store");
+    return c.body('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="3000"></svg>');
 });
 
 app.get("/request", (c) =>

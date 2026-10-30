@@ -37,6 +37,14 @@ describe("PixelImageBlock", () => {
         expect(html).toContain('src="https://api.example.com/dam/images/hash/640/360/image.jpg"');
     });
 
+    it("renders no title attribute when the DAM file has no title", () => {
+        const html = render(
+            <PixelImageBlock data={{ ...data, damFile: data.damFile && { ...data.damFile, title: undefined } }} aspectRatio="16x9" />,
+        );
+
+        expect(html).not.toContain("title=");
+    });
+
     it("inherits the aspect ratio of the image", () => {
         expect(render(<PixelImageBlock data={data} aspectRatio="inherit" />)).toContain(
             'src="https://api.example.com/dam/images/hash/640/320/image.jpg"',

@@ -65,7 +65,7 @@ export const PixelImageBlock = withPreview(
                 fill
                 placeholderColor={damFile.image.dominantColor ?? undefined}
                 alt={altText}
-                title={damFile.title ?? ""}
+                title={damFile.title ?? undefined}
                 {...imageProps}
             />
         );

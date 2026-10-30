@@ -101,6 +101,7 @@ app.get("/raw-redirect", (c) => c.redirect(c.req.query("location") ?? "/request"
 
 app.get("/redirect-with-cookie", (c) => {
     c.header("Set-Cookie", "redirected=1; Path=/");
+    c.header("Cache-Control", publicCacheControl);
     return c.redirect("/request");
 });
 

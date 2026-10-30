@@ -57,6 +57,7 @@ export async function renderPage(c: Context, options: RenderPageOptions): Promis
 
     const redirect = parseRedirectDigest(result.navigationDigest);
     if (redirect) {
+        c.header("Cache-Control", cacheControl);
         return c.redirect(redirect.location, redirect.status);
     }
     if (isNotFoundDigest(result.navigationDigest) && status !== 404) {

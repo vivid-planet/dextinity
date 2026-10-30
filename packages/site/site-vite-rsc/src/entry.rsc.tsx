@@ -44,9 +44,12 @@ async function createRedirectPayloadResponse(response: Response, location: strin
     headers.delete("Location");
     headers.delete("Content-Length");
     headers.set("Content-Type", "text/x-component;charset=utf-8");
-    headers.set("Cache-Control", noStoreCacheControl);
+    // Without an explicit Cache-Control, the CDN's defaults would decide, and a cached cookie would be set for everyone
+    if (!headers.has("Cache-Control") || headers.has("Set-Cookie")) {
+        headers.set("Cache-Control", noStoreCacheControl);
+    }
     headers.set("X-Robots-Tag", "noindex");
-    return new Response(await renderRedirectPayload(location), { status: 202, headers });
+    return new Response(await renderRedirectPayload(location), { headers });
 }
 
 export default { fetch: handler };

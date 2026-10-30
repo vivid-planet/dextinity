@@ -41,6 +41,7 @@ app.onError(handleError);
 - `notFound()` and `redirect()` can be called anywhere in server and client components
 - `redirect()` only accepts http(s), `mailto:` and `tel:` URLs and relative paths, e.g. no `javascript:` URLs from redirect entries of the CMS
 - Client navigation follows redirects of pages, middlewares and route handlers itself, also to other origins
+- Redirects of `renderPage()` are cached like the page, i.e. with `cacheControl`
 - `Link` navigates on the client, `useRouter()` offers `push()`, `replace()` and `refresh()`
 - `usePathname()`, `useSearchParams()`, `useParams()` and `useNavigationPending()`
 - In the site preview of the admin, i.e. when `getSitePreview()` is set, `renderPage()` marks the pages as site preview for the blocks and reports their location to the admin

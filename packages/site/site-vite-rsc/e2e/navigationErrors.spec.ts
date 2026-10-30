@@ -1,6 +1,6 @@
 import { type APIResponse, expect, test } from "@playwright/test";
 
-import { noStoreCacheControl, requestTypes } from "./helpers.js";
+import { noStoreCacheControl, publicCacheControl, requestTypes } from "./helpers.js";
 
 for (const { name, prefix, contentType } of requestTypes) {
     test.describe(name, () => {
@@ -38,6 +38,7 @@ test.describe("HTML request", () => {
 
         expect(response.status()).toBe(307);
         expect(response.headers()["location"]).toBe("/request");
+        expect(response.headers()["cache-control"]).toBe(publicCacheControl);
     });
 
     for (const status of [301, 302, 308]) {
@@ -80,29 +81,35 @@ test.describe("HTML request", () => {
 
 // fetch() in the browser would follow redirects itself, which fails for other origins
 test.describe("RSC request", () => {
-    async function expectRedirectPayload(response: APIResponse, location: string) {
-        expect(response.status()).toBe(202);
+    async function expectRedirectPayload(response: APIResponse, { location, cacheControl }: { location: string; cacheControl: string }) {
+        expect(response.status()).toBe(200);
         expect(response.headers()["content-type"]).toBe("text/x-component;charset=utf-8");
-        expect(response.headers()["cache-control"]).toBe(noStoreCacheControl);
+        expect(response.headers()["cache-control"]).toBe(cacheControl);
         expect(response.headers()["x-robots-tag"]).toBe("noindex");
         expect(response.headers()["location"]).toBeUndefined();
         expect(await response.text()).toContain(`{"redirect":{"location":${JSON.stringify(location)}}}`);
     }
 
-    test("responds with a redirect payload when redirect() is called deep in the tree", async ({ request }) => {
-        await expectRedirectPayload(await request.get("/_rsc/redirect", { maxRedirects: 0 }), "/request");
+    test("responds with a redirect payload, cached like the page, when redirect() is called deep in the tree", async ({ request }) => {
+        await expectRedirectPayload(await request.get("/_rsc/redirect", { maxRedirects: 0 }), {
+            location: "/request",
+            cacheControl: publicCacheControl,
+        });
     });
 
     for (const status of [301, 302, 308]) {
         test(`responds with a redirect payload for status ${status}`, async ({ request }) => {
-            await expectRedirectPayload(await request.get(`/_rsc/redirect?status=${status}`, { maxRedirects: 0 }), "/request");
+            await expectRedirectPayload(await request.get(`/_rsc/redirect?status=${status}`, { maxRedirects: 0 }), {
+                location: "/request",
+                cacheControl: publicCacheControl,
+            });
         });
     }
 
     test("keeps the search of the redirect location", async ({ request }) => {
         const response = await request.get(`/_rsc/redirect?location=${encodeURIComponent("/request?page=2")}`, { maxRedirects: 0 });
 
-        await expectRedirectPayload(response, "/request?page=2");
+        await expectRedirectPayload(response, { location: "/request?page=2", cacheControl: publicCacheControl });
     });
 
     test("keeps redirects to other origins", async ({ request }) => {
@@ -110,11 +117,14 @@ test.describe("RSC request", () => {
             maxRedirects: 0,
         });
 
-        await expectRedirectPayload(response, "https://example.com/target");
+        await expectRedirectPayload(response, { location: "https://example.com/target", cacheControl: publicCacheControl });
     });
 
-    test("responds with a redirect payload when redirect() is called in a route handler", async ({ request }) => {
-        await expectRedirectPayload(await request.get("/_rsc/redirect-in-handler", { maxRedirects: 0 }), "/request");
+    test("responds with an uncached redirect payload when redirect() is called in a route handler", async ({ request }) => {
+        await expectRedirectPayload(await request.get("/_rsc/redirect-in-handler", { maxRedirects: 0 }), {
+            location: "/request",
+            cacheControl: noStoreCacheControl,
+        });
     });
 
     test("responds with a redirect payload for redirects of route handlers", async ({ request }) => {
@@ -122,13 +132,13 @@ test.describe("RSC request", () => {
             maxRedirects: 0,
         });
 
-        await expectRedirectPayload(response, "mailto:office@example.com");
+        await expectRedirectPayload(response, { location: "mailto:office@example.com", cacheControl: noStoreCacheControl });
     });
 
-    test("keeps the headers of the redirect, e.g. cookies", async ({ request }) => {
+    test("keeps the headers of the redirect, e.g. cookies, but doesn't cache it then", async ({ request }) => {
         const response = await request.get("/_rsc/redirect-with-cookie", { maxRedirects: 0 });
 
-        await expectRedirectPayload(response, "/request");
+        await expectRedirectPayload(response, { location: "/request", cacheControl: noStoreCacheControl });
         expect(response.headers()["set-cookie"]).toBe("redirected=1; Path=/");
     });
 

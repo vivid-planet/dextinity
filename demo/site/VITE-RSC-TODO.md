@@ -85,10 +85,14 @@ If a project needs it: decide status and headers when React DOM reports the SSR 
 ### #38 Answer redirects of RSC requests with a redirect payload instead of 3xx (done)
 
 - Problem: RSC requests got a 3xx that `fetch` followed; `entry.rsc.tsx` rewrote `Location` to keep `/_rsc`. Targets on other origins (e.g. a CMS redirect to an external URL) failed with CSP/CORS → console error → full page load of the redirecting page (two requests). Absolute same-origin targets lost the `/_rsc` prefix (#4).
-- Solution: `entry.rsc.tsx` turns every 3xx with `Location` of an RSC request (`redirect()`, middlewares, Hono handlers) into status 202 with the RSC payload `{ redirect: { location } }`, keeping the other headers (e.g. `Set-Cookie`), with `no-store` and `noindex`. The browser entry follows it: same origin client-side with `replaceState` (relative to the page, fragment kept like browsers do, at most 20 redirects), other origins and `mailto:`/`tel:` with `location.replace`. `response.redirected` stays for redirects of infrastructure in front of the site.
-- Decision: payload instead of a header (React Router: 202 + payload, TanStack Start: 200 + JSON, Waku: 200 + `_location`; Next.js follows middleware redirects with `fetch` and renders `redirect()` as a digest in the stream).
+- Solution: `entry.rsc.tsx` turns every 3xx with `Location` of an RSC request (`redirect()`, middlewares, Hono handlers) into status 200 with the RSC payload `{ redirect: { location } }`, keeping the other headers (e.g. `Set-Cookie`, `Cache-Control`) and adding `noindex`. Redirects without `Cache-Control` or with `Set-Cookie` get `no-store`. `renderPage()` sends its `cacheControl` with redirects too, so redirects of the CMS are cached like pages (HTML and RSC). The browser entry follows it: same origin client-side with `replaceState` (relative to the page, fragment kept like browsers do, at most 20 redirects), other origins and `mailto:`/`tel:` with `location.replace`. `response.redirected` stays for redirects of infrastructure in front of the site.
+- Decision: payload instead of a header (React Router: 202 + payload, TanStack Start: 200 + JSON, Waku: 200 + `_location`; Next.js follows middleware redirects with `fetch` and renders `redirect()` as a digest in the stream). Status 200 instead of 202, as CDNs may not cache 202. Redirects are content like pages, so they're cached like them instead of always `no-store`.
 - Known limitation: for `mailto:`/`tel:` targets the address bar keeps the URL of the redirecting page, as the browser stays on the current page and the history entry was pushed before the request.
 - Refs: React Router `generateRedirectResponse` / `routeRSCServerRequest`, TanStack Start `serverFnFetcher`, Waku `fetchRsc`, Next.js `fetch-server-response.ts`.
+
+### #47 Send an explicit `Cache-Control` with all redirects
+
+HTML redirects without `Cache-Control` leave caching to the defaults of CDNs and browsers (a 301 is cached by browsers indefinitely), RSC requests turn them into `no-store` (#38). `trailingSlashRedirectMiddleware` could take a `cacheControl` option, as its redirects never change. The demo's redirects (`/` → `/en`, `predefinedPages`, `redirectToMainHost`, `/admin`) should set one (`rules/coding-guidelines/cdn.instructions.md`).
 
 ### #42 Switch the scroll restoration back to `"auto"` on `pagehide`
 

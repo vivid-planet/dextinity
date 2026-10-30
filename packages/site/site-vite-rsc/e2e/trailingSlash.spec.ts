@@ -10,7 +10,7 @@ test("redirects URLs with a trailing slash permanently to the URL without", asyn
 test("redirects RSC requests with a trailing slash with a redirect payload", async ({ request }) => {
     const response = await request.get("/_rsc/request/?page=2", { maxRedirects: 0 });
 
-    expect(response.status()).toBe(202);
+    expect(response.status()).toBe(200);
     expect(await response.text()).toContain('{"redirect":{"location":"/request?page=2"}}');
 });
 
@@ -33,6 +33,6 @@ test("doesn't redirect to another host", async ({ request, baseURL }) => {
 test("doesn't redirect RSC requests to another host", async ({ request, baseURL }) => {
     const response = await request.get(`${baseURL}/_rsc//example.com/`, { maxRedirects: 0 });
 
-    expect(response.status()).toBe(202);
+    expect(response.status()).toBe(200);
     expect(await response.text()).toContain('{"redirect":{"location":"/example.com"}}');
 });

@@ -4,7 +4,7 @@ import { ProductJsonLd, productJsonLdFragment } from "@src/products/ProductJsonL
 import type { ContentScope } from "@src/site-configs";
 import { graphQLFetch } from "@src/util/graphQLClient";
 
-import { Content, productDetailContentFragment } from "./Content";
+import { ProductDetailContent, productDetailContentFragment } from "./ProductDetailContent";
 import type { GQLProductDetailPageQuery, GQLProductDetailPageQueryVariables } from "./ProductDetailPage.generated";
 
 export async function ProductDetailPage({ scope, slug }: { scope: ContentScope; slug: string }) {
@@ -32,7 +32,7 @@ export async function ProductDetailPage({ scope, slug }: { scope: ContentScope; 
         <>
             <title>{data.productBySlug.title}</title>
             <ProductJsonLd product={data.productBySlug} scope={scope} />
-            <Content product={data.productBySlug} />
+            <ProductDetailContent product={data.productBySlug} />
         </>
     );
 }

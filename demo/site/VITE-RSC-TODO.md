@@ -48,7 +48,7 @@ The Next.js demo set `metadataBase: new URL(siteConfig.url)` in the language lay
 
 ### #8 Replace the `router.fetch()` handoff with Hono route order (done)
 
-Skip middlewares and the site context middleware handed requests to separate Hono apps (`router.fetch()`/`siteRouter.fetch()`), so whether a route was reachable and which middlewares applied was only defined by the position of the handoff. Now `src/handler.ts` is a single app whose registration order defines both: middlewares only apply to routes registered after them. `status`, `admin` and `dam` are routes in `src/app/`. Only the predefined pages rewrite still calls `siteRoutes.fetch()` (GET/HEAD only), since Hono routes by the original path. Verified by comparing status and headers of 46 requests before/after: identical except `/api` (now the 404 shortcut without CSP like all other `/api/*` paths). Ref: audi6 `src/app/app.tsx` + `middleware/chain.ts` (`handleRoute`).
+Skip middlewares and the site context middleware handed requests to separate Hono apps (`router.fetch()`/`siteRouter.fetch()`), so whether a route was reachable and which middlewares applied was only defined by the position of the handoff. Now `src/handler.ts` is a single app whose registration order defines both: middlewares only apply to routes registered after them. `status`, `admin` and `dam` are routes in `src/routes/` (#49). Only the predefined pages rewrite still calls `siteRoutes.fetch()` (GET/HEAD only), since Hono routes by the original path. Verified by comparing status and headers of 46 requests before/after: identical except `/api` (now the 404 shortcut without CSP like all other `/api/*` paths). Ref: audi6 `src/app/app.tsx` + `middleware/chain.ts` (`handleRoute`).
 
 ### #9 Resolve site config and preview params once per request (done)
 
@@ -138,6 +138,10 @@ In dev, back to a page that was left with a full page load (e.g. a plain `<a>`) 
 ### #39 Only allow http(s), mailto, tel and relative redirect targets (done)
 
 Redirect targets also come from the CMS (external link `targetUrl` of redirect entries, Link documents). Since the browser performs redirects itself (#38), a `javascript:` URL would execute. `redirect()` throws for other protocols (allowlist like TanStack Start, instead of React Router's denylist `hasInvalidProtocol`), `entry.rsc.tsx` answers redirects of Hono handlers to them with 500, the browser entry checks the payload again.
+
+### #49 Name the route files without Next.js conventions (done)
+
+The route files kept the folder structure of Next.js' app router (`src/app/[language]/news/[slug]/NewsDetailPage.tsx`, `route.ts`), which suggests file-based routing, while the routes are only defined in `src/routes/router.tsx`. Now they're in `src/routes/` and grouped by feature without params in the paths, e.g. `news/NewsDetailPage.tsx`, `blockPreview/`, `mails/`, `api/contactFormRoute.tsx`, `damRoute.ts`, and named after what they export.
 
 ### #36 Rewrite the description of [vivid-planet/dextinity#6779](https://github.com/vivid-planet/dextinity/pull/6779) (done)
 

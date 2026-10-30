@@ -1,7 +1,7 @@
 import { gql } from "@dextinity/site-react";
 import { newsArticleJsonLdFragment } from "@src/news/NewsArticleJsonLd";
 
-export const fragment = gql`
+export const newsDetailFragment = gql`
     fragment NewsDetailPage on News {
         ...NewsArticleJsonLd
         createdAt

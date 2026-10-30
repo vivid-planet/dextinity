@@ -4,28 +4,28 @@ import { getSiteContext } from "@src/util/siteContext";
 import { type Context, Hono } from "hono";
 import { Fragment, type ReactNode } from "react";
 
-import { DocumentPage } from "./[language]/[[...path]]/DocumentPage";
-import { getLayoutLanguage, LanguageLayout } from "./[language]/LanguageLayout";
-import { NewsDetailPage } from "./[language]/news/[slug]/NewsDetailPage";
-import { NewsIndexPage } from "./[language]/news/NewsIndexPage";
-import { ProductDetailPage } from "./[language]/product/[slug]/ProductDetailPage";
-import { ProductListPage } from "./[language]/product/ProductListPage";
-import { SiteNotFound } from "./[language]/SiteNotFound";
-import { loadMailsEntry } from "./api/loadMailsEntry";
-import { welcomeEmailRoute } from "./api/welcome-email/route";
-import { BlockPreviewLanguageLayout } from "./block-preview/[domain]/[language]/BlockPreviewLanguageLayout";
-import { BrevoEmailCampaignBlockPreviewPage } from "./block-preview/[domain]/[language]/brevo-email-campaign/BrevoEmailCampaignBlockPreviewPage";
-import { FooterBlockPreviewPage } from "./block-preview/[domain]/[language]/footer/FooterBlockPreviewPage";
-import { MainMenuBlockPreviewPage } from "./block-preview/[domain]/[language]/main-menu/MainMenuBlockPreviewPage";
-import { PageBlockPreviewPage } from "./block-preview/[domain]/[language]/page/PageBlockPreviewPage";
-import { StageBlockPreviewPage } from "./block-preview/[domain]/[language]/stage/StageBlockPreviewPage";
-import { WelcomeEmailBlockPreviewPage } from "./block-preview/[domain]/[language]/welcome-email/WelcomeEmailBlockPreviewPage";
-import { BlockPreviewLayout } from "./block-preview/[domain]/BlockPreviewLayout";
+import { BlockPreviewLanguageLayout } from "./blockPreview/BlockPreviewLanguageLayout";
+import { BlockPreviewLayout } from "./blockPreview/BlockPreviewLayout";
+import { BrevoEmailCampaignBlockPreviewPage } from "./blockPreview/BrevoEmailCampaignBlockPreviewPage";
+import { FooterBlockPreviewPage } from "./blockPreview/FooterBlockPreviewPage";
+import { MainMenuBlockPreviewPage } from "./blockPreview/MainMenuBlockPreviewPage";
+import { PageBlockPreviewPage } from "./blockPreview/PageBlockPreviewPage";
+import { StageBlockPreviewPage } from "./blockPreview/StageBlockPreviewPage";
+import { WelcomeEmailBlockPreviewPage } from "./blockPreview/WelcomeEmailBlockPreviewPage";
+import { DocumentPage } from "./DocumentPage";
 import { ErrorPage } from "./ErrorPage";
-import { graphQLRoute } from "./graphql/route";
+import { graphQLRoute } from "./graphQLRoute";
+import { getLayoutLanguage, LanguageLayout } from "./LanguageLayout";
+import { loadMailsEntry } from "./mails/loadMailsEntry";
+import { welcomeEmailRoute } from "./mails/welcomeEmailRoute";
+import { NewsDetailPage } from "./news/NewsDetailPage";
+import { NewsIndexPage } from "./news/NewsIndexPage";
+import { ProductDetailPage } from "./product/ProductDetailPage";
+import { ProductListPage } from "./product/ProductListPage";
 import { RootLayout } from "./RootLayout";
 import { RootNotFound } from "./RootNotFound";
-import { sitemapRoute } from "./sitemap";
+import { sitemapRoute } from "./sitemapRoute";
+import { SiteNotFound } from "./SiteNotFound";
 
 // Same as Next.js for pages revalidated every 7.5 minutes
 const publicCacheControl = "s-maxage=450, stale-while-revalidate=31535550";
@@ -132,8 +132,8 @@ siteRoutes.get("/sitemap.xml", sitemapRoute);
 siteRoutes.get("/", (c) => c.redirect("/en", 307));
 
 // Loaded on demand, so that missing environment variables of these routes don't break the whole site
-siteRoutes.post("/:language/api/contact-form", async (c) => (await import("./[language]/api/contact-form/route")).contactFormRoute(c));
-siteRoutes.post("/:language/api/file-upload", async (c) => (await import("./[language]/api/file-upload/route")).fileUploadRoute(c));
+siteRoutes.post("/:language/api/contact-form", async (c) => (await import("./api/contactFormRoute")).contactFormRoute(c));
+siteRoutes.post("/:language/api/file-upload", async (c) => (await import("./api/fileUploadRoute")).fileUploadRoute(c));
 
 siteRoutes.get("/:language/news", (c) => renderSitePage(c, (params) => <NewsIndexPage {...params} />));
 siteRoutes.get("/:language/news/:slug", (c) => renderSitePage(c, (params) => <NewsDetailPage {...params} slug={c.req.param("slug")} />));

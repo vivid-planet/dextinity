@@ -4,7 +4,7 @@ import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
 import type { Context } from "hono";
 import { z } from "zod";
 
-import { loadMailsEntry } from "../loadMailsEntry";
+import { loadMailsEntry } from "./loadMailsEntry";
 
 const QueryValidationSchema = z.object({
     domain: z.string(),

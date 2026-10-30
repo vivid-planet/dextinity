@@ -113,7 +113,7 @@
             "ignore": ["./src/**/generated/**", "**/*.generated.ts"]
         },
         "demo/site": {
-            "entry": ["./src/handler.ts", "./src/app/api/entry.mails.ts", "./server.ts", "tracing.dev.ts", "tracing.production.ts"],
+            "entry": ["./src/handler.ts", "./src/routes/mails/mailsEntry.ts", "./server.ts", "tracing.dev.ts", "tracing.production.ts"],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignoreDependencies": ["@babel/core", "@types/grecaptcha", "csso", "mjml"],
             "ignore": ["**/*.generated.ts"]

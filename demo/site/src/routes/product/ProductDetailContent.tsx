@@ -1,7 +1,7 @@
 import { gql } from "@dextinity/site-react";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
 
-import type { GQLProductDetailContentFragment } from "./Content.generated";
+import type { GQLProductDetailContentFragment } from "./ProductDetailContent.generated";
 
 export const productDetailContentFragment = gql`
     fragment ProductDetailContent on Product {
@@ -14,7 +14,7 @@ export const productDetailContentFragment = gql`
 type Props = {
     product: GQLProductDetailContentFragment;
 };
-export function Content({ product }: Props) {
+export function ProductDetailContent({ product }: Props) {
     return (
         <div>
             <DamImageBlock data={product.image} sizes="100vw" aspectRatio="16x9" />

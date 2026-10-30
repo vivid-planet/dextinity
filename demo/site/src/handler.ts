@@ -6,11 +6,11 @@ import {
     staticFilesMiddleware,
     trailingSlashRedirectMiddleware,
 } from "@dextinity/site-vite-rsc/server";
-import { adminRoute } from "@src/app/admin/route";
-import { statusRoute } from "@src/app/api/status/route";
-import { damRoute } from "@src/app/dam/route";
-import { robotsRoute } from "@src/app/robots";
-import { blockPreviewRoutes, mailRoutes, renderRootNotFoundPage, siteRoutes } from "@src/app/router";
+import { adminRoute } from "@src/routes/adminRoute";
+import { statusRoute } from "@src/routes/api/statusRoute";
+import { damRoute } from "@src/routes/damRoute";
+import { robotsRoute } from "@src/routes/robotsRoute";
+import { blockPreviewRoutes, mailRoutes, renderRootNotFoundPage, siteRoutes } from "@src/routes/router";
 import { Hono } from "hono";
 
 import { contentSecurityPolicyHeadersMiddleware } from "./middleware/contentSecurityPolicyHeaders";

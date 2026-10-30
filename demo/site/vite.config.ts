@@ -17,8 +17,8 @@ export default defineConfig({
         ssr: {
             build: {
                 rolldownOptions: {
-                    // Loaded by the mail routes in app/router.tsx
-                    input: { mails: "./src/app/api/entry.mails.ts" },
+                    // Loaded by the mail routes in routes/router.tsx
+                    input: { mails: "./src/routes/mails/mailsEntry.ts" },
                 },
             },
             resolve: {

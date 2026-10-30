@@ -5,8 +5,8 @@ import { NewsArticleJsonLd } from "@src/news/NewsArticleJsonLd";
 import type { ContentScope } from "@src/site-configs";
 import { graphQLFetch } from "@src/util/graphQLClient";
 
-import { Content } from "./content";
-import { fragment } from "./fragment";
+import { NewsDetailContent } from "./NewsDetailContent";
+import { newsDetailFragment } from "./newsDetailFragment";
 import type { GQLNewsDetailPageQuery, GQLNewsDetailPageQueryVariables } from "./NewsDetailPage.generated";
 
 export async function NewsDetailPage({ domain, language, slug }: ContentScope & { slug: string }) {
@@ -19,7 +19,7 @@ export async function NewsDetailPage({ domain, language, slug }: ContentScope & 
                     ...NewsDetailPage
                 }
             }
-            ${fragment}
+            ${newsDetailFragment}
         `,
         { slug, scope: scope as GQLNewsContentScopeInput },
     );
@@ -32,7 +32,7 @@ export async function NewsDetailPage({ domain, language, slug }: ContentScope & 
         <>
             <title>{data.newsBySlug.title}</title>
             <NewsArticleJsonLd news={data.newsBySlug} scope={scope} />
-            <Content news={data.newsBySlug} />
+            <NewsDetailContent news={data.newsBySlug} />
         </>
     );
 }

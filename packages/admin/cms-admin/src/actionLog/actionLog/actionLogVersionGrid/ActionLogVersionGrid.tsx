@@ -8,6 +8,7 @@ import { FormattedDate, FormattedMessage, useIntl } from "react-intl";
 import { DataGrid } from "../../../dataGrid/DataGrid";
 import { ActionLogHeader } from "../../components/actionLogHeader/ActionLogHeader";
 import { ActionLogTypeChip } from "../../components/actionLogTypeChip/ActionLogTypeChip";
+import { ScopeCell } from "../../components/scopeCell/ScopeCell";
 import { UserCell } from "../../components/userCell/UserCell";
 import { ActionGridToolbar, type ActionGridToolbarProps } from "./actionGridToolbar/ActionGridToolbar";
 import type { GQLActionLogVersionGridFragment } from "./ActionLogVersionGrid.gql.generated";
@@ -24,6 +25,10 @@ type ActionLogVersionGridProps = ReturnType<typeof useDataGridRemote> &
          * Latest name of the actual object, displayed in the title
          */
         name?: string;
+        /**
+         * Shows the scope of each version, for a history that spans several scopes.
+         */
+        showScope?: boolean;
         onShowVersionClick: (versionId: string) => void;
         onCompareVersionsClick: (versionId: string, versionsId2: string) => void;
     };
@@ -33,6 +38,7 @@ export const ActionLogVersionGrid: FunctionComponent<ActionLogVersionGridProps> 
     id,
     loading,
     name,
+    showScope,
     onShowVersionClick,
     onCompareVersionsClick,
     ...dataGridProps
@@ -53,6 +59,17 @@ export const ActionLogVersionGrid: FunctionComponent<ActionLogVersionGridProps> 
                 width: 130,
                 renderCell: ({ row }) => <ActionLogTypeChip actionLogType={row.type} label={row.type} />,
             },
+            ...(showScope
+                ? [
+                      {
+                          field: "scope",
+                          headerName: intl.formatMessage({ defaultMessage: "Scope", id: "actionLog.actionLogVersionGrid.columns.scope" }),
+                          sortable: false,
+                          width: 150,
+                          renderCell: ({ row }: { row: ActionGridRow }) => <ScopeCell scopes={row.scope} />,
+                      },
+                  ]
+                : []),
             {
                 field: "createdAt",
                 headerName: intl.formatMessage({ defaultMessage: "Date", id: "actionLog.actionLogVersionGrid.columns.createdAt" }),
@@ -96,7 +113,7 @@ export const ActionLogVersionGrid: FunctionComponent<ActionLogVersionGridProps> 
                 type: "actions",
             },
         ],
-        [intl, onShowVersionClick],
+        [intl, showScope, onShowVersionClick],
     );
 
     const rowCount = useBufferedRowCount(actionLogs?.totalCount);

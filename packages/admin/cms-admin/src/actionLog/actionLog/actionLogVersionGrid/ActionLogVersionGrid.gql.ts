@@ -8,6 +8,7 @@ export const actionLogVersionGridFragment = gql`
             name
         }
         entityName
+        scope
         version
         type
         createdAt

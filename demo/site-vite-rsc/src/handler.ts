@@ -8,7 +8,7 @@ import {
 } from "@dextinity/site-vite-rsc/server";
 import { statusRoute } from "@src/routes/api/statusRoute";
 import { damRoute } from "@src/routes/damRoute";
-import { blockPreviewRoutes, mailRoutes, renderRootNotFoundPage, siteRoutes } from "@src/routes/router";
+import { blockPreviewRoutes, mailRoutes, renderNotFoundPage, siteRoutes } from "@src/routes/router";
 import { Hono } from "hono";
 
 import { contentSecurityPolicyHeadersMiddleware } from "./middleware/contentSecurityPolicyHeaders";
@@ -31,14 +31,11 @@ app.use(trailingSlashRedirectMiddleware);
 app.get("/api/status", statusRoute);
 app.all("/dam/*", damRoute);
 app.route("/api", mailRoutes);
-// Unknown API routes and missing build files and icons don't need the site middlewares, missing files in /assets render the site's not found page
-app.on("ALL", ["/api/*", "/_assets/*", "/favicon.ico", "/apple-icon.png", "/icon.svg", "/manifest.json"], renderRootNotFoundPage);
 
 app.use(contentSecurityPolicyHeadersMiddleware);
 
 app.get("/site-preview", sitePreviewRoute);
 app.route("/block-preview", blockPreviewRoutes);
-app.all("/block-preview/*", renderRootNotFoundPage);
 
 app.use(sitePreviewMiddleware, siteContextMiddleware, previewDomainMiddleware, redirectToMainHostMiddleware);
 
@@ -47,5 +44,6 @@ app.use(predefinedPagesMiddleware);
 
 app.route("/", siteRoutes);
 
-app.notFound(renderRootNotFoundPage);
+// Rendered with the layout of the site, so it needs the site context of the middlewares
+app.notFound(renderNotFoundPage);
 app.onError(handleError);

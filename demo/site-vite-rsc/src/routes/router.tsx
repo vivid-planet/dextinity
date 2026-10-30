@@ -19,7 +19,6 @@ import { ProductDetailPage } from "./product/ProductDetailPage";
 import { ProductListPage } from "./product/ProductListPage";
 import { robotsRoute } from "./robotsRoute";
 import { RootLayout } from "./RootLayout";
-import { RootNotFound } from "./RootNotFound";
 import { sitemapRoute } from "./sitemapRoute";
 import { SiteNotFound } from "./SiteNotFound";
 
@@ -43,13 +42,7 @@ async function renderSitePage(c: Context, renderContent: (params: ContentScope) 
                 </LanguageLayout>
             </RootLayout>
         ),
-        notFound: () => (
-            <RootLayout lang={getLayoutLanguage(params)}>
-                <LanguageLayout domain={domain} language={language}>
-                    <SiteNotFound scope={{ domain, language: getLayoutLanguage(params) }} />
-                </LanguageLayout>
-            </RootLayout>
-        ),
+        notFound: () => renderSiteNotFound(params),
         error: () => renderErrorPage(getLayoutLanguage(params)),
         // Preview content must not be cached, also from the block preview, which doesn't set `sitePreview`
         cacheControl: sitePreview || visibility !== "default" ? noStoreCacheControl : publicCacheControl,
@@ -67,16 +60,19 @@ function renderBlockPreviewPage(c: Context) {
                 </BlockPreviewLayout>
             </RootLayout>
         ),
-        notFound: renderRootNotFound,
+        notFound: () => renderSiteNotFound({ domain, language }),
         error: () => renderErrorPage(language),
         cacheControl: noStoreCacheControl,
     });
 }
 
-function renderRootNotFound() {
+function renderSiteNotFound(params: ContentScope) {
+    const scope = { domain: params.domain, language: getLayoutLanguage(params) };
     return (
-        <RootLayout lang="en">
-            <RootNotFound />
+        <RootLayout lang={scope.language}>
+            <LanguageLayout domain={scope.domain} language={scope.language}>
+                <SiteNotFound scope={scope} />
+            </LanguageLayout>
         </RootLayout>
     );
 }
@@ -89,11 +85,16 @@ function renderErrorPage(lang: string) {
     );
 }
 
-export function renderRootNotFoundPage(c: Context) {
+/**
+ * For paths without a route, in the language of the first path segment if it's one of the site's languages
+ */
+export function renderNotFoundPage(c: Context) {
+    const [, firstPathSegment = ""] = c.req.path.split("/");
+    const params = { domain: getSiteContext().domain, language: firstPathSegment };
     return renderPage(c, {
-        root: renderRootNotFound(),
-        notFound: renderRootNotFound,
-        error: () => renderErrorPage("en"),
+        root: renderSiteNotFound(params),
+        notFound: () => renderSiteNotFound(params),
+        error: () => renderErrorPage(getLayoutLanguage(params)),
         cacheControl: noStoreCacheControl,
         status: 404,
     });
@@ -134,5 +135,5 @@ siteRoutes.get("/:language/*", (c) => {
     return renderSitePage(c, (params) => <DocumentPage {...params} path={path} />);
 });
 
-siteRoutes.notFound(renderRootNotFoundPage);
+siteRoutes.notFound(renderNotFoundPage);
 siteRoutes.onError(handleError);

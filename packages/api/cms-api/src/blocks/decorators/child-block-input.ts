@@ -2,7 +2,6 @@ import { Expose, Transform } from "class-transformer";
 import { IsDefined, ValidateNested } from "class-validator";
 
 import { type Block, isBlockInputInterface } from "../block";
-import { describeBlockInput } from "../helpers/describeBlockInput";
 import { BlockField } from "./field";
 
 interface ChildBlockInputOptions {
@@ -23,7 +22,7 @@ export function ChildBlockInput(block: Block, options?: ChildBlockInputOptions):
             ValidateNested()(target, key); // by default valdidate all child blocks
         }
         if (!nullable) {
-            IsDefined({ message: ({ property }) => `${property} is missing. Expected ${describeBlockInput(block)}.` })(target, key);
+            IsDefined()(target, key);
         }
         BlockField({ type: "block", block, nullable })(target, key);
         // We need add `@Expose()` to make sure that `@Transform()` is called even when no value is provided.

@@ -35,20 +35,6 @@ describe("createOneOfBlock", () => {
             "OneOfBlockInputValidationTest",
         );
 
-        it("should explain an empty one-of block that must not be empty", async () => {
-            const RequiredOneOfBlock = createOneOfBlock(
-                { supportedBlocks: { internal: InternalLinkBlock, external: ExternalLinkBlock }, allowEmpty: false },
-                "RequiredOneOfBlockInputValidationTest",
-            );
-
-            const errors = await validate(RequiredOneOfBlock.blockInputFactory({ attachedBlocks: [] }), validationOptions);
-
-            expect(errors).toHaveLength(1);
-            expect(errors[0].constraints?.arrayMinSize).toBe(
-                'attachedBlocks must not be empty. A one-of block lists its variants in "attachedBlocks" as { "type", "props" } and names the active one in "activeType".',
-            );
-        });
-
         it.each(["unknown", "toString"])("should report the unknown type '%s' at the index of the input", async (type) => {
             const input = OneOfBlock.blockInputFactory({
                 attachedBlocks: [

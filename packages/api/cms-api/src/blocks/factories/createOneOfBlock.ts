@@ -227,10 +227,7 @@ export function BaseOneOfBlockInput<
         @Transform(({ value }) => (Array.isArray(value) ? value.map((item) => plainToInstance(OneOfBlockItemInput, item)) : value))
         @IsArray()
         @IsObject({ each: true })
-        @ArrayMinSize(allowEmpty ? 0 : 1, {
-            message:
-                '$property must not be empty. A one-of block lists its variants in "attachedBlocks" as { "type", "props" } and names the active one in "activeType".',
-        })
+        @ArrayMinSize(allowEmpty ? 0 : 1)
         @ValidateNested({ each: true })
         attachedBlocks: OneOfBlockInputInterface<BlockMap, Data, Input>["attachedBlocks"];
 

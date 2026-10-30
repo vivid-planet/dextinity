@@ -6,7 +6,9 @@ import { rscStream } from "rsc-html-stream/client";
 import { announceNavigation, setUpNavigationAnnouncer } from "./announceNavigation.js";
 import { getFragmentTarget } from "./fragmentTarget.js";
 import { GlobalErrorBoundary } from "./GlobalErrorBoundary.js";
-import type { RscPayload } from "./render.js";
+import { resolveRedirectTarget } from "./redirectTarget.js";
+import type { NavigationPayload, RscPayload } from "./render.js";
+import { reportError } from "./reportError.js";
 import { NavigationProvider, type Router } from "./RouterProvider.js";
 import { createRscUrl, getRedirectedPageUrl } from "./rscRequest.js";
 import {
@@ -19,6 +21,8 @@ import {
 } from "./scrollPositions.js";
 
 type ScrollTarget = "top" | "hash" | { scrollY: number } | undefined;
+
+const maxRedirects = 20; // Like browsers
 
 let setPayloadFromOutside: ((payload: RscPayload, scrollTarget: ScrollTarget) => void) | undefined;
 let startNavigationTransition: TransitionStartFunction = startTransition; // Replaced by BrowserRoot to track the pending state
@@ -74,7 +78,7 @@ function BrowserRoot({ initialPayload }: { initialPayload: RscPayload }) {
     );
 }
 
-function navigate(href: string, scrollTarget: ScrollTarget) {
+function navigate(href: string, { scrollTarget, redirectCount = 0 }: { scrollTarget: ScrollTarget; redirectCount?: number }) {
     pendingNavigation?.abort();
     const navigation = new AbortController();
     pendingNavigation = navigation;
@@ -84,8 +88,12 @@ function navigate(href: string, scrollTarget: ScrollTarget) {
             if (!response.headers.get("Content-Type")?.startsWith("text/x-component")) {
                 throw new Error(`Unexpected response for ${href}`);
             }
-            const payload = await createFromFetch<RscPayload>(Promise.resolve(response));
+            const payload = await createFromFetch<NavigationPayload>(Promise.resolve(response));
             if (navigation.signal.aborted) {
+                return;
+            }
+            if ("redirect" in payload) {
+                followRedirect({ href, location: payload.redirect.location, scrollTarget, redirectCount });
                 return;
             }
             pendingNavigation = undefined; // The response may still be streaming, aborting it would break the displayed page
@@ -101,10 +109,37 @@ function navigate(href: string, scrollTarget: ScrollTarget) {
             if (navigation.signal.aborted) {
                 return;
             }
-            // Fall back to a full page load, e.g., for redirects to other origins or non-page responses
-            console.error(error);
+            // Fall back to a full page load, e.g., for non-page responses
+            reportError(error);
             window.location.assign(href);
         }
+    });
+}
+
+function followRedirect({
+    href,
+    location,
+    scrollTarget,
+    redirectCount,
+}: {
+    href: string;
+    location: string;
+    scrollTarget: ScrollTarget;
+    redirectCount: number;
+}) {
+    const target = resolveRedirectTarget(location, new URL(href));
+    if (!target) {
+        throw new Error(`Redirect of ${href} to ${location} disallowed`);
+    }
+    if (target.origin !== window.location.origin || redirectCount >= maxRedirects) {
+        window.location.replace(target);
+        return;
+    }
+    window.history.replaceState(window.history.state, "", target);
+    currentDocumentPath = getDocumentPath(target);
+    navigate(target.href, {
+        scrollTarget: scrollTarget === undefined ? undefined : getScrollTarget(target, true),
+        redirectCount: redirectCount + 1,
     });
 }
 
@@ -132,11 +167,11 @@ function changeHistory(method: "pushState" | "replaceState", href: string, scrol
     window.history[method](state, "", url);
     currentHistoryKey = state.key;
     currentDocumentPath = getDocumentPath(url);
-    navigate(url.href, getScrollTarget(url, scroll));
+    navigate(url.href, { scrollTarget: getScrollTarget(url, scroll) });
 }
 
 function refresh() {
-    navigate(window.location.href, undefined);
+    navigate(window.location.href, { scrollTarget: undefined });
 }
 
 function handlePopState(event: PopStateEvent) {
@@ -158,7 +193,7 @@ function handlePopState(event: PopStateEvent) {
         return;
     }
     currentDocumentPath = getDocumentPath(url);
-    navigate(url.href, scrollTarget);
+    navigate(url.href, { scrollTarget });
 }
 
 function setUpScrollRestoration() {

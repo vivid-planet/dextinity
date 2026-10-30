@@ -1,7 +1,13 @@
 import { app } from "virtual:dextinity-site/app";
 
+import { noStoreCacheControl } from "./cacheControl.js";
+import { isAllowedRedirectTarget } from "./redirectTarget.js";
+import { renderRedirectPayload } from "./render.js";
+import { reportError } from "./reportError.js";
 import { runWithRequestContext } from "./requestContext.js";
-import { addRscPrefix, stripRscPrefix } from "./rscRequest.js";
+import { stripRscPrefix } from "./rscRequest.js";
+
+const redirectStatuses = [301, 302, 303, 307, 308];
 
 async function handler(request: Request): Promise<Response> {
     const strippedUrl = stripRscPrefix(new URL(request.url));
@@ -13,15 +19,34 @@ async function handler(request: Request): Promise<Response> {
     const response = await runWithRequestContext({ request, isRscRequest }, () => app.fetch(request));
 
     const location = response.headers.get("Location");
-    if (isRscRequest && location?.startsWith("/") && !location.startsWith("//")) {
-        // Keep following redirects as RSC requests, the browser entry strips the prefix from the final URL
-        const redirectUrl = new URL(location, request.url);
-        const redirectResponse = new Response(response.body, response);
-        redirectResponse.headers.set("Location", `${addRscPrefix(redirectUrl.pathname)}${redirectUrl.search}`);
-        return redirectResponse;
+    if (isRscRequest && location !== null && redirectStatuses.includes(response.status)) {
+        return createRedirectPayloadResponse(response, location);
     }
 
     return response;
+}
+
+/**
+ * fetch() in the browser would follow the redirect itself, which fails for other origins (CORS, CSP) and loses the page
+ * URL of relative targets, so the browser entry follows the location of the payload instead
+ */
+async function createRedirectPayloadResponse(response: Response, location: string) {
+    await response.body?.cancel();
+    if (!isAllowedRedirectTarget(location)) {
+        reportError(new Error(`Redirect to ${location} disallowed: only http(s), mailto and tel URLs and relative paths are allowed`));
+        return new Response("Internal Server Error", {
+            status: 500,
+            headers: { "Content-Type": "text/plain;charset=utf-8", "Cache-Control": noStoreCacheControl },
+        });
+    }
+
+    const headers = new Headers(response.headers); // Keeps e.g. cookies set before redirecting
+    headers.delete("Location");
+    headers.delete("Content-Length");
+    headers.set("Content-Type", "text/x-component;charset=utf-8");
+    headers.set("Cache-Control", noStoreCacheControl);
+    headers.set("X-Robots-Tag", "noindex");
+    return new Response(await renderRedirectPayload(location), { status: 202, headers });
 }
 
 export default { fetch: handler };

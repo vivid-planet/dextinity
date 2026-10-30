@@ -43,6 +43,10 @@ describe("redirect", () => {
 
         expect(parseRedirectDigest(digest)).toEqual({ location: "https://example.com/a;b?c=d;e", status: 307 });
     });
+
+    it("rejects locations the browser mustn't navigate to", () => {
+        expect(() => redirect("javascript:alert(1)")).toThrow("Redirect to javascript:alert(1) disallowed");
+    });
 });
 
 describe("getNavigationErrorDigest", () => {

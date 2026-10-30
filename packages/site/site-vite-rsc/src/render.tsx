@@ -13,6 +13,12 @@ export type RscPayload = {
     root: ReactNode;
 };
 
+export type RedirectPayload = {
+    redirect: { location: string };
+};
+
+export type NavigationPayload = RscPayload | RedirectPayload;
+
 type RenderPageOptions = {
     root: ReactNode;
     /** Rendered with status 404 when `notFound()` is called while rendering `root` */
@@ -92,6 +98,11 @@ async function renderRscPayload(root: ReactNode) {
     }
 
     return { chunks, navigationDigest, hasError };
+}
+
+export async function renderRedirectPayload(location: string) {
+    const { renderToReadableStream } = await import("@vitejs/plugin-rsc/rsc/server");
+    return renderToReadableStream<RedirectPayload>({ redirect: { location } });
 }
 
 function createStream(chunks: Uint8Array[]) {

@@ -21,16 +21,16 @@ Errors carry a digest (`NOT_FOUND`, `REDIRECT;307;/path`), the RSC payload is bu
 
 - Problem: SSR failure answers with plain text "Internal Server Error" (`framework/entry.ssr.tsx`); RSC requests with a server component error get status 200 + `s-maxage` (CDN caches the broken payload); no client boundary, so any error after hydration or client navigation unmounts the whole document (white page). Block errors are already contained in the browser by site-react's `ErrorHandlerBoundary` (`BlocksBlock`/`ListBlock`/`OneOfBlock`), but not during SSR.
 - Proposal: `renderPage` gets an `error` option → server-rendered error page (`src/app/error.tsx`, only `RootLayout`, no API data) with status 500, plain-text fallback if it fails too; `no-store` for payloads containing errors; `framework/GlobalErrorBoundary.tsx` around `BrowserRoot` (full document fallback, keyed by URL to reset on navigation, navigation digests → full page load); one central `reportError` for RSC/SSR/client.
-- Decision: server-rendered error page without browser retry (instead of the plugin-rsc examples' 500 + empty shell + `__NO_HYDRATE` client render retry). `GlobalErrorBoundary` follows redirect digests with `location.assign` without protocol validation until #39.
+- Decision: server-rendered error page without browser retry (instead of the plugin-rsc examples' 500 + empty shell + `__NO_HYDRATE` client render retry). `GlobalErrorBoundary` follows redirect digests with `location.assign`, their targets are validated by `redirect()` since #39.
 - Refs: plugin-rsc `basic/src/framework/error-boundary.tsx` + `entry.ssr.tsx`, audi6 `GlobalErrorBoundary.tsx`/`renderPage.tsx` (`error` option), Next.js `global-error.tsx`, React Router `RSCRouterGlobalErrorBoundary`.
 
 ### #3 Redirect URLs with a trailing slash (done)
 
 `new Hono({ strict: false })` in `src/app/router.tsx` served `/en/` and `/en` with 200 (duplicate content). Next.js redirected with 308. Now `framework/trailingSlashRedirect.ts` redirects with 308, collapsing leading slashes so that `//example.com/` doesn't redirect to another host (audi6's middleware has that open redirect). `createSitePath` returns `/en` instead of `/en/` for the root page (links, sitemap). Ref: audi6 `src/app/app.tsx` (`trailingSlashRedirectMiddleware`).
 
-### #4 Keep the `/_rsc` prefix for absolute same-origin redirects (superseded by #38)
+### #4 Keep the `/_rsc` prefix for absolute same-origin redirects (done with #38)
 
-`framework/entry.rsc.tsx` only prefixes `Location` headers starting with `/`. Goes away with #38; close then.
+`framework/entry.rsc.tsx` only prefixed `Location` headers starting with `/`. RSC requests don't answer with a `Location` anymore since #38.
 
 ### #5 Don't store `Set-Cookie` in the fetch cache (won't fix)
 
@@ -82,9 +82,13 @@ Measured before: superseded navigations kept loading, and when one failed, its f
 
 If a project needs it: decide status and headers when React DOM reports the SSR shell and stream the rest, opt-in per page (`renderPage(c, { stream: true })`), as a CDN would cache a page whose late part failed until it revalidates. Late `notFound()`/`redirect()` like Next.js: inject `<meta name="robots" content="noindex">` or a meta refresh, and client boundaries around the page render the not found page or redirect with the router. RSC requests stay buffered (the RSC format has no shell signal), streaming them would answer 200 and rely on the client boundaries, together with #38. Streaming adds React's inline `$RC()` scripts (see #16). Needs the browser tests of #40. Refs: Next.js `app-render.js` + `make-get-server-inserted-html.js`, React Router `server.ssr.js` (redirect transform).
 
-### #38 Answer redirects of RSC requests with a redirect payload instead of 3xx
+### #38 Answer redirects of RSC requests with a redirect payload instead of 3xx (done)
 
-Today RSC requests get a 3xx that `fetch` follows; `entry.rsc.tsx` rewrites `Location` to keep `/_rsc`. External targets fail with CORS → console error → full page load (target requested twice). Turn every 3xx of an RSC request (renderPage, middlewares, Hono handlers) into status 202 + payload `{ type: "redirect", location, status }` with `no-store`; `RscPayload` becomes a union; the browser entry navigates (same origin client-side with `replaceState`, else `location.assign`). Makes #4 obsolete. Depends on #39. Ref: React Router `generateRedirectResponse` / `routeRSCServerRequest`.
+- Problem: RSC requests got a 3xx that `fetch` followed; `entry.rsc.tsx` rewrote `Location` to keep `/_rsc`. Targets on other origins (e.g. a CMS redirect to an external URL) failed with CSP/CORS → console error → full page load of the redirecting page (two requests). Absolute same-origin targets lost the `/_rsc` prefix (#4).
+- Solution: `entry.rsc.tsx` turns every 3xx with `Location` of an RSC request (`redirect()`, middlewares, Hono handlers) into status 202 with the RSC payload `{ redirect: { location } }`, keeping the other headers (e.g. `Set-Cookie`), with `no-store` and `noindex`. The browser entry follows it: same origin client-side with `replaceState` (relative to the page, fragment kept like browsers do, at most 20 redirects), other origins and `mailto:`/`tel:` with `location.replace`. `response.redirected` stays for redirects of infrastructure in front of the site.
+- Decision: payload instead of a header (React Router: 202 + payload, TanStack Start: 200 + JSON, Waku: 200 + `_location`; Next.js follows middleware redirects with `fetch` and renders `redirect()` as a digest in the stream).
+- Known limitation: for `mailto:`/`tel:` targets the address bar keeps the URL of the redirecting page, as the browser stays on the current page and the history entry was pushed before the request.
+- Refs: React Router `generateRedirectResponse` / `routeRSCServerRequest`, TanStack Start `serverFnFetcher`, Waku `fetchRsc`, Next.js `fetch-server-response.ts`.
 
 ### #42 Switch the scroll restoration back to `"auto"` on `pagehide`
 
@@ -123,9 +127,9 @@ Playwright with a browser against the same test app (`e2e/fixture/`): client nav
 
 In dev, back to a page that was left with a full page load (e.g. a plain `<a>`) breaks the page: Chrome takes the response of the SSR stylesheet `<link>` for `*.module.scss` from the cache for the JS module import of the same URL ("Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "text/css""), a client component fails to load, and the error boundary renders. Pre-existing, dev only, production works. Check which URLs plugin-rsc injects for CSS in dev (Vite itself requests CSS links with `?direct`) and whether a `Vary: Accept` or a distinct URL fixes it.
 
-### #39 Only allow http(s) and relative redirect targets
+### #39 Only allow http(s), mailto, tel and relative redirect targets (done)
 
-Redirect targets also come from the CMS (external link `targetUrl` of redirect entries, Link documents). Once the browser performs redirects itself (#38), a `javascript:` URL would execute. Validate in `redirect()` (`framework/navigation.ts`) and when creating the redirect payload. Ref: React Router `hasInvalidProtocol`.
+Redirect targets also come from the CMS (external link `targetUrl` of redirect entries, Link documents). Since the browser performs redirects itself (#38), a `javascript:` URL would execute. `redirect()` throws for other protocols (allowlist like TanStack Start, instead of React Router's denylist `hasInvalidProtocol`), `entry.rsc.tsx` answers redirects of Hono handlers to them with 500, the browser entry checks the payload again.
 
 ### #36 Rewrite the description of [vivid-planet/dextinity#6779](https://github.com/vivid-planet/dextinity/pull/6779) (done)
 

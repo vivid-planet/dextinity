@@ -1,3 +1,5 @@
+import { isAllowedRedirectTarget } from "./redirectTarget.js";
+
 // React keeps the digest of an error thrown while rendering server components, so it's also available in the
 // SSR environment and in the browser
 const notFoundDigest = "NOT_FOUND";
@@ -19,9 +21,12 @@ export function notFound(): never {
 }
 
 /**
- * Responds with a redirect.
+ * Responds with a redirect to an http(s), mailto or tel URL or a relative path.
  */
 export function redirect(location: string, status: RedirectStatus = 307): never {
+    if (!isAllowedRedirectTarget(location)) {
+        throw new Error(`Redirect to ${location} disallowed: only http(s), mailto and tel URLs and relative paths are allowed`);
+    }
     throw new NavigationError(`${redirectDigestPrefix}${status};${location}`);
 }
 

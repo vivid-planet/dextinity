@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { type APIResponse, expect, test } from "@playwright/test";
 
 import { noStoreCacheControl, requestTypes } from "./helpers.js";
 
@@ -29,53 +29,127 @@ for (const { name, prefix, contentType } of requestTypes) {
 
             expect(response.status()).toBe(500);
         });
-
-        test("redirects with status 307 when redirect() is called deep in the tree", async ({ request }) => {
-            const response = await request.get(`${prefix}/redirect`, { maxRedirects: 0 });
-
-            expect(response.status()).toBe(307);
-            expect(response.headers()["location"]).toBe(`${prefix}/request`);
-        });
-
-        for (const status of [301, 302, 308]) {
-            test(`redirects with the given status ${status}`, async ({ request }) => {
-                const response = await request.get(`${prefix}/redirect?status=${status}`, { maxRedirects: 0 });
-
-                expect(response.status()).toBe(status);
-                expect(response.headers()["location"]).toBe(`${prefix}/request`);
-            });
-        }
-
-        test("keeps the search of the redirect location", async ({ request }) => {
-            const response = await request.get(`${prefix}/redirect?location=${encodeURIComponent("/request?page=2")}`, { maxRedirects: 0 });
-
-            expect(response.headers()["location"]).toBe(`${prefix}/request?page=2`);
-        });
-
-        test("redirects to other origins without the RSC prefix", async ({ request }) => {
-            const response = await request.get(`${prefix}/redirect?location=${encodeURIComponent("https://example.com/target")}`, {
-                maxRedirects: 0,
-            });
-
-            expect(response.headers()["location"]).toBe("https://example.com/target");
-        });
-
-        test("redirects when redirect() is called in a route handler", async ({ request }) => {
-            const response = await request.get(`${prefix}/redirect-in-handler`, { maxRedirects: 0 });
-
-            expect(response.status()).toBe(307);
-            expect(response.headers()["location"]).toBe(`${prefix}/request`);
-        });
-
-        test("follows redirects to the target page", async ({ request }) => {
-            const response = await request.get(`${prefix}/redirect`);
-
-            expect(response.url()).toMatch(new RegExp(`${prefix}/request$`));
-            expect(response.headers()["content-type"]).toBe(contentType);
-            expect(await response.text()).toContain("Server pathname: /request");
-        });
     });
 }
+
+test.describe("HTML request", () => {
+    test("redirects with status 307 when redirect() is called deep in the tree", async ({ request }) => {
+        const response = await request.get("/redirect", { maxRedirects: 0 });
+
+        expect(response.status()).toBe(307);
+        expect(response.headers()["location"]).toBe("/request");
+    });
+
+    for (const status of [301, 302, 308]) {
+        test(`redirects with the given status ${status}`, async ({ request }) => {
+            const response = await request.get(`/redirect?status=${status}`, { maxRedirects: 0 });
+
+            expect(response.status()).toBe(status);
+            expect(response.headers()["location"]).toBe("/request");
+        });
+    }
+
+    test("redirects to other origins", async ({ request }) => {
+        const response = await request.get(`/redirect?location=${encodeURIComponent("https://example.com/target")}`, { maxRedirects: 0 });
+
+        expect(response.headers()["location"]).toBe("https://example.com/target");
+    });
+
+    test("redirects when redirect() is called in a route handler", async ({ request }) => {
+        const response = await request.get("/redirect-in-handler", { maxRedirects: 0 });
+
+        expect(response.status()).toBe(307);
+        expect(response.headers()["location"]).toBe("/request");
+    });
+
+    test("fails when redirect() is called with a location the browser mustn't navigate to", async ({ request }) => {
+        const response = await request.get(`/redirect?location=${encodeURIComponent("javascript:alert(1)")}`, { maxRedirects: 0 });
+
+        expect(response.status()).toBe(500);
+        expect(response.headers()["location"]).toBeUndefined();
+        expect(await response.text()).toContain("Error page");
+    });
+
+    test("follows redirects to the target page", async ({ request }) => {
+        const response = await request.get("/redirect");
+
+        expect(response.url()).toMatch(/\/request$/);
+        expect(await response.text()).toContain("Server pathname: /request");
+    });
+});
+
+// fetch() in the browser would follow redirects itself, which fails for other origins
+test.describe("RSC request", () => {
+    async function expectRedirectPayload(response: APIResponse, location: string) {
+        expect(response.status()).toBe(202);
+        expect(response.headers()["content-type"]).toBe("text/x-component;charset=utf-8");
+        expect(response.headers()["cache-control"]).toBe(noStoreCacheControl);
+        expect(response.headers()["x-robots-tag"]).toBe("noindex");
+        expect(response.headers()["location"]).toBeUndefined();
+        expect(await response.text()).toContain(`{"redirect":{"location":${JSON.stringify(location)}}}`);
+    }
+
+    test("responds with a redirect payload when redirect() is called deep in the tree", async ({ request }) => {
+        await expectRedirectPayload(await request.get("/_rsc/redirect", { maxRedirects: 0 }), "/request");
+    });
+
+    for (const status of [301, 302, 308]) {
+        test(`responds with a redirect payload for status ${status}`, async ({ request }) => {
+            await expectRedirectPayload(await request.get(`/_rsc/redirect?status=${status}`, { maxRedirects: 0 }), "/request");
+        });
+    }
+
+    test("keeps the search of the redirect location", async ({ request }) => {
+        const response = await request.get(`/_rsc/redirect?location=${encodeURIComponent("/request?page=2")}`, { maxRedirects: 0 });
+
+        await expectRedirectPayload(response, "/request?page=2");
+    });
+
+    test("keeps redirects to other origins", async ({ request }) => {
+        const response = await request.get(`/_rsc/redirect?location=${encodeURIComponent("https://example.com/target")}`, {
+            maxRedirects: 0,
+        });
+
+        await expectRedirectPayload(response, "https://example.com/target");
+    });
+
+    test("responds with a redirect payload when redirect() is called in a route handler", async ({ request }) => {
+        await expectRedirectPayload(await request.get("/_rsc/redirect-in-handler", { maxRedirects: 0 }), "/request");
+    });
+
+    test("responds with a redirect payload for redirects of route handlers", async ({ request }) => {
+        const response = await request.get(`/_rsc/raw-redirect?location=${encodeURIComponent("mailto:office@example.com")}`, {
+            maxRedirects: 0,
+        });
+
+        await expectRedirectPayload(response, "mailto:office@example.com");
+    });
+
+    test("keeps the headers of the redirect, e.g. cookies", async ({ request }) => {
+        const response = await request.get("/_rsc/redirect-with-cookie", { maxRedirects: 0 });
+
+        await expectRedirectPayload(response, "/request");
+        expect(response.headers()["set-cookie"]).toBe("redirected=1; Path=/");
+    });
+
+    test("sends the error of redirect() with a location the browser mustn't navigate to to the error boundary", async ({ request }) => {
+        const response = await request.get(`/_rsc/redirect?location=${encodeURIComponent("javascript:alert(1)")}`, { maxRedirects: 0 });
+
+        expect(response.status()).toBe(200);
+        expect(response.headers()["cache-control"]).toBe(noStoreCacheControl);
+        expect(await response.text()).not.toContain('{"redirect":');
+    });
+
+    test("fails for redirects of route handlers to locations the browser mustn't navigate to", async ({ request }) => {
+        const response = await request.get(`/_rsc/raw-redirect?location=${encodeURIComponent("javascript:alert(1)")}`, {
+            maxRedirects: 0,
+        });
+
+        expect(response.status()).toBe(500);
+        expect(response.headers()["cache-control"]).toBe(noStoreCacheControl);
+        expect(response.headers()["location"]).toBeUndefined();
+    });
+});
 
 test("renders the not found page with status 404 when a client component calls notFound() during SSR", async ({ request }) => {
     const response = await request.get("/not-found-in-client-component");

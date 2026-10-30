@@ -131,9 +131,9 @@ Playwright with Chromium against the test app (`e2e/fixture/`, `/pages/:name` wi
 
 A few tests against the real demo site (needs Docker and the API, so run manually or nightly, not in the regular CI job): pages render without errors, client navigation, site preview in the admin.
 
-### #50 Avoid the reload after the first page load in dev
+### #50 Avoid the reload after the first page load in dev (accepted)
 
-With an empty Vite cache, the first page in dev is loaded twice: the scanner only crawls `entry.browser.js`, client components are loaded at runtime through the RSC payload, and as `dextinitySite()` excludes `@dextinity/site-vite-rsc` from pre-bundling (plugin-rsc has to transform its `"use client"` files), the dependencies of `@dextinity/site-react` are found late ("optimized dependencies changed. reloading"). The test app includes `@dextinity/site-vite-rsc > @dextinity/site-react` in `optimizeDeps`. For projects, `dextinitySite()` could do the same for the client environment, but in this monorepo the linked `site-react` would then be pre-bundled and stale while working on it with the demo running. Decide whether to do it only for installed packages, or to add the project's `"use client"` files to `optimizeDeps.entries` (measured during #10 in the demo).
+With an empty Vite cache, the first page in dev is loaded twice: the scanner only crawls `entry.browser.js`, client components are loaded at runtime through the RSC payload, so their dependencies are found late ("optimized dependencies changed. reloading"). Measured in the demo: `react-intl`, `react-hook-form`, `swiper`, `@base-ui/react`, `react-focus-lock`, `redraft`, `filesize` and the dependencies of `@dextinity/site-react`. Adding the project's `"use client"` files to `optimizeDeps.entries` removed the reload (measured), installed packages would also need `@dextinity/site-vite-rsc > @dextinity/site-react` in `optimizeDeps.include`, as the scanner doesn't follow the excluded package. Decision: accepted, as it's dev only and once per new cache; noted in the changeset. The test app includes `@dextinity/site-vite-rsc > @dextinity/site-react`, so that the browser tests see one document load.
 
 ### #41 Fix back navigation to a full page load in dev
 

@@ -2,9 +2,9 @@
 // You may choose to use this file as scaffold by moving this file out of generated folder and removing this comment.
 import { RequiredPermission } from "@dextinity/cms-api";
 import { Resolver, ResolveField, Parent } from "@nestjs/graphql";
-import { Product } from "../entities/product.entity";
-import { ProductTag } from "../entities/product-tag.entity";
-import { ProductToTag } from "../entities/product-to-tag.entity";
+import { Product } from "../entities/product.entity.js";
+import { ProductTag } from "../entities/product-tag.entity.js";
+import { ProductToTag } from "../entities/product-to-tag.entity.js";
 @Resolver(() => ProductToTag)
 @RequiredPermission(["products"], { skipScopeCheck: true })
 export class ProductToTagResolver {

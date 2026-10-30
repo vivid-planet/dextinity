@@ -1,4 +1,4 @@
-import { EmailContactSubscribeScope } from "@src/brevo/brevo-contact/dto/brevo-contact-subscribe.scope";
+import { EmailContactSubscribeScope } from "@src/brevo/brevo-contact/dto/brevo-contact-subscribe.scope.js";
 import { Type } from "class-transformer";
 import { IsEmail, IsNotEmpty, IsString, ValidateNested } from "class-validator";
 

@@ -4,8 +4,8 @@ import { ArgsType, Field, ID } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsOptional, IsString, ValidateNested, IsUUID } from "class-validator";
 import { OffsetBasedPaginationArgs, SortDirection } from "@dextinity/cms-api";
-import { ProductVariantFilter } from "./product-variant.filter";
-import { ProductVariantSort, ProductVariantSortField } from "./product-variant.sort";
+import { ProductVariantFilter } from "./product-variant.filter.js";
+import { ProductVariantSort, ProductVariantSortField } from "./product-variant.sort.js";
 @ArgsType()
 export class ProductVariantsArgs extends OffsetBasedPaginationArgs {
     @Field(() => ID)

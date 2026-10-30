@@ -1,9 +1,9 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { faker } from "@src/db/fixtures/faker";
-import { StageBlock } from "@src/documents/pages/blocks/stage.block";
+import { faker } from "@src/db/fixtures/faker.js";
+import type { StageBlock } from "@src/documents/pages/blocks/stage.block.js";
 
-import { BasicStageBlockFixtureService } from "./blocks/stage/basic-stage-block-fixture.service";
+import { BasicStageBlockFixtureService } from "./blocks/stage/basic-stage-block-fixture.service.js";
 
 @Injectable()
 export class StageBlockFixtureService {

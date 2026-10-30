@@ -31,7 +31,7 @@ export async function generateCrudSingle(generatorOptions: CrudSingleGeneratorOp
 
         const serviceOut = `import type { ObjectQuery } from "@mikro-orm/postgresql";
     import { Injectable } from "@nestjs/common";
-    import { ${metadata.className} } from "${path.relative(targetDirectory, metadata.path).replace(/\.ts$/, "")}";
+    import { ${metadata.className} } from "${path.relative(targetDirectory, metadata.path).replace(/\.ts$/, ".js")}";
     
     @Injectable()
     export class ${classNamePlural}Service {    
@@ -44,14 +44,14 @@ export async function generateCrudSingle(generatorOptions: CrudSingleGeneratorOp
     import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
     import { ${entityHasRequiredPermission ? "" : "RequiredPermission, "}SortDirection, validateNotModified } from "@dextinity/cms-api";
     
-    import { ${metadata.className} } from "${path.relative(targetDirectory, metadata.path).replace(/\.ts$/, "")}";
+    import { ${metadata.className} } from "${path.relative(targetDirectory, metadata.path).replace(/\.ts$/, ".js")}";
     ${
         scopeProp && scopeProp.targetMeta
-            ? `import { ${scopeProp.targetMeta.className} } from "${path.relative(targetDirectory, scopeProp.targetMeta.path).replace(/\.ts$/, "")}";`
+            ? `import { ${scopeProp.targetMeta.className} } from "${path.relative(targetDirectory, scopeProp.targetMeta.path).replace(/\.ts$/, ".js")}";`
             : ""
     }
-    import { ${classNamePlural}Service } from "./${fileNamePlural}.service";
-    import { ${classNameSingular}Input } from "./dto/${fileNameSingular}.input";
+    import { ${classNamePlural}Service } from "./${fileNamePlural}.service.js";
+    import { ${classNameSingular}Input } from "./dto/${fileNameSingular}.input.js";
 
     @Resolver(() => ${metadata.className})
     ${entityHasRequiredPermission ? "" : `@RequiredPermission(${JSON.stringify(generatorOptions.requiredPermission)}${!scopeProp ? `, { skipScopeCheck: true }` : ""})`}

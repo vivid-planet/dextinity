@@ -1,12 +1,12 @@
 import { DamImageBlock } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, Logger } from "@nestjs/common";
-import { faker } from "@src/db/fixtures/faker";
-import { Manufacturer } from "@src/products/entities/manufacturer.entity";
-import { Product, ProductStatus } from "@src/products/entities/product.entity";
-import { ProductCategory } from "@src/products/entities/product-category.entity";
-import { ProductCategoryType } from "@src/products/entities/product-category-type.entity";
-import { ProductType } from "@src/products/entities/product-type.enum";
+import { faker } from "@src/db/fixtures/faker.js";
+import { Manufacturer } from "@src/products/entities/manufacturer.entity.js";
+import { Product, ProductStatus } from "@src/products/entities/product.entity.js";
+import { ProductCategory } from "@src/products/entities/product-category.entity.js";
+import { ProductCategoryType } from "@src/products/entities/product-category-type.entity.js";
+import { ProductType } from "@src/products/entities/product-type.enum.js";
 import { format } from "date-fns";
 
 @Injectable()

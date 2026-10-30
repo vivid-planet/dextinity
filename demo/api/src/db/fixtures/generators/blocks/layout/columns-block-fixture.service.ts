@@ -1,18 +1,18 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { faker } from "@src/db/fixtures/faker";
-import { StandaloneRichTextBlockFixtureService } from "@src/db/fixtures/generators/blocks/text-and-content/standalone-rich-text-block-fixture.service";
-import { ColumnsBlock, ColumnsContentBlock } from "@src/documents/pages/blocks/columns.block";
+import { faker } from "@src/db/fixtures/faker.js";
+import { StandaloneRichTextBlockFixtureService } from "@src/db/fixtures/generators/blocks/text-and-content/standalone-rich-text-block-fixture.service.js";
+import type { ColumnsBlock, ColumnsContentBlock } from "@src/documents/pages/blocks/columns.block.js";
 
-import { BlockFixture } from "../block-fixture";
-import { MediaGalleryBlockFixtureService } from "../media/media-gallery-block-fixture.service";
-import { StandaloneMediaBlockFixtureService } from "../media/standalone-media-block-fixture.service";
-import { AnchorBlockFixtureService } from "../navigation/anchor-block-fixture.service";
-import { StandaloneCallToActionListBlockFixtureService } from "../navigation/standalone-call-to-action-list-block-fixture.service";
-import { StandaloneHeadingBlockFixtureService } from "../text-and-content/standalone-heading-block-fixture.service";
-import { TextImageBlockFixtureService } from "../text-and-content/text-image-block-fixture.service";
-import { AccordionBlockFixtureService } from "./accordion-block-fixture.service";
-import { SpaceBlockFixtureService } from "./space-block-fixture.service";
+import type { BlockFixture } from "../block-fixture.js";
+import { MediaGalleryBlockFixtureService } from "../media/media-gallery-block-fixture.service.js";
+import { StandaloneMediaBlockFixtureService } from "../media/standalone-media-block-fixture.service.js";
+import { AnchorBlockFixtureService } from "../navigation/anchor-block-fixture.service.js";
+import { StandaloneCallToActionListBlockFixtureService } from "../navigation/standalone-call-to-action-list-block-fixture.service.js";
+import { StandaloneHeadingBlockFixtureService } from "../text-and-content/standalone-heading-block-fixture.service.js";
+import { TextImageBlockFixtureService } from "../text-and-content/text-image-block-fixture.service.js";
+import { AccordionBlockFixtureService } from "./accordion-block-fixture.service.js";
+import { SpaceBlockFixtureService } from "./space-block-fixture.service.js";
 
 const oneColumnLayouts = [{ name: "2-20-2" }];
 

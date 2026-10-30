@@ -1,9 +1,9 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block";
-import { LinkBlockFixtureService } from "@src/db/fixtures/generators/blocks/navigation/link-block-fixture.service";
+import type { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block.js";
+import { LinkBlockFixtureService } from "@src/db/fixtures/generators/blocks/navigation/link-block-fixture.service.js";
 
-import { DescriptionCellContent, TableBlockFixtureBase } from "./table-block-fixture-base";
+import { type DescriptionCellContent, TableBlockFixtureBase } from "./table-block-fixture-base.js";
 
 type TipTapRichTextInput = ExtractBlockInputFactoryProps<typeof TipTapRichTextBlock>;
 

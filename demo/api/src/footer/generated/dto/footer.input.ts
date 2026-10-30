@@ -4,7 +4,7 @@ import { Field, InputType } from "@nestjs/graphql";
 import { Transform } from "class-transformer";
 import { type BlockInputInterface, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
 import { IsNotEmpty, ValidateNested } from "class-validator";
-import { FooterContentBlock } from "../../blocks/footer-content.block";
+import { FooterContentBlock } from "../../blocks/footer-content.block.js";
 @InputType()
 export class FooterInput {
     @IsNotEmpty()

@@ -58,7 +58,7 @@ describe("find-hooks-service", () => {
         expect(hooksService.imports).toEqual([
             {
                 name: "Test2MutationError",
-                importPath: "./find-hooks-service.spec",
+                importPath: "./find-hooks-service.spec.js",
             },
         ]);
         expect(hooksService.validateCreateInput).toBeDefined();
@@ -91,11 +91,11 @@ describe("find-hooks-service", () => {
         expect(hooksService.imports).toEqual([
             {
                 name: "TestEntityService",
-                importPath: "./find-hooks-service/test-entity.service",
+                importPath: "./find-hooks-service/test-entity.service.js",
             },
             {
                 name: "TestMutationError",
-                importPath: "./find-hooks-service/test-entity.service",
+                importPath: "./find-hooks-service/test-entity.service.js",
             },
         ]);
         expect(hooksService.validateCreateInput).toBeDefined();
@@ -127,11 +127,11 @@ describe("find-hooks-service", () => {
         expect(hooksService.imports).toEqual([
             {
                 name: "TestEntity3Service",
-                importPath: "./find-hooks-service/test-entity3.service",
+                importPath: "./find-hooks-service/test-entity3.service.js",
             },
             {
                 name: "TestEntity3MutationError",
-                importPath: "./find-hooks-service/test-entity3-error",
+                importPath: "./find-hooks-service/test-entity3-error.js",
             },
         ]);
         expect(hooksService.validateCreateInput).toBeDefined();

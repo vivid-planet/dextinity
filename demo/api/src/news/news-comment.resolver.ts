@@ -2,9 +2,9 @@ import { AffectedEntity } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, ID, Mutation, Resolver } from "@nestjs/graphql";
 
-import { NewsCommentInput } from "./dto/news-comment.input";
-import { News } from "./entities/news.entity";
-import { NewsComment } from "./entities/news-comment.entity";
+import { NewsCommentInput } from "./dto/news-comment.input.js";
+import { News } from "./entities/news.entity.js";
+import { NewsComment } from "./entities/news-comment.entity.js";
 
 @Resolver(() => NewsComment)
 export class NewsCommentResolver {

@@ -2,7 +2,7 @@ import { ImporterLocalFileDataStream } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/core";
 import { Injectable } from "@nestjs/common";
 
-import { ProductImporter } from "./product-importer";
+import { ProductImporter } from "./product-importer.js";
 
 @Injectable()
 export class ProductImporterService {

@@ -1,6 +1,6 @@
 import { DefaultLogger, type LogContext, type Logger, type LoggerOptions } from "@mikro-orm/core";
 
-import { getOrCreateCounter, getOrCreateHistogram } from "./metrics";
+import { getOrCreateCounter, getOrCreateHistogram } from "./metrics.js";
 
 class SqlMetricsLogger extends DefaultLogger implements Logger {
     private readonly sqlQueryCount = getOrCreateCounter("sql.query.count", {

@@ -1,10 +1,10 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block";
-import { faker } from "@src/db/fixtures/faker";
-import { LinkBlockFixtureService } from "@src/db/fixtures/generators/blocks/navigation/link-block-fixture.service";
+import type { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
+import { faker } from "@src/db/fixtures/faker.js";
+import { LinkBlockFixtureService } from "@src/db/fixtures/generators/blocks/navigation/link-block-fixture.service.js";
 
-import { DescriptionCellContent, TableBlockFixtureBase } from "./table-block-fixture-base";
+import { type DescriptionCellContent, TableBlockFixtureBase } from "./table-block-fixture-base.js";
 
 type RichTextInput = ExtractBlockInputFactoryProps<typeof RichTextBlock>;
 

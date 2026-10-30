@@ -1,8 +1,8 @@
-import { AppModule } from "@src/app.module";
+import { AppModule } from "@src/app.module.js";
 import { useContainer } from "class-validator";
 import { CommandFactory } from "nest-commander";
 
-import { createConfig } from "./config/config";
+import { createConfig } from "./config/config.js";
 
 const config = createConfig(process.env);
 const appModule = AppModule.forRoot(config);

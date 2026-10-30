@@ -3,7 +3,7 @@ import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { Injectable } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 
-import { ProductImporterService } from "./product-importer.service";
+import { ProductImporterService } from "./product-importer.service.js";
 
 @Injectable()
 @Command({

@@ -1,7 +1,7 @@
-import { ExtractBlockInputFactoryProps, SvgImageBlock } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps, SvgImageBlock } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 
-import { ImageFixtureService } from "../../image-fixture.service";
+import { ImageFixtureService } from "../../image-fixture.service.js";
 
 @Injectable()
 export class SvgImageBlockFixtureService {

@@ -1,5 +1,5 @@
 import { createTipTapRichTextBlock } from "@dextinity/cms-api";
-import { mailTipTapRichTextBlockOptions } from "@src/mail/blocks/mail-tip-tap-rich-text.block";
+import { mailTipTapRichTextBlockOptions } from "@src/mail/blocks/mail-tip-tap-rich-text.block.js";
 
 export const EmailCampaignTipTapRichTextBlock = createTipTapRichTextBlock(
     {

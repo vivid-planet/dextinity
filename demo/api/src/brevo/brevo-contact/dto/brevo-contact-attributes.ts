@@ -3,7 +3,7 @@ import { Embeddable, Enum } from "@mikro-orm/decorators/legacy";
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { IsEnum, IsNotEmpty, IsString } from "class-validator";
 
-import { BrevoContactBranch, BrevoContactSalutation } from "./brevo-contact.enums";
+import { BrevoContactBranch, BrevoContactSalutation } from "./brevo-contact.enums.js";
 
 @ObjectType()
 @InputType("BrevoContactAttributesInput")

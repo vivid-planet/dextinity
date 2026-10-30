@@ -1,5 +1,5 @@
 import { createRichTextBlock } from "@dextinity/mail-react";
-import type { PhoneLinkBlockData } from "@src/blocks.generated";
+import type { PhoneLinkBlockData } from "@src/blocks.generated.js";
 
 export const { MjmlRichTextBlock } = createRichTextBlock({
     blockTypes: {

@@ -1,11 +1,11 @@
 import { DamImageBlock } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, Logger } from "@nestjs/common";
-import { faker } from "@src/db/fixtures/faker";
-import { NewsContentBlock } from "@src/news/blocks/news-content.block";
-import { News, NewsCategory, NewsStatus } from "@src/news/entities/news.entity";
+import { faker } from "@src/db/fixtures/faker.js";
+import { NewsContentBlock } from "@src/news/blocks/news-content.block.js";
+import { News, NewsCategory, NewsStatus } from "@src/news/entities/news.entity.js";
 
-import { DamImageBlockFixtureService } from "./blocks/media/dam-image-block-fixture.service";
+import { DamImageBlockFixtureService } from "./blocks/media/dam-image-block-fixture.service.js";
 
 @Injectable()
 export class NewsFixtureService {

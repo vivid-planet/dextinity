@@ -1,10 +1,10 @@
-import { ExtractBlockInputFactoryProps, ImagePosition } from "@dextinity/cms-api";
+import { type ExtractBlockInputFactoryProps, ImagePosition } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { TextImageBlock } from "@src/common/blocks/text-image.block";
-import { faker } from "@src/db/fixtures/faker";
+import type { TextImageBlock } from "@src/common/blocks/text-image.block.js";
+import { faker } from "@src/db/fixtures/faker.js";
 
-import { DamImageBlockFixtureService } from "../media/dam-image-block-fixture.service";
-import { RichTextBlockFixtureService } from "./rich-text-block-fixture.service";
+import { DamImageBlockFixtureService } from "../media/dam-image-block-fixture.service.js";
+import { RichTextBlockFixtureService } from "./rich-text-block-fixture.service.js";
 
 @Injectable()
 export class TextImageBlockFixtureService {

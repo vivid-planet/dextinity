@@ -24,6 +24,7 @@
         "target": "ES2023",
         "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
         "types": ["*"],
-        "useDefineForClassFields": false
+        "useDefineForClassFields": false,
+        "verbatimModuleSyntax": true
     }
 }

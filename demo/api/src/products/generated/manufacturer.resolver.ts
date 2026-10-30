@@ -2,10 +2,10 @@
 // You may choose to use this file as scaffold by moving this file out of generated folder and removing this comment.
 import { EntityManager, type FindOptions } from "@mikro-orm/postgresql";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { ManufacturerInput, ManufacturerUpdateInput } from "./dto/manufacturer.input";
-import { PaginatedManufacturers } from "./dto/paginated-manufacturers";
-import { ManufacturersArgs } from "./dto/manufacturers.args";
-import { Manufacturer } from "../entities/manufacturer.entity";
+import { ManufacturerInput, ManufacturerUpdateInput } from "./dto/manufacturer.input.js";
+import { PaginatedManufacturers } from "./dto/paginated-manufacturers.js";
+import { ManufacturersArgs } from "./dto/manufacturers.args.js";
+import { Manufacturer } from "../entities/manufacturer.entity.js";
 import { AffectedEntity, gqlArgsToMikroOrmQuery, gqlSortToMikroOrmOrderBy } from "@dextinity/cms-api";
 @Resolver(() => Manufacturer)
 export class ManufacturerResolver {

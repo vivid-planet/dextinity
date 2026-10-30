@@ -1,6 +1,6 @@
-import { BlockInputInterface, RootBlockInputScalar } from "@dextinity/cms-api";
+import { type BlockInputInterface, RootBlockInputScalar } from "@dextinity/cms-api";
 import { Field, InputType } from "@nestjs/graphql";
-import { LinkBlock } from "@src/common/blocks/link.block";
+import { LinkBlock } from "@src/common/blocks/link.block.js";
 import { Transform } from "class-transformer";
 import { ValidateNested } from "class-validator";
 

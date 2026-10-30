@@ -3,22 +3,22 @@ import {
     PageTreeNodeVisibility,
     RedirectGenerationType,
     REDIRECTS_LINK_BLOCK,
-    RedirectsLinkBlock,
+    type RedirectsLinkBlock,
     RedirectSourceType,
     resolveEntityClass,
 } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
-import { faker } from "@src/db/fixtures/faker";
-import { PageContentBlock } from "@src/documents/pages/blocks/page-content.block";
-import { SeoBlock } from "@src/documents/pages/blocks/seo.block";
-import { StageBlock } from "@src/documents/pages/blocks/stage.block";
-import { Page } from "@src/documents/pages/entities/page.entity";
-import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity";
-import { PageTreeNodeCategory } from "@src/page-tree/page-tree-node-category";
-import { UserGroup } from "@src/user-groups/user-group";
+import { faker } from "@src/db/fixtures/faker.js";
+import { PageContentBlock } from "@src/documents/pages/blocks/page-content.block.js";
+import { SeoBlock } from "@src/documents/pages/blocks/seo.block.js";
+import { StageBlock } from "@src/documents/pages/blocks/stage.block.js";
+import { Page } from "@src/documents/pages/entities/page.entity.js";
+import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
+import { PageTreeNodeCategory } from "@src/page-tree/page-tree-node-category.js";
+import { UserGroup } from "@src/user-groups/user-group.js";
 
-import { SeoBlockFixtureService } from "./seo-block-fixture.service";
+import { SeoBlockFixtureService } from "./seo-block-fixture.service.js";
 
 @Injectable()
 export class RedirectsFixtureService {

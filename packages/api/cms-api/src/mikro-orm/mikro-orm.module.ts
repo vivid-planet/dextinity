@@ -3,6 +3,7 @@ import { MikroOrmModule as MikroOrmNestjsModule, type MikroOrmModuleOptions as M
 import { EntityCaseNamingStrategy, type MigrationObject, type PostgreSqlDriver } from "@mikro-orm/postgresql";
 import { type DynamicModule, Module } from "@nestjs/common";
 import fs from "fs";
+import { createRequire } from "module";
 import path from "path";
 
 import { Migration20220127085859 } from "./migrations/Migration20220127085859.js";
@@ -47,6 +48,8 @@ export interface MikroOrmModuleOptions {
     ormConfig: MikroOrmNestjsOptions;
 }
 
+const require = createRequire(import.meta.url);
+
 export function createMigrationsList(migrationsDir: string): MigrationObject[] {
     if (!fs.existsSync(migrationsDir)) {
         return [];
@@ -68,7 +71,6 @@ export function createMigrationsList(migrationsDir: string): MigrationObject[] {
 
             return {
                 name,
-                // eslint-disable-next-line @typescript-eslint/no-require-imports
                 class: require(`${migrationsDir}/${file}`)[name],
             };
         });

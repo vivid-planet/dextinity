@@ -7,6 +7,7 @@
         "directory": "packages/api/brevo-api"
     },
     "license": "BSD-2-Clause",
+    "type": "module",
     "exports": {
         ".": {
             "types": "./lib/index.d.ts",
@@ -22,9 +23,9 @@
         "build": "$npm_execpath run clean && tsc -p tsconfig.build.json",
         "clean": "rimraf lib",
         "dev": "tsc --watch --preserveWatchOutput -p tsconfig.build.json",
-        "generate-block-meta": "node -r @swc-node/register generate-block-meta.ts",
+        "generate-block-meta": "node --import @swc-node/register/esm-register generate-block-meta.ts",
         "generate-block-meta:watch": "chokidar \"lib/\" -c \"$npm_execpath generate-block-meta\"",
-        "generate-schema": "node -r @swc-node/register generate-schema.ts",
+        "generate-schema": "node --import @swc-node/register/esm-register generate-schema.ts",
         "generate-schema:watch": "chokidar \"lib/\" -c \"$npm_execpath generate-schema\"",
         "lint": "run-p lint:prettier lint:eslint lint:tsc",
         "lint:ci": "pnpm run lint",

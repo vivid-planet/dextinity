@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { Config } from "@src/config/config";
-import { CONFIG } from "@src/config/config.module";
-import { loadMessages } from "@src/translation/loadMessages";
-import { createIntl, createIntlCache, IntlCache } from "react-intl";
+import type { Config } from "@src/config/config.js";
+import { CONFIG } from "@src/config/config.module.js";
+import { loadMessages } from "@src/translation/loadMessages.js";
+import { createIntl, createIntlCache, type IntlCache } from "react-intl";
 
 @Injectable()
 export class TranslationService {

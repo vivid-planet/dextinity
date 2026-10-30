@@ -3,8 +3,8 @@
 import { IsOptional, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 import { Field, InputType } from "@nestjs/graphql";
-import { NewsStatusEnumFilter } from "./news-status.enum-filter";
-import { NewsCategoryEnumFilter } from "./news-category.enum-filter";
+import { NewsStatusEnumFilter } from "./news-status.enum-filter.js";
+import { NewsCategoryEnumFilter } from "./news-category.enum-filter.js";
 import { DateTimeFilter, IdFilter, OneToManyFilter, StringFilter } from "@dextinity/cms-api";
 @InputType()
 export class NewsFilter {

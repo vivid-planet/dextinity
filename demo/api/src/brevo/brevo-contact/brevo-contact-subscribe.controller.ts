@@ -1,8 +1,8 @@
-import { BrevoContactsService, SubscribeResponse } from "@dextinity/brevo-api";
+import { BrevoContactsService, type SubscribeResponse } from "@dextinity/brevo-api";
 import { DisableDextinityGuards } from "@dextinity/cms-api";
 import { Body, Controller, Post } from "@nestjs/common";
 
-import { BrevoContactSubscribeInput } from "./dto/brevo-contact-subscribe.input";
+import { BrevoContactSubscribeInput } from "./dto/brevo-contact-subscribe.input.js";
 
 @Controller("brevo-contacts")
 export class BrevoContactSubscribeController {

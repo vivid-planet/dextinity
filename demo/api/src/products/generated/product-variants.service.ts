@@ -2,7 +2,7 @@
 // You may choose to use this file as scaffold by moving this file out of generated folder and removing this comment.
 import { EntityManager, type FilterQuery, raw } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
-import { ProductVariant } from "../entities/product-variant.entity";
+import { ProductVariant } from "../entities/product-variant.entity.js";
 @Injectable()
 export class ProductVariantsService {
     constructor(protected readonly entityManager: EntityManager) {}

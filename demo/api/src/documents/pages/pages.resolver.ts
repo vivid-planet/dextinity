@@ -1,6 +1,6 @@
 import {
     AffectedEntity,
-    PageTreeNodeInterface,
+    type PageTreeNodeInterface,
     PageTreeNodeVisibility,
     PageTreeService,
     RequiredPermission,
@@ -9,10 +9,10 @@ import {
 import { EntityManager } from "@mikro-orm/postgresql";
 import { UnauthorizedException } from "@nestjs/common";
 import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
-import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity";
+import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
 
-import { PageInput } from "./dto/page.input";
-import { Page } from "./entities/page.entity";
+import { PageInput } from "./dto/page.input.js";
+import { Page } from "./entities/page.entity.js";
 
 @Resolver(() => Page)
 @RequiredPermission(["pageTree"])

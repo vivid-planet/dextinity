@@ -1,7 +1,7 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { StandaloneRichTextBlock, TextAlignment } from "@src/common/blocks/standalone-rich-text.block";
-import { RichTextBlockFixtureService } from "@src/db/fixtures/generators/blocks/text-and-content/rich-text-block-fixture.service";
+import { type StandaloneRichTextBlock, TextAlignment } from "@src/common/blocks/standalone-rich-text.block.js";
+import { RichTextBlockFixtureService } from "@src/db/fixtures/generators/blocks/text-and-content/rich-text-block-fixture.service.js";
 
 @Injectable()
 export class StandaloneRichTextBlockFixtureService {

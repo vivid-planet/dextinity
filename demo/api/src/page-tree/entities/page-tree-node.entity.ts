@@ -1,10 +1,10 @@
 import { PageTreeNodeBase } from "@dextinity/cms-api";
 import { Embedded, Entity, Enum, Index, ManyToOne } from "@mikro-orm/decorators/legacy";
 import { Field, ObjectType } from "@nestjs/graphql";
-import { UserGroup } from "@src/user-groups/user-group";
+import { UserGroup } from "@src/user-groups/user-group.js";
 
-import { PageTreeNodeScope } from "../dto/page-tree-node-scope";
-import { PageTreeNodeCategory } from "../page-tree-node-category";
+import { PageTreeNodeScope } from "../dto/page-tree-node-scope.js";
+import { PageTreeNodeCategory } from "../page-tree-node-category.js";
 
 @Entity({ tableName: PageTreeNodeBase.tableName })
 @ObjectType("PageTreeNode") // name MUST NOT be changed in the app or gql-api in cms-api breaks

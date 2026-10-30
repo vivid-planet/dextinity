@@ -1,6 +1,6 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockField,
     BlockInput,
     blockInputToData,
@@ -8,10 +8,10 @@ import {
     ChildBlockInput,
     createBlock,
     DamImageBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
 } from "@dextinity/cms-api";
-import { LinkListBlock } from "@src/common/blocks/link-list.block";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block";
+import { LinkListBlock } from "@src/common/blocks/link-list.block.js";
+import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
 import { IsString } from "class-validator";
 
 class FooterContentBlockData extends BlockData {

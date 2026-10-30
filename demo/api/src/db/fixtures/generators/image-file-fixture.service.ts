@@ -1,6 +1,6 @@
-import { createFileUploadInputFromUrl, FileInterface, FilesService } from "@dextinity/cms-api";
+import { createFileUploadInputFromUrl, type FileInterface, FilesService } from "@dextinity/cms-api";
 import { Injectable, Logger } from "@nestjs/common";
-import { DamScope } from "@src/dam/dto/dam-scope";
+import type { DamScope } from "@src/dam/dto/dam-scope.js";
 import path from "path";
 
 const IMAGE_FILE_PATHS = ["astronaut", "comet", "planet", "rocket", "sun"];

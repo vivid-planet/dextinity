@@ -1,20 +1,20 @@
 import {
-    ExternalLinkBlock,
-    ExtractBlockData,
-    InternalLinkBlock,
+    type ExternalLinkBlock,
+    type ExtractBlockData,
+    type InternalLinkBlock,
     PageTreeReadApiService,
-    RedirectsLinkBlock,
-    RedirectTargetUrlServiceInterface,
+    type RedirectsLinkBlock,
+    type RedirectTargetUrlServiceInterface,
 } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Scope } from "@nestjs/common";
-import { Config } from "@src/config/config";
-import { CONFIG } from "@src/config/config.module";
-import { PredefinedPageType } from "@src/documents/predefined-pages/entities/predefined-page.entity";
-import { PredefinedPagesService } from "@src/documents/predefined-pages/predefined-pages.service";
-import { NewsLinkBlock } from "@src/news/blocks/news-link.block";
-import { News } from "@src/news/entities/news.entity";
-import type { PageTreeNodeScope } from "@src/page-tree/dto/page-tree-node-scope";
+import type { Config } from "@src/config/config.js";
+import { CONFIG } from "@src/config/config.module.js";
+import { PredefinedPageType } from "@src/documents/predefined-pages/entities/predefined-page.entity.js";
+import { PredefinedPagesService } from "@src/documents/predefined-pages/predefined-pages.service.js";
+import type { NewsLinkBlock } from "@src/news/blocks/news-link.block.js";
+import { News } from "@src/news/entities/news.entity.js";
+import type { PageTreeNodeScope } from "@src/page-tree/dto/page-tree-node-scope.js";
 
 @Injectable({ scope: Scope.REQUEST })
 export class RedirectTargetUrlService implements RedirectTargetUrlServiceInterface {

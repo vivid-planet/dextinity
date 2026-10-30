@@ -1,17 +1,17 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockField,
     BlockInput,
     blockInputToData,
     ChildBlock,
     ChildBlockInput,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
 } from "@dextinity/cms-api";
 import { IsEnum } from "class-validator";
 
-import { TextLinkBlock } from "./text-link.block";
+import { TextLinkBlock } from "./text-link.block.js";
 
 export enum Variant {
     contained = "contained",

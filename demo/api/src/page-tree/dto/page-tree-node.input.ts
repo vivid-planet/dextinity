@@ -1,6 +1,6 @@
 import { PageTreeNodeBaseCreateInput, PageTreeNodeBaseUpdateInput } from "@dextinity/cms-api";
 import { Field, InputType } from "@nestjs/graphql";
-import { UserGroup } from "@src/user-groups/user-group";
+import { UserGroup } from "@src/user-groups/user-group.js";
 import { IsEnum, IsOptional } from "class-validator";
 
 @InputType()

@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 
 import { formatSource, testPermission } from "../../utils/test-helper.js";
 import { generateCrudInput } from "../generate-crud-input.js";
-import { NestedObject, type NestedType } from "./.generate-crud-input-json-import-nested-object";
+import { NestedObject, type NestedType } from "./.generate-crud-input-json-import-nested-object.js";
 
 @Entity()
 export class TestEntityWithJsonObject1 extends BaseEntity {

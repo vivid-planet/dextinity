@@ -2,17 +2,17 @@ import {
     AnnotationBlockMeta,
     BlockData,
     BlockField,
-    BlockIndexData,
+    type BlockIndexData,
     BlockInput,
     blockInputToData,
-    BlockMetaField,
+    type BlockMetaField,
     BlockMetaFieldKind,
     createBlock,
     IsUndefinable,
 } from "@dextinity/cms-api";
 import { IsUUID } from "class-validator";
 
-import { ProductPriceBlockTransformerService } from "./product-price-block-transformer.service";
+import { ProductPriceBlockTransformerService } from "./product-price-block-transformer.service.js";
 
 class ProductPriceBlockData extends BlockData {
     @BlockField({ nullable: true })

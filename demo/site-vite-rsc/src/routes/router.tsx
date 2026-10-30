@@ -4,14 +4,9 @@ import { getSiteContext } from "@src/util/siteContext";
 import { type Context, Hono } from "hono";
 import { Fragment, type ReactNode } from "react";
 
-import { BlockPreviewLanguageLayout } from "./blockPreview/BlockPreviewLanguageLayout";
+import { BlockPreview } from "./blockPreview/BlockPreview";
 import { BlockPreviewLayout } from "./blockPreview/BlockPreviewLayout";
-import { BrevoEmailCampaignBlockPreviewPage } from "./blockPreview/BrevoEmailCampaignBlockPreviewPage";
-import { FooterBlockPreviewPage } from "./blockPreview/FooterBlockPreviewPage";
-import { MainMenuBlockPreviewPage } from "./blockPreview/MainMenuBlockPreviewPage";
-import { PageBlockPreviewPage } from "./blockPreview/PageBlockPreviewPage";
-import { StageBlockPreviewPage } from "./blockPreview/StageBlockPreviewPage";
-import { WelcomeEmailBlockPreviewPage } from "./blockPreview/WelcomeEmailBlockPreviewPage";
+import { isBlockPreviewType } from "./blockPreview/blockPreviewTypes";
 import { DocumentPage } from "./DocumentPage";
 import { ErrorPage } from "./ErrorPage";
 import { graphQLRoute } from "./graphQLRoute";
@@ -60,14 +55,17 @@ async function renderSitePage(c: Context, renderContent: (params: ContentScope) 
     });
 }
 
-function renderBlockPreviewPage(c: Context, page: ReactNode) {
-    const { domain, language } = c.req.param() as ContentScope;
+function renderBlockPreviewPage(c: Context) {
+    const { domain, language, type } = c.req.param();
+    if (!domain || !language || !type || !isBlockPreviewType(type)) {
+        return renderRootNotFoundPage(c);
+    }
 
     return renderPage(c, {
         root: (
             <RootLayout lang={language}>
-                <BlockPreviewLayout domain={domain}>
-                    <BlockPreviewLanguageLayout language={language}>{page}</BlockPreviewLanguageLayout>
+                <BlockPreviewLayout domain={domain} language={language}>
+                    <BlockPreview type={type} />
                 </BlockPreviewLayout>
             </RootLayout>
         ),
@@ -110,16 +108,7 @@ mailRoutes.get("/render-welcome-email", welcomeEmailRoute);
 
 export const blockPreviewRoutes = new Hono();
 
-blockPreviewRoutes.get("/:domain/:language/page", (c) => renderBlockPreviewPage(c, <PageBlockPreviewPage />));
-blockPreviewRoutes.get("/:domain/:language/stage", (c) => renderBlockPreviewPage(c, <StageBlockPreviewPage />));
-blockPreviewRoutes.get("/:domain/:language/main-menu", (c) => renderBlockPreviewPage(c, <MainMenuBlockPreviewPage />));
-blockPreviewRoutes.get("/:domain/:language/footer", (c) => renderBlockPreviewPage(c, <FooterBlockPreviewPage />));
-blockPreviewRoutes.get("/:domain/:language/welcome-email", (c) =>
-    renderBlockPreviewPage(c, <WelcomeEmailBlockPreviewPage {...(c.req.param() as ContentScope)} />),
-);
-blockPreviewRoutes.get("/:domain/:language/brevo-email-campaign", (c) =>
-    renderBlockPreviewPage(c, <BrevoEmailCampaignBlockPreviewPage {...(c.req.param() as ContentScope)} />),
-);
+blockPreviewRoutes.get("/:domain/:language/:type", renderBlockPreviewPage);
 
 /**
  * The pages of the site, the domain and visibility are available via `getSiteContext()`.

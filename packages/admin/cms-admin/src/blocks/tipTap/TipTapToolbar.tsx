@@ -437,7 +437,7 @@ export const TipTapToolbar = ({
                     </FormControl>
                 </ToolbarGroup>
             )}
-            {(applicableTextBlockStyles.length > 0 || (resolvedOptions.alwaysShowTextBlockStyleSelect && hasTextBlockStyles(styledNodes))) && (
+            {hasTextBlockStyles(styledNodes) && (
                 <ToolbarGroup>
                     <FormControl sx={selectFormControlSx}>
                         <Select

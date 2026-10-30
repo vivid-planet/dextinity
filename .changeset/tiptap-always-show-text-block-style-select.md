@@ -2,14 +2,8 @@
 "@dextinity/cms-admin": minor
 ---
 
-Add `alwaysShowTextBlockStyleSelect` option to `createTipTapRichTextBlock`
+Keep the text block style select of `createTipTapRichTextBlock` in the toolbar where the selected node has no styles
 
-By default, the toolbar hides the text block style select where the selected node has no styles, for instance in a list without styles, and the toolbar buttons to its right move to the left.
-With `alwaysShowTextBlockStyleSelect: true`, the select stays in the toolbar and is disabled there instead:
-
-```tsx
-const RichTextBlock = createTipTapRichTextBlock({
-    alwaysShowTextBlockStyleSelect: true,
-    textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [introStyle] }],
-});
-```
+Previously, the toolbar hid the select where the selected node had no styles, for instance in a list without styles, and the toolbar buttons to its right moved to the left.
+Now the select stays in the toolbar and is disabled there.
+Blocks without any text block styles still show no select.

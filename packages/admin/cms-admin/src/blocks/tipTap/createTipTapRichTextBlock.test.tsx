@@ -284,7 +284,7 @@ describe("createTipTapRichTextBlock", () => {
         });
     });
 
-    describe("alwaysShowTextBlockStyleSelect", () => {
+    describe("text block style select", () => {
         const style = { name: "copy100", label: "Copy 100", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
         const textBlocks: TipTapTextBlock[] = [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [style] }];
         const listContent: JSONContent = {
@@ -303,24 +303,14 @@ describe("createTipTapRichTextBlock", () => {
         };
 
         it("should keep the style select disabled in a list without styles", () => {
-            const block = createTipTapRichTextBlock({ textBlocks, alwaysShowTextBlockStyleSelect: true });
+            const block = createTipTapRichTextBlock({ textBlocks });
             const { container } = render(<block.AdminComponent state={{ tipTapContent: listContent }} updateState={vi.fn()} />);
 
             expect(within(container).queryByRole("combobox")?.getAttribute("aria-disabled")).toBe("true");
         });
 
-        it("should hide the style select in a list without styles by default", () => {
-            const block = createTipTapRichTextBlock({ textBlocks });
-            const { container } = render(<block.AdminComponent state={{ tipTapContent: listContent }} updateState={vi.fn()} />);
-
-            expect(within(container).queryByRole("combobox")).toBeNull();
-        });
-
         it("should not show a style select when nothing has styles", () => {
-            const block = createTipTapRichTextBlock({
-                alwaysShowTextBlockStyleSelect: true,
-                textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }],
-            });
+            const block = createTipTapRichTextBlock({ textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }] });
             const { container } = render(<block.AdminComponent state={{ tipTapContent: listContent }} updateState={vi.fn()} />);
 
             expect(within(container).queryByRole("combobox")).toBeNull();

@@ -70,7 +70,6 @@ export type { JSONContent as TipTapRichTextBlockContent } from "@tiptap/core";
  */
 export interface TipTapResolvedOptions {
     undoRedoButtons: boolean;
-    alwaysShowTextBlockStyleSelect: boolean;
     bold: boolean;
     italic: boolean;
     underline: boolean;
@@ -106,7 +105,6 @@ const defaultTextBlocks: TipTapTextBlock[] = [
 
 export function resolveTipTapOptions({
     undoRedoButtons = true,
-    alwaysShowTextBlockStyleSelect = false,
     bold = true,
     italic = true,
     underline = false,
@@ -131,7 +129,6 @@ export function resolveTipTapOptions({
 
     return {
         undoRedoButtons,
-        alwaysShowTextBlockStyleSelect,
         bold,
         italic,
         underline,
@@ -196,11 +193,6 @@ export interface TipTapRichTextBlockFactoryOptions {
      * Shows the undo/redo buttons in the toolbar. The keyboard shortcuts work regardless. Defaults to `true`.
      */
     undoRedoButtons?: boolean;
-    /**
-     * Keeps the text block style select in the toolbar where the selected node has no styles, for instance in a list,
-     * and disables it there, so the toolbar doesn't shift. Defaults to `false`.
-     */
-    alwaysShowTextBlockStyleSelect?: boolean;
     /**
      * Enables bold text. Defaults to `true`.
      */

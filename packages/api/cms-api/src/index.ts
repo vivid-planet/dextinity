@@ -114,6 +114,7 @@ export {
     type TipTapTextBlockTag,
 } from "./blocks/tipTap/createTipTapRichTextBlock";
 export { transformToBlockSaveIndex } from "./blocks/transformToBlockSaveIndex/transformToBlockSaveIndex";
+export { getValidationErrorDetails, ValidationErrorDetail } from "./blocks/validation/validation-error-details";
 export { IsLinkTarget } from "./blocks/validator/is-link-target.validator";
 export { VimeoVideoBlock } from "./blocks/vimeo-video.block";
 export { YouTubeVideoBlock } from "./blocks/YouTubeVideoBlock/you-tube-video.block";

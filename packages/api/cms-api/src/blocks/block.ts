@@ -382,8 +382,22 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
     return finalBlock;
 }
 
+const blocksByBlockInput = new WeakMap<object, Block>();
+
 export function registerBlock(block: Block): void {
+    const blockInputFactory = block.blockInputFactory;
+    block.blockInputFactory = (value) => {
+        const blockInput = blockInputFactory(value);
+        if (typeof blockInput === "object" && blockInput !== null) {
+            blocksByBlockInput.set(blockInput, block);
+        }
+        return blockInput;
+    };
     blocks.push(block);
+}
+
+export function getBlockOfBlockInput(blockInput: unknown): Block | undefined {
+    return typeof blockInput === "object" && blockInput !== null ? blocksByBlockInput.get(blockInput) : undefined;
 }
 
 export function getRegisteredBlocks(): Block[] {

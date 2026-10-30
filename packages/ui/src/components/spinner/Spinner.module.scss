@@ -1,0 +1,59 @@
+.root {
+    display: inline-block;
+    flex-shrink: 0;
+    color: var(--dextinity-color-action-primary-default);
+    animation: spin 1s linear infinite;
+
+    &[data-size="md"] {
+        inline-size: 16px;
+        block-size: 16px;
+
+        .arc {
+            r: 6px;
+            stroke-width: 1.5px;
+        }
+    }
+
+    &[data-size="lg"] {
+        inline-size: 32px;
+        block-size: 32px;
+
+        .arc {
+            r: 13.5px;
+            stroke-width: 2px;
+        }
+    }
+
+    &[data-size="xl"] {
+        inline-size: 64px;
+        block-size: 64px;
+
+        .arc {
+            r: 30.5px;
+            stroke-width: 3px;
+        }
+    }
+}
+
+.svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+}
+
+.arc {
+    cx: 50%;
+    cy: 50%;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-dasharray: 75 100;
+    transform: rotate(-90deg);
+    transform-origin: center;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

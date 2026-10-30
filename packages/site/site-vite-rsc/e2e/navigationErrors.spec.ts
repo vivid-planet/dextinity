@@ -168,3 +168,13 @@ test("renders the not found page with status 404 when a client component calls n
     expect(response.headers()["cache-control"]).toBe(noStoreCacheControl);
     expect(await response.text()).toContain("Not found page");
 });
+
+test("renders the not found page with status 404 when a client component calls notFound() inside a Suspense boundary during SSR", async ({
+    request,
+}) => {
+    const response = await request.get("/not-found-in-client-component-in-suspense");
+
+    expect(response.status()).toBe(404);
+    expect(response.headers()["cache-control"]).toBe(noStoreCacheControl);
+    expect(await response.text()).toContain("Not found page");
+});

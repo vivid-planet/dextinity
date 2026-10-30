@@ -1,9 +1,12 @@
-// @vitest-environment node
+import { act } from "react";
+import { createRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { Image } from "./Image.js";
 import { ImageConfigProvider } from "./ImageConfigProvider.js";
+
+Reflect.set(globalThis, "IS_REACT_ACT_ENVIRONMENT", true);
 
 const config = { deviceSizes: [640, 1080], imageSizes: [320] };
 const src = "https://api.example.com/dam/images/hash/$resizeWidth/$resizeHeight/image.jpg";
@@ -27,6 +30,26 @@ describe("Image", () => {
 
     it("shows the placeholder color until the image has loaded", () => {
         expect(render(<Image src={src} aspectRatio="1x1" placeholderColor="#ff0000" />)).toContain("background-color:#ff0000");
+    });
+
+    it("removes the placeholder color when the image has loaded and calls onLoad", async () => {
+        const onLoad = vi.fn();
+        const container = document.createElement("div");
+        const root = createRoot(container);
+        await act(() =>
+            root.render(
+                <ImageConfigProvider config={config}>
+                    <Image src={src} aspectRatio="1x1" placeholderColor="#ff0000" onLoad={onLoad} />
+                </ImageConfigProvider>,
+            ),
+        );
+        const [image] = container.getElementsByTagName("img");
+
+        await act(() => image.dispatchEvent(new Event("load")));
+
+        expect(image.style.backgroundColor).toBe("");
+        expect(onLoad).toHaveBeenCalledOnce();
+        act(() => root.unmount());
     });
 
     it("preloads the image with high priority", () => {

@@ -32,3 +32,20 @@ test("updates the preview when the admin sends a changed block", async ({ page }
 
     await expect(page.getByText("Preview: Changed (Text)")).toBeVisible();
 });
+
+test("reports a failure to load the block data and renders the next block", async ({ page, allowConsoleErrors }) => {
+    allowConsoleErrors(/Loading the block data failed/);
+    await openPage(page, "/block-preview/text");
+    const sendBlock = (text: string) =>
+        page.evaluate((text) => window.postMessage(JSON.stringify({ dextinityType: "Block", data: { block: { text } } }), "*"), text);
+
+    await sendBlock("Hello");
+    await expect(page.getByText("Preview: Hello (Text)")).toBeVisible();
+    const consoleError = page.waitForEvent("console", (message) => message.type() === "error");
+    await sendBlock("Failing");
+    expect((await consoleError).text()).toContain("Loading the block data failed");
+    await expect(page.getByText("Preview: Hello (Text)")).toBeHidden();
+    await sendBlock("Changed");
+
+    await expect(page.getByText("Preview: Changed (Text)")).toBeVisible();
+});

@@ -158,7 +158,7 @@ async function respond(
     return {
         response: new Response(import.meta.env.DEV ? checkTitleCount(html.stream) : html.stream, {
             status,
-            headers: { "Content-Type": "text/html;charset=utf-8", "Cache-Control": cacheControl },
+            headers: { "Content-Type": "text/html;charset=utf-8", "Cache-Control": html.hasError ? noStoreCacheControl : cacheControl },
         }),
     };
 }

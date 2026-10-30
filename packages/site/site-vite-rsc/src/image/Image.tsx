@@ -20,7 +20,7 @@ export interface ImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, "s
     preload?: boolean;
 }
 
-export function Image({ src, aspectRatio, sizes = "100vw", fill, placeholderColor, preload, style, ...imgProps }: ImageProps) {
+export function Image({ src, aspectRatio, sizes = "100vw", fill, placeholderColor, preload, style, onLoad, ...imgProps }: ImageProps) {
     const imageRef = useRef<HTMLImageElement>(null);
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -49,7 +49,10 @@ export function Image({ src, aspectRatio, sizes = "100vw", fill, placeholderColo
             loading={preload ? "eager" : "lazy"}
             fetchPriority={preload ? "high" : undefined}
             decoding="async"
-            onLoad={() => setIsLoaded(true)}
+            onLoad={(event) => {
+                setIsLoaded(true);
+                onLoad?.(event);
+            }}
             style={{ ...(fill && fillStyle), backgroundColor: isLoaded ? undefined : placeholderColor, ...style }}
             {...imgProps}
         />

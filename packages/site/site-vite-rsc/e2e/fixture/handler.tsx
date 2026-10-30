@@ -93,6 +93,15 @@ app.get("/not-found-in-suspense", (c) =>
 
 app.get("/not-found-in-client-component", (c) => renderTestPage(c, <ClientNotFound />));
 
+app.get("/not-found-in-client-component-in-suspense", (c) =>
+    renderTestPage(
+        c,
+        <Suspense fallback={<p>Loading</p>}>
+            <ClientNotFound />
+        </Suspense>,
+    ),
+);
+
 app.get("/not-found-in-not-found-page", (c) => renderTestPage(c, <ServerNotFound />, { notFound: () => <ServerNotFound /> }));
 
 app.get("/redirect", (c) => {
@@ -130,6 +139,15 @@ app.get("/server-error", (c) =>
 );
 
 app.get("/client-error", (c) => renderTestPage(c, <ClientError />));
+
+app.get("/client-error-in-suspense", (c) =>
+    renderTestPage(
+        c,
+        <Suspense fallback={<p>Loading</p>}>
+            <ClientError />
+        </Suspense>,
+    ),
+);
 
 app.get("/error-in-error-page", (c) => renderTestPage(c, <ServerError />, { error: () => <ServerError /> }));
 

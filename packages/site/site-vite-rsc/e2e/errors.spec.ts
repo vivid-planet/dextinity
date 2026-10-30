@@ -20,6 +20,15 @@ test.describe("HTML request", () => {
         expect(await response.text()).toContain("Error page");
     });
 
+    test("doesn't cache the page when a client component inside a Suspense boundary fails during SSR", async ({ request }) => {
+        const response = await request.get("/client-error-in-suspense");
+
+        // React renders the boundary in the browser instead, where an error boundary handles a repeated failure
+        expect(response.status()).toBe(200);
+        expect(response.headers()["cache-control"]).toBe(noStoreCacheControl);
+        expect(await response.text()).toContain("Loading");
+    });
+
     test("falls back to plain text when the error page fails too", async ({ request }) => {
         const response = await request.get("/error-in-error-page");
 

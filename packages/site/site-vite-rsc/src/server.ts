@@ -1,4 +1,5 @@
 export { noStoreCacheControl } from "./cacheControl.js";
+export { cdnOriginCheckMiddleware } from "./cdnOriginCheck.js";
 export { errorResponseCacheControlMiddleware } from "./errorResponseCacheControl.js";
 export { createCachingFetch } from "./fetchCache.js";
 export {

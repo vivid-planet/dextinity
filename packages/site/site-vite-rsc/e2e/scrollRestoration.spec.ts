@@ -7,6 +7,8 @@ const getMaxScrollY = (page: import("@playwright/test").Page) => page.evaluate((
 async function goToOtherSite(page: import("@playwright/test").Page) {
     await page.route("https://example.com/**", (route) => route.fulfill({ contentType: "text/html", body: "<title>Other site</title>" }));
     await page.goto("https://example.com/");
+    // Chromium hands the scroll position and mode of the left page to the browser process only when its renderer gets to unload it, which can be after the other site is shown. Going back before would restore an outdated state.
+    await page.waitForTimeout(1000);
 }
 
 test("scrolls to the top after navigating", async ({ page }) => {

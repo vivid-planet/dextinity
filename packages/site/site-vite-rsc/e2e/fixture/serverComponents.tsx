@@ -33,7 +33,7 @@ export async function ServerRedirect({ location, status }: { location: string; s
     redirect(location, status);
 }
 
-export async function ServerError(): Promise<never> {
+export async function ServerError({ id = "" }: { id?: string }): Promise<never> {
     await delay();
-    throw new Error("Server component failed");
+    throw new Error(`Server component failed${id}`);
 }

@@ -81,7 +81,15 @@
             "ignore": ["./src/**/*.generated.ts"]
         },
         "packages/site/site-vite-rsc": {
-            "entry": ["./src/index.ts", "./src/server.ts", "./src/node.ts", "./src/vite/index.ts", "./src/entry.*.tsx", "./e2e/fixture/handler.tsx"],
+            "entry": [
+                "./src/index.ts",
+                "./src/server.ts",
+                "./src/node.ts",
+                "./src/vite/index.ts",
+                "./src/entry.*.tsx",
+                "./e2e/fixture/handler.tsx",
+                "./e2e/fixture/reportError.ts"
+            ],
             "project": ["./src/**/*.{ts,tsx}", "./e2e/**/*.{ts,tsx}"],
             "ignore": ["./src/**/*.generated.ts"]
         },
@@ -119,7 +127,7 @@
             "ignore": ["**/*.generated.ts"]
         },
         "demo/site-vite-rsc": {
-            "entry": ["./src/handler.ts", "./src/routes/mails/mailsEntry.ts", "./server.ts", "tracing.dev.ts"],
+            "entry": ["./src/handler.ts", "./src/util/reportError.ts", "./src/routes/mails/mailsEntry.ts", "./server.ts", "tracing.dev.ts"],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignoreDependencies": ["@babel/core", "@types/grecaptcha", "csso", "mjml"],
             "ignore": ["**/*.generated.ts"]

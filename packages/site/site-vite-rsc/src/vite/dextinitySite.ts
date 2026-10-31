@@ -7,16 +7,23 @@ import { isCSSRequest, type Plugin, type PluginOption } from "vite";
 
 const packageName = "@dextinity/site-vite-rsc";
 const appModuleId = "virtual:dextinity-site/app";
+const reportErrorModuleId = "virtual:dextinity-site/report-error";
+const defaultReportErrorModuleId = `\0${reportErrorModuleId}`;
 
 export type DextinitySiteOptions = {
     /** The module exporting the Hono app of the site as `app`, relative to the Vite root */
     app: string;
+    /**
+     * The module exporting `reportError(error)`, relative to the Vite root, e.g. to report errors to an error tracking service.
+     * Called for all unexpected errors on the server and in the browser. Logs the errors with `console.error()` if not set.
+     */
+    reportError?: string;
 };
 
 /**
  * Vite plugins for a Dextinity site with React Server Components
  */
-export function dextinitySite({ app }: DextinitySiteOptions): PluginOption[] {
+export function dextinitySite({ app, reportError }: DextinitySiteOptions): PluginOption[] {
     return [
         rsc({
             entries: {
@@ -28,6 +35,7 @@ export function dextinitySite({ app }: DextinitySiteOptions): PluginOption[] {
         react(),
         dextinitySiteConfig(),
         dextinitySiteApp(app),
+        dextinitySiteReportError(reportError),
         dextinitySiteDevCss(),
     ];
 }
@@ -42,6 +50,26 @@ function dextinitySiteApp(app: string): Plugin {
         resolveId(source) {
             if (source === appModuleId) {
                 return resolve(root, app);
+            }
+        },
+    };
+}
+
+function dextinitySiteReportError(reportError: string | undefined): Plugin {
+    let root: string;
+    return {
+        name: `${packageName}:report-error`,
+        configResolved(config) {
+            root = config.root;
+        },
+        resolveId(source) {
+            if (source === reportErrorModuleId) {
+                return reportError ? resolve(root, reportError) : defaultReportErrorModuleId;
+            }
+        },
+        load(id) {
+            if (id === defaultReportErrorModuleId) {
+                return "export function reportError(error) { console.error(error); }";
             }
         },
     };

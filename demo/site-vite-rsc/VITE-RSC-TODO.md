@@ -203,9 +203,9 @@ The Next.js site cached with Next.js and attached Valkey through a project-level
 
 In the admin's site preview, `SitePreviewProvider` marks the page as site preview for the blocks (`ExternalLinkBlock` sends external links to the admin, `CookieSafe` shows embeds without consent) and reports the location to the admin on each navigation. The old Next.js demo rendered `SitePreviewProvider` from site-nextjs in its domain layout in draft mode; through the middleware rewrite, that covered every page and its 404, but not Next.js' error page. The Vite demo had a copy, rendered in `LanguageLayout`, so the root 404 (e.g. `/de`) lost it. Now `renderPage()` wraps every page it renders (page, 404, 500) when `getSitePreview()` is set; the provider isn't exported, and projects only set the site preview in their middleware (#34). Copied from site-nextjs instead of shared through site-react, as only the router hooks differ.
 
-### #44 Make error reporting configurable
+### #44 Make error reporting configurable (done)
 
-`reportError()` (now in the package) only logs; projects used to edit it to report to an error tracking service (e.g. Sentry). Add a way to set the reporter, e.g. an option or `setErrorReporter()`, used by `renderPage`, `handleError`, `GlobalErrorBoundary` and the SSR entry. The fallback texts of `GlobalErrorBoundary` are English, as it replaces the document outside of the site's providers.
+`dextinitySite({ reportError })` takes a module exporting `reportError(error)`, which the RSC, SSR and browser entries pass to the package's `reportError()` through the virtual module `virtual:dextinity-site/report-error`. Without it, errors are logged. The demo's `src/util/reportError.ts` is the place to call an error tracking service; `ErrorHandler` reports block errors with the package's `reportError()`, so they reach the same module. The fallback texts of `GlobalErrorBoundary` stay English, as it replaces the document outside of the site's providers.
 
 ### #21–#32 Move into the package
 

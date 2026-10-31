@@ -36,6 +36,24 @@ app.get("/:language", (c) =>
 app.onError(handleError);
 ```
 
+**Error reporting**
+
+All unexpected errors on the server and in the browser are passed to `reportError()`, which logs them. To report them to an error tracking service, pass a module exporting `reportError(error)` to `dextinitySite()`, relative to the Vite root. It's used in the RSC, the SSR and the browser environment:
+
+```ts
+dextinitySite({ app: "./src/handler.ts", reportError: "./src/util/reportError.ts" });
+```
+
+```ts
+// src/util/reportError.ts
+export function reportError(error: unknown) {
+    // Report the error to the error tracking service, e.g. Sentry
+    console.error(error);
+}
+```
+
+Code of the site, e.g. a route handler or the `onError` of `ErrorHandlerProvider` for the block error boundaries, reports errors with `reportError()` from `@dextinity/site-vite-rsc`.
+
 **Pages and components**
 
 - `notFound()` and `redirect()` can be called anywhere in server and client components

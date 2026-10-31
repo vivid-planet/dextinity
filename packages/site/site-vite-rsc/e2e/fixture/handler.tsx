@@ -141,12 +141,12 @@ app.get("/server-error", (c) =>
     renderTestPage(
         c,
         <Nested>
-            <ServerError />
+            <ServerError id={c.req.query("id")} />
         </Nested>,
     ),
 );
 
-app.get("/client-error", (c) => renderTestPage(c, <ClientError />));
+app.get("/client-error", (c) => renderTestPage(c, <ClientError id={c.req.query("id")} />));
 
 app.get("/client-error-in-suspense", (c) =>
     renderTestPage(
@@ -159,8 +159,10 @@ app.get("/client-error-in-suspense", (c) =>
 
 app.get("/error-in-error-page", (c) => renderTestPage(c, <ServerError />, { error: () => <ServerError /> }));
 
-app.get("/error-in-handler", () => {
-    throw new Error("Handler failed");
+app.get("/error-in-handler", (c) => {
+    throw new Error(`Handler failed${c.req.query("id") ?? ""}`);
 });
+
+app.get("/reported-errors", (c) => c.json(globalThis.reportedErrors ?? []));
 
 app.onError(handleError);

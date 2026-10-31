@@ -2,13 +2,14 @@ import { createFromFetch, createFromReadableStream } from "@vitejs/plugin-rsc/br
 import { startTransition, type TransitionStartFunction, useEffect, useLayoutEffect, useState, useTransition } from "react";
 import { hydrateRoot } from "react-dom/client";
 import { rscStream } from "rsc-html-stream/client";
+import { reportError as reportErrorOfSite } from "virtual:dextinity-site/report-error";
 
 import { announceNavigation, setUpNavigationAnnouncer } from "./announceNavigation.js";
 import { getFragmentTarget } from "./fragmentTarget.js";
 import { GlobalErrorBoundary } from "./GlobalErrorBoundary.js";
 import { resolveRedirectTarget } from "./redirectTarget.js";
 import type { NavigationPayload, RscPayload } from "./render.js";
-import { reportError } from "./reportError.js";
+import { reportError, setErrorReporter } from "./reportError.js";
 import { NavigationProvider, type Router } from "./RouterProvider.js";
 import { createRscUrl, getRedirectedPageUrl } from "./rscRequest.js";
 import {
@@ -19,6 +20,8 @@ import {
     persistScrollPositions,
     rememberScrollPosition,
 } from "./scrollPositions.js";
+
+setErrorReporter(reportErrorOfSite);
 
 type ScrollTarget = "top" | "hash" | { scrollY: number } | undefined;
 

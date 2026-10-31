@@ -1,6 +1,6 @@
 import { createFromReadableStream, getClientEntryUrl } from "@vitejs/plugin-rsc/ssr";
 import { use } from "react";
-import { renderToReadableStream } from "react-dom/server.edge";
+import { renderToReadableStream } from "react-dom/server";
 import { injectRSCPayload } from "rsc-html-stream/server";
 import { reportError as reportErrorOfSite } from "virtual:dextinity-site/report-error";
 

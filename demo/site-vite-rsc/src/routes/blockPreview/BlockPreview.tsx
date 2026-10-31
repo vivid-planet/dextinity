@@ -11,19 +11,18 @@ import type {
     StageBlockData,
     WelcomeEmailContentBlockData,
 } from "@src/blocks.generated";
-import { EmailCampaignMail } from "@src/brevo/EmailCampaignMail";
-import { replaceMailHtmlPlaceholders } from "@src/brevo/util/replaceMailHtmlPlaceholders";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { PageContentBlock } from "@src/documents/pages/blocks/PageContentBlock";
 import { StageBlock } from "@src/documents/pages/blocks/StageBlock";
 import { FooterContentBlock } from "@src/layout/footer/blocks/FooterContentBlock";
-import { RenderedMailForBlockPreview } from "@src/mail/components/RenderedMailForBlockPreview";
 import type { ContentScope } from "@src/site-configs";
 import { createBrowserGraphQLFetch } from "@src/util/browserGraphQLClient";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
-import { WelcomeEmailMail } from "@src/welcomeEmail/WelcomeEmailMail";
+import { lazy } from "react";
 
-const replacePlaceholdersForPreview = (html: string) => replaceMailHtmlPlaceholders(html, "preview");
+// Loaded on demand, as only the mail previews need the mail renderer
+const WelcomeEmailPreview = lazy(async () => ({ default: (await import("./WelcomeEmailPreview")).WelcomeEmailPreview }));
+const EmailCampaignPreview = lazy(async () => ({ default: (await import("./EmailCampaignPreview")).EmailCampaignPreview }));
 
 const cachingFetch = createFetchInMemoryCache(fetch);
 
@@ -47,19 +46,12 @@ export const BlockPreview = createBlockPreview<AllBlockNames>({
         }),
         "welcome-email": defineBlockPreview({
             blockType: "WelcomeEmailContent",
-            render: (data: WelcomeEmailContentBlockData) => (
-                <RenderedMailForBlockPreview mail={(props) => <WelcomeEmailMail content={data} {...props} />} />
-            ),
+            render: (data: WelcomeEmailContentBlockData) => <WelcomeEmailPreview data={data} />,
         }),
         "brevo-email-campaign": defineBlockPreview({
             blockType: "EmailCampaignContent",
             getBlock: (state: { content: unknown }) => state.content,
-            render: (data: EmailCampaignContentBlockData) => (
-                <RenderedMailForBlockPreview
-                    mail={(props) => <EmailCampaignMail content={data} {...props} />}
-                    transformHtml={replacePlaceholdersForPreview}
-                />
-            ),
+            render: (data: EmailCampaignContentBlockData) => <EmailCampaignPreview data={data} />,
         }),
     },
     loadBlockData: ({ blockType, block, contentScope }) =>

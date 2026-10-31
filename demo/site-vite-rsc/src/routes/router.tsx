@@ -5,7 +5,6 @@ import { type Context, Hono } from "hono";
 import { Fragment, type ReactNode } from "react";
 
 import { adminRoute } from "./adminRoute";
-import { BlockPreview } from "./blockPreview/BlockPreview";
 import { BlockPreviewLayout } from "./blockPreview/BlockPreviewLayout";
 import { DocumentPage } from "./DocumentPage";
 import { ErrorPage } from "./ErrorPage";
@@ -49,8 +48,10 @@ async function renderSitePage(c: Context, renderContent: (params: ContentScope) 
     });
 }
 
-function renderBlockPreviewPage(c: Context) {
+async function renderBlockPreviewPage(c: Context) {
     const { domain, language, type } = c.req.param() as ContentScope & { type: string };
+    // Loaded on demand, so that the client code of the previews, e.g. the mails, gets its own chunk instead of being loaded on every page
+    const { BlockPreview } = await import("./blockPreview/BlockPreview");
 
     return renderPage(c, {
         root: (

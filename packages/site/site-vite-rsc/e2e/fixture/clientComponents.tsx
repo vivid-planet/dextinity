@@ -1,6 +1,6 @@
 "use client";
 
-import { notFound, useNavigationPending, usePathname, usePreview, useRouter, useSearchParams } from "@dextinity/site-vite-rsc";
+import { ErrorHandlerBoundary, notFound, useNavigationPending, usePathname, usePreview, useRouter, useSearchParams } from "@dextinity/site-vite-rsc";
 import { useEffect } from "react";
 
 export function ClientRouterInfo() {
@@ -48,4 +48,25 @@ export function ClientNotFound(): never {
 
 export function ClientError({ id = "" }: { id?: string }): never {
     throw new Error(`Client component failed${id}`);
+}
+
+function FailingAfterClientNavigation() {
+    const isAfterClientNavigation =
+        typeof window !== "undefined" && new URL(performance.getEntriesByType("navigation")[0].name).pathname !== window.location.pathname;
+    if (isAfterClientNavigation) {
+        throw new Error("client reference not found 'otherBuild'");
+    }
+    return <p>Rendered client component of other build</p>;
+}
+
+/**
+ * Fails like a client component of another build, but only after a client navigation, so that a full page load renders it.
+ * Inside the error boundary of blocks, which hides a failed block in production.
+ */
+export function ClientComponentOfOtherBuild() {
+    return (
+        <ErrorHandlerBoundary>
+            <FailingAfterClientNavigation />
+        </ErrorHandlerBoundary>
+    );
 }

@@ -44,6 +44,7 @@ export function TestPage({ name, imageDelay }: { name: string; imageDelay?: numb
                 <Link href="/redirect-loop">Redirect loop</Link>
                 <Link href="/server-error">Server error</Link>
                 <Link href="/client-error">Client error</Link>
+                <Link href="/client-component-of-other-build">Client component of other build</Link>
             </nav>
             <Paragraphs />
             <h2 id="section">Section</h2>

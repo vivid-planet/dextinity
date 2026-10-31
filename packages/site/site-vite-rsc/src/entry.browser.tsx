@@ -20,6 +20,7 @@ import {
     persistScrollPositions,
     rememberScrollPosition,
 } from "./scrollPositions.js";
+import { shouldReloadForUnknownClientReference } from "./unknownClientReference.js";
 
 setErrorReporter(reportErrorOfSite);
 
@@ -227,7 +228,16 @@ const browserRouter: Router = {
 async function main() {
     setUpScrollRestoration();
     const initialPayload = await createFromReadableStream<RscPayload>(rscStream);
-    hydrateRoot(document, <BrowserRoot initialPayload={initialPayload} />);
+    hydrateRoot(document, <BrowserRoot initialPayload={initialPayload} />, {
+        // Called for the errors of all error boundaries, also of those that hide a failed block
+        onCaughtError(error) {
+            if (shouldReloadForUnknownClientReference(error)) {
+                window.location.reload();
+                return;
+            }
+            console.error(error); // Like React's default
+        },
+    });
     window.addEventListener("popstate", handlePopState);
 
     if (import.meta.hot) {

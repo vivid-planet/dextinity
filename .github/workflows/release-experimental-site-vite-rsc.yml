@@ -42,7 +42,7 @@ jobs:
               id: version
               working-directory: packages/site/site-vite-rsc
               run: |
-                  version="$(node -p 'require("./package.json").version')-experimental-$(date -u +%Y%m%d%H%M)-$(git rev-parse --short=7 HEAD)"
+                  version="$(node -p 'require("./package.json").version')-canary-experimental-$(date -u +%Y%m%d%H%M)-$(git rev-parse --short=7 HEAD)"
                   npm pkg set version="$version"
                   echo "version=$version" >> "$GITHUB_OUTPUT"
 

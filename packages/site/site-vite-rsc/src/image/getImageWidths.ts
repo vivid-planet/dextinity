@@ -1,7 +1,11 @@
 import type { ImageConfig } from "./ImageConfigProvider.js";
 
 // Same selection as next/image, see https://github.com/vercel/next.js/blob/canary/packages/next/src/shared/lib/get-img-props.ts
-export function getImageWidths({ deviceSizes, imageSizes }: ImageConfig, sizes: string): number[] {
+export function getImageWidths({ deviceSizes, imageSizes }: ImageConfig, sizes: string, maxWidth?: number): number[] {
+    return limitToMaxWidth(selectWidths({ deviceSizes, imageSizes }, sizes), maxWidth);
+}
+
+function selectWidths({ deviceSizes, imageSizes }: ImageConfig, sizes: string): number[] {
     const allSizes = [...imageSizes, ...deviceSizes].sort((a, b) => a - b);
     const percentSizes = [...sizes.matchAll(/(^|\s)(1?\d?\d)vw/g)].map((match) => parseInt(match[2], 10));
     if (percentSizes.length === 0) {
@@ -9,4 +13,10 @@ export function getImageWidths({ deviceSizes, imageSizes }: ImageConfig, sizes: 
     }
     const smallestRatio = Math.min(...percentSizes) * 0.01;
     return allSizes.filter((size) => size >= Math.min(...deviceSizes) * smallestRatio);
+}
+
+// The API doesn't enlarge images, so all larger widths would deliver the same image as the first width reaching `maxWidth`
+function limitToMaxWidth(widths: number[], maxWidth: number | undefined): number[] {
+    const firstWidthReachingMaxWidth = maxWidth === undefined ? -1 : widths.findIndex((width) => width >= maxWidth);
+    return firstWidthReachingMaxWidth === -1 ? widths : widths.slice(0, firstWidthReachingMaxWidth + 1);
 }

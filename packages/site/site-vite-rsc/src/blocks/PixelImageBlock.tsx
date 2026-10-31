@@ -34,6 +34,19 @@ export interface PixelImageBlockProps
     aiContentAltTextPrefixLabels?: Partial<AiContentAltTextPrefixLabels>;
 }
 
+type CropArea = NonNullable<NonNullable<PixelImageBlockData["damFile"]>["image"]>["cropArea"];
+
+/**
+ * Same as the API, which crops the largest area of the aspect ratio and doesn't enlarge it
+ */
+function getMaxImageWidth(image: { width: number; height: number }, cropArea: CropArea, aspectRatio: number) {
+    const area =
+        cropArea.focalPoint === "SMART"
+            ? image
+            : { width: (image.width * (cropArea.width ?? 100)) / 100, height: (image.height * (cropArea.height ?? 100)) / 100 };
+    return Math.ceil(Math.min(area.width, area.height * aspectRatio));
+}
+
 export const PixelImageBlock = withPreview(
     ({
         aspectRatio,
@@ -64,6 +77,7 @@ export const PixelImageBlock = withPreview(
                 aspectRatio={usedAspectRatio}
                 fill
                 placeholderColor={damFile.image.dominantColor ?? undefined}
+                maxWidth={getMaxImageWidth(damFile.image, usedCropArea, usedAspectRatio)}
                 alt={altText}
                 title={damFile.title ?? ""}
                 {...imageProps}

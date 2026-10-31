@@ -18,9 +18,11 @@ export interface ImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, "s
     placeholderColor?: string;
     /** Load the image immediately with high priority, e.g. for the largest image above the fold */
     preload?: boolean;
+    /** Width of the largest image the API delivers, e.g. of the cropped DAM image, no larger widths are requested */
+    maxWidth?: number;
 }
 
-export function Image({ src, aspectRatio, sizes = "100vw", fill, placeholderColor, preload, style, onLoad, ...imgProps }: ImageProps) {
+export function Image({ src, aspectRatio, sizes = "100vw", fill, placeholderColor, preload, maxWidth, style, onLoad, ...imgProps }: ImageProps) {
     const imageRef = useRef<HTMLImageElement>(null);
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -32,7 +34,7 @@ export function Image({ src, aspectRatio, sizes = "100vw", fill, placeholderColo
     }, []);
 
     const usedAspectRatio = parseAspectRatio(aspectRatio);
-    const widths = getImageWidths(useImageConfig(), sizes);
+    const widths = getImageWidths(useImageConfig(), sizes, maxWidth);
     const srcSet = widths.map((width) => `${generateImageUrl({ src, width }, usedAspectRatio)} ${width}w`).join(", ");
     const fallbackSrc = generateImageUrl({ src, width: widths[widths.length - 1] }, usedAspectRatio);
 

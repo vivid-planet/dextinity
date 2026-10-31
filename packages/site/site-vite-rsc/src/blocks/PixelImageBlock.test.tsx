@@ -43,6 +43,31 @@ describe("PixelImageBlock", () => {
         );
     });
 
+    it("doesn't request widths larger than the cropped image", () => {
+        const html = renderToString(
+            <ImageConfigProvider config={{ deviceSizes: [640, 1080, 1920, 3840], imageSizes: [] }}>
+                <PixelImageBlock data={{ ...data, cropArea: { focalPoint: "NORTHWEST", width: 50, height: 100, x: 0, y: 0 } }} aspectRatio="1x1" />
+            </ImageConfigProvider>,
+        );
+
+        // The crop area of 1000x1000 pixels fits the aspect ratio completely
+        expect(html).toContain(
+            'srcSet="https://api.example.com/dam/images/hash/640/640/image.jpg 640w, https://api.example.com/dam/images/hash/1080/1080/image.jpg 1080w"',
+        );
+    });
+
+    it("limits the widths by the height of the image for narrower aspect ratios", () => {
+        const html = renderToString(
+            <ImageConfigProvider config={{ deviceSizes: [640, 1080, 1920, 3840], imageSizes: [] }}>
+                <PixelImageBlock data={data} aspectRatio="1x1" />
+            </ImageConfigProvider>,
+        );
+
+        // The image of 2000x1000 pixels is cropped to 1000x1000 pixels
+        expect(html).toContain('src="https://api.example.com/dam/images/hash/1080/1080/image.jpg"');
+        expect(html).not.toContain("1920w");
+    });
+
     it("renders only the image when it fills the parent", () => {
         expect(render(<PixelImageBlock data={data} aspectRatio="16x9" fill />)).toMatch(/^<img /);
     });

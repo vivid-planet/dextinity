@@ -13,6 +13,14 @@ describe("getImageWidths", () => {
         expect(getImageWidths(config, "(min-width: 900px) 33vw, 50vw")).toEqual([256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840]);
     });
 
+    it("stops at the first width reaching the max width", () => {
+        expect(getImageWidths(config, "100vw", 1024)).toEqual([640, 750, 828, 1080]);
+    });
+
+    it("keeps all widths when the max width is larger than the largest width", () => {
+        expect(getImageWidths(config, "100vw", 5000)).toEqual([640, 750, 828, 1080, 1200, 1920, 2048, 3840]);
+    });
+
     it("uses all widths for sizes without viewport units", () => {
         expect(getImageWidths(config, "300px")).toEqual([16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840]);
     });

@@ -1,23 +1,18 @@
-name: Release @vivid/experimental-site-vite-rsc
+name: Release Experimental site-vite-rsc
 
-# Publishes the unreleased @dextinity/site-vite-rsc as @vivid/experimental-site-vite-rsc to the private
-# npm registry on gitlab.vivid-planet.com, so it can be tried out in projects before the public release.
-# See .github/scripts/experimental-site-vite-rsc.md.
-#
-# workflow_dispatch only works once this file is on the default branch, so pushes to the feature
-# branches publish as well. Without the VIVID_GITLAB_NPM_TOKEN secret, the run is a dry run.
+# Publishes @dextinity/site-vite-rsc from the site-vite-rsc branch with the dist-tag experimental, so it can be
+# tried out in projects before the branch is merged: `pnpm add @dextinity/site-vite-rsc@experimental`.
+# Only this package is published; it depends on the released @dextinity/site-react, so it only works as long
+# as the branch doesn't need unreleased changes of other packages. Remove this workflow before merging.
+# Pushes to other branches only do a dry run.
 on:
     push:
         branches:
             - site-vite-rsc
             - site-vite-rsc-gitlab-release
-    workflow_dispatch:
-        inputs:
-            dry-run:
-                description: Only pack the package and show its contents, don't publish it
-                type: boolean
-                default: false
 
+# Releases publish to npm, so an in-flight run must never be aborted:
+# queue the next run instead of cancelling the running one.
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: false
@@ -26,8 +21,8 @@ permissions:
     contents: read
 
 jobs:
-    release:
-        name: Release @vivid/experimental-site-vite-rsc
+    release-experimental:
+        name: Release Experimental site-vite-rsc
         if: ${{ github.repository == 'vivid-planet/dextinity' }}
         runs-on: ubuntu-latest
         steps:
@@ -41,29 +36,23 @@ jobs:
             - name: Build @dextinity/site-vite-rsc and its workspace dependencies
               run: pnpm --filter '@dextinity/site-vite-rsc...' run build
 
-            - name: Pack as @vivid/experimental-site-vite-rsc
-              id: pack
-              run: node .github/scripts/pack-experimental-site-vite-rsc.mjs "$RUNNER_TEMP/experimental-site-vite-rsc"
-
-            - name: Show the manifest
-              run: cat "$RUNNER_TEMP/experimental-site-vite-rsc/package/package.json"
-
-            # A separate npm config, so that neither the npmjs.org config written by actions/setup-node
-            # nor its NODE_AUTH_TOKEN is used for this publish.
-            - name: Publish to the GitLab npm registry
-              working-directory: ${{ runner.temp }}/experimental-site-vite-rsc/package
+            # A single prerelease identifier stays valid semver even when the short SHA only consists of digits
+            # with a leading zero.
+            - name: Set the experimental version
+              id: version
+              working-directory: packages/site/site-vite-rsc
               run: |
-                  npmrc="$RUNNER_TEMP/gitlab.npmrc"
-                  echo "@vivid:registry=https://gitlab.vivid-planet.com/api/v4/projects/899/packages/npm/" > "$npmrc"
-                  if [ "$DRY_RUN" = "true" ] || [ -z "$VIVID_GITLAB_NPM_TOKEN" ]; then
-                      echo "::notice::Dry run, @vivid/experimental-site-vite-rsc@$VERSION isn't published"
-                      npm publish --dry-run --tag canary --userconfig "$npmrc"
-                  else
-                      echo '//gitlab.vivid-planet.com/api/v4/projects/899/packages/npm/:_authToken=${VIVID_GITLAB_NPM_TOKEN}' >> "$npmrc"
-                      npm publish --tag canary --userconfig "$npmrc"
-                      echo "::notice::Published @vivid/experimental-site-vite-rsc@$VERSION with the dist-tag canary"
-                  fi
+                  version="$(node -p 'require("./package.json").version')-experimental-$(date -u +%Y%m%d%H%M)-$(git rev-parse --short=7 HEAD)"
+                  npm pkg set version="$version"
+                  echo "version=$version" >> "$GITHUB_OUTPUT"
+
+            # pnpm publish replaces the workspace: ranges with the versions of the workspace packages.
+            - name: Publish to npm
+              if: ${{ github.ref_name == 'site-vite-rsc' }}
+              run: pnpm --filter @dextinity/site-vite-rsc publish --tag experimental --no-git-checks
               env:
-                  DRY_RUN: ${{ inputs.dry-run }}
-                  VERSION: ${{ steps.pack.outputs.version }}
-                  VIVID_GITLAB_NPM_TOKEN: ${{ secrets.VIVID_GITLAB_NPM_TOKEN }}
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+            - name: Publish to npm (dry run)
+              if: ${{ github.ref_name != 'site-vite-rsc' }}
+              run: pnpm --filter @dextinity/site-vite-rsc publish --tag experimental --no-git-checks --dry-run

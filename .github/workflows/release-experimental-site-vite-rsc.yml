@@ -31,6 +31,9 @@ jobs:
               with:
                   setup-ci: "false"
 
+            - name: Link the block-meta.json files needed by generate-block-types
+              run: pnpm run copy-project-files
+
             - name: Build @dextinity/site-vite-rsc and its workspace dependencies
               run: pnpm --filter '@dextinity/site-vite-rsc...' run build
 

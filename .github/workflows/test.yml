@@ -45,6 +45,34 @@ jobs:
                       demo/*/junit-unit.xml
                   overwrite: true
 
+    test-e2e:
+        name: Test (e2e)
+        runs-on: ubuntu-latest
+        steps:
+            - run: echo "${{ github.actor }}"
+
+            - uses: actions/checkout@v7
+
+            - uses: ./.github/actions/setup
+
+            # The test app of @dextinity/site-vite-rsc runs the package's build
+            - name: Build packages for the e2e tests
+              run: pnpm --filter '@dextinity/site-vite-rsc...' run build
+
+            - name: Install Playwright Browsers
+              run: pnpm --filter @dextinity/site-vite-rsc exec playwright install chromium-headless-shell
+
+            - name: Test (e2e)
+              run: pnpm run test:e2e
+
+            - name: Upload test results
+              uses: actions/upload-artifact@v7
+              if: success() || failure()
+              with:
+                  name: test-results-e2e
+                  path: packages/site/site-vite-rsc/junit-e2e.xml
+                  overwrite: true
+
     test-storybook:
         name: Test (storybook)
         runs-on: ubuntu-latest

@@ -1,0 +1,59 @@
+@use "@src/styles/variables" as *;
+
+.disableLastBottomSpacing {
+    > *:last-child {
+        margin-bottom: 0;
+
+        @media (min-width: $breakpoint-sm) {
+            margin-bottom: 0;
+        }
+    }
+}
+
+.text {
+    white-space: pre-line;
+
+    // Show empty lines as spacing between paragraphs
+    &:empty:not(:first-child:last-child)::before {
+        white-space: pre;
+        content: " ";
+    }
+}
+
+.inlineLink {
+    color: var(--cta-inline-link-default);
+    transition: color 0.3s ease-in-out;
+
+    &:hover {
+        color: var(--cta-inline-link-hover);
+        text-decoration-thickness: 2px;
+    }
+}
+
+.inlineStyle-highlight {
+    background-color: #fff3cd;
+    padding: 2px 4px;
+}
+
+.inlineStyle-tag {
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.85em;
+}
+
+.pageLayoutContent {
+    grid-column: 3 / -3;
+}
+
+.orderedListLevel0 {
+    list-style-type: decimal;
+}
+
+.orderedListLevel1 {
+    list-style-type: lower-alpha;
+}
+
+.orderedListLevel2 {
+    list-style-type: lower-roman;
+}

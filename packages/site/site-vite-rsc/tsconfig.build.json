@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "rootDir": "src"
+    },
+    "exclude": ["node_modules", "lib", "**/*.test.ts", "**/*.test.tsx"],
+    "extends": "./tsconfig.json",
+    "include": ["src"]
+}

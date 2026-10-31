@@ -163,6 +163,13 @@ jobs:
                   path: packages/site/site-nextjs/lib
                   key: ${{ runner.os }}-build-site-nextjs-${{ hashFiles('packages/site/site-nextjs/src/**', 'packages/site/site-nextjs/package.json', 'packages/site/site-nextjs/tsconfig*.json', 'pnpm-lock.yaml') }}
 
+            - name: Cache @dextinity/site-vite-rsc build
+              id: cache-site-vite-rsc
+              uses: actions/cache@v6
+              with:
+                  path: packages/site/site-vite-rsc/lib
+                  key: ${{ runner.os }}-build-site-vite-rsc-${{ hashFiles('packages/site/site-vite-rsc/src/**', 'packages/site/site-vite-rsc/package.json', 'packages/site/site-vite-rsc/tsconfig*.json', 'pnpm-lock.yaml') }}
+
             - name: Cache @dextinity/site-react build
               id: cache-site-react
               uses: actions/cache@v6
@@ -209,6 +216,7 @@ jobs:
                   [ "${{ steps.cache-mail-react.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/mail-react"
                   [ "${{ steps.cache-site-nextjs.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/site-nextjs"
                   [ "${{ steps.cache-site-react.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/site-react"
+                  [ "${{ steps.cache-site-vite-rsc.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/site-vite-rsc"
                   if [ -n "$FILTERS" ]; then
                       pnpm --recursive $FILTERS run build
                   fi

@@ -98,6 +98,12 @@ Demo frontend site (Next.js)
 - Start using `pnpm exec dev-pm start @demo-site`
 - access at: http://localhost:3000/
 
+**Site (Vite RSC):**
+The same demo site built with `@dextinity/site-vite-rsc` (Vite, React Server Components via `@vitejs/plugin-rsc`, Hono) in `demo/site-vite-rsc`, can run at the same time as the Next.js site
+
+- Start using `pnpm exec dev-pm start @demo-site-vite-rsc`
+- access at: http://localhost:3001/
+
 ### dev-pm
 
 Use dev-pm for managing demo processes:
@@ -144,10 +150,11 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 
 ### Site (`packages/site/`)
 
-| Package                  | Description                                                   |
-| ------------------------ | ------------------------------------------------------------- |
-| `@dextinity/site-react`  | React components and utilities for the frontend/site layer    |
-| `@dextinity/site-nextjs` | Next.js-specific site layer components (extends `site-react`) |
+| Package                    | Description                                                        |
+| -------------------------- | ------------------------------------------------------------------ |
+| `@dextinity/site-react`    | React components and utilities for the frontend/site layer         |
+| `@dextinity/site-nextjs`   | Next.js-specific site layer components (extends `site-react`)      |
+| `@dextinity/site-vite-rsc` | Vite and React Server Components site layer (extends `site-react`) |
 
 ### Utilities
 

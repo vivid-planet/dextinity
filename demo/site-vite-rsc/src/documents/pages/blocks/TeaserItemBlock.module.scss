@@ -1,0 +1,59 @@
+@use "@src/styles/variables" as *;
+
+.link {
+    text-decoration: none;
+    cursor: pointer;
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    gap: var(--spacing-s300);
+    color: var(--text-primary);
+
+    @media (min-width: $breakpoint-md) {
+        flex: unset;
+        gap: var(--spacing-s400);
+        flex-direction: column;
+    }
+}
+
+.mediaMobile {
+    flex: 1;
+
+    @media (min-width: $breakpoint-sm) {
+        display: none;
+    }
+}
+
+.mediaDesktop {
+    flex: 1;
+    display: none;
+
+    @media (min-width: $breakpoint-sm) {
+        display: block;
+    }
+}
+
+.contentContainer {
+    flex: 2;
+}
+
+.title {
+    margin-bottom: var(--spacing-s100);
+}
+
+.textLinkContainer {
+    margin-top: var(--spacing-s300);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s200);
+    color: var(--cta-text-default);
+    transition: color 0.3s ease-in-out;
+
+    &:hover {
+        color: var(--cta-text-hover);
+    }
+}
+
+.linkText {
+    font-weight: 700;
+}

@@ -93,17 +93,22 @@ export const BlockPreview = createBlockPreview<AllBlockNames>({
 });
 ```
 
+Import it with `await import()` in its route. Client components are bundled per server chunk, so a static import would add the code of all previews to the JavaScript of every page:
+
 ```tsx
-app.get("/block-preview/:domain/:language/:type", (c) =>
-    renderPage(c, {
+app.get("/block-preview/:domain/:language/:type", async (c) => {
+    const { BlockPreview } = await import("./BlockPreview");
+    return renderPage(c, {
         root: (
             <Layout>
                 <BlockPreview type={c.req.param("type")} />
             </Layout>
         ) /* … */,
-    }),
-);
+    });
+});
 ```
+
+Previews are rendered in a Suspense boundary, so previews with large dependencies that the others don't need, e.g. mails, can be loaded with `lazy()`.
 
 **Middlewares** (`@dextinity/site-vite-rsc/server`)
 

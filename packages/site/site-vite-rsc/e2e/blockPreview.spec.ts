@@ -1,4 +1,20 @@
+import type { Page, Response } from "@playwright/test";
+
 import { expect, openPage, test } from "./browserTest.js";
+
+async function loadScripts(page: Page, path: string) {
+    const scripts: Promise<string>[] = [];
+    const onResponse = (response: Response) => {
+        if (response.request().resourceType() === "script" && response.ok()) {
+            scripts.push(response.text());
+        }
+    };
+    page.on("response", onResponse);
+    await openPage(page, path);
+    await page.waitForLoadState("networkidle");
+    page.off("response", onResponse);
+    return Promise.all(scripts);
+}
 
 test("renders the not found page for unknown block preview types", async ({ request }) => {
     const response = await request.get("/block-preview/unknown");
@@ -48,4 +64,12 @@ test("reports a failure to load the block data and renders the next block", asyn
     await sendBlock("Changed");
 
     await expect(page.getByText("Preview: Changed (Text)")).toBeVisible();
+});
+
+test("doesn't load the code of the block preview on other pages", async ({ page }) => {
+    test.skip(test.info().project.name !== "build", "The dev server loads each client component as its own module");
+    const previewCode = "Wrapped preview: ";
+
+    expect((await loadScripts(page, "/pages/first")).some((script) => script.includes(previewCode))).toBe(false);
+    expect((await loadScripts(page, "/block-preview/text")).some((script) => script.includes(previewCode))).toBe(true);
 });

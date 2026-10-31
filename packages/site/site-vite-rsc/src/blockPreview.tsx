@@ -1,7 +1,7 @@
 "use client";
 
 import { BlockPreviewProvider, IFrameBridgeProvider, useIFrameBridge } from "@dextinity/site-react";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, Suspense, useEffect, useState } from "react";
 
 import { notFound } from "./navigation.js";
 import { reportError } from "./reportError.js";
@@ -37,6 +37,16 @@ type CreateBlockPreviewOptions<BlockType extends string> = {
 /**
  * Creates the component rendering the block the admin sends through the iframe bridge in its block preview.
  * Call it in a client component module, as the previews contain functions. Unknown types render the not found page.
+ *
+ * Client components are bundled per server chunk, so if a module of the site's pages imports the block preview statically,
+ * the code of all previews is loaded on every page. Import it with `await import()` in the route rendering the preview.
+ * Previews with large dependencies that other previews don't need, e.g. mails, can be loaded with `lazy()`, as they're rendered in a Suspense boundary.
+ *
+ * @example
+ * app.get("/block-preview/:type", async (c) => {
+ *     const { BlockPreview } = await import("./BlockPreview");
+ *     return renderPage(c, { root: <BlockPreview type={c.req.param("type")} />, ... });
+ * });
  */
 export function createBlockPreview<BlockType extends string>({ previews, loadBlockData }: CreateBlockPreviewOptions<BlockType>) {
     function BlockPreviewContent({ preview }: { preview: BlockPreviewDefinition<BlockType> }) {
@@ -68,7 +78,7 @@ export function createBlockPreview<BlockType extends string>({ previews, loadBlo
             };
         }, [preview, state, contentScope]);
 
-        return data === undefined ? null : preview.render(data as never);
+        return data === undefined ? null : <Suspense>{preview.render(data as never)}</Suspense>;
     }
 
     return function BlockPreview({ type }: { type: string }) {

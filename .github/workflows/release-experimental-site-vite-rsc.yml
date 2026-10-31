@@ -3,13 +3,11 @@ name: Release Experimental site-vite-rsc
 # Publishes @dextinity/site-vite-rsc from the site-vite-rsc branch with the dist-tag experimental, so it can be
 # tried out in projects before the branch is merged: `pnpm add @dextinity/site-vite-rsc@experimental`.
 # Only this package is published; it depends on the released @dextinity/site-react, so it only works as long
-# as the branch doesn't need unreleased changes of other packages. Remove this workflow before merging.
-# Pushes to other branches only do a dry run.
+# as the branch doesn't need unreleased changes of other packages. Remove this workflow before merging into main.
 on:
     push:
         branches:
             - site-vite-rsc
-            - site-vite-rsc-gitlab-release
 
 # Releases publish to npm, so an in-flight run must never be aborted:
 # queue the next run instead of cancelling the running one.
@@ -50,11 +48,6 @@ jobs:
 
             # pnpm publish replaces the workspace: ranges with the versions of the workspace packages.
             - name: Publish to npm
-              if: ${{ github.ref_name == 'site-vite-rsc' }}
               run: pnpm --filter @dextinity/site-vite-rsc publish --tag experimental --no-git-checks
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-            - name: Publish to npm (dry run)
-              if: ${{ github.ref_name != 'site-vite-rsc' }}
-              run: pnpm --filter @dextinity/site-vite-rsc publish --tag experimental --no-git-checks --dry-run

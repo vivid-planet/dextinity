@@ -5,7 +5,7 @@ import { type ReactNode, Suspense } from "react";
 
 import { publicCacheControl } from "../helpers.js";
 import { BlockPreview } from "./blockPreview.js";
-import { ClientError, ClientNotFound, ClientRouterInfo } from "./clientComponents.js";
+import { ClientComponentOfOtherBuild, ClientError, ClientNotFound, ClientRouterInfo } from "./clientComponents.js";
 import { Layout } from "./Layout.js";
 import { Nested, RequestInfo, ServerError, ServerNotFound, ServerRedirect } from "./serverComponents.js";
 import { TestPage } from "./TestPage.js";
@@ -147,6 +147,8 @@ app.get("/server-error", (c) =>
 );
 
 app.get("/client-error", (c) => renderTestPage(c, <ClientError id={c.req.query("id")} />));
+
+app.get("/client-component-of-other-build", (c) => renderTestPage(c, <ClientComponentOfOtherBuild />));
 
 app.get("/client-error-in-suspense", (c) =>
     renderTestPage(

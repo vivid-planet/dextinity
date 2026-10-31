@@ -14,20 +14,24 @@ function createCacheKey(request: Request, body: Uint8Array<ArrayBuffer>) {
 
 const nullBodyStatuses = [204, 205, 304];
 
+function isJsonContentType(contentType: string) {
+    return /^application\/([\w.-]+\+)?json\b/i.test(contentType);
+}
+
 // Binary responses would be changed by storing them as text, so they aren't cached
 function hasTextBody(response: Response) {
     if (nullBodyStatuses.includes(response.status)) {
         return true;
     }
     const contentType = response.headers.get("content-type") ?? "";
-    return /^(text\/|application\/([\w.-]+\+)?(json|xml)\b)/.test(contentType);
+    return /^(text\/|application\/([\w.-]+\+)?xml\b)/i.test(contentType) || isJsonContentType(contentType);
 }
 
 function isCacheable(response: Response, body: string) {
     if (!response.ok) {
         return false;
     }
-    if (response.headers.get("content-type")?.includes("application/json")) {
+    if (isJsonContentType(response.headers.get("content-type") ?? "")) {
         try {
             // Must not cache GraphQL errors
             return !(JSON.parse(body) as { errors?: unknown }).errors;

@@ -79,6 +79,32 @@ describe("createCachingFetch", () => {
         expect(baseFetch).toHaveBeenCalledTimes(2);
     });
 
+    it.each(["application/graphql-response+json", "Application/GraphQL-Response+JSON; charset=utf-8"])(
+        "doesn't cache GraphQL errors served as %s",
+        async (contentType) => {
+            const baseFetch = createBaseFetch(() => Response.json({ errors: [{ message: "Failed" }] }, { headers: { "content-type": contentType } }));
+            const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });
+
+            await cachingFetch("https://api.example.com/graphql");
+            await cachingFetch("https://api.example.com/graphql");
+
+            expect(baseFetch).toHaveBeenCalledTimes(2);
+        },
+    );
+
+    it("caches successful responses served as application/graphql-response+json", async () => {
+        const baseFetch = createBaseFetch(() =>
+            Response.json({ data: { page: "content" } }, { headers: { "content-type": "application/graphql-response+json" } }),
+        );
+        const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });
+
+        await cachingFetch("https://api.example.com/graphql");
+        const cached = await cachingFetch("https://api.example.com/graphql");
+
+        expect(baseFetch).toHaveBeenCalledTimes(1);
+        expect(await cached.json()).toEqual({ data: { page: "content" } });
+    });
+
     it("doesn't cache invalid JSON", async () => {
         const baseFetch = createBaseFetch(() => new Response("{", { headers: { "content-type": "application/json" } }));
         const cachingFetch = createCachingFetch(baseFetch, { revalidateInSeconds, store });

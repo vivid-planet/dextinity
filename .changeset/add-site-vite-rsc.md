@@ -193,6 +193,6 @@ declare module "@dextinity/site-vite-rsc/server" {
 }
 ```
 
-Pin `react-server-dom-webpack` to exactly the version of `react` used by the site.
+Requires React 19.2 or later, which added `renderToReadableStream` to the Node build of `react-dom/server`. Pin `react-server-dom-webpack` to exactly the version of `react` used by the site.
 
 In development, the first page after a new Vite cache, e.g. after a dependency update, is reloaded once: Vite only discovers the dependencies of client components when the page loads them.

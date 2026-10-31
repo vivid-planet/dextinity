@@ -48,6 +48,12 @@ describe("dextinitySite", () => {
         }
     });
 
+    it("optimizes React DOM's server renderer for the SSR environment", async () => {
+        const config = await resolveSiteConfig();
+
+        expect(config.environments.ssr.optimizeDeps.include).toContain("react-dom/server");
+    });
+
     it("bundles this package in the server environments", async () => {
         const config = await resolveSiteConfig();
 

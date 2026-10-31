@@ -118,8 +118,12 @@ function dextinitySiteConfig(): Plugin {
             }
 
             return {
-                // plugin-rsc has to transform the "use client" files of this package
-                optimizeDeps: { exclude: [packageName] },
+                optimizeDeps: {
+                    // plugin-rsc only optimizes `react-dom/server.edge`, without this Vite runs the CommonJS files of the Node build unbundled
+                    include: name === "ssr" ? ["react-dom/server"] : undefined,
+                    // plugin-rsc has to transform the "use client" files of this package
+                    exclude: [packageName],
+                },
                 resolve: name === "client" ? undefined : { noExternal: [packageName] },
             };
         },

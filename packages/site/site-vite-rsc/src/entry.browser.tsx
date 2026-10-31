@@ -163,6 +163,8 @@ function changeHistory(method: "pushState" | "replaceState", href: string, scrol
         return;
     }
     rememberScrollPosition(currentHistoryKey, window.scrollY);
+    // The browser would restore the position before the new page is rendered. Switching only now (the new entry inherits it), as switching while the page is loading cancels the browser's restoration of reloads.
+    window.history.scrollRestoration = "manual";
     const state = createHistoryState();
     window.history[method](state, "", url);
     currentHistoryKey = state.key;
@@ -197,19 +199,19 @@ function handlePopState(event: PopStateEvent) {
 }
 
 function setUpScrollRestoration() {
-    // The browser would restore the position before the new page is rendered
-    window.history.scrollRestoration = "manual";
     loadPersistedScrollPositions();
     currentHistoryKey = getHistoryKey(window.history.state) ?? replaceWithNewHistoryState();
 
+    // Entries left with "auto" on pagehide are restored by the browser, it retries until the page is loaded instead of being capped by a short page
     const rememberedScrollY = getRememberedScrollPosition(currentHistoryKey);
-    if (rememberedScrollY !== undefined) {
+    if (rememberedScrollY !== undefined && window.history.scrollRestoration === "manual") {
         window.scrollTo(0, rememberedScrollY);
     }
 
     window.addEventListener("pagehide", () => {
         rememberScrollPosition(currentHistoryKey, window.scrollY);
         persistScrollPositions();
+        window.history.scrollRestoration = "auto";
     });
 }
 

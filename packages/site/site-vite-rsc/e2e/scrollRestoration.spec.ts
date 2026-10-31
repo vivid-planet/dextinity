@@ -2,6 +2,13 @@ import { clickInPlace, expect, getScrollY, openPage, scrollTo, test } from "./br
 
 const heading = (page: import("@playwright/test").Page) => page.getByRole("heading", { level: 1 });
 
+const getMaxScrollY = (page: import("@playwright/test").Page) => page.evaluate(() => document.documentElement.scrollHeight - window.innerHeight);
+
+async function goToOtherSite(page: import("@playwright/test").Page) {
+    await page.route("https://example.com/**", (route) => route.fulfill({ contentType: "text/html", body: "<title>Other site</title>" }));
+    await page.goto("https://example.com/");
+}
+
 test("scrolls to the top after navigating", async ({ page }) => {
     await openPage(page, "/pages/first");
     await scrollTo(page, 1500);
@@ -51,6 +58,58 @@ test("restores the scroll positions after a reload", async ({ page }) => {
 
     await page.goBack();
     await expect(heading(page)).toHaveText("first");
+    await expect.poll(() => getScrollY(page)).toBe(1500);
+});
+
+test("restores the scroll position after a reload when the page grows until it's loaded", async ({ page }) => {
+    await openPage(page, "/pages/first?imageDelay=1000");
+    await page.waitForLoadState("load");
+    await scrollTo(page, await getMaxScrollY(page));
+    const scrollY = await getScrollY(page);
+
+    await page.reload();
+
+    await page.waitForLoadState("load");
+    await expect.poll(() => getScrollY(page)).toBe(scrollY);
+});
+
+test("restores the scroll position when returning from another site", async ({ page }) => {
+    await openPage(page, "/pages/first?imageDelay=1000");
+    await page.waitForLoadState("load");
+    await scrollTo(page, await getMaxScrollY(page));
+    const scrollY = await getScrollY(page);
+    await goToOtherSite(page);
+
+    await page.goBack();
+
+    await expect(heading(page)).toHaveText("first");
+    await expect.poll(() => getScrollY(page)).toBe(scrollY);
+});
+
+test("restores the scroll position of an entry left by a client navigation when returning from another site", async ({ page }) => {
+    await openPage(page, "/pages/first");
+    await scrollTo(page, 1500);
+    await clickInPlace(page, "Second");
+    await expect(heading(page)).toHaveText("second");
+    await goToOtherSite(page);
+
+    await page.evaluate(() => window.history.go(-2));
+
+    await expect(heading(page)).toHaveText("first");
+    await expect.poll(() => getScrollY(page)).toBe(1500);
+});
+
+test("keeps the browser from restoring entries left by a client navigation before the page is loaded", async ({ page }) => {
+    await page.goto("/pages/first?imageDelay=10000", { waitUntil: "commit" });
+    await page.locator("html[data-hydrated]").waitFor({ state: "attached" });
+    await scrollTo(page, 1500);
+    await clickInPlace(page, "Second");
+    await expect(heading(page)).toHaveText("second");
+
+    await page.goBack({ waitUntil: "commit" });
+
+    await expect(heading(page)).toHaveText("first");
+    expect(await page.evaluate(() => window.history.scrollRestoration)).toBe("manual");
     await expect.poll(() => getScrollY(page)).toBe(1500);
 });
 

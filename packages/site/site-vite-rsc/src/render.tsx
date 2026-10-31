@@ -3,8 +3,9 @@ import type { ReactNode } from "react";
 
 import { noStoreCacheControl } from "./cacheControl.js";
 import { getNavigationErrorDigest, isNotFoundDigest, parseRedirectDigest } from "./navigation.js";
+import { createCoalescer, getRenderCoalescingKey } from "./renderCoalescing.js";
 import { reportError } from "./reportError.js";
-import { getRequest, getSitePreview, isRscRequest } from "./requestContext.js";
+import { getPreviewScope, getRequest, getSitePreview, getVisibility, isRscRequest } from "./requestContext.js";
 import { RouterProvider } from "./RouterProvider.js";
 import { SitePreviewProvider } from "./SitePreviewProvider.js";
 import { createTitleCountCheck } from "./titleCountCheck.js";
@@ -28,9 +29,71 @@ type RenderPageOptions = {
     /** Only used for successful responses, all others aren't cached */
     cacheControl: string;
     status?: number;
+    /**
+     * Concurrent identical requests of a public page share one render, like a CDN shares the cached response.
+     * Set to `false` if the page depends on request headers other than the URL, cookies and the forwarded host.
+     * @default true
+     */
+    coalesceRenders?: boolean;
 };
 
+type RedirectStatus = NonNullable<ReturnType<typeof parseRedirectDigest>>["status"];
+
+type PageResult<ResponseType = Response> =
+    { response: ResponseType } | { redirect: { location: string; status: RedirectStatus }; cacheControl: string } | { hasFailed: true };
+
+type BufferedResponse = { status: number; headers: [string, string][]; body: Uint8Array<ArrayBuffer> };
+
+// A render taking longer is probably stuck, e.g. waiting for an API, so waiting requests render on their own instead
+const renderCoalescer = createCoalescer<PageResult<BufferedResponse>>({ maxWaitMs: 10_000 });
+
 export async function renderPage(c: Context, options: RenderPageOptions): Promise<Response> {
+    const { coalesceRenders = true } = options;
+    const coalescingKey = coalesceRenders
+        ? getRenderCoalescingKey({
+              request: getRequest(),
+              routedUrl: c.req.url,
+              isRscRequest: isRscRequest(),
+              isPreview: getSitePreview() !== undefined || getVisibility() !== "default" || getPreviewScope() !== undefined,
+              cacheControl: options.cacheControl,
+          })
+        : undefined;
+    if (coalescingKey === undefined) {
+        return createResponse(c, await renderPageResult(c, options));
+    }
+
+    // The response is buffered, so that every request gets its own copy. HTML is only sent when completely rendered anyway.
+    const result = await renderCoalescer.run(coalescingKey, async () => bufferResponse(await renderPageResult(c, options)));
+    if ("response" in result) {
+        const { body, status, headers } = result.response;
+        return new Response(body, { status, headers });
+    }
+    return createResponse(c, result);
+}
+
+async function bufferResponse(result: PageResult): Promise<PageResult<BufferedResponse>> {
+    if (!("response" in result)) {
+        return result;
+    }
+    const { response } = result;
+    return { response: { status: response.status, headers: [...response.headers], body: new Uint8Array(await response.arrayBuffer()) } };
+}
+
+/**
+ * Redirects and failures are created with the context of each request, so that they get the headers set by its middlewares
+ */
+function createResponse(c: Context, result: PageResult): Response {
+    if ("response" in result) {
+        return result.response;
+    }
+    if ("redirect" in result) {
+        c.header("Cache-Control", result.cacheControl);
+        return c.redirect(result.redirect.location, result.redirect.status);
+    }
+    return c.text("Internal Server Error", 500, { "Cache-Control": noStoreCacheControl });
+}
+
+async function renderPageResult(c: Context, options: RenderPageOptions): Promise<PageResult> {
     const { root, notFound, error, status = 200 } = options;
     const url = new URL(getRequest().url);
     const rscPayload = await renderRscPayload(
@@ -45,23 +108,22 @@ export async function renderPage(c: Context, options: RenderPageOptions): Promis
         ? { navigationDigest: rscPayload.navigationDigest }
         : await respond(rscPayload.chunks, { status, cacheControl });
     if ("response" in result) {
-        return result.response;
+        return result;
     }
 
     if ("hasFailed" in result) {
         if (status === 500) {
-            return c.text("Internal Server Error", 500, { "Cache-Control": noStoreCacheControl });
+            return { hasFailed: true };
         }
-        return renderPage(c, { ...options, root: error(), status: 500 });
+        return renderPageResult(c, { ...options, root: error(), status: 500 });
     }
 
     const redirect = parseRedirectDigest(result.navigationDigest);
     if (redirect) {
-        c.header("Cache-Control", cacheControl);
-        return c.redirect(redirect.location, redirect.status);
+        return { redirect, cacheControl };
     }
     if (isNotFoundDigest(result.navigationDigest) && status !== 404) {
-        return renderPage(c, { ...options, root: notFound(), status: 404 });
+        return renderPageResult(c, { ...options, root: notFound(), status: 404 });
     }
     throw new Error("notFound() must not be called while rendering the not found page");
 }

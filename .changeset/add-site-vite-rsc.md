@@ -67,6 +67,16 @@ Code of the site, e.g. a route handler or the `onError` of `ErrorHandlerProvider
 - In the site preview of the admin, i.e. when `getSitePreview()` is set, `renderPage()` marks the pages as site preview for the blocks and reports their location to the admin
 - `Metadata` renders the description, robots, canonical, alternate and Open Graph tags of a page and resolves relative URLs, e.g. of DAM images, against `baseUrl`
 
+**Render coalescing**
+
+Concurrent identical requests of a public page share one render, e.g. when many requests for a page miss the CDN cache after a deployment or a purge. Nothing is cached, the next request renders again. Only requests whose response is the same for everyone share a render: `GET` and `HEAD` requests without `Authorization` header outside the site preview and the block preview, for pages whose `cacheControl` isn't `private`, `no-store` or `no-cache`. They must have the same URL, host, cookies and forwarded host (`Forwarded`, `X-Forwarded-Host`, `X-Forwarded-Proto`) and be both HTML or both RSC requests. If the shared render fails, every request gets the error page. A request waiting longer than 10 seconds renders on its own.
+
+Pages whose content depends on other request headers, e.g. `Accept-Language`, opt out with `coalesceRenders: false`:
+
+```tsx
+renderPage(c, { root, notFound, error, cacheControl, coalesceRenders: false });
+```
+
 **Images and videos**
 
 `PixelImageBlock` and `Image` render responsive images with a `srcset`, lazy loading and the dominant color as placeholder. Pass `preload` for the most important image of a page, e.g. a stage image. `DamVideoBlock`, `YouTubeVideoBlock` and `VimeoVideoBlock` render their preview image with `PixelImageBlock`, so `renderPreviewImage` is optional. The widths must be the ones the API resizes images to, set them in the root layout:

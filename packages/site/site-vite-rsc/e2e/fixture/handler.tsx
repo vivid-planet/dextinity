@@ -6,11 +6,12 @@ import { type ReactNode, Suspense } from "react";
 import { publicCacheControl } from "../helpers.js";
 import { ClientComponentOfOtherBuild, ClientError, ClientNotFound, ClientRouterInfo } from "./clientComponents.js";
 import { Layout } from "./Layout.js";
-import { Nested, RequestInfo, ServerError, ServerNotFound, ServerRedirect } from "./serverComponents.js";
+import { CountedRender, getCoalescingRenderCount, Nested, RequestInfo, ServerError, ServerNotFound, ServerRedirect } from "./serverComponents.js";
 import { TestPage } from "./TestPage.js";
 
 type TestPageOptions = {
     title?: string;
+    coalesceRenders?: boolean;
     notFound?: () => ReactNode;
     error?: () => ReactNode;
 };
@@ -33,6 +34,7 @@ function renderTestPage(c: Context, root: ReactNode, options: TestPageOptions = 
                 </Layout>
             )),
         cacheControl: publicCacheControl,
+        coalesceRenders: options.coalesceRenders,
     });
 }
 
@@ -41,7 +43,7 @@ export const app = new Hono();
 app.use(trailingSlashRedirectMiddleware);
 
 app.use(async (c, next) => {
-    if (c.req.query("sitePreview") !== undefined) {
+    if (c.req.query("sitePreview") !== undefined || c.req.header("x-test-site-preview") !== undefined) {
         setPreview({ visibility: "invisiblePages", sitePreview: {} });
     }
     await next();
@@ -166,6 +168,16 @@ app.get("/error-in-error-page", (c) => renderTestPage(c, <ServerError />, { erro
 app.get("/error-in-handler", (c) => {
     throw new Error(`Handler failed${c.req.query("id") ?? ""}`);
 });
+
+app.get("/counted-render", (c) =>
+    renderTestPage(
+        c,
+        <CountedRender id={c.req.query("id") ?? ""} delay={Number(c.req.query("delay") ?? 0)} shouldFail={c.req.query("fail") !== undefined} />,
+        { coalesceRenders: c.req.query("coalesceRenders") !== "false" },
+    ),
+);
+
+app.get("/counted-render-count", (c) => c.json(getCoalescingRenderCount(c.req.query("id") ?? "")));
 
 app.get("/reported-errors", (c) => c.json(globalThis.reportedErrors ?? []));
 

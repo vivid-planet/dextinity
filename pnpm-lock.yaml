@@ -680,6 +680,9 @@ importers:
       '@formatjs/cli':
         specifier: ^6.16.34
         version: 6.16.34(@vue/compiler-core@3.5.43)
+      '@formatjs/intl':
+        specifier: ^6.1.4
+        version: 6.1.4
       '@google-cloud/recaptcha-enterprise':
         specifier: ^5.13.0
         version: 5.13.0(supports-color@8.1.1)

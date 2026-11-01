@@ -3,6 +3,13 @@
     "private": true,
     "description": "Dextinity Site Demo Application",
     "type": "commonjs",
+    "imports": {
+        "#intl": {
+            "types": "./src/util/intl.d.ts",
+            "react-server": "./src/util/intl.server.tsx",
+            "default": "./src/util/intl.client.ts"
+        }
+    },
     "scripts": {
         "build": "run-s intl:compile && run-p gql:types generate-block-types css:types build-server && next build --webpack",
         "build-server": "tsc --project tsconfig.server.json",
@@ -37,6 +44,7 @@
         "@dextinity/mail-react": "workspace:*",
         "@dextinity/site-nextjs": "workspace:*",
         "@formatjs/cli": "^6.16.34",
+        "@formatjs/intl": "^6.1.4",
         "@google-cloud/recaptcha-enterprise": "^5.13.0",
         "@next/bundle-analyzer": "^16.3.8",
         "@opentelemetry/api": "^1.9.1",

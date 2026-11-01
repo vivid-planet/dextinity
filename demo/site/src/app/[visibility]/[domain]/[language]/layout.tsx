@@ -7,6 +7,7 @@ import { TopNavigation } from "@src/layout/topNavigation/TopNavigation";
 import { topMenuPageTreeNodeFragment } from "@src/layout/topNavigation/TopNavigation.fragment";
 import { OrganizationJsonLd } from "@src/organization/OrganizationJsonLd";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
+import { setServerIntl } from "@src/util/intl.server";
 import { IntlProvider } from "@src/util/IntlProvider";
 import { loadMessages } from "@src/util/loadMessages";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
@@ -51,6 +52,7 @@ export default async function Layout({ children, params }: LayoutProps<"/[visibi
     );
 
     const messages = await loadMessages(language);
+    setServerIntl(language, messages);
 
     if (footer) {
         footer.content = await recursivelyLoadBlockData({

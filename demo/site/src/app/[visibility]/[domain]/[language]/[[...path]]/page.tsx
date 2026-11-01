@@ -7,6 +7,8 @@ import type { GQLPageTreeNodeScope } from "@src/graphql.generated";
 import type { VisibilityParam } from "@src/middleware/domainRewrite";
 import { createSitePath } from "@src/util/createSitePath";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
+import { setServerIntl } from "@src/util/intl.server";
+import { loadMessages } from "@src/util/loadMessages";
 import { setVisibilityParam } from "@src/util/ServerContext";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import type { Metadata, ResolvingMetadata } from "next";
@@ -61,6 +63,7 @@ async function fetchPageTreeNode(params: PageProps<"/[visibility]/[domain]/[lang
 export default async function Page({ params }: PageProps<"/[visibility]/[domain]/[language]/[[...path]]">) {
     const { visibility, domain, language } = await params;
     setVisibilityParam(visibility as VisibilityParam);
+    setServerIntl(language, await loadMessages(language));
     const scope = { domain, language };
     const data = await fetchPageTreeNode(params);
 

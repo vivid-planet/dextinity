@@ -1,3 +1,5 @@
+"use client";
+
 import { BlocksBlock, type PropsWithData, type SupportedBlocks, usePreview, withPreview } from "@dextinity/site-nextjs";
 import type { AccordionContentBlockData, AccordionItemBlockData } from "@src/blocks.generated";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";

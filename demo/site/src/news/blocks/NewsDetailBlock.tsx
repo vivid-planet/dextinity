@@ -1,4 +1,3 @@
-"use client";
 import type { PropsWithData } from "@dextinity/site-nextjs";
 import type { NewsLinkBlockData } from "@src/blocks.generated";
 import type { JSX, PropsWithChildren } from "react";

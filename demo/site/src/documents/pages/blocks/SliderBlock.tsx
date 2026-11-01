@@ -2,14 +2,12 @@ import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { SliderBlockData } from "@src/blocks.generated";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
-import { BasicSwiper } from "@src/common/components/BasicSwiper";
 import { PageLayout } from "@src/layout/PageLayout";
 import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import { AnimateGroup } from "@src/util/animations/AnimateGroup";
-import { Pagination } from "swiper/modules";
-import { SwiperSlide } from "swiper/react";
 
 import styles from "./SliderBlock.module.scss";
+import { SliderSwiper } from "./SliderSwiper";
 
 type SliderBlockProps = PropsWithData<SliderBlockData>;
 
@@ -20,19 +18,10 @@ export const SliderBlock = withPreview(
                 <PageLayout>
                     <div className={styles.slider}>
                         <div className={styles.swiperContainer}>
-                            <BasicSwiper
-                                slidesPerView={3}
-                                spaceBetween={20}
-                                longSwipesRatio={0.1}
-                                modules={[Pagination]}
-                                pagination={{ clickable: true }}
-                                threshold={3}
-                                allowTouchMove
-                                watchOverflow
-                                autoHeight
-                            >
-                                {sliderList.blocks.map((block, index) => (
-                                    <SwiperSlide key={block.key}>
+                            <SliderSwiper
+                                slides={sliderList.blocks.map((block, index) => ({
+                                    key: block.key,
+                                    content: (
                                         <AnimateBoxInOnScroll direction="left" delay={100 * index}>
                                             <div className={styles.sliderItemBlockRoot}>
                                                 <div className={styles.mediaWrapper}>
@@ -41,9 +30,9 @@ export const SliderBlock = withPreview(
                                                 <RichTextBlock data={block.props.text} />
                                             </div>
                                         </AnimateBoxInOnScroll>
-                                    </SwiperSlide>
-                                ))}
-                            </BasicSwiper>
+                                    ),
+                                }))}
+                            />
                         </div>
                     </div>
                 </PageLayout>

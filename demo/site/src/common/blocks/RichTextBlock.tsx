@@ -1,11 +1,10 @@
-"use client";
 import { hasRichTextBlockContent, PreviewSkeleton, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { LinkBlockData, RichTextBlockData } from "@src/blocks.generated";
 import clsx from "clsx";
 import redraft, { type Renderers, type TextBlockRenderFn } from "redraft";
 
 import { Typography, type TypographyProps } from "../components/Typography";
-import { isValidLink } from "../helpers/HiddenIfInvalidLink";
+import { isValidLink } from "../helpers/isValidLink";
 import { LinkBlock } from "./LinkBlock";
 import styles from "./RichTextBlock.module.scss";
 

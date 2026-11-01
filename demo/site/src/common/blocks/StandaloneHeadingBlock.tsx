@@ -1,4 +1,3 @@
-"use client";
 import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { StandaloneHeadingBlockData } from "@src/blocks.generated";
 import { PageLayout } from "@src/layout/PageLayout";

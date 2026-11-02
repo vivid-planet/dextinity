@@ -47,6 +47,7 @@ import { liftOutOfList } from "./liftOutOfList";
 import {
     findTextBlock,
     getStyledNodes,
+    hasTextBlockStyles,
     isTextBlockAllowedInListItem,
     orderedListName,
     type TipTapResolvedList,
@@ -436,11 +437,12 @@ export const TipTapToolbar = ({
                     </FormControl>
                 </ToolbarGroup>
             )}
-            {applicableTextBlockStyles.length > 0 && (
+            {hasTextBlockStyles(styledNodes) && (
                 <ToolbarGroup>
                     <FormControl sx={selectFormControlSx}>
                         <Select
                             value={editorState.activeTextBlockStyle}
+                            disabled={applicableTextBlockStyles.length === 0}
                             onChange={handleTextBlockStyleChange}
                             displayEmpty
                             variant="filled"

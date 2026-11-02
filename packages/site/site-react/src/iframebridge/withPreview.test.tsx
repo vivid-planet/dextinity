@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { isValidElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
@@ -36,6 +36,12 @@ function countPreviewContainers(html: string) {
 }
 
 describe("withPreview", () => {
+    it("doesn't use hooks, so it can be rendered as a server component", () => {
+        const element = TestBlock({ data: { text: "Hello" } });
+
+        expect(isValidElement(element)).toBe(true);
+    });
+
     it("renders the block without a preview wrapper when there's no adminMeta", () => {
         const html = renderInBlockPreview(<TestBlock data={{ text: "Hello" }} />);
 

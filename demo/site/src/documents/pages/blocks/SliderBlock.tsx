@@ -14,6 +14,7 @@ import {
 import { PageLayout } from "@src/layout/PageLayout";
 import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import { AnimateGroup } from "@src/util/animations/AnimateGroup";
+import { createImageSizes } from "@src/util/createImageSizes";
 import clsx from "clsx";
 import { useIntl } from "react-intl";
 
@@ -40,9 +41,16 @@ export const SliderBlock = withPreview(
                                     <AnimateBoxInOnScroll direction="left" delay={100 * index}>
                                         <div className={styles.sliderItemBlockRoot}>
                                             <div className={styles.mediaWrapper}>
-                                                <MediaBlock data={block.props.media} fill aspectRatio="16x9" sizes="50vw" />
+                                                <MediaBlock
+                                                    data={block.props.media}
+                                                    fill
+                                                    aspectRatio="16x9"
+                                                    sizes={createImageSizes({ default: "85vw", sm: "45vw", md: "33vw" })}
+                                                />
                                             </div>
-                                            <RichTextBlock data={block.props.text} />
+                                            <div className={styles.text}>
+                                                <RichTextBlock data={block.props.text} />
+                                            </div>
                                         </div>
                                     </AnimateBoxInOnScroll>
                                 </CarouselSlide>

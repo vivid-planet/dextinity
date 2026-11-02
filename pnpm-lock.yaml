@@ -2159,10 +2159,10 @@ importers:
   packages/api/cms-api:
     dependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.1160.0
+        specifier: ^3.1161.0
         version: 3.1161.0
       '@aws-sdk/lib-storage':
-        specifier: ^3.1160.0
+        specifier: ^3.1161.0
         version: 3.1161.0(@aws-sdk/client-s3@3.1161.0)
       '@azure-rest/ai-translation-text':
         specifier: ^1.0.2

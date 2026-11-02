@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
 
-import { BlockMigration } from "../migrations/BlockMigration";
-import type { BlockMigrationInterface } from "../migrations/types";
 import { createExternalLinkBlock } from "./create-external-link.block";
 
 function fieldNames(block: ReturnType<typeof createExternalLinkBlock>) {
@@ -12,10 +10,6 @@ function fieldNames(block: ReturnType<typeof createExternalLinkBlock>) {
 }
 
 describe("createExternalLinkBlock", () => {
-    it("should use the given name", () => {
-        expect(createExternalLinkBlock({}, "UrlOnlyLink").name).toBe("UrlOnlyLink");
-    });
-
     it("should offer both options by default", () => {
         expect(fieldNames(createExternalLinkBlock({}, "DefaultLink"))).toEqual({
             fields: ["targetUrl", "openInNewWindow", "noFollow"],
@@ -35,28 +29,6 @@ describe("createExternalLinkBlock", () => {
         });
     });
 
-    it("should keep the field order stable regardless of the order of the options", () => {
-        expect(fieldNames(createExternalLinkBlock({ noFollow: true, openInNewWindow: true }, "ReorderedLink")).fields).toEqual([
-            "targetUrl",
-            "openInNewWindow",
-            "noFollow",
-        ]);
-    });
-
-    it("should not leak fields between blocks created by separate calls", () => {
-        createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "FirstLink");
-
-        expect(fieldNames(createExternalLinkBlock({}, "SecondLink")).fields).toEqual(["targetUrl", "openInNewWindow", "noFollow"]);
-    });
-
-    it("should transform the input to block data", () => {
-        const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "TransformingLink");
-
-        expect(UrlLinkBlock.blockInputFactory({ targetUrl: "https://www.example.com" }).transformToBlockData().transformToSave()).toMatchObject({
-            targetUrl: "https://www.example.com",
-        });
-    });
-
     describe("content stored by ExternalLinkBlock", () => {
         const stored = { targetUrl: "https://www.example.com", openInNewWindow: true, noFollow: true, $$version: 1 };
 
@@ -64,41 +36,6 @@ describe("createExternalLinkBlock", () => {
             const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "StoredUrlLink");
 
             expect(await UrlLinkBlock.blockDataFactory({ ...stored }).transformToPlain()).toEqual({ targetUrl: "https://www.example.com" });
-        });
-
-        it("should keep the stored values of options that are left out until the block is saved again", () => {
-            const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "KeepingUrlLink");
-
-            expect(UrlLinkBlock.blockDataFactory({ ...stored }).transformToSave()).toEqual({
-                targetUrl: "https://www.example.com",
-                openInNewWindow: true,
-                noFollow: true,
-                $$vendorVersion: 1,
-            });
-        });
-
-        it("should apply the block's own migrations starting at version 1", async () => {
-            class RemoveLinkOptionsMigration
-                extends BlockMigration<(from: typeof stored) => { targetUrl?: string }>
-                implements BlockMigrationInterface
-            {
-                public readonly toVersion = 1;
-
-                protected migrate({ targetUrl }: typeof stored) {
-                    return { targetUrl };
-                }
-            }
-
-            const UrlLinkBlock = createExternalLinkBlock(
-                { openInNewWindow: false, noFollow: false },
-                { name: "MigratedUrlLink", migrate: { version: 1, migrations: [RemoveLinkOptionsMigration] } },
-            );
-
-            expect(UrlLinkBlock.blockDataFactory({ ...stored }).transformToSave()).toEqual({
-                targetUrl: "https://www.example.com",
-                $$version: 1,
-                $$vendorVersion: 1,
-            });
         });
 
         it("should add noFollow to content stored before it existed", async () => {

@@ -1,10 +1,8 @@
-"use client";
 import {
     type AiContentAltTextPrefixLabels,
     AiContentDisclosure,
     type AiContentDisclosureProps,
     calculateInheritAspectRatio,
-    generateImageUrl,
     getAiContentAltTextWithPrefix,
     getMaxDimensionsFromArea,
     type ImageDimensions,
@@ -13,18 +11,12 @@ import {
     type PropsWithData,
     withPreview,
 } from "@dextinity/site-react";
-// eslint-disable-next-line no-restricted-imports
-import NextImageImport, { type ImageProps } from "next/image";
+import type { ImageProps } from "next/image";
 import type { ReactNode } from "react";
 
 import type { PixelImageBlockData } from "../blocks.generated";
+import { NextImageWithAspectRatio } from "./helpers/NextImageWithAspectRatio";
 import styles from "./PixelImageBlock.module.scss";
-
-// `next/image` is a CJS module; under Next.js Pages Router its default import
-// from this ESM package yields the module-namespace object instead of the
-// component (Node-style ESM↔CJS interop). Unwrap so the component works under
-// both bundler-style and Node-style interop.
-const NextImage: typeof NextImageImport = (NextImageImport as unknown as { default?: typeof NextImageImport }).default ?? NextImageImport;
 
 interface PixelImageBlockProps extends PropsWithData<PixelImageBlockData>, Omit<ImageProps, "src" | "width" | "height" | "alt"> {
     aspectRatio: string | number | "inherit";
@@ -97,8 +89,8 @@ export const PixelImageBlock = withPreview(
         const blurDataUrl = createDominantImageDataUrl(dimensions.width, dimensions.height, damFile.image.dominantColor);
 
         const nextImage = (
-            <NextImage
-                loader={(loaderProps) => generateImageUrl(loaderProps, usedAspectRatio)}
+            <NextImageWithAspectRatio
+                aspectRatio={usedAspectRatio}
                 src={urlTemplate}
                 fill
                 style={{ objectFit: "cover" }}

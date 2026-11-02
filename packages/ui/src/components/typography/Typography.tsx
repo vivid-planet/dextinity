@@ -4,7 +4,8 @@ import { forwardRef, type HTMLAttributes } from "react";
 
 import styles from "./Typography.module.scss";
 
-type TypographyVariant = "headline" | "body";
+type TypographyVariant =
+    "display" | "h1" | "h2" | "h3" | "h4" | "bodyL" | "bodyM" | "bodyS" | "bodyXs" | "caption" | "labelM" | "labelS" | "labelXs" | "dataM" | "dataS";
 type TypographyElement = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span";
 
 /**
@@ -15,15 +16,28 @@ export type TypographyOwnerState = {
 };
 
 const variantElement: Record<TypographyVariant, TypographyElement> = {
-    headline: "h2",
-    body: "p",
+    display: "h1",
+    h1: "h1",
+    h2: "h2",
+    h3: "h3",
+    h4: "h4",
+    bodyL: "p",
+    bodyM: "p",
+    bodyS: "p",
+    bodyXs: "p",
+    caption: "span",
+    labelM: "span",
+    labelS: "span",
+    labelXs: "span",
+    dataM: "span",
+    dataS: "span",
 };
 
 export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "className"> {
     /**
      * Visual style. Each variant has a default semantic element.
      *
-     * @defaultValue `"body"`
+     * @defaultValue `"bodyM"`
      */
     variant?: TypographyVariant;
     /**
@@ -50,7 +64,7 @@ export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "clas
  * mapping to a default semantic element.
  */
 export const Typography = forwardRef<HTMLElement, TypographyProps>(function Typography(
-    { variant = "body", element, className, children, render, ...restProps },
+    { variant = "bodyM", element, className, children, render, ...restProps },
     ref,
 ) {
     const ownerState: TypographyOwnerState = { variant };

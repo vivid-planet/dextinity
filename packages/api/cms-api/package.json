@@ -82,7 +82,7 @@
     "devDependencies": {
         "@aws-sdk/types": "^3.975.0",
         "@dextinity/eslint-config": "workspace:*",
-        "@golevelup/ts-vitest": "^4.0.0",
+        "@golevelup/ts-vitest": "^4.0.1",
         "@kubernetes/client-node": "^1.4.0",
         "@mikro-orm/core": "^6.6.17",
         "@mikro-orm/migrations": "^6.6.17",

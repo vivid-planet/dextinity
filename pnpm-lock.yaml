@@ -2286,8 +2286,8 @@ importers:
         specifier: workspace:*
         version: link:../../eslint-config
       '@golevelup/ts-vitest':
-        specifier: ^4.0.0
-        version: 4.0.0
+        specifier: ^4.0.1
+        version: 4.0.1(vitest@5.0.5)
       '@kubernetes/client-node':
         specifier: ^1.4.0
         version: 1.4.0(supports-color@8.1.1)
@@ -5410,8 +5410,10 @@ packages:
       '@nestjs/common': ^11.1.21
       '@nestjs/core': ^11.1.21
 
-  '@golevelup/ts-vitest@4.0.0':
-    resolution: {integrity: sha512-TNIhtox9zWfxlww0ql91l/k2zDthN4owg5qDieRHtjIwIvuoUlXLiwqAb/ifkRr8K+jZLRIC9QrKN/J7TBghlQ==}
+  '@golevelup/ts-vitest@4.0.1':
+    resolution: {integrity: sha512-Goch9LEndGfd6PxRgB3XiE6M3j7xd1uKRTZjjK+PIOZ+4okSiugwl8qlqkIP7jRMKj9rO2wVBIZlcfKLhvyJhQ==}
+    peerDependencies:
+      vitest: '>=2.0.0'
 
   '@google-cloud/recaptcha-enterprise@5.13.0':
     resolution: {integrity: sha512-kIGnUfrAroVkjWD3M+NWaqTuwu0YEjIDulY8YVBozHiJaeztK+5mvgV5MKrwLYyqyK9JuswLXOLAnSc57hUcHA==}
@@ -22919,7 +22921,9 @@ snapshots:
       '@nestjs/common': 11.2.8(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1)
       '@nestjs/core': 11.2.8(@nestjs/common@11.2.8(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/platform-express@11.2.8)(reflect-metadata@0.2.2)(rxjs@7.8.2)
 
-  '@golevelup/ts-vitest@4.0.0': {}
+  '@golevelup/ts-vitest@4.0.1(vitest@5.0.5)':
+    dependencies:
+      vitest: 5.0.5(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.0.5)(@vitest/ui@5.0.5)(jsdom@28.1.0(@noble/hashes@1.8.0)(supports-color@8.1.1))(msw@2.15.0(@types/node@24.19.2)(typescript@5.9.3))(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.106.1)(terser@5.51.2)(yaml@2.9.1))
 
   '@google-cloud/recaptcha-enterprise@5.13.0(supports-color@8.1.1)':
     dependencies:

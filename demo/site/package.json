@@ -3,6 +3,13 @@
     "private": true,
     "description": "Dextinity Site Demo Application",
     "type": "commonjs",
+    "imports": {
+        "#intl": {
+            "types": "./src/util/intl.d.ts",
+            "react-server": "./src/util/intl.server.ts",
+            "default": "./src/util/intl.client.ts"
+        }
+    },
     "scripts": {
         "build": "run-s intl:compile && run-p gql:types generate-block-types css:types build-server && next build --webpack",
         "build-server": "tsc --project tsconfig.server.json",

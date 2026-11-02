@@ -759,6 +759,224 @@ cd admin
 npm run intl:extract
 ```
 
+### Update React Router to v8
+
+The admin packages now require React Router v8 instead of v5. React Router v8 merges `react-router-dom` into `react-router`, removes the `history` package and requires React 19.2.7 or later.
+
+#### Update the dependencies
+
+```sh
+cd admin
+npm uninstall react-router-dom history @types/history @types/react-router @types/react-router-dom
+npm install react-router@^8.5.1
+```
+
+If your admin still uses React 18, update `react` and `react-dom` to v19 first.
+
+Then replace all imports from `react-router-dom` with `react-router`:
+
+```sh
+grep -rln '"react-router-dom"' src | xargs sed -i 's/"react-router-dom"/"react-router"/'
+```
+
+Find the code that uses APIs removed in React Router v6 and later:
+
+```sh
+grep -rnE "useRouteMatch|useHistory|<Switch|<Redirect|RouteComponentProps|RouteChildrenProps|RouteWithErrorBoundary|\bhistory\b|component=\{|render=\{" src
+```
+
+Work through the following steps until none of them are left.
+
+#### Keep using `RouterBrowserRouter`
+
+`RouterBrowserRouter` now creates a data router, which is required for the dirty prompts of `RouterPrompt`. Keep rendering your app as its children. Don't render a `BrowserRouter` or `RouterProvider` of your own. `RouterBrowserRouter` only accepts `basename` anymore.
+
+Routers can't be nested in React Router v8. Replace a `MemoryRouter` inside your app (e.g., in a dialog) with `RouterMemoryRouter` from `@dextinity/admin`:
+
+```diff
+- import { MemoryRouter } from "react-router";
++ import { RouterMemoryRouter } from "@dextinity/admin";
+
+- <MemoryRouter>
++ <RouterMemoryRouter>
+      <DamTable />
+- </MemoryRouter>
++ </RouterMemoryRouter>
+```
+
+#### Replace the routes in `App.tsx`
+
+The render prop of `ContentScopeProvider` creates a route for the content scope. Render `<Routes>` with paths relative to the content scope inside it:
+
+```diff
+  <ContentScopeProvider>
+-     {({ match }) => (
+-         <Switch>
+-             <Route path={`${match.path}/preview`} render={(props) => <SitePreview resolvePath={resolvePath} {...props} />} />
+-             <Route render={() => <MasterLayout headerComponent={MasterHeader} menuComponent={AppMasterMenu}><AppMasterMenuRoutes /></MasterLayout>} />
+-         </Switch>
+-     )}
++     {() => (
++         <Routes>
++             <Route path="preview/*" element={<SitePreview resolvePath={resolvePath} />} />
++             <Route
++                 path="*"
++                 element={
++                     <MasterLayout headerComponent={MasterHeader} menuComponent={AppMasterMenu}>
++                         <AppMasterMenuRoutes />
++                     </MasterLayout>
++                 }
++             />
++         </Routes>
++     )}
+  </ContentScopeProvider>
+```
+
+The `match` of the render prop and of `useContentScope()` now has the type `CurrentRouteMatch` (`url`, `path` and `params`).
+
+#### Replace `component` and `render` in the master menu
+
+The `route` of a master menu item takes an `element` now. The path still matches all sub paths. Read path params with `useParams()`:
+
+```diff
+  route: {
+      path: "/dashboard",
+-     component: DashboardPage,
++     element: <DashboardPage />,
+  },
+```
+
+```diff
+  route: {
+      path: "/pages/pagetree/:category",
+-     render: ({ match }: RouteComponentProps<{ category: string }>) => <PagesPage category={match.params.category} />,
++     element: <PagesPageForCategory />,
+  },
+```
+
+```tsx
+function PagesPageForCategory() {
+    const { category } = useParams<{ category: string }>();
+    return <PagesPage category={category} />;
+}
+```
+
+#### Replace `useRouteMatch()` and `useHistory()`
+
+| React Router v5                          | Replacement                                                                                       |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `useRouteMatch()`                        | `useCurrentRouteMatch()` from `@dextinity/admin` (returns `url`, `path` and `params`)             |
+| `useRouteMatch(path)`                    | `matchPath({ path, end: false }, useLocation().pathname)`, note the swapped arguments             |
+| `useHistory().push(url)`                 | `useNavigate()(url)`                                                                              |
+| `useHistory().replace(url)`              | `useNavigate()(url, { replace: true })`                                                           |
+| `useHistory().replace({ search })`       | `useNavigate()({ pathname: location.pathname, search }, { replace: true })`                       |
+| `history.listen(callback)`               | A `useEffect` depending on `useLocation()`                                                        |
+| `match.isExact`                          | `matchPath({ path: match.url, end: true }, location.pathname) !== null`                           |
+| `<Redirect to={url} />`                  | `<Navigate to={url} replace />`                                                                   |
+| `<Link innerRef={ref} to={() => url} />` | `<Link ref={ref} to={url} />`, `to` doesn't accept a function anymore                             |
+
+When you build a URL from `match.url` and the match can be the root route, its URL is `/`. Strip the trailing slash to avoid URLs like `//products`, or use `useSubRoutePrefix()`, which already does this.
+
+#### Replace `<Switch>` and `<Route>`
+
+`<Route>` can only be rendered as a child of `<Routes>` in React Router v8, and its paths are relative to the parent route. Routes match exactly unless their path ends with `/*`.
+
+Replace routes with relative paths:
+
+```diff
+- const match = useRouteMatch();
+-
+- <Switch>
+-     <Route path={`${match.path}/products`} component={ProductsPage} />
+-     <Redirect to={`${match.url}/products`} />
+- </Switch>
++ <Routes>
++     <Route path="products/*" element={<ProductsPage />} />
++     <Route path="*" element={<Navigate to="products" replace />} />
++ </Routes>
+```
+
+Routes inside a `StackPage`, a `RouterTab` or a `SelectionRoute` are relative to the URL of the page, the tab or the selection.
+
+If a path is absolute because it's built with `useSubRoutePrefix()`, use `AbsoluteRoute` and `AbsoluteRoutes` from `@dextinity/admin` instead. They match like `<Route>` and `<Switch>` in React Router v5 (by prefix, unless `exact` is set):
+
+```diff
+  const urlPrefix = useSubRoutePrefix();
+
+- <Switch>
+-     <Route path={`${urlPrefix}/details`}>
+-         <Details />
+-     </Route>
++ <AbsoluteRoutes>
++     <AbsoluteRoute path={`${urlPrefix}/details`}>
++         <Details />
++     </AbsoluteRoute>
+      <SubRouteIndexRoute>
+          <Overview />
+      </SubRouteIndexRoute>
+- </Switch>
++ </AbsoluteRoutes>
+```
+
+`<AbsoluteRoute>` also accepts a function as children, which is always called and receives the match or `null`, like the `children` function of `<Route>` in React Router v5.
+
+Path params with a regular expression (e.g., `:id(\\d+)`) aren't supported anymore. Validate the param in the element instead.
+
+#### Replace `RouteWithErrorBoundary`
+
+`RouteWithErrorBoundary` has been removed. Wrap the element of the route in an `ErrorBoundary`. Set a `key` so that the boundary resets when navigating to another route:
+
+```diff
+- <RouteWithErrorBoundary path={`${match.path}/products`} component={ProductsPage} />
++ <Route
++     path="products/*"
++     element={
++         <ErrorBoundary key="products">
++             <ProductsPage />
++         </ErrorBoundary>
++     }
++ />
+```
+
+#### Update `RouterPrompt` and `ForcePromptRoute`
+
+The `message` callback of `RouterPrompt` receives `Location` and `NavigationType` from `react-router`:
+
+```diff
+- import type { Action, Location } from "history";
++ import type { Location, NavigationType } from "react-router";
+
+- message={(location: Location, action: Action) => ...}
++ message={(location: Location, action: NavigationType) => ...}
+```
+
+`ForcePromptRoute` only accepts `path`, `exact` and `children` now. `RouterPromptHandler` no longer accepts `apiRef`.
+
+#### Update the tests
+
+Replace `createMemoryHistory` and `<Router history={history}>` with a memory router. Read the location from the router state:
+
+```diff
+- const history = createMemoryHistory({ initialEntries: ["/products"] });
+- render(
+-     <Router history={history}>
+-         <ProductsPage />
+-     </Router>,
+- );
+- expect(history.location.pathname).toBe("/products/add");
++ const router = createMemoryRouter([{ path: "*", element: <ProductsPage /> }], { initialEntries: ["/products"] });
++ render(<RouterProvider router={router} />);
++ expect(router.state.location.pathname).toBe("/products/add");
+```
+
+Import `createMemoryRouter` from `react-router` and `RouterProvider` from `react-router/dom`.
+
+Navigations in a data router are asynchronous. Wrap assertions that follow a click in `waitFor()`.
+
+#### Verify the routing
+
+Start the admin and check the routing: the redirect to the content scope, the master menu, stack pages and their breadcrumbs, router tabs, the dirty prompt (navigating away from a form with unsaved changes, including with the browser's back button) and dialogs that use a `RouterMemoryRouter`.
+
 ### Stop reading `__typename` from the file upload fragments
 
 `GQLFinalFormFileUploadFragment` and `GQLFinalFormFileUploadDownloadableFragment` no longer have a `__typename` field.

@@ -1802,6 +1802,7 @@ describe("createTipTapRichTextBlock block meta", () => {
                 kind: BlockMetaFieldKind.TipTapRichTextBlock,
                 childBlocks: { externalLink: ExternalLinkBlock },
                 linkBlock: LinkBlock,
+                tipTap: expect.any(Object),
                 nullable: false,
             },
         ];
@@ -1821,6 +1822,7 @@ describe("createTipTapRichTextBlock block meta", () => {
                 kind: "TipTapRichTextBlock",
                 childBlocks: { externalLink: "ExternalLink" },
                 linkBlock: "TestMetaLink",
+                tipTap: expect.any(Object),
                 nullable: false,
             },
         ]);
@@ -1830,7 +1832,14 @@ describe("createTipTapRichTextBlock block meta", () => {
         const block = createTipTapRichTextBlock({}, "TestMetaWithoutLink");
 
         expect(block.blockMeta.fields).toEqual([
-            { name: "tipTapContent", kind: BlockMetaFieldKind.TipTapRichTextBlock, childBlocks: {}, linkBlock: undefined, nullable: false },
+            {
+                name: "tipTapContent",
+                kind: BlockMetaFieldKind.TipTapRichTextBlock,
+                childBlocks: {},
+                linkBlock: undefined,
+                tipTap: expect.any(Object),
+                nullable: false,
+            },
         ]);
     });
 });

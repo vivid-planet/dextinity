@@ -60,6 +60,7 @@ const nextConfig: NextConfig = {
             ],
         },
     ],
+    // Not import.meta.resolve(): it throws when dist/ hasn't been built yet, which breaks tools that only read this config (Storybook, next typegen).
     // eslint-disable-next-line no-restricted-syntax -- VALKEY_ENABLED is a server-start-time flag for cache handler setup
     cacheHandler: process.env.VALKEY_ENABLED === "true" ? join(dirname(fileURLToPath(import.meta.url)), "dist/cache-handler.js") : undefined,
     // eslint-disable-next-line no-restricted-syntax -- VALKEY_ENABLED is a server-start-time flag for cache handler setup

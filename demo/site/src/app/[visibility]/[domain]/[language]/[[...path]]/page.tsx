@@ -63,10 +63,6 @@ async function fetchPageTreeNode(params: PageProps<"/[visibility]/[domain]/[lang
 export default async function Page({ params }: PageProps<"/[visibility]/[domain]/[language]/[[...path]]">) {
     const { visibility, domain, language } = await params;
     setVisibilityParam(visibility as VisibilityParam);
-    if (!getSiteConfigForDomain(domain).scope.languages.includes(language)) {
-        notFound();
-    }
-    setServerIntl(language, await loadMessages(language));
     const scope = { domain, language };
     const data = await fetchPageTreeNode(params);
 
@@ -104,6 +100,11 @@ export default async function Page({ params }: PageProps<"/[visibility]/[domain]
         }
         notFound();
     }
+
+    if (!getSiteConfigForDomain(domain).scope.languages.includes(language)) {
+        notFound();
+    }
+    setServerIntl(language, await loadMessages(language));
 
     const pageTreeNodeId = data.pageTreeNodeByPath.id;
 

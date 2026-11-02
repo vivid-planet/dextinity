@@ -46,6 +46,7 @@
         "test:watch": "vitest --watch"
     },
     "dependencies": {
+        "@formatjs/intl": "^3.1.8",
         "clsx": "^2.1.1",
         "fast-equals": "^6.2.1",
         "jose": "^5.10.0",

@@ -2669,6 +2669,9 @@ importers:
       '@dextinity/site-react':
         specifier: workspace:*
         version: link:../site-react
+      '@formatjs/intl':
+        specifier: ^3.1.8
+        version: 3.1.8(typescript@5.9.3)
       jose:
         specifier: ^5.10.0
         version: 5.10.0
@@ -2742,6 +2745,9 @@ importers:
 
   packages/site/site-react:
     dependencies:
+      '@formatjs/intl':
+        specifier: ^3.1.8
+        version: 3.1.8(typescript@5.9.3)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1

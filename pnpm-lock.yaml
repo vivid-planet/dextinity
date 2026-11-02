@@ -177,8 +177,8 @@ importers:
         specifier: workspace:*
         version: link:packages/cli
       '@formatjs/cli':
-        specifier: ^6.16.35
-        version: 6.16.35(@vue/compiler-core@3.5.43)
+        specifier: ^6.16.36
+        version: 6.18.0(@vue/compiler-core@3.5.43)
       '@types/node':
         specifier: ^24.19.2
         version: 24.19.2
@@ -328,8 +328,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/eslint-config
       '@formatjs/cli':
-        specifier: ^6.16.35
-        version: 6.16.35(@vue/compiler-core@3.5.43)
+        specifier: ^6.16.36
+        version: 6.18.0(@vue/compiler-core@3.5.43)
       '@graphql-codegen/add':
         specifier: ^5.0.3
         version: 5.0.3(graphql@16.14.2)
@@ -579,8 +579,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/eslint-config
       '@formatjs/cli':
-        specifier: ^6.16.35
-        version: 6.16.35(@vue/compiler-core@3.5.43)
+        specifier: ^6.16.36
+        version: 6.18.0(@vue/compiler-core@3.5.43)
       '@nestjs/cli':
         specifier: ^11.0.24
         version: 11.0.24(@swc/core@1.16.18(@swc/helpers@0.5.23))(@types/node@24.19.2)(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.29))(csso@5.0.5)(esbuild@0.28.2)(html-minifier-terser@7.2.0)(lightningcss@1.33.0)(postcss@8.5.29)(prettier@3.9.10)(uglify-js@3.19.3)
@@ -678,8 +678,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/site/site-nextjs
       '@formatjs/cli':
-        specifier: ^6.16.35
-        version: 6.16.35(@vue/compiler-core@3.5.43)
+        specifier: ^6.16.36
+        version: 6.18.0(@vue/compiler-core@3.5.43)
       '@google-cloud/recaptcha-enterprise':
         specifier: ^5.13.0
         version: 5.13.0(supports-color@8.1.1)
@@ -5291,48 +5291,58 @@ packages:
   '@fontsource-variable/roboto-flex@5.3.0':
     resolution: {integrity: sha512-bOxckUy0qXNRjhV6e4pcHGSvptix4ZRD1uaj5Za8h+p3qrb2GL4U4TQdpVmPSy0SmqwldfD+JJqEKdF68EyiAw==}
 
-  '@formatjs/cli-native-darwin-arm64@1.1.29':
-    resolution: {integrity: sha512-kh+l/SZGTpDEH/aLjwbH9CqHaSW7htGiwljZ4vOobhtQbJXriQRRHzA/LAgJ+798QMflP6HjR74hK0BJPucqAw==}
+  '@formatjs/cli-native-darwin-arm64@1.1.32':
+    resolution: {integrity: sha512-T3R9V8DMW0y2FT3wQembm2g+g9xlszI2XBnSLqzjjSaL7NyolNN1kcLO1kYHZTx9b78e8B6zXPqk2GhChA3iNg==}
     cpu: [arm64]
     os: [darwin]
 
-  '@formatjs/cli-native-linux-arm64-musl@1.0.27':
-    resolution: {integrity: sha512-HZtqjqJrTHJt5lvhFoz0Ak5TpsYYxgIdkyh5IJYlyCpcGzCC89bb8Bq4N8K+tqsJ+p/eN0ewsLuQA9T0gT+y/w==}
+  '@formatjs/cli-native-darwin-x64@1.1.0':
+    resolution: {integrity: sha512-TUw3bYa2E1k2KAEFBrtCB3t4r/h9na4m8IkXsDrt4YRBYSQggYxqWCVNXO+ZiMmTOQehQdD5TyF62og4Gw8UTg==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@formatjs/cli-native-linux-arm64-musl@1.0.30':
+    resolution: {integrity: sha512-GOiklaXhcj3dvctTb2qWYrZk7VapJk0pbcJFUJnoONJqNJB0X985RB7t2EXyNOCNujFr6kR8XPNVIAYj1vVIBA==}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@formatjs/cli-native-linux-arm64@1.2.29':
-    resolution: {integrity: sha512-vSTXe5IXETlf1cMCRqUHuOREM5zpF1dCk542zOHv388F71LWIWz/Hdu6pEdI4oFxdkqEM3tcKFMWB306JOOAaQ==}
+  '@formatjs/cli-native-linux-arm64@1.2.32':
+    resolution: {integrity: sha512-OBiwXNWVmyaCh+Ga4/OqTseYJiOzLZB2aQIY5+sVG63/pP+63iVxROMctPsW5lqNgFmfe+tuvz8yXac7uRyLlw==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@formatjs/cli-native-linux-x64-musl@1.0.27':
-    resolution: {integrity: sha512-bv8thdLdTeYG0jcAMBAXb27tc4BiLvwa/v8US3kHLhkq7arDM5Dmvsf1+XSMNzXLuqdCU5p+OI/2m/qOb44Jqg==}
+  '@formatjs/cli-native-linux-x64-musl@1.0.30':
+    resolution: {integrity: sha512-4nQkxuqTBLXMRp+0L1T2y/MOoiWxju/peidvMZVZDCF4hHlbAmDEj43FoHA9Iq/FskpNx898sp/OROKBD2X19w==}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@formatjs/cli-native-linux-x64@1.1.29':
-    resolution: {integrity: sha512-GuF20VE1eqz6u5ndmYNbiIO7g/WJaKSFNAWlhLBMCWS/8ggyw5bqvFfZMgR1VUTa/oMVWfJp+5q+oi0DMc89Sw==}
+  '@formatjs/cli-native-linux-x64@1.1.32':
+    resolution: {integrity: sha512-aagNUKgj8LF7bpd1zx9BzsRkneviCZbXx4IzdaGZeehY4iY4OVO+MCTvVjSfRBOw2qKUJWu5dlo5gL98jyt7uA==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@formatjs/cli-native-win32-x64@1.1.30':
-    resolution: {integrity: sha512-iP5Qd7mTRu5Rn69bWnP1AgzdQ640TQQlkhiZGCGoUYSLEZ/bGTgDgzYvI4LRFIQYoS9niKDXAOETjwWAEPGoCw==}
+  '@formatjs/cli-native-win32-arm64@1.1.0':
+    resolution: {integrity: sha512-1sGjugyj8428wvDmfY8JUWkktaiIPPXnoQZeHhHpH4HMjEihIinJ0OaPR282eZ+BUFKu2yg7oeg3iFkY9XXwiA==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@formatjs/cli-native-win32-x64@1.1.33':
+    resolution: {integrity: sha512-tUd3LNJOjSf1SyoXAVfljYFS4Z9nAb16Pofnzcjt0FwN48+lPbwfBovns1wfZ7sVZ8InYLqk+kZujBfJBTvabg==}
     cpu: [x64]
     os: [win32]
 
-  '@formatjs/cli@6.16.35':
-    resolution: {integrity: sha512-JeTpErAlJ0br8uaUII4uINrfldnp6C6eIYNaR+Tj4YJTGAUtxjItUPsP8fY9cc/zMDXf8SuDL6NFle4VzgY1TA==}
+  '@formatjs/cli@6.18.0':
+    resolution: {integrity: sha512-fBj1lxVPq2IC5lO48l56F2yOPqVW3OOexI/PYJbu1xLHN/+j9Tk+VeqBkZUEPsxrNwxjaOrLRsi/rDcEdrVedA==}
     engines: {node: '>= 20.12.0'}
     hasBin: true
     peerDependencies:
       '@glimmer/env': '*'
       '@glimmer/reference': '*'
-      '@glimmer/syntax': ^0.84.3 || ^0.95.0
+      '@glimmer/syntax': ^0.84.3 || ^0.95.0 || ^0.97.0
       '@glimmer/validator': '*'
       '@vue/compiler-core': '3'
       content-tag: '4'
@@ -22815,32 +22825,40 @@ snapshots:
 
   '@fontsource-variable/roboto-flex@5.3.0': {}
 
-  '@formatjs/cli-native-darwin-arm64@1.1.29':
+  '@formatjs/cli-native-darwin-arm64@1.1.32':
     optional: true
 
-  '@formatjs/cli-native-linux-arm64-musl@1.0.27':
+  '@formatjs/cli-native-darwin-x64@1.1.0':
     optional: true
 
-  '@formatjs/cli-native-linux-arm64@1.2.29':
+  '@formatjs/cli-native-linux-arm64-musl@1.0.30':
     optional: true
 
-  '@formatjs/cli-native-linux-x64-musl@1.0.27':
+  '@formatjs/cli-native-linux-arm64@1.2.32':
     optional: true
 
-  '@formatjs/cli-native-linux-x64@1.1.29':
+  '@formatjs/cli-native-linux-x64-musl@1.0.30':
     optional: true
 
-  '@formatjs/cli-native-win32-x64@1.1.30':
+  '@formatjs/cli-native-linux-x64@1.1.32':
     optional: true
 
-  '@formatjs/cli@6.16.35(@vue/compiler-core@3.5.43)':
+  '@formatjs/cli-native-win32-arm64@1.1.0':
+    optional: true
+
+  '@formatjs/cli-native-win32-x64@1.1.33':
+    optional: true
+
+  '@formatjs/cli@6.18.0(@vue/compiler-core@3.5.43)':
     optionalDependencies:
-      '@formatjs/cli-native-darwin-arm64': 1.1.29
-      '@formatjs/cli-native-linux-arm64': 1.2.29
-      '@formatjs/cli-native-linux-arm64-musl': 1.0.27
-      '@formatjs/cli-native-linux-x64': 1.1.29
-      '@formatjs/cli-native-linux-x64-musl': 1.0.27
-      '@formatjs/cli-native-win32-x64': 1.1.30
+      '@formatjs/cli-native-darwin-arm64': 1.1.32
+      '@formatjs/cli-native-darwin-x64': 1.1.0
+      '@formatjs/cli-native-linux-arm64': 1.2.32
+      '@formatjs/cli-native-linux-arm64-musl': 1.0.30
+      '@formatjs/cli-native-linux-x64': 1.1.32
+      '@formatjs/cli-native-linux-x64-musl': 1.0.30
+      '@formatjs/cli-native-win32-arm64': 1.1.0
+      '@formatjs/cli-native-win32-x64': 1.1.33
       '@vue/compiler-core': 3.5.43
 
   '@formatjs/ecma402-abstract@2.3.6':

@@ -3,11 +3,12 @@ import { useContext } from "react";
 
 import { findListNodeType } from "../findListNodeType";
 import { TextBlockContext } from "../TextBlockContext";
-import { findTextBlock, type TipTapResolvedTextBlock, type TipTapTextBlockStyle } from "../textBlocks";
+import { findTextBlock, type TipTapResolvedStyledNode, type TipTapResolvedTextBlock } from "../textBlocks";
 
 /**
  * Renders a text block the way it is configured: through the selected text block style, or through
- * the text block's own `element`. A text block with neither is rendered as its plain tag.
+ * the text block's own `element`. Inside a list item, the list's style and `element` come first. A
+ * text block with neither is rendered as its plain tag.
  */
 export function createTextBlockNodeView(defaultTextBlock: TipTapResolvedTextBlock) {
     return function TextBlockNodeView({ node, editor, getPos }: ReactNodeViewProps) {
@@ -26,11 +27,11 @@ export function createTextBlockNodeView(defaultTextBlock: TipTapResolvedTextBloc
         const list = listNodeType === "orderedList" ? orderedList : listNodeType === "bulletList" ? unorderedList : false;
         const styleName = node.attrs.textBlockStyle as string | null;
         // A list wins over the text block inside its items, the same way the toolbar offers a list's
-        // own styles there. The text block's own styles still apply, since a styled text block keeps
-        // its style when it is turned into a list item.
-        const findStyle = (styles: TipTapTextBlockStyle[]) => styles.find((style) => style.name === styleName);
-        const style = styleName ? ((list ? findStyle(list.styles) : undefined) ?? findStyle(textBlock.styles)) : undefined;
-        const element = style?.element ?? textBlock.element;
+        // own styles there - with its own element as well. The text block's own styles still apply,
+        // since a styled text block keeps its style when it is turned into a list item.
+        const findStyle = (styledNode: TipTapResolvedStyledNode) => styledNode.styles.find((style) => style.name === styleName);
+        const listElement = list ? (findStyle(list)?.element ?? list.element) : undefined;
+        const element = listElement ?? findStyle(textBlock)?.element ?? textBlock.element;
 
         if (element) {
             return (

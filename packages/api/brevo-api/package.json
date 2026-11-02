@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/brevo-api",
-    "version": "10.10.0",
+    "version": "10.12.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity",
@@ -44,10 +44,9 @@
         "cache-manager": "^7.2.9",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.15.1",
-        "commander": "^14.0.3",
-        "graphql-scalars": "1.26.0",
-        "nest-commander": "^3.21.0",
-        "uuid": "^11.1.1"
+        "commander": "^15.0.0",
+        "graphql-scalars": "^1.26.0 || ^2.0.0",
+        "nest-commander": "^3.21.0"
     },
     "devDependencies": {
         "@dextinity/eslint-config": "workspace:*",
@@ -57,12 +56,12 @@
         "@mikro-orm/migrations": "^6.6.17",
         "@mikro-orm/nestjs": "^6.1.2",
         "@mikro-orm/postgresql": "^6.6.17",
-        "@nestjs/common": "^11.2.7",
-        "@nestjs/core": "^11.2.7",
+        "@nestjs/common": "^11.2.8",
+        "@nestjs/core": "^11.2.8",
         "@nestjs/graphql": "^13.4.5",
-        "@nestjs/platform-express": "^11.2.7",
-        "@nestjs/testing": "^11.2.7",
-        "@swc/core": "^1.16.18",
+        "@nestjs/platform-express": "^11.2.8",
+        "@nestjs/testing": "^11.2.8",
+        "@swc/core": "^1.16.20",
         "@types/inquirer": "^8.2.13",
         "chokidar-cli": "^3.0.0",
         "eslint": "^9.39.5",
@@ -75,7 +74,7 @@
         "ts-node": "^10.9.2",
         "typescript": "^5.9.3",
         "unplugin-swc": "^2.0.0",
-        "vitest": "^5.0.4"
+        "vitest": "^5.0.5"
     },
     "peerDependencies": {
         "@mikro-orm/cli": "^6.0.0",

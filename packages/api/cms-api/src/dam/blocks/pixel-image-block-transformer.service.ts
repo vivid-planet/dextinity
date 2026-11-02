@@ -46,11 +46,19 @@ export class PixelImageBlockTransformerService implements BlockTransformerServic
             return {};
         }
 
-        const file = await this.filesService.findOneById(block.damFileId);
+        const blockFile = await this.filesService.findOneById(block.damFileId);
 
-        if (!file) {
+        if (!blockFile) {
             return {};
         }
+
+        const image = await this.filesService.findImageToDeliver({ file: blockFile, cropArea: block.cropArea }, { previewDamUrls });
+
+        if (!image) {
+            return {};
+        }
+
+        const { file, cropArea } = image;
 
         const fileUrl = includeInvisibleContent ? await this.filesService.createFileUrl(file, { previewDamUrls }) : undefined;
 
@@ -78,8 +86,8 @@ export class PixelImageBlockTransformerService implements BlockTransformerServic
                     : undefined,
                 fileUrl,
             },
-            cropArea: block.cropArea ? { ...block.cropArea } : undefined,
-            urlTemplate: this.imagesService.createUrlTemplate({ file, cropArea: block.cropArea }, { previewDamUrls }),
+            cropArea: cropArea ? { ...cropArea } : undefined,
+            urlTemplate: this.imagesService.createUrlTemplate({ file, cropArea }, { previewDamUrls }),
         };
     }
 }

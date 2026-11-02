@@ -230,9 +230,18 @@ export function createFilesResolver({
 
         @ResolveField(() => String)
         async fileUrl(@Parent() file: FileInterface, @Context("req") req: IncomingMessage): Promise<string> {
-            return this.filesService.createFileUrl(file, {
-                previewDamUrls: Boolean(req.headers["x-preview-dam-urls"]),
-            });
+            const previewDamUrls = Boolean(req.headers["x-preview-dam-urls"]);
+
+            // A file with an invalid license keeps its URL, which responds with 410 Gone, unless it's a pixel image with a fallback image
+            if (file.image) {
+                const image = await this.filesService.findImageToDeliver({ file }, { previewDamUrls });
+
+                if (image) {
+                    return this.filesService.createFileUrl(image.file, { previewDamUrls });
+                }
+            }
+
+            return this.filesService.createFileUrl(file, { previewDamUrls });
         }
 
         @ResolveField(() => [File])

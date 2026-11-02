@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
 
+export type TableColumnSize = "extraSmall" | "small" | "standard" | "large" | "extraLarge";
+
 export type TableColumn = {
     id: string;
+    size: TableColumnSize;
     highlighted: boolean;
 };
 
@@ -10,6 +13,8 @@ export type TableRow<CellValue> = {
     highlighted: boolean;
     cellValues: Array<{ columnId: string; value: CellValue }>;
 };
+
+export type TableHeaderPosition = "firstRow" | "firstColumn";
 
 export type RenderTableCell<CellValue> = (value: CellValue) => ReactNode;
 

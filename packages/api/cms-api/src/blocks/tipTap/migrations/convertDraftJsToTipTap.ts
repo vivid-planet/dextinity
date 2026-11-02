@@ -156,6 +156,15 @@ function clamp(value: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, value));
 }
 
+function createCodePointOffsetToCodeUnitIndex(text: string): (codePointOffset: number) => number {
+    const codeUnitIndices: number[] = [];
+    for (let index = 0; index < text.length; index += (text.codePointAt(index) ?? 0) > 0xffff ? 2 : 1) {
+        codeUnitIndices.push(index);
+    }
+    codeUnitIndices.push(text.length);
+    return (codePointOffset) => codeUnitIndices[clamp(codePointOffset, 0, codeUnitIndices.length - 1)];
+}
+
 interface InlineSegment {
     text: string;
     marks: NonNullable<JSONContent["marks"]>;
@@ -180,11 +189,12 @@ function buildInlineContent({
     }
 
     const splitPoints = new Set<number>([0, text.length]);
+    const toCodeUnitIndex = createCodePointOffsetToCodeUnitIndex(text);
 
     const styleRanges = (block.inlineStyleRanges ?? []).map((range) => ({
         style: range.style,
-        start: clamp(range.offset, 0, text.length),
-        end: clamp(range.offset + range.length, 0, text.length),
+        start: toCodeUnitIndex(range.offset),
+        end: toCodeUnitIndex(range.offset + range.length),
     }));
     for (const range of styleRanges) {
         splitPoints.add(range.start);
@@ -193,8 +203,8 @@ function buildInlineContent({
 
     const entityRanges = (block.entityRanges ?? []).map((range) => ({
         key: String(range.key),
-        start: clamp(range.offset, 0, text.length),
-        end: clamp(range.offset + range.length, 0, text.length),
+        start: toCodeUnitIndex(range.offset),
+        end: toCodeUnitIndex(range.offset + range.length),
     }));
     for (const range of entityRanges) {
         splitPoints.add(range.start);
@@ -266,6 +276,14 @@ function makeTextNode(text: string, marks: NonNullable<JSONContent["marks"]>): J
     return node;
 }
 
+function makeAtomNode(type: "nonBreakingSpace" | "softHyphen", marks: NonNullable<JSONContent["marks"]>): JSONContent {
+    const node: JSONContent = { type };
+    if (marks.length > 0) {
+        node.marks = marks;
+    }
+    return node;
+}
+
 // Splits a text segment so each newline becomes a hardBreak node, and each U+00A0/U+00AD
 // character (the way the DraftJS RTE persists non-breaking-spaces and soft-hyphens) becomes a
 // dedicated TipTap atom node when the corresponding feature is supported. Otherwise the
@@ -295,10 +313,10 @@ function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, 
             nodes.push({ type: "hardBreak" });
         } else if (char === NBSP_CHAR && nonBreakingSpace) {
             flushBuffer();
-            nodes.push({ type: "nonBreakingSpace" });
+            nodes.push(makeAtomNode("nonBreakingSpace", marks));
         } else if (char === SOFT_HYPHEN_CHAR && softHyphen) {
             flushBuffer();
-            nodes.push({ type: "softHyphen" });
+            nodes.push(makeAtomNode("softHyphen", marks));
         } else {
             buffer += char;
         }

@@ -1,8 +1,8 @@
 import { Enum } from "@mikro-orm/core";
 import { ArrayType, BaseEntity, Entity, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { randomUUID } from "crypto";
 import type { SendMailOptions as MailOptions, SentMessageInfo } from "nodemailer";
-import { v4 as uuid } from "uuid";
 
 import { MailerLogStatus } from "./mailer-log-status.enum";
 
@@ -13,7 +13,7 @@ export class MailerLog<AdditionalData> extends BaseEntity {
 
     @Field(() => ID)
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Enum({ items: () => MailerLogStatus })
     @Field(() => MailerLogStatus)

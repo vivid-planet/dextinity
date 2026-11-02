@@ -258,8 +258,32 @@ export type BlockMetaField =
            * Lets consumers like the block loader process blocks embedded in the content.
            */
           childBlocks: Record<string, Block>;
+          /**
+           * The editor schema and options the content is validated against, so tools outside the
+           * editor can build valid content.
+           */
+          tipTap?: BlockMetaTipTap;
           nullable: boolean;
       };
+
+export interface BlockMetaTipTapStyledNode {
+    styles: string[];
+    defaultStyle: string | null;
+}
+
+export interface BlockMetaTipTap {
+    nodes: string[];
+    marks: string[];
+    textBlocks: Array<{ name: string; tag: string } & BlockMetaTipTapStyledNode>;
+    defaultTextBlock: string;
+    orderedList: BlockMetaTipTapStyledNode | null;
+    unorderedList: BlockMetaTipTapStyledNode | null;
+    inlineStyles: Array<{ name: string; appliesTo: string[] | null }>;
+    placeholders: string[];
+    link: string | null;
+    maxTextBlocks: number | null;
+    listLevelMax: number | null;
+}
 
 export interface BlockMetaInterface {
     fields: BlockMetaField[];

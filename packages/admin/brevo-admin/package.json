@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/brevo-admin",
-    "version": "10.10.0",
+    "version": "10.12.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity",
@@ -44,7 +44,7 @@
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/cms-admin": "workspace:*",
         "date-fns": "^4.4.0",
-        "react-dropzone": "^14.4.1"
+        "react-dropzone": "^20.1.4"
     },
     "devDependencies": {
         "@apollo/client": "^3.14.1",
@@ -61,9 +61,9 @@
         "@graphql-codegen/typescript-operations": "^4.6.1",
         "@mui/material": "^7.3.11",
         "@mui/system": "^7.3.11",
-        "@mui/x-data-grid": "^8.29.3",
-        "@mui/x-data-grid-pro": "^8.29.3",
-        "@mui/x-date-pickers": "^8.29.4",
+        "@mui/x-data-grid": "^8.29.5",
+        "@mui/x-data-grid-pro": "^8.29.5",
+        "@mui/x-date-pickers": "^8.29.5",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@types/react-router": "^5.1.20",
@@ -72,10 +72,10 @@
         "final-form": "^4.20.10",
         "graphql": "^16.14.2",
         "prettier": "^3.9.10",
-        "react": "^19.3.0",
+        "react": "^19.3.1",
         "react-dnd": "^16.0.1",
         "react-dnd-html5-backend": "^16.0.1",
-        "react-dom": "^19.3.0",
+        "react-dom": "^19.3.1",
         "react-final-form": "^6.5.9",
         "react-intl": "^7.1.14",
         "react-router": "^5.3.4",

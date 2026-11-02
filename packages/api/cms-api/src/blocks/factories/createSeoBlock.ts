@@ -168,8 +168,6 @@ export function createSeoBlock<ImageBlock extends Block = typeof PixelImageBlock
         @BlockField({ nullable: true })
         openGraphDescription?: string;
 
-        @ValidateNested()
-        @IsOptional() // @TODO: Should not be optional as the image-block is already optional itself
         @ChildBlockInput(OptionalImageBlock)
         openGraphImage: OptionalBlockInputInterface<ExtractBlockInput<ImageBlock>>;
 

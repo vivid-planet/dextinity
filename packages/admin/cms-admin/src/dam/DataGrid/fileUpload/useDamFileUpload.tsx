@@ -2,7 +2,7 @@ import { useApolloClient } from "@apollo/client";
 import { Alert, useSnackbarApi } from "@dextinity/admin";
 import { Snackbar } from "@mui/material";
 import { type ReactNode, useCallback, useMemo, useState } from "react";
-import type { Accept, FileRejection } from "react-dropzone";
+import type { Accept, DropzoneOptions, FileRejection } from "react-dropzone";
 import { FormattedMessage } from "react-intl";
 
 import { NetworkError, UnknownError } from "../../../common/errors/errorMessages";
@@ -18,7 +18,7 @@ import {
     type FilenameData,
     useManualDuplicatedFilenamesHandler,
 } from "../duplicatedFilenames/ManualDuplicatedFilenamesHandler";
-import { convertMimetypesToDropzoneAccept } from "./fileUpload.utils";
+import { convertMimetypesToDropzoneAccept, getFilesWithMimeTypeFromEvent } from "./fileUpload.utils";
 import { type NewlyUploadedItem, useFileUploadContext } from "./FileUploadContext";
 import { FileUploadErrorDialog } from "./FileUploadErrorDialog";
 import {
@@ -82,6 +82,7 @@ export interface FileUploadApi {
         accept: Accept;
         multiple: boolean;
         maxSize: number;
+        getFilesFromEvent: NonNullable<DropzoneOptions["getFilesFromEvent"]>;
     };
     newlyUploadedItems: NewlyUploadedItem[];
 }
@@ -523,6 +524,7 @@ export const useDamFileUpload = (options: UploadDamFileOptions): FileUploadApi =
             accept: accept,
             multiple: true,
             maxSize: maxFileSizeInBytes,
+            getFilesFromEvent: getFilesWithMimeTypeFromEvent,
         },
         newlyUploadedItems,
     };

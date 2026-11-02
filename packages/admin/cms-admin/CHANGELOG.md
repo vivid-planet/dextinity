@@ -1,5 +1,102 @@
 # @comet/cms-admin
 
+## 10.12.0
+
+### Minor Changes
+
+- ffcbdd7: Keep the text block style select of `createTipTapRichTextBlock` in the toolbar where the selected node has no styles
+
+    Previously, the toolbar hid the select where the selected node had no styles, for instance in a list without styles, and the toolbar buttons to its right moved to the left.
+    Now the select stays in the toolbar and is disabled there.
+    Blocks without any text block styles still show no select.
+
+### Patch Changes
+
+- 1b288ab: Copy referenced DAM assets to the target scope when pasting blocks
+
+    Previously, only pasting pages in the page tree copied the referenced DAM assets. Blocks pasted into another scope kept referencing the assets of the source scope, so deleting an asset in the source scope broke the page it was pasted into.
+
+    Pasting blocks now behaves like pasting pages: assets that don't live in the target DAM scope are copied into an inbox folder of the target scope (reusing an existing copy if there is one) and the pasted blocks reference the copies. Pasting within the same scope is unchanged.
+
+    Like when pasting pages, dependencies that can't be carried over to another scope are removed when pasting blocks into another content scope, e.g., links to pages of the source scope.
+
+- 2735896: TipTap Rich Text Block: disable the horizontal rule
+
+    The schema contained StarterKit's `horizontalRule` node, so the editor inserted one when typing `---`, `___ ` or `*** ` at the start of a text block. Neither the site nor the mail renderer renders it, so it silently disappeared on the site. The API now rejects content containing a `horizontalRule`, and the editor no longer creates one.
+
+    Remove horizontal rules from existing content before saving it again, as saving fails otherwise.
+
+- eb77fc2: Clarify the error thrown by `createOneOfBlock` when `activeType` has no entry in `attachedBlocks`
+
+    The message now names the active type and the types that `attachedBlocks` holds.
+    A missing `x-include-invisible-content` HTTP header is mentioned only as one possible cause, since the state can also come from malformed input to `output2State`.
+
+- 3d1fb7c: Keep the target of links and the data of child blocks when copying and pasting in `createTipTapRichTextBlock`
+
+    The editor wrote the data of links and child blocks into the clipboard as `[object Object]`, so a pasted link had no target and a pasted child block lost its content.
+    Saving a rich text with such a link failed.
+    - @dextinity/admin@10.12.0
+    - @dextinity/admin-icons@10.12.0
+    - @dextinity/admin-rte@10.12.0
+
+## 10.11.0
+
+### Minor Changes
+
+- 05ea45d: Add a DAM settings page to set the fallback image for invalid licenses
+
+    When the license feature is enabled (`enableLicenseFeature`), the "More actions" menu of the DAM contains a "Settings" item.
+    It opens a page where you can choose the image that replaces images whose license has expired or isn't valid yet on the site.
+
+- a6f647b: Render `TableBlock` with the data grid configured in `DextinityConfig`
+
+    `TableBlock` no longer needs `@mui/x-data-grid-pro`.
+    With the free `DataGrid`, rows and columns can only be moved with the menu items, not by dragging.
+    `TableBlock` treats every configured grid other than MUI's `DataGrid` as a Pro or Premium grid, so configure `DataGrid` itself, not a wrapper around it.
+
+    **Action required for drag-and-drop**
+
+    To keep drag-and-drop, configure the Pro or Premium grid:
+
+    ```tsx
+    <DextinityConfigProvider dataGrid={{ component: DataGridPro }}>
+    ```
+
+- 8a645b7: Allow moving `TableBlock` rows and columns without dragging
+
+### Patch Changes
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- 43ee19a: Use dedicated icons to insert and move rows and columns in the `TableBlock` menus
+- 96bf6f1: Keep the focus in the child block dialog of `createTipTapRichTextBlock`
+
+    Choosing a child block from the toolbar's "Insert block" menu refocused the editor shortly after the dialog had opened, which moved the focus away from the dialog's fields, for instance from a field with `autoFocus`.
+
+- c5f02ac: Keep bold, italic and links on soft hyphens and non-breaking spaces in TipTap rich texts
+
+    `migrateFromDraftJs` and the editor's soft hyphen and non-breaking space buttons created these nodes without the marks of the surrounding text.
+    On the site, a soft hyphen in a bold word was rendered outside the `<strong>`, so the hyphen at a line break was thinner than the letters around it, and a link containing one was split into two links.
+
+- f423240: Update `react-window` to v2
+
+    The page tree, the page tree select dialog and the folder list in the "Move DAM item" dialog use the new `List` API.
+    `react-virtualized-auto-sizer` is no longer a dependency, as the lists size themselves to their container.
+
+- Updated dependencies [3e0526b]
+- Updated dependencies [5bb4070]
+- Updated dependencies [75ebfd4]
+- Updated dependencies [43ee19a]
+    - @dextinity/admin@10.11.0
+    - @dextinity/admin-icons@10.11.0
+    - @dextinity/admin-rte@10.11.0
+
 ## 10.10.0
 
 ### Minor Changes

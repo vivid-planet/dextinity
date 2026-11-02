@@ -33,14 +33,14 @@
         ]
     },
     "dependencies": {
-        "@algolia/client-search": "^5.59.0",
+        "@algolia/client-search": "^5.60.0",
         "@docusaurus/core": "^3.10.2",
         "@docusaurus/preset-classic": "^3.10.2",
         "@docusaurus/theme-mermaid": "^3.10.2",
         "@mdx-js/react": "^3.1.1",
         "prism-react-renderer": "^2.4.1",
-        "react": "^19.3.0",
-        "react-dom": "^19.3.0",
+        "react": "^19.3.1",
+        "react-dom": "^19.3.1",
         "search-insights": "^2.17.3"
     },
     "devDependencies": {
@@ -52,7 +52,7 @@
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "eslint": "^9.39.5",
-        "npm-run-all2": "^9.0.3",
+        "npm-run-all2": "^9.0.4",
         "prettier": "^3.9.10",
         "typescript": "^5.9.3"
     },

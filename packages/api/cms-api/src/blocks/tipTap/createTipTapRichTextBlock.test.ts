@@ -350,6 +350,30 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(errors).toHaveLength(1);
         });
 
+        it("should reject a horizontalRule (disabled in config)", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "textBlock", content: [{ type: "text", text: "Above" }] }, { type: "horizontalRule" }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
+        });
+
+        it("should accept a hardBreak", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        { type: "textBlock", content: [{ type: "text", text: "First" }, { type: "hardBreak" }, { type: "text", text: "Second" }] },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
+        });
+
         it("should reject null content", async () => {
             // Cast required because the typed input rejects invalid content at compile time; here we test the runtime guard.
             const input = block.blockInputFactory({ tipTapContent: null as unknown as TipTapRichTextBlockContent });

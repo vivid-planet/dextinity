@@ -22,7 +22,10 @@ import { getDamFileCategory } from "../common/mimeTypes/dam-file-category";
 import { DamConfig } from "../dam.config";
 import { DAM_CONFIG, DAM_DOMINANT_COLOR_CALCULATOR } from "../dam.constants";
 import { DominantColorCalculatorInterface } from "../dominant-color-calculator.interface";
+import { ImageInterface } from "../images/dto/image.interface";
 import { ImageCropAreaInput } from "../images/dto/image-crop-area.input";
+import { damSettingsByScope } from "../settings/dam-settings-by-scope";
+import { DamSettings } from "../settings/entities/dam-settings.entity";
 import { DamScopeInterface } from "../types";
 import { DamMediaAlternative } from "./dam-media-alternatives/entities/dam-media-alternative.entity";
 import { DamFileListPositionArgs, FileArgsInterface } from "./dto/file.args";
@@ -33,6 +36,7 @@ import { FILE_TABLE_NAME, FileInterface } from "./entities/file.entity";
 import { DamFileImage } from "./entities/file-image.entity";
 import { FolderInterface } from "./entities/folder.entity";
 import { FoldersService } from "./folders.service";
+import { isLicenseValid } from "./license-validity";
 
 const exifrSupportedMimetypes = ["image/jpeg", "image/tiff", "image/x-iiq", "image/heif", "image/heic", "image/avif", "image/png"];
 
@@ -671,6 +675,45 @@ export class FilesService {
         }
 
         return [...baseUrl, file.contentHash, file.id, filename].join("/");
+    }
+
+    hasInvalidLicense(file: FileInterface): boolean {
+        if (!this.config.enableLicenseFeature || !file.license) {
+            return false;
+        }
+
+        return !isLicenseValid(file.license);
+    }
+
+    // Preview DAM URLs are requested by the Admin, which must keep showing the original file and saves blocks back as it reads them
+    isBlockedByLicense(file: FileInterface, { previewDamUrls = false }: { previewDamUrls?: boolean }): boolean {
+        return !previewDamUrls && this.hasInvalidLicense(file);
+    }
+
+    /**
+     * Returns the image to deliver for the given one: the image itself, the fallback image if its license is invalid, or `null` if
+     * there's no fallback image.
+     */
+    async findImageToDeliver(image: ImageInterface, { previewDamUrls = false }: { previewDamUrls?: boolean }): Promise<ImageInterface | null> {
+        if (!this.isBlockedByLicense(image.file, { previewDamUrls })) {
+            return image;
+        }
+
+        const fallbackImage = await this.findInvalidLicenseFallbackImage(image.file.scope);
+
+        // The crop area was chosen for the original image and doesn't fit the fallback image
+        return fallbackImage ? { file: fallbackImage } : null;
+    }
+
+    private async findInvalidLicenseFallbackImage(scope?: DamScopeInterface): Promise<FileInterface | null> {
+        const settings = await this.entityManager.findOne(DamSettings, damSettingsByScope(scope));
+        const fallbackImage = await settings?.invalidLicenseFallbackImage?.load();
+
+        if (!fallbackImage?.image || this.hasInvalidLicense(fallbackImage)) {
+            return null;
+        }
+
+        return fallbackImage;
     }
 
     createHash(params: FileParams): string {

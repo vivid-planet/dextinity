@@ -3,6 +3,7 @@ import { LocalErrorScopeApolloContext, messages, readClipboardText, useErrorDial
 import { type ReactNode, useCallback } from "react";
 import { FormattedMessage } from "react-intl";
 
+import { useProgressDialog } from "../../common/useProgressDialog";
 import { useDextinityConfig } from "../../config/DextinityConfigContext";
 import type { ContentScope } from "../../contentScope/Provider";
 import { useDamBasePath } from "../../dam/config/damConfig";
@@ -13,7 +14,6 @@ import { usePageTreeConfig } from "../pageTreeConfig";
 import { sendPages, type SendPagesOptions } from "./useCopyPastePages/sendPages";
 import type { GQLPageTreePageFragment } from "./usePageTree";
 import { usePageTreeContext } from "./usePageTreeContext";
-import { useProgressDialog } from "./useProgressDialog";
 
 export type PageClipboard = GQLPageTreePageFragment & { document?: GQLDocument | null };
 

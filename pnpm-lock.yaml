@@ -1315,9 +1315,6 @@ importers:
       commander:
         specifier: ^15.0.0
         version: 15.0.0
-      glob:
-        specifier: ^13.0.6
-        version: 13.0.6
       graphql:
         specifier: ^16.14.2
         version: 16.14.2

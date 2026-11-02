@@ -22,6 +22,9 @@
         "./future/react.js": {
             "import": "./future/react.js"
         },
+        "./json.js": {
+            "import": "./json.js"
+        },
         "./nestjs.js": {
             "import": "./nestjs.js"
         },

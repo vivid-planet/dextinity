@@ -18,6 +18,11 @@
             "entry": [],
             "project": []
         },
+        "packages/oxlint-config": {
+            "ignore": ["*"],
+            "entry": [],
+            "project": []
+        },
         "codemods": {
             "ignore": ["*"],
             "entry": [],

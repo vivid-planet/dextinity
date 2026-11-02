@@ -12,8 +12,24 @@ const meta = {
     },
     argTypes: {
         variant: {
-            control: "radio",
-            options: ["headline", "body"],
+            control: "select",
+            options: [
+                "display",
+                "h1",
+                "h2",
+                "h3",
+                "h4",
+                "bodyL",
+                "bodyM",
+                "bodyS",
+                "bodyXs",
+                "caption",
+                "labelM",
+                "labelS",
+                "labelXs",
+                "dataM",
+                "dataS",
+            ],
         },
         element: {
             control: "select",
@@ -31,33 +47,110 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-export const Headline: Story = {
+export const Display: Story = {
     args: {
-        variant: "headline",
-        children: "Headline",
+        variant: "display",
+    },
+};
+
+export const H1: Story = {
+    args: {
+        variant: "h1",
+    },
+};
+
+export const H2: Story = {
+    args: {
+        variant: "h2",
+    },
+};
+
+export const H3: Story = {
+    args: {
+        variant: "h3",
+    },
+};
+
+export const H4: Story = {
+    args: {
+        variant: "h4",
+    },
+};
+
+export const BodyL: Story = {
+    args: {
+        variant: "bodyL",
+    },
+};
+
+export const BodyS: Story = {
+    args: {
+        variant: "bodyS",
+    },
+};
+
+export const BodyXs: Story = {
+    args: {
+        variant: "bodyXs",
+    },
+};
+
+export const Caption: Story = {
+    args: {
+        variant: "caption",
+    },
+};
+
+export const LabelM: Story = {
+    args: {
+        variant: "labelM",
+    },
+};
+
+export const LabelS: Story = {
+    args: {
+        variant: "labelS",
+    },
+};
+
+export const LabelXs: Story = {
+    args: {
+        variant: "labelXs",
+    },
+};
+
+export const DataM: Story = {
+    args: {
+        variant: "dataM",
+    },
+};
+
+export const DataS: Story = {
+    args: {
+        variant: "dataS",
     },
 };
 
 /**
- * Each variant maps to a default semantic element (`h2` for `headline`, `p`
- * for `body`). `element` overrides it when visual level and document outline
- * disagree — for example, a `headline` rendered as an `h1`.
+ * Each variant maps to a default semantic element (`h2` for `h2`, `p` for
+ * `bodyM`). `element` overrides it when visual level and document outline
+ * disagree — for example, an `h2` rendered as an `h1`.
  */
 export const WithCustomElement: Story = {
     args: {
-        variant: "headline",
+        variant: "h2",
         element: "h1",
-        children: "Visually headline, semantically h1",
+        children: "Visually h2, semantically h1",
     },
 };
 
 /**
  * `render` replaces the root element while keeping Typography's styling. Here a
- * `headline` renders as a `<label>`, with `htmlFor` typed natively.
+ * `labelS` renders as a `<label>`, with `htmlFor` typed natively.
  */
 export const WithRender: Story = {
     args: {
-        variant: "headline",
+        variant: "labelS",
         render: <label htmlFor="email" />,
         children: "Email",
     },

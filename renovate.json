@@ -1,9 +1,16 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["github>vivid-planet/dextinity//renovate/default", ":automergeStableNonMajor"],
-    "automergeStrategy": "squash",
+    "extends": ["github>vivid-planet/dextinity//renovate/default"],
     "lockFileMaintenance": { "enabled": false },
     "toolSettings": {
         "nodeMaxMemory": 2048
-    }
+    },
+    "packageRules": [
+        {
+            "description": "Raising the minimum @opentelemetry/api version is breaking for consumers: an older globally registered API is rejected and cms-api falls back to a no-op tracer",
+            "matchFileNames": ["packages/api/cms-api/package.json"],
+            "matchPackageNames": ["@opentelemetry/api"],
+            "rangeStrategy": "in-range-only"
+        }
+    ]
 }

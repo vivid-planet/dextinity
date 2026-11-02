@@ -1,10 +1,11 @@
-import { CrudMoreActionsMenu, useEditDialog, useSnackbarApi } from "@dextinity/admin";
-import { AddFolder as AddFolderIcon, Archive, Delete, Download, Move, Restore, Upload } from "@dextinity/admin-icons";
+import { CrudMoreActionsMenu, useEditDialog, useSnackbarApi, useStackSwitchApi } from "@dextinity/admin";
+import { AddFolder as AddFolderIcon, Archive, Delete, Download, Move, Restore, Settings, Upload } from "@dextinity/admin-icons";
 import { type PopoverOrigin, Slide, type SlideProps, Snackbar } from "@mui/material";
 import { useRef } from "react";
 import { type FileRejection, useDropzone } from "react-dropzone";
 import { FormattedMessage, useIntl } from "react-intl";
 
+import { useDamConfig } from "../../config/damConfig";
 import { useDamAcceptedMimeTypes } from "../../config/useDamAcceptedMimeTypes";
 import { useDamFileUpload } from "../fileUpload/useDamFileUpload";
 import { useDamSelectionApi } from "./DamSelectionContext";
@@ -17,15 +18,25 @@ interface DamMoreActionsProps {
         allowedMimetypes?: string[];
     };
     hideSelectiveActions?: boolean;
+    hideSettingsAction?: boolean;
 }
 
-export const DamMoreActions = ({ transformOrigin, anchorOrigin, folderId, filter, hideSelectiveActions }: DamMoreActionsProps) => {
+export const DamMoreActions = ({
+    transformOrigin,
+    anchorOrigin,
+    folderId,
+    filter,
+    hideSelectiveActions,
+    hideSettingsAction,
+}: DamMoreActionsProps) => {
     const damSelectionActionsApi = useDamSelectionApi();
     const { selectionMap, archiveSelected, deleteSelected, downloadSelected, restoreSelected, moveSelected } = damSelectionActionsApi;
     const snackbarApi = useSnackbarApi();
     const [, , editDialogApi] = useEditDialog();
     const intl = useIntl();
     const { allAcceptedMimeTypes } = useDamAcceptedMimeTypes();
+    const { enableLicenseFeature } = useDamConfig();
+    const stackSwitchApi = useStackSwitchApi();
 
     const folderInputRef = useRef<HTMLInputElement>(null);
 
@@ -82,6 +93,13 @@ export const DamMoreActions = ({ transformOrigin, anchorOrigin, folderId, filter
                         onClick: () => editDialogApi.openAddDialog(folderId),
                         icon: <AddFolderIcon />,
                     },
+                    enableLicenseFeature && !hideSettingsAction
+                        ? {
+                              label: <FormattedMessage id="dextinity.dam.moreActions.settings" defaultMessage="Settings" />,
+                              onClick: () => stackSwitchApi.activatePage("settings", "settings"),
+                              icon: <Settings />,
+                          }
+                        : null,
                 ]}
                 selectiveActions={
                     hideSelectiveActions

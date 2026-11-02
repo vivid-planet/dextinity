@@ -1,19 +1,26 @@
-import { useState } from "react";
+// eslint-disable-next-line no-restricted-imports
+import { DataGridPro } from "@mui/x-data-grid-pro";
+import { type ComponentProps, useState } from "react";
 import { fireEvent, render, type RenderResult, waitFor, within } from "test-utils";
 import { expect } from "vitest";
 
+import { DextinityConfigProvider } from "../../../config/DextinityConfigContext";
 import type { TableBlockState } from "../../createTableBlock";
 import { MockRichTextBlock } from "../__mocks__/TableBlockData.mocks";
 import { TableBlockContextProvider } from "../TableBlockContext";
 import { TableBlockGrid } from "../TableBlockGrid";
 
-export const renderTableBlock = (initialState: TableBlockState) => {
+type DataGridConfig = ComponentProps<typeof DextinityConfigProvider>["dataGrid"];
+
+export const renderTableBlock = (initialState: TableBlockState, dataGrid: DataGridConfig = { component: DataGridPro }) => {
     const Component = () => {
         const [state, setState] = useState<TableBlockState>(initialState);
         return (
-            <TableBlockContextProvider RichTextBlock={MockRichTextBlock}>
-                <TableBlockGrid state={state} updateState={setState} />
-            </TableBlockContextProvider>
+            <DextinityConfigProvider apiUrl="" graphQLApiUrl="" adminUrl="" dataGrid={dataGrid}>
+                <TableBlockContextProvider RichTextBlock={MockRichTextBlock}>
+                    <TableBlockGrid state={state} updateState={setState} />
+                </TableBlockContextProvider>
+            </DextinityConfigProvider>
         );
     };
     return render(<Component />);

@@ -1,5 +1,7 @@
 import { createCache, memoryStore } from "cache-manager";
 
+// Next.js' data cache doesn't apply to fetch calls in middleware, so without this cache
+// every request would query the API for redirects and predefined pages
 export const memoryCache = createCache(
     memoryStore({
         ttl: 15 * 60 * 1000, // 15 minutes,

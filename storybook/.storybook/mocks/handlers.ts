@@ -6,7 +6,7 @@ import { fileUploadsHandler } from "./fileUploadsHandler";
 import { folderHandler, subfolderHandler } from "./foldersHandler";
 import { launchesPastPagePagingResolver, launchesPastRestHandler, launchesPastResultResolver } from "./launchesPastHandler";
 
-export type { LaunchesPastPagePagingResult, LaunchesPastResult } from "./launchesPastHandler";
+export type { Launch, LaunchesPastPagePagingResult, LaunchesPastResult } from "./launchesPastHandler";
 
 const graphqlSchema = `
 schema {

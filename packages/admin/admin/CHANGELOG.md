@@ -1,5 +1,31 @@
 # @comet/admin
 
+## 10.11.0
+
+### Patch Changes
+
+- 3e0526b: Add the selected files up to `maxFiles` in `FileSelect` and `FinalFormFileSelect`
+
+    When more files are selected than `maxFiles` allows, the files up to the limit are added and only the remaining files are shown as rejected.
+    Before, none of the selected files were added.
+    The same applies when several files are selected in a single-file `FileSelect`: the first file is added.
+
+- 5bb4070: Fix styling of `Switch` with `size="small"`
+
+    Previously, the thumb was too large and overflowed the track.
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- Updated dependencies [75ebfd4]
+- Updated dependencies [43ee19a]
+    - @dextinity/admin-icons@10.11.0
+
 ## 10.10.0
 
 ### Patch Changes

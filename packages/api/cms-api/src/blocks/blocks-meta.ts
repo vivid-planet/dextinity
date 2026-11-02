@@ -1,4 +1,10 @@
-import { type Block, type BlockMetaField as BlockMetaFieldInterface, BlockMetaFieldKind, type BlockMetaInterface } from "./block.js";
+import {
+    type Block,
+    type BlockMetaField as BlockMetaFieldInterface,
+    BlockMetaFieldKind,
+    type BlockMetaInterface,
+    type BlockMetaTipTap,
+} from "./block.js";
 
 type BlockMetaField =
     | {
@@ -19,6 +25,7 @@ type BlockMetaField =
           nullable: boolean;
           childBlocks: Record<string, string>;
           linkBlock?: string;
+          tipTap?: BlockMetaTipTap;
       }
     | {
           name: string;
@@ -86,6 +93,7 @@ function extractFromBlockMeta(blockMeta: BlockMetaInterface): BlockMetaField[] {
                 nullable: field.nullable,
                 childBlocks: Object.fromEntries(Object.entries(field.childBlocks).map(([blockType, block]) => [blockType, block.name])),
                 linkBlock: field.linkBlock?.name,
+                tipTap: field.tipTap,
             };
         } else if (field.kind === BlockMetaFieldKind.Enum) {
             return {

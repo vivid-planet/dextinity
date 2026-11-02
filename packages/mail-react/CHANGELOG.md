@@ -1,5 +1,48 @@
 # @comet/mail-react
 
+## 10.11.0
+
+### Minor Changes
+
+- a4cc3bb: Make mail blocks selectable in the admin's block preview
+
+    Mail blocks now work in the block preview like site blocks: a hover highlights them, and a click opens their form. The sent mail does not change.
+
+    Wrap each mail block in `withPreview` and apply the `className` it passes to the block's root element:
+
+    ```tsx
+    export const MailButtonBlock = withPreview<PropsWithData<MailButtonBlockData>>(
+        ({ data, className }) => (
+            <MjmlSection className={className}>
+                <MjmlColumn>
+                    <MjmlButton href={data.link.targetUrl}>{data.text}</MjmlButton>
+                </MjmlColumn>
+            </MjmlSection>
+        ),
+        { label: "Button" },
+    );
+    ```
+
+    Pass the block's props as the type argument of `withPreview`, as in `withPreview<PropsWithData<MailButtonBlockData>>`, and it adds the `className` to them.
+
+    In the block preview page, pass the result of `useIFrameBridge` to `useRefToRegisterMailBlocksForPreview`, and put the ref it returns on the element that contains the mail HTML:
+
+    ```tsx
+    const mailContainerRef = useRefToRegisterMailBlocksForPreview<HTMLSpanElement>(useIFrameBridge());
+
+    return <span ref={mailContainerRef} dangerouslySetInnerHTML={{ __html: mailHtml }} />;
+    ```
+
+### Patch Changes
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
 ## 10.10.0
 
 ### Patch Changes

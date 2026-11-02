@@ -1,4 +1,6 @@
-import { gridClasses } from "@mui/x-data-grid-pro";
+import { gridClasses } from "@mui/x-data-grid";
+// eslint-disable-next-line no-restricted-imports
+import { DataGridPro } from "@mui/x-data-grid-pro";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { MemoryRouter } from "react-router";
@@ -44,6 +46,9 @@ const config: Meta<typeof TableBlockOpenedFromCellH25InThePreview> = {
     component: TableBlockOpenedFromCellH25InThePreview,
     title: "Debug/blocks/TableBlock/Clicked cell",
     tags: ["!autodocs"],
+    parameters: {
+        dataGrid: { component: DataGridPro },
+    },
 };
 
 export default config;

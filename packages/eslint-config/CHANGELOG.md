@@ -1,5 +1,29 @@
 # @comet/eslint-config
 
+## 10.11.0
+
+### Patch Changes
+
+- 35f2b48: Update `globals` to v17
+
+    The browser configs know about newer browser APIs.
+    Audio worklet globals, such as `registerProcessor` and `sampleRate`, are no longer defined in the browser configs.
+
+- 2fb3ecf: Move `npm-run-all2` to `devDependencies`
+
+    It's only used by the package's own lint scripts, so projects using `@dextinity/eslint-config` no longer install it.
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- Updated dependencies [75ebfd4]
+    - @dextinity/eslint-plugin@10.11.0
+
 ## 10.10.0
 
 ### Patch Changes

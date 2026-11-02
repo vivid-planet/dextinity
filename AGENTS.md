@@ -56,8 +56,8 @@ pnpm run lint:fix
 
 Every package and demo service exposes these scripts:
 
-- `lint:fix` — runs the linter's fix script and `lint:fix:prettier` in parallel (plus `lint:fix:style` in `demo/site`)
-- `lint:fix:eslint` — runs ESLint with `--fix` (also applies Prettier formatting via `eslint-plugin-prettier`); packages only
+- `lint:fix` — runs the linters' fix scripts and `lint:fix:prettier` in parallel (plus `lint:fix:style` in `demo/site`)
+- `lint:fix:eslint` — runs ESLint with `--fix`; in packages it also applies Prettier formatting via `eslint-plugin-prettier`, in `demo/*` it only lints JSON files
 - `lint:fix:oxlint` — runs oxlint with `--fix`; `demo/*` only (Prettier formatting is covered by `lint:fix:prettier`)
 - `lint:fix:prettier` — runs Prettier with `--write` for any remaining formatting issues
 - `lint:fix:style` — runs Stylelint with `--fix` (`demo/site` only)

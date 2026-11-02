@@ -324,6 +324,9 @@ importers:
       '@dextinity/cli':
         specifier: workspace:*
         version: link:../../packages/cli
+      '@dextinity/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
       '@dextinity/oxlint-config':
         specifier: workspace:*
         version: link:../../packages/oxlint-config
@@ -390,6 +393,9 @@ importers:
       dotenv-cli:
         specifier: ^11.0.0
         version: 11.0.0
+      eslint:
+        specifier: ^9.39.5
+        version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
       npm-run-all2:
         specifier: ^9.0.3
         version: 9.0.3
@@ -581,6 +587,9 @@ importers:
       '@dextinity/cli':
         specifier: workspace:*
         version: link:../../packages/cli
+      '@dextinity/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
       '@dextinity/oxlint-config':
         specifier: workspace:*
         version: link:../../packages/oxlint-config
@@ -771,6 +780,9 @@ importers:
       '@dextinity/cli':
         specifier: workspace:*
         version: link:../../packages/cli
+      '@dextinity/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
       '@dextinity/oxlint-config':
         specifier: workspace:*
         version: link:../../packages/oxlint-config
@@ -813,6 +825,9 @@ importers:
       chokidar-cli:
         specifier: ^3.0.0
         version: 3.0.0
+      eslint:
+        specifier: ^9.39.5
+        version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
       graphql:
         specifier: ^16.14.2
         version: 16.14.2

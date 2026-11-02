@@ -17,7 +17,7 @@ export class BrevoApiCampaignsService {
         @Inject(CACHE_MANAGER) private cacheManager: Cache,
     ) {}
 
-    public getSendingInformationFromBrevoCampaign(campaign: BrevoApiCampaign): SendingState {
+    public getSendingInformationFromBrevoCampaign(campaign: BrevoApiCampaign): SendingState | undefined {
         if (campaign.status === Brevo.GetEmailCampaignResponse.Status.Sent) {
             return SendingState.SENT;
         } else if (
@@ -27,7 +27,7 @@ export class BrevoApiCampaignsService {
             return SendingState.SCHEDULED;
         }
 
-        return SendingState.DRAFT;
+        return undefined;
     }
 
     public async createBrevoCampaign({

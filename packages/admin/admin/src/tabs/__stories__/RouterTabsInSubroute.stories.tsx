@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { Redirect, Route, Switch, useLocation, useRouteMatch } from "react-router";
+import { Navigate, Route, Routes, useLocation } from "react-router";
 
-import { SubRoute } from "../../router/SubRoute";
+import { SubRoute, useSubRoutePrefix } from "../../router/SubRoute";
 import { RouterTab, RouterTabs } from "../RouterTabs";
 
 function Story() {
-    const match = useRouteMatch();
+    const urlPrefix = useSubRoutePrefix();
     return (
         <div>
-            <SubRoute path={`${match.url}/cmp1`}>
+            <SubRoute path={`${urlPrefix}/cmp1`}>
                 <RouterTabs>
                     <RouterTab label="Tab 1" path="">
                         Tab 1 Content
@@ -43,14 +43,10 @@ export const RouterTabsInSubRoute = {
         return (
             <>
                 <Path />
-                <Switch>
-                    <Route exact path="/">
-                        <Redirect to="/foo" />
-                    </Route>
-                    <Route path="/foo">
-                        <Story />
-                    </Route>
-                </Switch>
+                <Routes>
+                    <Route path="/" element={<Navigate to="/foo" replace />} />
+                    <Route path="/foo/*" element={<Story />} />
+                </Routes>
             </>
         );
     },

@@ -1,7 +1,7 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { createMemoryHistory } from "history";
 import type { ReactNode } from "react";
-import { Router } from "react-router";
+import { createMemoryRouter } from "react-router";
+import { RouterProvider } from "react-router/dom";
 import { cleanup, render, waitFor } from "test-utils";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
@@ -19,7 +19,7 @@ describe("ContentScopeProvider", () => {
         localStorage.clear();
     });
 
-    function Wrapper({ children, history }: { children: ReactNode; history: ReturnType<typeof createMemoryHistory> }) {
+    function Wrapper({ children }: { children: ReactNode }) {
         return (
             <MockedProvider>
                 <CurrentUserContext.Provider
@@ -36,10 +36,15 @@ describe("ContentScopeProvider", () => {
                         isAllowed: () => true,
                     }}
                 >
-                    <Router history={history}>{children}</Router>
+                    {children}
                 </CurrentUserContext.Provider>
             </MockedProvider>
         );
+    }
+
+    function renderWithRouter(ui: ReactNode) {
+        const router = createMemoryRouter([{ path: "*", element: <Wrapper>{ui}</Wrapper> }]);
+        return { ...render(<RouterProvider router={router} />), router };
     }
 
     it("should use stored scope when it is in allowed scopes", async () => {
@@ -52,14 +57,10 @@ describe("ContentScopeProvider", () => {
         // Store a scope that is allowed
         localStorage.setItem(contentScopeLocalStorageKey, JSON.stringify(storedScope));
 
-        const history = createMemoryHistory();
-
-        const { container } = render(
-            <Wrapper history={history}>
-                <ContentScopeProvider values={allowedScopes} defaultValue={allowedScopes[0].scope}>
-                    {() => <div>Content</div>}
-                </ContentScopeProvider>
-            </Wrapper>,
+        const { container, router } = renderWithRouter(
+            <ContentScopeProvider values={allowedScopes} defaultValue={allowedScopes[0].scope}>
+                {() => <div>Content</div>}
+            </ContentScopeProvider>,
         );
 
         await waitFor(() => {
@@ -69,7 +70,7 @@ describe("ContentScopeProvider", () => {
         // The stored scope should still be in localStorage since it's valid
         expect(localStorage.getItem(contentScopeLocalStorageKey)).toBe(JSON.stringify(storedScope));
         // URL should reflect the stored scope
-        expect(history.location.pathname).toBe("/main/de");
+        expect(router.state.location.pathname).toBe("/main/de");
     });
 
     it("should clear stored scope when it is not in allowed scopes", async () => {
@@ -82,14 +83,10 @@ describe("ContentScopeProvider", () => {
         // Store a scope that is NOT allowed
         localStorage.setItem(contentScopeLocalStorageKey, JSON.stringify(storedScope));
 
-        const history = createMemoryHistory();
-
-        const { container } = render(
-            <Wrapper history={history}>
-                <ContentScopeProvider values={allowedScopes} defaultValue={allowedScopes[0].scope}>
-                    {() => <div>Content</div>}
-                </ContentScopeProvider>
-            </Wrapper>,
+        const { container, router } = renderWithRouter(
+            <ContentScopeProvider values={allowedScopes} defaultValue={allowedScopes[0].scope}>
+                {() => <div>Content</div>}
+            </ContentScopeProvider>,
         );
 
         await waitFor(() => {
@@ -99,7 +96,7 @@ describe("ContentScopeProvider", () => {
         // The stored scope should be cleared from localStorage since it's invalid
         expect(localStorage.getItem(contentScopeLocalStorageKey)).toBeNull();
         // URL should fall back to the default scope
-        expect(history.location.pathname).toBe("/main/en");
+        expect(router.state.location.pathname).toBe("/main/en");
     });
 
     it("should use default scope when no scope is stored", async () => {
@@ -110,14 +107,10 @@ describe("ContentScopeProvider", () => {
 
         // No stored scope
 
-        const history = createMemoryHistory();
-
-        const { container } = render(
-            <Wrapper history={history}>
-                <ContentScopeProvider values={allowedScopes} defaultValue={allowedScopes[0].scope}>
-                    {() => <div>Content</div>}
-                </ContentScopeProvider>
-            </Wrapper>,
+        const { container, router } = renderWithRouter(
+            <ContentScopeProvider values={allowedScopes} defaultValue={allowedScopes[0].scope}>
+                {() => <div>Content</div>}
+            </ContentScopeProvider>,
         );
 
         await waitFor(() => {
@@ -127,7 +120,7 @@ describe("ContentScopeProvider", () => {
         // No scope should be stored
         expect(localStorage.getItem(contentScopeLocalStorageKey)).toBeNull();
         // URL should use the default scope
-        expect(history.location.pathname).toBe("/main/en");
+        expect(router.state.location.pathname).toBe("/main/en");
     });
 
     it("should handle partial scope matches correctly", async () => {
@@ -140,14 +133,10 @@ describe("ContentScopeProvider", () => {
         // Store a partial scope
         localStorage.setItem(contentScopeLocalStorageKey, JSON.stringify(storedScope));
 
-        const history = createMemoryHistory();
-
-        const { container } = render(
-            <Wrapper history={history}>
-                <ContentScopeProvider values={allowedScopes} defaultValue={allowedScopes[0].scope}>
-                    {() => <div>Content</div>}
-                </ContentScopeProvider>
-            </Wrapper>,
+        const { container, router } = renderWithRouter(
+            <ContentScopeProvider values={allowedScopes} defaultValue={allowedScopes[0].scope}>
+                {() => <div>Content</div>}
+            </ContentScopeProvider>,
         );
 
         await waitFor(() => {
@@ -157,7 +146,7 @@ describe("ContentScopeProvider", () => {
         // The partial scope should be cleared since it doesn't exactly match any allowed scope
         expect(localStorage.getItem(contentScopeLocalStorageKey)).toBeNull();
         // URL should fall back to the default scope
-        expect(history.location.pathname).toBe("/main/en");
+        expect(router.state.location.pathname).toBe("/main/en");
     });
 
     it("should use default scope when localStorage contains 'undefined' string", async () => {
@@ -166,14 +155,10 @@ describe("ContentScopeProvider", () => {
         // Store "undefined" string (edge case that can happen in some scenarios)
         localStorage.setItem(contentScopeLocalStorageKey, "undefined");
 
-        const history = createMemoryHistory();
-
-        const { container } = render(
-            <Wrapper history={history}>
-                <ContentScopeProvider values={allowedScopes} defaultValue={allowedScopes[0].scope}>
-                    {() => <div>Content</div>}
-                </ContentScopeProvider>
-            </Wrapper>,
+        const { container, router } = renderWithRouter(
+            <ContentScopeProvider values={allowedScopes} defaultValue={allowedScopes[0].scope}>
+                {() => <div>Content</div>}
+            </ContentScopeProvider>,
         );
 
         await waitFor(() => {
@@ -184,6 +169,6 @@ describe("ContentScopeProvider", () => {
         // The provider uses the default scope instead of trying to parse "undefined"
         expect(localStorage.getItem(contentScopeLocalStorageKey)).toBe("undefined");
         // URL should use the default scope
-        expect(history.location.pathname).toBe("/main/en");
+        expect(router.state.location.pathname).toBe("/main/en");
     });
 });

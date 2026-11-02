@@ -1,7 +1,7 @@
+import { RouterMemoryRouter } from "@dextinity/admin";
 import { gridClasses } from "@mui/x-data-grid-pro";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { MemoryRouter } from "react-router";
 import { expect, screen, waitFor } from "storybook/test";
 
 import { createRichTextBlock } from "../createRichTextBlock";
@@ -34,9 +34,9 @@ function TableBlockOpenedFromCellH25InThePreview() {
     const [state, setState] = useState(tableLargerThanTheDialog);
 
     return (
-        <MemoryRouter initialEntries={["/table#H:25"]}>
+        <RouterMemoryRouter initialEntries={["/table#H:25"]}>
             <TableBlock.AdminComponent state={state} updateState={setState} />
-        </MemoryRouter>
+        </RouterMemoryRouter>
     );
 }
 

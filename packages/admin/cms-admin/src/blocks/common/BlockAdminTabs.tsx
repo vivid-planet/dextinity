@@ -1,9 +1,8 @@
-import { RouteWithErrorBoundary } from "@dextinity/admin";
+import { AbsoluteRoute, AbsoluteRoutes, ErrorBoundary, useCurrentRouteMatch } from "@dextinity/admin";
 import { Tab as MuiTab, type TabProps, Tabs as MuiTabs } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { JSX } from "react";
-import { Switch, useRouteMatch } from "react-router";
-import { Link, type LinkProps } from "react-router-dom";
+import { Link, type LinkProps, matchPath, useLocation } from "react-router";
 
 import type { BlockAdminComponentPart } from "../types";
 import { TabContent } from "./AdminTabsTabContent";
@@ -13,8 +12,10 @@ export interface BlockAdminTabsProps {
 }
 
 export function BlockAdminTabs({ children }: BlockAdminTabsProps): JSX.Element | null {
-    const match = useRouteMatch();
-    const tabRouteMatch = useRouteMatch<{ tab: string }>(`${match.path}/:tab`);
+    const match = useCurrentRouteMatch();
+    const matchUrl = match.url.replace(/\/$/, "");
+    const location = useLocation();
+    const tabRouteMatch = matchPath({ path: `${matchUrl}/:tab`, end: false }, location.pathname);
     const selected = tabRouteMatch?.params.tab;
     if (children.length < 1) {
         return null;
@@ -25,21 +26,23 @@ export function BlockAdminTabs({ children }: BlockAdminTabsProps): JSX.Element |
         <Root key="tabs">
             <Tabs value={selectedTab} variant="scrollable" scrollButtons="auto">
                 {children.map((tab, index) => {
-                    const url = index === 0 ? match.url : `${match.url}/${tab.key}`;
+                    const url = index === 0 ? match.url : `${matchUrl}/${tab.key}`;
                     return <Tab key={tab.key} value={tab.key} label={tab.label} component={Link} to={url} />;
                 })}
             </Tabs>
             <TabContent selectedTab={selectedTab}>
-                <Switch>
+                <AbsoluteRoutes>
                     {otherTabs.map((tab) => (
-                        <RouteWithErrorBoundary key={tab.key} path={`${match.url}/${tab.key}`}>
-                            {tab.content}
-                        </RouteWithErrorBoundary>
+                        <AbsoluteRoute key={tab.key} path={`${matchUrl}/${tab.key}`}>
+                            <ErrorBoundary>{tab.content}</ErrorBoundary>
+                        </AbsoluteRoute>
                     ))}
 
-                    {/* first tab is default route, last in <Switch> */}
-                    <RouteWithErrorBoundary path={match.url}>{firstTab.content}</RouteWithErrorBoundary>
-                </Switch>
+                    {/* first tab is default route, last in <AbsoluteRoutes> */}
+                    <AbsoluteRoute path={match.url}>
+                        <ErrorBoundary>{firstTab.content}</ErrorBoundary>
+                    </AbsoluteRoute>
+                </AbsoluteRoutes>
             </TabContent>
         </Root>
     );

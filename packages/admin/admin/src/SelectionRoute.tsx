@@ -1,36 +1,33 @@
 import { type ComponentType, type PropsWithChildren, type ReactNode, useCallback, useMemo } from "react";
-import { Route, useHistory, useRouteMatch } from "react-router";
+import { useNavigate } from "react-router";
 
+import { AbsoluteRoute, useAbsoluteMatch, useCurrentRouteMatch } from "./router/RouteMatch";
 import { useSubRoutePrefix } from "./router/SubRoute";
 import type { ISelectionApi } from "./SelectionApi";
 
-interface IRouteParams {
-    id?: string;
-}
-
 export function useSelectionRoute(): [ComponentType<IProps>, { id?: string; mode?: "edit" | "add" }, ISelectionApi] {
-    const history = useHistory();
+    const navigate = useNavigate();
     const subRoutePrefix = useSubRoutePrefix();
-    const match = useRouteMatch<IRouteParams>(`${subRoutePrefix}/:id`);
+    const match = useAbsoluteMatch(`${subRoutePrefix}/:id`);
 
     const parentUrl = subRoutePrefix;
 
     const handleSelectId = useCallback(
         async (id: string) => {
-            history.push(`${parentUrl}/${id}`);
+            navigate(`${parentUrl}/${id}`);
         },
-        [history, parentUrl],
+        [navigate, parentUrl],
     );
 
     const handleDeselect = useCallback(async () => {
-        history.push(`${parentUrl}`);
-    }, [history, parentUrl]);
+        navigate(parentUrl || "/");
+    }, [navigate, parentUrl]);
 
     const handleAdd = useCallback(
         (id?: string) => {
-            history.push(`${parentUrl}/add${id ? `-${id}` : ""}`);
+            navigate(`${parentUrl}/add${id ? `-${id}` : ""}`);
         },
-        [history, parentUrl],
+        [navigate, parentUrl],
     );
 
     const api: ISelectionApi = useMemo(
@@ -72,8 +69,8 @@ export interface ISelectionRouterRenderPropArgs {
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface IProps {}
 export const SelectionRouteInner = ({ children }: PropsWithChildren<IProps>) => {
-    const { path } = useRouteMatch();
-    return <Route path={`${path}/:id`}>{() => <>{children}</>}</Route>;
+    const { url } = useCurrentRouteMatch();
+    return <AbsoluteRoute path={`${url}/:id`}>{() => children}</AbsoluteRoute>;
 };
 
 interface ISelectionRouteHooklessProps extends IProps {

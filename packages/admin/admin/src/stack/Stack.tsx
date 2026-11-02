@@ -1,6 +1,7 @@
 import { type PropsWithChildren, type ReactNode, useCallback, useEffect, useState } from "react";
-import { Route, type RouteComponentProps, useHistory, useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
+import { useCurrentRouteMatch } from "../router/RouteMatch";
 import { StackApiContext } from "./Api";
 import { StackBreadcrumb } from "./Breadcrumb";
 
@@ -71,8 +72,9 @@ export interface SwitchItem {
 export const Stack = (props: PropsWithChildren<StackProps>) => {
     const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
     const [switches, setSwitches] = useState<SwitchItem[]>([]);
-    const history = useHistory();
+    const navigate = useNavigate();
     const location = useLocation();
+    const routeMatch = useCurrentRouteMatch();
 
     const getVisibleBreadcrumbs = useCallback(() => {
         return sortByParentId(breadcrumbs).map((i) => {
@@ -83,15 +85,15 @@ export const Stack = (props: PropsWithChildren<StackProps>) => {
     const goBack = useCallback(() => {
         const breadcrumbs = getVisibleBreadcrumbs();
         if (breadcrumbs[breadcrumbs.length - 2]) {
-            history.push(breadcrumbs[breadcrumbs.length - 2].url);
+            navigate(breadcrumbs[breadcrumbs.length - 2].url);
         } else {
-            history.push(breadcrumbs[breadcrumbs.length - 1].url);
+            navigate(breadcrumbs[breadcrumbs.length - 1].url);
         }
-    }, [history, getVisibleBreadcrumbs]);
+    }, [navigate, getVisibleBreadcrumbs]);
 
     const goAllBack = useCallback(() => {
-        history.push(breadcrumbs[0].url);
-    }, [history, breadcrumbs]);
+        navigate(breadcrumbs[0].url);
+    }, [navigate, breadcrumbs]);
 
     const addBreadcrumb = useCallback((id: string, parentId: string, url: string, title: ReactNode) => {
         setBreadcrumbs((old) => {
@@ -171,19 +173,9 @@ export const Stack = (props: PropsWithChildren<StackProps>) => {
                 breadCrumbs: visibleBreadcrumbs,
             }}
         >
-            <Route>
-                {(routerProps: RouteComponentProps<any>) => {
-                    const { topLevelTitle, children } = props;
-                    if (!routerProps.match) {
-                        return children;
-                    }
-                    return (
-                        <StackBreadcrumb title={topLevelTitle} url={routerProps.match.url} ignoreParentId={true}>
-                            {children}
-                        </StackBreadcrumb>
-                    );
-                }}
-            </Route>
+            <StackBreadcrumb title={props.topLevelTitle} url={routeMatch.url} ignoreParentId={true}>
+                {props.children}
+            </StackBreadcrumb>
         </StackApiContext.Provider>
     );
 };

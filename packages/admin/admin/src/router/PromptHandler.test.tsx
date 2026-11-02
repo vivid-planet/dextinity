@@ -1,10 +1,10 @@
-import { Redirect, Route, Switch } from "react-router";
-import { Link } from "react-router-dom";
-import { cleanup, fireEvent, render, waitFor } from "test-utils";
+import { Link, Navigate, Route, Routes } from "react-router";
+import { act, cleanup, createTestRouter, fireEvent, render, waitFor } from "test-utils";
 import { afterEach, expect, test } from "vitest";
 
 import { ForcePromptRoute } from "./ForcePromptRoute";
 import { RouterPrompt } from "./Prompt";
+import { AbsoluteRoute } from "./RouteMatch";
 import { useSubRoutePrefix } from "./SubRoute";
 
 afterEach(cleanup);
@@ -12,22 +12,25 @@ afterEach(cleanup);
 test("Nested route in Prompt", async () => {
     function Story() {
         return (
-            <Switch>
-                <Route path="/foo">
-                    <RouterPrompt
-                        message={() => {
-                            return "sure?";
-                        }}
-                        subRoutePath="/foo/s"
-                    >
-                        <Link to="/foo/s/sub">subLink</Link>
-                        <Route path="/foo/s/sub">
-                            <div>sub</div>
-                        </Route>
-                    </RouterPrompt>
-                </Route>
-                <Redirect to="/foo" />
-            </Switch>
+            <Routes>
+                <Route
+                    path="/foo/*"
+                    element={
+                        <RouterPrompt
+                            message={() => {
+                                return "sure?";
+                            }}
+                            subRoutePath="/foo/s"
+                        >
+                            <Link to="/foo/s/sub">subLink</Link>
+                            <AbsoluteRoute path="/foo/s/sub">
+                                <div>sub</div>
+                            </AbsoluteRoute>
+                        </RouterPrompt>
+                    }
+                />
+                <Route path="*" element={<Navigate to="/foo" replace />} />
+            </Routes>
         );
     }
 
@@ -54,20 +57,18 @@ test("Nested dynamic route in Prompt", async () => {
             >
                 <Link to={`${subRoutePrefix}/s/sub`}>subLink</Link>
                 <Link to={`${subRoutePrefix}`}>back</Link>
-                <Route path={`${subRoutePrefix}/s/sub`}>
+                <AbsoluteRoute path={`${subRoutePrefix}/s/sub`}>
                     <div>sub</div>
-                </Route>
+                </AbsoluteRoute>
             </RouterPrompt>
         );
     }
     function Story() {
         return (
-            <Switch>
-                <Route path="/foo/:param">
-                    <FooPage />
-                </Route>
-                <Redirect to="/foo/paramvalue" />
-            </Switch>
+            <Routes>
+                <Route path="/foo/:param/*" element={<FooPage />} />
+                <Route path="*" element={<Navigate to="/foo/paramvalue" replace />} />
+            </Routes>
         );
     }
 
@@ -93,26 +94,29 @@ test("Nested dynamic route in Prompt", async () => {
 test("Nested route with non-sub-path route in Prompt", async () => {
     function Story() {
         return (
-            <Switch>
-                <Route path="/foo">
-                    <RouterPrompt
-                        message={() => {
-                            return "sure?";
-                        }}
-                        subRoutePath="/foo/s"
-                    >
-                        <Link to="/foo/s/sub">subLink</Link>
-                        <Link to="/foo">fooLink</Link>
-                        <Route path="/foo">
-                            <div>foo</div>
-                        </Route>
-                        <Route path="/foo/s/sub">
-                            <div>sub</div>
-                        </Route>
-                    </RouterPrompt>
-                </Route>
-                <Redirect to="/foo" />
-            </Switch>
+            <Routes>
+                <Route
+                    path="/foo/*"
+                    element={
+                        <RouterPrompt
+                            message={() => {
+                                return "sure?";
+                            }}
+                            subRoutePath="/foo/s"
+                        >
+                            <Link to="/foo/s/sub">subLink</Link>
+                            <Link to="/foo">fooLink</Link>
+                            <AbsoluteRoute path="/foo">
+                                <div>foo</div>
+                            </AbsoluteRoute>
+                            <AbsoluteRoute path="/foo/s/sub">
+                                <div>sub</div>
+                            </AbsoluteRoute>
+                        </RouterPrompt>
+                    }
+                />
+                <Route path="*" element={<Navigate to="/foo" replace />} />
+            </Routes>
         );
     }
 
@@ -138,19 +142,22 @@ test("Nested route with non-sub-path route in Prompt", async () => {
 test("route outside Prompt", async () => {
     function Story() {
         return (
-            <Switch>
-                <Route path="/" exact={true}>
-                    <RouterPrompt
-                        message={() => {
-                            return "sure?";
-                        }}
-                        subRoutePath="/s"
-                    >
-                        <Link to="/bar">barLink</Link>
-                    </RouterPrompt>
-                </Route>
-                <Route path="/bar">bar</Route>
-            </Switch>
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <RouterPrompt
+                            message={() => {
+                                return "sure?";
+                            }}
+                            subRoutePath="/s"
+                        >
+                            <Link to="/bar">barLink</Link>
+                        </RouterPrompt>
+                    }
+                />
+                <Route path="/bar" element="bar" />
+            </Routes>
         );
     }
 
@@ -174,35 +181,38 @@ test("route outside Prompt", async () => {
 test("ForcePromptRoute", async () => {
     function Story() {
         return (
-            <Switch>
-                <Route path="/foo">
-                    <RouterPrompt
-                        message={() => {
-                            return "sure?";
-                        }}
-                        subRoutePath="/foo"
-                    >
-                        <ul>
-                            <li>
-                                <Link to="/foo/sub1">/foo/sub1</Link> (no prompt)
-                            </li>
-                            <li>
-                                <Link to="/foo/sub2">/foo/sub2</Link> (force prompt)
-                            </li>
-                            <li>
-                                <Link to="/foo">/foo</Link> (back)
-                            </li>
-                        </ul>
-                        <Route path="/foo/sub1">
-                            <div>sub1</div>
-                        </Route>
-                        <ForcePromptRoute path="/foo/sub2">
-                            <div>sub2</div>
-                        </ForcePromptRoute>
-                    </RouterPrompt>
-                </Route>
-                <Redirect to="/foo" />
-            </Switch>
+            <Routes>
+                <Route
+                    path="/foo/*"
+                    element={
+                        <RouterPrompt
+                            message={() => {
+                                return "sure?";
+                            }}
+                            subRoutePath="/foo"
+                        >
+                            <ul>
+                                <li>
+                                    <Link to="/foo/sub1">/foo/sub1</Link> (no prompt)
+                                </li>
+                                <li>
+                                    <Link to="/foo/sub2">/foo/sub2</Link> (force prompt)
+                                </li>
+                                <li>
+                                    <Link to="/foo">/foo</Link> (back)
+                                </li>
+                            </ul>
+                            <AbsoluteRoute path="/foo/sub1">
+                                <div>sub1</div>
+                            </AbsoluteRoute>
+                            <ForcePromptRoute path="/foo/sub2">
+                                <div>sub2</div>
+                            </ForcePromptRoute>
+                        </RouterPrompt>
+                    }
+                />
+                <Route path="*" element={<Navigate to="/foo" replace />} />
+            </Routes>
         );
     }
     const rendered = render(<Story />);
@@ -228,4 +238,99 @@ test("ForcePromptRoute", async () => {
         const sub = rendered.queryAllByText("sub");
         expect(sub.length).toBe(0);
     });
+});
+
+test("Discard in dirty dialog continues the blocked navigation", async () => {
+    let resetActionCalled = false;
+    function Story() {
+        return (
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <RouterPrompt
+                            message={() => "sure?"}
+                            resetAction={() => {
+                                resetActionCalled = true;
+                            }}
+                        >
+                            <Link to="/bar">barLink</Link>
+                        </RouterPrompt>
+                    }
+                />
+                <Route path="/bar" element="bar" />
+            </Routes>
+        );
+    }
+
+    const rendered = render(<Story />);
+
+    fireEvent.click(rendered.getByText("barLink"));
+    await rendered.findByText("sure?");
+    expect(rendered.router.state.location.pathname).toBe("/");
+
+    fireEvent.click(rendered.getByText("Discard"));
+
+    await waitFor(() => {
+        expect(rendered.router.state.location.pathname).toBe("/bar");
+    });
+    expect(rendered.getByText("bar")).toBeInTheDocument();
+    expect(resetActionCalled).toBe(true);
+});
+
+test("Cancel in dirty dialog stays on the current page", async () => {
+    function Story() {
+        return (
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <RouterPrompt message={() => "sure?"}>
+                            <Link to="/bar">barLink</Link>
+                        </RouterPrompt>
+                    }
+                />
+                <Route path="/bar" element="bar" />
+            </Routes>
+        );
+    }
+
+    const rendered = render(<Story />);
+
+    fireEvent.click(rendered.getByText("barLink"));
+    await rendered.findByText("sure?");
+
+    fireEvent.keyDown(rendered.getByRole("dialog"), { key: "Escape" });
+
+    await waitFor(() => {
+        expect(rendered.queryByText("sure?")).not.toBeInTheDocument();
+    });
+    expect(rendered.router.state.location.pathname).toBe("/");
+    expect(rendered.queryByText("bar")).not.toBeInTheDocument();
+});
+
+test("Back navigation is blocked by Prompt", async () => {
+    function Story() {
+        return (
+            <Routes>
+                <Route path="/" element="start" />
+                <Route
+                    path="/foo"
+                    element={
+                        <RouterPrompt message={() => "sure?"}>
+                            <div>foo</div>
+                        </RouterPrompt>
+                    }
+                />
+            </Routes>
+        );
+    }
+
+    const rendered = render(<Story />, { router: createTestRouter({ initialEntries: ["/", "/foo"], initialIndex: 1 }) });
+    expect(rendered.getByText("foo")).toBeInTheDocument();
+
+    await act(() => rendered.router.navigate(-1));
+
+    await rendered.findByText("sure?");
+    expect(rendered.router.state.location.pathname).toBe("/foo");
 });

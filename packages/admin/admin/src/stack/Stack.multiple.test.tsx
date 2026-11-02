@@ -1,11 +1,6 @@
-import { createTheme } from "@mui/material/styles";
-import { createMemoryHistory } from "history";
-import { IntlProvider } from "react-intl";
-import { Router } from "react-router";
-import { fireEvent, render, waitFor } from "test-utils";
+import { createTestRouter, fireEvent, render, waitFor } from "test-utils";
 import { expect, test } from "vitest";
 
-import { MuiThemeProvider } from "../mui/ThemeProvider";
 import { SubRoute, useSubRoutePrefix } from "../router/SubRoute";
 import { StackBreadcrumbs } from "./breadcrumbs/StackBreadcrumbs";
 import { StackPage } from "./Page";
@@ -45,17 +40,9 @@ test("multiple stacks on same page", async () => {
         );
     }
 
-    const history = createMemoryHistory();
+    const router = createTestRouter();
 
-    const rendered = render(
-        <IntlProvider locale="en">
-            <MuiThemeProvider theme={createTheme()}>
-                <Router history={history}>
-                    <Story />
-                </Router>
-            </MuiThemeProvider>
-        </IntlProvider>,
-    );
+    const rendered = render(<Story />, { router });
 
     fireEvent.click(rendered.getByText("activate First Page2"));
 

@@ -126,7 +126,7 @@ export { UserHeaderItem } from "./common/header/UserHeaderItem";
 export type { TextMatch } from "./common/MarkedMatches";
 export { MarkedMatches } from "./common/MarkedMatches";
 export { findTextMatches } from "./common/MarkedMatches";
-export type { MasterMenuData, MasterMenuProps } from "./common/MasterMenu";
+export type { MasterMenuData, MasterMenuProps, MasterMenuRoute } from "./common/MasterMenu";
 export { MasterMenu, useMenuFromMasterMenuData } from "./common/MasterMenu";
 export type { MasterMenuRoutesProps } from "./common/MasterMenuRoutes";
 export { MasterMenuRoutes, useRoutePropsFromMasterMenuData } from "./common/MasterMenuRoutes";

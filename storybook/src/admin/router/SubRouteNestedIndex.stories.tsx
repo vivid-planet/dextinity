@@ -1,7 +1,6 @@
-import { SubRouteIndexRoute, useSubRoutePrefix } from "@dextinity/admin";
+import { AbsoluteRoute, AbsoluteRoutes, SubRouteIndexRoute, useSubRoutePrefix } from "@dextinity/admin";
 import { useEffect, useState } from "react";
-import { Redirect, Route, Switch, useLocation } from "react-router";
-import { Link } from "react-router-dom";
+import { Link, Navigate, Route, Routes, useLocation } from "react-router";
 
 import { storyRouterDecorator } from "../../story-router.decorator";
 
@@ -9,15 +8,15 @@ function Cmp1() {
     const urlPrefix = useSubRoutePrefix();
     return (
         <div>
-            <Switch>
-                <Route path={`${urlPrefix}/sub`}>
+            <AbsoluteRoutes>
+                <AbsoluteRoute path={`${urlPrefix}/sub`}>
                     <p>Cmp1-Sub</p>
-                </Route>
+                </AbsoluteRoute>
                 <SubRouteIndexRoute>
                     <p>Cmp1-Index</p>
                     <Link to={`${urlPrefix}/sub`}>to-cmp1-sub</Link>
                 </SubRouteIndexRoute>
-            </Switch>
+            </AbsoluteRoutes>
         </div>
     );
 }
@@ -25,12 +24,12 @@ function Cmp1() {
 function Story() {
     return (
         <div>
-            <Switch>
+            <AbsoluteRoutes>
                 <SubRouteIndexRoute>
                     <Cmp1 />
                 </SubRouteIndexRoute>
-                <Route path="/sub">Sub</Route>
-            </Switch>
+                <AbsoluteRoute path="/sub">Sub</AbsoluteRoute>
+            </AbsoluteRoutes>
         </div>
     );
 }
@@ -57,14 +56,10 @@ export const SubrouteNestedIndex = {
         return (
             <>
                 <Path />
-                <Switch>
-                    <Route exact path="/">
-                        <Redirect to="/foo" />
-                    </Route>
-                    <Route path="/foo">
-                        <Story />
-                    </Route>
-                </Switch>
+                <Routes>
+                    <Route path="/" element={<Navigate to="/foo" replace />} />
+                    <Route path="/foo/*" element={<Story />} />
+                </Routes>
             </>
         );
     },

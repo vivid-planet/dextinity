@@ -1,5 +1,5 @@
-import type * as History from "history";
 import { createContext, type RefObject } from "react";
+import type { Location, NavigationType } from "react-router";
 
 import type { PromptRoutes } from "./Prompt";
 import type { ResetAction, SaveAction } from "./PromptHandler";
@@ -7,7 +7,7 @@ import type { ResetAction, SaveAction } from "./PromptHandler";
 interface IContext {
     register: (options: {
         id: string;
-        message: (location: History.Location, action: History.Action) => string | boolean;
+        message: (location: Location, action: NavigationType) => string | boolean;
         saveAction?: SaveAction;
         resetAction?: ResetAction;
         path: string;

@@ -1,32 +1,34 @@
-import { RouterPrompt } from "@dextinity/admin";
+import { AbsoluteRoute, RouterPrompt } from "@dextinity/admin";
 import { useEffect, useState } from "react";
-import { Redirect, Route, Switch, useLocation } from "react-router";
-import { Link } from "react-router-dom";
+import { Link, Navigate, Route, Routes, useLocation } from "react-router";
 
 import { storyRouterDecorator } from "../../story-router.decorator";
 
 function Story() {
     return (
-        <Switch>
-            <Route path="/foo">
-                <RouterPrompt
-                    message={() => {
-                        return "sure?";
-                    }}
-                    subRoutePath="/foo/s"
-                >
-                    <Link to="/foo/s/sub">subLink</Link>
-                    <Link to="/foo">fooLink</Link>
-                    <Route path="/foo">
-                        <div>foo</div>
-                    </Route>
-                    <Route path="/foo/s/sub">
-                        <div>sub</div>
-                    </Route>
-                </RouterPrompt>
-            </Route>
-            <Redirect to="/foo" />
-        </Switch>
+        <Routes>
+            <Route
+                path="/foo/*"
+                element={
+                    <RouterPrompt
+                        message={() => {
+                            return "sure?";
+                        }}
+                        subRoutePath="/foo/s"
+                    >
+                        <Link to="/foo/s/sub">subLink</Link>
+                        <Link to="/foo">fooLink</Link>
+                        <AbsoluteRoute path="/foo">
+                            <div>foo</div>
+                        </AbsoluteRoute>
+                        <AbsoluteRoute path="/foo/s/sub">
+                            <div>sub</div>
+                        </AbsoluteRoute>
+                    </RouterPrompt>
+                }
+            />
+            <Route path="*" element={<Navigate to="/foo" replace />} />
+        </Routes>
     );
 }
 

@@ -1,5 +1,5 @@
+import { useCurrentRouteMatch } from "@dextinity/admin";
 import type { ReactNode } from "react";
-import { useRouteMatch } from "react-router";
 
 import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
 import { type ContentScope, useContentScope } from "../contentScope/Provider";
@@ -29,7 +29,7 @@ const DefaultContentScopeIndicator = () => {
 
 function DamPage({ renderContentScopeIndicator, additionalToolbarItems }: Props) {
     const { scope, match } = useContentScope();
-    const routeMatch = useRouteMatch();
+    const routeMatch = useCurrentRouteMatch();
     const damRouteLocation = routeMatch.url.replace(match.url, "");
     useContentScopeConfig({ redirectPathAfterChange: damRouteLocation });
     const damConfig = useDamConfig();

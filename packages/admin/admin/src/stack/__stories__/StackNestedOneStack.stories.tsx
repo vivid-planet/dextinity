@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Redirect, Route, Switch, useLocation } from "react-router";
+import { Navigate, Route, Routes, useLocation } from "react-router";
 
 import { SubRoute, useSubRoutePrefix } from "../../router/SubRoute";
 import { StackBreadcrumbs } from "../breadcrumbs/StackBreadcrumbs";
@@ -60,14 +60,10 @@ export const StackNestedOneStack = {
         return (
             <>
                 <Path />
-                <Switch>
-                    <Route exact path="/">
-                        <Redirect to="/foo" />
-                    </Route>
-                    <Route path="/foo">
-                        <Story />
-                    </Route>
-                </Switch>
+                <Routes>
+                    <Route path="/" element={<Navigate to="/foo" replace />} />
+                    <Route path="/foo/*" element={<Story />} />
+                </Routes>
             </>
         );
     },

@@ -1,9 +1,8 @@
 import { gql, useQuery } from "@apollo/client";
-import { FillSpace, Stack, Toolbar, ToolbarActions, ToolbarTitleItem } from "@dextinity/admin";
+import { FillSpace, Stack, Toolbar, ToolbarActions, ToolbarTitleItem, useCurrentRouteMatch } from "@dextinity/admin";
 import { styled } from "@mui/material/styles";
 import { parseISO } from "date-fns";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useRouteMatch } from "react-router";
 
 import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
 import { useContentScope } from "../contentScope/Provider";
@@ -34,7 +33,7 @@ const DataGridContainer = styled("div")`
 
 export function PublisherPage() {
     const { match } = useContentScope();
-    const routeMatch = useRouteMatch();
+    const routeMatch = useCurrentRouteMatch();
     const location = routeMatch.url.replace(match.url, "");
     useContentScopeConfig({ redirectPathAfterChange: location });
 

@@ -9,6 +9,7 @@ import {
     FinalForm,
     type GridColDef,
     GridToolbarQuickFilter,
+    RouterMemoryRouter,
     ToolbarFillSpace,
     ToolbarItem,
     ToolbarTitleItem,
@@ -23,7 +24,6 @@ import { Box } from "@mui/system";
 import type { GridSlotsComponent } from "@mui/x-data-grid";
 import { type ReactElement, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { MemoryRouter } from "react-router";
 
 import { useContactImportFromCsv } from "../../common/contactImport/useContactImportFromCsv";
 import { DataGrid } from "../../dataGrid/DataGrid";
@@ -279,7 +279,7 @@ export function AddContactsGridSelect({ id, scope, assignedContactsTargetGroupBr
             <FinalForm<FormProps> mode="edit" onSubmit={submit}>
                 {({ handleSubmit, submitting }) => {
                     return (
-                        <MemoryRouter>
+                        <RouterMemoryRouter>
                             <Dialog open={isDialogOpen} maxWidth="lg" onClose={() => setIsDialogOpen(false)}>
                                 <DialogTitle display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
                                     <ToolbarFillSpace />
@@ -326,7 +326,7 @@ export function AddContactsGridSelect({ id, scope, assignedContactsTargetGroupBr
                                     </Button>
                                 </DialogActions>
                             </Dialog>
-                        </MemoryRouter>
+                        </RouterMemoryRouter>
                     );
                 }}
             </FinalForm>

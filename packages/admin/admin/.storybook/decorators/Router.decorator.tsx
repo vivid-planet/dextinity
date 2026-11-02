@@ -1,7 +1,6 @@
 import type { Decorator } from "@storybook/react-vite";
-import type { Action, History, UnregisterCallback } from "history";
 import { type PropsWithChildren, useEffect } from "react";
-import { Route, type RouteComponentProps } from "react-router";
+import { useLocation, useNavigationType } from "react-router";
 import { action } from "storybook/actions";
 
 import { RouterMemoryRouter } from "../../src/router/MemoryRouter";
@@ -15,18 +14,13 @@ declare module "storybook/internal/csf" {
     }
 }
 
-function HistoryWatcher({ history, children }: PropsWithChildren<RouteComponentProps>) {
-    useEffect(() => {
-        const onHistoryChanged: History.LocationListener = (location, historyAction: Action) => {
-            const path = location.pathname;
-            action(historyAction ? historyAction : (location as any).action)(path);
-        };
-        const unlisten: UnregisterCallback = history.listen(onHistoryChanged);
+function LocationWatcher({ children }: PropsWithChildren) {
+    const location = useLocation();
+    const navigationType = useNavigationType();
 
-        return () => {
-            unlisten();
-        };
-    }, [history]);
+    useEffect(() => {
+        action(navigationType)(location.pathname);
+    }, [location, navigationType]);
 
     return <>{children}</>;
 }
@@ -36,19 +30,15 @@ export const RouterDecorator: Decorator = (Story, context) => {
 
     return (
         <RouterMemoryRouter>
-            <Route
-                render={(props) => (
-                    <HistoryWatcher {...props}>
-                        {stackParams !== undefined ? (
-                            <Stack topLevelTitle={stackParams.topLevelTitle ?? "Example"}>
-                                <Story />
-                            </Stack>
-                        ) : (
-                            <Story />
-                        )}
-                    </HistoryWatcher>
+            <LocationWatcher>
+                {stackParams !== undefined ? (
+                    <Stack topLevelTitle={stackParams.topLevelTitle ?? "Example"}>
+                        <Story />
+                    </Stack>
+                ) : (
+                    <Story />
                 )}
-            />
+            </LocationWatcher>
         </RouterMemoryRouter>
     );
 };

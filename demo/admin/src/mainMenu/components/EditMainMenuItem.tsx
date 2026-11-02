@@ -10,6 +10,7 @@ import {
     ToolbarActions,
     ToolbarBackButton,
     ToolbarTitleItem,
+    useCurrentRouteMatch,
 } from "@dextinity/admin";
 import { Add, Delete, Preview } from "@dextinity/admin-icons";
 import {
@@ -32,7 +33,6 @@ import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { deepEqual } from "fast-equals";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useRouteMatch } from "react-router-dom";
 
 import type {
     GQLEditMainMenuItemFragment,
@@ -74,7 +74,7 @@ type RichTextBlockOutput = BlockOutputApi<typeof RichTextBlock>;
 
 const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
     const previewApi = useBlockPreview();
-    const match = useRouteMatch();
+    const match = useCurrentRouteMatch();
     const [updateMainMenuItem, { loading: saving, error: saveError }] = useMutation<
         GQLUpdateMainMenuItemMutation,
         GQLUpdateMainMenuItemMutationVariables

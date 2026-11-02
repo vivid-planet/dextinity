@@ -1,16 +1,16 @@
 import { useContext, useEffect } from "react";
-import { Route, type RouteProps } from "react-router";
 import useConstant from "use-constant";
 import { v4 as uuid } from "uuid";
 
 import { PromptContext } from "./Prompt";
+import { AbsoluteRoute, type AbsoluteRouteProps } from "./RouteMatch";
 
-export function ForcePromptRoute(props: RouteProps) {
+export function ForcePromptRoute({ path, exact, children }: AbsoluteRouteProps) {
     const id = useConstant<string>(() => uuid());
     const context = useContext(PromptContext);
     useEffect(() => {
         if (context) {
-            context.register(id, props.path as string);
+            context.register(id, path);
         }
         return function cleanup() {
             if (context) {
@@ -18,5 +18,9 @@ export function ForcePromptRoute(props: RouteProps) {
             }
         };
     });
-    return <Route {...props} />;
+    return (
+        <AbsoluteRoute path={path} exact={exact}>
+            {children}
+        </AbsoluteRoute>
+    );
 }

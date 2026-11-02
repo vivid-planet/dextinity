@@ -1,6 +1,5 @@
-import { useSubRoutePrefix } from "@dextinity/admin";
+import { useCurrentRouteMatch, useSubRoutePrefix } from "@dextinity/admin";
 import { type PropsWithChildren, useEffect, useRef } from "react";
-import { useRouteMatch } from "react-router";
 import scrollIntoView from "scroll-into-view-if-needed";
 
 import * as sc from "./HoverPreviewComponent.sc";
@@ -11,7 +10,7 @@ interface HoverPreviewComponentProps {
 }
 
 function useComponentRoute(componentSlug: string) {
-    const match = useRouteMatch();
+    const match = useCurrentRouteMatch();
     const subRoutePrefix = useSubRoutePrefix();
 
     if (componentSlug.startsWith("#")) {

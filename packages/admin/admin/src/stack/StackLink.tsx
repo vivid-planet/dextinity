@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { Link as RouterLink, type LinkProps as RouterLinkProps } from "react-router-dom";
+import { Link as RouterLink, type LinkProps as RouterLinkProps } from "react-router";
 
 import { type IStackSwitchApi, useStackSwitchApi } from "./Switch";
 
@@ -17,7 +17,7 @@ export const StackLink = forwardRef<HTMLAnchorElement, StackLinkProps>(
         const _switchApi = externalSwitchApi !== undefined ? externalSwitchApi : internalSwitchApi;
 
         return (
-            <RouterLink ref={ref} to={() => _switchApi.getTargetUrl(pageName, payload, subUrl)} {...props}>
+            <RouterLink ref={ref} to={_switchApi.getTargetUrl(pageName, payload, subUrl)} {...props}>
                 {children}
             </RouterLink>
         );

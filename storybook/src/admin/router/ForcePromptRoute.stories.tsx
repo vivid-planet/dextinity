@@ -1,41 +1,43 @@
-import { ForcePromptRoute, RouterPrompt } from "@dextinity/admin";
+import { AbsoluteRoute, ForcePromptRoute, RouterPrompt } from "@dextinity/admin";
 import { useEffect, useState } from "react";
-import { Redirect, Route, Switch, useLocation } from "react-router";
-import { Link } from "react-router-dom";
+import { Link, Navigate, Route, Routes, useLocation } from "react-router";
 
 import { storyRouterDecorator } from "../../story-router.decorator";
 
 function Story() {
     return (
-        <Switch>
-            <Route path="/foo">
-                <RouterPrompt
-                    message={() => {
-                        return "rly?";
-                    }}
-                    subRoutePath="/foo"
-                >
-                    <ul>
-                        <li>
-                            <Link to="/foo/sub1">/foo/sub1</Link> (no prompt)
-                        </li>
-                        <li>
-                            <Link to="/foo/sub2">/foo/sub2</Link> (force prompt)
-                        </li>
-                        <li>
-                            <Link to="/foo">/foo</Link> (back)
-                        </li>
-                    </ul>
-                    <Route path="/foo/sub1">
-                        <div>sub1</div>
-                    </Route>
-                    <ForcePromptRoute path="/foo/sub2">
-                        <div>sub2</div>
-                    </ForcePromptRoute>
-                </RouterPrompt>
-            </Route>
-            <Redirect to="/foo" />
-        </Switch>
+        <Routes>
+            <Route
+                path="/foo/*"
+                element={
+                    <RouterPrompt
+                        message={() => {
+                            return "rly?";
+                        }}
+                        subRoutePath="/foo"
+                    >
+                        <ul>
+                            <li>
+                                <Link to="/foo/sub1">/foo/sub1</Link> (no prompt)
+                            </li>
+                            <li>
+                                <Link to="/foo/sub2">/foo/sub2</Link> (force prompt)
+                            </li>
+                            <li>
+                                <Link to="/foo">/foo</Link> (back)
+                            </li>
+                        </ul>
+                        <AbsoluteRoute path="/foo/sub1">
+                            <div>sub1</div>
+                        </AbsoluteRoute>
+                        <ForcePromptRoute path="/foo/sub2">
+                            <div>sub2</div>
+                        </ForcePromptRoute>
+                    </RouterPrompt>
+                }
+            />
+            <Route path="*" element={<Navigate to="/foo" replace />} />
+        </Routes>
     );
 }
 

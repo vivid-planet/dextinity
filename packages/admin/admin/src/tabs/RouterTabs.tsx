@@ -1,10 +1,11 @@
 import { type ComponentsOverrides, Tab as MuiTab, type TabProps as MuiTabProps, Tabs, type TabsProps } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
 import { Children, type ComponentType, isValidElement, type ReactElement, type ReactNode, type SyntheticEvent } from "react";
-import { Route, useHistory, useRouteMatch } from "react-router-dom";
+import { matchPath, useLocation, useNavigate } from "react-router";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import { RouteMatchProvider, useCurrentRouteMatch } from "../router/RouteMatch";
 import { useSubRoutePrefix } from "../router/SubRoute";
 import { useIsActiveStackSwitch } from "../stack/useIsActiveStackSwitch";
 import { TabScrollButton } from "./TabScrollButton";
@@ -75,9 +76,10 @@ export function RouterTabs(inProps: Props) {
         ...restProps
     } = useThemeProps({ props: inProps, name: "DextinityAdminRouterTabs" });
 
-    const history = useHistory();
+    const navigate = useNavigate();
+    const location = useLocation();
     const subRoutePrefix = useSubRoutePrefix();
-    const routeMatch = useRouteMatch();
+    const routeMatch = useCurrentRouteMatch();
     const isActiveStackSwitch = useIsActiveStackSwitch();
 
     const childrenArr = Children.toArray(children);
@@ -86,7 +88,7 @@ export function RouterTabs(inProps: Props) {
         const paths = childrenArr.map((child) => {
             return isValidElement<TabProps>(child) ? child.props.path : null;
         });
-        history.push(deduplicateSlashesInUrl(subRoutePrefix + paths[value]));
+        navigate(deduplicateSlashesInUrl(subRoutePrefix + paths[value]));
     };
 
     const paths = childrenArr.map((child) => {
@@ -111,69 +113,57 @@ export function RouterTabs(inProps: Props) {
         rearrangedChildren.push(defaultPathChild);
     }
 
-    // used for only rendering the first matching child
-    // note: React Router's Switch can't be used because it
-    // prevents the rendering of more than one child
-    // however we need to render all children if forceRender is true
-    let foundFirstMatch = false;
+    const tabMatch = matchPath({ path: deduplicateSlashesInUrl(`${subRoutePrefix}/:tab`), end: false }, location.pathname);
+    const activeTabPath = tabMatch ? `/${tabMatch.params.tab}` : "";
+    const activeTabIndex = paths.includes(activeTabPath) ? paths.indexOf(activeTabPath) : defaultPathIndex;
+
+    const contentMatches = rearrangedChildren.map((child) => {
+        if (!isValidElement<TabProps>(child)) {
+            return null;
+        }
+        const path = child.props.path != "" ? deduplicateSlashesInUrl(`${subRoutePrefix}/${child.props.path}`) : routeMatch.url;
+        return { path, match: matchPath({ path, end: false }, location.pathname) };
+    });
+    // only the first matching child is shown, all others are hidden (if forceRender is set) or not rendered
+    const firstMatchingContentIndex = contentMatches.findIndex((contentMatch) => !!contentMatch?.match);
 
     return (
         <Root {...slotProps?.root} {...restProps}>
             {/* When inside a Stack show only the last TabBar */}
             {isActiveStackSwitch && (
-                <Route path={deduplicateSlashesInUrl(`${subRoutePrefix}/:tab`)}>
-                    {({ match }) => {
-                        const routePath = match ? `/${match.params.tab}` : "";
-                        const value = paths.includes(routePath) ? paths.indexOf(routePath) : defaultPathIndex;
-                        return (
-                            <StyledTabs
-                                value={value}
-                                onChange={handleChange}
-                                ScrollButtonComponent={ScrollButtonComponent}
-                                scrollButtons="auto"
-                                variant="scrollable"
-                                {...slotProps?.tabs}
-                                {...tabsProps}
-                            >
-                                {Children.map(children, (child) => {
-                                    if (!isValidElement<TabProps>(child)) {
-                                        return null;
-                                    }
-                                    const { path, forceRender, children, label, ...restTabProps } = child.props;
-                                    return <TabComponent label={label} {...restTabProps} />;
-                                })}
-                            </StyledTabs>
-                        );
-                    }}
-                </Route>
+                <StyledTabs
+                    value={activeTabIndex}
+                    onChange={handleChange}
+                    ScrollButtonComponent={ScrollButtonComponent}
+                    scrollButtons="auto"
+                    variant="scrollable"
+                    {...slotProps?.tabs}
+                    {...tabsProps}
+                >
+                    {Children.map(children, (child) => {
+                        if (!isValidElement<TabProps>(child)) {
+                            return null;
+                        }
+                        const { path, forceRender, children, label, ...restTabProps } = child.props;
+                        return <TabComponent label={label} {...restTabProps} />;
+                    })}
+                </StyledTabs>
             )}
-            {Children.map(rearrangedChildren, (child) => {
-                if (!isValidElement<TabProps>(child)) {
+            {rearrangedChildren.map((child, index) => {
+                const contentMatch = contentMatches[index];
+                if (!isValidElement<TabProps>(child) || !contentMatch) {
                     return null;
                 }
-                const path = child.props.path != "" ? deduplicateSlashesInUrl(`${subRoutePrefix}/${child.props.path}`) : routeMatch.path;
+                const isActive = index === firstMatchingContentIndex;
+                if (!isActive && !child.props.forceRender) {
+                    return null;
+                }
                 return (
-                    <Route path={path}>
-                        {({ match }) => {
-                            if (match && !foundFirstMatch) {
-                                foundFirstMatch = true;
-                                return (
-                                    <Content ownerState={{ contentHidden: false }} {...slotProps?.content}>
-                                        {child.props.children}
-                                    </Content>
-                                );
-                            } else if (child.props.forceRender) {
-                                return (
-                                    <Content ownerState={{ contentHidden: true }} {...slotProps?.content}>
-                                        {child.props.children}
-                                    </Content>
-                                );
-                            } else {
-                                // don't render tab contents
-                                return null;
-                            }
-                        }}
-                    </Route>
+                    <RouteMatchProvider key={child.key} match={contentMatch.match} path={contentMatch.path}>
+                        <Content ownerState={{ contentHidden: !isActive }} {...slotProps?.content}>
+                            {child.props.children}
+                        </Content>
+                    </RouteMatchProvider>
                 );
             })}
         </Root>

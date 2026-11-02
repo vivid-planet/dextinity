@@ -1,8 +1,8 @@
+import { AbsoluteRoute, useCurrentRouteMatch } from "@dextinity/admin";
 import { Box, Divider } from "@mui/material";
 import { deepEqual } from "fast-equals";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import type { MessageDescriptor } from "react-intl";
-import { Route, useRouteMatch } from "react-router";
 
 import { BlockAdminComponentPaper } from "../common/BlockAdminComponentPaper";
 import { Collapsible } from "../common/Collapsible";
@@ -100,7 +100,7 @@ export function createOptionalBlock<T extends BlockInterface>(
         definesOwnTitle: true,
 
         AdminComponent: ({ state, updateState }) => {
-            const match = useRouteMatch();
+            const match = useCurrentRouteMatch();
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const updateSubBlocksFn: Dispatch<SetStateAction<any>> = (setStateAction) => {
@@ -111,9 +111,9 @@ export function createOptionalBlock<T extends BlockInterface>(
             };
 
             return (
-                <Route path={match.url}>
-                    {({ match }) =>
-                        match?.isExact ? (
+                <AbsoluteRoute path={match.url} exact>
+                    {(exactMatch) =>
+                        exactMatch ? (
                             <BlockAdminComponentPaper disablePadding>
                                 <Collapsible
                                     open={state.visible}
@@ -169,7 +169,7 @@ export function createOptionalBlock<T extends BlockInterface>(
                             />
                         )
                     }
-                </Route>
+                </AbsoluteRoute>
             );
         },
         previewContent: ({ block, visible }, ctx) => {

@@ -1,11 +1,9 @@
 import { Add, Edit } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { DataGrid, type GridSlotsComponent } from "@mui/x-data-grid";
-import { createMemoryHistory } from "history";
 import { type ReactNode, type RefObject, useRef } from "react";
 import { useIntl } from "react-intl";
-import { Router } from "react-router";
-import { render, screen, waitFor, within } from "test-utils";
+import { createTestRouter, render, screen, waitFor, within } from "test-utils";
 import { describe, expect, it } from "vitest";
 
 import { Button } from "../common/buttons/Button";
@@ -161,13 +159,9 @@ describe("EditDialog with Stack, Router Tabs and Grid", () => {
     }
 
     it("should not open edit dialog when navigating back to products page", async () => {
-        const history = createMemoryHistory();
+        const router = createTestRouter();
 
-        const rendered = render(
-            <Router history={history}>
-                <EditDialogInStackTabs />
-            </Router>,
-        );
+        const rendered = render(<EditDialogInStackTabs />, { router });
 
         rendered.getByText("Products").click();
 
@@ -176,7 +170,7 @@ describe("EditDialog with Stack, Router Tabs and Grid", () => {
         });
         rendered.queryAllByTestId("edit.row")[5].click();
 
-        expect(history.location.pathname).toBe("/5/productEdit");
+        expect(router.state.location.pathname).toBe("/5/productEdit");
         await waitFor(() => {
             expect(rendered.getByTestId("editPage.backButton")).toBeInTheDocument();
         });
@@ -184,7 +178,7 @@ describe("EditDialog with Stack, Router Tabs and Grid", () => {
         await waitFor(() => {
             expect(screen.getByText("Products")).toBeInTheDocument();
         });
-        expect(history.location.pathname).toBe("/index/products");
+        expect(router.state.location.pathname).toBe("/index/products");
 
         // Check that the Edit Dialog is not open, there was a bug that was fixed
         // where the edit dialog was open when navigating to a page

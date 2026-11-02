@@ -1,6 +1,6 @@
 import { type ComponentsOverrides, type Drawer as MuiDrawer, type Theme, useThemeProps } from "@mui/material";
 import { Children, cloneElement, type ReactNode, useContext, useEffect, useMemo, useRef } from "react";
-import { useHistory } from "react-router";
+import { useLocation } from "react-router";
 
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 import { MasterLayoutContext } from "../MasterLayoutContext";
@@ -32,7 +32,8 @@ export const MainNavigation = (inProps: MainNavigationProps) => {
         slotProps,
         ...restProps
     } = useThemeProps({ props: inProps, name: "DextinityAdminMainNavigation" });
-    const history = useHistory();
+    const location = useLocation();
+    const previousLocation = useRef(location);
     const { open, toggleOpen, setOpen, setDrawerVariant, drawerVariant } = useMainNavigation();
     const initialRender = useRef(true);
     const { headerHeight } = useContext(MasterLayoutContext);
@@ -66,12 +67,14 @@ export const MainNavigation = (inProps: MainNavigationProps) => {
 
     // Close temporary menu after changing location (e.g. when clicking menu item).
     useEffect(() => {
-        return history.listen(() => {
-            if (variant === "temporary" && open) {
-                toggleOpen();
-            }
-        });
-    }, [history, variant, open, toggleOpen]);
+        if (previousLocation.current === location) {
+            return;
+        }
+        previousLocation.current = location;
+        if (variant === "temporary" && open) {
+            toggleOpen();
+        }
+    }, [location, variant, open, toggleOpen]);
 
     // workaround for issue: https://github.com/mui/material-ui/issues/35793
     const temporaryDrawerIsOpen = initialRender.current ? false : open;

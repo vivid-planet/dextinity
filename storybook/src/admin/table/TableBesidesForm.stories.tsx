@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 import { Field, FinalForm, FinalFormInput, type ISelectionApi, Selected, SelectionRoute, Table, TableQuery, useTableQuery } from "@dextinity/admin";
 import { Grid } from "@mui/material";
-import { Redirect, Route, Switch } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 
 import { apolloRestStoryDecorator } from "../../apollo-rest-story.decorator";
 import { storyRouterDecorator } from "../../story-router.decorator";
@@ -117,13 +117,9 @@ export default {
 
 export const BesidesForm = () => {
     return (
-        <Switch>
-            <Route exact path="/">
-                <Redirect to="/foo" />
-            </Route>
-            <Route path="/foo">
-                <Story />
-            </Route>
-        </Switch>
+        <Routes>
+            <Route path="/" element={<Navigate to="/foo" replace />} />
+            <Route path="/foo/*" element={<Story />} />
+        </Routes>
     );
 };

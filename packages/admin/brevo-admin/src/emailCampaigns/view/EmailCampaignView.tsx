@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { Loading, MainContent, Toolbar, ToolbarFillSpace, ToolbarItem, ToolbarTitleItem, useStackApi } from "@dextinity/admin";
+import { Loading, MainContent, Toolbar, ToolbarFillSpace, ToolbarItem, ToolbarTitleItem, useCurrentRouteMatch, useStackApi } from "@dextinity/admin";
 import { ArrowLeft } from "@dextinity/admin-icons";
 import {
     type BlockInterface,
@@ -12,7 +12,6 @@ import {
 } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import { FormattedMessage } from "react-intl";
-import { useRouteMatch } from "react-router";
 
 import { useBrevoConfig } from "../../common/BrevoConfigProvider";
 import { emailCampaignViewQuery } from "./EmailCampaignView.gql";
@@ -27,7 +26,7 @@ export function EmailCampaignView({ id, EmailCampaignContentBlock }: EmailCampai
     const stackApi = useStackApi();
     const previewApi = useBlockPreview();
     const blockContext = useBlockContext();
-    const match = useRouteMatch();
+    const match = useCurrentRouteMatch();
     const { scope } = useContentScope();
     const { previewUrl } = useBrevoConfig();
 

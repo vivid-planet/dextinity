@@ -1,7 +1,6 @@
-import { Dialog, StackLink, SubRoute } from "@dextinity/admin";
+import { Dialog, RouterMemoryRouter, StackLink, SubRoute } from "@dextinity/admin";
 import { styled } from "@mui/material/styles";
 import type { ReactNode, SyntheticEvent } from "react";
-import { MemoryRouter } from "react-router";
 
 import { useDamConfig } from "../../../dam/config/damConfig";
 import { DamScopeProvider } from "../../../dam/config/DamScopeProvider";
@@ -70,7 +69,7 @@ export const BaseChooseDamFileDialog = ({
             }}
         >
             <DamScopeProvider>
-                <MemoryRouter>
+                <RouterMemoryRouter>
                     <SubRoute path="">
                         <RedirectToPersistedDamLocation stateKey={scopedStateKey} />
                         <DamTable
@@ -102,7 +101,7 @@ export const BaseChooseDamFileDialog = ({
                             additionalToolbarItems={additionalToolbarItems}
                         />
                     </SubRoute>
-                </MemoryRouter>
+                </RouterMemoryRouter>
             </DamScopeProvider>
             {actions}
         </Dialog>

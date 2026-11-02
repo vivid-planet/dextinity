@@ -1,23 +1,16 @@
-import { useRef } from "react";
-import { MemoryRouter as ReactMemoryRouter, type MemoryRouterProps } from "react-router-dom";
+import { type PropsWithChildren, useState } from "react";
+import { createMemoryRouter, type InitialEntry } from "react-router";
 
-import { type PromptHandlerApi, RouterPromptHandler } from "./PromptHandler";
+import { catchAllRoutes, RouterProviderWithChildren } from "./RouterChildren";
 
-// MemoryRouter that sets up a material-ui confirmation dialog
-// plus a PromptHandler that works with our Prompt (supporting multiple Prompts)
+interface RouterMemoryRouterProps {
+    basename?: string;
+    initialEntries?: InitialEntry[];
+    initialIndex?: number;
+}
 
-export const RouterMemoryRouter = ({ children, ...props }: MemoryRouterProps) => {
-    const apiRef = useRef<PromptHandlerApi>(undefined);
-
-    const getConfirmation = (message: string, callback: (ok: boolean) => void) => {
-        if (apiRef.current) {
-            apiRef.current.showDialog(message, callback);
-        }
-    };
-
-    return (
-        <ReactMemoryRouter getUserConfirmation={getConfirmation} {...props}>
-            <RouterPromptHandler apiRef={apiRef}>{children}</RouterPromptHandler>
-        </ReactMemoryRouter>
-    );
+// Router that sets up a material-ui confirmation dialog plus a PromptHandler that works with our Prompt (supporting multiple Prompts)
+export const RouterMemoryRouter = ({ children, basename, initialEntries, initialIndex }: PropsWithChildren<RouterMemoryRouterProps>) => {
+    const [router] = useState(() => createMemoryRouter(catchAllRoutes, { basename, initialEntries, initialIndex }));
+    return <RouterProviderWithChildren router={router}>{children}</RouterProviderWithChildren>;
 };

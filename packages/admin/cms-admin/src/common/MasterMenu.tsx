@@ -8,13 +8,22 @@ import {
     type MainNavigationItemGroupProps,
     MainNavigationItemRouterLink,
     type MainNavigationItemRouterLinkProps,
+    useCurrentRouteMatch,
     useMainNavigation,
     useWindowSize,
 } from "@dextinity/admin";
 import { type ReactNode, useEffect } from "react";
-import { type RouteProps, useRouteMatch } from "react-router-dom";
 
 import { type Permission, useUserPermissionCheck } from "../userPermissions/hooks/currentUser";
+
+export interface MasterMenuRoute {
+    /**
+     * Path relative to the content scope URL, e.g. `/dashboard`. Also matches all sub paths (e.g. `/dashboard/foo`).
+     * Use `useParams()` in the element to access path params.
+     */
+    path: string;
+    element: ReactNode;
+}
 
 type MasterMenuItemBase = {
     requiredPermission?: Permission | Permission[];
@@ -23,7 +32,7 @@ type MasterMenuItemBase = {
 type MasterMenuItemRoute = MasterMenuItemBase &
     Omit<MainNavigationItemRouterLinkProps, "to"> & {
         type: "route";
-        route?: RouteProps;
+        route?: MasterMenuRoute;
         to?: string;
         badgeContent?: ReactNode;
     };
@@ -32,7 +41,7 @@ type MasterMenuItemCollapsible = MasterMenuItemBase &
     Omit<MainNavigationCollapsibleItemProps, "children"> & {
         type: "collapsible";
         items?: Array<MasterMenuItemRoute | MasterMenuItemAnchor | MasterMenuItemCollapsible>;
-        route?: RouteProps;
+        route?: MasterMenuRoute;
     };
 
 type MasterMenuItemAnchor = MasterMenuItemBase &
@@ -129,7 +138,7 @@ export function useMenuFromMasterMenuData(items: MasterMenuData): MenuItem[] {
             type,
             menuElement: {
                 ...menuItem,
-                to: to ?? route?.path?.toString() ?? "",
+                to: to ?? route?.path ?? "",
             },
         };
     };
@@ -140,7 +149,7 @@ export const MasterMenu = ({ menu, permanentMenuMinWidth = 1024 }: MasterMenuPro
     const menuItems = useMenuFromMasterMenuData(menu);
     const { setHasMultipleMenuItems } = useMainNavigation();
     const windowSize = useWindowSize();
-    const match = useRouteMatch();
+    const scopeUrl = useCurrentRouteMatch().url.replace(/\/$/, "");
     const useTemporaryMenu: boolean = windowSize.width < permanentMenuMinWidth;
 
     useEffect(() => {
@@ -162,7 +171,7 @@ export const MasterMenu = ({ menu, permanentMenuMinWidth = 1024 }: MasterMenuPro
             } else if (item.type === "externalLink") {
                 return <MainNavigationItemAnchorLink key={index} {...item.menuElement} />;
             } else if (item.type === "route") {
-                return <MainNavigationItemRouterLink key={index} {...item.menuElement} to={`${match.url}${item.menuElement.to}`} />;
+                return <MainNavigationItemRouterLink key={index} {...item.menuElement} to={`${scopeUrl}${item.menuElement.to}`} />;
             }
             return [];
         });
@@ -187,7 +196,7 @@ export const MasterMenu = ({ menu, permanentMenuMinWidth = 1024 }: MasterMenuPro
                         return <MainNavigationItemAnchorLink key={index} {...menuElement.menuElement} />;
                     case "route":
                         return (
-                            <MainNavigationItemRouterLink key={index} {...menuElement.menuElement} to={`${match.url}${menuElement.menuElement.to}`} />
+                            <MainNavigationItemRouterLink key={index} {...menuElement.menuElement} to={`${scopeUrl}${menuElement.menuElement.to}`} />
                         );
                 }
             })}

@@ -1,9 +1,10 @@
 import { Badge } from "@mui/material";
 import type { ListItemProps } from "@mui/material/ListItem";
 import type { ReactNode } from "react";
-import { Link, type LinkProps, Route } from "react-router-dom";
+import { Link, type LinkProps } from "react-router";
 
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import { useAbsoluteMatch } from "../../router/RouteMatch";
 import { MainNavigationItem, type MainNavigationItemProps } from "./Item";
 
 interface MainNavigationRouterLinkItemStandardProps extends ThemedComponentBaseProps<{
@@ -36,19 +37,15 @@ export const MainNavigationItemRouterLink = ({
         passedSecondaryAction
     );
 
+    const match = useAbsoluteMatch(restProps.to);
+
     return (
-        <Route path={restProps.to} strict={false}>
-            {({ match }) => {
-                return (
-                    <MainNavigationItem
-                        selected={!!match}
-                        secondaryAction={secondaryAction}
-                        component={Link}
-                        slotProps={mainNavigationItemSlotProps}
-                        {...restProps}
-                    />
-                );
-            }}
-        </Route>
+        <MainNavigationItem
+            selected={!!match}
+            secondaryAction={secondaryAction}
+            component={Link}
+            slotProps={mainNavigationItemSlotProps}
+            {...restProps}
+        />
     );
 };

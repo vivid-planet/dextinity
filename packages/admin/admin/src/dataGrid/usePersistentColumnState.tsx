@@ -1,9 +1,9 @@
 import { type DataGridProps, type GridColumnVisibilityModel, type GridPinnedColumnFields, useGridApiRef } from "@mui/x-data-grid";
 import type { DataGridProProps } from "@mui/x-data-grid-pro";
 import { type RefObject, useCallback, useEffect, useMemo, useState } from "react";
-import { useRouteMatch } from "react-router";
 
 import { useStoredState } from "../hooks/useStoredState";
+import { useCurrentRouteMatch } from "../router/RouteMatch";
 import type { GridColDef } from "./GridColDef";
 
 const useGridColumns = (apiRef: ReturnType<typeof useGridApiRef>) => {
@@ -75,7 +75,7 @@ type GridProps = {
 export function usePersistentColumnState(stateKey: string): GridProps {
     const apiRef = useGridApiRef();
     const columns = useGridColumns(apiRef);
-    const match = useRouteMatch();
+    const match = useCurrentRouteMatch();
 
     const storageKeyPrefix = `${match.path}${stateKey}`;
 

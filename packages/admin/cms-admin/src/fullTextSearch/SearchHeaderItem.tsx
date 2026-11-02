@@ -3,7 +3,7 @@ import { Search } from "@dextinity/admin-icons";
 import { Box, CircularProgress, ClickAwayListener, InputBase, List, ListItemButton, ListItemText, Paper, Popper, Typography } from "@mui/material";
 import { useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 import { useDebounce } from "use-debounce";
 
 import { useContentScope } from "../contentScope/Provider";
@@ -27,7 +27,7 @@ const searchQuery = gql`
 `;
 
 export function SearchHeaderItem() {
-    const history = useHistory();
+    const navigate = useNavigate();
     const apolloClient = useApolloClient();
     const contentScope = useContentScope();
     const { entityDependencyMap } = useDependenciesConfig();
@@ -57,7 +57,7 @@ export function SearchHeaderItem() {
         }
         const path = await dependency.resolvePath({ apolloClient, id: result.id });
         setOpen(false);
-        history.push(contentScope.match.url + path);
+        navigate(contentScope.match.url + path);
     };
 
     return (

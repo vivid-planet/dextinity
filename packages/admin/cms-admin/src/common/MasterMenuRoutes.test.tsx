@@ -19,7 +19,7 @@ describe("useRoutePropsFromMasterMenuData", () => {
         const items: MasterMenuData = [
             {
                 type: "route",
-                route: { path: "/allowed" },
+                route: { path: "/allowed", element: null },
                 primary: "Test",
                 icon: undefined,
             },
@@ -27,21 +27,21 @@ describe("useRoutePropsFromMasterMenuData", () => {
 
         const routes = useRoutePropsFromMasterMenuData(items);
 
-        expect(routes).toEqual([{ path: "/allowed" }]);
+        expect(routes).toEqual([{ path: "/allowed", element: null }]);
     });
 
     it("should filter item with missing permission", () => {
         const items: MasterMenuData = [
             {
                 type: "route",
-                route: { path: "/allowed" },
+                route: { path: "/allowed", element: null },
                 primary: "Allowed",
                 icon: undefined,
                 requiredPermission: permissions.allowed,
             },
             {
                 type: "route",
-                route: { path: "/disallowed" },
+                route: { path: "/disallowed", element: null },
                 primary: "Disallowed",
                 icon: undefined,
                 requiredPermission: permissions.disallowed,
@@ -50,7 +50,7 @@ describe("useRoutePropsFromMasterMenuData", () => {
 
         const routes = useRoutePropsFromMasterMenuData(items);
 
-        expect(routes).toEqual([{ path: "/allowed" }]);
+        expect(routes).toEqual([{ path: "/allowed", element: null }]);
     });
 
     it("should include item if ancestors are allowed", () => {
@@ -63,7 +63,7 @@ describe("useRoutePropsFromMasterMenuData", () => {
                 items: [
                     {
                         type: "route",
-                        route: { path: "/allowed" },
+                        route: { path: "/allowed", element: null },
                         primary: "Allowed",
                         icon: undefined,
                     },
@@ -73,7 +73,7 @@ describe("useRoutePropsFromMasterMenuData", () => {
 
         const routes = useRoutePropsFromMasterMenuData(items);
 
-        expect(routes).toEqual([{ path: "/allowed" }]);
+        expect(routes).toEqual([{ path: "/allowed", element: null }]);
     });
 
     it("should include item if you have one ancestor permission", () => {
@@ -86,7 +86,7 @@ describe("useRoutePropsFromMasterMenuData", () => {
                 items: [
                     {
                         type: "route",
-                        route: { path: "/allowed" },
+                        route: { path: "/allowed", element: null },
                         primary: "Allowed",
                         icon: undefined,
                     },
@@ -96,7 +96,7 @@ describe("useRoutePropsFromMasterMenuData", () => {
 
         const routes = useRoutePropsFromMasterMenuData(items);
 
-        expect(routes).toEqual([{ path: "/allowed" }]);
+        expect(routes).toEqual([{ path: "/allowed", element: null }]);
     });
 
     it("should filter item if ancestors aren't allowed", () => {
@@ -109,7 +109,7 @@ describe("useRoutePropsFromMasterMenuData", () => {
                 items: [
                     {
                         type: "route",
-                        route: { path: "/allowed" },
+                        route: { path: "/allowed", element: null },
                         primary: "Allowed",
                         requiredPermission: permissions.allowed,
                         icon: undefined,
@@ -133,7 +133,7 @@ describe("useRoutePropsFromMasterMenuData", () => {
                 items: [
                     {
                         type: "route",
-                        route: { path: "/allowed" },
+                        route: { path: "/allowed", element: null },
                         primary: "Allowed",
                         requiredPermission: permissions.allowed,
                         icon: undefined,

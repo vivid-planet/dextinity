@@ -8,6 +8,7 @@ import {
     Toolbar,
     ToolbarActions,
     ToolbarItem,
+    useCurrentRouteMatch,
     useStackApi,
 } from "@dextinity/admin";
 import { ArrowLeft, Preview } from "@dextinity/admin-icons";
@@ -30,7 +31,7 @@ import {
 } from "@dextinity/cms-admin";
 import { IconButton, Stack } from "@mui/material";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useRouteMatch } from "react-router";
+import { matchPath, useLocation } from "react-router";
 
 import { PageContentBlock } from "./blocks/PageContentBlock";
 import { SeoBlock } from "./blocks/SeoBlock";
@@ -144,7 +145,7 @@ export const EditPage = ({ id }: Props) => {
         pageId: id,
     });
 
-    const match = useRouteMatch();
+    const match = useCurrentRouteMatch();
     const stackApi = useStackApi();
     const { match: contentScopeMatch, scope } = useContentScope();
     const siteConfig = useSiteConfig({ scope });
@@ -152,7 +153,8 @@ export const EditPage = ({ id }: Props) => {
 
     const blockContext = useBlockContext();
 
-    const tabRouteMatch = useRouteMatch<{ tab: string }>(`${match.path}/:tab`);
+    const location = useLocation();
+    const tabRouteMatch = matchPath({ path: `${match.url}/:tab`, end: false }, location.pathname);
 
     if (pageState == null || pageState.document == null) {
         return null;

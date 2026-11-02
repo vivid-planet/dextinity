@@ -1,12 +1,8 @@
-import { createTheme } from "@mui/material/styles";
-import { createMemoryHistory } from "history";
 import { useEffect } from "react";
-import { IntlProvider } from "react-intl";
-import { Router, useRouteMatch } from "react-router";
-import { fireEvent, render } from "test-utils";
+import { createTestRouter, fireEvent, render } from "test-utils";
 import { expect, test } from "vitest";
 
-import { MuiThemeProvider } from "../mui/ThemeProvider";
+import { useCurrentRouteMatch } from "../router/RouteMatch";
 import { SubRoute, useSubRoutePrefix } from "../router/SubRoute";
 import { StackPage } from "../stack/Page";
 import { Stack } from "../stack/Stack";
@@ -15,7 +11,7 @@ import { RouterTab, RouterTabs } from "./RouterTabs";
 
 test("RouterTabs in SubRoute", async () => {
     function Cmp1() {
-        const match = useRouteMatch();
+        const match = useCurrentRouteMatch();
         return <p>matchUrl={match?.url}</p>;
     }
     function Story() {
@@ -35,17 +31,9 @@ test("RouterTabs in SubRoute", async () => {
         );
     }
 
-    const history = createMemoryHistory();
+    const router = createTestRouter();
 
-    const rendered = render(
-        <IntlProvider locale="en">
-            <MuiThemeProvider theme={createTheme()}>
-                <Router history={history}>
-                    <Story />
-                </Router>
-            </MuiThemeProvider>
-        </IntlProvider>,
-    );
+    const rendered = render(<Story />, { router });
     expect(rendered.getByText("foo tab content")).toBeInTheDocument();
 
     fireEvent.click(rendered.getByText("Bar"));
@@ -93,17 +81,9 @@ test("RouterTabs must not remount content", async () => {
         );
     }
 
-    const history = createMemoryHistory();
+    const router = createTestRouter();
 
-    const rendered = render(
-        <IntlProvider locale="en">
-            <MuiThemeProvider theme={createTheme()}>
-                <Router history={history}>
-                    <Story />
-                </Router>
-            </MuiThemeProvider>
-        </IntlProvider>,
-    );
+    const rendered = render(<Story />, { router });
     expect(rendered.getByText("FooContent")).toBeInTheDocument();
     expect(mountCountFoo).toBe(1);
     expect(mountCountBar).toBe(1);

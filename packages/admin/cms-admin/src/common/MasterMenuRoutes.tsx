@@ -1,11 +1,11 @@
-import { RouteWithErrorBoundary } from "@dextinity/admin";
+import { ErrorBoundary, useCurrentRouteMatch } from "@dextinity/admin";
 import type { ReactNode } from "react";
-import { Redirect, type RouteProps, Switch, useRouteMatch } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router";
 
 import { type Permission, useUserPermissionCheck } from "../userPermissions/hooks/currentUser";
-import type { MasterMenuData, MasterMenuItem } from "./MasterMenu";
+import type { MasterMenuData, MasterMenuItem, MasterMenuRoute } from "./MasterMenu";
 
-export function useRoutePropsFromMasterMenuData(items: MasterMenuData): RouteProps[] {
+export function useRoutePropsFromMasterMenuData(items: MasterMenuData): MasterMenuRoute[] {
     const isAllowed = useUserPermissionCheck();
     const checkPermission = (item: MasterMenuItem, ancestors: MasterMenuItem[]): boolean => {
         function getRequiredPermissionsArray(permission: Permission | Permission[]): Permission[] {
@@ -28,15 +28,15 @@ export function useRoutePropsFromMasterMenuData(items: MasterMenuData): RoutePro
     };
 
     const flat = (
-        routes: RouteProps[],
+        routes: MasterMenuRoute[],
         item: MasterMenuItem & { icon?: ReactNode },
         ancestors: Array<MasterMenuItem & { icon?: ReactNode }>,
-    ): RouteProps[] => {
+    ): MasterMenuRoute[] => {
         if (item.type === "externalLink") {
             return routes;
         }
         if (item.type === "group") {
-            return routes.concat(item.items.reduce((routes, child) => flat(routes, child, [...ancestors, item]), [] as RouteProps[]));
+            return routes.concat(item.items.reduce((routes, child) => flat(routes, child, [...ancestors, item]), [] as MasterMenuRoute[]));
         }
         if (item.route && checkPermission(item, ancestors)) {
             routes = routes.concat(item.route);
@@ -45,13 +45,13 @@ export function useRoutePropsFromMasterMenuData(items: MasterMenuData): RoutePro
             routes = routes.concat(
                 (item.items as Array<MasterMenuItem & { icon?: ReactNode }>).reduce(
                     (routes, child) => flat(routes, child, [...ancestors, item]),
-                    [] as RouteProps[],
+                    [] as MasterMenuRoute[],
                 ),
             );
         }
         return routes;
     };
-    return items.reduce((routes, item) => flat(routes, item, []), [] as RouteProps[]);
+    return items.reduce((routes, item) => flat(routes, item, []), [] as MasterMenuRoute[]);
 }
 
 export interface MasterMenuRoutesProps {
@@ -60,14 +60,18 @@ export interface MasterMenuRoutesProps {
 
 export const MasterMenuRoutes = ({ menu }: MasterMenuRoutesProps) => {
     const routes = useRoutePropsFromMasterMenuData(menu);
-    const match = useRouteMatch();
+    const scopeUrl = useCurrentRouteMatch().url.replace(/\/$/, "");
 
     return (
-        <Switch>
-            <Redirect to={`${match.url}${routes[0].path}`} exact={true} from={match.path} />
-            {routes.map((route, index) => (
-                <RouteWithErrorBoundary key={index} {...route} path={`${match.path}${route.path}`} />
+        <Routes>
+            <Route index element={<Navigate to={`${scopeUrl}${routes[0].path}`} replace />} />
+            {routes.map((route) => (
+                <Route
+                    key={route.path}
+                    path={`${route.path.replace(/^\//, "")}/*`}
+                    element={<ErrorBoundary key={route.path}>{route.element}</ErrorBoundary>}
+                />
             ))}
-        </Switch>
+        </Routes>
     );
 };

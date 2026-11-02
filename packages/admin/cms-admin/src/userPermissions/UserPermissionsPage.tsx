@@ -1,8 +1,7 @@
-import { MainContent, RouterTab, RouterTabs, Stack, StackLink, StackPage, StackSwitch, StackToolbar } from "@dextinity/admin";
+import { MainContent, RouterTab, RouterTabs, Stack, StackLink, StackPage, StackSwitch, StackToolbar, useCurrentRouteMatch } from "@dextinity/admin";
 import { Edit } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { FormattedMessage } from "react-intl";
-import { useRouteMatch } from "react-router";
 
 import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
 import { useContentScope } from "../contentScope/Provider";
@@ -16,7 +15,7 @@ import { UserPermissionsUserGrid } from "./UserGrid";
 export const UserPermissionsPage = () => {
     const isAllowed = useUserPermissionCheck();
     const { match } = useContentScope();
-    const routeMatch = useRouteMatch();
+    const routeMatch = useCurrentRouteMatch();
     const location = routeMatch.url.replace(match.url, "");
     useContentScopeConfig({ redirectPathAfterChange: location });
 

@@ -17,6 +17,7 @@ import {
     MasterMenuRoutes,
     PagesPage,
     PublisherPage,
+    useContentScope,
     UserPermissionsPage,
     WarningsPage,
 } from "@dextinity/cms-admin";
@@ -50,7 +51,7 @@ import type { ContentScope } from "@src/site-configs";
 import { EditWelcomeEmailPage } from "@src/welcomeEmail/EditWelcomeEmailPage";
 import { useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Redirect, type RouteComponentProps } from "react-router";
+import { Navigate, useParams } from "react-router";
 
 import { EditPageNode } from "./EditPageNode";
 
@@ -60,6 +61,39 @@ export const pageTreeDocumentTypes: Record<string, DocumentInterface<any, any>> 
     Link,
     PredefinedPage,
 };
+
+function PageTreePage() {
+    const params = useParams<{ category: string }>();
+    const contentScope = useContentScope();
+    const category = urlParamToCategory(params.category ?? "");
+
+    if (category === undefined) {
+        return <Navigate to={`${contentScope.match.url}/dashboard`} replace />;
+    }
+
+    return (
+        <PagesPage
+            path={`/pages/pagetree/${params.category}`}
+            documentTypes={(category): Record<DocumentType, DocumentInterface> => {
+                if (category === "TopMenu") {
+                    return {
+                        Page,
+                        PredefinedPage,
+                    };
+                }
+
+                return {
+                    Page,
+                    PredefinedPage,
+                    Link,
+                };
+            }}
+            editPageNode={EditPageNode}
+            category={category}
+            renderContentScopeIndicator={(scope: ContentScope) => <ContentScopeIndicator scope={scope} />}
+        />
+    );
+}
 
 const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoContactConfig }): MasterMenuData => {
     const BrevoContactsPage = createBrevoContactsPage({
@@ -97,7 +131,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             icon: <Dashboard />,
             route: {
                 path: "/dashboard",
-                component: DashboardPage,
+                element: <DashboardPage />,
             },
         },
         {
@@ -111,36 +145,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             })),
             route: {
                 path: "/pages/pagetree/:category",
-                render: ({ match }: RouteComponentProps<{ category: string }>) => {
-                    const category = urlParamToCategory(match.params.category);
-
-                    if (category === undefined) {
-                        return <Redirect to={`${match.url}/dashboard`} />;
-                    }
-
-                    return (
-                        <PagesPage
-                            path={`/pages/pagetree/${match.params.category}`}
-                            documentTypes={(category): Record<DocumentType, DocumentInterface> => {
-                                if (category === "TopMenu") {
-                                    return {
-                                        Page,
-                                        PredefinedPage,
-                                    };
-                                }
-
-                                return {
-                                    Page,
-                                    PredefinedPage,
-                                    Link,
-                                };
-                            }}
-                            editPageNode={EditPageNode}
-                            category={category}
-                            renderContentScopeIndicator={(scope: ContentScope) => <ContentScopeIndicator scope={scope} />}
-                        />
-                    );
-                },
+                element: <PageTreePage />,
             },
             requiredPermission: "pageTree",
         },
@@ -154,7 +159,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     primary: <FormattedMessage id="menu.news" defaultMessage="News" />,
                     route: {
                         path: "/structured-content/news",
-                        component: NewsPage,
+                        element: <NewsPage />,
                     },
                 },
             ],
@@ -166,7 +171,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             icon: <Assets />,
             route: {
                 path: "/assets",
-                render: () => <DamPage additionalToolbarItems={<ImportFromPicsum />} />,
+                element: <DamPage additionalToolbarItems={<ImportFromPicsum />} />,
             },
             requiredPermission: "dam",
         },
@@ -180,7 +185,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     primary: <FormattedMessage id="menu.project-snips.mainMenu" defaultMessage="Main menu" />,
                     route: {
                         path: "/project-snips/main-menu",
-                        component: MainMenu,
+                        element: <MainMenu />,
                     },
                     requiredPermission: "pageTree",
                 },
@@ -189,7 +194,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     primary: <FormattedMessage id="menu.project-snips.footer" defaultMessage="Footer" />,
                     route: {
                         path: "/project-snips/footer",
-                        component: EditFooterPage,
+                        element: <EditFooterPage />,
                     },
                     requiredPermission: "pageTree",
                 },
@@ -206,7 +211,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     primary: <FormattedMessage id="menu.newsletter.welcomeEmail" defaultMessage="Welcome email" />,
                     route: {
                         path: "/newsletter/welcome-email",
-                        component: EditWelcomeEmailPage,
+                        element: <EditWelcomeEmailPage />,
                     },
                     requiredPermission: "pageTree",
                 },
@@ -215,7 +220,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     primary: <FormattedMessage id="menu.newsletter.emailCampaigns" defaultMessage="Email campaigns" />,
                     route: {
                         path: "/newsletter/email-campaigns",
-                        component: CampaignsPage,
+                        element: <CampaignsPage />,
                     },
                 },
                 {
@@ -223,7 +228,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     primary: <FormattedMessage id="menu.newsletter.contacts" defaultMessage="Contacts" />,
                     route: {
                         path: "/newsletter/contacts",
-                        component: BrevoContactsPage,
+                        element: <BrevoContactsPage />,
                     },
                 },
                 {
@@ -231,7 +236,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     primary: <FormattedMessage id="menu.newsletter.testContacts" defaultMessage="Test contacts" />,
                     route: {
                         path: "/newsletter/test-contacts",
-                        component: BrevoTestContactsPage,
+                        element: <BrevoTestContactsPage />,
                     },
                 },
                 {
@@ -239,7 +244,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     primary: <FormattedMessage id="menu.newsletter.targetGroups" defaultMessage="Target groups" />,
                     route: {
                         path: "/newsletter/target-groups",
-                        component: TargetGroupsPage,
+                        element: <TargetGroupsPage />,
                     },
                 },
                 {
@@ -247,7 +252,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     primary: <FormattedMessage id="menu.newsletter.config" defaultMessage="Config" />,
                     route: {
                         path: "/newsletter/config",
-                        component: BrevoConfigPage,
+                        element: <BrevoConfigPage />,
                     },
                     requiredPermission: "brevoNewsletterConfig",
                 },
@@ -264,7 +269,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     primary: <FormattedMessage id="menu.publisher" defaultMessage="Publisher" />,
                     route: {
                         path: "/system/publisher",
-                        component: PublisherPage,
+                        element: <PublisherPage />,
                     },
                     requiredPermission: "builds",
                 },
@@ -273,7 +278,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     primary: <FormattedMessage id="menu.cronJobs" defaultMessage="Cron Jobs" />,
                     route: {
                         path: "/system/cron-jobs",
-                        component: CronJobsPage,
+                        element: <CronJobsPage />,
                     },
                     requiredPermission: "cronJobs",
                 },
@@ -282,7 +287,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     primary: <FormattedMessage id="menu.redirects" defaultMessage="Redirects" />,
                     route: {
                         path: "/system/redirects",
-                        render: () => <RedirectsPage redirectPathAfterChange="/system/redirects" />,
+                        element: <RedirectsPage redirectPathAfterChange="/system/redirects" />,
                     },
                     requiredPermission: "pageTree",
                 },
@@ -291,7 +296,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     primary: <FormattedMessage id="menu.warnings" defaultMessage="Warnings" />,
                     route: {
                         path: "/system/warnings",
-                        component: WarningsPage,
+                        element: <WarningsPage />,
                     },
                     requiredPermission: "warnings",
                 },
@@ -303,7 +308,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             icon: <Snips />,
             route: {
                 path: "/user-permissions",
-                component: UserPermissionsPage,
+                element: <UserPermissionsPage />,
             },
             requiredPermission: ["userPermissions", "impersonation"],
         },
@@ -321,7 +326,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                             primary: <FormattedMessage id="menu.products" defaultMessage="Products" />,
                             route: {
                                 path: "/products",
-                                component: ProductsPage,
+                                element: <ProductsPage />,
                             },
                         },
                         {
@@ -329,7 +334,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                             primary: <FormattedMessage id="menu.createCapProduct" defaultMessage="Create Cap Product" />,
                             route: {
                                 path: "/create-cap-product",
-                                component: CreateCapProductPage,
+                                element: <CreateCapProductPage />,
                             },
                         },
                         {
@@ -337,7 +342,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                             primary: <FormattedMessage id="menu.manufacturers" defaultMessage="Manufacturers" />,
                             route: {
                                 path: "/manufacturers",
-                                component: ManufacturersPage,
+                                element: <ManufacturersPage />,
                             },
                         },
                         {
@@ -345,7 +350,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                             primary: <FormattedMessage id="menu.productsWithLowPrice" defaultMessage="Products with low price" />,
                             route: {
                                 path: "/products-with-low-price",
-                                component: ProductsWithLowPricePage,
+                                element: <ProductsWithLowPricePage />,
                             },
                         },
                         {
@@ -353,7 +358,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                             primary: <FormattedMessage id="menu.productCategories" defaultMessage="Product Categories" />,
                             route: {
                                 path: "/product-categories",
-                                component: ProductCategoriesPage,
+                                element: <ProductCategoriesPage />,
                             },
                         },
                         {
@@ -361,7 +366,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                             primary: <FormattedMessage id="menu.productTags" defaultMessage="Product Tags" />,
                             route: {
                                 path: "/product-tags",
-                                component: ProductTagsPage,
+                                element: <ProductTagsPage />,
                             },
                         },
                         {
@@ -369,7 +374,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                             primary: <FormattedMessage id="menu.productHighlights" defaultMessage="Product Highlights" />,
                             route: {
                                 path: "/product-highlights",
-                                component: ProductHighlightsPage,
+                                element: <ProductHighlightsPage />,
                             },
                         },
                     ],
@@ -384,7 +389,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                             primary: <FormattedMessage id="menu.productsHandmade" defaultMessage="Products Handmade" />,
                             route: {
                                 path: "/products-handmade",
-                                component: ProductsHandmadePage,
+                                element: <ProductsHandmadePage />,
                             },
                         },
                         {
@@ -392,7 +397,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                             primary: <FormattedMessage id="menu.manufacturersHandmade" defaultMessage="Manufacturers Handmade" />,
                             route: {
                                 path: "/manufacturers-handmade",
-                                component: ManufacturersHandmadePage,
+                                element: <ManufacturersHandmadePage />,
                             },
                         },
                         {
@@ -400,7 +405,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                             primary: <FormattedMessage id="menu.productCategoriesHandmade" defaultMessage="Product Categories Handmade" />,
                             route: {
                                 path: "/product-categories-handmade",
-                                component: ProductCategoriesHandmadePage,
+                                element: <ProductCategoriesHandmadePage />,
                             },
                         },
                         {
@@ -408,7 +413,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                             primary: <FormattedMessage id="menu.productTagsHandmade" defaultMessage="Product Tags Handmade" />,
                             route: {
                                 path: "/product-tags-handmade",
-                                component: ProductTagsHandmadePage,
+                                element: <ProductTagsHandmadePage />,
                             },
                         },
                         {
@@ -416,7 +421,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                             primary: <FormattedMessage id="menu.productHighlightsHandmade" defaultMessage="Product Highlights Handmade" />,
                             route: {
                                 path: "/product-highlights-handmade",
-                                component: ProductHighlightsHandmadePage,
+                                element: <ProductHighlightsHandmadePage />,
                             },
                         },
                     ],

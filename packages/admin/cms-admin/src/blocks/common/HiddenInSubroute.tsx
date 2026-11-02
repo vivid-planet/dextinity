@@ -1,12 +1,12 @@
+import { AbsoluteRoute, useCurrentRouteMatch } from "@dextinity/admin";
 import type { ReactNode } from "react";
-import { Route, useRouteMatch } from "react-router";
 
 export const HiddenInSubroute = ({ children }: { children?: ReactNode }) => {
-    const match = useRouteMatch();
+    const match = useCurrentRouteMatch();
 
     return (
-        <Route path={match.url} exact>
+        <AbsoluteRoute path={match.url} exact>
             {children}
-        </Route>
+        </AbsoluteRoute>
     );
 };

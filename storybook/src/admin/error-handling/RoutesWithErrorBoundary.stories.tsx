@@ -1,6 +1,6 @@
-import { Alert, MainNavigation, MainNavigationItemRouterLink, MasterLayout, RouteWithErrorBoundary } from "@dextinity/admin";
+import { Alert, ErrorBoundary, MainNavigation, MainNavigationItemRouterLink, MasterLayout } from "@dextinity/admin";
 import { Card, CardContent, Typography } from "@mui/material";
-import { Redirect, Route, Switch } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 
 import { storyRouterDecorator } from "../../story-router.decorator";
 
@@ -12,7 +12,7 @@ const ViewWithNoError = () => {
                     View with No Error
                 </Typography>
                 <Alert severity="info">
-                    <Typography>Use the RouteWithErrorBoundary component to create a boundary for app routes.</Typography>
+                    <Typography>Wrap the element of a route in an ErrorBoundary to create a boundary for app routes.</Typography>
                     <Typography>Try to click on the second route (Error Route) to display a route which throws an error.</Typography>
                 </Alert>
             </CardContent>
@@ -43,20 +43,32 @@ export default {
     decorators: [storyRouterDecorator()],
 };
 
-export const _RouteWithErrorBoundary = {
+export const RoutesWithErrorBoundary = {
     render: () => {
         return (
             <MasterLayout menuComponent={MasterMenu}>
-                <Switch>
-                    <RouteWithErrorBoundary path="/no-error-route" component={ViewWithNoError} />
-                    <RouteWithErrorBoundary path="/error-route" component={ViewWithError} />
-                    <Route exact path="/">
-                        <Redirect to="/no-error-route" />
-                    </Route>
-                </Switch>
+                <Routes>
+                    <Route
+                        path="/no-error-route"
+                        element={
+                            <ErrorBoundary key="no-error-route">
+                                <ViewWithNoError />
+                            </ErrorBoundary>
+                        }
+                    />
+                    <Route
+                        path="/error-route"
+                        element={
+                            <ErrorBoundary key="error-route">
+                                <ViewWithError />
+                            </ErrorBoundary>
+                        }
+                    />
+                    <Route path="/" element={<Navigate to="/no-error-route" replace />} />
+                </Routes>
             </MasterLayout>
         );
     },
 
-    name: "RouteWithErrorBoundary",
+    name: "Routes with ErrorBoundary",
 };

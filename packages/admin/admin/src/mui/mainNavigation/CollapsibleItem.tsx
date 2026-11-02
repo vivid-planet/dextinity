@@ -4,6 +4,7 @@ import { Children, cloneElement, type MouseEvent, type ReactElement, type ReactN
 import { matchPath, useLocation } from "react-router";
 
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import { normalizePath } from "../../router/RouteMatch";
 import {
     CollapsibleIndicator,
     CollapsibleItemMainNavigationItem,
@@ -83,7 +84,7 @@ export const MainNavigationCollapsibleItem = (inProps: MainNavigationCollapsible
         function checkIfPathInLocation(
             child: ReactElement<MainNavigationCollapsibleItemProps | MainNavigationItemRouterLinkProps | MainNavigationItemProps>,
         ) {
-            return "to" in child.props && matchPath(location.pathname, { path: child.props.to, strict: true });
+            return "to" in child.props && matchPath({ path: normalizePath(child.props.to), end: false }, location.pathname);
         }
         hasSelectedChild.current = false;
 

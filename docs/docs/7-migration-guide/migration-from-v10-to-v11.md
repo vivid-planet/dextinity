@@ -556,18 +556,28 @@ Run the TypeScript scripts with `@swc-node/register` instead of `ts-node`. Nest 
 
 If `src/repl.ts` imports `tsconfig-paths/register`, remove that import.
 
-Static imports are evaluated before the module body runs, so `require("./tracing")` at the top of `main.ts` no longer runs before the application is loaded. Move the bootstrap code to `src/bootstrap.ts` and load it dynamically after tracing:
+Static imports are evaluated before the module body runs, so `require("./tracing")` at the top of `main.ts` no longer runs before the application is loaded. Move it to `src/tracing.ts` and preload it with `--import` instead:
 
-```ts title="api/src/main.ts"
+```ts title="api/src/tracing.ts"
 if (process.env.TRACING == "production") {
     await import("./tracing.production.js");
 } else if (process.env.TRACING == "dev") {
     await import("./tracing.dev.js");
 }
-
-// Imported dynamically so that the application's modules are loaded after tracing has been set up and can be instrumented.
-await import("./bootstrap.js");
 ```
+
+```diff title="api/package.json"
+{
+    "scripts": {
+-       "dev:nest": "... nest start --debug --watch --preserveWatchOutput",
++       "dev:nest": "... nest start --debug --watch --preserveWatchOutput --exec \"node --import ./dist/tracing.js\"",
+-       "start:prod": "node dist/main",
++       "start:prod": "node --import ./dist/tracing.js dist/main.js",
+    }
+}
+```
+
+Update every other place that starts the API with `node dist/main`, for instance the command of your Docker image or deployment. Without `--import`, the API starts without tracing.
 
 OpenTelemetry instrumentations only patch ES modules through a loader hook. If you use them, add `import-in-the-middle` to the dependencies and register its hook in the tracing file. Limit the hook to the modules the instrumentations patch: wrapping every module breaks packages with circular imports, such as `@getbrevo/brevo`, with `ReferenceError: Cannot access 'BrevoError' before initialization`.
 

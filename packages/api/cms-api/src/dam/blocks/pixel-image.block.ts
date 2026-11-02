@@ -12,7 +12,6 @@ import {
     createBlock,
 } from "../../blocks/block";
 import { AnnotationBlockMeta } from "../../blocks/decorators/field";
-import { IsUndefinable } from "../../common/validators/is-undefinable";
 import { FocalPoint } from "../../file-utils/focal-point.enum";
 import { DamFileAiContentType } from "../files/entities/ai-content-type.enum";
 import { FILE_ENTITY } from "../files/entities/file.entity";
@@ -74,7 +73,7 @@ class PixelImageBlockInput extends BlockInput {
     damFileId?: string;
 
     @Type(() => ImageCropAreaInput)
-    @IsUndefinable()
+    @IsOptional()
     @ValidateNested()
     cropArea?: ImageCropAreaInput;
 

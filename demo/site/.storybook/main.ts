@@ -2,8 +2,29 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { StorybookConfig } from "@storybook/nextjs-vite";
+import type { Plugin } from "vitest/config";
 
 const currentDirectory = dirname(fileURLToPath(import.meta.url));
+
+const bundledSiteReactDirectory = "/lib/site-react/";
+
+// @dextinity/site-nextjs bundles @dextinity/site-react into its `lib` but keeps site-react's own dependencies (e.g. `fast-equals`)
+// as bare imports. They aren't dependencies of site-nextjs, so Vite can't resolve them from the bundled files. Resolve them from
+// site-react instead.
+const resolveBundledSiteReactDependencies: Plugin = {
+    name: "resolve-bundled-site-react-dependencies",
+    enforce: "pre",
+    async resolveId(source, importer, options) {
+        if (!importer?.includes(bundledSiteReactDirectory) || source.startsWith(".") || source.startsWith("/")) {
+            return null;
+        }
+
+        const siteNextjsDirectory = importer.slice(0, importer.indexOf(bundledSiteReactDirectory));
+        const siteReactImporter = resolve(siteNextjsDirectory, "node_modules/@dextinity/site-react/package.json");
+
+        return this.resolve(source, siteReactImporter, { ...options, skipSelf: true });
+    },
+};
 
 const config: StorybookConfig = {
     stories: ["../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
@@ -22,6 +43,7 @@ const config: StorybookConfig = {
             ...config.resolve.alias,
             "@src": resolve(currentDirectory, "../src"),
         };
+        config.plugins = [...(config.plugins ?? []), resolveBundledSiteReactDependencies];
         return config;
     },
 };

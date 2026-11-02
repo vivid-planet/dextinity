@@ -1,6 +1,6 @@
 import nextBundleAnalyzer from "@next/bundle-analyzer";
 import type { NextConfig } from "next";
-import { dirname } from "path";
+import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 import dextinityConfig from "./src/dextinity-config.json" with { type: "json" };
@@ -60,8 +60,9 @@ const nextConfig: NextConfig = {
             ],
         },
     ],
+    // Not import.meta.resolve(): it throws when dist/ hasn't been built yet, which breaks tools that only read this config (Storybook, next typegen).
     // eslint-disable-next-line no-restricted-syntax -- VALKEY_ENABLED is a server-start-time flag for cache handler setup
-    cacheHandler: process.env.VALKEY_ENABLED === "true" ? import.meta.resolve("./dist/cache-handler.js").replace("file://", "") : undefined,
+    cacheHandler: process.env.VALKEY_ENABLED === "true" ? join(dirname(fileURLToPath(import.meta.url)), "dist/cache-handler.js") : undefined,
     // eslint-disable-next-line no-restricted-syntax -- VALKEY_ENABLED is a server-start-time flag for cache handler setup
     cacheMaxMemorySize: process.env.VALKEY_ENABLED === "true" ? 0 : undefined, // disable default in-memory caching
     rewrites: async () => {

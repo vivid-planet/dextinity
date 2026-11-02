@@ -1,12 +1,15 @@
 export const dynamic = "error";
 
 import { gql } from "@dextinity/site-nextjs";
+import { setServerIntl } from "@dextinity/site-nextjs/server";
 import type { VisibilityParam } from "@src/middleware/domainRewrite";
 import { createSitePath } from "@src/util/createSitePath";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
+import { loadMessages } from "@src/util/loadMessages";
 import { setVisibilityParam } from "@src/util/ServerContext";
-import { setServerIntlForScope } from "@src/util/setServerIntlForScope";
+import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import NextLink from "next/link";
+import { notFound } from "next/navigation";
 
 import { FormattedMessage } from "#intl";
 
@@ -49,7 +52,10 @@ async function fetchAllPublishedProducts() {
 export default async function ProductListPage({ params }: PageProps<"/[visibility]/[domain]/[language]/product">) {
     const { domain, language, visibility } = await params;
     setVisibilityParam(visibility as VisibilityParam);
-    await setServerIntlForScope({ domain, language });
+    if (!getSiteConfigForDomain(domain).scope.languages.includes(language)) {
+        notFound();
+    }
+    setServerIntl(language, await loadMessages(language));
     const products = await fetchAllPublishedProducts();
 
     return (

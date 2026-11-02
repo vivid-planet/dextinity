@@ -15,7 +15,7 @@ Follow the coding guidelines at https://cms-docs.dextinity.com/docs/coding-guide
 
 ### TypeScript
 
-- Prefer using an options object instead of multiple parameters.
+- Prefer an options object when the arguments' meaning isn't clear at the call site (e.g. boolean flags or easily confused parameters of the same type). Positional parameters are fine when their meaning is obvious.
 - Use named exports only (default exports are allowed only if technically required).
 - Prefer async/await over callbacks.
 - Prefer `for...of` loops.

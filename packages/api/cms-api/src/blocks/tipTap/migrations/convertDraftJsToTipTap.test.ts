@@ -1017,9 +1017,9 @@ describe("convertDraftJsToTipTap", () => {
                     blocks: [
                         makeBlock({
                             type: "unstyled",
-                            text: "Winter­räder",
-                            inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 12 }],
-                            entityRanges: [{ key: 0, offset: 0, length: 12 }],
+                            text: "Wonder­ful",
+                            inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 10 }],
+                            entityRanges: [{ key: 0, offset: 0, length: 10 }],
                         }),
                     ],
                     entityMap: { "0": { type: "LINK", mutability: "MUTABLE", data: { href: "https://example.com" } } },
@@ -1028,9 +1028,9 @@ describe("convertDraftJsToTipTap", () => {
             );
             const marks = [{ type: "bold" }, { type: "link", attrs: { data: { href: "https://example.com" } } }];
             expect(result.content?.[0].content).toEqual([
-                { type: "text", text: "Winter", marks },
+                { type: "text", text: "Wonder", marks },
                 { type: "softHyphen", marks },
-                { type: "text", text: "räder", marks },
+                { type: "text", text: "ful", marks },
             ]);
         });
 

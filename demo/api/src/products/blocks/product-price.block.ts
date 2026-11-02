@@ -15,11 +15,11 @@ import { IsUUID } from "class-validator";
 import { ProductPriceBlockTransformerService } from "./product-price-block-transformer.service";
 
 class ProductPriceBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    productId?: string;
+    @BlockField({ type: "string", nullable: true })
+    productId?: string | null;
 
     indexData(): BlockIndexData {
-        if (this.productId === undefined) {
+        if (!this.productId) {
             return {};
         }
 
@@ -71,10 +71,10 @@ class Meta extends AnnotationBlockMeta {
 }
 
 class ProductPriceBlockInput extends BlockInput {
-    @BlockField({ nullable: true })
+    @BlockField({ type: "string", nullable: true })
     @IsUUID()
     @IsUndefinable()
-    productId?: string;
+    productId?: string | null;
 
     transformToBlockData(): ProductPriceBlockData {
         return blockInputToData(ProductPriceBlockData, this);

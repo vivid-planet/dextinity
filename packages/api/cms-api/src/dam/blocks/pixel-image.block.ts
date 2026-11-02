@@ -23,7 +23,7 @@ import { PixelImageBlockTransformerService } from "./pixel-image-block-transform
 
 // @TODO: make factory to support flexible validation
 class PixelImageBlockData extends BlockData {
-    damFileId?: string;
+    damFileId?: string | null;
 
     @Type(() => ImageCropArea)
     cropArea?: ImageCropArea | null;
@@ -52,7 +52,7 @@ class PixelImageBlockData extends BlockData {
     }
 
     indexData(): BlockIndexData {
-        if (this.damFileId === undefined) {
+        if (!this.damFileId) {
             return {};
         }
 
@@ -70,7 +70,7 @@ class PixelImageBlockData extends BlockData {
 class PixelImageBlockInput extends BlockInput {
     @IsOptional()
     @IsUUID()
-    damFileId?: string;
+    damFileId?: string | null;
 
     @Type(() => ImageCropAreaInput)
     @IsOptional()

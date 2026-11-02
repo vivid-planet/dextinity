@@ -42,8 +42,8 @@ export enum AccordionItemTitleHtmlTag {
 }
 
 class AccordionItemBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    title?: string;
+    @BlockField({ type: "string", nullable: true })
+    title?: string | null;
 
     @ChildBlock(AccordionContentBlock)
     content: BlockDataInterface;
@@ -57,9 +57,9 @@ class AccordionItemBlockData extends BlockData {
 
 class AccordionItemBlockInput extends BlockInput {
     @IsUndefinable()
-    @BlockField({ nullable: true })
+    @BlockField({ type: "string", nullable: true })
     @IsString()
-    title?: string;
+    title?: string | null;
 
     @ChildBlockInput(AccordionContentBlock)
     content: ExtractBlockInput<typeof AccordionContentBlock>;

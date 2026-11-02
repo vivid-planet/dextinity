@@ -22,7 +22,7 @@ interface CreateTextLinkBlockOptions<LinkBlock extends Block> {
 }
 
 interface TextImageBlockInputInterface<LinkBlockInput extends BlockInputInterface> extends SimpleBlockInputInterface {
-    text?: string;
+    text?: string | null;
     link: LinkBlockInput;
 }
 
@@ -31,8 +31,8 @@ export function createTextLinkBlock<LinkBlock extends Block>(
     name: BlockFactoryNameOrOptions = "TextLink",
 ): Block<BlockDataInterface, TextImageBlockInputInterface<ExtractBlockInput<LinkBlock>>> {
     class TextLinkBlockData extends BlockData {
-        @BlockField()
-        text?: string;
+        @BlockField({ type: "string" })
+        text?: string | null;
 
         @ChildBlock(LinkBlock)
         link: BlockDataInterface;
@@ -45,8 +45,8 @@ export function createTextLinkBlock<LinkBlock extends Block>(
     class TextLinkBlockInput extends BlockInput {
         @IsOptional()
         @IsString()
-        @BlockField()
-        text?: string;
+        @BlockField({ type: "string" })
+        text?: string | null;
 
         @ChildBlockInput(LinkBlock)
         link: ExtractBlockInput<LinkBlock>;

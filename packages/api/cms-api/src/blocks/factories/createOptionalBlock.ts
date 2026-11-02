@@ -22,7 +22,7 @@ import { BlockFactoryNameOrOptions } from "./types";
 import { withDefaultDescription } from "./withDefaultDescription";
 
 export interface OptionalBlockInputInterface<DecoratedBlockInput extends BlockInputInterface> extends SimpleBlockInputInterface {
-    block?: DecoratedBlockInput;
+    block?: DecoratedBlockInput | null;
     visible: boolean;
 }
 
@@ -33,7 +33,7 @@ export function createOptionalBlock<DecoratedBlock extends Block>(
     class BlockOptional extends BlockData {
         @BlockField({ type: "block", block, nullable: true })
         @Transform(({ value }) => (value ? (isBlockDataInterface(value) ? value : block.blockDataFactory(value)) : undefined), { toClassOnly: true })
-        block?: BlockDataInterface;
+        block?: BlockDataInterface | null;
 
         @BlockField()
         visible: boolean;
@@ -66,7 +66,7 @@ export function createOptionalBlock<DecoratedBlock extends Block>(
         })
         @ValidateNested()
         @IsOptional()
-        block?: ExtractBlockInput<DecoratedBlock>;
+        block?: ExtractBlockInput<DecoratedBlock> | null;
 
         @IsBoolean()
         @BlockField()

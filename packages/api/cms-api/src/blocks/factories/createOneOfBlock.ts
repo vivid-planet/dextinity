@@ -29,7 +29,7 @@ type BaseBlockMap = Record<string, Block<BlockDataInterface, BlockInputInterface
 
 type OneOfBlockDataInterface<BlockMap extends BaseBlockMap, Data extends BlockDataInterface> = Data & {
     attachedBlocks: SupportedBlocksDataInterfaces<BlockMap>[];
-    activeType?: keyof BlockMap;
+    activeType?: keyof BlockMap | null;
 };
 
 type SupportedBlocksDataInterfaces<BlockMap extends BaseBlockMap> = {
@@ -45,7 +45,7 @@ type OneOfBlockInputInterface<
     Input extends SimpleBlockInputInterface<Data>,
 > = Input & {
     attachedBlocks: SupportedBlocksInputInterfaces<BlockMap>[];
-    activeType?: keyof BlockMap;
+    activeType?: keyof BlockMap | null;
 };
 
 type SupportedBlocksInputInterfaces<BlockMap extends BaseBlockMap> = {
@@ -119,7 +119,7 @@ export function BaseOneOfBlockData<BlockMap extends BaseBlockMap, Data extends B
         attachedBlocks: OneOfBlockDataInterface<BlockMap, Data>["attachedBlocks"][number][];
 
         // index of blocks
-        activeType?: string;
+        activeType?: string | null;
 
         async transformToPlain({ includeInvisibleContent }: BlockContext): Promise<TraversableTransformBlockResponse> {
             const { attachedBlocks, activeType, ...additionalFields } = this;
@@ -233,8 +233,8 @@ export function BaseOneOfBlockInput<
 
         @IsOptional()
         @IsIn(supportedBlockTypes)
-        @BlockField({ nullable: allowEmpty })
-        activeType?: string;
+        @BlockField({ type: "string", nullable: allowEmpty })
+        activeType?: string | null;
 
         transformToBlockData(): OneOfBlockDataInterface<BlockMap, Data> {
             const { attachedBlocks, activeType, ...additionalFields } = this;

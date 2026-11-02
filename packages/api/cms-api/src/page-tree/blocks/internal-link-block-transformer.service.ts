@@ -40,7 +40,7 @@ export class InternalLinkBlockTransformerService implements BlockTransformerServ
                 documentType: node.documentType,
                 scope: node.scope ? node.scope : null,
             },
-            targetPageAnchor: block.targetPageAnchor,
+            targetPageAnchor: block.targetPageAnchor ?? undefined,
         };
     }
 }

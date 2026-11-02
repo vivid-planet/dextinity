@@ -6,14 +6,14 @@ import { FILE_ENTITY } from "../files/entities/file.entity";
 import { SvgImageBlockTransformerService } from "./svg-image-block-transformer.service";
 
 class SvgImageBlockData extends BlockData {
-    damFileId?: string;
+    damFileId?: string | null;
 
     async transformToPlain() {
         return SvgImageBlockTransformerService;
     }
 
     indexData(): BlockIndexData {
-        if (this.damFileId === undefined) {
+        if (!this.damFileId) {
             return {};
         }
 
@@ -31,7 +31,7 @@ class SvgImageBlockData extends BlockData {
 class SvgImageBlockInput extends BlockInput {
     @IsOptional()
     @IsUUID()
-    damFileId?: string;
+    damFileId?: string | null;
 
     transformToBlockData(): SvgImageBlockData {
         return blockInputToData(SvgImageBlockData, this);

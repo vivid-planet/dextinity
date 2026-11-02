@@ -30,7 +30,7 @@ export class DamFileDownloadLinkBlockTransformerService implements BlockTransfor
             openFileType: block.openFileType,
         };
 
-        if (block.fileId === undefined) {
+        if (!block.fileId) {
             return ret;
         }
 

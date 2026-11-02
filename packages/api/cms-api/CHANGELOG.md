@@ -1,5 +1,33 @@
 # @comet/cms-api
 
+## 10.12.0
+
+### Minor Changes
+
+- 6d552f0: Add the TipTap editor schema of a `TipTapRichTextBlock` field to the block meta
+
+    The field's entry in `block-meta.json` now carries a `tipTap` description next to `childBlocks`: the node and mark types of the editor schema, the text blocks with their styles, the default text block, the ordered and unordered list (`null` when disabled), the inline styles, the placeholders, the link block (`null` when links are disabled), `maxTextBlocks` and `listLevelMax`.
+    This allows tools outside the editor, for instance an AI agent, to build content the API accepts instead of falling back to TipTap's defaults.
+    The block's default description explains how to build content from it.
+
+### Patch Changes
+
+- 2735896: TipTap Rich Text Block: disable the horizontal rule
+
+    The schema contained StarterKit's `horizontalRule` node, so the editor inserted one when typing `---`, `___ ` or `*** ` at the start of a text block. Neither the site nor the mail renderer renders it, so it silently disappeared on the site. The API now rejects content containing a `horizontalRule`, and the editor no longer creates one.
+
+    Remove horizontal rules from existing content before saving it again, as saving fails otherwise.
+
+- a3ba4c9: Fix combining multiple fields in a `RedirectFilter`
+
+    A filter like `{ sourceType: { equal: "domain" }, active: { equal: true } }` only applied its last field, so `paginatedRedirects` also returned redirects that didn't match the other fields. All fields of a filter now have to match.
+
+    If your site's domain redirect middleware (`redirectToMainHost.ts`) only filters on `sourceType`, add `active: { equal: true }` to the filter, so redirects that are deactivated in the admin no longer redirect:
+
+    ```ts
+    filter: { sourceType: { equal: "domain" }, active: { equal: true } },
+    ```
+
 ## 10.11.0
 
 ### Minor Changes

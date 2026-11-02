@@ -67,7 +67,7 @@
         "@dextinity/admin-generator": "workspace:*",
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
-        "@formatjs/cli": "^6.16.35",
+        "@formatjs/cli": "^6.16.36",
         "@graphql-codegen/add": "^5.0.3",
         "@graphql-codegen/cli": "^5.0.7",
         "@graphql-codegen/fragment-matcher": "^5.1.0",
@@ -95,6 +95,6 @@
         "rimraf": "^6.1.3",
         "typescript": "^5.9.3",
         "vite": "^8.3.5",
-        "vite-plugin-compression2": "^2.5.3"
+        "vite-plugin-compression2": "^2.5.4"
     }
 }

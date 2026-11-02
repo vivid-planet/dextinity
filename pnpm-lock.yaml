@@ -1319,7 +1319,7 @@ importers:
         specifier: ^15.0.0
         version: 15.0.0
       glob:
-        specifier: ^14.0.0
+        specifier: ^14.0.3
         version: 14.0.3
       graphql:
         specifier: ^16.14.2

@@ -44,9 +44,7 @@ describe("ImagesService.createUrlTemplate", () => {
         const file = createImageFile({ name: "photo.png", mimetype: "image/png" });
         const imagesService = createImagesService();
 
-        expect(imagesService.createUrlTemplate({ file, cropArea: null as unknown as undefined }, {})).toBe(
-            imagesService.createUrlTemplate({ file }, {}),
-        );
+        expect(imagesService.createUrlTemplate({ file, cropArea: null }, {})).toBe(imagesService.createUrlTemplate({ file }, {}));
     });
 
     it("adds the extension to preview URLs", () => {

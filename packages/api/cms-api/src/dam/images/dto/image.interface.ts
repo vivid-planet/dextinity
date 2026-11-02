@@ -4,5 +4,5 @@ import type { ImageCropArea } from "../entities/image-crop-area.entity";
 export interface ImageInterface {
     file: FileInterface;
 
-    cropArea?: ImageCropArea;
+    cropArea?: ImageCropArea | null;
 }

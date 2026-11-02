@@ -29,4 +29,5 @@ import { FormattedMessage } from "@dextinity/site-nextjs/intl";
 <FormattedMessage id="productList.title" defaultMessage="Products" />;
 ```
 
-The server implementation is also available as `setServerIntl`, `useServerIntl` and `ServerFormattedMessage` from `@dextinity/site-react/server`.
+Projects using `@dextinity/site-react` without `@dextinity/site-nextjs` import `FormattedMessage` and `useIntl` from `@dextinity/site-react/intl` and `setServerIntl` from `@dextinity/site-react/server` instead.
+Don't combine imports from both packages: they don't share the per-request intl.

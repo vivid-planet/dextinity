@@ -8,7 +8,7 @@ import { RouterDecorator } from "./decorators/Router.decorator";
 import { ThemeOption, ThemeProviderDecorator } from "./decorators/ThemeProvider.decorator";
 import { worker } from "./mocks/browser";
 
-const mswReady = typeof window === "undefined" ? Promise.resolve() : worker.start({ onUnhandledRequest: "bypass" });
+const mswReady = typeof window === "undefined" ? Promise.resolve() : worker.start({ onUnhandledFrame: "bypass" });
 
 export const globalTypes: GlobalTypes = {
     theme: {

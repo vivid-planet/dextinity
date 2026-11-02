@@ -1,4 +1,6 @@
-import { graphql, http, HttpResponse } from "msw";
+import { http, HttpResponse } from "msw";
+
+import { graphqlApi } from "./graphqlApi";
 
 const users = [
     { id: 1, name: "Leanne Graham", username: "Bret", email: "Sincere@april.biz" },
@@ -13,7 +15,7 @@ const users = [
     { id: 10, name: "Clementina DuBuque", username: "Moriah.Stanton", email: "Rey.Padberg@karina.biz" },
 ];
 
-export const usersQueryHandler = graphql.query<{ users: typeof users }, { query?: string }>("users", ({ variables }) => {
+export const usersQueryHandler = graphqlApi.query<{ users: typeof users }, { query?: string }>("users", ({ variables }) => {
     const query = variables.query?.toLowerCase() ?? "";
     return HttpResponse.json({
         data: {
@@ -26,7 +28,7 @@ export const usersRestHandler = http.get("/users", () => {
     return HttpResponse.json(users);
 });
 
-export const userQueryHandler = graphql.query<{ user: (typeof users)[number] | null }, { id: number }>("user", ({ variables }) => {
+export const userQueryHandler = graphqlApi.query<{ user: (typeof users)[number] | null }, { id: number }>("user", ({ variables }) => {
     return HttpResponse.json({
         data: {
             user: users.find((user) => user.id === variables.id) ?? null,

@@ -1,7 +1,6 @@
+import { PageContentStandaloneCallToActionListBlock, StandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCallToActionListBlock";
 import { createCallToActionList } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import { PageContentStandaloneCallToActionListBlock, StandaloneCallToActionListBlock } from "../StandaloneCallToActionListBlock";
 
 const callToActionList = createCallToActionList({ text: "Primary action", variant: "contained" }, { text: "Secondary action", variant: "outlined" });
 

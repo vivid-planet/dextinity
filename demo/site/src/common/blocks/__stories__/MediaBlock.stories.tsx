@@ -1,7 +1,6 @@
+import { MediaBlock } from "@src/common/blocks/MediaBlock";
 import { createImageMedia, createPixelImage, createYouTubeMedia, emptyMedia } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import { MediaBlock } from "../MediaBlock";
 
 const vimeoProps = { vimeoIdentifier: "76979871", showControls: true, previewImage: createPixelImage({ seed: "vimeo" }) };
 

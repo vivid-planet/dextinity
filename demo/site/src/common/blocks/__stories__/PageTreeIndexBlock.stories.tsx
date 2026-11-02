@@ -1,7 +1,6 @@
+import { PageTreeIndexBlock } from "@src/common/blocks/PageTreeIndexBlock";
+import type { LoadedData } from "@src/common/blocks/PageTreeIndexBlock.loader";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import { PageTreeIndexBlock } from "../PageTreeIndexBlock";
-import type { LoadedData } from "../PageTreeIndexBlock.loader";
 
 const scope = { domain: "main", language: "en" };
 

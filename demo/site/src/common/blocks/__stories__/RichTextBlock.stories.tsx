@@ -1,7 +1,6 @@
+import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { createExternalLink, createRichText, emptyRichText, loremIpsum } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import { RichTextBlock } from "../RichTextBlock";
 
 const meta: Meta<typeof RichTextBlock> = {
     title: "Blocks/Common/RichTextBlock",

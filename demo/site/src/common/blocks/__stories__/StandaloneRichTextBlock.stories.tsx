@@ -1,7 +1,6 @@
+import { PageContentStandaloneRichTextBlock, StandaloneRichTextBlock } from "@src/common/blocks/StandaloneRichTextBlock";
 import { createRichText, loremIpsum } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import { PageContentStandaloneRichTextBlock, StandaloneRichTextBlock } from "../StandaloneRichTextBlock";
 
 const richText = createRichText({ text: "Standalone rich text", type: "header-three" }, loremIpsum);
 

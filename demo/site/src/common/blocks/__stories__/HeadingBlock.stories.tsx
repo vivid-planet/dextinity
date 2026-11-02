@@ -1,8 +1,7 @@
+import { HeadingBlock } from "@src/common/blocks/HeadingBlock";
 import { createHeading, createRichText } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, within } from "storybook/test";
-
-import { HeadingBlock } from "../HeadingBlock";
 
 const meta: Meta<typeof HeadingBlock> = {
     title: "Blocks/Common/HeadingBlock",

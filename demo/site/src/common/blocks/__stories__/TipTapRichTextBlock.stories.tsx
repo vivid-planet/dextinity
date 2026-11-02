@@ -1,3 +1,4 @@
+import { PageContentTipTapRichTextBlock, TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
 import {
     createExternalLink,
     createTipTapBulletList,
@@ -7,8 +8,6 @@ import {
     loremIpsum,
 } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import { PageContentTipTapRichTextBlock, TipTapRichTextBlock } from "../TipTapRichTextBlock";
 
 const meta: Meta<typeof TipTapRichTextBlock> = {
     title: "Blocks/Common/TipTapRichTextBlock",

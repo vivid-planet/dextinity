@@ -1,8 +1,7 @@
 import type { LayoutBlockData } from "@src/blocks.generated";
+import { LayoutBlock } from "@src/common/blocks/LayoutBlock";
 import { createImageMedia, createRichText, loremIpsum } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import { LayoutBlock } from "../LayoutBlock";
 
 function createLayout(layout: LayoutBlockData["layout"]): LayoutBlockData {
     return {

@@ -1,7 +1,6 @@
+import { StandaloneMediaBlock } from "@src/common/blocks/StandaloneMediaBlock";
 import { createImageMedia, createYouTubeMedia } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import { StandaloneMediaBlock } from "../StandaloneMediaBlock";
 
 const meta: Meta<typeof StandaloneMediaBlock> = {
     title: "Blocks/Common/StandaloneMediaBlock",

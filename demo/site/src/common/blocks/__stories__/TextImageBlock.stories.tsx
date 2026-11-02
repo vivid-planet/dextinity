@@ -1,7 +1,6 @@
+import { PageContentTextImageBlock, TextImageBlock } from "@src/common/blocks/TextImageBlock";
 import { createDamImage, createRichText, loremIpsum } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import { PageContentTextImageBlock, TextImageBlock } from "../TextImageBlock";
 
 const text = createRichText({ text: "Text and image", type: "header-three" }, loremIpsum, loremIpsum);
 

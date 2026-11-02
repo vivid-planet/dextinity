@@ -1,7 +1,6 @@
+import { ContactFormBlock } from "@src/common/blocks/ContactFormBlock";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, userEvent, within } from "storybook/test";
-
-import { ContactFormBlock } from "../ContactFormBlock";
 
 const meta: Meta<typeof ContactFormBlock> = {
     title: "Blocks/Common/ContactFormBlock",

@@ -1,8 +1,7 @@
-import { createExternalLink, createInternalLink, createTextLink, emptyLink } from "@src/storybook/blockFixtures";
+import { CallToActionBlock } from "@src/common/blocks/CallToActionBlock";
+import { createExternalLink, createFileDownloadLink, createInternalLink, createTextLink, emptyLink } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, within } from "storybook/test";
-
-import { CallToActionBlock } from "../CallToActionBlock";
 
 const meta: Meta<typeof CallToActionBlock> = {
     title: "Blocks/Common/CallToActionBlock",
@@ -36,18 +35,11 @@ export const FileDownload: Story = {
     args: {
         data: {
             variant: "outlined",
-            textLink: createTextLink("Download brochure", {
-                attachedBlocks: [],
-                activeType: "damFileDownload",
-                block: {
-                    type: "damFileDownload",
-                    props: {
-                        openFileType: "Download",
-                        file: { id: "brochure", name: "brochure.pdf", fileUrl: "/brochure.pdf", size: 1250000, mimetype: "application/pdf" },
-                    },
-                },
-            }),
+            textLink: createTextLink("Download logo", createFileDownloadLink()),
         },
+    },
+    play: async ({ canvasElement }) => {
+        await expect(within(canvasElement).getByRole("link", { name: /Download logo \(\d/ })).toHaveAttribute("href", "/assets/dextinity-logo.svg");
     },
 };
 

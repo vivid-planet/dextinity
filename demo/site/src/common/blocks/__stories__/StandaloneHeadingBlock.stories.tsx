@@ -1,7 +1,6 @@
+import { PageContentStandaloneHeadingBlock, StandaloneHeadingBlock } from "@src/common/blocks/StandaloneHeadingBlock";
 import { createHeading } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import { PageContentStandaloneHeadingBlock, StandaloneHeadingBlock } from "../StandaloneHeadingBlock";
 
 const heading = createHeading({ eyebrow: "Eyebrow", headline: "Standalone heading" });
 

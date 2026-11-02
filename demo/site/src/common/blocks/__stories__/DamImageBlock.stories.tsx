@@ -1,7 +1,6 @@
+import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
 import { createDamImage, createSvgDamImage, emptyDamImage } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import { DamImageBlock } from "../DamImageBlock";
 
 const aspectRatios = ["inherit", "16x9", "4x3", "3x2", "3x1", "2x1", "1x1", "1x2", "1x3", "2x3", "3x4", "9x16"];
 

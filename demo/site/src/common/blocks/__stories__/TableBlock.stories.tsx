@@ -1,8 +1,7 @@
 import type { TableBlockData } from "@src/blocks.generated";
+import { TableBlock } from "@src/common/blocks/TableBlock";
 import { createRichText } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import { TableBlock } from "../TableBlock";
 
 const columnIds = ["product", "price", "availability"];
 

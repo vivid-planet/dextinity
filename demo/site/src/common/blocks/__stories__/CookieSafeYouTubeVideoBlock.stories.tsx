@@ -1,7 +1,6 @@
+import { CookieSafeYouTubeVideoBlock } from "@src/common/blocks/CookieSafeYouTubeVideoBlock";
 import { createPixelImage } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import { CookieSafeYouTubeVideoBlock } from "../CookieSafeYouTubeVideoBlock";
 
 const meta: Meta<typeof CookieSafeYouTubeVideoBlock> = {
     title: "Blocks/Common/CookieSafeYouTubeVideoBlock",

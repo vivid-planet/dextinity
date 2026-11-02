@@ -1,7 +1,6 @@
+import { InternalLinkBlock } from "@src/common/blocks/InternalLinkBlock";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, within } from "storybook/test";
-
-import { InternalLinkBlock } from "../InternalLinkBlock";
 
 const targetPage = { id: "about-us", name: "About us", path: "/about-us", scope: { domain: "main", language: "en" }, documentType: "Page" };
 

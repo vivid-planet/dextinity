@@ -1,7 +1,6 @@
+import { AnchorBlock } from "@src/common/blocks/AnchorBlock";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect } from "storybook/test";
-
-import { AnchorBlock } from "../AnchorBlock";
 
 const meta: Meta<typeof AnchorBlock> = {
     title: "Blocks/Common/AnchorBlock",

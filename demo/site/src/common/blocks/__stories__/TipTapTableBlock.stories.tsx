@@ -1,8 +1,7 @@
 import type { TipTapTableBlockData } from "@src/blocks.generated";
+import { TipTapTableBlock } from "@src/common/blocks/TipTapTableBlock";
 import { createTipTapParagraph, createTipTapRichText } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import { TipTapTableBlock } from "../TipTapTableBlock";
 
 const columnIds = ["product", "price", "availability"];
 

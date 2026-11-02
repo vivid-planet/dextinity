@@ -104,6 +104,15 @@ export function createTextLink(text: string, link: LinkBlockData = createExterna
     return { text, link };
 }
 
+// An existing public file, so the download works in Storybook.
+export function createFileDownloadLink(): LinkBlockData {
+    const props = {
+        openFileType: "Download" as const,
+        file: { id: "storybook-logo", name: "dextinity-logo.svg", fileUrl: "/assets/dextinity-logo.svg", size: 3953, mimetype: "image/svg+xml" },
+    };
+    return { attachedBlocks: [{ type: "damFileDownload", props }], activeType: "damFileDownload", block: { type: "damFileDownload", props } };
+}
+
 export const emptyLink: LinkBlockData = { attachedBlocks: [] };
 
 // picsum.photos serves a stable image per seed in every size the `urlTemplate` asks for, so stories don't depend on the DAM.

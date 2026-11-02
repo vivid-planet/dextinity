@@ -1,8 +1,7 @@
+import { MediaGalleryBlock, PageContentMediaGalleryBlock } from "@src/common/blocks/MediaGalleryBlock";
 import { createImageMedia, createListItems } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, userEvent, within } from "storybook/test";
-
-import { MediaGalleryBlock, PageContentMediaGalleryBlock } from "../MediaGalleryBlock";
 
 const meta: Meta<typeof MediaGalleryBlock> = {
     title: "Blocks/Common/MediaGalleryBlock",

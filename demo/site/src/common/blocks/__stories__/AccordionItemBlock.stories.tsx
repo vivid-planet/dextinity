@@ -1,9 +1,8 @@
 import type { AccordionContentBlockData } from "@src/blocks.generated";
+import { AccordionItemBlock } from "@src/common/blocks/AccordionItemBlock";
 import { createBlocksItems, createCallToActionList, createHeading, createRichText, createSpace, loremIpsum } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { fn } from "storybook/test";
-
-import { AccordionItemBlock } from "../AccordionItemBlock";
 
 const meta: Meta<typeof AccordionItemBlock> = {
     title: "Blocks/Common/AccordionItemBlock",

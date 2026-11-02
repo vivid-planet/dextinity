@@ -1,7 +1,6 @@
+import { CallToActionListBlock } from "@src/common/blocks/CallToActionListBlock";
 import { createCallToActionList } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import { CallToActionListBlock } from "../CallToActionListBlock";
 
 const meta: Meta<typeof CallToActionListBlock> = {
     title: "Blocks/Common/CallToActionListBlock",

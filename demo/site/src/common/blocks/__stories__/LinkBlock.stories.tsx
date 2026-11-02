@@ -1,9 +1,8 @@
 import type { LinkBlockData } from "@src/blocks.generated";
-import { createExternalLink, createInternalLink } from "@src/storybook/blockFixtures";
+import { LinkBlock } from "@src/common/blocks/LinkBlock";
+import { createExternalLink, createFileDownloadLink, createInternalLink } from "@src/storybook/blockFixtures";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, within } from "storybook/test";
-
-import { LinkBlock } from "../LinkBlock";
 
 function createLink(type: string, props: LinkBlockData["attachedBlocks"][number]["props"]): LinkBlockData {
     return { attachedBlocks: [{ type, props }], activeType: type, block: { type, props } };
@@ -49,10 +48,7 @@ export const News: Story = {
 
 export const FileDownload: Story = {
     args: {
-        data: createLink("damFileDownload", {
-            openFileType: "Download",
-            file: { id: "brochure", name: "brochure.pdf", fileUrl: "/brochure.pdf", size: 1250000, mimetype: "application/pdf" },
-        }),
+        data: createFileDownloadLink(),
     },
 };
 

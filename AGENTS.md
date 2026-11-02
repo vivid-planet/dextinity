@@ -1,5 +1,15 @@
 # Agent Instructions
 
+## Keeping This File Up to Date
+
+When making changes that affect project structure, commands, architecture, ports, conventions, or configuration, update the relevant section of this file to reflect the new state. This includes:
+
+- Adding or removing packages or demo services
+- Changing commands or scripts
+- Introducing new patterns or conventions
+- Modifying ports, environment files, or Docker services
+- Updating tooling or linting configuration
+
 ## Local Usage (IDE / CLI)
 
 - you can expect setup is already done: all dependencies are installed and builds are done

@@ -27,7 +27,7 @@ services:
           ./demo/site/intl-update.sh &&
           MAILER_HOST=build MAILER_PORT=25 CONTACT_FORM_FROM_EMAIL=build@example.com CONTACT_FORM_TO_EMAIL=build@example.com RECAPTCHA_SERVICE_ACCOUNT=eyJwcm9qZWN0X2lkIjoiYnVpbGQifQ== pnpm --filter dextinity-demo-site run build
       environment_slug: node-js
-      run_command: cd demo/site && node dist/server.js
+      run_command: cd demo/site && node server.ts
       source_dir: /
       github:
           branch: ${DEPLOY_BRANCH}

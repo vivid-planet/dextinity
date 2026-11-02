@@ -95,7 +95,7 @@
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
         "@dextinity/oxlint-config": "workspace:*",
-        "@formatjs/cli": "^6.16.35",
+        "@formatjs/cli": "^6.16.36",
         "@nestjs/cli": "^12.0.3",
         "@nestjs/schematics": "^12.0.6",
         "@nestjs/testing": "^12.0.4",

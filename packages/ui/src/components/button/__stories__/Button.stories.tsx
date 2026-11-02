@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent } from "storybook/test";
 
 import { ArrowRightIcon } from "../../../icons/ArrowRightIcon";
 import { FavoriteIcon } from "../../../icons/FavoriteIcon";
@@ -22,7 +22,15 @@ const meta = {
     argTypes: {
         variant: {
             control: "radio",
-            options: ["primary", "secondary"],
+            options: ["contained", "outlined", "text"],
+        },
+        color: {
+            control: "select",
+            options: ["primary", "secondary", "error", "success"],
+        },
+        size: {
+            control: "radio",
+            options: ["default", "small"],
         },
         startIcon: {
             control: "select",
@@ -46,15 +54,55 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
+export const Outlined: Story = {
+    args: {
+        variant: "outlined",
+    },
+};
+
+export const Text: Story = {
+    args: {
+        variant: "text",
+    },
+};
+
 export const Secondary: Story = {
     args: {
-        variant: "secondary",
+        color: "secondary",
+    },
+};
+
+export const Error: Story = {
+    args: {
+        color: "error",
+    },
+};
+
+export const Success: Story = {
+    args: {
+        color: "success",
+    },
+};
+
+export const Small: Story = {
+    args: {
+        size: "small",
     },
 };
 
 export const Disabled: Story = {
     args: {
         disabled: true,
+    },
+};
+
+export const Loading: Story = {
+    args: {
+        loading: true,
+    },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button"));
+        await expect(args.onClick).not.toHaveBeenCalled();
     },
 };
 

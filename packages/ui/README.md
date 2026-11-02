@@ -55,17 +55,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
  * The resolved configuration that influences the component's appearance or behavior.
  */
 export type ButtonOwnerState = {
-    variant: "primary" | "secondary";
+    variant: "contained" | "outlined" | "text";
     disabled: boolean;
 };
 
 export interface ButtonProps {
     /**
-     * Use `primary` only for the single main action on a page, dialog, etc.
+     * Visual emphasis: `contained` for the main action, `outlined` and `text` for less important ones.
      *
-     * @defaultValue `"primary"`
+     * @defaultValue `"contained"`
      */
-    variant?: "primary" | "secondary";
+    variant?: "contained" | "outlined" | "text";
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */
@@ -105,7 +105,7 @@ The contract has two parts: **structural class names** for a component's element
 
 **Owner-state styling** uses `data-*` attributes on the root element, following base-ui's own conversion of an owner-state object:
 
-- **Enum state** → a single valued attribute: `data-variant="primary"`.
+- **Enum state** → a single valued attribute: `data-variant="contained"`.
 - **Boolean state** → presence only: `data-disabled` (absent when false).
 - The attribute name is `data-` + the lowercased owner-state key. Owner-state keys are single lowercase words, so the name needs no kebab-casing.
 
@@ -121,7 +121,7 @@ The contract has two parts: **structural class names** for a component's element
 | `startIcon`  | `dextinityButton__startIcon` |
 
 - A component with no single dominant element names no class `root`.
-- Owner-state styles use attribute selectors nested under `.root` with `&` (`.root { &[data-variant="primary"] { … } }`).
+- Owner-state styles use attribute selectors nested under `.root` with `&` (`.root { &[data-variant="contained"] { … } }`).
 
 ### Stories
 

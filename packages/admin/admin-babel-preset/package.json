@@ -10,6 +10,14 @@
     "description": "Babel preset for Dextinity Admin packages",
     "license": "BSD-2-Clause",
     "main": "index.js",
+    "files": [
+        "index.js"
+    ],
+    "scripts": {
+        "test": "pnpm run test:unit",
+        "test:unit": "vitest --run",
+        "test:watch": "vitest --watch"
+    },
     "dependencies": {
         "@babel/cli": "^8.0.6",
         "@babel/core": "^8.0.10",
@@ -19,7 +27,8 @@
         "@emotion/babel-plugin": "^11.13.5"
     },
     "devDependencies": {
-        "@babel/cli": "^8.0.6"
+        "@babel/cli": "^8.0.6",
+        "vitest": "^5.0.4"
     },
     "peerDependencies": {
         "@babel/cli": ">= 8"

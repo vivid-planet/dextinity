@@ -10,6 +10,16 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 This package is experimental. Any component, prop, or other export may change or be removed at any time, without notice.
 
+## MCP
+
+The Storybook serves an MCP server, so that AI agents can look up the components, their props, and examples. Connect it to your agent, for example to Claude Code:
+
+{/* TODO: Use the `main--` URL once `next` becomes `main` */}
+
+```sh
+claude mcp add --transport http dextinity-ui https://next--6adb09e1f667e1e0e9a4a772.chromatic.com/mcp
+```
+
 ## Installation and setup
 
 Install the package and the Inter font:

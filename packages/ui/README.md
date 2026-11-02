@@ -158,7 +158,7 @@ Each declared prop is exposed as a control through `argTypes`, by kind:
 
 #### Dev story
 
-`__stories__/<name>.dev.stories.tsx`, optional, nests its title under a `Dev` segment (`Components/<Component>/Dev/<Name>`) and sets `tags: ["!autodocs"]` in its meta, keeping these out of the consumer docs. A dev story serves any development, testing, or debugging need, so add them freely — e.g. reproduce a bug in a dev story and use it to confirm the fix, rather than reaching for the Dextinity demo or a consuming project.
+`__stories__/<name>.dev.stories.tsx`, optional, nests its title under a `Dev` segment (`Components/<Component>/Dev/<Name>`) and sets `tags: ["!autodocs", "!manifest"]` in its meta, keeping these out of the consumer docs and out of what the MCP server serves. A dev story serves any development, testing, or debugging need, so add them freely — e.g. reproduce a bug in a dev story and use it to confirm the fix, rather than reaching for the Dextinity demo or a consuming project.
 
 ## Testing
 

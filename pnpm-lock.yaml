@@ -2427,9 +2427,6 @@ importers:
       '@dextinity/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@types/js-yaml':
-        specifier: ^4.0.9
-        version: 4.0.9
       '@types/node':
         specifier: ^24.19.2
         version: 24.19.2

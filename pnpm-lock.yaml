@@ -2258,7 +2258,7 @@ importers:
         specifier: ^10.2.1
         version: 10.2.1
       openai:
-        specifier: ^7.43.0
+        specifier: ^7.45.1
         version: 7.45.1(@aws-sdk/credential-provider-node@3.972.88)(@smithy/signature-v4@5.7.4)(google-auth-library@11.3.2(supports-color@8.1.1))(undici@7.30.0)(ws@8.22.0)(zod@4.6.7)
       probe-image-size:
         specifier: ^7.4.0

@@ -1,15 +1,14 @@
 export const dynamic = "error";
 
 import { gql } from "@dextinity/site-nextjs";
-import { setServerIntl } from "@dextinity/site-nextjs/server";
 import type { ExternalLinkBlockData, InternalLinkBlockData, NewsLinkBlockData, RedirectsLinkBlockData } from "@src/blocks.generated";
 import { documentTypes } from "@src/documents";
 import type { GQLPageTreeNodeScope } from "@src/graphql.generated";
 import type { VisibilityParam } from "@src/middleware/domainRewrite";
 import { createSitePath } from "@src/util/createSitePath";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
-import { loadMessages } from "@src/util/loadMessages";
 import { setVisibilityParam } from "@src/util/ServerContext";
+import { setServerIntlForScope } from "@src/util/setServerIntlForScope";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import type { Metadata, ResolvingMetadata } from "next";
 import { notFound, redirect } from "next/navigation";
@@ -63,6 +62,7 @@ async function fetchPageTreeNode(params: PageProps<"/[visibility]/[domain]/[lang
 export default async function Page({ params }: PageProps<"/[visibility]/[domain]/[language]/[[...path]]">) {
     const { visibility, domain, language } = await params;
     setVisibilityParam(visibility as VisibilityParam);
+    await setServerIntlForScope({ domain, language });
     const scope = { domain, language };
     const data = await fetchPageTreeNode(params);
 
@@ -100,8 +100,6 @@ export default async function Page({ params }: PageProps<"/[visibility]/[domain]
         }
         notFound();
     }
-
-    setServerIntl(language, await loadMessages(language));
 
     const pageTreeNodeId = data.pageTreeNodeByPath.id;
 

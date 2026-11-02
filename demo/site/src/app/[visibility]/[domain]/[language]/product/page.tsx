@@ -5,7 +5,10 @@ import type { VisibilityParam } from "@src/middleware/domainRewrite";
 import { createSitePath } from "@src/util/createSitePath";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { setVisibilityParam } from "@src/util/ServerContext";
+import { setServerIntlForScope } from "@src/util/setServerIntlForScope";
 import NextLink from "next/link";
+
+import { FormattedMessage } from "#intl";
 
 import type { GQLProductListPageQuery, GQLProductListPageQueryVariables } from "./page.generated";
 
@@ -44,13 +47,16 @@ async function fetchAllPublishedProducts() {
 }
 
 export default async function ProductListPage({ params }: PageProps<"/[visibility]/[domain]/[language]/product">) {
-    const { language, visibility } = await params;
+    const { domain, language, visibility } = await params;
     setVisibilityParam(visibility as VisibilityParam);
+    await setServerIntlForScope({ domain, language });
     const products = await fetchAllPublishedProducts();
 
     return (
         <div>
-            <h1>Products</h1>
+            <h1>
+                <FormattedMessage id="productListPage.title" defaultMessage="Products" />
+            </h1>
             <ul>
                 {products.map((product) => (
                     <li key={product.id}>

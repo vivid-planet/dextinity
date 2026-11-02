@@ -6,6 +6,7 @@ import type { VisibilityParam } from "@src/middleware/domainRewrite";
 import { NewsArticleJsonLd } from "@src/news/NewsArticleJsonLd";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { setVisibilityParam } from "@src/util/ServerContext";
+import { setServerIntlForScope } from "@src/util/setServerIntlForScope";
 import { notFound } from "next/navigation";
 
 import { Content } from "./content";
@@ -15,6 +16,7 @@ import type { GQLNewsDetailPageQuery, GQLNewsDetailPageQueryVariables } from "./
 export default async function NewsDetailPage({ params }: PageProps<"/[visibility]/[domain]/[language]/news/[slug]">) {
     const { domain, language, slug, visibility } = await params;
     setVisibilityParam(visibility as VisibilityParam);
+    await setServerIntlForScope({ domain, language });
     const scope = { domain, language };
     const graphqlFetch = createGraphQLFetch();
 

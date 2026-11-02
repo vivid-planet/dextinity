@@ -1,6 +1,5 @@
 import type { AiContentAltTextPrefixLabels } from "@dextinity/site-nextjs";
-
-import { useIntl } from "#intl";
+import { useIntl } from "@dextinity/site-nextjs/intl";
 
 export function useAiContentAltTextPrefixLabels(): AiContentAltTextPrefixLabels {
     const intl = useIntl();

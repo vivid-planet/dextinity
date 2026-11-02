@@ -1,6 +1,7 @@
 export const dynamic = "error";
 
 import { gql } from "@dextinity/site-nextjs";
+import { FormattedMessage } from "@dextinity/site-nextjs/intl";
 import { setServerIntl } from "@dextinity/site-nextjs/server";
 import type { VisibilityParam } from "@src/middleware/domainRewrite";
 import { createSitePath } from "@src/util/createSitePath";
@@ -10,8 +11,6 @@ import { setVisibilityParam } from "@src/util/ServerContext";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import NextLink from "next/link";
 import { notFound } from "next/navigation";
-
-import { FormattedMessage } from "#intl";
 
 import type { GQLProductListPageQuery, GQLProductListPageQueryVariables } from "./page.generated";
 

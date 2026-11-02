@@ -25,7 +25,7 @@
         "lint:fix:oxlint": "pnpm run lint:oxlint --fix",
         "lint:fix:prettier": "pnpm run lint:prettier --write",
         "lint:fix:style": "pnpm run lint:style --fix",
-        "lint:oxlint": "oxlint --config oxlint.config.mts --max-warnings 0 src/",
+        "lint:oxlint": "oxlint --config oxlint.config.mts --max-warnings 0 src/ next.config.ts",
         "lint:prettier": "pnpm exec prettier --check \"*.{ts,js,json,md,yml,yaml,css,scss}\" \"src/**/*.{ts,tsx,js,jsx,json}\" \"!src/**/*.generated.ts\"",
         "lint:style": "pnpm exec stylelint '**/*.{css,scss}'",
         "lint:tsc": "pnpm exec next typegen && tsc --project .",

@@ -15,7 +15,7 @@ const meta: Meta<typeof RichTextBlock> = {
                 inlineStyleRanges: [
                     { offset: 0, length: 4, style: "BOLD" },
                     { offset: 6, length: 6, style: "ITALIC" },
-                    { offset: 17, length: 15, style: "STRIKETHROUGH" },
+                    { offset: 17, length: 14, style: "STRIKETHROUGH" },
                 ],
             },
             { text: "A paragraph with a link to dextinity.com.", link: { offset: 27, length: 13, data: createExternalLink() } },

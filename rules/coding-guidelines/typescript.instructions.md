@@ -12,7 +12,7 @@ alwaysApply: false
 
 ## Function signatures
 
-- If a function takes **more than 2** parameters, use a single options object. This makes call sites self-documenting and avoids argument-order mistakes.
+- Prefer a single options object when the arguments' meaning isn't clear at the call site, for instance boolean flags, parameters of the same type that are easily mixed up, or optional parameters in the middle. Options objects make call sites self-documenting and avoid argument-order mistakes.
 
     ```ts
     // Bad
@@ -22,6 +22,7 @@ alwaysApply: false
     getSortedJobs({ orderBy: "createdAt", includeSoftDeleted: true, limit: 20 });
     ```
 
+- Positional parameters are fine when their meaning is obvious from the function name and argument values, even with more than two parameters, e.g. `clamp(value, min, max)` or `addToCart(cart, product, quantity)`.
 - Use default argument values (`function f(name = "X")`) instead of `name || "X"` or conditional fallbacks inside the body.
 - Prefer `param?: T` over `param: T | undefined` — the optional form does not require callers to explicitly pass `undefined`.
 

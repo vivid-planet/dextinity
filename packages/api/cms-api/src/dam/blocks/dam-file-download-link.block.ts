@@ -12,7 +12,7 @@ export enum OpenFileTypeMethod {
 }
 
 export class DamFileDownloadLinkBlockData extends BlockData {
-    fileId?: string;
+    fileId?: string | null;
 
     @BlockField({ type: "enum", enum: OpenFileTypeMethod })
     openFileType: OpenFileTypeMethod;
@@ -22,7 +22,7 @@ export class DamFileDownloadLinkBlockData extends BlockData {
     }
 
     indexData(): BlockIndexData {
-        if (this.fileId === undefined) {
+        if (!this.fileId) {
             return {};
         }
 
@@ -40,8 +40,8 @@ export class DamFileDownloadLinkBlockData extends BlockData {
 class DamFileDownloadLinkBlockInput extends BlockInput {
     @IsUndefinable()
     @IsUUID()
-    @BlockField({ nullable: true })
-    fileId?: string;
+    @BlockField({ type: "string", nullable: true })
+    fileId?: string | null;
 
     @IsEnum(OpenFileTypeMethod)
     @BlockField({ type: "enum", enum: OpenFileTypeMethod })

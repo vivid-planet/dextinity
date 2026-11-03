@@ -381,7 +381,11 @@ export const _CrudContextMenu = {
         ];
 
         return (
-            <Box height={400}>
+            <Box
+                sx={{
+                    height: 400,
+                }}
+            >
                 <DataGrid rows={exampleRows} columns={columns} />
             </Box>
         );
@@ -567,7 +571,11 @@ export const GridColumnTypes = {
         }
 
         return (
-            <Box height={400}>
+            <Box
+                sx={{
+                    height: 400,
+                }}
+            >
                 <DataGrid {...dataGridProps} rows={rows} columns={columns} rowCount={rowCount} loading={loading} />
             </Box>
         );
@@ -619,7 +627,11 @@ export const _CrudMoreActionsMenu = {
         }
 
         return (
-            <Box height={600}>
+            <Box
+                sx={{
+                    height: 600,
+                }}
+            >
                 <DataGrid
                     {...dataGridProps}
                     paginationMode="client"
@@ -648,7 +660,11 @@ export const _CrudMoreActionsMenu = {
 export const DateColumn = {
     render: () => {
         return (
-            <Box height={600}>
+            <Box
+                sx={{
+                    height: 600,
+                }}
+            >
                 <DataGrid
                     paginationMode="client"
                     rows={[
@@ -686,7 +702,11 @@ export const DateColumn = {
 export const DateTimeColumn = {
     render: () => {
         return (
-            <Box height={600}>
+            <Box
+                sx={{
+                    height: 600,
+                }}
+            >
                 <DataGrid
                     paginationMode="client"
                     rows={[

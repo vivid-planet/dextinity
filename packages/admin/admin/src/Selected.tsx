@@ -26,7 +26,11 @@ const SelectEdit = <Data extends { id: string | number }>(props: IProps<Data>) =
             <ErrorComponent error={queryResult.error} />
         ) : (
             <Card>
-                <Box padding={4}>
+                <Box
+                    sx={{
+                        padding: 4,
+                    }}
+                >
                     <Typography>
                         <FormattedMessage
                             id="dextinity.table.tableQuery.error"

@@ -62,7 +62,11 @@ export const _CustomButtons = {
                             <Field label="Bar" name="bar" component={FinalFormInput} fullWidth />
                         </CardContent>
                     </Card>
-                    <Box paddingTop={4}>
+                    <Box
+                        sx={{
+                            paddingTop: 4,
+                        }}
+                    >
                         <CustomButtons />
                     </Box>
                 </FinalForm>

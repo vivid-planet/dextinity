@@ -76,7 +76,13 @@ export function FinalFormLayoutSelect({ input: { value, onChange }, layouts }: P
                     ? [
                           i > 0 ? <SectionDivider /> : null,
                           <ListSubheader key={`section-${section.name}`}>
-                              <Typography variant="body2" fontWeight="bold" color="text.primary">
+                              <Typography
+                                  variant="body2"
+                                  sx={{
+                                      fontWeight: "bold",
+                                      color: "text.primary",
+                                  }}
+                              >
                                   {section.label}
                               </Typography>
                           </ListSubheader>,

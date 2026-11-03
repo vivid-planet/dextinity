@@ -46,13 +46,23 @@ export const FileFieldRow = ({ file, onRemove, preview, menuActions }: FileField
                 </Stack>
             }
         >
-            <Stack direction="row" alignItems="center" spacing={2} flex={1} minWidth={0}>
+            <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                    alignItems: "center",
+                    flex: 1,
+                    minWidth: 0,
+                }}
+            >
                 {preview ? preview(file) : <DamThumbnail asset={{ ...file, __typename: "DamFile" }} />}
                 <ListItemText
                     primary={file.name}
                     secondary={<DamPathLazy fileId={file.id} />}
-                    primaryTypographyProps={{ variant: "subtitle1", noWrap: true }}
-                    secondaryTypographyProps={{ variant: "body2", color: "textSecondary", noWrap: true, component: "span" }}
+                    slotProps={{
+                        primary: { variant: "subtitle1", noWrap: true },
+                        secondary: { variant: "body2", color: "textSecondary", noWrap: true, component: "span" },
+                    }}
                 />
             </Stack>
             {showMoreMenu && (

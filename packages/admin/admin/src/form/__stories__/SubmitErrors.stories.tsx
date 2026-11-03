@@ -43,14 +43,22 @@ export const SubmitErrors = {
 
         return (
             <FinalForm mode="edit" onSubmit={onSubmit} initialValues={initialValues} resolveSubmitErrors={resolveSubmitErrors}>
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Card variant="outlined">
                         <CardContent>
                             <Field label="Foo" name="foo" component={FinalFormInput} />
                         </CardContent>
                     </Card>
                 </Box>
-                <Box marginBottom={4}>
+                <Box
+                    sx={{
+                        marginBottom: 4,
+                    }}
+                >
                     <Card variant="outlined">
                         <CardContent>
                             <Field label="Bar" name="bar" component={FinalFormInput} />

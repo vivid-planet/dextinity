@@ -218,7 +218,7 @@ export function TargetGroupsGrid({
                 }
                 return (
                     <>
-                        <IconButton component={StackLink} pageName="edit" payload={row.id}>
+                        <IconButton component={StackLink} nativeButton={false} pageName="edit" payload={row.id}>
                             <Edit color="primary" />
                         </IconButton>
                         <IconButton onClick={() => downloadTargetGroupContactsExportFile({ id: row.id, title: row.title })}>

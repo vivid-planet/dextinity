@@ -13,7 +13,7 @@ export const commonSelectStyleOverrides = {
         backgroundColor: "transparent",
     },
 
-    [`&.${inputBaseClasses.inputAdornedEnd}`]: {
+    [`.${inputBaseClasses.adornedEnd} &`]: {
         paddingRight: 42,
     },
 
@@ -22,6 +22,7 @@ export const commonSelectStyleOverrides = {
         top: 0,
         bottom: 0,
         right: 26,
+        transform: "none",
     },
 };
 

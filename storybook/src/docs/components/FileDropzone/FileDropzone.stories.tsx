@@ -8,7 +8,12 @@ export default {
         (story) => (
             <Card>
                 <CardContent>
-                    <Stack gap={4} direction="row">
+                    <Stack
+                        direction="row"
+                        sx={{
+                            gap: 4,
+                        }}
+                    >
                         {story()}
                     </Stack>
                 </CardContent>

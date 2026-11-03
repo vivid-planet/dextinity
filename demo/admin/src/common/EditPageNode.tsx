@@ -40,7 +40,11 @@ export const EditPageNode = createEditPageNode({
     nodeFragment: additionalPageTreeNodeFieldsFragment,
     additionalFormFields: (
         <>
-            <Box marginY={6}>
+            <Box
+                sx={{
+                    marginY: 6,
+                }}
+            >
                 <Divider />
             </Box>
             <SelectField

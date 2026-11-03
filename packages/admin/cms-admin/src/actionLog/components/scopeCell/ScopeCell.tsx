@@ -1,21 +1,12 @@
 import { messages } from "@dextinity/admin";
 import { Box, Chip } from "@mui/material";
-import { capitalCase } from "change-case";
-import isEqual from "lodash.isequal";
 import { useIntl } from "react-intl";
 
-import { type ContentScope, type ContentScopeValues, useContentScope } from "../../../contentScope/Provider";
+import { type ContentScope, useContentScope } from "../../../contentScope/Provider";
+import { getContentScopeLabel } from "../../../contentScope/utils/getContentScopeLabel";
 
 type ScopeCellProps = {
     scopes: ContentScope[] | null;
-};
-
-const formatScopeLabel = (scope: ContentScope, scopeValues: ContentScopeValues): string => {
-    const matched = scopeValues.find((item) => isEqual(item.scope, scope));
-    const source = matched ?? { scope, label: undefined as Record<string, string> | undefined };
-    return Object.keys(source.scope)
-        .map((key) => source.label?.[key] ?? capitalCase(String(source.scope[key])))
-        .join(" / ");
 };
 
 export function ScopeCell({ scopes }: ScopeCellProps) {
@@ -29,7 +20,7 @@ export function ScopeCell({ scopes }: ScopeCellProps) {
     return (
         <Box display="flex" gap={1} flexWrap="wrap">
             {scopes.map((scope) => (
-                <Chip key={JSON.stringify(scope)} label={formatScopeLabel(scope, scopeValues)} />
+                <Chip key={JSON.stringify(scope)} label={getContentScopeLabel({ scope, values: scopeValues })} />
             ))}
         </Box>
     );

@@ -5,11 +5,10 @@ import prettierConfig from "eslint-config-prettier";
 import prettierPlugin from "eslint-plugin-prettier/recommended";
 import unusedImports from "eslint-plugin-unused-imports";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
-import { configs as eslintPluginJsonc } from "eslint-plugin-jsonc";
 import dextinityPlugin from "@dextinity/eslint-plugin";
 import importPlugin from "eslint-plugin-import";
 import js from "@eslint/js";
-import packageJson from "eslint-plugin-package-json";
+import jsonConfig from "./json.js";
 
 export const restrictedImportPatterns = [
     {
@@ -61,27 +60,7 @@ const config = [
             "import/no-extraneous-dependencies": "error",
         },
     },
-    ...eslintPluginJsonc["flat/recommended-with-json"],
-    {
-        ignores: [
-            /**
-             * disable package.json and nested package.json files (e.g.in admin -> /server/package.json)
-             */
-            "**/package.json",
-        ],
-        rules: {
-            "jsonc/sort-keys": "error",
-        },
-    },
-    {
-        ...packageJson.configs.recommended,
-        rules: {
-            ...packageJson.configs.recommended.rules,
-            "package-json/require-type": "off",
-            "package-json/require-description": "off",
-            "package-json/require-attribution": "off",
-        },
-    },
+    ...jsonConfig,
     {
         ignores: ["**/*.json"],
         languageOptions: {

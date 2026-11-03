@@ -9,7 +9,7 @@ import styles from "./customization.dev.module.scss";
 const meta = {
     component: Button,
     title: "Components/Button/Dev/Customization",
-    tags: ["!autodocs"],
+    tags: ["!autodocs", "!manifest"],
     decorators: [themeDecorator],
 } satisfies Meta<typeof Button>;
 
@@ -33,7 +33,7 @@ export const ViaWrapperGlobalSelectors: Story = {
     render: () => (
         <div className={styles.wrapper}>
             <Button startIcon={<FavoriteIcon />}>Themed via wrapper</Button>
-            <Button variant="secondary" endIcon={<ArrowRightIcon />}>
+            <Button color="secondary" endIcon={<ArrowRightIcon />}>
                 Secondary in the same wrapper
             </Button>
         </div>

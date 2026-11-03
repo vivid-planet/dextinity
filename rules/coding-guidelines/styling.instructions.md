@@ -24,7 +24,8 @@ alwaysApply: false
 
 ## Where styles live
 
-- **No inline `style={{ … }}`.** Use Emotion / styled-components. Name the styled component after its semantic role (`DeleteButton`, not `StyledIconButton`).
+- **Static styles don't go into inline `style={{ … }}`.** Put them in the project's styling solution (Emotion / styled-components, or CSS/SCSS modules where the project uses them). Name a styled component after its semantic role (`DeleteButton`, not `StyledIconButton`).
+- Inline `style` is fine for passing a runtime value (from props or state) to the stylesheet as a CSS custom property, e.g. `style={{ "--aspect-ratio": aspectRatio }}`. Keep the actual styling in the stylesheet and only set the variable inline.
 - Keep list-level layout (flex/grid/wrap) on the list container, not on item blocks. When the item needs sizing, wrap it in an `Item` inside the list rather than styling the block itself.
 - When a component gets complex, extract styles to a `*.sc.ts` sibling file (and GraphQL to `*.gql.ts`). Those files are **private** to the component — do not import them elsewhere.
 

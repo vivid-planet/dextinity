@@ -10,8 +10,17 @@ export default {
 export const Default = {
     render: () => {
         return (
-            <Box display="flex" alignItems="center">
-                <Box marginRight={15}>
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                }}
+            >
+                <Box
+                    sx={{
+                        marginRight: 15,
+                    }}
+                >
                     <Typography variant="body1">Input Field with Default ClearInputButton:</Typography>
                 </Box>
                 <InputBase
@@ -31,8 +40,17 @@ export const ClearableInputField = {
         const [inputText, setInputText] = useState<string>("");
 
         return (
-            <Box display="flex" alignItems="center">
-                <Box marginRight={15}>
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                }}
+            >
+                <Box
+                    sx={{
+                        marginRight: 15,
+                    }}
+                >
                     <Typography variant="body1">Input Field with clearable onClick Button Functionality:</Typography>
                 </Box>
                 <InputBase
@@ -52,8 +70,17 @@ export const ClearableInputField = {
 export const Disabled = {
     render: () => {
         return (
-            <Box display="flex" alignItems="center">
-                <Box marginRight={15}>
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                }}
+            >
+                <Box
+                    sx={{
+                        marginRight: 15,
+                    }}
+                >
                     <Typography variant="body1">Input Field with disabled ClearInputButton:</Typography>
                 </Box>
                 <InputBase
@@ -71,8 +98,17 @@ export const Disabled = {
 export const CustomClearIcon = {
     render: () => {
         return (
-            <Box display="flex" alignItems="center">
-                <Box marginRight={15}>
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                }}
+            >
+                <Box
+                    sx={{
+                        marginRight: 15,
+                    }}
+                >
                     <Typography variant="body1">Input Field with Custom ClearInputButton Icon:</Typography>
                 </Box>
                 <InputBase

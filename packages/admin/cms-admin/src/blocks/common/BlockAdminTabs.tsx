@@ -21,7 +21,7 @@ export function BlockAdminTabs({ children }: BlockAdminTabsProps): JSX.Element |
         return null;
     }
     const [firstTab, ...otherTabs] = children;
-    const selectedTab = children.find((tab) => tab.key === selected) ? selected : firstTab.key; //fall back to first, as <Switch> does
+    const selectedTab = children.find((tab) => tab.key === selected) ? selected : firstTab.key; //fall back to first, as <AbsoluteRoutes> does
     return (
         <Root key="tabs">
             <Tabs value={selectedTab} variant="scrollable" scrollButtons="auto">

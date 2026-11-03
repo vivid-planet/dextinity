@@ -19,7 +19,11 @@ const SampleTable = () => {
 
     return (
         <>
-            <Box marginBottom={4}>
+            <Box
+                sx={{
+                    marginBottom: 4,
+                }}
+            >
                 <Toolbar>
                     <ToolbarBackButton />
                     <ToolbarItem>

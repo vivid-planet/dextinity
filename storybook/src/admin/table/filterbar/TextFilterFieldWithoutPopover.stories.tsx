@@ -66,7 +66,11 @@ function Story({ tableData }: StoryProps) {
         <>
             <TableFilterFinalForm filterApi={filterApi}>
                 <Typography variant="h5">FilterBar</Typography>
-                <Box marginTop={2}>
+                <Box
+                    sx={{
+                        marginTop: 2,
+                    }}
+                >
                     <FilterBar>
                         <Field name="query" component={FinalFormSearchTextField} />
                         <FilterBarPopoverFilter label="Owner">

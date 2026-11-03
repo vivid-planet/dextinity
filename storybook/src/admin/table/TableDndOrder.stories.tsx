@@ -53,7 +53,14 @@ export const DnDOrder = {
                                             },
                                         ]}
                                     />
-                                    <MuiStack direction="row" gap={2} sx={{ mt: 2, alignItems: "center" }}>
+                                    <MuiStack
+                                        direction="row"
+                                        sx={{
+                                            gap: 2,
+                                            mt: 2,
+                                            alignItems: "center",
+                                        }}
+                                    >
                                         <Button
                                             onClick={() => {
                                                 tableLocalChangesApi.submitLocalDataChanges();

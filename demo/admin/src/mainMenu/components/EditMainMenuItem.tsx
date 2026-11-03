@@ -177,7 +177,11 @@ const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
                                         }}
                                     />
                                     <HiddenInSubroute>
-                                        <Box mb={4} />
+                                        <Box
+                                            sx={{
+                                                mb: 4,
+                                            }}
+                                        />
                                         <Button variant="destructive" startIcon={<Delete />} onClick={handleRemoveContentClick}>
                                             <FormattedMessage id="mainMenu.removeContent" defaultMessage="Remove content" />
                                         </Button>

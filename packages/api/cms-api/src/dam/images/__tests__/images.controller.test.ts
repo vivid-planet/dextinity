@@ -1,3 +1,4 @@
+import { GoneException } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import type { Response } from "express";
 import { describe, expect, it, vi } from "vitest";
@@ -32,9 +33,20 @@ function createImagesService(config: Partial<DamConfig> = {}) {
     return new ImagesService({ secret: "secret", basePath: damBasePath, ...config } as DamConfig);
 }
 
-function createController({ file, includeFormatExtensionInImageUrls }: { file: FileInterface; includeFormatExtensionInImageUrls: boolean }) {
+function createController({
+    file,
+    includeFormatExtensionInImageUrls,
+    hasInvalidLicense = false,
+}: {
+    file: FileInterface;
+    includeFormatExtensionInImageUrls: boolean;
+    hasInvalidLicense?: boolean;
+}) {
     const config = { secret: "secret", basePath: damBasePath, filesDirectory: "files", includeFormatExtensionInImageUrls } as DamConfig;
-    const filesService = { findOneById: vi.fn().mockResolvedValue(file) } as unknown as FilesService;
+    const filesService = {
+        findOneById: vi.fn().mockResolvedValue(file),
+        hasInvalidLicense: vi.fn().mockReturnValue(hasInvalidLicense),
+    } as unknown as FilesService;
     const imgproxyService = { builder: () => new ImgproxyBuilder(80) } as unknown as ImgproxyService;
     const cacheService = {
         get: vi.fn().mockResolvedValue({ file: { pipe: vi.fn() }, metaData: { contentType: "image/png", size: 1000 } }),
@@ -145,6 +157,21 @@ describe.each(routes)("ImagesController.$handler", ({ handler, storedCropArea, r
             await controller[handler](parseImageUrl(urlBeforeRename), "image/webp", res);
 
             expect(redirect).toHaveBeenCalledWith(301, expect.stringMatching(/\/new-name\.png$/));
+        });
+    });
+
+    describe("with an invalid license", () => {
+        it("responds with 410 Gone and prevents caching the response", async () => {
+            const file = createPngFile();
+            const controller = createController({ file, includeFormatExtensionInImageUrls: false, hasInvalidLicense: true });
+            const { res, setHeader, writeHead } = createMockResponse();
+
+            await expect(
+                controller[handler](parseImageUrl(createRequestedImageUrl({ file, imagesService: createImagesService() })), "image/webp", res),
+            ).rejects.toThrow(GoneException);
+
+            expect(setHeader).toHaveBeenCalledWith("cache-control", "no-store");
+            expect(writeHead).not.toHaveBeenCalled();
         });
     });
 

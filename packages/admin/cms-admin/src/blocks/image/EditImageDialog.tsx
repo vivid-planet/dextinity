@@ -123,7 +123,12 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                 <Dialog open onClose={onClose} maxWidth={false}>
                     <DialogFormWrapper onSubmit={handleSubmit}>
                         <DialogTitle>
-                            <Grid container justifyContent="space-between">
+                            <Grid
+                                container
+                                sx={{
+                                    justifyContent: "space-between",
+                                }}
+                            >
                                 <Grid>
                                     <Typography>
                                         <FormattedMessage
@@ -163,7 +168,12 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                             <div>
                                 {inheritedDamSettings !== undefined && (
                                     <>
-                                        <Box padding={8} paddingTop={0}>
+                                        <Box
+                                            sx={{
+                                                padding: 8,
+                                                paddingTop: 0,
+                                            }}
+                                        >
                                             <FormSection
                                                 title={<FormattedMessage id="dextinity.blocks.image.dam" defaultMessage="DAM" />}
                                                 disableMarginBottom
@@ -184,12 +194,21 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                                         </Box>
 
                                         {entityDependencyMap["DamFile"] && damFileId && (
-                                            <Box padding={7} paddingTop={0}>
+                                            <Box
+                                                sx={{
+                                                    padding: 7,
+                                                    paddingTop: 0,
+                                                }}
+                                            >
                                                 <>
                                                     <Typography variant="subtitle1">
                                                         <FormattedMessage id="dextinity.blocks.image.damPath" defaultMessage="DAM Path: " />
                                                     </Typography>
-                                                    <Typography mb={2}>
+                                                    <Typography
+                                                        sx={{
+                                                            mb: 2,
+                                                        }}
+                                                    >
                                                         <DamPathLazy fileId={damFileId} />
                                                     </Typography>
                                                 </>
@@ -213,7 +232,11 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                                         <Divider sx={{ marginLeft: 8, marginRight: 8 }} />
                                     </>
                                 )}
-                                <Box padding={8}>
+                                <Box
+                                    sx={{
+                                        padding: 8,
+                                    }}
+                                >
                                     <CropSettingsFields disabled={inheritedDamSettings === undefined ? false : values.useInheritedDamSettings} />
                                 </Box>
                             </div>

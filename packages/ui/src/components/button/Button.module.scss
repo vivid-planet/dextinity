@@ -1,32 +1,50 @@
+@use "buttonColors";
+
 .root {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
     gap: var(--dextinity-button-type-button-default-gap);
-    padding-block: var(--dextinity-button-type-button-default-padding-vertical);
-    padding-inline: var(--dextinity-button-type-button-default-padding-horizontal);
-    border: none;
+    block-size: var(--dextinity-button-type-button-default-height);
+    padding-block: calc(var(--dextinity-button-type-button-default-padding-vertical) - var(--dextinity-button-border-width));
+    padding-inline: calc(var(--dextinity-button-type-button-default-padding-horizontal) - var(--dextinity-button-border-width));
+    border: var(--dextinity-button-border-width) solid;
     border-radius: var(--dextinity-button-type-button-default-radius);
     font-family: var(--dextinity-brand-font-family-sans);
     font-size: var(--dextinity-button-type-button-default-font-size);
     font-weight: var(--dextinity-button-type-button-default-font-weight);
     line-height: var(--dextinity-button-type-button-default-font-line-height);
+    letter-spacing: var(--dextinity-font-letter-spacing-normal);
+    white-space: nowrap;
     cursor: pointer;
 
-    &[data-variant="primary"] {
-        background: var(--dextinity-button-color-primary-contained-default-background);
-        color: var(--dextinity-button-color-primary-contained-default-foreground);
-    }
-
-    &[data-variant="secondary"] {
-        background: var(--dextinity-button-color-secondary-contained-default-background);
-        color: var(--dextinity-button-color-secondary-contained-default-foreground);
+    &:focus-visible {
+        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-border-focus);
+        outline-offset: var(--dextinity-focus-ring-offset);
     }
 
     &[data-disabled] {
         cursor: not-allowed;
-        opacity: 0.5;
     }
+
+    &[data-loading] {
+        cursor: progress;
+    }
+
+    .loadingSpinner {
+        color: inherit;
+    }
+
+    &[data-size="small"] {
+        gap: var(--dextinity-button-type-button-small-gap);
+        block-size: var(--dextinity-button-type-button-small-height);
+        padding-block: calc(var(--dextinity-button-type-button-small-padding-vertical) - var(--dextinity-button-border-width));
+        padding-inline: calc(var(--dextinity-button-type-button-small-padding-horizontal) - var(--dextinity-button-border-width));
+        border-radius: var(--dextinity-button-type-button-small-radius);
+    }
+
+    @include buttonColors.colors;
 }
 
 .startIcon,
@@ -34,4 +52,16 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    inline-size: var(--dextinity-button-type-button-default-icon-size);
+    block-size: var(--dextinity-button-type-button-default-icon-size);
+
+    .root[data-size="small"] & {
+        inline-size: var(--dextinity-button-type-button-small-icon-size);
+        block-size: var(--dextinity-button-type-button-small-icon-size);
+    }
+
+    svg {
+        inline-size: 100%;
+        block-size: 100%;
+    }
 }

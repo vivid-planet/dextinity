@@ -1,4 +1,5 @@
 import { type ComponentsOverrides, type Drawer as MuiDrawer, type Theme, useThemeProps } from "@mui/material";
+import { mergeSlotProps } from "@mui/material/utils";
 import { Children, cloneElement, type ReactNode, useContext, useEffect, useMemo, useRef } from "react";
 import { useLocation } from "react-router";
 
@@ -116,9 +117,9 @@ export const MainNavigation = (inProps: MainNavigationProps) => {
                 open={variant === "permanent" && open}
                 hidden={variant === "temporary"}
                 {...slotProps?.permanentDrawer}
-                PaperProps={{
-                    elevation: 2,
-                    ...slotProps?.permanentDrawer?.PaperProps,
+                slotProps={{
+                    ...slotProps?.permanentDrawer?.slotProps,
+                    paper: mergeSlotProps(slotProps?.permanentDrawer?.slotProps?.paper, { elevation: 2 }),
                 }}
                 {...restProps}
             >

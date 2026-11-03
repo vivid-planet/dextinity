@@ -19,7 +19,7 @@ import type {
 import { Command } from "commander";
 import type { FieldValidator, FormApi } from "final-form";
 import { promises as fs } from "fs";
-import { glob } from "glob";
+import { glob } from "fs/promises";
 import { introspectionFromSchema } from "graphql";
 import { basename, dirname } from "path";
 import { format, resolveConfig } from "prettier";
@@ -346,7 +346,10 @@ async function runGenerate(filePattern = "src/**/*.dextinityGen.{ts,tsx}") {
     const gqlIntrospection = introspectionFromSchema(schema);
     const writtenFiles: string[] = [];
 
-    const files: string[] = await glob(filePattern);
+    const files: string[] = [];
+    for await (const file of glob(filePattern)) {
+        files.push(file);
+    }
     for (const file of files) {
         let outputCode = "";
         let gqlDocumentsOutputCode = "";

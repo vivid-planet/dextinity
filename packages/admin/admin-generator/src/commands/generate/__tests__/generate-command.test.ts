@@ -1,11 +1,14 @@
 import type { CommanderError } from "commander";
-import { glob } from "glob";
+import { glob } from "fs/promises";
 import { buildSchema } from "graphql";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { generateCommand } from "../generate-command";
 
-vi.mock("glob", () => ({ glob: vi.fn(async () => []) }));
+vi.mock("fs/promises", async (importOriginal) => ({
+    ...(await importOriginal<typeof import("fs/promises")>()),
+    glob: vi.fn(async function* () {}),
+}));
 vi.mock("@graphql-tools/load", () => ({ loadSchema: vi.fn(async () => buildSchema("type Query { id: ID }")) }));
 
 describe("generate command", () => {

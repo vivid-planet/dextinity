@@ -316,7 +316,11 @@ const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDouble
                             )}
 
                             {importInformation.failed > 0 && (
-                                <Box mt={2}>
+                                <Box
+                                    sx={{
+                                        mt: 2,
+                                    }}
+                                >
                                     <Alert severity="error">
                                         <FormattedMessage
                                             id="dextinity.useContactImport.error.contactsCouldNotBeImported"
@@ -331,7 +335,11 @@ const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDouble
                             )}
 
                             {importInformation.blacklisted > 0 && (
-                                <Box mt={2}>
+                                <Box
+                                    sx={{
+                                        mt: 2,
+                                    }}
+                                >
                                     <Alert severity="error">
                                         <FormattedMessage
                                             id="dextinity.useContactImport.error.contactsAreBlacklisted"
@@ -348,7 +356,11 @@ const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDouble
                             )}
 
                             {(importInformation.created > 0 || importInformation.updated > 0) && sendDoubleOptIn && (
-                                <Box mt={2}>
+                                <Box
+                                    sx={{
+                                        mt: 2,
+                                    }}
+                                >
                                     <Alert severity="warning">
                                         <FormattedMessage
                                             id="dextinity.useContactImport.importSuccessful.doiNotice"

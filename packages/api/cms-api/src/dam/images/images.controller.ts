@@ -4,6 +4,7 @@ import {
     ForbiddenException,
     forwardRef,
     Get,
+    GoneException,
     Headers,
     HttpStatus,
     Inject,
@@ -131,6 +132,8 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
+            this.throwIfLicenseIsInvalid(file, res);
+
             if (this.imagesService.shouldRedirectToCurrentUrl(file, params.filename)) {
                 return this.redirectToCurrentUrl({ file, params, res });
             }
@@ -154,6 +157,8 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
+            this.throwIfLicenseIsInvalid(file, res);
+
             if (this.imagesService.shouldRedirectToCurrentUrl(file, params.filename)) {
                 return this.redirectToCurrentUrl({ file, params, res });
             }
@@ -163,6 +168,13 @@ export const createImagesController = ({ damBasePath }: { damBasePath: string })
 
         private isValidHash({ hash, ...imageParams }: HashImageParams): boolean {
             return hash === this.imagesService.createHash(imageParams);
+        }
+
+        private throwIfLicenseIsInvalid(file: FileInterface, res: Response): void {
+            if (this.filesService.hasInvalidLicense(file)) {
+                res.setHeader("cache-control", "no-store"); // The image must be delivered again once the license becomes valid
+                throw new GoneException();
+            }
         }
 
         private redirectToCurrentUrl({ file, params, res }: { file: FileInterface; params: ImageParams; res: Response }): void {

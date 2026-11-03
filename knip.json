@@ -18,6 +18,11 @@
             "entry": [],
             "project": []
         },
+        "packages/oxlint-config": {
+            "ignore": ["*"],
+            "entry": [],
+            "project": []
+        },
         "codemods": {
             "ignore": ["*"],
             "entry": [],
@@ -112,7 +117,7 @@
             "ignore": ["./src/**/generated/**", "**/*.generated.ts"]
         },
         "demo/site": {
-            "entry": ["./src/app/**", "./cache-handler.ts", "./server.ts", "./opentelemetry-metrics.ts", "tracing.dev.ts", "tracing.production.ts"],
+            "entry": ["./src/app/**", "./cache-handler.ts", "./opentelemetry-metrics.ts", "tracing.dev.ts", "tracing.production.ts"],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignoreDependencies": ["@babel/core", "@types/grecaptcha", "mjml"],
             "ignore": ["**/*.generated.ts"]

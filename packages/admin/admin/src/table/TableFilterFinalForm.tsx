@@ -41,10 +41,24 @@ export class TableFilterFinalForm<FilterValues = AnyObject> extends Component<Pr
     private renderForm = (formRenderProps: FormRenderProps<FilterValues>) => {
         return (
             <form onSubmit={formRenderProps.handleSubmit}>
-                <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+                <Grid
+                    container
+                    spacing={2}
+                    sx={{
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                    }}
+                >
                     {(this.props.headline || this.props.resetButton) && (
                         <Grid size={12}>
-                            <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                }}
+                            >
                                 {this.props.headline && (
                                     <Grid>
                                         <Typography variant="h4">{this.props.headline}</Typography>

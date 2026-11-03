@@ -2,7 +2,7 @@ import { createServer } from "http";
 import next from "next";
 import { parse } from "url";
 
-import { withMetrics } from "./opentelemetry-metrics";
+import { withMetrics } from "./opentelemetry-metrics.ts";
 
 const dev = process.env.NODE_ENV !== "production";
 const host = process.env.SERVER_HOST ?? "localhost";
@@ -12,11 +12,11 @@ const cdnOriginCheckSecret = process.env.CDN_ORIGIN_CHECK_SECRET;
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname: host, port, webpack: true });
 
-app.prepare().then(() => {
+app.prepare().then(async () => {
     if (process.env.TRACING == "production") {
-        require("./tracing.production");
+        await import("./tracing.production.ts");
     } else if (process.env.TRACING == "dev") {
-        require("./tracing.dev");
+        await import("./tracing.dev.ts");
     }
     const handle = withMetrics(app.getRequestHandler());
 

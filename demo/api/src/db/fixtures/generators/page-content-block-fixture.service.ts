@@ -24,7 +24,6 @@ import { SliderBlockFixtureService } from "./blocks/slider-fixture.service";
 import { BillboardTeaserBlockFixtureService } from "./blocks/teaser/billboard-teaser-block-fixture.service";
 import { TeaserBlockFixtureService } from "./blocks/teaser/teaser-block-fixture.service";
 import { KeyFactsBlockFixtureService } from "./blocks/text-and-content/key-facts-block-fixture.service";
-import { ProductListBlockFixtureService } from "./blocks/text-and-content/product-list-block.fixture";
 import { StandaloneHeadingBlockFixtureService } from "./blocks/text-and-content/standalone-heading-block-fixture.service";
 import { TableBlockFixtureService } from "./blocks/text-and-content/table-block-fixture.service";
 import { TextImageBlockFixtureService } from "./blocks/text-and-content/text-image-block-fixture.service";
@@ -55,7 +54,6 @@ export class PageContentBlockFixtureService {
         private readonly textImageBlockFixtureService: TextImageBlockFixtureService,
         private readonly sliderBlockFixtureService: SliderBlockFixtureService,
         private readonly standaloneRichTextBlockFixtureService: StandaloneRichTextBlockFixtureService,
-        private readonly productListBlockFixtureService: ProductListBlockFixtureService,
         private readonly pageTreeIndexBlockFixtureService: PageTreeIndexBlockFixtureService,
         private readonly contactFormBlockFixtureService: ContactFormBlockFixtureService,
         private readonly tableBlockFixtureService: TableBlockFixtureService,
@@ -89,7 +87,6 @@ export class PageContentBlockFixtureService {
             keyFacts: ["textAndContent", this.keyFactsBlockFixtureService],
             richtext: ["textAndContent", this.standaloneRichTextBlockFixtureService],
             textImage: ["textAndContent", this.textImageBlockFixtureService],
-            productList: ["textAndContent", this.productListBlockFixtureService],
             contactForm: ["form", this.contactFormBlockFixtureService],
             table: ["textAndContent", this.tableBlockFixtureService],
             tipTapRichText: ["textAndContent", this.tipTapRichTextBlockFixtureService],

@@ -18,6 +18,7 @@ export function createTextBlock({
 }) {
     return Node.create({
         name: "textBlock",
+        priority: 1000,
         group: "block",
         content: "inline*",
         defining: true,

@@ -307,7 +307,7 @@ const blockLoaders: Partial<Record<AllBlockNames, BlockLoader>> = {
 };
 ```
 
-The key must match the block's type name exactly. This is the string used as the last argument in `createBlock(Data, Input, "MyEntity")` in the API layer.
+The key must match the block's type name exactly. This is the `name` passed to `createBlock` in the API layer.
 
 ---
 

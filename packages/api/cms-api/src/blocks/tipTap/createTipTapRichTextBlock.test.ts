@@ -1,9 +1,11 @@
+import { getSchema } from "@tiptap/core";
 import { validate } from "class-validator";
 import { describe, expect, it } from "vitest";
 
 import { ExternalLinkBlock } from "../externalLink/external-link.block";
 import { createLinkBlock } from "../factories/createLinkBlock";
 import {
+    buildExtensions,
     createTipTapRichTextBlock,
     type CreateTipTapRichTextBlockOptions,
     resolveTipTapOptions,
@@ -42,6 +44,25 @@ const onlyFeatures = (options: CreateTipTapRichTextBlockOptions = {}): CreateTip
     nonBreakingSpace: false,
     softHyphen: false,
     ...options,
+});
+
+describe("createTipTapRichTextBlock schema", () => {
+    it.each([
+        ["default text blocks", {}],
+        ["heading-only text blocks", { textBlocks: headingOnly234 }],
+    ])("should use the text block as the default block type with %s, like the Admin's schema", (_name, options) => {
+        const schema = getSchema(
+            buildExtensions({
+                resolvedOptions: resolveTipTapOptions(options),
+                inlineStyles: [],
+                placeholders: [],
+                hasBlockChildBlocks: true,
+                hasInlineChildBlocks: false,
+            }),
+        );
+
+        expect(schema.topNodeType.contentMatch.defaultType?.name).toBe("textBlock");
+    });
 });
 
 describe("createTipTapRichTextBlock validation", () => {
@@ -329,6 +350,30 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(errors).toHaveLength(1);
         });
 
+        it("should reject a horizontalRule (disabled in config)", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "textBlock", content: [{ type: "text", text: "Above" }] }, { type: "horizontalRule" }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
+        });
+
+        it("should accept a hardBreak", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        { type: "textBlock", content: [{ type: "text", text: "First" }, { type: "hardBreak" }, { type: "text", text: "Second" }] },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
+        });
+
         it("should reject null content", async () => {
             // Cast required because the typed input rejects invalid content at compile time; here we test the runtime guard.
             const input = block.blockInputFactory({ tipTapContent: null as unknown as TipTapRichTextBlockContent });
@@ -464,8 +509,11 @@ describe("createTipTapRichTextBlock validation", () => {
         const block = createTipTapRichTextBlock(
             onlyFeatures({
                 bold: true,
-                textBlocks: undefined,
-                textBlockStyles: [{ name: "intro", appliesTo: ["paragraph"] }, { name: "highlight" }],
+                textBlocks: [
+                    { name: "paragraph", tag: "p", styles: [{ name: "intro" }, { name: "highlight" }] },
+                    { name: "heading-1", tag: "h1", styles: [{ name: "highlight" }] },
+                    { name: "heading-2", tag: "h2", styles: [{ name: "highlight" }] },
+                ],
             }),
             "TestBlockStyles",
         );
@@ -526,12 +574,11 @@ describe("createTipTapRichTextBlock validation", () => {
         const block = createTipTapRichTextBlock(
             {
                 bold: true,
-                orderedList: true,
-                unorderedList: true,
-                textBlockStyles: [
-                    { name: "intro", appliesTo: ["paragraph"] },
-                    { name: "listStyle", appliesTo: ["ordered-list", "unordered-list"] },
-                    { name: "highlight" },
+                orderedList: { styles: [{ name: "listStyle" }] },
+                unorderedList: { styles: [{ name: "listStyle" }] },
+                textBlocks: [
+                    { name: "paragraph", tag: "p", styles: [{ name: "intro" }, { name: "highlight" }] },
+                    { name: "heading-1", tag: "h1", styles: [{ name: "highlight" }] },
                 ],
             },
             "TestBlockStylesList",
@@ -798,6 +845,7 @@ describe("createTipTapRichTextBlock validation", () => {
                     content: [
                         {
                             type: "textBlock",
+                            attrs: { textBlock: "paragraph" },
                             content: [
                                 { type: "text", marks: [{ type: "inlineStyle", attrs: { type: "heading-accent" } }], text: "Accent in paragraph" },
                             ],
@@ -1432,6 +1480,27 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(() => createTipTapRichTextBlock({ textBlocks: [] }, "TestEmptyTextBlocks")).toThrow();
         });
 
+        it("should throw when a text block or a list offers the same style twice, because a style's name identifies it", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    { textBlocks: [{ name: "paragraph", tag: "p", styles: [{ name: "copy100" }, { name: "copy100" }] }] },
+                    "TestDuplicateStyle",
+                ),
+            ).toThrow();
+            expect(() =>
+                createTipTapRichTextBlock({ orderedList: { styles: [{ name: "list300" }, { name: "list300" }] } }, "TestDuplicateListStyle"),
+            ).toThrow();
+        });
+
+        it("should throw when the defaultStyle is not one of the text block's styles", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    { textBlocks: [{ name: "paragraph", tag: "p", styles: [{ name: "copy100" }], defaultStyle: "copy200" }] },
+                    "TestInvalidDefaultStyle",
+                ),
+            ).toThrow();
+        });
+
         it("should throw for a duplicate text block name", () => {
             expect(() =>
                 createTipTapRichTextBlock(
@@ -1538,7 +1607,7 @@ describe("createTipTapRichTextBlock validation", () => {
             const resolvedOptions = resolveTipTapOptions({ textBlocks: headingOnly234 });
             expect(resolvedOptions.orderedList).toBe(false);
             expect(resolvedOptions.unorderedList).toBe(false);
-            expect(resolvedOptions.defaultTextBlock).toEqual({ name: "heading-2", tag: "h2", level: 2 });
+            expect(resolvedOptions.defaultTextBlock).toEqual({ name: "heading-2", tag: "h2", level: 2, styles: [], defaultStyle: null });
         });
     });
 
@@ -1715,5 +1784,176 @@ describe("createTipTapRichTextBlock block typing", () => {
 
         expect(input.tipTapContent.type).toBe("doc");
         expect(blockData.tipTapContent.type).toBe("doc");
+    });
+});
+
+describe("createTipTapRichTextBlock defaultStyle on read", () => {
+    const listStyles = { styles: [{ name: "list300" }, { name: "list200" }] };
+    const block = createTipTapRichTextBlock(
+        {
+            textBlocks: [
+                { name: "paragraph", tag: "p", styles: [{ name: "copy300" }, { name: "copy200" }], defaultStyle: "copy300" },
+                { name: "heading-2", tag: "h2", styles: [{ name: "headline400" }], defaultStyle: "headline400" },
+                { name: "heading-3", tag: "h3", styles: [{ name: "headline300" }] },
+            ],
+            orderedList: listStyles,
+            unorderedList: { ...listStyles, defaultStyle: "list300" },
+        },
+        "TestDefaultStyleOnRead",
+    );
+
+    function textBlock(attrs: Record<string, unknown>): TipTapRichTextBlockContent {
+        return { type: "textBlock", attrs, content: [{ type: "text", text: "Text" }] };
+    }
+
+    function read(content: TipTapRichTextBlockContent[]): TipTapRichTextBlockContent[] | undefined {
+        return block.blockDataFactory({ tipTapContent: { type: "doc", content } }).tipTapContent.content;
+    }
+
+    it("fills in the text block's defaultStyle where the content carries no style", () => {
+        expect(read([textBlock({ textBlock: "paragraph" }), textBlock({ textBlock: "heading-2", textBlockStyle: null })])).toEqual([
+            textBlock({ textBlock: "paragraph", textBlockStyle: "copy300" }),
+            textBlock({ textBlock: "heading-2", textBlockStyle: "headline400" }),
+        ]);
+    });
+
+    it("keeps a style the content carries", () => {
+        expect(read([textBlock({ textBlock: "paragraph", textBlockStyle: "copy200" })])).toEqual([
+            textBlock({ textBlock: "paragraph", textBlockStyle: "copy200" }),
+        ]);
+    });
+
+    it("leaves a text block without defaultStyle unstyled", () => {
+        expect(read([textBlock({ textBlock: "heading-3" })])).toEqual([textBlock({ textBlock: "heading-3" })]);
+    });
+
+    it("gives a node naming no text block the default text block's defaultStyle", () => {
+        expect(read([{ type: "textBlock", content: [{ type: "text", text: "Text" }] }])).toEqual([textBlock({ textBlockStyle: "copy300" })]);
+    });
+
+    it("takes the innermost list's defaultStyle inside a list item rather than the text block's", () => {
+        expect(
+            read([
+                {
+                    type: "orderedList",
+                    content: [
+                        {
+                            type: "listItem",
+                            content: [
+                                textBlock({ textBlock: "paragraph" }),
+                                { type: "bulletList", content: [{ type: "listItem", content: [textBlock({ textBlock: "paragraph" })] }] },
+                            ],
+                        },
+                    ],
+                },
+            ]),
+        ).toEqual([
+            {
+                type: "orderedList",
+                content: [
+                    {
+                        type: "listItem",
+                        content: [
+                            // The ordered list has no defaultStyle, and inside it the text block's doesn't apply.
+                            textBlock({ textBlock: "paragraph" }),
+                            {
+                                type: "bulletList",
+                                content: [{ type: "listItem", content: [textBlock({ textBlock: "paragraph", textBlockStyle: "list300" })] }],
+                            },
+                        ],
+                    },
+                ],
+            },
+        ]);
+    });
+
+    it("leaves the content untouched where nothing has a defaultStyle", () => {
+        const blockWithoutDefaults = createTipTapRichTextBlock(
+            { textBlocks: [{ name: "paragraph", tag: "p", styles: [{ name: "copy300" }] }] },
+            "TestNoDefaultStyleOnRead",
+        );
+        const content = [textBlock({ textBlock: "paragraph" })];
+
+        expect(blockWithoutDefaults.blockDataFactory({ tipTapContent: { type: "doc", content } }).tipTapContent.content).toEqual(content);
+    });
+});
+
+describe("createTipTapRichTextBlock searchText", () => {
+    const block = createTipTapRichTextBlock({ textBlocks: headingLevels234 }, "TestSearchText");
+
+    function searchText(content: TipTapRichTextBlockContent[]) {
+        return block.blockDataFactory({ tipTapContent: { type: "doc", content } }).searchText();
+    }
+
+    function text(value: string, marks?: TipTapRichTextBlockContent["marks"]): TipTapRichTextBlockContent {
+        return marks ? { type: "text", text: value, marks } : { type: "text", text: value };
+    }
+
+    function textBlock(name: string, content: TipTapRichTextBlockContent[]): TipTapRichTextBlockContent {
+        return { type: "textBlock", attrs: { textBlock: name }, content };
+    }
+
+    it("returns one entry for a paragraph split into several text nodes by marks", () => {
+        expect(
+            searchText([
+                textBlock("paragraph", [
+                    text("Text with "),
+                    text("bold", [{ type: "bold" }]),
+                    text(", "),
+                    text("italic", [{ type: "italic" }]),
+                    text(" and a "),
+                    text("link", [{ type: "link" }]),
+                    text("."),
+                ]),
+            ]),
+        ).toEqual(["Text with bold, italic and a link."]);
+    });
+
+    it("returns one weighted entry for a heading containing a mark", () => {
+        expect(searchText([textBlock("heading-2", [text("A "), text("bold", [{ type: "bold" }]), text(" heading")])])).toEqual([
+            { weight: "h2", text: "A bold heading" },
+        ]);
+    });
+
+    it("returns one entry per text block", () => {
+        expect(searchText([textBlock("paragraph", [text("First")]), textBlock("paragraph", [text("Second")])])).toEqual(["First", "Second"]);
+    });
+
+    it("returns one entry per list item", () => {
+        expect(
+            searchText([
+                {
+                    type: "bulletList",
+                    content: [
+                        { type: "listItem", content: [textBlock("paragraph", [text("First "), text("item", [{ type: "bold" }])])] },
+                        { type: "listItem", content: [textBlock("paragraph", [text("Second item")])] },
+                    ],
+                },
+            ]),
+        ).toEqual(["First item", "Second item"]);
+    });
+
+    it("joins the text around a hard break with a newline", () => {
+        expect(searchText([textBlock("paragraph", [text("First line"), { type: "hardBreak" }, text("Second line")])])).toEqual([
+            "First line\nSecond line",
+        ]);
+    });
+
+    it("joins the text around a non-breaking space with a space", () => {
+        expect(searchText([textBlock("paragraph", [text("First"), { type: "nonBreakingSpace" }, text("Second")])])).toEqual(["First Second"]);
+    });
+
+    it("returns no entry for an empty text block", () => {
+        expect(searchText([textBlock("paragraph", []), textBlock("paragraph", [text("Text")])])).toEqual(["Text"]);
+    });
+
+    it("returns no entries when indexSearchText is disabled", () => {
+        const blockWithoutSearchText = createTipTapRichTextBlock({ indexSearchText: false }, "TestSearchTextDisabled");
+
+        expect(
+            blockWithoutSearchText
+                .blockDataFactory({ tipTapContent: { type: "doc", content: [textBlock("paragraph", [text("Text")])] } })
+                .searchText(),
+        ).toEqual([]);
     });
 });

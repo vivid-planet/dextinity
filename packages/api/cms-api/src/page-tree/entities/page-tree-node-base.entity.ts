@@ -1,6 +1,6 @@
 import { BaseEntity, Entity, Enum, FullTextType, Index, ManyToOne, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { EntityInfo } from "../../entity-info/entity-info.decorator";
 import { PAGE_TREE_ENTITY } from "../page-tree.constants";
@@ -17,7 +17,7 @@ export abstract class PageTreeNodeBase extends BaseEntity {
 
     @PrimaryKey({ columnType: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ columnType: "uuid", nullable: true, persist: false })
     @Field(() => String, { nullable: true })

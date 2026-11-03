@@ -1,5 +1,62 @@
 # @comet/cli
 
+## 10.12.0
+
+## 10.11.0
+
+### Patch Changes
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- 48a9757: Update `commander` to v14
+
+    Commands now fail with "too many arguments" when they receive positional arguments they don't declare. Before, these arguments were ignored.
+    For example, an unquoted glob passed to `dextinity-admin-generator generate --file` is expanded by the shell into several arguments, and only the first file was generated. Quote the glob so the admin generator receives it as one pattern:
+
+    ```bash
+    dextinity-admin-generator generate --file 'src/products/**/*.dextinityGen.tsx'
+    ```
+
+## 10.10.0
+
+### Patch Changes
+
+- b0decc5: Fix `dextinity inject-site-configs` failing with `ERR_MODULE_NOT_FOUND` in projects without a `tsconfig.json`
+
+    Without a `tsconfig.json`, `ts-node` falls back to the defaults of `@tsconfig/node16`, which switched to `module: Node16` in version 1.0.4.
+    This caused `ts-node` to emit ESM, so extensionless imports in the site configs (e.g., `import main from "./main"`) could no longer be resolved.
+    The CLI now always compiles to CommonJS.
+
+## 10.9.1
+
+### Patch Changes
+
+- 3348875: Fix `inject-site-configs` failing with "expected data on stdin but none found" for configs with 1Password references
+
+    Since 10.9.0, `inject-site-configs` passed the references to `op inject` through stdin, which `op` doesn't accept when Node starts it.
+    The references are now passed in a temporary file.
+
+## 10.9.0
+
+### Patch Changes
+
+- 43c28ef: Resolve all 1Password references in `inject-site-configs` with a single `op inject` call
+
+    Previously, `inject-site-configs` started one `op read` process per reference and site-config placeholder, which took about 1.2 seconds each.
+    Now each unique reference is read once, which also reduces the reads counted against the 1Password rate limits.
+
+- 4bc8293: Insert 1Password secrets literally in `inject-site-configs`
+
+    Previously, `$&`, `$'` and `` $` `` in a secret were interpreted as replacement patterns, so the injected value differed from the secret stored in 1Password.
+
+## 10.8.0
+
 ## 10.7.0
 
 ## 10.6.0

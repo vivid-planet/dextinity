@@ -5,17 +5,7 @@ import type { MainNavigationContext } from "./Context";
 import type { MainNavigationItemLevel } from "./Item";
 
 export type MainNavigationItemClassKey =
-    | "root"
-    | "level1"
-    | "level2"
-    | "level3"
-    | "open"
-    | "hasIcon"
-    | "hasSecondaryText"
-    | "hasSecondaryAction"
-    | "icon"
-    | "text"
-    | "tooltip";
+    "root" | "level1" | "level2" | "level3" | "open" | "hasIcon" | "hasSecondaryText" | "hasSecondaryAction" | "icon" | "text" | "tooltip";
 
 export type OwnerState = {
     level: MainNavigationItemLevel;
@@ -76,249 +66,269 @@ export const Root = createComponentSlot(ListItemButton)<MainNavigationItemClassK
             white-space: nowrap;
         }
 
-        ${ownerState.level === 1 &&
-        css`
-            border-bottom: 1px solid ${theme.palette.grey[50]};
-            box-sizing: border-box;
-            color: ${theme.palette.grey[900]};
-            height: 60px;
-            padding: 16px 22px;
-            background-color: ${!ownerState.open && ownerState.collapsibleOpen
-                ? `${theme.palette.primary.main} !important`
-                : theme.palette.common.white};
-
-            .${listItemIconClasses.root} {
-                color: ${!ownerState.open && ownerState.collapsibleOpen ? `${theme.palette.common.white} !important` : ""};
-            }
-
-            :hover {
-                background-color: ${!ownerState.open ? `${theme.palette.primary.main} !important` : ""};
-                color: ${!ownerState.open ? `${theme.palette.common.white}` : ""};
+        ${
+            ownerState.level === 1 &&
+            css`
+                border-bottom: 1px solid ${theme.palette.grey[50]};
+                box-sizing: border-box;
+                color: ${theme.palette.grey[900]};
+                height: 60px;
+                padding: 16px 22px;
+                background-color: ${
+                    !ownerState.open && ownerState.collapsibleOpen ? `${theme.palette.primary.main} !important` : theme.palette.common.white
+                };
 
                 .${listItemIconClasses.root} {
-                    color: ${!ownerState.open ? `${theme.palette.common.white}` : ""};
-                }
-            }
-
-            &.Mui-selected {
-                background-color: ${theme.palette.common.white};
-                color: ${theme.palette.primary.main};
-
-                :after {
-                    background-color: ${theme.palette.primary.main};
-                }
-
-                .${listItemIconClasses.root} {
-                    color: ${theme.palette.primary.main};
+                    color: ${!ownerState.open && ownerState.collapsibleOpen ? `${theme.palette.common.white} !important` : ""};
                 }
 
                 :hover {
-                    color: ${!ownerState.open ? theme.palette.common.white : theme.palette.primary.main};
-                    background-color: ${theme.palette.grey[50]};
+                    background-color: ${!ownerState.open ? `${theme.palette.primary.main} !important` : ""};
+                    color: ${!ownerState.open ? `${theme.palette.common.white}` : ""};
 
                     .${listItemIconClasses.root} {
-                        color: ${!ownerState.open ? theme.palette.common.white : theme.palette.primary.main};
+                        color: ${!ownerState.open ? `${theme.palette.common.white}` : ""};
                     }
                 }
-            }
 
-            .${listItemTextClasses.primary} {
-                font-size: 16px;
-                line-height: 20px;
-                margin-left: 10px;
-                font-weight: 450;
-            }
+                &.Mui-selected {
+                    background-color: ${theme.palette.common.white};
+                    color: ${theme.palette.primary.main};
 
-            .${listItemTextClasses.secondary} {
-                margin-left: 10px;
-            }
-        `}
+                    :after {
+                        background-color: ${theme.palette.primary.main};
+                    }
 
-        ${ownerState.level === 2 &&
-        css`
-            color: ${theme.palette.grey[900]};
-            padding-left: ${ownerState.open ? 48 : 30}px;
-            padding-right: 15px;
-            padding-top: 8px;
-            padding-bottom: 8px;
-            width: ${ownerState.open ? "initial" : 240}px;
+                    .${listItemIconClasses.root} {
+                        color: ${theme.palette.primary.main};
+                    }
 
-            .${listItemTextClasses.primary} {
-                font-size: 14px;
-                line-height: 20px;
-            }
+                    :hover {
+                        color: ${!ownerState.open ? theme.palette.common.white : theme.palette.primary.main};
+                        background-color: ${theme.palette.grey[50]};
 
-            :last-child {
-                border-bottom: 1px solid
-                    ${ownerState.open && (!ownerState.hasSubItems || !ownerState.collapsibleOpen)
-                        ? theme.palette.grey[50]
-                        : theme.palette.common.white};
-                box-sizing: border-box;
-            }
-
-            &.Mui-selected {
-                background-color: ${theme.palette.common.white};
-                color: ${theme.palette.primary.main};
-                font-weight: ${theme.typography.fontWeightMedium};
-
-                :after {
-                    background-color: ${ownerState.open ? theme.palette.primary.main : undefined};
-                }
-
-                :hover {
-                    background-color: ${theme.palette.grey[50]};
+                        .${listItemIconClasses.root} {
+                            color: ${!ownerState.open ? theme.palette.common.white : theme.palette.primary.main};
+                        }
+                    }
                 }
 
                 .${listItemTextClasses.primary} {
-                    font-weight: ${theme.typography.fontWeightMedium};
+                    font-size: 16px;
+                    line-height: 20px;
+                    margin-left: 10px;
+                    font-weight: 450;
                 }
 
-                .${listItemIconClasses.root} {
-                    color: ${theme.palette.primary.main};
+                .${listItemTextClasses.secondary} {
+                    margin-left: 10px;
                 }
-            }
+            `
+        }
 
-            .${listItemTextClasses.root} {
-                margin: 0;
-            }
-        `}
-
-        ${ownerState.level === 3 &&
-        css`
-            color: ${theme.palette.grey[900]};
-            padding-left: ${ownerState.open ? 50 : 30}px;
-            padding-right: 15px;
-            padding-top: 0;
-            padding-bottom: 0;
-            position: relative;
-            width: ${ownerState.open ? "initial" : 240}px;
-
-            background-color: ${ownerState.open && ownerState.collapsibleOpen && ownerState.variant === "temporary"
-                ? theme.palette.grey[50]
-                : theme.palette.common.white};
-
-            :hover {
-                background-color: ${ownerState.open && ownerState.collapsibleOpen && ownerState.variant === "temporary"
-                    ? theme.palette.grey[100]
-                    : theme.palette.grey[50]};
-            }
-
-            :last-child {
-                border-bottom: ${ownerState.open ? `1px solid ${theme.palette.grey[50]}` : "initial"};
-                box-sizing: border-box;
-            }
-
-            &.Mui-selected {
-                background-color: ${ownerState.open && ownerState.collapsibleOpen && ownerState.variant === "temporary"
-                    ? theme.palette.grey[50]
-                    : theme.palette.common.white};
-                color: ${theme.palette.primary.main};
-                font-weight: ${theme.typography.fontWeightMedium};
-
-                :hover {
-                    background-color: ${ownerState.open && ownerState.collapsibleOpen && ownerState.variant === "temporary"
-                        ? theme.palette.grey[100]
-                        : theme.palette.grey[50]};
-                }
-
-                .${listItemTextClasses.primary} {
-                    font-weight: ${theme.typography.fontWeightMedium};
-                }
-
-                .${listItemIconClasses.root} {
-                    color: ${theme.palette.primary.main};
-                }
-            }
-
-            .${listItemTextClasses.root} {
-                margin: 0;
-            }
-
-            .${listItemTextClasses.primary} {
-                font-size: 14px;
-                line-height: 20px;
-                padding-left: ${ownerState.open ? 15 : 0}px;
+        ${
+            ownerState.level === 2 &&
+            css`
+                color: ${theme.palette.grey[900]};
+                padding-left: ${ownerState.open ? 48 : 30}px;
+                padding-right: 15px;
                 padding-top: 8px;
                 padding-bottom: 8px;
-            }
+                width: ${ownerState.open ? "initial" : 240}px;
 
-            ${ownerState.open &&
-            css`
-                :not(:last-child) {
-                    .${listItemTextClasses.root} {
-                        position: relative;
-
-                        &:before {
-                            content: "";
-                            position: absolute;
-                            width: 1px;
-                            height: 100%;
-                            top: 0;
-                            background-color: ${theme.palette.grey[200]};
-                        }
-
-                        &:after {
-                            content: "";
-                            position: absolute;
-                            width: 5px;
-                            height: 1px;
-                            top: 50%;
-                            transform: translateY(-50%);
-                            background-color: ${theme.palette.grey[200]};
-                        }
-                    }
-
-                    &.Mui-selected {
-                        .${listItemTextClasses.root} {
-                            :before,
-                            :after {
-                                background-color: ${theme.palette.primary.main};
-                            }
-                        }
-                    }
+                .${listItemTextClasses.primary} {
+                    font-size: 14px;
+                    line-height: 20px;
                 }
 
                 :last-child {
-                    .${listItemTextClasses.root} {
-                        position: relative;
-                        padding-right: 10px;
+                    border-bottom: 1px solid
+                        ${
+                            ownerState.open && (!ownerState.hasSubItems || !ownerState.collapsibleOpen)
+                                ? theme.palette.grey[50]
+                                : theme.palette.common.white
+                        };
+                    box-sizing: border-box;
+                }
 
-                        &:before {
-                            content: "";
-                            position: absolute;
-                            width: 1px;
-                            height: 50%;
-                            top: 0;
-                            background-color: ${theme.palette.grey[200]};
-                        }
+                &.Mui-selected {
+                    background-color: ${theme.palette.common.white};
+                    color: ${theme.palette.primary.main};
+                    font-weight: ${theme.typography.fontWeightMedium};
 
-                        &:after {
-                            content: "";
-                            position: absolute;
-                            width: 5px;
-                            height: 1px;
-                            top: 50%;
-                            transform: translateY(-50%);
-                            background-color: ${theme.palette.grey[200]};
-                        }
+                    :after {
+                        background-color: ${ownerState.open ? theme.palette.primary.main : undefined};
                     }
 
-                    &.Mui-selected {
-                        .${listItemTextClasses.root} {
-                            :before,
-                            :after {
-                                background-color: ${theme.palette.primary.main};
-                            }
-                        }
+                    :hover {
+                        background-color: ${theme.palette.grey[50]};
+                    }
+
+                    .${listItemTextClasses.primary} {
+                        font-weight: ${theme.typography.fontWeightMedium};
+                    }
+
+                    .${listItemIconClasses.root} {
+                        color: ${theme.palette.primary.main};
                     }
                 }
-            `}
-        `}
 
-        ${ownerState.hasSecondaryAction &&
-        css`
-            padding-right: 18px;
-        `}
+                .${listItemTextClasses.root} {
+                    margin: 0;
+                }
+            `
+        }
+
+        ${
+            ownerState.level === 3 &&
+            css`
+                color: ${theme.palette.grey[900]};
+                padding-left: ${ownerState.open ? 50 : 30}px;
+                padding-right: 15px;
+                padding-top: 0;
+                padding-bottom: 0;
+                position: relative;
+                width: ${ownerState.open ? "initial" : 240}px;
+
+                background-color: ${
+                    ownerState.open && ownerState.collapsibleOpen && ownerState.variant === "temporary"
+                        ? theme.palette.grey[50]
+                        : theme.palette.common.white
+                };
+
+                :hover {
+                    background-color: ${
+                        ownerState.open && ownerState.collapsibleOpen && ownerState.variant === "temporary"
+                            ? theme.palette.grey[100]
+                            : theme.palette.grey[50]
+                    };
+                }
+
+                :last-child {
+                    border-bottom: ${ownerState.open ? `1px solid ${theme.palette.grey[50]}` : "initial"};
+                    box-sizing: border-box;
+                }
+
+                &.Mui-selected {
+                    background-color: ${
+                        ownerState.open && ownerState.collapsibleOpen && ownerState.variant === "temporary"
+                            ? theme.palette.grey[50]
+                            : theme.palette.common.white
+                    };
+                    color: ${theme.palette.primary.main};
+                    font-weight: ${theme.typography.fontWeightMedium};
+
+                    :hover {
+                        background-color: ${
+                            ownerState.open && ownerState.collapsibleOpen && ownerState.variant === "temporary"
+                                ? theme.palette.grey[100]
+                                : theme.palette.grey[50]
+                        };
+                    }
+
+                    .${listItemTextClasses.primary} {
+                        font-weight: ${theme.typography.fontWeightMedium};
+                    }
+
+                    .${listItemIconClasses.root} {
+                        color: ${theme.palette.primary.main};
+                    }
+                }
+
+                .${listItemTextClasses.root} {
+                    margin: 0;
+                }
+
+                .${listItemTextClasses.primary} {
+                    font-size: 14px;
+                    line-height: 20px;
+                    padding-left: ${ownerState.open ? 15 : 0}px;
+                    padding-top: 8px;
+                    padding-bottom: 8px;
+                }
+
+                ${
+                    ownerState.open &&
+                    css`
+                        :not(:last-child) {
+                            .${listItemTextClasses.root} {
+                                position: relative;
+
+                                &:before {
+                                    content: "";
+                                    position: absolute;
+                                    width: 1px;
+                                    height: 100%;
+                                    top: 0;
+                                    background-color: ${theme.palette.grey[200]};
+                                }
+
+                                &:after {
+                                    content: "";
+                                    position: absolute;
+                                    width: 5px;
+                                    height: 1px;
+                                    top: 50%;
+                                    transform: translateY(-50%);
+                                    background-color: ${theme.palette.grey[200]};
+                                }
+                            }
+
+                            &.Mui-selected {
+                                .${listItemTextClasses.root} {
+                                    :before,
+                                    :after {
+                                        background-color: ${theme.palette.primary.main};
+                                    }
+                                }
+                            }
+                        }
+
+                        :last-child {
+                            .${listItemTextClasses.root} {
+                                position: relative;
+                                padding-right: 10px;
+
+                                &:before {
+                                    content: "";
+                                    position: absolute;
+                                    width: 1px;
+                                    height: 50%;
+                                    top: 0;
+                                    background-color: ${theme.palette.grey[200]};
+                                }
+
+                                &:after {
+                                    content: "";
+                                    position: absolute;
+                                    width: 5px;
+                                    height: 1px;
+                                    top: 50%;
+                                    transform: translateY(-50%);
+                                    background-color: ${theme.palette.grey[200]};
+                                }
+                            }
+
+                            &.Mui-selected {
+                                .${listItemTextClasses.root} {
+                                    :before,
+                                    :after {
+                                        background-color: ${theme.palette.primary.main};
+                                    }
+                                }
+                            }
+                        }
+                    `
+                }
+            `
+        }
+
+        ${
+            ownerState.hasSecondaryAction &&
+            css`
+                padding-right: 18px;
+            `
+        }
     `,
 );
 

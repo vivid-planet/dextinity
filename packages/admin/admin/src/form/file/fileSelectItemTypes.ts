@@ -17,6 +17,4 @@ export type LoadingFileSelectItem = {
 };
 
 export type FileSelectItem<AdditionalValidFileValues = Record<string, unknown>> =
-    | ValidFileSelectItem<AdditionalValidFileValues>
-    | ErrorFileSelectItem
-    | LoadingFileSelectItem;
+    ValidFileSelectItem<AdditionalValidFileValues> | ErrorFileSelectItem | LoadingFileSelectItem;

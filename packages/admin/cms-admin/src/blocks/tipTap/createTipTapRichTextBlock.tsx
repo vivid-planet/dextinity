@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 import { Extension, type Extensions } from "@tiptap/core";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
+import { skipTrailingNodeMeta } from "@tiptap/extensions";
 import { EditorContent, type JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import isEqual from "lodash.isequal";
@@ -25,27 +26,43 @@ import { ChildBlocksContext } from "./ChildBlocksContext";
 import { translateTipTapContent } from "./contentTranslation";
 import { CmsBlock, CmsInlineBlock } from "./extensions/CmsBlock";
 import { CmsLink } from "./extensions/CmsLink";
+import { createDefaultTextBlockStyle } from "./extensions/DefaultTextBlockStyle";
 import { InlineStyleMark } from "./extensions/InlineStyleMark";
 import { NonBreakingSpace } from "./extensions/NonBreakingSpace";
 import { Placeholder } from "./extensions/Placeholder";
 import { SoftHyphen } from "./extensions/SoftHyphen";
 import { createTextBlock } from "./extensions/TextBlock";
+import { createTextBlockList } from "./extensions/TextBlockList";
 import { TextBlockListItem } from "./extensions/TextBlockListItem";
 import { InlineStyleContext } from "./InlineStyleContext";
 import { createListLevelMaxExtension, getListNestingDepthFromJson, trimListNesting } from "./listLevelMaxHelpers";
+import { TextBlockContext } from "./TextBlockContext";
 import {
     allHeadingLevels,
     findDefaultTextBlock,
+    getStyledNodes,
     hasParagraphTextBlock,
+    hasTextBlockStyles,
+    orderedListName,
+    resolveList,
     resolveTextBlocks,
+    type TipTapListOptions,
+    type TipTapResolvedList,
     type TipTapResolvedTextBlock,
     type TipTapTextBlock,
+    unorderedListName,
 } from "./textBlocks";
-import { TextBlockStyleContext } from "./TextBlockStyleContext";
 import { TipTapContentTranslationDialog } from "./TipTapContentTranslationDialog";
 import { TipTapToolbar } from "./TipTapToolbar";
 
-export type { TipTapTextBlock, TipTapTextBlockTag } from "./textBlocks";
+export type {
+    TipTapListOptions,
+    TipTapTextBlock,
+    TipTapTextBlockElement,
+    TipTapTextBlockElementProps,
+    TipTapTextBlockStyle,
+    TipTapTextBlockTag,
+} from "./textBlocks";
 export type { JSONContent as TipTapRichTextBlockContent } from "@tiptap/core";
 
 /**
@@ -65,8 +82,8 @@ export interface TipTapResolvedOptions {
      * the schema's default block type.
      */
     defaultTextBlock: TipTapResolvedTextBlock;
-    orderedList: boolean;
-    unorderedList: boolean;
+    orderedList: false | TipTapResolvedList;
+    unorderedList: false | TipTapResolvedList;
     nonBreakingSpace: boolean;
     softHyphen: boolean;
     link: boolean;
@@ -86,7 +103,7 @@ const defaultTextBlocks: TipTapTextBlock[] = [
     })),
 ];
 
-function resolveTipTapOptions({
+export function resolveTipTapOptions({
     undoRedoButtons = true,
     bold = true,
     italic = true,
@@ -121,8 +138,8 @@ function resolveTipTapOptions({
         textBlocks: resolvedTextBlocks,
         defaultTextBlock: findDefaultTextBlock({ textBlocks: resolvedTextBlocks, defaultTextBlock }),
         // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
-        orderedList: orderedList ?? hasParagraph,
-        unorderedList: unorderedList ?? hasParagraph,
+        orderedList: resolveList({ list: orderedList ?? hasParagraph, name: orderedListName, tag: "ol" }),
+        unorderedList: resolveList({ list: unorderedList ?? hasParagraph, name: unorderedListName, tag: "ul" }),
         nonBreakingSpace,
         softHyphen,
         link: !!link,
@@ -130,36 +147,14 @@ function resolveTipTapOptions({
     };
 }
 
-export type TipTapTextBlockType =
-    | "paragraph"
-    | "heading-1"
-    | "heading-2"
-    | "heading-3"
-    | "heading-4"
-    | "heading-5"
-    | "heading-6"
-    | "ordered-list"
-    | "unordered-list";
-
-export interface TipTapTextBlockStyle {
-    name: string;
-    label: ReactNode;
-    /**
-     * Limits the text block style to the provided text block types.
-     * If none is specified, the text block style is allowed for all text block types.
-     */
-    appliesTo?: TipTapTextBlockType[];
-    element: ComponentType<HTMLAttributes<HTMLElement>>;
-}
-
 export interface TipTapInlineStyle {
     name: string;
     label: ReactNode;
     /**
-     * Limits the inline style to the provided text block types.
-     * If none is specified, the inline style is allowed for all text block types.
+     * Limits the inline style to the named text blocks, `"ordered-list"` and `"unordered-list"`.
+     * If none is specified, the inline style is allowed everywhere.
      */
-    appliesTo?: TipTapTextBlockType[];
+    appliesTo?: string[];
     element: ComponentType<HTMLAttributes<HTMLElement>>;
     /**
      * Displayed next to the label in the toolbar's "More options" menu, matching Superscript/Subscript.
@@ -193,7 +188,7 @@ export interface TipTapChildBlock {
     display: "block" | "inline";
 }
 
-interface TipTapRichTextBlockFactoryOptions {
+export interface TipTapRichTextBlockFactoryOptions {
     /**
      * Shows the undo/redo buttons in the toolbar. The keyboard shortcuts work regardless. Defaults to `true`.
      */
@@ -240,13 +235,15 @@ interface TipTapRichTextBlockFactoryOptions {
      */
     defaultTextBlock?: string;
     /**
-     * Enables ordered lists. Defaults to `true`.
+     * Enables ordered lists. Defaults to `true`. Pass `{ styles }` or `{ element }` to control how a
+     * list item's content is rendered, the same way a text block does.
      */
-    orderedList?: boolean;
+    orderedList?: boolean | TipTapListOptions;
     /**
-     * Enables unordered lists. Defaults to `true`.
+     * Enables unordered lists. Defaults to `true`. Pass `{ styles }` or `{ element }` to control how
+     * a list item's content is rendered, the same way a text block does.
      */
-    unorderedList?: boolean;
+    unorderedList?: boolean | TipTapListOptions;
     /**
      * Enables non-breaking spaces. Defaults to `true`.
      */
@@ -264,7 +261,6 @@ interface TipTapRichTextBlockFactoryOptions {
      * to avoid a nested translate button when this block is rendered inside another translation UI.
      */
     contentTranslation?: boolean;
-    textBlockStyles?: TipTapTextBlockStyle[];
     inlineStyles?: TipTapInlineStyle[];
     placeholders?: TipTapPlaceholder[];
     /**
@@ -306,16 +302,41 @@ function getPlainTextFromContent(content: JSONContent): string {
     return text;
 }
 
-const buildEmptyContent = ({ defaultTextBlock }: TipTapResolvedOptions): JSONContent => ({
-    type: "doc",
-    content: [{ type: "textBlock", attrs: { textBlock: defaultTextBlock.name } }],
-});
+function getTextLines(content: JSONContent): string[] {
+    if (content.type !== "textBlock") {
+        return (content.content ?? []).flatMap(getTextLines);
+    }
+    const lines = [""];
+    for (const child of content.content ?? []) {
+        if (child.type === "hardBreak") {
+            lines.push("");
+        } else {
+            lines[lines.length - 1] += getPlainTextFromContent(child);
+        }
+    }
+    return lines;
+}
+
+const buildEmptyContent = ({ defaultTextBlock }: TipTapResolvedOptions): JSONContent => {
+    const attrs: JSONContent["attrs"] = { textBlock: defaultTextBlock.name };
+    if (defaultTextBlock.defaultStyle !== null) {
+        attrs.textBlockStyle = defaultTextBlock.defaultStyle;
+    }
+
+    return { type: "doc", content: [{ type: "textBlock", attrs }] };
+};
 
 const isCmsBlockNode = (content: JSONContent): boolean => content.type === "cmsBlock" || content.type === "cmsInlineBlock";
 
 const createMaxTextBlocksExtension = (maxTextBlocks: number) =>
     Extension.create({
         name: "maxTextBlocks",
+        dispatchTransaction({ transaction, next }) {
+            if (transaction.doc.childCount >= maxTextBlocks) {
+                transaction.setMeta(skipTrailingNodeMeta, true);
+            }
+            next(transaction);
+        },
         addKeyboardShortcuts() {
             return {
                 Enter: ({ editor }) => {
@@ -435,6 +456,13 @@ function collectCmsBlockNodes(content: JSONContent): Array<{ blockType: string; 
     return results;
 }
 
+const hasContent = (content: JSONContent): boolean =>
+    isCmsBlockNode(content) || (content.type === "textBlock" ? (content.content?.length ?? 0) > 0 : (content.content ?? []).some(hasContent));
+
+export function isTipTapRichTextEmpty(tipTapContent: JSONContent): boolean {
+    return !hasContent(tipTapContent);
+}
+
 function collectLinkMarksData(content: JSONContent): unknown[] {
     const results: unknown[] = [];
 
@@ -455,9 +483,8 @@ function collectLinkMarksData(content: JSONContent): unknown[] {
     return results;
 }
 
-function buildTipTapExtensions({
+export function buildTipTapExtensions({
     resolvedOptions,
-    textBlockStyles,
     inlineStyles,
     placeholders,
     linkBlock,
@@ -466,7 +493,6 @@ function buildTipTapExtensions({
     listLevelMax,
 }: {
     resolvedOptions: TipTapResolvedOptions;
-    textBlockStyles: TipTapTextBlockStyle[];
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
     linkBlock?: BlockInterface & LinkBlockInterface;
@@ -474,7 +500,10 @@ function buildTipTapExtensions({
     maxTextBlocks?: number;
     listLevelMax?: number;
 }): Extensions {
-    const hasTextBlockStyles = textBlockStyles.length > 0;
+    const styledNodes = getStyledNodes(resolvedOptions);
+    const hasStyles = hasTextBlockStyles(styledNodes);
+    // A text block with an `element` needs the node view to preview it, even without any styles.
+    const styled = hasStyles || styledNodes.some((styledNode) => styledNode.element !== undefined);
     const hasInlineStyles = inlineStyles.length > 0;
     const hasLink = resolvedOptions.link && !!linkBlock;
     const hasPlaceholders = placeholders.length > 0;
@@ -501,13 +530,20 @@ function buildTipTapExtensions({
             blockquote: false,
             code: false,
             codeBlock: false,
+            horizontalRule: false,
             link: false,
-            // A text block is directly editable (Enter at its end already creates the next one), so it
-            // doesn't need TrailingNode's own empty paragraph the way a trailing atom node (e.g. a child block) does.
-            trailingNode: { notAfter: ["textBlock"] },
+            // Enter at the end of a text block creates the next one, and Enter in an empty last list item
+            // leaves the list, so only a trailing atom node (e.g. a child block) needs TrailingNode's empty
+            // text block. After a list, it couldn't be deleted: TrailingNode adds it again right away.
+            trailingNode: { notAfter: ["textBlock", "orderedList", "bulletList"] },
         }),
-        createTextBlock({ ...resolvedOptions, styled: hasTextBlockStyles }),
+        createTextBlock({ ...resolvedOptions, hasTextBlockStyles: hasStyles, styled }),
         ...(hasParagraph ? [TextBlockListItem] : []),
+        ...(hasStyles ? [createDefaultTextBlockStyle(resolvedOptions)] : []),
+        // Only worth replacing the list shortcuts where a list has styles of its own to apply.
+        ...([resolvedOptions.orderedList, resolvedOptions.unorderedList].some((list) => list && list.styles.length > 0)
+            ? [createTextBlockList(resolvedOptions)]
+            : []),
         ...(hasInlineStyles ? [InlineStyleMark] : []),
         ...(resolvedOptions.sup ? [Superscript] : []),
         ...(resolvedOptions.sub ? [Subscript] : []),
@@ -536,7 +572,6 @@ export interface TipTapEditorProps {
     state: TipTapRichTextBlockState;
     updateState: React.Dispatch<React.SetStateAction<TipTapRichTextBlockState>>;
     resolvedOptions: TipTapResolvedOptions;
-    textBlockStyles: TipTapTextBlockStyle[];
     inlineStyles: TipTapInlineStyle[];
     placeholders: TipTapPlaceholder[];
     linkBlock?: BlockInterface & LinkBlockInterface;
@@ -551,7 +586,6 @@ export const TipTapEditor = ({
     state,
     updateState,
     resolvedOptions,
-    textBlockStyles,
     inlineStyles,
     placeholders,
     linkBlock,
@@ -570,7 +604,6 @@ export const TipTapEditor = ({
 
     const extensions = buildTipTapExtensions({
         resolvedOptions,
-        textBlockStyles,
         inlineStyles,
         placeholders,
         linkBlock,
@@ -578,6 +611,11 @@ export const TipTapEditor = ({
         maxTextBlocks,
         listLevelMax,
     });
+    const textBlockContextValue = {
+        textBlocks: resolvedOptions.textBlocks,
+        orderedList: resolvedOptions.orderedList,
+        unorderedList: resolvedOptions.unorderedList,
+    };
 
     const editor = useEditor({
         extensions,
@@ -593,9 +631,7 @@ export const TipTapEditor = ({
                 for (let i = 0; i < maxTextBlocks; i++) {
                     pos += doc.child(i).nodeSize;
                 }
-                // In ProseMirror, doc content positions are offset by 1 (for the doc open token)
-                // Delete from after the last allowed text block to end of doc content
-                tr.delete(pos + 1, doc.content.size + 1);
+                tr.delete(pos, doc.content.size);
                 editor.view.dispatch(tr);
                 return;
             }
@@ -682,7 +718,7 @@ export const TipTapEditor = ({
     const editorNode = <EditorContent editor={editor} />;
 
     return (
-        <TextBlockStyleContext.Provider value={textBlockStyles}>
+        <TextBlockContext.Provider value={textBlockContextValue}>
             <InlineStyleContext.Provider value={inlineStyles}>
                 <ChildBlocksContext.Provider value={childBlocksByKey}>
                     {readOnly ? (
@@ -692,7 +728,6 @@ export const TipTapEditor = ({
                             <TipTapToolbar
                                 editor={editor}
                                 resolvedOptions={resolvedOptions}
-                                textBlockStyles={textBlockStyles}
                                 inlineStyles={inlineStyles}
                                 placeholders={placeholders}
                                 linkBlock={linkBlock}
@@ -716,7 +751,6 @@ export const TipTapEditor = ({
                             }}
                             editorProps={{
                                 resolvedOptions,
-                                textBlockStyles,
                                 inlineStyles,
                                 placeholders,
                                 linkBlock,
@@ -729,7 +763,7 @@ export const TipTapEditor = ({
                     )}
                 </ChildBlocksContext.Provider>
             </InlineStyleContext.Provider>
-        </TextBlockStyleContext.Provider>
+        </TextBlockContext.Provider>
     );
 };
 
@@ -741,7 +775,6 @@ type TipTapRichTextBlockInterface = BlockInterface<TipTapRichTextBlockData, TipT
  */
 export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOptions = {}): TipTapRichTextBlockInterface => {
     const resolvedOptions = resolveTipTapOptions(options);
-    const textBlockStyles = options.textBlockStyles ?? [];
     const inlineStyles = options.inlineStyles ?? [];
     const placeholders = options.placeholders ?? [];
     const linkBlock = options.link;
@@ -755,7 +788,6 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
 
     const sharedEditorProps = {
         resolvedOptions,
-        textBlockStyles,
         inlineStyles,
         placeholders,
         linkBlock,
@@ -767,7 +799,6 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
 
     const tipTapExtensions = buildTipTapExtensions({
         resolvedOptions,
-        textBlockStyles,
         inlineStyles,
         placeholders,
         linkBlock,
@@ -844,7 +875,10 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
         ReadOnlyComponent: ({ state }) => <TipTapEditor state={state} updateState={() => {}} {...sharedEditorProps} readOnly />,
 
         previewContent: (state) => {
-            const text = getPlainTextFromContent(state.tipTapContent);
+            const text = getTextLines(state.tipTapContent)
+                .map((line) => line.trim())
+                .filter((line) => line.length > 0)
+                .join(" ");
             const MAX_CHARS = 100;
             return text.length > 0 ? [{ type: "text", content: text.slice(0, MAX_CHARS) }] : [];
         },

@@ -1,7 +1,7 @@
 import { CrudGenerator } from "@dextinity/cms-api";
 import { BaseEntity, Entity, ManyToOne, OptionalProps, PrimaryKey, Property, Ref } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { Product } from "./product.entity";
 
@@ -13,7 +13,7 @@ export class ProductHighlight extends BaseEntity {
 
     @PrimaryKey({ type: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ type: "text" })
     @Field()

@@ -57,8 +57,7 @@ function extractErrorEnumFromMutation(mutationType: IntrospectionField, gqlIntro
 
         // 3. Find the payload object type in introspection schema
         const payloadType = gqlIntrospection.__schema.types.find((type) => type.kind === "OBJECT" && type.name === returnType.name) as
-            | IntrospectionObjectType
-            | undefined;
+            IntrospectionObjectType | undefined;
 
         if (!payloadType) {
             return undefined;

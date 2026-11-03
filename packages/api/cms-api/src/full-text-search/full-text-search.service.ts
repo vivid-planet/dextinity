@@ -55,8 +55,7 @@ export class FullTextSearchService {
 
             const fullTextSql = resolveFieldToSql(entityInfo.fullText, metadata, metadata.tableName);
             const permissionMetadata = Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, targetEntity.entity) as
-                | RequiredPermissionMetadata
-                | undefined;
+                RequiredPermissionMetadata | undefined;
             const requiredPermissionSql = requiredPermissionToSql(permissionMetadata?.requiredPermission);
 
             const scopedEntity = Reflect.getMetadata(SCOPED_ENTITY_METADATA_KEY, targetEntity.entity) as ScopedEntityMeta | undefined;

@@ -10,7 +10,6 @@ sidebar_position: -5
 - Create one file per "logical component." Multiple Function Components per file are allowed for structuring, styling, etc.
 - Always use JSX (use React's `createElement` only for app initialization).
 - Use React's `PropsWithChildren` instead of defining children manually.
-- Inject dependencies to services/APIs via Context.
 - How to structure folders: "Move files around until it feels right."
   Recommendation: separate by modules instead of by type ([File Structure – React](https://legacy.reactjs.org/docs/faq-structure.html#grouping-by-features-or-routes)).
 
@@ -129,7 +128,7 @@ type BarProps = {
 
 ## Defining boolean props
 
-Boolean props should generally be optional and not have a default value, as they are falsy by default.
+Boolean flag props should generally be optional and not have a default value, as they are falsy by default.
 
 :::warning Bad
 
@@ -162,6 +161,21 @@ const Baz = ({ hidden }: BazProps) => {
         // ...
     }
     // ...
+};
+```
+
+:::
+
+An exception are boolean props that are the controlled value of a component, for instance, `checked` of a switch or `open` of a controlled dialog.
+They should be required.
+Otherwise, omitting the prop would silently put the component into uncontrolled mode.
+
+:::tip Good
+
+```tsx
+type SwitchProps = {
+    checked: boolean;
+    onChange: (checked: boolean) => void;
 };
 ```
 

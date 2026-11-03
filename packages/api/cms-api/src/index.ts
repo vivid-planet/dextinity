@@ -34,6 +34,8 @@ export {
     BlockMetaFieldKind,
     BlockMetaInterface,
     BlockMetaLiteralFieldKind,
+    BlockMetaTipTap,
+    BlockMetaTipTapStyledNode,
     BlockTransformerServiceInterface,
     BlockWarning,
     ChildBlockInfo,
@@ -111,6 +113,7 @@ export {
     type CreateTipTapRichTextBlockOptions,
     type TipTapRichTextBlockContent,
     type TipTapTextBlock,
+    type TipTapTextBlockStyle,
     type TipTapTextBlockTag,
 } from "./blocks/tipTap/createTipTapRichTextBlock";
 export { transformToBlockSaveIndex } from "./blocks/transformToBlockSaveIndex/transformToBlockSaveIndex";
@@ -142,6 +145,7 @@ export { DextinityException } from "./common/errors/dextinity.exception";
 export { DextinityEntityNotFoundException } from "./common/errors/entity-not-found.exception";
 export { ExceptionFilter } from "./common/errors/exception.filter";
 export { ExceptionInterceptor } from "./common/errors/exception.interceptor";
+export { FormattedValidationError, formatValidationErrors } from "./common/errors/format-validation-errors";
 export { DextinityValidationException } from "./common/errors/validation.exception";
 export { ValidationExceptionFactory } from "./common/errors/validation.exception-factory";
 export { BooleanFilter } from "./common/filter/boolean.filter";

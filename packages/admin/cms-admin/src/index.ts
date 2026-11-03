@@ -97,14 +97,16 @@ export { SpaceBlock } from "./blocks/SpaceBlock";
 export { SvgImageBlock } from "./blocks/SvgImageBlock";
 export type {
     TipTapInlineStyle,
+    TipTapListOptions,
     TipTapPlaceholder,
     TipTapRichTextBlockContent,
     TipTapTextBlock,
+    TipTapTextBlockElement,
+    TipTapTextBlockElementProps,
     TipTapTextBlockStyle,
     TipTapTextBlockTag,
-    TipTapTextBlockType,
 } from "./blocks/tipTap/createTipTapRichTextBlock";
-export { createTipTapRichTextBlock } from "./blocks/tipTap/createTipTapRichTextBlock";
+export { createTipTapRichTextBlock, isTipTapRichTextEmpty } from "./blocks/tipTap/createTipTapRichTextBlock";
 export type {
     AnonymousBlockInterface,
     BlockAdminComponent,
@@ -198,7 +200,7 @@ export { SearchHeaderItem } from "./fullTextSearch/SearchHeaderItem";
 export { ChooseDamFileDialog as ChooseFileDialog } from "./form/file/chooseFile/ChooseDamFileDialog";
 export { ChooseDamFilesDialog } from "./form/file/chooseFile/ChooseDamFilesDialog";
 export { FileField, type GQLDamFileFieldFileFragment } from "./form/file/FileField";
-export { damFileFieldFragment } from "./form/file/FileField.gql";
+export { damFileFieldFragment } from "./form/file/FileField.fragment";
 export { FileUploadField, type FileUploadFieldProps } from "./form/file/FileUploadField";
 export {
     FinalFormFileUpload,

@@ -32,6 +32,9 @@ class ProductTeaserBlockInput extends BlockInput {
     }
 }
 
-const ProductTeaserBlock = createBlock(ProductTeaserBlockData, ProductTeaserBlockInput, "ProductTeaser");
+const ProductTeaserBlock = createBlock(ProductTeaserBlockData, ProductTeaserBlockInput, {
+    name: "ProductTeaser",
+    description: "A teaser for a single product.",
+});
 
 export { ProductTeaserBlock };

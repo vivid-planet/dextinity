@@ -102,11 +102,10 @@ export type FilterEditorStateBeforeUpdateFn = (
     context: Pick<IRteOptions, "supports" | "listLevelMax" | "maxBlocks" | "standardBlockType">,
 ) => EditorState;
 
-export interface RteProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        editor: "div";
-    }> {
+export interface RteProps extends ThemedComponentBaseProps<{
+    root: "div";
+    editor: "div";
+}> {
     value: EditorState;
     onChange: OnEditorStateChangeFn;
     options?: IOptions;
@@ -375,19 +374,23 @@ const Editor = createComponentSlot("div")<RteClassKey, OwnerState>({
         & .public-DraftEditor-content {
             min-height: 240px;
 
-            ${ownerState.minHeight !== undefined &&
-            css`
-                min-height: ${`${ownerState.minHeight}px`};
-            `}
+            ${
+                ownerState.minHeight !== undefined &&
+                css`
+                    min-height: ${`${ownerState.minHeight}px`};
+                `
+            }
 
             padding: 20px;
             box-sizing: border-box;
         }
 
-        ${ownerState.disabled &&
-        css`
-            color: ${theme.palette.text.disabled};
-        `}
+        ${
+            ownerState.disabled &&
+            css`
+                color: ${theme.palette.text.disabled};
+            `
+        }
     `,
 );
 

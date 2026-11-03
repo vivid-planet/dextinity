@@ -23,16 +23,19 @@ import { createTextBlockNodeView } from "./TextBlockNodeView";
 export function createTextBlock({
     textBlocks,
     defaultTextBlock,
+    hasTextBlockStyles,
     styled,
 }: {
     textBlocks: TipTapResolvedTextBlock[];
     defaultTextBlock: TipTapResolvedTextBlock;
+    hasTextBlockStyles: boolean;
     styled: boolean;
 }) {
     const tagOf = (name: unknown): TipTapTextBlockTag => (textBlocks.find((textBlock) => textBlock.name === name) ?? defaultTextBlock).tag;
 
     return Node.create({
         name: "textBlock",
+        priority: 1000,
         group: "block",
         content: "inline*",
         defining: true,
@@ -40,7 +43,7 @@ export function createTextBlock({
         addAttributes() {
             return {
                 ...textBlockAttribute(defaultTextBlock.name),
-                ...(styled ? textBlockStyleAttribute : {}),
+                ...(hasTextBlockStyles ? textBlockStyleAttribute : {}),
             };
         },
 
@@ -136,7 +139,7 @@ export function createTextBlock({
         ...(styled
             ? {
                   addNodeView() {
-                      return ReactNodeViewRenderer(createTextBlockNodeView(textBlocks));
+                      return ReactNodeViewRenderer(createTextBlockNodeView(defaultTextBlock));
                   },
               }
             : {}),

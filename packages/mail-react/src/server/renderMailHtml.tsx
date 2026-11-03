@@ -9,6 +9,10 @@ type MjmlWarning = ReturnType<typeof mjml2html>["errors"][number];
 
 export function renderMailHtml(element: ReactElement, options?: MjmlOptions): { html: string; mjmlWarnings: MjmlWarning[] } {
     const mjmlString = renderToMjml(element);
-    const { html, errors: mjmlWarnings } = mjml2html(mjmlString, { validationLevel: "soft", ...options });
+    const { html, errors: mjmlWarnings } = mjml2html(mjmlString, {
+        validationLevel: "soft",
+        ...options,
+        ignoreIncludes: options?.ignoreIncludes ?? true,
+    });
     return { html: addBodyTargetingId(html), mjmlWarnings };
 }

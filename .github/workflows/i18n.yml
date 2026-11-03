@@ -18,13 +18,13 @@ jobs:
         steps:
             - run: echo "${{ github.actor }}"
 
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
             - run: |
                   git config user.name github-actions
                   git config user.email github-actions@github.com
 
             - name: "Library: Clone translations"
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
               with:
                   repository: vivid-planet/dextinity-lang
                   token: ${{ secrets.VIVID_PLANET_BOT_TOKEN }}
@@ -38,12 +38,12 @@ jobs:
                   cp -r lang/* demo/admin/lang/dextinity-lang/
 
             - name: "Library: Update translatable strings"
-              uses: EndBug/add-and-commit@v10
+              uses: EndBug/add-and-commit@v11
               with:
                   cwd: "./demo/admin/lang/dextinity-lang"
 
             - name: "Demo Admin: Clone translations"
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
               with:
                   repository: vivid-planet/dextinity-demo-lang
                   token: ${{ secrets.VIVID_PLANET_BOT_TOKEN }}
@@ -56,12 +56,12 @@ jobs:
                   cp -r lang-extracted/* lang/dextinity-demo-lang/admin
 
             - name: "Demo Admin: Update translatable strings"
-              uses: EndBug/add-and-commit@v10
+              uses: EndBug/add-and-commit@v11
               with:
                   cwd: "./demo/admin/lang/dextinity-demo-lang"
 
             - name: "Demo Site: Clone translations"
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
               with:
                   repository: vivid-planet/dextinity-demo-lang
                   token: ${{ secrets.VIVID_PLANET_BOT_TOKEN }}
@@ -74,12 +74,12 @@ jobs:
                   cp -r lang-extracted/* lang/dextinity-demo-lang/site
 
             - name: "Demo Site: Update translatable strings"
-              uses: EndBug/add-and-commit@v10
+              uses: EndBug/add-and-commit@v11
               with:
                   cwd: "./demo/site/lang/dextinity-demo-lang"
 
             - name: "Demo Api: Clone translations"
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
               with:
                   repository: vivid-planet/dextinity-demo-lang
                   token: ${{ secrets.VIVID_PLANET_BOT_TOKEN }}
@@ -92,6 +92,6 @@ jobs:
                   cp -r lang-extracted/* lang/dextinity-demo-lang/api
 
             - name: "Demo Api: Update translatable strings"
-              uses: EndBug/add-and-commit@v10
+              uses: EndBug/add-and-commit@v11
               with:
                   cwd: "./demo/api/lang/dextinity-demo-lang"

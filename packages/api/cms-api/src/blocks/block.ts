@@ -1,5 +1,6 @@
 import type { Type } from "@nestjs/common";
 import { type ClassConstructor, instanceToPlain, plainToInstance } from "class-transformer";
+import { Equals } from "class-validator";
 import type { WarningSeverity as WarningSeverityEnum } from "src/warnings/entities/warning-severity.enum";
 
 import { AnnotationBlockMeta, getBlockFieldData, getFieldKeys } from "./decorators/field";
@@ -159,9 +160,11 @@ type Unpacked<T> = T extends (infer U)[] ? U : T extends (...args: any[]) => inf
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NestedToPlainReturn<T extends Record<string, any>> = WithoutBlockInputMethods<{
-    [Key in keyof T]: T[Key] extends BlockInputInterface | undefined // value is a BlockInputInterface
+    [Key in keyof T]: T[Key] extends
+        BlockInputInterface | undefined // value is a BlockInputInterface
         ? ReturnType<NonNullable<T[Key]>["toPlain"]>
-        : T[Key] extends BlockInputInterface[] | undefined // value is an array of BlockInputInterfaces
+        : T[Key] extends
+                BlockInputInterface[] | undefined // value is an array of BlockInputInterfaces
           ? ReturnType<NonNullable<Unpacked<T[Key]>>["toPlain"]>[]
           : T[Key];
 }>;
@@ -180,6 +183,14 @@ export interface BlockInputInterface<
 
 export type SimpleBlockInputInterface<BlockType extends BlockDataInterface = BlockDataInterface> = BlockInputInterface<BlockType, undefined>;
 export abstract class BlockInput<BlockType extends BlockDataInterface = BlockDataInterface> implements BlockInputInterface<BlockType, undefined> {
+    // class-validator rejects classes without any validation metadata, as `forbidUnknownValues` is enabled by default
+    // since v0.14. Block inputs that don't validate a single field (e.g. a block without fields) would therefore always
+    // fail to validate. This property exists so that every block input has at least one validation metadata.
+    // It must never be set: a validated property is whitelisted, so without `@Equals(undefined)` it could be sent by a
+    // client and would end up in the saved block data. As it is never set, it shows up in neither `toPlain()` nor the block meta.
+    @Equals(undefined)
+    thisBlockInputNeedsValidationMetadata____?: never;
+
     abstract transformToBlockData(): BlockType;
 
     toPlain(): CreateToPlainReturn<this> {
@@ -247,8 +258,32 @@ export type BlockMetaField =
            * Lets consumers like the block loader process blocks embedded in the content.
            */
           childBlocks: Record<string, Block>;
+          /**
+           * The editor schema and options the content is validated against, so tools outside the
+           * editor can build valid content.
+           */
+          tipTap?: BlockMetaTipTap;
           nullable: boolean;
       };
+
+export interface BlockMetaTipTapStyledNode {
+    styles: string[];
+    defaultStyle: string | null;
+}
+
+export interface BlockMetaTipTap {
+    nodes: string[];
+    marks: string[];
+    textBlocks: Array<{ name: string; tag: string } & BlockMetaTipTapStyledNode>;
+    defaultTextBlock: string;
+    orderedList: BlockMetaTipTapStyledNode | null;
+    unorderedList: BlockMetaTipTapStyledNode | null;
+    inlineStyles: Array<{ name: string; appliesTo: string[] | null }>;
+    placeholders: string[];
+    link: string | null;
+    maxTextBlocks: number | null;
+    listLevelMax: number | null;
+}
 
 export interface BlockMetaInterface {
     fields: BlockMetaField[];

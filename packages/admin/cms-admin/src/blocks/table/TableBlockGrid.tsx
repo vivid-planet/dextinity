@@ -1,30 +1,48 @@
 import { DragIndicator } from "@dextinity/admin-icons";
-// eslint-disable-next-line no-restricted-imports
-import type { GridColDef, GridColumnHeaderParams, GridValidRowModel } from "@mui/x-data-grid";
+/* eslint-disable no-restricted-imports */
 import {
-    // eslint-disable-next-line no-restricted-imports
-    DataGridPro,
-    GRID_REORDER_COL_DEF,
+    DataGrid as MuiDataGrid,
+    type DataGridProps,
+    type GridColDef,
+    type GridColumnHeaderParams,
     type GridEventListener,
     type GridRenderCellParams,
     type GridRenderEditCellParams,
-    useGridApiRef,
-} from "@mui/x-data-grid-pro";
-import { type ComponentProps, type Dispatch, type SetStateAction, useEffect } from "react";
+    type GridValidRowModel,
+} from "@mui/x-data-grid";
+/* eslint-enable no-restricted-imports */
+import type { DataGridProProps, GridApiPro } from "@mui/x-data-grid-pro";
+import { type ComponentType, type Dispatch, type SetStateAction, useCallback, useEffect, useRef } from "react";
 
 import type { TableBlockData } from "../../blocks.generated";
+import { type DextinityConfig, useDextinityConfig } from "../../config/DextinityConfigContext";
 import type { TableBlockState } from "../createTableBlock";
 import { CellValue } from "./CellValue";
 import { ColumnHeader } from "./ColumnHeader";
-import { dataGridStyles } from "./dataGridStyles";
+import { dataGridStyles, freeDataGridStyles, lastContentColumnClassName } from "./dataGridStyles";
 import { EditCell } from "./EditCell";
 import { RowActionsCell } from "./RowActionsCell";
 import { useTableBlockContext } from "./TableBlockContext";
+import { useScrollToAndHighlightCell } from "./useScrollToAndHighlightCell";
+import { type CellPosition, createCellKey } from "./utils/cellRoute";
+import { moveColumnToIndex } from "./utils/column";
 import { ensureMinimumTableState } from "./utils/ensureMinimumTableState";
-import { useRecentlyPastedIds } from "./utils/useRecentlyPastedIds";
+import { moveRowToIndex } from "./utils/row";
+import { useTemporarilyHighlightedIds } from "./utils/useTemporarilyHighlightedIds";
 
 type ColumnSize = TableBlockData["columns"][number]["size"];
 type TableBlockColumn = TableBlockData["columns"][number];
+
+type ConfiguredDataGrid = NonNullable<DextinityConfig["dataGrid"]>["component"];
+
+const reorderColumnField = "__reorder__";
+const maximumPageSizeOfFreeDataGrid = 100;
+
+const isProOrPremiumDataGrid = (dataGrid: ConfiguredDataGrid): dataGrid is ComponentType<DataGridProProps> =>
+    dataGrid !== undefined && dataGrid !== MuiDataGrid;
+
+const getLastContentColumnClassName = (columnIndex: number, numberOfColumns: number) =>
+    columnIndex === numberOfColumns - 1 ? lastContentColumnClassName : undefined;
 
 const widthForColumnSize: Record<ColumnSize, number> = {
     extraSmall: 100,
@@ -45,13 +63,20 @@ const flexForColumnSize: Record<ColumnSize, number> = {
 type Props = {
     state: TableBlockState;
     updateState: Dispatch<SetStateAction<TableBlockState>>;
+    clickedCell?: CellPosition;
 };
 
-export const TableBlockGrid = ({ state, updateState }: Props) => {
+export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
     const { RichTextBlock } = useTableBlockContext();
-    const apiRef = useGridApiRef();
-    const { recentlyPastedIds: recentlyPastedRowIds, addToRecentlyPastedIds: addToRecentlyPastedRowIds } = useRecentlyPastedIds();
-    const { recentlyPastedIds: recentlyPastedColumnIds, addToRecentlyPastedIds: addToRecentlyPastedColumnIds } = useRecentlyPastedIds();
+    const { dataGrid: { component: ConfiguredDataGrid } = {} } = useDextinityConfig();
+    const hasDragAndDrop = isProOrPremiumDataGrid(ConfiguredDataGrid);
+    const apiRef = useRef<GridApiPro | null>(null);
+    const { highlightedIds: recentlyPastedRowIds, highlightTemporarily: addToRecentlyPastedRowIds } = useTemporarilyHighlightedIds();
+    const { highlightedIds: recentlyPastedColumnIds, highlightTemporarily: addToRecentlyPastedColumnIds } = useTemporarilyHighlightedIds();
+    const { highlightedIds: recentlyClickedCellKeys, highlightTemporarily: highlightCellKey } = useTemporarilyHighlightedIds();
+
+    const highlightCell = useCallback((cell: CellPosition) => highlightCellKey(createCellKey(cell)), [highlightCellKey]);
+    useScrollToAndHighlightCell({ apiRef, cell: clickedCell, highlightCell });
 
     useEffect(() => {
         if (state.columns.length === 0 || state.rows.length === 0) {
@@ -65,7 +90,7 @@ export const TableBlockGrid = ({ state, updateState }: Props) => {
         });
     };
 
-    const processRowUpdate: ComponentProps<typeof DataGridPro>["processRowUpdate"] = (newRow) => {
+    const processRowUpdate: DataGridProps["processRowUpdate"] = (newRow) => {
         const { id: newRowId, ...newRowValuesRecord } = newRow;
 
         setRowData((previousRowData) => {
@@ -86,21 +111,6 @@ export const TableBlockGrid = ({ state, updateState }: Props) => {
         return newRow;
     };
 
-    const moveRow = (targetIndex: number, rowId: string) => {
-        updateState((state) => {
-            const movingRow = state.rows.find((row) => row.id === rowId);
-            if (!movingRow) {
-                return state;
-            }
-
-            const otherRows = state.rows.filter((row) => row.id !== rowId);
-            return {
-                ...state,
-                rows: [...otherRows.slice(0, targetIndex), movingRow, ...otherRows.slice(targetIndex)],
-            };
-        });
-    };
-
     useEffect(() => {
         const handleMoveColumn: GridEventListener<"columnHeaderDragEnd"> = ({ field: columnId }) => {
             if (!apiRef.current) {
@@ -108,35 +118,21 @@ export const TableBlockGrid = ({ state, updateState }: Props) => {
             }
             const targetIndex = apiRef.current.getColumnIndex(columnId) - 1;
 
-            updateState((state) => {
-                const movingColumn = state.columns.find((column: TableBlockColumn) => column.id === columnId);
-                if (!movingColumn) {
-                    return state;
-                }
-
-                const otherColumns = state.columns.filter((column: TableBlockColumn) => column.id !== columnId);
-                return {
-                    ...state,
-                    columns: [...otherColumns.slice(0, targetIndex), movingColumn, ...otherColumns.slice(targetIndex)],
-                };
-            });
+            updateState((state) => moveColumnToIndex({ state, columnId, targetIndex }));
         };
 
         return apiRef.current?.subscribeEvent("columnHeaderDragEnd", handleMoveColumn);
     }, [apiRef, updateState]);
 
     const dataGridColumns: GridColDef[] = [
-        {
-            ...GRID_REORDER_COL_DEF,
-            minWidth: 36,
-            maxWidth: 36,
-        },
         ...state.columns.map(({ id: columnId, highlighted, size }: TableBlockColumn, index: number) => ({
             field: columnId,
             editable: true,
             sortable: false,
             flex: flexForColumnSize[size],
             minWidth: widthForColumnSize[size],
+            headerClassName: getLastContentColumnClassName(index, state.columns.length),
+            cellClassName: getLastContentColumnClassName(index, state.columns.length),
             renderHeader: (params: GridColumnHeaderParams) => (
                 <ColumnHeader
                     {...params}
@@ -145,6 +141,7 @@ export const TableBlockGrid = ({ state, updateState }: Props) => {
                     highlighted={highlighted}
                     updateState={updateState}
                     columnIndex={index}
+                    isDraggable={hasDragAndDrop}
                     addToRecentlyPastedIds={addToRecentlyPastedColumnIds}
                 />
             ),
@@ -152,12 +149,13 @@ export const TableBlockGrid = ({ state, updateState }: Props) => {
                 const rowFromState = state.rows.find((rowInState) => rowInState.id === row.id);
                 const rowWasRecentlyPasted = recentlyPastedRowIds.includes(row.id);
                 const columnWasRecentlyPasted = recentlyPastedColumnIds.includes(columnId);
+                const cellWasRecentlyClicked = recentlyClickedCellKeys.includes(createCellKey({ columnId, rowId: row.id }));
 
                 return (
                     <CellValue
                         value={value}
                         highlighted={rowFromState?.highlighted || highlighted}
-                        recentlyPasted={rowWasRecentlyPasted || columnWasRecentlyPasted}
+                        isTemporarilyHighlighted={rowWasRecentlyPasted || columnWasRecentlyPasted || cellWasRecentlyClicked}
                     />
                 );
             },
@@ -186,29 +184,46 @@ export const TableBlockGrid = ({ state, updateState }: Props) => {
         return dataGridRow;
     });
 
+    const commonDataGridProps = {
+        apiRef,
+        rows: rowsInDataGridFormat,
+        rowHeight: 55,
+        disableColumnResize: true,
+        disableColumnMenu: true,
+        disableRowSelectionOnClick: true,
+        processRowUpdate,
+    } satisfies Partial<DataGridProps>;
+
+    if (isProOrPremiumDataGrid(ConfiguredDataGrid)) {
+        return (
+            <ConfiguredDataGrid
+                {...commonDataGridProps}
+                sx={dataGridStyles}
+                columns={[{ field: reorderColumnField, minWidth: 36, maxWidth: 36 }, ...dataGridColumns]}
+                rowReordering
+                hideFooter
+                pinnedColumns={{
+                    left: [reorderColumnField],
+                    right: ["actions"],
+                }}
+                slots={{
+                    rowReorderIcon: ({ color, ...restProps }) => <DragIndicator {...restProps} htmlColor={color} />,
+                }}
+                onRowOrderChange={({ targetIndex, row }) => {
+                    updateState((state) => moveRowToIndex({ state, rowId: row.id, targetIndex }));
+                }}
+            />
+        );
+    }
+
     return (
-        <DataGridPro
+        <MuiDataGrid
+            {...commonDataGridProps}
+            sx={freeDataGridStyles}
+            disableVirtualization
+            pageSizeOptions={[maximumPageSizeOfFreeDataGrid]}
             columns={dataGridColumns}
-            apiRef={apiRef}
-            rows={rowsInDataGridFormat}
-            rowHeight={55}
-            rowReordering
-            disableColumnResize
-            disableColumnMenu
-            disableRowSelectionOnClick
-            hideFooter
-            pinnedColumns={{
-                left: ["__reorder__"],
-                right: ["actions"],
-            }}
-            slots={{
-                rowReorderIcon: ({ color, ...restProps }) => <DragIndicator {...restProps} htmlColor={color} />,
-            }}
-            sx={dataGridStyles}
-            onRowOrderChange={({ targetIndex, row }) => {
-                moveRow(targetIndex, row.id);
-            }}
-            processRowUpdate={processRowUpdate}
+            hideFooter={state.rows.length <= maximumPageSizeOfFreeDataGrid}
         />
     );
 };

@@ -1,7 +1,7 @@
 import react from "@vitejs/plugin-react";
 import preserveDirectives from "rollup-plugin-preserve-directives";
 import { defineConfig } from "vite";
-import dts from "vite-plugin-dts";
+import dts from "unplugin-dts/vite";
 
 export default defineConfig({
     plugins: [
@@ -19,7 +19,7 @@ export default defineConfig({
             formats: ["es"],
             cssFileName: "style",
         },
-        rollupOptions: {
+        rolldownOptions: {
             plugins: [preserveDirectives()], // is necessary to preserve "use client" at top of file
             external: (source) => {
                 // this is necessary to treat all npm packages as external,

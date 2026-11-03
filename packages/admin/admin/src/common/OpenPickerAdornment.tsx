@@ -68,12 +68,14 @@ const OpenPickerButton = createComponentSlot(IconButton)<OpenPickerAdornmentClas
     slotName: "openPickerButton",
 })(
     ({ theme, ownerState: { inputIsDisabled } }) => css`
-        ${!inputIsDisabled &&
-        css`
-            &.Mui-disabled {
-                color: ${theme.palette.text.primary};
-            }
-        `}
+        ${
+            !inputIsDisabled &&
+            css`
+                &.Mui-disabled {
+                    color: ${theme.palette.text.primary};
+                }
+            `
+        }
     `,
 );
 

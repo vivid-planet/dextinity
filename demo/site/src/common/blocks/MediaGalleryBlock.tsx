@@ -47,7 +47,7 @@ export const MediaGalleryBlock = withPreview(
         }, [swiper, activeItem]);
 
         return (
-            <>
+            <div className={styles.root}>
                 <button
                     ref={prevButtonRef}
                     className={clsx(styles.navigationButton, styles["navigationButton--previous"])}
@@ -94,7 +94,7 @@ export const MediaGalleryBlock = withPreview(
                     aria-label={intl.formatMessage({ id: "mediaGalleryBlock.nextSlide", defaultMessage: "Next slide" })}
                     disabled={activeItem === data.items.blocks.length - 1}
                 />
-            </>
+            </div>
         );
     },
     { label: "MediaGallery" },

@@ -19,14 +19,7 @@ import {
 import type { FullPageAlertBackground } from "./FullPageAlertBackground";
 
 export type FullPageAlertClassKey =
-    | "root"
-    | "background"
-    | "detailDescription"
-    | "contentContainer"
-    | "divider"
-    | "logoContainer"
-    | "actionContainer"
-    | "inlineAlert";
+    "root" | "background" | "detailDescription" | "contentContainer" | "divider" | "logoContainer" | "actionContainer" | "inlineAlert";
 
 type FullPageAlertSeverity = InlineAlertSeverity;
 

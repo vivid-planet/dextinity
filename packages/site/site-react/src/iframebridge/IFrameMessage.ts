@@ -65,11 +65,7 @@ export interface IFrameHoverComponentMessage {
 }
 
 export type IFrameMessage =
-    | IReadyIFrameMessage
-    | IFrameSelectComponentMessage
-    | IFrameOpenLinkMessage
-    | IFrameLocationMessage
-    | IFrameHoverComponentMessage;
+    IReadyIFrameMessage | IFrameSelectComponentMessage | IFrameOpenLinkMessage | IFrameLocationMessage | IFrameHoverComponentMessage;
 
 // Messages sent from Admin -> iFrame
 export enum AdminMessageType {

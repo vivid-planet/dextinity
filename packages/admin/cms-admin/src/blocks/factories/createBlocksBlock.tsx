@@ -495,7 +495,11 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                 }
             }, [scope, isBlockSupported]);
 
-            const { updateClipboardContent, getClipboardContent } = useBlockClipboard({ supports: Object.values(filteredSupportedBlocks) });
+            const {
+                updateClipboardContent,
+                getClipboardContent,
+                progressDialog: clipboardProgressDialog,
+            } = useBlockClipboard({ supports: Object.values(filteredSupportedBlocks) });
 
             const pasteBlock = async (insertAt: number) => {
                 const response = await getClipboardContent();
@@ -863,7 +867,7 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
 
                                         return (
                                             <StackPageTitle title={block.displayName}>
-                                                <block.AdminComponent state={match.props} updateState={createUpdateSubBlocksFn(id)} />
+                                                <block.AdminComponent key={id} state={match.props} updateState={createUpdateSubBlocksFn(id)} />
                                             </StackPageTitle>
                                         );
                                     }}
@@ -874,6 +878,7 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                     {cannotPasteBlockError !== undefined && (
                         <CannotPasteBlockDialog open onClose={() => setCannotPasteBlockError(undefined)} error={cannotPasteBlockError} />
                     )}
+                    {clipboardProgressDialog}
                 </>
             );
         },

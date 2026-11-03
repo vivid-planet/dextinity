@@ -15,8 +15,10 @@ export interface ITableData<TRow extends { id: string | number } = { id: string 
     totalCount?: number;
     pagingInfo?: IPagingInfo;
 }
-interface ITableQueryHookOptions<TData, TVariables extends OperationVariables, TTableData extends ITableData>
-    extends QueryHookOptions<TData, TVariables> {
+interface ITableQueryHookOptions<TData, TVariables extends OperationVariables, TTableData extends ITableData> extends QueryHookOptions<
+    TData,
+    TVariables
+> {
     resolveTableData: (data: TData) => TTableData;
     selectionApi?: ISelectionApi;
     globalErrorHandling?: boolean;
@@ -25,8 +27,10 @@ interface ITableQueryHookOptions<TData, TVariables extends OperationVariables, T
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
  */
-export interface ITableQueryHookResult<TData, TVariables extends OperationVariables, TTableData extends ITableData>
-    extends QueryResult<TData, TVariables> {
+export interface ITableQueryHookResult<TData, TVariables extends OperationVariables, TTableData extends ITableData> extends QueryResult<
+    TData,
+    TVariables
+> {
     tableData?: TTableData;
     api: ITableQueryApi;
 }

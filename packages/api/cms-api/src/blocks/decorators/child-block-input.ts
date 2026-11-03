@@ -1,5 +1,5 @@
 import { Expose, Transform } from "class-transformer";
-import { ValidateNested } from "class-validator";
+import { IsDefined, ValidateNested } from "class-validator";
 
 import { type Block, isBlockInputInterface } from "../block";
 import { BlockField } from "./field";
@@ -21,6 +21,9 @@ export function ChildBlockInput(block: Block, options?: ChildBlockInputOptions):
         if (!disableValidateNested) {
             ValidateNested()(target, key); // by default valdidate all child blocks
         }
+        if (!nullable) {
+            IsDefined()(target, key);
+        }
         BlockField({ type: "block", block, nullable })(target, key);
         // We need add `@Expose()` to make sure that `@Transform()` is called even when no value is provided.
         // See https://github.com/typestack/class-transformer/issues/1599#issuecomment-2094934401.
@@ -29,13 +32,9 @@ export function ChildBlockInput(block: Block, options?: ChildBlockInputOptions):
             ({ value }) => {
                 if (isBlockInputInterface(value)) {
                     return value;
-                } else if (nullable && value == null) {
+                } else if (value == null) {
                     return undefined;
                 } else {
-                    if (value == null) {
-                        throw new Error(`Missing child block input for '${key as string}' (${block.name})`);
-                    }
-
                     return block.blockInputFactory(value);
                 }
             },

@@ -15,6 +15,7 @@ concurrency:
 jobs:
     test-report-unit:
         name: "Test Report (unit)"
+        if: github.event.workflow_run.conclusion != 'cancelled'
         runs-on: ubuntu-latest
         steps:
             - uses: dorny/test-reporter@v3
@@ -25,6 +26,7 @@ jobs:
                   reporter: jest-junit
     test-report-storybook:
         name: "Test Report (storybook)"
+        if: github.event.workflow_run.conclusion != 'cancelled'
         runs-on: ubuntu-latest
         steps:
             - uses: dorny/test-reporter@v3

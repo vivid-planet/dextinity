@@ -56,7 +56,8 @@ export class AuthModule {
                             }),
                         }),
                         // Additionally, set a static user as fallback that is always authenticated. Used when bypassing OAuth2-Proxy through http://localhost:8001.
-                        createStaticUserAuthService({ staticUser: staticUsers[0] }),
+                        // Never in production, where the API may be reachable without OAuth2-Proxy.
+                        ...(config.debug ? [createStaticUserAuthService({ staticUser: staticUsers[0] })] : []),
                     ],
                 ),
             ],

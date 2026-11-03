@@ -123,6 +123,7 @@ export function ProductTagsGrid() {
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.productTags.totalCount);
     if (error) throw error;

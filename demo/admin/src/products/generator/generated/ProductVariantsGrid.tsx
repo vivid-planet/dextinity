@@ -169,6 +169,7 @@ export function ProductVariantsGrid({ product }: Props) {
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.productVariants.totalCount);
     if (error) throw error;

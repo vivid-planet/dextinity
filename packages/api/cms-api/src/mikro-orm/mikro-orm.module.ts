@@ -42,6 +42,7 @@ import { Migration20260413072931 } from "./migrations/Migration20260413072931.js
 import { Migration20260707120000 } from "./migrations/Migration20260707120000.js";
 import { Migration20260715090000 } from "./migrations/Migration20260715090000.js";
 import { Migration20260803090000 } from "./migrations/Migration20260803090000.js";
+import { Migration20261019090000 } from "./migrations/Migration20261019090000.js";
 
 export interface MikroOrmModuleOptions {
     ormConfig: MikroOrmNestjsOptions;
@@ -120,6 +121,7 @@ export function createOrmConfig({ migrations, ...defaults }: MikroOrmNestjsOptio
                 { name: "Migration20260413072931", class: Migration20260413072931 },
                 { name: "Migration20260715090000", class: Migration20260715090000 },
                 { name: "Migration20260803090000", class: Migration20260803090000 },
+                { name: "Migration20261019090000", class: Migration20261019090000 },
                 ...(migrations?.migrationsList || []),
             ].sort((migrationA, migrationB) => {
                 if (migrationA.name < migrationB.name) {

@@ -45,6 +45,7 @@ type Props = GridColumnHeaderParams & {
     state: TableBlockState;
     updateState: Dispatch<SetStateAction<TableBlockState>>;
     columnIndex: number;
+    isDraggable?: boolean;
     addToRecentlyPastedIds: (id: string) => void;
 };
 
@@ -56,7 +57,16 @@ const columnSizes: Record<ColumnSize, ReactNode> = {
     extraLarge: <FormattedMessage id="dextinity.tableBlock.columnSize.extraLarge" defaultMessage="Extra large" />,
 };
 
-export const ColumnHeader = ({ columnSize, highlighted, state, updateState, columnIndex, field: columnId, addToRecentlyPastedIds }: Props) => {
+export const ColumnHeader = ({
+    columnSize,
+    highlighted,
+    state,
+    updateState,
+    columnIndex,
+    isDraggable,
+    field: columnId,
+    addToRecentlyPastedIds,
+}: Props) => {
     const snackbarApi = useSnackbarApi();
     const blockContext = useBlockContext();
     const intl = useIntl();
@@ -162,9 +172,11 @@ export const ColumnHeader = ({ columnSize, highlighted, state, updateState, colu
 
     return (
         <>
-            <DraggableColumnReorderingButton component="div" disableRipple>
-                <DragIndicator />
-            </DraggableColumnReorderingButton>
+            {isDraggable && (
+                <DraggableColumnReorderingButton component="div" disableRipple>
+                    <DragIndicator />
+                </DraggableColumnReorderingButton>
+            )}
             <RowActionsMenu>
                 <RowActionsMenu
                     componentsProps={{

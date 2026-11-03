@@ -101,10 +101,11 @@ export const createOneOfBlock = <T extends boolean = boolean>(
         }
         const activeBlockState = s.attachedBlocks.find((c) => c.type === s.activeType);
         if (!activeBlockState) {
-            let message = `Can't find reference to active block of type "${s.activeType}".`;
+            const attachedTypes = s.attachedBlocks.map((c) => `"${c.type}"`).join(", ");
+            let message = `activeType "${s.activeType}" has no entry in attachedBlocks, which ${attachedTypes ? `holds: ${attachedTypes}` : "is empty"}.`;
 
             if (process.env.NODE_ENV === "development") {
-                message += ` This is probably due to a missing "x-include-invisible-content" HTTP header. Please make sure to include the header when fetching the block.`;
+                message += ` One possible cause is a missing "x-include-invisible-content" HTTP header when fetching the block.`;
             }
 
             throw new Error(message);

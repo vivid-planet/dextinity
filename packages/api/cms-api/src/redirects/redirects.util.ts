@@ -20,11 +20,11 @@ export function redirectMatchesFilter(redirect: FilterableRedirect, filter: Redi
     }
 
     if (filter.generationType) {
-        matches = stringMatchesFilter(redirect.generationType, filter.generationType);
+        matches = (matches ?? true) && stringMatchesFilter(redirect.generationType, filter.generationType);
     }
 
     if (filter.source) {
-        matches = stringMatchesFilter(redirect.source, filter.source);
+        matches = (matches ?? true) && stringMatchesFilter(redirect.source, filter.source);
     }
 
     if (filter.target) {
@@ -32,30 +32,30 @@ export function redirectMatchesFilter(redirect: FilterableRedirect, filter: Redi
 
         if (isAbsoluteUrl && redirect.target) {
             const url = new URL(redirect.target);
-            matches = stringMatchesFilter(redirect.target, filter.target) || stringMatchesFilter(url.pathname, filter.target);
+            matches = (matches ?? true) && (stringMatchesFilter(redirect.target, filter.target) || stringMatchesFilter(url.pathname, filter.target));
         } else {
-            matches = stringMatchesFilter(redirect.target, filter.target);
+            matches = (matches ?? true) && stringMatchesFilter(redirect.target, filter.target);
         }
     }
 
     if (filter.active) {
-        matches = booleanMatchesFilter(redirect.active, filter.active);
+        matches = (matches ?? true) && booleanMatchesFilter(redirect.active, filter.active);
     }
 
     if (filter.sourceType) {
-        matches = enumMatchesFilter(redirect.sourceType, filter.sourceType);
+        matches = (matches ?? true) && enumMatchesFilter(redirect.sourceType, filter.sourceType);
     }
 
     if (filter.createdAt) {
-        matches = dateTimeMatchesFilter(redirect.createdAt, filter.createdAt);
+        matches = (matches ?? true) && dateTimeMatchesFilter(redirect.createdAt, filter.createdAt);
     }
 
     if (filter.updatedAt) {
-        matches = dateTimeMatchesFilter(redirect.updatedAt, filter.updatedAt);
+        matches = (matches ?? true) && dateTimeMatchesFilter(redirect.updatedAt, filter.updatedAt);
     }
 
     if (filter.activatedAt) {
-        matches = dateTimeMatchesFilter(redirect.activatedAt, filter.activatedAt);
+        matches = (matches ?? true) && dateTimeMatchesFilter(redirect.activatedAt, filter.activatedAt);
     }
 
     if (filter.and) {
@@ -79,7 +79,7 @@ export function redirectMatchesFilter(redirect: FilterableRedirect, filter: Redi
     return matches ?? false;
 }
 
-function stringMatchesFilter(string: string | undefined, filter: StringFilter) {
+function stringMatchesFilter(string: string | undefined, filter: StringFilter): boolean {
     if (!string) {
         return filter.isEmpty === true;
     } else if (filter.contains && string.includes(filter.contains)) {
@@ -99,6 +99,7 @@ function stringMatchesFilter(string: string | undefined, filter: StringFilter) {
     } else if (filter.isNotEmpty && string !== undefined) {
         return true;
     }
+    return false;
 }
 
 function booleanMatchesFilter(boolean: boolean, filter: BooleanFilter) {

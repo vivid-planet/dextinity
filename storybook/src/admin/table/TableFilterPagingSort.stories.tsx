@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 import {
-    createRestPagingActions,
+    createOffsetLimitPagingAction,
     Field,
     FinalFormInput,
     MainContent,
@@ -16,149 +16,70 @@ import {
     useTableQuerySort,
 } from "@dextinity/admin";
 import { Typography } from "@mui/material";
-import * as qs from "qs";
 
-import { apolloRestStoryDecorator } from "../../apollo-rest-story.decorator";
+import type { LaunchesPastResult } from "../../../.storybook/mocks/handlers";
+import { apolloStoryDecorator } from "../../apollo-story.decorator";
 
-const gqlRest = gql;
-
-const query = gqlRest`
-query users(
-    $pathFunction: any
-    $page: Int
-    $sort: String
-    $order: String
-    $query: String
-) {
-    users(
-        page: $page
-        sort: $sort
-        order: $order
-        query: $query
-    ) @rest(type: "UsersPayload", pathBuilder: $pathFunction) {
-        meta @type(name: "UsersMeta") {
-            totalCount
-            links
-        }
-        data @type(name: "User") {
-            id
-            name
-            username
-            email
+const query = gql`
+    query LaunchesPast($offset: Int, $limit: Int, $sort: String, $order: String, $filter: LaunchesPastFilter) {
+        launchesPastResult(offset: $offset, limit: $limit, sort: $sort, order: $order, filter: $filter) {
+            data {
+                id
+                mission_name
+                launch_date_local
+            }
+            result {
+                totalCount
+            }
         }
     }
-}
 `;
 
 interface IQueryData {
-    users: {
-        meta: {
-            totalCount: number;
-            links: IResponseLinks;
-        };
-        data: Array<{
-            id: number;
-            name: string;
-            username: string;
-            email: string;
-        }>;
-    };
+    launchesPastResult: LaunchesPastResult;
 }
 
-function pathFunction({ args }: { args: { [key: string]: any } }) {
-    interface IPathMapping {
-        [arg: string]: string;
-    }
-    const paramMapping: IPathMapping = {
-        query: "q",
-        page: "_page",
-        sort: "_sort",
-        order: "_order",
-    };
-
-    const q = Object.keys(args).reduce((acc: { [key: string]: any }, key: string): { [key: string]: any } => {
-        if (paramMapping[key] && args[key]) {
-            acc[paramMapping[key]] = args[key];
-        }
-        return acc;
-    }, {});
-    return `users?_limit=5&${qs.stringify(q, { arrayFormat: "brackets" })}`;
-}
-
-interface IVariables extends IFilterValues {
-    pathFunction: any;
-    page: number;
+interface IVariables {
+    offset: number;
+    limit: number;
     sort: string;
     order: string;
+    filter?: { mission_name: { contains: string } };
 }
 interface IFilterValues {
     query?: string;
 }
 
-interface IResponseLinks {
-    first?: string;
-    prev?: string;
-    next?: string;
-    last?: string;
-}
-
 export default {
     title: "@dextinity/admin/table",
-
-    decorators: [
-        apolloRestStoryDecorator({
-            responseTransformer: async (response) => {
-                const links: IResponseLinks = {};
-                const linkMatches = response.headers.get("link").match(/<(.*?)>; rel="(.*?)"/g) || [];
-                linkMatches.forEach((i: string) => {
-                    const m = i.match(/<(.*?)>; rel="(.*?)"/);
-                    if (m) {
-                        links[m[2] as keyof IResponseLinks] = m[1];
-                    }
-                });
-                return {
-                    data: await response.json(),
-                    meta: {
-                        links,
-                        totalCount: response.headers.get("x-total-count"),
-                    },
-                };
-            },
-        }),
-    ],
+    decorators: [apolloStoryDecorator("/graphql")],
 };
 
 export const FilterPagingSort = () => {
     const filterApi = useTableQueryFilter<IFilterValues>({});
 
-    const pagingApi = useTableQueryPaging(1);
+    const limit = 5;
+    const pagingApi = useTableQueryPaging(0);
     const sortApi = useTableQuerySort({
-        columnName: "name",
+        columnName: "mission_name",
         direction: SortDirection.ASC,
     });
     const { tableData, api, loading, error } = useTableQuery<IQueryData, IVariables>()(query, {
         variables: {
-            pathFunction,
             sort: sortApi.current.columnName,
             order: sortApi.current.direction,
-            page: pagingApi.current,
-            ...filterApi.current,
+            offset: pagingApi.current,
+            limit,
+            filter: filterApi.current.query ? { mission_name: { contains: filterApi.current.query } } : undefined,
         },
-        resolveTableData: (data) => ({
-            data: data.users.data,
-            totalCount: data.users.meta.totalCount,
-            pagingInfo: createRestPagingActions(
-                pagingApi,
-                {
-                    nextPage: data.users.meta.links.next,
-                    previousPage: data.users.meta.links.prev,
-                    totalPages: data.users.meta.totalCount / 5,
-                },
-                {
-                    pageParameterName: "_page",
-                },
-            ),
-        }),
+        resolveTableData: (data) => {
+            const totalCount = data.launchesPastResult.result.totalCount;
+            return {
+                data: data.launchesPastResult.data,
+                totalCount,
+                pagingInfo: createOffsetLimitPagingAction(pagingApi, { totalCount }, limit),
+            };
+        },
     });
 
     return (
@@ -181,18 +102,13 @@ export const FilterPagingSort = () => {
                             {...tableData}
                             columns={[
                                 {
-                                    name: "name",
-                                    header: "Name",
+                                    name: "mission_name",
+                                    header: "Mission Name",
                                     sortable: true,
                                 },
                                 {
-                                    name: "username",
-                                    header: "Username",
-                                    sortable: true,
-                                },
-                                {
-                                    name: "email",
-                                    header: "E-Mail",
+                                    name: "launch_date_local",
+                                    header: "Launch Date",
                                     sortable: true,
                                 },
                             ]}

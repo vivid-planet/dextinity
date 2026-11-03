@@ -1,7 +1,7 @@
 import { Editor, type JSONContent } from "@tiptap/core";
 import { describe, expect, it, vi } from "vitest";
 
-import { render } from "../../testing/test-utils";
+import { render, waitFor, within } from "../../testing/test-utils";
 import type { BlockContext } from "../context/BlockContext";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "../types";
@@ -108,11 +108,18 @@ describe("createTipTapRichTextBlock", () => {
                     resolvedOptions: resolveTipTapOptions(options),
                     inlineStyles: [],
                     placeholders: [],
+                    linkBlock: options.link,
                     childBlocks: options.childBlocks ?? {},
                     maxTextBlocks: options.maxTextBlocks,
                 }),
             });
         }
+
+        const copyAndPasteAll = (editor: Editor) => {
+            const { dom } = editor.view.serializeForClipboard(editor.state.doc.slice(0, editor.state.doc.content.size));
+            editor.commands.setTextSelection(editor.state.doc.content.size - 1);
+            editor.view.pasteHTML(dom.innerHTML, new Event("paste") as ClipboardEvent);
+        };
 
         const pressKey = (editor: Editor, key: string) =>
             editor.view.someProp("handleKeyDown", (handleKeyDown) => handleKeyDown(editor.view, new KeyboardEvent("keydown", { key })));
@@ -173,6 +180,44 @@ describe("createTipTapRichTextBlock", () => {
             editor.commands.deleteSelection();
 
             expect(editor.getJSON()).toEqual({ type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "paragraph" } }] });
+        });
+
+        it.each([
+            ["insertSoftHyphen", "softHyphen"],
+            ["insertNonBreakingSpace", "nonBreakingSpace"],
+        ] as const)("should give the node inserted with %s the marks at the cursor", (command, nodeType) => {
+            const editor = createEditor();
+            const bold = [{ type: "bold" }];
+            editor.commands.setContent({
+                type: "doc",
+                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Wonderful", marks: bold }] }],
+            });
+            editor.commands.setTextSelection(7);
+
+            editor.commands[command]();
+
+            expect(editor.getJSON().content?.[0].content).toEqual([
+                { type: "text", text: "Wonder", marks: bold },
+                { type: nodeType, marks: bold },
+                { type: "text", text: "ful", marks: bold },
+            ]);
+        });
+
+        it("should insert a soft hyphen without marks into text without marks", () => {
+            const editor = createEditor();
+            editor.commands.setContent({
+                type: "doc",
+                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Wonderful" }] }],
+            });
+            editor.commands.setTextSelection(7);
+
+            editor.commands.insertSoftHyphen();
+
+            expect(editor.getJSON().content?.[0].content).toEqual([
+                { type: "text", text: "Wonder" },
+                { type: "softHyphen" },
+                { type: "text", text: "ful" },
+            ]);
         });
 
         it("should fill an emptied heading-only block with the default text block", () => {
@@ -257,6 +302,70 @@ describe("createTipTapRichTextBlock", () => {
 
             expect(editor.getJSON().content?.map((node) => node.type)).toEqual(["textBlock", "cmsBlock", "textBlock"]);
         });
+
+        it("should keep a child block's data when copying and pasting it", () => {
+            const editor = createEditor({ childBlocks: { child: { block: childBlock, display: "block" } } });
+            const data = { nested: { value: "keep me" } };
+            editor.commands.setContent({
+                type: "doc",
+                content: [{ type: "cmsBlock", attrs: { blockType: "child", data } }, paragraph("after")],
+            });
+
+            copyAndPasteAll(editor);
+
+            const childBlockNodes = editor.getJSON().content?.filter((node) => node.type === "cmsBlock");
+            expect(childBlockNodes).toHaveLength(2);
+            expect(childBlockNodes?.map((node) => node.attrs?.data)).toEqual([data, data]);
+        });
+
+        const linkBlock: BlockInterface & LinkBlockInterface = {
+            ...createBlockSkeleton(),
+            name: "Link",
+            displayName: "Link",
+            category: BlockCategory.Other,
+            defaultValues: () => ({}),
+            AdminComponent: () => null,
+            previewContent: () => [],
+        };
+
+        const collectLinkData = (editor: Editor) => {
+            const linkData: unknown[] = [];
+            editor.state.doc.descendants((node) => {
+                const linkMark = node.marks.find((mark) => mark.type.name === "link");
+                if (linkMark) {
+                    linkData.push(linkMark.attrs.data);
+                }
+            });
+            return linkData;
+        };
+
+        it("should keep a link's data when copying and pasting it", () => {
+            const editor = createEditor({ link: linkBlock });
+            const data = { activeType: "internal", attachedBlocks: [{ type: "internal", props: { targetPage: { id: "page-1" } } }] };
+            editor.commands.setContent({
+                type: "doc",
+                content: [
+                    {
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph" },
+                        content: [{ type: "text", text: "a link", marks: [{ type: "link", attrs: { data } }] }],
+                    },
+                ],
+            });
+
+            copyAndPasteAll(editor);
+
+            expect(collectLinkData(editor)).toEqual([data, data]);
+        });
+
+        it("should paste a link with invalid data as plain text", () => {
+            const editor = createEditor({ link: linkBlock });
+
+            editor.view.pasteHTML('<p><a data-cms-link="invalid">pasted</a></p>', new Event("paste") as ClipboardEvent);
+
+            expect(editor.getText()).toBe("pasted");
+            expect(collectLinkData(editor)).toEqual([]);
+        });
     });
 
     describe("maxTextBlocks", () => {
@@ -281,6 +390,98 @@ describe("createTipTapRichTextBlock", () => {
 
             expect(editor.getJSON().content).toEqual([paragraph("first"), paragraph("second")]);
             expect(updateState).toHaveBeenLastCalledWith({ tipTapContent: { type: "doc", content: [paragraph("first"), paragraph("second")] } });
+        });
+    });
+
+    describe("text block style select", () => {
+        const style = { name: "copy100", label: "Copy 100", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
+        const textBlocks: TipTapTextBlock[] = [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [style] }];
+        const listContent: JSONContent = {
+            type: "doc",
+            content: [
+                {
+                    type: "bulletList",
+                    content: [
+                        {
+                            type: "listItem",
+                            content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "item" }] }],
+                        },
+                    ],
+                },
+            ],
+        };
+
+        it("should keep the style select disabled in a list without styles", () => {
+            const block = createTipTapRichTextBlock({ textBlocks });
+            const { container } = render(<block.AdminComponent state={{ tipTapContent: listContent }} updateState={vi.fn()} />);
+
+            expect(within(container).queryByRole("combobox")?.getAttribute("aria-disabled")).toBe("true");
+        });
+
+        it("should not show a style select when nothing has styles", () => {
+            const block = createTipTapRichTextBlock({ textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }] });
+            const { container } = render(<block.AdminComponent state={{ tipTapContent: listContent }} updateState={vi.fn()} />);
+
+            expect(within(container).queryByRole("combobox")).toBeNull();
+        });
+    });
+
+    describe("list element", () => {
+        const paragraphStyle = {
+            name: "copy100",
+            label: "Copy 100",
+            element: (props: TipTapTextBlockElementProps) => <p data-paragraph-style {...props} />,
+        };
+        const listElement = (props: TipTapTextBlockElementProps) => <p data-list-element {...props} />;
+        const contentWithList = (textBlockStyle: string | null): JSONContent => ({
+            type: "doc",
+            content: [
+                { type: "textBlock", attrs: { textBlock: "paragraph", textBlockStyle }, content: [{ type: "text", text: "paragraph" }] },
+                {
+                    type: "bulletList",
+                    content: [
+                        {
+                            type: "listItem",
+                            content: [
+                                { type: "textBlock", attrs: { textBlock: "paragraph", textBlockStyle }, content: [{ type: "text", text: "item" }] },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        });
+
+        it("should render a list item through the list's element instead of the paragraph style it kept", async () => {
+            const block = createTipTapRichTextBlock({
+                textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [paragraphStyle] }],
+                unorderedList: { element: listElement },
+            });
+            const { container } = render(<block.AdminComponent state={{ tipTapContent: contentWithList("copy100") }} updateState={vi.fn()} />);
+
+            await waitFor(() => expect(container.querySelector("li [data-list-element]")?.textContent).toBe("item"));
+            expect(container.querySelector("li [data-paragraph-style]")).toBeNull();
+            expect(container.querySelector("[data-paragraph-style]")?.textContent).toBe("paragraph");
+        });
+
+        it("should render a list item without a style through the list's element", async () => {
+            const block = createTipTapRichTextBlock({
+                textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [paragraphStyle] }],
+                unorderedList: { element: listElement },
+            });
+            const { container } = render(<block.AdminComponent state={{ tipTapContent: contentWithList(null) }} updateState={vi.fn()} />);
+
+            await waitFor(() => expect(container.querySelector("li [data-list-element]")?.textContent).toBe("item"));
+        });
+
+        it("should render a list item through the list's element when nothing else has an element or styles", async () => {
+            const block = createTipTapRichTextBlock({
+                textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }],
+                unorderedList: { element: listElement },
+            });
+            const { container } = render(<block.AdminComponent state={{ tipTapContent: contentWithList(null) }} updateState={vi.fn()} />);
+
+            await waitFor(() => expect(container.querySelector("li [data-list-element]")?.textContent).toBe("item"));
+            expect(container.querySelectorAll("[data-list-element]")).toHaveLength(1);
         });
     });
 

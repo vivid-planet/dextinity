@@ -1,7 +1,7 @@
 import { Selection, SelectionRoute, useSelection, useSelectionRoute } from "@dextinity/admin";
 import { Add } from "@dextinity/admin-icons";
 import { List, ListItemButton, ListItemIcon, ListItemText, Paper } from "@mui/material";
-import { Redirect, Route, useLocation } from "react-router";
+import { Navigate, Route, Routes, useLocation } from "react-router";
 
 import { storyRouterDecorator } from "../../../story-router.decorator";
 
@@ -113,12 +113,10 @@ export const UseSelectionRouteHook = {
                 <p>
                     <strong>Current URL: </strong> {location.pathname}
                 </p>
-                <Route exact path="/">
-                    <Redirect to="/example" />
-                </Route>
-                <Route path="/example">
-                    <SelectionList />
-                </Route>
+                <Routes>
+                    <Route index element={<Navigate to="/example" replace />} />
+                    <Route path="/example/*" element={<SelectionList />} />
+                </Routes>
             </Paper>
         );
     },
@@ -165,12 +163,10 @@ export const SelectionRouteComponent = {
                 <p>
                     <strong>Current URL: </strong> {location.pathname}
                 </p>
-                <Route exact path="/">
-                    <Redirect to="/example" />
-                </Route>
-                <Route path="/example">
-                    <SelectionList />
-                </Route>
+                <Routes>
+                    <Route index element={<Navigate to="/example" replace />} />
+                    <Route path="/example/*" element={<SelectionList />} />
+                </Routes>
             </Paper>
         );
     },

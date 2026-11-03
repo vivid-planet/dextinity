@@ -1,6 +1,6 @@
 import { Alert, MainNavigation, MainNavigationItemRouterLink, MasterLayout, RouteWithErrorBoundary } from "@dextinity/admin";
 import { Card, CardContent, Typography } from "@mui/material";
-import { Redirect, Route, Switch } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 
 import { storyRouterDecorator } from "../../story-router.decorator";
 
@@ -47,13 +47,25 @@ export const _RouteWithErrorBoundary = {
     render: () => {
         return (
             <MasterLayout menuComponent={MasterMenu}>
-                <Switch>
-                    <RouteWithErrorBoundary path="/no-error-route" component={ViewWithNoError} />
-                    <RouteWithErrorBoundary path="/error-route" component={ViewWithError} />
-                    <Route exact path="/">
-                        <Redirect to="/no-error-route" />
-                    </Route>
-                </Switch>
+                <Routes>
+                    <Route
+                        path="/no-error-route/*"
+                        element={
+                            <RouteWithErrorBoundary>
+                                <ViewWithNoError />
+                            </RouteWithErrorBoundary>
+                        }
+                    />
+                    <Route
+                        path="/error-route/*"
+                        element={
+                            <RouteWithErrorBoundary>
+                                <ViewWithError />
+                            </RouteWithErrorBoundary>
+                        }
+                    />
+                    <Route index element={<Navigate to="/no-error-route" replace />} />
+                </Routes>
             </MasterLayout>
         );
     },

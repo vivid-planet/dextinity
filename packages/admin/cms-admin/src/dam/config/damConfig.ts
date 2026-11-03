@@ -6,6 +6,7 @@ export interface DamConfig {
     acceptedMimeTypes?: string[];
     scopeParts?: string[];
     enableLicenseFeature?: boolean;
+    enableInvalidLicenseFallbackImage?: boolean;
     requireLicense?: boolean;
     additionalToolbarItems?: ReactNode;
     importSources?: Record<string, { label: ReactNode }>;

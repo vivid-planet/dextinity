@@ -194,8 +194,13 @@ describe("FilesService — invalid licenses", () => {
 
     function createService({
         enableLicenseFeature = true,
+        enableInvalidLicenseFallbackImage = true,
         settings = null,
-    }: { enableLicenseFeature?: boolean; settings?: { invalidLicenseFallbackImage?: { load: () => Promise<FileInterface> } } | null } = {}) {
+    }: {
+        enableLicenseFeature?: boolean;
+        enableInvalidLicenseFallbackImage?: boolean;
+        settings?: { invalidLicenseFallbackImage?: { load: () => Promise<FileInterface> } } | null;
+    } = {}) {
         const entityManager = { findOne: vi.fn().mockResolvedValue(settings) };
 
         const service = new FilesService(
@@ -203,7 +208,7 @@ describe("FilesService — invalid licenses", () => {
             null as never, // damMediaAlternativesRepository
             null as never, // blobStorageBackendService
             null as never, // foldersService
-            { enableLicenseFeature } as DamConfig,
+            { enableLicenseFeature, enableInvalidLicenseFallbackImage } as DamConfig,
             null as never, // orm
             entityManager as unknown as EntityManager,
         );
@@ -258,6 +263,17 @@ describe("FilesService — invalid licenses", () => {
 
         await expect(service.findImageToDeliver(imageWithInvalidLicense, {})).resolves.toEqual({ file: fallbackImage });
         expect(entityManager.findOne).toHaveBeenCalledWith(DamSettings, damSettingsByScope(scope));
+    });
+
+    it("delivers no image, without looking up a fallback image, when the fallback image is disabled", async () => {
+        const fallbackImage = { id: FILE_ID_A, image: {}, license: validLicense } as Partial<FileInterface>;
+        const { service, entityManager } = createService({
+            enableInvalidLicenseFallbackImage: false,
+            settings: createSettingsWithFallbackImage(fallbackImage),
+        });
+
+        await expect(service.findImageToDeliver(imageWithInvalidLicense, {})).resolves.toBeNull();
+        expect(entityManager.findOne).not.toHaveBeenCalled();
     });
 
     it.each([

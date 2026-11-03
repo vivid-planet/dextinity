@@ -699,6 +699,10 @@ export class FilesService {
             return image;
         }
 
+        if (!this.config.enableInvalidLicenseFallbackImage) {
+            return null;
+        }
+
         const fallbackImage = await this.findInvalidLicenseFallbackImage(image.file.scope);
 
         // The crop area was chosen for the original image and doesn't fit the fallback image

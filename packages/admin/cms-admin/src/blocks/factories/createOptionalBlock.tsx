@@ -2,8 +2,8 @@ import { Box, Divider } from "@mui/material";
 import { deepEqual } from "fast-equals";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import type { MessageDescriptor } from "react-intl";
-import { Route, useRouteMatch } from "react-router";
 
+import { useIsExactRouteMatch } from "../../common/useIsExactRouteMatch";
 import { BlockAdminComponentPaper } from "../common/BlockAdminComponentPaper";
 import { Collapsible } from "../common/Collapsible";
 import { CollapsibleSwitchButtonHeader } from "../common/CollapsibleSwitchButtonHeader";
@@ -100,7 +100,7 @@ export function createOptionalBlock<T extends BlockInterface>(
         definesOwnTitle: true,
 
         AdminComponent: ({ state, updateState }) => {
-            const match = useRouteMatch();
+            const isExactRouteMatch = useIsExactRouteMatch();
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const updateSubBlocksFn: Dispatch<SetStateAction<any>> = (setStateAction) => {
@@ -110,70 +110,61 @@ export function createOptionalBlock<T extends BlockInterface>(
                 }));
             };
 
-            return (
-                <Route path={match.url}>
-                    {({ match }) =>
-                        match?.isExact ? (
-                            <BlockAdminComponentPaper disablePadding>
-                                <Collapsible
-                                    open={state.visible}
-                                    header={<CollapsibleSwitchButtonHeader checked={state.visible} title={options?.title} />}
-                                    onChange={(open) => {
-                                        updateState((prevState) => {
-                                            if (open) {
-                                                // we need the default state of the decorated block now
-                                                if (!prevState.block) {
-                                                    return {
-                                                        ...prevState,
-                                                        block: decoratedBlock.defaultValues(),
-                                                        visible: open,
-                                                    };
-                                                } else {
-                                                    return {
-                                                        ...prevState,
-                                                        visible: open,
-                                                    };
-                                                }
-                                            } else {
-                                                // decorated block is turned off, clean up the state of decorated block
-                                                // we do not save the default state
-                                                if (deepEqual(decoratedBlock.defaultValues(), prevState.block)) {
-                                                    return {
-                                                        ...prevState,
-                                                        block: undefined,
-                                                        visible: open,
-                                                    };
-                                                } else {
-                                                    return {
-                                                        ...prevState,
-                                                        visible: open,
-                                                    };
-                                                }
-                                            }
-                                        });
-                                    }}
-                                >
-                                    <Divider />
-                                    <Box
-                                        sx={{
-                                            padding: decoratedBlock.definesOwnPadding ? 0 : 3,
-                                        }}
-                                    >
-                                        <decoratedBlock.AdminComponent
-                                            updateState={updateSubBlocksFn}
-                                            state={state.block ? state.block : decoratedBlock.defaultValues()}
-                                        />
-                                    </Box>
-                                </Collapsible>
-                            </BlockAdminComponentPaper>
-                        ) : (
+            return isExactRouteMatch ? (
+                <BlockAdminComponentPaper disablePadding>
+                    <Collapsible
+                        open={state.visible}
+                        header={<CollapsibleSwitchButtonHeader checked={state.visible} title={options?.title} />}
+                        onChange={(open) => {
+                            updateState((prevState) => {
+                                if (open) {
+                                    // we need the default state of the decorated block now
+                                    if (!prevState.block) {
+                                        return {
+                                            ...prevState,
+                                            block: decoratedBlock.defaultValues(),
+                                            visible: open,
+                                        };
+                                    } else {
+                                        return {
+                                            ...prevState,
+                                            visible: open,
+                                        };
+                                    }
+                                } else {
+                                    // decorated block is turned off, clean up the state of decorated block
+                                    // we do not save the default state
+                                    if (deepEqual(decoratedBlock.defaultValues(), prevState.block)) {
+                                        return {
+                                            ...prevState,
+                                            block: undefined,
+                                            visible: open,
+                                        };
+                                    } else {
+                                        return {
+                                            ...prevState,
+                                            visible: open,
+                                        };
+                                    }
+                                }
+                            });
+                        }}
+                    >
+                        <Divider />
+                        <Box
+                            sx={{
+                                padding: decoratedBlock.definesOwnPadding ? 0 : 3,
+                            }}
+                        >
                             <decoratedBlock.AdminComponent
                                 updateState={updateSubBlocksFn}
                                 state={state.block ? state.block : decoratedBlock.defaultValues()}
                             />
-                        )
-                    }
-                </Route>
+                        </Box>
+                    </Collapsible>
+                </BlockAdminComponentPaper>
+            ) : (
+                <decoratedBlock.AdminComponent updateState={updateSubBlocksFn} state={state.block ? state.block : decoratedBlock.defaultValues()} />
             );
         },
         previewContent: ({ block, visible }, ctx) => {

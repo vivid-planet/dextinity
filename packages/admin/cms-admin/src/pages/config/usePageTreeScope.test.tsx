@@ -1,7 +1,7 @@
 import { MockedProvider } from "@apollo/client/testing";
 import { RouterMemoryRouter } from "@dextinity/admin";
 import type { ReactNode } from "react";
-import { renderHook } from "test-utils";
+import { renderHook, waitFor } from "test-utils";
 import { describe, expect, it } from "vitest";
 
 import { type DextinityConfig, DextinityConfigProvider } from "../../config/DextinityConfigContext";
@@ -44,7 +44,7 @@ describe("usePageTreeScope", () => {
     const baseDextinityConfig = {} as DextinityConfig;
     const basePageTreeConfig = {} as PageTreeConfig;
 
-    it("should work with CmsBlockContextProvider", () => {
+    it("should work with CmsBlockContextProvider", async () => {
         const { result } = renderHook(() => usePageTreeScope(), {
             wrapper: ({ children }) => (
                 <Providers>
@@ -53,10 +53,12 @@ describe("usePageTreeScope", () => {
             ),
         });
 
-        expect(result.current).toEqual({ domain: "main", language: "en" });
+        await waitFor(() => {
+            expect(result.current).toEqual({ domain: "main", language: "en" });
+        });
     });
 
-    it("should work for a single dimension", () => {
+    it("should work for a single dimension", async () => {
         const { result } = renderHook(() => usePageTreeScope(), {
             wrapper: ({ children }) => (
                 <Providers>
@@ -67,10 +69,12 @@ describe("usePageTreeScope", () => {
             ),
         });
 
-        expect(result.current).toEqual({ domain: "main" });
+        await waitFor(() => {
+            expect(result.current).toEqual({ domain: "main" });
+        });
     });
 
-    it("should work for multiple dimensions", () => {
+    it("should work for multiple dimensions", async () => {
         const { result } = renderHook(() => usePageTreeScope(), {
             wrapper: ({ children }) => (
                 <Providers>
@@ -81,10 +85,12 @@ describe("usePageTreeScope", () => {
             ),
         });
 
-        expect(result.current).toEqual({ domain: "main", language: "en" });
+        await waitFor(() => {
+            expect(result.current).toEqual({ domain: "main", language: "en" });
+        });
     });
 
-    it("should work for no dimensions", () => {
+    it("should work for no dimensions", async () => {
         const { result } = renderHook(() => usePageTreeScope(), {
             wrapper: ({ children }) => (
                 <Providers>
@@ -95,10 +101,12 @@ describe("usePageTreeScope", () => {
             ),
         });
 
-        expect(result.current).toEqual({});
+        await waitFor(() => {
+            expect(result.current).toEqual({});
+        });
     });
 
-    it("should ignore unknown dimensions", () => {
+    it("should ignore unknown dimensions", async () => {
         const { result } = renderHook(() => usePageTreeScope(), {
             wrapper: ({ children }) => (
                 <Providers>
@@ -109,6 +117,8 @@ describe("usePageTreeScope", () => {
             ),
         });
 
-        expect(result.current).toEqual({ domain: "main" });
+        await waitFor(() => {
+            expect(result.current).toEqual({ domain: "main" });
+        });
     });
 });

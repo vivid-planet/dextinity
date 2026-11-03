@@ -1,5 +1,14 @@
 # @comet/brevo-api
 
+## 10.13.0
+
+### Patch Changes
+
+- Updated dependencies [7d8cbff]
+- Updated dependencies [ad3f6d5]
+- Updated dependencies [a476170]
+    - @dextinity/cms-api@10.13.0
+
 ## 10.12.0
 
 ### Patch Changes

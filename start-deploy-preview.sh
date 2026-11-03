@@ -41,6 +41,11 @@ fi
     -i demo/.env.site-configs.tpl \
     -o demo/.env.site-configs.deploy-preview \
     --base64
+DEPLOY_PREVIEW_HOST="site-vite-rsc--$DEPLOY_PREVIEW_HOST" ./node_modules/.bin/dextinity inject-site-configs \
+    -f demo/site-configs/site-configs.ts \
+    -i demo/.env.site-configs.tpl \
+    -o demo/.env.site-configs.deploy-preview-site-vite-rsc \
+    --base64
 
 docker compose -p "${COMPOSE_PROJECT_NAME:-dextinity-demo-deploy-preview}" \
     -f .deploy-preview/docker-compose.yml --project-directory . up --build -d --wait
@@ -49,6 +54,7 @@ if [[ -n "${DEPLOY_PREVIEW_URLS_FILE:-}" ]]
 then
     cat > "$DEPLOY_PREVIEW_URLS_FILE" <<URLS
 Site=$DEPLOY_PREVIEW_SCHEME://$DEPLOY_PREVIEW_HOST
+SiteViteRsc=$DEPLOY_PREVIEW_SCHEME://site-vite-rsc--$DEPLOY_PREVIEW_HOST
 Admin=$DEPLOY_PREVIEW_SCHEME://admin--$DEPLOY_PREVIEW_HOST
 Mailpit=$DEPLOY_PREVIEW_SCHEME://mail--$DEPLOY_PREVIEW_HOST
 URLS

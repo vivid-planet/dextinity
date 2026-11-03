@@ -142,6 +142,7 @@ export function ProductsGrid({ rowSelectionModel, onRowSelectionModelChange }: P
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.products.totalCount);
     if (error) throw error;

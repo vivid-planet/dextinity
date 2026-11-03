@@ -339,6 +339,7 @@ export function ManufacturersGrid() {
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.manufacturers.totalCount);
     if (error) throw error;

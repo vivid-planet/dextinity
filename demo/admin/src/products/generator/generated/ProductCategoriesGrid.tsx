@@ -177,6 +177,7 @@ export function ProductCategoriesGrid() {
             offset: 0,
             limit: 100,
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.productCategories.totalCount);
     if (error) throw error;

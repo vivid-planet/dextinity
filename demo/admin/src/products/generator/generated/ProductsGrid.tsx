@@ -363,6 +363,7 @@ export function ProductsGrid({ filter, toolbarAction, rowAction, actionsColumnWi
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.products.totalCount);
     if (error) throw error;

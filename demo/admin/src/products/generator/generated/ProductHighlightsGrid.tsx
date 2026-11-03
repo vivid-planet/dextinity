@@ -106,6 +106,7 @@ export function ProductHighlightsGrid() {
     );
     const { data, loading, error } = useQuery<GQLProductHighlightsGridQuery, GQLProductHighlightsGridQueryVariables>(productHighlightsQuery, {
         variables: {},
+        notifyOnNetworkStatusChange: false,
     });
     if (error) throw error;
     const rows = data?.productHighlights ?? [];

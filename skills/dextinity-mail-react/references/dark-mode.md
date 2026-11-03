@@ -25,6 +25,10 @@ Set the color twice: as `background-color`, and as a `background-image` of a sol
 - Use this technique behind images only, not behind text. Outlook iOS turns dark text on a light background light, and Gmail iOS and Outlook on the web turn light text on a dark background dark. In both cases the text disappears.
 - Name the PNG after its color, such as `001e50-100x100.png` for `#001e50`. When the theme color changes, replace the image too.
 
+## Keep All Colors
+
+`<meta name="color-scheme" content="light only">` stops Gmail iOS and Apple Mail (iOS and macOS) from changing the colors of the mail in dark mode. Gmail Android ignores it. React 19 removes a `<meta>` element that is rendered in the head, so add it as raw HTML, with an `MjmlRaw` in the `head` of `MjmlMailRoot`.
+
 ## Keep a Logo Readable
 
 - Put the light background of a dark logo into the image file. When the logo and its background are separate, some Gmail Android phones invert only one of them, even with the solid PNG from [Keep a Background Color](#keep-a-background-color). These phones may also invert the whole image. Then the logo and its background change together, so they keep their contrast.

@@ -4,7 +4,7 @@ import { DextinityIcon, Domain, DomainLocked } from "@dextinity/admin-icons";
 import { Grid, Typography } from "@mui/material";
 import { type ReactNode, useCallback, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { type RouteComponentProps, useHistory, useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 import type { ExternalLinkBlockData } from "../../blocks.generated";
 import { type ContentScope, useContentScope } from "../../contentScope/Provider";
@@ -19,8 +19,7 @@ import { OpenLinkDialog } from "./OpenLinkDialog";
 import type { GQLSitePreviewJwtQuery } from "./SitePreview.generated";
 import { ActionsContainer, LogoWrapper, Root, SiteInformation, SiteLink, SiteLinkWrapper } from "./SitePreview.sc";
 
-//TODO v4 remove RouteComponentProps
-interface Props extends RouteComponentProps {
+interface Props {
     resolvePath?: (path: string, scope: ContentScope) => string;
     logo?: ReactNode;
 }
@@ -29,7 +28,7 @@ function useSearchState<ParseFunction extends (value: string | undefined) => Ret
     name: string,
     parseValue: ParseFunction,
 ): [ReturnType<ParseFunction>, (value: string) => void] {
-    const history = useHistory();
+    const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const strValue = queryParams.get(name);
@@ -38,9 +37,9 @@ function useSearchState<ParseFunction extends (value: string | undefined) => Ret
         (newValue: string) => {
             const newQueryParams = new URLSearchParams(location.search);
             newQueryParams.set(name, newValue);
-            history.replace({ search: newQueryParams.toString() });
+            navigate({ search: newQueryParams.toString() }, { replace: true });
         },
-        [location.search, history, name],
+        [location.search, navigate, name],
     );
     return [value, setValue];
 }

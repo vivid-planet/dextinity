@@ -105,16 +105,16 @@
     --cta-inline-link-default: var(--brand-primary-main);
     --cta-inline-link-hover: var(--brand-primary-dark);
 
-    --carousel-button-default-bg: rgb(250 250 250 / 0%);
-    --carousel-button-default-contrast: var(--brand-grey-700);
-    --carousel-button-hover-bg: var(--brand-grey-100);
-    --carousel-button-hover-contrast: var(--brand-grey-900);
-    --carousel-button-disabled-bg: var(--brand-grey-100);
-    --carousel-button-disabled-contrast: var(--brand-grey-300);
-    --carousel-dot-default: var(--brand-grey-300);
-    --carousel-dot-hover: var(--brand-grey-400);
-    --carousel-dot-active: var(--brand-primary-main);
-    --carousel-dot-active-hover: var(--brand-primary-dark);
+    --media-gallery-button-default-bg: rgb(250 250 250 / 0%);
+    --media-gallery-button-default-contrast: var(--brand-grey-700);
+    --media-gallery-button-hover-bg: var(--brand-grey-100);
+    --media-gallery-button-hover-contrast: var(--brand-grey-900);
+    --media-gallery-button-disabled-bg: var(--brand-grey-100);
+    --media-gallery-button-disabled-contrast: var(--brand-grey-300);
+    --media-gallery-dot-navigation-default: var(--brand-grey-300);
+    --media-gallery-dot-navigation-hover: var(--brand-grey-400);
+    --media-gallery-dot-navigation-active: var(--brand-primary-main);
+    --media-gallery-dot-navigation-active-hover: var(--brand-primary-dark);
 
     --table-border: var(--brand-grey-300);
     --table-default-bg: #fff;
@@ -197,16 +197,16 @@
     --cta-inline-link-default: #fff;
     --cta-inline-link-hover: var(--brand-primary-main);
 
-    --carousel-button-default-bg: rgb(255 255 255 / 0%);
-    --carousel-button-default-contrast: var(--brand-grey-400);
-    --carousel-button-hover-bg: var(--brand-grey-800);
-    --carousel-button-hover-contrast: var(--brand-grey-050);
-    --carousel-button-disabled-bg: var(--brand-grey-800);
-    --carousel-button-disabled-contrast: var(--brand-grey-700);
-    --carousel-dot-default: #fff;
-    --carousel-dot-hover: var(--brand-grey-100);
-    --carousel-dot-active: var(--brand-primary-main);
-    --carousel-dot-active-hover: var(--brand-primary-light);
+    --media-gallery-button-default-bg: rgb(255 255 255 / 0%);
+    --media-gallery-button-default-contrast: var(--brand-grey-400);
+    --media-gallery-button-hover-bg: var(--brand-grey-800);
+    --media-gallery-button-hover-contrast: var(--brand-grey-050);
+    --media-gallery-button-disabled-bg: var(--brand-grey-800);
+    --media-gallery-button-disabled-contrast: var(--brand-grey-700);
+    --media-gallery-dot-navi-default: #fff;
+    --media-gallery-dot-navi-hover: var(--brand-grey-100);
+    --media-gallery-dot-navi-active: var(--brand-primary-main);
+    --media-gallery-dot-navi-active-hover: var(--brand-primary-light);
 
     --table-border: var(--brand-grey-700);
     --table-default-bg: var(--brand-grey-900);

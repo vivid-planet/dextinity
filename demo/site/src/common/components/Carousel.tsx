@@ -9,6 +9,7 @@ import styles from "./Carousel.module.scss";
 import { useArrowKeyNavigation } from "./useArrowKeyNavigation";
 import { useEmblaAccessibilityPluginOptions } from "./useEmblaAccessibilityPluginOptions";
 import { type EmblaCarouselState, useEmblaCarouselState } from "./useEmblaCarouselState";
+import { useInertHiddenSlides } from "./useInertHiddenSlides";
 
 type CarouselContextValue = EmblaCarouselState & {
     viewportRef: EmblaRootNodeRefType;
@@ -61,6 +62,7 @@ export const Carousel = ({ label, slideCount, className, children }: CarouselPro
     const hasNavigation = (carouselState.snapCount ?? slideCount) > 1;
 
     useArrowKeyNavigation({ emblaApi, getRootNode: getCarouselRoot });
+    useInertHiddenSlides({ emblaApi });
 
     useEffect(() => {
         if (!emblaApi) {

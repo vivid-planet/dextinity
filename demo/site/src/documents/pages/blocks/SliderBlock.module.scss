@@ -49,25 +49,25 @@ $dot-size: 24px;
     justify-content: center;
     align-items: center;
     border-radius: 100%;
-    background-color: var(--carousel-button-hover-bg);
+    background-color: var(--media-gallery-button-hover-bg);
 
     &::after {
         content: "";
         width: var(--spacing-s200);
         height: var(--spacing-s200);
-        border-top: 2px solid var(--carousel-button-default-contrast);
-        border-right: 2px solid var(--carousel-button-default-contrast);
+        border-top: 2px solid var(--media-gallery-button-default-contrast);
+        border-right: 2px solid var(--media-gallery-button-default-contrast);
     }
 
     &:hover::after {
-        border-color: var(--carousel-button-hover-contrast);
+        border-color: var(--media-gallery-button-hover-contrast);
     }
 
     &[aria-disabled="true"] {
-        background-color: var(--carousel-button-disabled-bg);
+        background-color: var(--media-gallery-button-disabled-bg);
 
         &::after {
-            border-color: var(--carousel-button-disabled-contrast);
+            border-color: var(--media-gallery-button-disabled-contrast);
         }
     }
 
@@ -119,20 +119,20 @@ $dot-size: 24px;
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background-color: var(--carousel-dot-default);
+        background-color: var(--media-gallery-dot-navigation-default);
     }
 
     &:hover::after {
-        background-color: var(--carousel-dot-hover);
+        background-color: var(--media-gallery-dot-navigation-hover);
     }
 
     &[aria-current="true"] {
         &::after {
-            background-color: var(--carousel-dot-active);
+            background-color: var(--media-gallery-dot-navigation-active);
         }
 
         &:hover::after {
-            background-color: var(--carousel-dot-active-hover);
+            background-color: var(--media-gallery-dot-navigation-active-hover);
         }
     }
 }

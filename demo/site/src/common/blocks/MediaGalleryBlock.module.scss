@@ -69,26 +69,26 @@ $navigation-button-size-mobile: 30px;
         content: "";
         width: var(--spacing-s200);
         height: var(--spacing-s200);
-        border-top: 2px solid var(--carousel-button-default-contrast);
-        border-right: 2px solid var(--carousel-button-default-contrast);
+        border-top: 2px solid var(--media-gallery-button-default-contrast);
+        border-right: 2px solid var(--media-gallery-button-default-contrast);
     }
 
     &:hover {
-        background-color: var(--carousel-button-hover-bg);
+        background-color: var(--media-gallery-button-hover-bg);
 
         &::after {
-            border-top: 2px solid var(--carousel-button-hover-contrast);
-            border-right: 2px solid var(--carousel-button-hover-contrast);
+            border-top: 2px solid var(--media-gallery-button-hover-contrast);
+            border-right: 2px solid var(--media-gallery-button-hover-contrast);
         }
     }
 
     &[aria-disabled="true"] {
-        background-color: var(--carousel-button-disabled-bg);
+        background-color: var(--media-gallery-button-disabled-bg);
 
         &::after,
         &:hover::after {
-            border-top: 2px solid var(--carousel-button-disabled-contrast);
-            border-right: 2px solid var(--carousel-button-disabled-contrast);
+            border-top: 2px solid var(--media-gallery-button-disabled-contrast);
+            border-right: 2px solid var(--media-gallery-button-disabled-contrast);
         }
     }
 

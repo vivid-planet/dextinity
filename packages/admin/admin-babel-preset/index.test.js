@@ -1,5 +1,5 @@
 import { transformAsync } from "@babel/core";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import preset from "./index.js";
 
@@ -8,6 +8,10 @@ function transform(code, options) {
 }
 
 describe("@dextinity/admin-babel-preset", () => {
+    afterEach(() => {
+        vi.unstubAllEnvs();
+    });
+
     it("parses generic arrow functions in .ts files", async () => {
         const result = await transform("export const identity = <T>(value: T): T => value;", { filename: "identity.ts" });
 
@@ -22,10 +26,20 @@ describe("@dextinity/admin-babel-preset", () => {
         expect(result.code).toMatch(/target: "e\w+"/);
     });
 
-    it("uses the production JSX runtime in .tsx files when no environment is set", async () => {
-        const result = await transform("export const Component = () => <div />;", { filename: "Component.tsx", envName: "development" });
+    it("uses the production JSX runtime in .tsx files when NODE_ENV isn't set", async () => {
+        vi.stubEnv("NODE_ENV", undefined);
+
+        const result = await transform("export const Component = () => <div />;", { filename: "Component.tsx" });
 
         expect(result.code).toContain('from "react/jsx-runtime"');
         expect(result.code).not.toContain("jsx-dev-runtime");
+    });
+
+    it("uses the development JSX runtime in .tsx files when NODE_ENV is development", async () => {
+        vi.stubEnv("NODE_ENV", "development");
+
+        const result = await transform("export const Component = () => <div />;", { filename: "Component.tsx" });
+
+        expect(result.code).toContain('from "react/jsx-dev-runtime"');
     });
 });

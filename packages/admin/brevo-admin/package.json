@@ -36,7 +36,7 @@
         "lint:prettier": "pnpm exec prettier --check './**/*.{js,json,md,yml,yaml}'",
         "lint:tsc": "tsc --noEmit",
         "start": "run-p gql:types generate-block-types && run-p start:babel start:types",
-        "start:babel": "pnpm exec babel ./src -x \".ts,.tsx\" -d lib -w",
+        "start:babel": "NODE_ENV=development pnpm exec babel ./src -x \".ts,.tsx\" -d lib -w",
         "start:types": "tsc --project ./tsconfig.json --emitDeclarationOnly --watch --preserveWatchOutput"
     },
     "dependencies": {

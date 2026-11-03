@@ -14,7 +14,11 @@ function disableJsxParsing() {
     };
 }
 
-module.exports = function () {
+module.exports = function (api) {
+    // Opt-in instead of Babel's default, which enables the development JSX transform whenever NODE_ENV isn't set.
+    // A build that misses NODE_ENV would otherwise publish packages that import the dev-only `react/jsx-dev-runtime`.
+    const isDevelopment = api.cache.using(() => process.env.NODE_ENV === "development");
+
     return {
         presets: [
             [
@@ -58,7 +62,7 @@ module.exports = function () {
                         "@babel/preset-react",
                         {
                             runtime: "automatic",
-                            development: false, // Babel 8 enables it unless NODE_ENV is set, which would make the published packages import the dev-only `react/jsx-dev-runtime`
+                            development: isDevelopment,
                         },
                     ],
                 ],

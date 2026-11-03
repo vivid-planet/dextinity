@@ -22,12 +22,12 @@ Use the `showAllScopes` prop on `WarningsPage` and `LatestWarningsDashboardWidge
 <LatestWarningsDashboardWidget showAllScopes />
 ```
 
-For `WarningsPage`, the masterMenu entry needs a `render` function instead of `component` to pass the prop:
+For `WarningsPage`, pass the prop in the `element` of the masterMenu entry:
 
 ```tsx
 route: {
     path: "/system/warnings",
-    render: () => <WarningsPage showAllScopes />,
+    element: <WarningsPage showAllScopes />,
 }
 ```
 
@@ -74,7 +74,7 @@ To make the warnings accessible in the admin panel, add the following entry to t
     primary: <FormattedMessage id="menu.warnings" defaultMessage="Warnings" />,
     route: {
         path: "/system/warnings",
-        component: WarningsPage,
+        element: <WarningsPage />,
     },
     requiredPermission: "warnings",
 }

@@ -21,5 +21,8 @@ export class Migration20261102163117 extends Migration {
         this.addSql(`alter table "BrevoTargetGroup" alter column "isMainList" type boolean using ("isMainList"::boolean);`);
         this.addSql(`update "BrevoTargetGroup" set "isMainList" = false where "isMainList" is null;`);
         this.addSql(`alter table "BrevoTargetGroup" alter column "isMainList" set not null;`);
+
+        this.addSql(`alter table "BrevoEmailImportLog" add constraint "BrevoEmailImportLog_pkey" primary key ("id");`);
+        this.addSql(`alter table "BrevoBlacklistedContacts" add constraint "BrevoBlacklistedContacts_pkey" primary key ("id");`);
     }
 }

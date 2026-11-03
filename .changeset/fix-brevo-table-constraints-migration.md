@@ -8,3 +8,4 @@ Add migration to fix Brevo table constraints and column types
 - Add nullable to `BrevoEmailImportLog.importId` Property and Field
 - Remove Property decorator from `BrevoEmailImportLog.contactSource` since it already has Enum decorator
 - Change `BrevoTargetGroup.isMainList` column to not null
+- Add missing primary keys to `BrevoEmailImportLog` and `BrevoBlacklistedContacts`

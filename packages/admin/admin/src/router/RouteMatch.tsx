@@ -83,7 +83,6 @@ function removeLeadingSegments(path: string, segmentCount: number) {
  */
 export function RouteMatchProvider({ match, path, children }: PropsWithChildren<{ match: PathMatch | null; path: string }>) {
     const parentContext = useContext(RouteContext);
-    const location = useLocation();
 
     const value = useMemo(() => {
         if (!match) {
@@ -100,7 +99,7 @@ export function RouteMatchProvider({ match, path, children }: PropsWithChildren<
 
         const routeMatch: ReactRouterRouteMatch = {
             params: { ...parentMatch?.params, ...match.params },
-            pathname: location.pathname,
+            pathname: match.pathname,
             pathnameBase: match.pathnameBase,
             route: { path: relativePath === "" ? "*" : `${relativePath}/*` },
         };
@@ -109,7 +108,7 @@ export function RouteMatchProvider({ match, path, children }: PropsWithChildren<
             isDataRoute: false,
             matches: [...parentContext.matches, routeMatch],
         };
-    }, [match, parentContext, path, location.pathname]);
+    }, [match, parentContext, path]);
 
     return <RouteContext.Provider value={value}>{children}</RouteContext.Provider>;
 }

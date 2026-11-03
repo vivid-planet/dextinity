@@ -63,4 +63,10 @@ test("StackPage provides a route context for relative routes, links and params",
         expect(rendered.router.state.location.pathname).toBe("/products/42/detail/sub");
     });
     expect(rendered.getByText("sub route of 42")).toBeInTheDocument();
+
+    fireEvent.click(rendered.getByText("relative link"));
+    await waitFor(() => {
+        expect(rendered.router.state.location.pathname).toBe("/products/42/detail/sub");
+    });
+    expect(rendered.getByText("sub route of 42")).toBeInTheDocument();
 });

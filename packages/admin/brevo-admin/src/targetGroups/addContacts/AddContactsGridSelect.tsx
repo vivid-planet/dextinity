@@ -174,6 +174,7 @@ export function AddContactsGridSelect({ id, scope, assignedContactsTargetGroupBr
                 : undefined,
             scope,
         },
+        notifyOnNetworkStatusChange: false,
     });
 
     const {
@@ -192,6 +193,7 @@ export function AddContactsGridSelect({ id, scope, assignedContactsTargetGroupBr
                 targetGroupId: id,
             },
             skip: !assignedContactsTargetGroupBrevoId,
+            notifyOnNetworkStatusChange: false,
         },
     );
 

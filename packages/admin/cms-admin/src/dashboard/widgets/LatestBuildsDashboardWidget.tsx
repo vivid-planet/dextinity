@@ -11,7 +11,9 @@ import { DashboardWidgetRoot } from "./DashboardWidgetRoot";
 import type { GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables } from "./LatestBuildsDashboardWidget.generated";
 
 export const LatestBuildsDashboardWidget = () => {
-    const { data, loading, error } = useQuery<GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables>(latestBuildsQuery);
+    const { data, loading, error } = useQuery<GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables>(latestBuildsQuery, {
+        notifyOnNetworkStatusChange: false,
+    });
 
     const intl = useIntl();
 

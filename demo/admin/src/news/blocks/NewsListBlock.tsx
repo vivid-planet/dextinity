@@ -41,7 +41,7 @@ export const NewsListBlock: BlockInterface<NewsListBlockData, State, NewsListBlo
                     title
                 }
             `,
-            { variables: { scope } },
+            { variables: { scope }, notifyOnNetworkStatusChange: false },
         );
         const rowCount = useBufferedRowCount(data?.newsList.totalCount);
 

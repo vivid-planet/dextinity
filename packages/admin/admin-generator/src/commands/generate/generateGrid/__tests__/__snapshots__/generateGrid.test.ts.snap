@@ -170,6 +170,7 @@ renderCell: (params) => {
             variables: {
                 filter: gqlFilter, sort: muiGridSortToGql(dataGridProps.sortModel, columns), offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize, limit: dataGridProps.paginationModel.pageSize
             },
+            notifyOnNetworkStatusChange: false,
         });
         const rowCount = useBufferedRowCount(data?.books.totalCount);
         if (error) throw error;
@@ -390,6 +391,7 @@ renderCell: (params) => {
             variables: {
                 filter: gqlFilter, sort: muiGridSortToGql(dataGridProps.sortModel, columns), offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize, limit: dataGridProps.paginationModel.pageSize
             },
+            notifyOnNetworkStatusChange: false,
         });
         const rowCount = useBufferedRowCount(data?.books.totalCount);
         if (error) throw error;
@@ -588,6 +590,7 @@ renderCell: (params) => {
             variables: {
                 filter: gqlFilter, sort: muiGridSortToGql(dataGridProps.sortModel, columns)
             },
+            notifyOnNetworkStatusChange: false,
         });
         
         if (error) throw error;
@@ -784,6 +787,7 @@ renderCell: (params) => {
             variables: {
                 
             },
+            notifyOnNetworkStatusChange: false,
         });
         
         if (error) throw error;
@@ -982,6 +986,7 @@ renderCell: (params) => {
             variables: {
                 filter: gqlFilter, sort: muiGridSortToGql(dataGridProps.sortModel, columns), offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize, limit: dataGridProps.paginationModel.pageSize
             },
+            notifyOnNetworkStatusChange: false,
         });
         const rowCount = useBufferedRowCount(data?.books.totalCount);
         if (error) throw error;
@@ -1202,6 +1207,7 @@ renderCell: (params) => {
             variables: {
                 authorId, filter: gqlFilter, sort: muiGridSortToGql(dataGridProps.sortModel, columns), offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize, limit: dataGridProps.paginationModel.pageSize
             },
+            notifyOnNetworkStatusChange: false,
         });
         const rowCount = useBufferedRowCount(data?.booksByAuthor.totalCount);
         if (error) throw error;
@@ -1440,6 +1446,7 @@ renderCell: (params) => {
             variables: {
                 filter: gqlFilter, sort: muiGridSortToGql(dataGridProps.sortModel, columns), offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize, limit: dataGridProps.paginationModel.pageSize
             },
+            notifyOnNetworkStatusChange: false,
         });
         const rowCount = useBufferedRowCount(data?.books.totalCount);
         if (error) throw error;
@@ -1652,6 +1659,7 @@ renderCell: (params) => {
             variables: {
                 offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize, limit: dataGridProps.paginationModel.pageSize
             },
+            notifyOnNetworkStatusChange: false,
         });
         const rowCount = useBufferedRowCount(data?.books.totalCount);
         if (error) throw error;

@@ -155,6 +155,7 @@ export function ProductCategoriesGrid() {
             limit: 100,
             sort: { field: "position", direction: "ASC" },
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.productCategories.totalCount);
     if (error) {

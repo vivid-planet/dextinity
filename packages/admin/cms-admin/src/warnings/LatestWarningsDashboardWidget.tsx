@@ -28,6 +28,7 @@ export const LatestWarningsDashboardWidget = ({ showAllScopes = false }: LatestW
 
     const { data, loading, error } = useQuery<GQLLatestWarningsQuery, GQLLatestWarningsQueryVariables>(latestWarningsQuery, {
         variables: { scopes },
+        notifyOnNetworkStatusChange: false,
     });
 
     const intl = useIntl();

@@ -229,6 +229,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
         },
         context: LocalErrorScopeApolloContext,
         fetchPolicy: "cache-and-network",
+        notifyOnNetworkStatusChange: false,
     });
 
     if (error) {

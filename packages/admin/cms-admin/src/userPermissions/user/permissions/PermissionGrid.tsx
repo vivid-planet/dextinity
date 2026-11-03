@@ -69,6 +69,7 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
             variables: {
                 userId,
             },
+            notifyOnNetworkStatusChange: false,
         },
     );
 

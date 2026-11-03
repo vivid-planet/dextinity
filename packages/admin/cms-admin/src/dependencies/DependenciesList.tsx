@@ -196,6 +196,7 @@ export const DependenciesList = ({ query, variables }: DependenciesListProps) =>
             sort,
             ...variables,
         },
+        notifyOnNetworkStatusChange: false,
     });
 
     if (error) {

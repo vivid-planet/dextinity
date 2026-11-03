@@ -186,7 +186,21 @@ export class BrevoApiCampaignsService {
             // The property globalStats seems to be right here according to the docs: https://developers.brevo.com/reference/getemailcampaign
             // Unforunately, the API returns only 0 values for the globalStats property.
             // That's why we return the first element of the campaignStats array, which contains the correct values.
-            return brevoCampaign.statistics.campaignStats[0];
+            const stats = brevoCampaign.statistics.campaignStats[0];
+            return {
+                uniqueClicks: stats.uniqueClicks ?? 0,
+                clickers: stats.clickers ?? 0,
+                complaints: stats.complaints ?? 0,
+                delivered: stats.delivered ?? 0,
+                sent: stats.sent ?? 0,
+                softBounces: stats.softBounces ?? 0,
+                hardBounces: stats.hardBounces ?? 0,
+                uniqueViews: stats.uniqueViews ?? 0,
+                trackableViews: stats.trackableViews ?? 0,
+                estimatedViews: stats.estimatedViews,
+                unsubscriptions: stats.unsubscriptions ?? 0,
+                viewed: stats.viewed ?? 0,
+            };
         } catch (error) {
             handleBrevoError(error);
         }

@@ -3,6 +3,12 @@ import { Migration } from "@mikro-orm/migrations";
 export class Migration20261102163117 extends Migration {
     async up(): Promise<void> {
         // Required migrations for constraints due to adding Brevo prefix to tables
+        this.addSql(`alter table "BrevoEmailCampaign" rename constraint "Campaign_pkey" to "BrevoEmailCampaign_pkey";`);
+        this.addSql(
+            `alter table "BrevoEmailCampaign" rename constraint "EmailCampaign_sendingState_check" to "BrevoEmailCampaign_sendingState_check";`,
+        );
+        this.addSql(`alter table "BrevoTargetGroup" rename constraint "TargetGroup_pkey" to "BrevoTargetGroup_pkey";`);
+
         this.addSql(`alter table "BrevoEmailCampaign_targetGroups" drop constraint "EmailCampaign_targetGroups_pkey";`);
         this.addSql(
             `alter table "BrevoEmailCampaign_targetGroups" add constraint "BrevoEmailCampaign_targetGroups_pkey" primary key ("brevoEmailCampaign", "brevoTargetGroup");`,

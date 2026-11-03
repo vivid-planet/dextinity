@@ -9,11 +9,11 @@ import { RootBlock } from "../../blocks/decorators/root-block";
 import { RootBlockEntity } from "../../blocks/decorators/root-block-entity";
 import { RootBlockType } from "../../blocks/root-block-type";
 import { EntityInfo } from "../../entity-info/entity-info.decorator";
-import { RedirectGenerationType, RedirectSourceType } from "../redirects.enum";
+import { RedirectGenerationType, RedirectSourceType, RedirectType } from "../redirects.enum";
 import { RedirectScopeInterface } from "../types";
 
 export interface RedirectInterface {
-    [OptionalProps]?: "createdAt" | "updatedAt" | "active";
+    [OptionalProps]?: "createdAt" | "updatedAt" | "active" | "redirectType";
     id: string;
     sourceType: RedirectSourceType;
     source: string;
@@ -22,6 +22,7 @@ export interface RedirectInterface {
     active: boolean;
     activatedAt?: Date;
     generationType: RedirectGenerationType;
+    redirectType: RedirectType;
     createdAt: Date;
     updatedAt: Date;
     scope?: RedirectScopeInterface;
@@ -33,7 +34,7 @@ export class RedirectEntityFactory {
         @Entity({ abstract: true })
         @ObjectType({ isAbstract: true })
         class RedirectBase implements RedirectInterface {
-            [OptionalProps]?: "createdAt" | "updatedAt" | "active";
+            [OptionalProps]?: "createdAt" | "updatedAt" | "active" | "redirectType";
 
             @PrimaryKey({ columnType: "uuid" })
             @Field(() => ID)
@@ -75,6 +76,10 @@ export class RedirectEntityFactory {
             @Enum(() => RedirectGenerationType)
             @Field(() => RedirectGenerationType)
             generationType: RedirectGenerationType;
+
+            @Enum({ items: () => RedirectType, default: RedirectType.temporary })
+            @Field(() => RedirectType)
+            redirectType: RedirectType = RedirectType.temporary;
 
             @Property({
                 columnType: "timestamp with time zone",

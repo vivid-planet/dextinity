@@ -280,7 +280,7 @@ export { PageExists, PageExistsConstraint } from "./page-tree/validators/page-ex
 export { RedirectInterface } from "./redirects/entities/redirect-entity.factory";
 export { RedirectTargetUrlServiceInterface } from "./redirects/redirect-target-url.service";
 export { REDIRECTS_LINK_BLOCK } from "./redirects/redirects.constants";
-export { RedirectGenerationType, RedirectSourceType } from "./redirects/redirects.enum";
+export { RedirectGenerationType, RedirectSourceType, RedirectType } from "./redirects/redirects.enum";
 export { RedirectsLinkBlock, RedirectsModule } from "./redirects/redirects.module";
 export { createRedirectsResolver } from "./redirects/redirects.resolver";
 export { RedirectsService } from "./redirects/redirects.service";

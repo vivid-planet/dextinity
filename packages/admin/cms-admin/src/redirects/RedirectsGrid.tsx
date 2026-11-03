@@ -37,6 +37,7 @@ import { BlockPreviewContent } from "../blocks/common/blockRow/BlockPreviewConte
 import type { BlockInterface } from "../blocks/types";
 import { DataGrid } from "../dataGrid/DataGrid";
 import RedirectActiveness from "./RedirectActiveness";
+import { useRedirectsConfig } from "./redirectsConfig";
 import { deleteRedirectMutation, deleteRedirectsMutation, paginatedRedirectsQuery } from "./RedirectsGrid.gql";
 import {
     type GQLDeleteRedirectsMutation,
@@ -83,6 +84,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
     const intl = useIntl();
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const { enableRedirectType } = useRedirectsConfig();
 
     const [deleteRedirects] = useMutation<GQLDeleteRedirectsMutation, GQLDeleteRedirectsMutationVariables>(deleteRedirectsMutation, {
         refetchQueries: [namedOperations.Query.PaginatedRedirects],
@@ -112,6 +114,23 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
                 defaultMessage: "Automatic",
             }),
             value: "automatic",
+        },
+    ];
+
+    const redirectTypeOptions = [
+        {
+            label: intl.formatMessage({
+                id: "dextinity.pages.redirects.redirect.redirectType.temporary",
+                defaultMessage: "Temporary (307)",
+            }),
+            value: "temporary",
+        },
+        {
+            label: intl.formatMessage({
+                id: "dextinity.pages.redirects.redirect.redirectType.permanent",
+                defaultMessage: "Permanent (308)",
+            }),
+            value: "permanent",
         },
     ];
 
@@ -164,6 +183,26 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
             valueOptions: typeOptions,
             width: 130,
         },
+        ...(enableRedirectType
+            ? [
+                  {
+                      field: "redirectType",
+                      headerName: intl.formatMessage({
+                          id: "dextinity.pages.redirects.redirect.redirectType",
+                          defaultMessage: "Redirect type",
+                      }),
+                      renderCell: (params) =>
+                          params.row.sourceType === "path" ? (
+                              <Typography>{redirectTypeOptions.find((option) => option.value === params.value)?.label}</Typography>
+                          ) : null,
+                      sortable: false,
+                      filterOperators: getGridSingleSelectOperators(),
+                      type: "singleSelect",
+                      valueOptions: redirectTypeOptions,
+                      width: 160,
+                  } satisfies GridColDef,
+              ]
+            : []),
         {
             field: "active",
             headerName: intl.formatMessage({

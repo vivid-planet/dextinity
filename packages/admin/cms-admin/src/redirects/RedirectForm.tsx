@@ -24,7 +24,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { createFinalFormBlock } from "../blocks/form/createFinalFormBlock";
 import type { BlockInterface, BlockState } from "../blocks/types";
 import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
-import type { GQLRedirectSourceType } from "../graphql.generated";
+import type { GQLRedirectSourceType, GQLRedirectType } from "../graphql.generated";
 import type { GQLRedirectSourceAvailableQuery, GQLRedirectSourceAvailableQueryVariables } from "./RedirectForm.generated";
 import { redirectDetailQuery } from "./RedirectForm.gql";
 import type {
@@ -33,6 +33,7 @@ import type {
     GQLRedirectDetailQuery,
     GQLRedirectDetailQueryVariables,
 } from "./RedirectForm.gql.generated";
+import { useRedirectsConfig } from "./redirectsConfig";
 import { useSubmitMutation } from "./submitMutation";
 
 export { createRedirectMutation, updateRedirectMutation } from "./RedirectForm.gql";
@@ -50,6 +51,7 @@ export interface FormValues {
     source: string;
     target: BlockState<BlockInterface>;
     comment?: string;
+    redirectType: GQLRedirectType;
     updatedAt?: string;
 }
 
@@ -65,6 +67,7 @@ const useInitialValues = (id: string | undefined, linkBlock: BlockInterface): Fo
             sourceType: "path",
             source: "",
             target: linkBlock.defaultValues(),
+            redirectType: "temporary",
         };
     }
 
@@ -79,6 +82,7 @@ const useInitialValues = (id: string | undefined, linkBlock: BlockInterface): Fo
         source: redirect.source,
         target: linkBlock.input2State(redirect.target),
         comment: redirect.comment ?? undefined,
+        redirectType: redirect.redirectType,
         updatedAt: redirect.updatedAt,
     };
 };
@@ -89,6 +93,7 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
     const targetInput = useMemo(() => createFinalFormBlock(linkBlock), [linkBlock]);
     const client = useApolloClient();
     const stackSwitchApi = useStackSwitchApi();
+    const { enableRedirectType } = useRedirectsConfig();
 
     const sourceTypeOptions = [
         {
@@ -103,6 +108,23 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
             label: intl.formatMessage({
                 id: "dextinity.pages.redirects.redirect.source.type.domain",
                 defaultMessage: "Domain",
+            }),
+        },
+    ];
+
+    const redirectTypeOptions: Array<{ value: GQLRedirectType; label: string }> = [
+        {
+            value: "temporary",
+            label: intl.formatMessage({
+                id: "dextinity.pages.redirects.redirect.redirectType.temporary",
+                defaultMessage: "Temporary (307)",
+            }),
+        },
+        {
+            value: "permanent",
+            label: intl.formatMessage({
+                id: "dextinity.pages.redirects.redirect.redirectType.permanent",
+                defaultMessage: "Permanent (308)",
             }),
         },
     ];
@@ -254,6 +276,39 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
                             fullWidth
                             component={targetInput}
                         />
+                        {enableRedirectType && values.sourceType === "path" && (
+                            <>
+                                <Field
+                                    label={intl.formatMessage({
+                                        id: "dextinity.pages.redirects.redirect.redirectType",
+                                        defaultMessage: "Redirect type",
+                                    })}
+                                    name="redirectType"
+                                    required
+                                    fullWidth
+                                >
+                                    {(props) => (
+                                        <FinalFormSelect {...props} fullWidth>
+                                            {redirectTypeOptions.map((option) => (
+                                                <MenuItem value={option.value} key={option.value}>
+                                                    {option.label}
+                                                </MenuItem>
+                                            ))}
+                                        </FinalFormSelect>
+                                    )}
+                                </Field>
+                                {values.redirectType === "permanent" && (
+                                    <Box sx={{ marginBottom: 4 }}>
+                                        <Alert severity="warning">
+                                            <FormattedMessage
+                                                id="dextinity.pages.redirects.redirect.redirectType.permanent.warning"
+                                                defaultMessage="Browsers, search engines and CDNs cache permanent redirects for a long time. Changing or removing this redirect later may not take effect for visitors who have already been redirected."
+                                            />
+                                        </Alert>
+                                    </Box>
+                                )}
+                            </>
+                        )}
                         <Field
                             label={intl.formatMessage({ id: "dextinity.pages.redirects.redirect.comment", defaultMessage: "Comment" })}
                             name="comment"

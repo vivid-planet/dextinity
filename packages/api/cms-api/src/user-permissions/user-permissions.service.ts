@@ -4,7 +4,6 @@ import { EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
 import { isFuture, isPast } from "date-fns";
 import { Request } from "express";
-import getUuid from "uuid-by-string";
 
 import { AbstractAccessControlService } from "./access-control.service";
 import { DisablePermissionCheck, REQUIRED_PERMISSION_METADATA_KEY, RequiredPermissionMetadata } from "./decorators/required-permission.decorator";
@@ -15,6 +14,7 @@ import { UserContentScopes } from "./entities/user-content-scopes.entity";
 import { UserPermission, UserPermissionSource } from "./entities/user-permission.entity";
 import { ContentScope } from "./interfaces/content-scope.interface";
 import { User } from "./interfaces/user";
+import { stringToUuid } from "./string-to-uuid";
 import { ACCESS_CONTROL_SERVICE, USER_PERMISSIONS_OPTIONS, USER_PERMISSIONS_USER_SERVICE } from "./user-permissions.constants";
 import {
     AccessControlServiceInterface,
@@ -196,7 +196,7 @@ export class UserPermissionsService {
                 }
                 for (const p of permissionsByRule) {
                     const permission = new UserPermission();
-                    permission.id = getUuid(JSON.stringify(p));
+                    permission.id = stringToUuid(JSON.stringify(p));
                     permission.source = UserPermissionSource.BY_RULE;
                     permission.userId = user.id;
                     permission.overrideContentScopes = !!p.contentScopes;

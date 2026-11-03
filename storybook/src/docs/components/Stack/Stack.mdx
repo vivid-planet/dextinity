@@ -22,13 +22,13 @@ Root component of the stack.
 
 ### StackSwitch
 
-Container for pages where one will render at a time. Similar to a react-router Switch. Provides a context with an API allowing to switch between pages in this `StackSwitch`.
+Container for pages where one will render at a time. Similar to React Router's `Routes`. Provides a context with an API allowing to switch between pages in this `StackSwitch`.
 
 ### StackPage
 
 The pages a `StackSwitch` will switch. First one is the default page.
 
-Dextinity Admin Stack uses react-router behind the scene and creates a `Route` for every page.
+Dextinity Admin Stack uses React Router behind the scenes and provides a route context for every page, so relative routes and links work inside a page.
 
 ## Switch page
 
@@ -36,7 +36,7 @@ Dextinity Admin Stack uses react-router behind the scene and creates a `Route` f
 
 Use the `StackLink` component for creating a link to a page.
 
-The StackLink is based on [react-router Link](https://reactrouter.com/web/api/Link).
+The StackLink is based on [React Router Link](https://reactrouter.com/api/components/Link).
 It can be combined with the Material UI components [`Link`](https://mui.com/api/link/) and [`Button`](https://mui.com/api/button/) using their `component` prop.
 More infos on this functionality can be found in the [Routing Libraries section of the Material UI Docs](https://mui.com/guides/composition/#routing-libraries/).
 

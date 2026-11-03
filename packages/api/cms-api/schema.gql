@@ -66,17 +66,13 @@ enum Permission {
   sitePreview
   blockPreview
   fullTextSearch
+  actionLog
 }
 
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
-
-type ActionLogsUser {
-  id: ID!
-  name: String
-}
 
 type ActionLog {
   id: ID!
@@ -103,6 +99,11 @@ enum ActionLogType {
   Created
   Updated
   Deleted
+}
+
+type ActionLogsUser {
+  id: ID!
+  name: String
 }
 
 type PaginatedActionLogs {
@@ -571,6 +572,11 @@ input WarningSourceInfoInput {
 
 type Query {
   actionLogs(offset: Int! = 0, limit: Int! = 25, entity: String!, scope: JSONObject!, filter: ActionLogFilter, sort: [ActionLogSort!]): PaginatedActionLogs!
+
+  """
+  Returns the action log of all entities, restricted to the entries the current user could read in the action log of each entity.
+  """
+  myActionLogs(offset: Int! = 0, limit: Int! = 25, filter: ActionLogFilter, sort: [ActionLogSort!]): PaginatedActionLogs!
   builds(limit: Float): [Build!]!
   autoBuildStatus: AutoBuildStatus!
   buildTemplates: [BuildTemplate!]!
@@ -681,6 +687,7 @@ input ActionLogSort {
 enum ActionLogSortField {
   version
   createdAt
+  entityName
 }
 
 input RedirectScopeInput {

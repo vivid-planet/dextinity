@@ -251,6 +251,7 @@ export function EmailCampaignsGrid({
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(dataGridProps.sortModel),
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.brevoEmailCampaigns.totalCount);
     if (error) {

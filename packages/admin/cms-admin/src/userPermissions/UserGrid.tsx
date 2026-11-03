@@ -124,6 +124,7 @@ export const UserPermissionsUserGrid = ({ toolbarAction, rowAction, actionsColum
                 limit: dataGridProps.paginationModel.pageSize ?? 0,
                 sort: muiGridSortToGql(dataGridProps.sortModel),
             },
+            notifyOnNetworkStatusChange: false,
         },
     );
 

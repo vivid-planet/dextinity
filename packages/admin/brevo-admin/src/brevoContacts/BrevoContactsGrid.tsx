@@ -213,6 +213,7 @@ export function BrevoContactsGrid({
             email: dataGridProps.filterModel?.quickFilterValues ? dataGridProps.filterModel?.quickFilterValues[0] : undefined,
             scope,
         },
+        notifyOnNetworkStatusChange: false,
     });
 
     const rowCount = useBufferedRowCount(data?.brevoContacts.totalCount);

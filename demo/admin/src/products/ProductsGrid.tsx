@@ -347,6 +347,7 @@ export function ProductsGrid() {
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(sortModel, columns),
         },
+        notifyOnNetworkStatusChange: false,
     });
     if (error) {
         throw error;

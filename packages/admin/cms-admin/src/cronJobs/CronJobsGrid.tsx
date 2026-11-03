@@ -66,7 +66,9 @@ export function CronJobsGrid() {
     const [cronJobToStart, setCronJobToStart] = useState<string>();
     const dialogOpen = Boolean(cronJobToStart);
 
-    const { data, loading, error } = useQuery<GQLKubernetesCronJobsQuery, GQLKubernetesCronJobsQueryVariables>(cronJobsQuery);
+    const { data, loading, error } = useQuery<GQLKubernetesCronJobsQuery, GQLKubernetesCronJobsQueryVariables>(cronJobsQuery, {
+        notifyOnNetworkStatusChange: false,
+    });
 
     if (error) {
         throw error;

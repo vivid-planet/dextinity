@@ -1085,6 +1085,7 @@ export function generateGrid<T extends { __typename?: string }>(
                         : []),
                 ].join(", ")}
             },
+            notifyOnNetworkStatusChange: false,
         });
         ${hasPaging ? `const rowCount = useBufferedRowCount(data?.${gridQuery}.totalCount);` : ""}
         if (error) throw error;

@@ -266,6 +266,7 @@ export function TargetGroupsGrid({
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(dataGridProps.sortModel),
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.brevoTargetGroups.totalCount);
     if (error) {

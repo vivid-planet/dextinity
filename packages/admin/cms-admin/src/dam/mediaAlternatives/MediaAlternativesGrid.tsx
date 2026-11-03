@@ -183,6 +183,7 @@ export function MediaAlternativesGrid({ file, type, direction }: MediaAlternativ
             alternative: direction === "alternative" ? file.id : undefined,
             type: type,
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.damMediaAlternatives.totalCount);
     if (error) {

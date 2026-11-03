@@ -102,6 +102,7 @@ export const UseDataGridRemote = {
                     sort: dataGridProps.sortModel[0]?.field,
                     order: dataGridProps.sortModel[0]?.sort,
                 },
+                notifyOnNetworkStatusChange: false,
             },
         );
 
@@ -161,6 +162,7 @@ export const UseDataGridRemoteInitialSort = {
                     sort: dataGridProps.sortModel[0]?.field,
                     order: dataGridProps.sortModel[0]?.sort,
                 },
+                notifyOnNetworkStatusChange: false,
             },
         );
 
@@ -221,6 +223,7 @@ export const UseDataGridRemoteInitialFilter = {
                     offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
                     filter: muiGridFilterToGql(columns, dataGridProps.filterModel).filter,
                 },
+                notifyOnNetworkStatusChange: false,
             },
         );
 
@@ -439,6 +442,7 @@ export const UseDataGridExcelExport = {
 
         const { data, loading, error } = useQuery<GQLQuery, QueryVariables>(query, {
             variables,
+            notifyOnNetworkStatusChange: false,
         });
 
         const exportApi = useDataGridExcelExport<Launch, GQLQuery, QueryVariables>({
@@ -559,6 +563,7 @@ export const GridColumnTypes = {
                 sort: dataGridProps.sortModel[0]?.field,
                 order: dataGridProps.sortModel[0]?.sort,
             },
+            notifyOnNetworkStatusChange: false,
         });
 
         const rows = (data?.launchesPastResult.data ?? []).map((row) => ({

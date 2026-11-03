@@ -251,6 +251,7 @@ export function WarningsGrid({ showAllScopes = false }: WarningsGridProps) {
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(dataGridProps.sortModel, columns),
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.warnings.totalCount);
     if (error) {

@@ -446,6 +446,7 @@ const FolderDataGrid = ({
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             scope,
         },
+        notifyOnNetworkStatusChange: false,
     });
 
     const rowCount = useBufferedRowCount(dataGridData?.damItemsList.totalCount);

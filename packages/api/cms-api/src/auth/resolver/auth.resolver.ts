@@ -4,7 +4,7 @@ import { GraphQLJSONObject } from "graphql-scalars";
 import { IncomingMessage } from "http";
 
 import { SkipBuild } from "../../builds/skip-build.decorator";
-import { isScopeWithin } from "../../user-permissions/access-control.service";
+import { createIsScopeWithinAny } from "../../user-permissions/access-control.service";
 import { DisablePermissionCheck, RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
 import { ContentScopeWithLabel } from "../../user-permissions/dto/content-scope";
 import { CurrentUser } from "../../user-permissions/dto/current-user";
@@ -56,9 +56,9 @@ export function createAuthResolver(config?: AuthResolverConfig): Type<unknown> {
 
         @ResolveField(() => [ContentScopeWithLabel])
         async allowedContentScopes(@Parent() user: CurrentUser): Promise<ContentScopeWithLabel[]> {
-            const allowedContentScopes = user.permissions.flatMap((p) => p.contentScopes);
+            const isAllowedContentScope = createIsScopeWithinAny(user.permissions.flatMap((p) => p.contentScopes));
             return (await this.service.getAvailableContentScopes()).filter((contentScopeWithLabel) =>
-                allowedContentScopes.some((allowedContentScope) => isScopeWithin(contentScopeWithLabel.scope, allowedContentScope)),
+                isAllowedContentScope(contentScopeWithLabel.scope),
             );
         }
     }

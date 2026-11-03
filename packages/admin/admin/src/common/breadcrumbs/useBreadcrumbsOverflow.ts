@@ -83,16 +83,37 @@ export const useBreadcrumbsOverflow = ({
     const itemsKey = items.map((item) => item.url).join("|");
 
     useEffect(() => {
-        const children = measureRef.current?.children;
+        const measureLayer = measureRef.current;
 
-        if (!children?.length) {
+        if (!measureLayer) {
             setMeasuredWidths(undefined);
             return;
         }
 
-        const widths = Array.from(children).map(getElementOuterWidth);
+        const measureItems = () => {
+            const children = measureLayer.children;
 
-        setMeasuredWidths({ itemWidths: widths.slice(0, -1), ellipsisWidth: widths[widths.length - 1] });
+            if (!children.length) {
+                setMeasuredWidths(undefined);
+                return;
+            }
+
+            const widths = Array.from(children).map(getElementOuterWidth);
+
+            setMeasuredWidths({ itemWidths: widths.slice(0, -1), ellipsisWidth: widths[widths.length - 1] });
+        };
+
+        measureItems();
+
+        // A title can reach its final width after the first render, for instance when it is loaded asynchronously or
+        // translated. `itemsKey` does not cover that, because the URLs stay the same while the title changes, so the
+        // layer is measured again whenever it grows or shrinks.
+        const measureLayerObserver = new ResizeObserver(measureItems);
+        measureLayerObserver.observe(measureLayer);
+
+        return () => {
+            measureLayerObserver.disconnect();
+        };
     }, [itemsKey, measureRef]);
 
     return getOverflow({ items, measuredWidths, containerWidth });

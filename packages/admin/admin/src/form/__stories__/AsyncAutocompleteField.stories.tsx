@@ -1,4 +1,5 @@
-import { gql, useApolloClient } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { WarningSolid } from "@dextinity/admin-icons";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -436,7 +437,7 @@ export const AsyncAutocompleteLoadingDataFromApi: Story = {
                                         },
                                     });
 
-                                    return data.manufacturers.map((manufacturer) => {
+                                    return (data?.manufacturers ?? []).map((manufacturer) => {
                                         return {
                                             value: manufacturer.id,
                                             label: manufacturer.name,

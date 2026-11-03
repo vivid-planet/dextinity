@@ -1,6 +1,6 @@
 import "react-image-crop/dist/ReactCrop.css";
 
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { CancelButton, Field, FormSection, messages, SaveButton } from "@dextinity/admin";
 import { OpenNewTab } from "@dextinity/admin-icons";
 import {

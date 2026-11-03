@@ -49,7 +49,7 @@ export function createDocumentDependencyMethods<RootBlocks extends Record<string
                 },
             });
 
-            if (error || data.node === null) {
+            if (error || !data || data.node === null) {
                 throw new Error(`Error for document ${id}: ${error?.message ?? "Document is undefined"}`);
             }
 

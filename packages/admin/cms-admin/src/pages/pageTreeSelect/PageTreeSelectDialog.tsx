@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Button, FillSpace, Toolbar, ToolbarActions, useFocusAwarePolling } from "@dextinity/admin";
 import { ArrowRight, Close, Delete } from "@dextinity/admin-icons";
 import {

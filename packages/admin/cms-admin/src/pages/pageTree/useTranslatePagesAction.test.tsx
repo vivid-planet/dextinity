@@ -12,7 +12,7 @@ import { useTranslatePagesAction } from "./useTranslatePagesAction";
 
 const mockMutate = vi.fn();
 
-vi.mock(import("@apollo/client"), async (importOriginal) => {
+vi.mock(import("@apollo/client/react"), async (importOriginal) => {
     const originalModule = await importOriginal();
     return {
         ...originalModule,
@@ -22,7 +22,7 @@ vi.mock(import("@apollo/client"), async (importOriginal) => {
                 query: async () => ({ data: { page: { document: null }, pageTreeNodeSlugAvailable: "Available" } }),
                 mutate: mockMutate,
                 refetchQueries: vi.fn(),
-            }) as unknown as ApolloClient<object>,
+            }) as unknown as ApolloClient,
     };
 });
 

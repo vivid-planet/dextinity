@@ -37,7 +37,7 @@ export function createDependencyMethods<RootBlocks extends Record<string, BlockI
                 },
             });
 
-            if (error || data.node === null) {
+            if (error || !data || data.node === null) {
                 throw new Error(`Error for document ${id}: ${error?.message ?? "Document is undefined"}`);
             }
 

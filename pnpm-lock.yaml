@@ -219,8 +219,8 @@ importers:
   demo/admin:
     dependencies:
       '@apollo/client':
-        specifier: ^3.14.1
-        version: 3.14.1(@types/react@19.3.0)(graphql-ws@6.3.0(graphql@16.15.0)(ws@8.22.0))(graphql@16.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(subscriptions-transport-ws@0.11.0(graphql@16.15.0))
+        specifier: ^4.3.5
+        version: 4.3.8(graphql-ws@6.3.0(graphql@16.15.0)(ws@8.22.0))(graphql@16.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)(subscriptions-transport-ws@0.11.0(graphql@16.15.0))
       '@dextinity/admin':
         specifier: workspace:*
         version: link:../../packages/admin/admin
@@ -311,6 +311,9 @@ importers:
       react-router-dom:
         specifier: ^5.3.4
         version: 5.3.4(react@19.3.1)
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
       use-debounce:
         specifier: ^10.1.1
         version: 10.1.1(react@19.3.1)
@@ -1011,8 +1014,8 @@ importers:
         version: 14.0.3
     devDependencies:
       '@apollo/client':
-        specifier: ^3.14.1
-        version: 3.14.1(@types/react@19.3.0)(graphql-ws@6.3.0(graphql@16.15.0)(ws@8.22.0))(graphql@16.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(subscriptions-transport-ws@0.11.0(graphql@16.15.0))
+        specifier: ^4.3.5
+        version: 4.3.8(graphql-ws@6.3.0(graphql@16.15.0)(ws@8.22.0))(graphql@16.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)(subscriptions-transport-ws@0.11.0(graphql@16.15.0))
       '@babel/cli':
         specifier: ^8.0.6
         version: 8.0.6(@babel/core@8.0.10)
@@ -1160,6 +1163,9 @@ importers:
       rimraf:
         specifier: ^6.1.4
         version: 6.1.4
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
       storybook:
         specifier: ^10.6.6
         version: 10.6.7(@types/react@19.3.0)(prettier@3.9.10)(react@19.3.1)
@@ -1396,8 +1402,8 @@ importers:
         version: 6.0.3
     devDependencies:
       '@apollo/client':
-        specifier: ^3.14.1
-        version: 3.14.1(@types/react@19.3.0)(graphql-ws@6.3.0(graphql@16.15.0)(ws@8.22.0))(graphql@16.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(subscriptions-transport-ws@0.11.0(graphql@16.15.0))
+        specifier: ^4.3.5
+        version: 4.3.8(graphql-ws@6.3.0(graphql@16.15.0)(ws@8.22.0))(graphql@16.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)(subscriptions-transport-ws@0.11.0(graphql@16.15.0))
       '@dextinity/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
@@ -1437,6 +1443,9 @@ importers:
       react-intl:
         specifier: ^12.1.4
         version: 12.1.5(@types/react@19.3.0)(react@19.3.1)
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
       tsdown:
         specifier: 0.23.7
         version: 0.23.7(@volar/typescript@2.4.28(typescript@6.0.3))(oxc-resolver@11.24.2)(typescript@6.0.3)(unrun@0.2.39(synckit@0.11.13))
@@ -1618,8 +1627,8 @@ importers:
         version: 20.2.0(@types/react@19.3.0)(react@19.3.1)
     devDependencies:
       '@apollo/client':
-        specifier: ^3.14.1
-        version: 3.14.1(@types/react@19.3.0)(graphql-ws@6.3.0(graphql@16.15.0)(ws@8.22.0))(graphql@16.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(subscriptions-transport-ws@0.11.0(graphql@16.15.0))
+        specifier: ^4.3.5
+        version: 4.3.8(graphql-ws@6.3.0(graphql@16.15.0)(ws@8.22.0))(graphql@16.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)(subscriptions-transport-ws@0.11.0(graphql@16.15.0))
       '@babel/cli':
         specifier: ^8.0.6
         version: 8.0.6(@babel/core@8.0.10)
@@ -1716,6 +1725,9 @@ importers:
       react-router-dom:
         specifier: ^5.3.4
         version: 5.3.4(react@19.3.1)
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -1826,8 +1838,8 @@ importers:
         version: 4.6.7
     devDependencies:
       '@apollo/client':
-        specifier: ^3.14.1
-        version: 3.14.1(@types/react@19.3.0)(graphql-ws@6.3.0(graphql@16.15.0)(ws@8.22.0))(graphql@16.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(subscriptions-transport-ws@0.11.0(graphql@16.15.0))
+        specifier: ^4.3.5
+        version: 4.3.8(graphql-ws@6.3.0(graphql@16.15.0)(ws@8.22.0))(graphql@16.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)(subscriptions-transport-ws@0.11.0(graphql@16.15.0))
       '@babel/cli':
         specifier: ^8.0.6
         version: 8.0.6(@babel/core@8.0.10)
@@ -1999,6 +2011,9 @@ importers:
       react-router-dom:
         specifier: ^5.3.4
         version: 5.3.4(react@19.3.1)
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
       storybook:
         specifier: ^10.6.6
         version: 10.6.7(@types/react@19.3.0)(prettier@3.9.10)(react@19.3.1)
@@ -3032,8 +3047,8 @@ importers:
   storybook:
     dependencies:
       '@apollo/client':
-        specifier: ^3.14.1
-        version: 3.14.1(@types/react@19.3.0)(graphql-ws@6.3.0(graphql@16.15.0)(ws@8.22.0))(graphql@16.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(subscriptions-transport-ws@0.11.0(graphql@16.15.0))
+        specifier: ^4.3.5
+        version: 4.3.8(graphql-ws@6.3.0(graphql@16.15.0)(ws@8.22.0))(graphql@16.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)(subscriptions-transport-ws@0.11.0(graphql@16.15.0))
       '@dextinity/admin':
         specifier: workspace:*
         version: link:../packages/admin/admin
@@ -3109,6 +3124,9 @@ importers:
       react-intl:
         specifier: ^12.1.4
         version: 12.1.5(@types/react@19.3.0)(react@19.3.1)
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
       ts-dedent:
         specifier: ^2.3.0
         version: 2.3.0
@@ -3376,13 +3394,14 @@ packages:
     peerDependencies:
       graphql: 14.x || 15.x || 16.x
 
-  '@apollo/client@3.14.1':
-    resolution: {integrity: sha512-SgGX6E23JsZhUdG2anxiyHvEvvN6CUaI4ZfMsndZFeuHPXL3H0IsaiNAhLITSISbeyeYd+CBd9oERXQDdjXWZw==}
+  '@apollo/client@4.3.8':
+    resolution: {integrity: sha512-g04oCNYjbbjpecZmcUOE0fZLt3vMFwoZJ+o4iu0N3bDDhMR95/ZVzWL9v3mM7WDSPxI0++P2348yAbSWceLoZA==}
     peerDependencies:
-      graphql: ^15.0.0 || ^16.0.0
+      graphql: ^16.0.0 || ^17.0.0
       graphql-ws: ^5.5.5 || ^6.0.3
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+      react: ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+      react-dom: ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+      rxjs: ^7.3.0
       subscriptions-transport-ws: ^0.9.0 || ^0.11.0
     peerDependenciesMeta:
       graphql-ws:
@@ -17757,17 +17776,6 @@ packages:
     resolution: {integrity: sha512-EWV80YgFaVgFrjGCAsV7oybp4GOxbls5RzBg8OB0nKEVXsBJR1JlV8Di1JhCROg3MzTfe1RI8yitIm1eOs68iA==}
     hasBin: true
 
-  rehackt@0.1.0:
-    resolution: {integrity: sha512-7kRDOuLHB87D/JESKxQoRwv4DzbIdwkAGQ7p6QKGdVlY1IZheUnVhlk/4UZlNUVxdAXpyxikE3URsG067ybVzw==}
-    peerDependencies:
-      '@types/react': '*'
-      react: '*'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      react:
-        optional: true
-
   rehype-raw@7.0.0:
     resolution: {integrity: sha512-/aE8hCfKlQeA8LmyeyQvQF3eBiLRGNlfBJEvWH7ivp9sBqs7TNqBL5X3v157rM4IFETqDnIOO+z5M/biZbo9Ww==}
 
@@ -18726,10 +18734,6 @@ packages:
     resolution: {integrity: sha512-e900nM8RRtGhlV36KGEU9k65K3mPb1WV70OdjfxlG2EAuM1noi/E/BaW/uMhL7bPEssK8QV57vN3esixjUvcXQ==}
     engines: {node: '>=0.10.0'}
 
-  symbol-observable@4.0.0:
-    resolution: {integrity: sha512-b19dMThMV4HVFynSAM1++gBHAbk2Tc/osgLIBZMKsyqh34jb2e8Os7T6ZW/Bt3pJFdBTd2JwAnAAEQV7rSNvcQ==}
-    engines: {node: '>=0.10'}
-
   sync-fetch@0.7.1:
     resolution: {integrity: sha512-tTw2sPVgJb/ZO+Uz5Cs1haWg7aL0cw+DvD8mXos+ws5YaelM3IBZ50M717T1+RD5Qq0TdeZ/EI/wVMnAdJA0Eg==}
     engines: {node: '>=22.12.0'}
@@ -18966,10 +18970,6 @@ packages:
   ts-dedent@2.3.0:
     resolution: {integrity: sha512-JfJeIHke7y2egdGGgRAvpCwYFUsHlM2gPcrVOxFkznt/4uzQ7HFmvE63iFHVLBJNDuyDOQgijDK/tXH/f6Msjg==}
     engines: {node: '>=6.10'}
-
-  ts-invariant@0.10.3:
-    resolution: {integrity: sha512-uivwYcQaxAucv1CzRp2n/QdYPo4ILf9VXgH19zEIjFx2EJufV16P0JtJVpYHy89DItG6Kwj2oIUjrcK5au+4tQ==}
-    engines: {node: '>=8'}
 
   ts-log@3.0.3:
     resolution: {integrity: sha512-4uxVlS/cbNFeSmZbXgBCq+MRkbck1iW7B2Vqd+gziasf//uZP/HFI2IcoHlyYWFgFRl+5G5iqHe4RvY/h/qUxw==}
@@ -19990,12 +19990,6 @@ packages:
       '@yuku-toolchain/wasm':
         optional: true
 
-  zen-observable-ts@1.2.5:
-    resolution: {integrity: sha512-QZWQekv6iB72Naeake9hS1KxHlotfRpe+WGNbNx5/ta+R3DNjVO2bswf63gXlWDcs+EMd7XY8HfVQyP1X6T4Zg==}
-
-  zen-observable@0.8.15:
-    resolution: {integrity: sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==}
-
   zip-stream@4.1.1:
     resolution: {integrity: sha512-9qv4rlDiopXg4E69k+vMHjNN63YFMe9sZMrdlvKnCjlCRWeCBswPPMPUfx+ipsAWq1LXHe70RcbaHdJJpS6hyQ==}
     engines: {node: '>= 10'}
@@ -20209,7 +20203,7 @@ snapshots:
     dependencies:
       graphql: 16.15.0
 
-  '@apollo/client@3.14.1(@types/react@19.3.0)(graphql-ws@6.3.0(graphql@16.15.0)(ws@8.22.0))(graphql@16.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(subscriptions-transport-ws@0.11.0(graphql@16.15.0))':
+  '@apollo/client@4.3.8(graphql-ws@6.3.0(graphql@16.15.0)(ws@8.22.0))(graphql@16.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)(subscriptions-transport-ws@0.11.0(graphql@16.15.0))':
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.15.0)
       '@wry/caches': 1.0.1
@@ -20217,21 +20211,14 @@ snapshots:
       '@wry/trie': 0.5.0
       graphql: 16.15.0
       graphql-tag: 2.12.7(graphql@16.15.0)
-      hoist-non-react-statics: 3.3.2
       optimism: 0.18.1
-      prop-types: 15.8.1
-      rehackt: 0.1.0(@types/react@19.3.0)(react@19.3.1)
-      symbol-observable: 4.0.0
-      ts-invariant: 0.10.3
+      rxjs: 7.8.2
       tslib: 2.8.1
-      zen-observable-ts: 1.2.5
     optionalDependencies:
       graphql-ws: 6.3.0(graphql@16.15.0)(ws@8.22.0)
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
       subscriptions-transport-ws: 0.11.0(graphql@16.15.0)
-    transitivePeerDependencies:
-      - '@types/react'
 
   '@apollo/protobufjs@1.2.8':
     dependencies:
@@ -37522,11 +37509,6 @@ snapshots:
     dependencies:
       jsesc: 3.1.0
 
-  rehackt@0.1.0(@types/react@19.3.0)(react@19.3.1):
-    optionalDependencies:
-      '@types/react': 19.3.0
-      react: 19.3.1
-
   rehype-raw@7.0.0:
     dependencies:
       '@types/hast': 3.0.5
@@ -38818,8 +38800,6 @@ snapshots:
   symbol-observable@1.2.0:
     optional: true
 
-  symbol-observable@4.0.0: {}
-
   sync-fetch@0.7.1:
     dependencies:
       node-fetch: 3.3.2
@@ -39034,10 +39014,6 @@ snapshots:
       typescript: 6.0.3
 
   ts-dedent@2.3.0: {}
-
-  ts-invariant@0.10.3:
-    dependencies:
-      tslib: 2.8.1
 
   ts-log@3.0.3: {}
 
@@ -40204,12 +40180,6 @@ snapshots:
       '@yuku-toolchain/linux-x64': 0.27.0
       '@yuku-toolchain/win32-arm64': 0.27.0
       '@yuku-toolchain/win32-x64': 0.27.0
-
-  zen-observable-ts@1.2.5:
-    dependencies:
-      zen-observable: 0.8.15
-
-  zen-observable@0.8.15: {}
 
   zip-stream@4.1.1:
     dependencies:

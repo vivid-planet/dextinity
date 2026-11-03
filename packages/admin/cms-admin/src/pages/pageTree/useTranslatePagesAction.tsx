@@ -1,4 +1,5 @@
-import { gql, useApolloClient } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { Button, Dialog, messages, useContentTranslationService, useErrorDialog } from "@dextinity/admin";
 import { DialogActions, DialogContent, DialogContentText } from "@mui/material";
 import { type ReactNode, useState } from "react";

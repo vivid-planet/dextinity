@@ -1,6 +1,6 @@
 import { type ApolloClient, gql } from "@apollo/client";
 
-export async function queryUpdatedAt(client: ApolloClient<object>, rootQueryName: string, id: string | undefined): Promise<string | undefined> {
+export async function queryUpdatedAt(client: ApolloClient, rootQueryName: string, id: string | undefined): Promise<string | undefined> {
     if (!id) {
         return undefined;
     }
@@ -12,10 +12,10 @@ export async function queryUpdatedAt(client: ApolloClient<object>, rootQueryName
             }
         }
     `;
-    const { data } = await client.query({
+    const { data } = await client.query<Record<string, { updatedAt: string } | null>>({
         query,
         variables: { id },
         fetchPolicy: "no-cache",
     });
-    return data[rootQueryName]?.updatedAt;
+    return data?.[rootQueryName]?.updatedAt;
 }

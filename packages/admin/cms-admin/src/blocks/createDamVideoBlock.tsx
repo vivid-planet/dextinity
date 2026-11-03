@@ -133,7 +133,7 @@ export const createDamVideoBlock = (
 
             // TODO consider throwing an error
             // TODO fix typing: generated GraphQL files use null, we use undefined, e.g. title: string | null vs title?: string
-            const damFile = data.damFile as unknown as DamVideoBlockData["damFile"];
+            const damFile = data?.damFile as unknown as DamVideoBlockData["damFile"];
 
             return {
                 damFile,

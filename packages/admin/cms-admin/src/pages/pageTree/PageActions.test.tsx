@@ -1,4 +1,4 @@
-import { MockedProvider } from "@apollo/client/testing";
+import { MockedProvider } from "@apollo/client/testing/react";
 import { cleanup, fireEvent, render, screen } from "test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 

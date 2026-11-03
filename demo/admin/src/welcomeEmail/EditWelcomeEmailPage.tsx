@@ -1,4 +1,5 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
 import {
     Alert,
     Button,
@@ -64,6 +65,7 @@ export function EditWelcomeEmailPage(): JSX.Element | null {
 
     const { data, refetch, loading } = useQuery<GQLWelcomeEmailQuery, GQLWelcomeEmailQueryVariables>(welcomeEmailQuery, {
         variables: { scope },
+        notifyOnNetworkStatusChange: false,
     });
 
     const saveConflict = useSaveConflictQuery<GQLCheckForChangesWelcomeEmailQuery, GQLCheckForChangesWelcomeEmailQueryVariables>(

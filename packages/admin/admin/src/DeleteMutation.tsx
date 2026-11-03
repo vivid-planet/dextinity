@@ -1,4 +1,5 @@
-import { type PureQueryOptions, useApolloClient } from "@apollo/client";
+import type { ApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 // eslint-disable-next-line no-restricted-imports
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -13,7 +14,7 @@ import { TableQueryContext } from "./table/TableQueryContext";
 interface IProps {
     mutation: any;
     children: (action: (options: { variables: object }) => void, data: { loading: boolean; error: any }) => ReactNode;
-    refetchQueries?: Array<string | PureQueryOptions>;
+    refetchQueries?: Array<string | ApolloClient.QueryOptions>;
 }
 export function DeleteMutation(props: IProps) {
     const [dialogOpen, setDialogOpen] = useState(false);

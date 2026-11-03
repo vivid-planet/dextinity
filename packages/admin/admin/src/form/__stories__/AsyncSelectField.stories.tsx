@@ -1,4 +1,5 @@
-import { gql, useApolloClient } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { Info, WarningSolid } from "@dextinity/admin-icons";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -422,7 +423,7 @@ export const AsyncLoadingDataFromApi: Story = {
                                         `,
                                     });
 
-                                    return data.manufacturers;
+                                    return data?.manufacturers ?? [];
                                 }}
                                 getOptionLabel={(option) => {
                                     return option.name;

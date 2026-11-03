@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import {
     Alert,
     Button,
@@ -74,6 +74,7 @@ export function PagesPage({
 
     const { loading, data, error, refetch, startPolling, stopPolling } = useQuery<GQLPagesQuery, GQLPagesQueryVariables>(pagesQuery, {
         fetchPolicy: "cache-and-network",
+        notifyOnNetworkStatusChange: false,
         variables: {
             contentScope: pageTreeScope,
             category,

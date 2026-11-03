@@ -1,4 +1,5 @@
-import { type ApolloError, type ApolloQueryResult, type OperationVariables, useQuery } from "@apollo/client";
+import type { ErrorLike, OperationVariables } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { deepEqual } from "fast-equals";
 import type { DocumentNode } from "graphql";
 import { type Dispatch, type SetStateAction, useCallback, useEffect, useState } from "react";
@@ -12,7 +13,7 @@ interface EditStateOptions<TData, TVariables, TState, TOutput> {
     defaultState: TState;
 }
 
-interface EditStateReturn<TData, TVariables, TState, TOutput> {
+interface EditStateReturn<TData, TVariables extends OperationVariables, TState, TOutput> {
     hasChanges: boolean;
     state?: TState;
     setState: Dispatch<SetStateAction<TState | undefined>>;
@@ -20,8 +21,8 @@ interface EditStateReturn<TData, TVariables, TState, TOutput> {
     output?: TOutput;
     query: {
         data?: TData;
-        refetch: (variables?: Partial<TVariables> | undefined) => Promise<ApolloQueryResult<TData>>;
-        error?: ApolloError;
+        refetch: useQuery.Result<TData, TVariables>["refetch"];
+        error?: ErrorLike;
         loading: boolean;
     };
 }
@@ -40,9 +41,10 @@ export function useEditState<TData = any, TVariables extends OperationVariables 
         refetch,
         error,
         loading,
-    } = useQuery<TData, TVariables>(options.query, {
+    } = useQuery<TData, OperationVariables>(options.query, {
         variables: options.variables,
         skip: options.mode === "add",
+        notifyOnNetworkStatusChange: false,
     });
 
     useEffect(() => {

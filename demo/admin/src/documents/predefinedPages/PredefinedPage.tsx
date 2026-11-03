@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { FileData, FileDataNotMenu } from "@dextinity/admin-icons";
 import type { DocumentInterface } from "@dextinity/cms-admin";
 import { Chip } from "@mui/material";

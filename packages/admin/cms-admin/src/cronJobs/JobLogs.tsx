@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Loading, StackPageTitle } from "@dextinity/admin";
 import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";

@@ -1,4 +1,3 @@
-"use client";
 import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { ProductTeaserBlockData } from "@src/blocks.generated";
 

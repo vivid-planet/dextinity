@@ -1,4 +1,3 @@
-"use client";
 import {
     hasTipTapRichTextContent,
     PreviewSkeleton,
@@ -16,7 +15,7 @@ import type { LoadedData as ProductTeaserLoadedData } from "@src/products/blocks
 import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 
 import { Typography, type TypographyProps } from "../components/Typography";
-import { isValidLink } from "../helpers/HiddenIfInvalidLink";
+import { isValidLink } from "../helpers/isValidLink";
 import { LinkBlock } from "./LinkBlock";
 import styles from "./RichTextBlock.module.scss";
 

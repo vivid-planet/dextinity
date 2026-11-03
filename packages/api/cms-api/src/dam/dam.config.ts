@@ -9,7 +9,7 @@ export interface DamConfig {
     maxFileSize: number;
     requireLicense?: boolean;
     enableLicenseFeature?: boolean;
-    enableInvalidLicenseFallbackImage?: boolean;
+    blockFilesWithInvalidLicense?: boolean;
     maxSrcResolution: number;
     basePath: string;
     includeFormatExtensionInImageUrls?: boolean;

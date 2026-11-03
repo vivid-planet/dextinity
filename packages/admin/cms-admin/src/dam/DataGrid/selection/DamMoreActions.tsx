@@ -35,7 +35,7 @@ export const DamMoreActions = ({
     const [, , editDialogApi] = useEditDialog();
     const intl = useIntl();
     const { allAcceptedMimeTypes } = useDamAcceptedMimeTypes();
-    const { enableLicenseFeature, enableInvalidLicenseFallbackImage } = useDamConfig();
+    const { enableLicenseFeature, blockFilesWithInvalidLicense } = useDamConfig();
     const stackSwitchApi = useStackSwitchApi();
 
     const folderInputRef = useRef<HTMLInputElement>(null);
@@ -93,7 +93,7 @@ export const DamMoreActions = ({
                         onClick: () => editDialogApi.openAddDialog(folderId),
                         icon: <AddFolderIcon />,
                     },
-                    enableLicenseFeature && enableInvalidLicenseFallbackImage && !hideSettingsAction
+                    enableLicenseFeature && blockFilesWithInvalidLicense && !hideSettingsAction
                         ? {
                               label: <FormattedMessage id="dextinity.dam.moreActions.settings" defaultMessage="Settings" />,
                               onClick: () => stackSwitchApi.activatePage("settings", "settings"),

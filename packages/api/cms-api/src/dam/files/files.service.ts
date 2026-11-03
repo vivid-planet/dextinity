@@ -678,7 +678,7 @@ export class FilesService {
     }
 
     hasInvalidLicense(file: FileInterface): boolean {
-        if (!this.config.enableLicenseFeature || !file.license) {
+        if (!this.config.enableLicenseFeature || !this.config.blockFilesWithInvalidLicense || !file.license) {
             return false;
         }
 
@@ -697,10 +697,6 @@ export class FilesService {
     async findImageToDeliver(image: ImageInterface, { previewDamUrls = false }: { previewDamUrls?: boolean }): Promise<ImageInterface | null> {
         if (!this.isBlockedByLicense(image.file, { previewDamUrls })) {
             return image;
-        }
-
-        if (!this.config.enableInvalidLicenseFallbackImage) {
-            return null;
         }
 
         const fallbackImage = await this.findInvalidLicenseFallbackImage(image.file.scope);

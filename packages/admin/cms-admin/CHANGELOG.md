@@ -1,5 +1,41 @@
 # @comet/cms-admin
 
+## 10.13.0
+
+### Minor Changes
+
+- ad3f6d5: Make blocking files with an invalid license opt-in with `blockFilesWithInvalidLicense`
+
+    A project decides whether files whose license has expired or isn't valid yet are blocked. While the option is off, which is the default, such files are delivered as before blocking was added: their URLs don't answer `410 Gone`, blocks don't hide them or replace them with the fallback image, and the DAM hides its "Settings" action, where the fallback image is chosen.
+
+    A project that blocks such files since blocking was added needs to enable the option in the API and in the Admin:
+
+    ```ts
+    DamModule.register({
+        damConfig: {
+            enableLicenseFeature: true,
+            blockFilesWithInvalidLicense: true,
+            // ...
+        },
+    });
+    ```
+
+    ```tsx
+    <DextinityConfigProvider dam={{ enableLicenseFeature: true, blockFilesWithInvalidLicense: true /* ... */ }}>
+    ```
+
+### Patch Changes
+
+- 46a1a08: Render list items in `createTipTapRichTextBlock` through the list's `element`
+
+    The editor ignored the `element` of `orderedList` and `unorderedList`. A list item was rendered through the style its text block kept from before it was turned into a list item, or as a plain `p` without a style.
+    A text block in a list item is now rendered through the list's style, then the list's `element`, then the text block's style, then the text block's `element`.
+
+- b16df0b: Update `react-hotkeys-hook` to v5
+    - @dextinity/admin@10.13.0
+    - @dextinity/admin-icons@10.13.0
+    - @dextinity/admin-rte@10.13.0
+
 ## 10.12.0
 
 ### Minor Changes

@@ -1,8 +1,9 @@
 import { type PropsWithChildren, type RefObject, useCallback, useEffect, useMemo, useRef } from "react";
-import { type BlockerFunction, type Location, matchPath, type NavigationType, useBlocker } from "react-router";
+import { type BlockerFunction, type Location, type NavigationType, useBlocker } from "react-router";
 
 import { PromptAction, RouterConfirmationDialog } from "./ConfirmationDialog";
 import { RouterContext } from "./Context";
+import { isPathnameStartingWith, matchAbsolutePath } from "./internal/pathMatching";
 import { useIsNavigationBlocked } from "./internal/routeContext";
 import type { PromptRoutes } from "./Prompt";
 
@@ -28,10 +29,10 @@ function getPromptMessage(registeredMessages: PromptMessages, location: Location
         const promptRoutes = registeredMessages[id].promptRoutes?.current ?? {};
 
         const promptRouteMatches = Object.values(promptRoutes).some((route) => {
-            return matchPath({ path: route.path, end: true }, location.pathname);
+            return matchAbsolutePath(route.path, location.pathname, { end: true });
         });
-        const subRouteMatches = subRoutePath && location.pathname.startsWith(subRoutePath);
-        const pathMatches = path !== undefined && matchPath({ path, end: true }, location.pathname);
+        const subRouteMatches = subRoutePath && isPathnameStartingWith(location.pathname, subRoutePath);
+        const pathMatches = path !== undefined && matchAbsolutePath(path, location.pathname, { end: true });
 
         if (promptRouteMatches || (!subRouteMatches && !pathMatches)) {
             const message = registeredMessages[id].message(location, action);

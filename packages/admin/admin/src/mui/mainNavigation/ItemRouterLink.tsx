@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { createPath, Link, type LinkProps, useLocation, useResolvedPath } from "react-router";
 
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
-import { matchAbsolutePath, RouteMatchProvider } from "../../router/internal/routeContext";
+import { RouteMatchProvider, useMatchAbsolutePath } from "../../router/internal/routeContext";
 import { MainNavigationItem, type MainNavigationItemProps } from "./Item";
 
 interface MainNavigationRouterLinkItemStandardProps extends ThemedComponentBaseProps<{
@@ -24,6 +24,7 @@ export const MainNavigationItemRouterLink = ({
 }: MainNavigationItemRouterLinkProps) => {
     const { badge, ...mainNavigationItemSlotProps } = slotProps ?? {};
     const { pathname } = useLocation();
+    const matchAbsolutePath = useMatchAbsolutePath();
     const resolvedPath = useResolvedPath(restProps.to, { relative: restProps.relative });
     const match = matchAbsolutePath(resolvedPath.pathname, pathname, { end: false });
     // Resolved before publishing the match, which would otherwise become the base of a relative `to`

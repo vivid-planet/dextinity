@@ -1,7 +1,7 @@
 import { createContext, type PropsWithChildren, type ReactNode, useContext } from "react";
 import { type PathMatch, useLocation } from "react-router";
 
-import { matchAbsolutePath, RouteMatchProvider, useCurrentRouteMatch } from "./internal/routeContext";
+import { RouteMatchProvider, useCurrentRouteMatch, useMatchAbsolutePath } from "./internal/routeContext";
 
 interface SubRoutesContext {
     path: string;
@@ -14,6 +14,7 @@ export interface SubRouteIndexRouteChildrenProps {
 
 export function SubRouteIndexRoute({ children }: { children?: ReactNode | ((props: SubRouteIndexRouteChildrenProps) => ReactNode) }) {
     const { pathname } = useLocation();
+    const matchAbsolutePath = useMatchAbsolutePath();
     const routeMatch = useCurrentRouteMatch();
     const urlPrefix = useSubRoutePrefix();
 

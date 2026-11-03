@@ -98,11 +98,11 @@ export const HeadlineBlock = withPreview(
 If you want to open the site preview at a particular place, you can do that with the following code:
 
 ```ts
-import { openPreviewWindow } from "@dextinity/cms-admin";
+import { openSitePreviewWindow, useContentScope } from "@dextinity/cms-admin";
 
 function myCustomFunction() {
-    const { scope, match } = useContentScope();
-    openPreviewWindow("/my-custom-path/", match);
+    const { match } = useContentScope();
+    openSitePreviewWindow("/my-custom-path/", match.url);
 }
 ```
 

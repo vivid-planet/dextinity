@@ -65,7 +65,7 @@ export const masterMenuData: MasterMenuData = [
                 primary: "Main Menu",
                 route: {
                     path: "/project-snips/main-menu",
-                    component: MainMenu,
+                    element: <MainMenu />,
                 },
             },
         ],
@@ -77,14 +77,17 @@ export const masterMenuData: MasterMenuData = [
 export const AppMasterMenu = () => <MasterMenu menu={masterMenuData} />;
 
 // src/App.tsx
-<Route
-    render={() => (
-        <MasterLayout
-            headerComponent={MasterHeader}
-            menuComponent={AppMasterMenu}
-        >
-            <MasterMenuRoutes menu={masterMenuData} />
-        </MasterLayout>
-    )}
-/>
+<Routes>
+    <Route
+        path="*"
+        element={
+            <MasterLayout
+                headerComponent={MasterHeader}
+                menuComponent={AppMasterMenu}
+            >
+                <MasterMenuRoutes menu={masterMenuData} />
+            </MasterLayout>
+        }
+    />
+</Routes>
 ```

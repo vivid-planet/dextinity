@@ -1,8 +1,7 @@
 import { Dashboard, DextinityIcon, DextinityLogo, LinkExternal, Settings, Sort } from "@dextinity/admin-icons";
 import { Card, CardContent, Divider, Typography } from "@mui/material";
 import { useEffect } from "react";
-import { matchPath, Route, Switch, useLocation } from "react-router";
-import { Link } from "react-router-dom";
+import { Link, matchPath, Route, Routes, useLocation } from "react-router";
 
 import { AppHeader } from "../../../appHeader/AppHeader";
 import { AppHeaderMenuButton } from "../../../appHeader/menuButton/AppHeaderMenuButton";
@@ -26,7 +25,7 @@ const AppMenu = () => {
 
     let useTemporaryMenu: boolean = windowSize.width < permanentMenuMinWidth;
 
-    if (matchPath(location.pathname, { path: pathsToAlwaysUseTemporaryMenu, strict: true })) {
+    if (pathsToAlwaysUseTemporaryMenu.some((path) => matchPath({ path, end: false }, location.pathname))) {
         useTemporaryMenu = true;
     }
 
@@ -119,15 +118,15 @@ export default {
 export const MenuDynamicVariants = {
     render: () => (
         <MasterLayout headerComponent={Header} menuComponent={AppMenu}>
-            <Switch>
-                <Route path="/" exact render={() => <Content>Root</Content>} />
-                <Route path="/dashboard" render={() => <Content>Dashboard</Content>} />
-                <Route path="/settings" render={() => <Content>Settings</Content>} />
-                <Route path="/foo1" render={() => <Content>Foo 1</Content>} />
-                <Route path="/foo2" render={() => <Content>Foo 2</Content>} />
-                <Route path="/foo3" render={() => <Content>Foo 3</Content>} />
-                <Route path="/foo4" render={() => <Content>Foo 4</Content>} />
-            </Switch>
+            <Routes>
+                <Route path="/" element={<Content>Root</Content>} />
+                <Route path="/dashboard/*" element={<Content>Dashboard</Content>} />
+                <Route path="/settings/*" element={<Content>Settings</Content>} />
+                <Route path="/foo1/*" element={<Content>Foo 1</Content>} />
+                <Route path="/foo2/*" element={<Content>Foo 2</Content>} />
+                <Route path="/foo3/*" element={<Content>Foo 3</Content>} />
+                <Route path="/foo4/*" element={<Content>Foo 4</Content>} />
+            </Routes>
         </MasterLayout>
     ),
 

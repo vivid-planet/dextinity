@@ -1,27 +1,33 @@
-import { createContext, type ReactNode, useContext } from "react";
-import { __RouterContext, matchPath, Route, type RouteChildrenProps, useLocation, useRouteMatch } from "react-router";
+import { createContext, type PropsWithChildren, type ReactNode, useContext } from "react";
+import { type PathMatch, useLocation } from "react-router";
+
+import { matchAbsolutePath, RouteMatchProvider, useCurrentRouteMatch } from "./internal/routeContext";
 
 interface SubRoutesContext {
     path: string;
 }
 const SubRoutesContext = createContext<SubRoutesContext | undefined>(undefined);
 
-export function SubRouteIndexRoute({ children }: { children?: ReactNode | ((props: RouteChildrenProps) => ReactNode) }) {
-    const location = useLocation();
-    const match = useRouteMatch();
+export interface SubRouteIndexRouteChildrenProps {
+    match: PathMatch | null;
+}
+
+export function SubRouteIndexRoute({ children }: { children?: ReactNode | ((props: SubRouteIndexRouteChildrenProps) => ReactNode) }) {
+    const { pathname } = useLocation();
+    const routeMatch = useCurrentRouteMatch();
     const urlPrefix = useSubRoutePrefix();
 
-    const matchIndex = matchPath(location.pathname, { path: match.url, exact: true });
-    const routeProps = matchIndex ? { path: match.url, exact: true } : { path: urlPrefix };
+    const indexMatch = routeMatch ? matchAbsolutePath(routeMatch.url, pathname, { end: true }) : null;
+    const match = indexMatch ?? matchAbsolutePath(urlPrefix, pathname, { end: false });
 
     return (
         <SubRoute path={`${urlPrefix}/index`}>
-            <Route {...routeProps}>{children}</Route>
+            <RouteMatchProvider match={match}>{typeof children === "function" ? children({ match }) : match ? children : null}</RouteMatchProvider>
         </SubRoute>
     );
 }
 
-export function SubRoute({ children, path }: { children?: ReactNode; path: string }) {
+export function SubRoute({ children, path }: PropsWithChildren<{ path: string }>) {
     const subRoutePrefix = useSubRoutePrefix();
     if (path.startsWith("./")) {
         path = subRoutePrefix + path.substring(1);
@@ -29,17 +35,21 @@ export function SubRoute({ children, path }: { children?: ReactNode; path: strin
     return <SubRoutesContext.Provider value={{ path }}>{children}</SubRoutesContext.Provider>;
 }
 
+export function ResetSubRoute({ children }: PropsWithChildren) {
+    return <SubRoutesContext.Provider value={undefined}>{children}</SubRoutesContext.Provider>;
+}
+
 export function useSubRoutePrefix() {
-    const routerContext = useContext(__RouterContext);
+    const routeUrl = useCurrentRouteMatch()?.url;
     const subRoutesContext = useContext(SubRoutesContext);
     let ret;
     if (subRoutesContext?.path) {
         ret = subRoutesContext.path;
-        if (routerContext?.match?.url && routerContext.match.url.startsWith(subRoutesContext.path)) {
-            ret = routerContext.match.url;
+        if (routeUrl && routeUrl.startsWith(subRoutesContext.path)) {
+            ret = routeUrl;
         }
     } else {
-        ret = routerContext?.match?.url || "";
+        ret = routeUrl || "";
     }
     ret = ret.replace(/\/$/, ""); //remove trailing slash
     return ret;

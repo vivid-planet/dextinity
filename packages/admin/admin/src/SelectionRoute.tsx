@@ -1,36 +1,33 @@
 import { type ComponentType, type PropsWithChildren, type ReactNode, useCallback, useMemo } from "react";
-import { Route, useHistory, useRouteMatch } from "react-router";
 
+import { RouteMatchProvider, useAbsolutePathMatch } from "./router/internal/routeContext";
+import { useStableNavigate } from "./router/internal/useStableNavigate";
 import { useSubRoutePrefix } from "./router/SubRoute";
 import type { ISelectionApi } from "./SelectionApi";
 
-interface IRouteParams {
-    id?: string;
-}
-
 export function useSelectionRoute(): [ComponentType<IProps>, { id?: string; mode?: "edit" | "add" }, ISelectionApi] {
-    const history = useHistory();
+    const navigate = useStableNavigate();
     const subRoutePrefix = useSubRoutePrefix();
-    const match = useRouteMatch<IRouteParams>(`${subRoutePrefix}/:id`);
+    const match = useAbsolutePathMatch(getSelectionPattern(subRoutePrefix), { end: false });
 
     const parentUrl = subRoutePrefix;
 
     const handleSelectId = useCallback(
         async (id: string) => {
-            history.push(`${parentUrl}/${id}`);
+            navigate(`${parentUrl}/${id}`);
         },
-        [history, parentUrl],
+        [navigate, parentUrl],
     );
 
     const handleDeselect = useCallback(async () => {
-        history.push(`${parentUrl}`);
-    }, [history, parentUrl]);
+        navigate(parentUrl || "/");
+    }, [navigate, parentUrl]);
 
     const handleAdd = useCallback(
         (id?: string) => {
-            history.push(`${parentUrl}/add${id ? `-${id}` : ""}`);
+            navigate(`${parentUrl}/add${id ? `-${id}` : ""}`);
         },
-        [history, parentUrl],
+        [navigate, parentUrl],
     );
 
     const api: ISelectionApi = useMemo(
@@ -60,7 +57,26 @@ export function useSelectionRoute(): [ComponentType<IProps>, { id?: string; mode
         };
     }, [routeId]);
 
-    return [SelectionRouteInner, selection, api];
+    // Matches with the hook's prefix, not with the prefix where it's rendered: e.g. a hook called outside a Stack selects "<url>/:id",
+    // but the Stack's initial page, where the selection is rendered, has the prefix "<url>/index"
+    const SelectionRouteConfigured = useMemo(
+        () =>
+            function SelectionRouteConfigured({ children }: PropsWithChildren<IProps>) {
+                return <SelectionRouteMatch urlPrefix={subRoutePrefix}>{children}</SelectionRouteMatch>;
+            },
+        [subRoutePrefix],
+    );
+
+    return [SelectionRouteConfigured, selection, api];
+}
+
+function getSelectionPattern(urlPrefix: string) {
+    return `${urlPrefix}/:id`;
+}
+
+function SelectionRouteMatch({ urlPrefix, children }: PropsWithChildren<{ urlPrefix: string }>) {
+    const match = useAbsolutePathMatch(getSelectionPattern(urlPrefix), { end: false });
+    return <RouteMatchProvider match={match}>{children}</RouteMatchProvider>;
 }
 
 export interface ISelectionRouterRenderPropArgs {
@@ -72,8 +88,8 @@ export interface ISelectionRouterRenderPropArgs {
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface IProps {}
 export const SelectionRouteInner = ({ children }: PropsWithChildren<IProps>) => {
-    const { path } = useRouteMatch();
-    return <Route path={`${path}/:id`}>{() => <>{children}</>}</Route>;
+    const subRoutePrefix = useSubRoutePrefix();
+    return <SelectionRouteMatch urlPrefix={subRoutePrefix}>{children}</SelectionRouteMatch>;
 };
 
 interface ISelectionRouteHooklessProps extends IProps {

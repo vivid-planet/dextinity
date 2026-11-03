@@ -161,8 +161,8 @@ type Unpacked<T> = T extends (infer U)[] ? U : T extends (...args: any[]) => inf
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NestedToPlainReturn<T extends Record<string, any>> = WithoutBlockInputMethods<{
     [Key in keyof T]: T[Key] extends
-        BlockInputInterface | undefined // value is a BlockInputInterface
-        ? ReturnType<NonNullable<T[Key]>["toPlain"]>
+        BlockInputInterface | null | undefined // value is a BlockInputInterface
+        ? ReturnType<NonNullable<T[Key]>["toPlain"]> | Extract<T[Key], null>
         : T[Key] extends
                 BlockInputInterface[] | undefined // value is an array of BlockInputInterfaces
           ? ReturnType<NonNullable<Unpacked<T[Key]>>["toPlain"]>[]

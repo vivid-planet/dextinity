@@ -10,14 +10,14 @@ import { DamVideoBlockTransformerService } from "./dam-video-block-transformer.s
 import { AddPreviewImageMigration } from "./migrations/1-add-preview-image.migration";
 
 class DamVideoBlockData extends BaseVideoBlockData {
-    damFileId?: string;
+    damFileId?: string | null;
 
     async transformToPlain() {
         return DamVideoBlockTransformerService;
     }
 
     indexData(): BlockIndexData {
-        if (this.damFileId === undefined) {
+        if (!this.damFileId) {
             return {};
         }
 
@@ -33,10 +33,10 @@ class DamVideoBlockData extends BaseVideoBlockData {
 }
 
 class DamVideoBlockInput extends BaseVideoBlockInput {
-    @BlockField({ nullable: true })
+    @BlockField({ type: "string", nullable: true })
     @IsUUID()
     @IsOptional()
-    damFileId?: string;
+    damFileId?: string | null;
 
     transformToBlockData(): BlockDataInterface {
         return blockInputToData(DamVideoBlockData, this);

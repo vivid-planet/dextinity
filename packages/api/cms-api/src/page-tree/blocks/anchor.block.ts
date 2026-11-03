@@ -4,15 +4,15 @@ import { BlockData, BlockInput, blockInputToData, createBlock } from "../../bloc
 import { BlockField } from "../../blocks/decorators/field";
 
 class AnchorBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    name?: string;
+    @BlockField({ type: "string", nullable: true })
+    name?: string | null;
 }
 
 class AnchorBlockInput extends BlockInput {
-    @BlockField({ nullable: true })
+    @BlockField({ type: "string", nullable: true })
     @IsOptional()
     @IsString()
-    name?: string;
+    name?: string | null;
 
     transformToBlockData(): AnchorBlockData {
         return blockInputToData(AnchorBlockData, this);

@@ -14,11 +14,11 @@ import { IsOptional, IsUUID } from "class-validator";
 import { NewsLinkBlockTransformerService } from "./news-link-block-transformer.service";
 
 class NewsLinkBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    id?: string;
+    @BlockField({ type: "string", nullable: true })
+    id?: string | null;
 
     indexData(): BlockIndexData {
-        if (this.id === undefined) {
+        if (!this.id) {
             return {};
         }
 
@@ -84,10 +84,10 @@ class Meta extends AnnotationBlockMeta {
 }
 
 class NewsLinkBlockInput extends BlockInput {
-    @BlockField({ nullable: true })
+    @BlockField({ type: "string", nullable: true })
     @IsUUID()
     @IsOptional()
-    id?: string;
+    id?: string | null;
 
     transformToBlockData(): NewsLinkBlockData {
         return blockInputToData(NewsLinkBlockData, this);

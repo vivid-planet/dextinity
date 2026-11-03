@@ -42,7 +42,7 @@ export class RedirectTargetUrlService implements RedirectTargetUrlServiceInterfa
                 return `${baseUrl}/${scope.language}${path}`;
             }
         } else if (target.type === "external") {
-            return (target.props as ExtractBlockData<typeof ExternalLinkBlock>).targetUrl;
+            return (target.props as ExtractBlockData<typeof ExternalLinkBlock>).targetUrl ?? undefined;
         } else {
             const newsId = (target.props as ExtractBlockData<typeof NewsLinkBlock>).id;
             if (newsId) {

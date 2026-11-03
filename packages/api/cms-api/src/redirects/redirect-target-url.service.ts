@@ -27,7 +27,7 @@ export class DefaultRedirectTargetUrlService implements RedirectTargetUrlService
                 return this.pageTreeReadApi.nodePath(targetPageNode);
             }
         } else if (target.type === "external") {
-            return (target.props as ExtractBlockData<typeof ExternalLinkBlock>).targetUrl;
+            return (target.props as ExtractBlockData<typeof ExternalLinkBlock>).targetUrl ?? undefined;
         } else {
             if (process.env.NODE_ENV === "development") {
                 throw new Error(`Unsupported custom redirect target: ${target.type}. You need to implement a custom target URL service`);

@@ -8,17 +8,17 @@ import { InternalLinkBlockTransformerService } from "./internal-link-block-trans
 import { InternalLinkBlockWarningsService } from "./internal-link-block-warnings.service";
 
 class InternalLinkBlockData extends BlockData {
-    targetPageId?: string;
+    targetPageId?: string | null;
 
-    @BlockField({ nullable: true })
-    targetPageAnchor?: string;
+    @BlockField({ type: "string", nullable: true })
+    targetPageAnchor?: string | null;
 
     async transformToPlain() {
         return InternalLinkBlockTransformerService;
     }
 
     indexData(): BlockIndexData {
-        if (this.targetPageId === undefined) {
+        if (!this.targetPageId) {
             return {};
         }
 
@@ -38,16 +38,16 @@ class InternalLinkBlockData extends BlockData {
 }
 
 class InternalLinkBlockInput extends BlockInput {
-    @BlockField({ nullable: true })
+    @BlockField({ type: "string", nullable: true })
     @IsOptional()
     @IsUUID()
     @PageExists()
-    targetPageId?: string;
+    targetPageId?: string | null;
 
-    @BlockField({ nullable: true })
+    @BlockField({ type: "string", nullable: true })
     @IsOptional()
     @IsString()
-    targetPageAnchor?: string;
+    targetPageAnchor?: string | null;
 
     transformToBlockData(): InternalLinkBlockData {
         return blockInputToData(InternalLinkBlockData, this);

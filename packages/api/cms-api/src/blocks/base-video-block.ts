@@ -7,14 +7,14 @@ import { ChildBlockInput } from "./decorators/child-block-input";
 import { BlockField } from "./decorators/field";
 
 export class BaseVideoBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    autoplay?: boolean;
+    @BlockField({ type: "boolean", nullable: true })
+    autoplay?: boolean | null;
 
-    @BlockField({ nullable: true })
-    showControls?: boolean;
+    @BlockField({ type: "boolean", nullable: true })
+    showControls?: boolean | null;
 
-    @BlockField({ nullable: true })
-    loop?: boolean;
+    @BlockField({ type: "boolean", nullable: true })
+    loop?: boolean | null;
 
     @ChildBlock(PixelImageBlock)
     previewImage: BlockDataInterface;
@@ -23,18 +23,18 @@ export class BaseVideoBlockData extends BlockData {
 export class BaseVideoBlockInput extends BlockInput {
     @IsBoolean()
     @IsOptional()
-    @BlockField({ nullable: true })
-    autoplay?: boolean;
+    @BlockField({ type: "boolean", nullable: true })
+    autoplay?: boolean | null;
 
     @IsBoolean()
     @IsOptional()
-    @BlockField({ nullable: true })
-    showControls?: boolean;
+    @BlockField({ type: "boolean", nullable: true })
+    showControls?: boolean | null;
 
     @IsBoolean()
     @IsOptional()
-    @BlockField({ nullable: true })
-    loop?: boolean;
+    @BlockField({ type: "boolean", nullable: true })
+    loop?: boolean | null;
 
     @ChildBlockInput(PixelImageBlock)
     previewImage: ExtractBlockInput<typeof PixelImageBlock>;

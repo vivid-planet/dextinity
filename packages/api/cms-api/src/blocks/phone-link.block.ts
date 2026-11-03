@@ -5,15 +5,15 @@ import { BlockData, BlockInput, blockInputToData, createBlock } from "./block";
 import { BlockField } from "./decorators/field";
 
 class PhoneLinkBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    phone?: string;
+    @BlockField({ type: "string", nullable: true })
+    phone?: string | null;
 }
 
 class PhoneLinkBlockInput extends BlockInput {
     @IsOptional()
     @IsPhoneNumber()
-    @BlockField({ nullable: true })
-    phone?: string;
+    @BlockField({ type: "string", nullable: true })
+    phone?: string | null;
 
     transformToBlockData(): PhoneLinkBlockData {
         return blockInputToData(PhoneLinkBlockData, this);

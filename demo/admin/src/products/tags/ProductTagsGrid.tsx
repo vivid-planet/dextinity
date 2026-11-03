@@ -112,6 +112,7 @@ export function ProductTagsGrid() {
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(dataGridProps.sortModel, columns),
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.productTags.totalCount);
     if (error) {

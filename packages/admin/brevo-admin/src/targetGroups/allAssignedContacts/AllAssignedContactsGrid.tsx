@@ -63,6 +63,7 @@ export function AllAssignedContactsGrid({ id, scope, brevoId }: AllAssignedConta
             scope,
         },
         skip: !brevoId,
+        notifyOnNetworkStatusChange: false,
     });
 
     const allAssignedContactsColumns: GridColDef<GQLTargetGroupBrevoContactsListFragment>[] = [

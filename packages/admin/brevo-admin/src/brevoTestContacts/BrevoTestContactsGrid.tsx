@@ -186,6 +186,7 @@ export function BrevoTestContactsGrid({
             email: dataGridProps.filterModel?.quickFilterValues ? dataGridProps.filterModel?.quickFilterValues[0] : undefined,
             scope,
         },
+        notifyOnNetworkStatusChange: false,
     });
 
     const rowCount = useBufferedRowCount(data?.brevoTestContacts.totalCount);

@@ -155,6 +155,7 @@ renderCell: (params) => {
             variables: {
                 scope, offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize, limit: dataGridProps.paginationModel.pageSize
             },
+            notifyOnNetworkStatusChange: false,
         });
         const rowCount = useBufferedRowCount(data?.products.totalCount);
         if (error) throw error;
@@ -337,6 +338,7 @@ renderCell: (params) => {
             variables: {
                 scope, offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize, limit: dataGridProps.paginationModel.pageSize
             },
+            notifyOnNetworkStatusChange: false,
         });
         const rowCount = useBufferedRowCount(data?.products.totalCount);
         if (error) throw error;

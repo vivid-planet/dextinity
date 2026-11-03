@@ -14,6 +14,7 @@ import type { GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables } from "./Late
 export const LatestBuildsDashboardWidget = () => {
     const { data, loading, error } = useQuery<GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables>(latestBuildsQuery, {
         context: LocalErrorScopeApolloContext,
+        notifyOnNetworkStatusChange: false,
     });
 
     const intl = useIntl();

@@ -12,6 +12,7 @@ export const LatestContentUpdates = () => {
         variables: {
             scope: contentScope.scope,
         },
+        notifyOnNetworkStatusChange: false,
     });
 
     if (error) {

@@ -147,6 +147,7 @@ export function ManufacturersGrid() {
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(sortModel),
         },
+        notifyOnNetworkStatusChange: false,
     });
     if (error) {
         throw error;

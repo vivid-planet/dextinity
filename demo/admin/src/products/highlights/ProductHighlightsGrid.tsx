@@ -92,7 +92,9 @@ export function ProductHighlightsGrid() {
             },
         },
     ];
-    const { data, loading, error } = useQuery<GQLProductHighlightsGridQuery, GQLProductHighlightsGridQueryVariables>(productHighlightsQuery);
+    const { data, loading, error } = useQuery<GQLProductHighlightsGridQuery, GQLProductHighlightsGridQueryVariables>(productHighlightsQuery, {
+        notifyOnNetworkStatusChange: false,
+    });
     if (error) {
         throw error;
     }

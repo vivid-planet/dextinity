@@ -41,7 +41,7 @@ export function PublisherPage() {
 
     const intl = useIntl();
 
-    const { data, loading, error } = useQuery<GQLBuildsQuery>(buildsQuery);
+    const { data, loading, error } = useQuery<GQLBuildsQuery>(buildsQuery, { notifyOnNetworkStatusChange: false });
 
     if (error) {
         throw error;

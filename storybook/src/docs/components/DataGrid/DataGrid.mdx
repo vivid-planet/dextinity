@@ -161,5 +161,8 @@ const { data, loading, error } = useQuery<GQLProductsListQuery, GQLProductsListQ
         ...muiGridPagingToGql({ page: dataGridProps.page, pageSize: dataGridProps.pageSize }),
         sort: muiGridSortToGql(sortModel),
     },
+    notifyOnNetworkStatusChange: false,
 });
 ```
+
+Pass `notifyOnNetworkStatusChange: false` to the query that feeds the grid's `loading` prop. Otherwise, the grid shows its loading overlay on every refetch or poll. Changing the variables, for instance, when paging, sorting or filtering, still shows the loading overlay.

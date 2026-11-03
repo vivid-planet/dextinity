@@ -18,8 +18,8 @@ export class Migration20261102163117 extends Migration {
             `alter table "BrevoEmailCampaign_targetGroups" add constraint "BrevoEmailCampaign_targetGroups_brevoTargetGroup_foreign" foreign key ("brevoTargetGroup") references "BrevoTargetGroup" ("id") on update cascade on delete cascade;`,
         );
 
-        // Migrations for Brevo code column changes
         this.addSql(`alter table "BrevoTargetGroup" alter column "isMainList" type boolean using ("isMainList"::boolean);`);
+        this.addSql(`update "BrevoTargetGroup" set "isMainList" = false where "isMainList" is null;`);
         this.addSql(`alter table "BrevoTargetGroup" alter column "isMainList" set not null;`);
     }
 }

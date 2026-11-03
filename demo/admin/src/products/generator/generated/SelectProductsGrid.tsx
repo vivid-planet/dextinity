@@ -4,7 +4,7 @@ import { GQLProductsGridQuery, GQLProductsGridQueryVariables, GQLSelectProductsG
 import { FormattedNumber } from "react-intl";
 import { useIntl } from "react-intl";
 import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { DataGridToolbar } from "@dextinity/admin";
 import { GridFilterButton } from "@dextinity/admin";
 import { GridColDef } from "@dextinity/admin";

@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === "development" && mjmlWarnings.length) {
 - **`html`** — the final HTML string ready for sending
 - **`mjmlWarnings`** — an array of MJML validation warnings (collected, not thrown)
 
-There is no decorator outside Storybook, so you must wrap your content in [`MjmlMailRoot`](./2-components-and-theme.md#mjmlmailroot) yourself. Optional MJML options can be passed as a second argument and are forwarded to the underlying MJML compiler.
+There is no decorator outside Storybook, so you must wrap your content in [`MjmlMailRoot`](./2-components-and-theme.md#mjmlmailroot) yourself. Optional MJML options can be passed as a second argument and are forwarded to the underlying MJML compiler. The server `renderMailHtml` turns off `mj-include` by default, because an include can read files on the server into the mail. To use `mj-include`, pass `{ ignoreIncludes: false }`.
 
 ### MJML Warnings
 
@@ -51,3 +51,30 @@ import { renderMailHtml } from "@dextinity/mail-react/client";
 ```
 
 The API is identical. The only difference is the underlying MJML compiler: `/server` uses `mjml` (requires Node.js), while `/client` uses `mjml-browser` (works without `fs`).
+
+## Block preview in the admin
+
+To make mail blocks selectable in the admin's block preview, wrap each block in `withPreview` and apply the `className` it passes to the block's root element:
+
+```tsx
+export const MailTextBlock = withPreview<PropsWithData<MailTextBlockData>>(
+    ({ data, className }) => (
+        <MjmlSection className={className}>
+            <MjmlColumn>
+                <MjmlText>{data.text}</MjmlText>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+    { label: "Text" },
+);
+```
+
+A block without data of its own still needs its data passed, because in the block preview, the admin adds the block's route to it: `divider: (data) => <MailDividerBlock data={data} />`.
+
+The block preview page must pass the result of `useIFrameBridge` to `useRefToRegisterMailBlocksForPreview`, and put the ref it returns on the element that contains the mail HTML:
+
+```tsx
+const mailContainerRef = useRefToRegisterMailBlocksForPreview<HTMLSpanElement>(useIFrameBridge());
+
+return <span ref={mailContainerRef} dangerouslySetInnerHTML={{ __html: mailHtml }} />;
+```

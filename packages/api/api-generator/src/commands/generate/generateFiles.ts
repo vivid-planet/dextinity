@@ -63,8 +63,7 @@ export const generateFiles = async (
                 }
                 {
                     const generatorOptions = Reflect.getMetadata(CRUD_SINGLE_GENERATOR_METADATA_KEY, entity.class) as
-                        | CrudSingleGeneratorOptions
-                        | undefined;
+                        CrudSingleGeneratorOptions | undefined;
                     if (generatorOptions) {
                         console.log(`🚀 start generateCrudSingle for Entity ${entity.path}`);
                         const files = await generateCrudSingle(generatorOptions, entity);

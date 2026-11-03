@@ -13,8 +13,7 @@ export interface CommonRowActionItemProps {
 type RowActionsItemPropsComponentsProps<T extends ElementType = "li"> = RowActionsIconItemComponentsProps & RowActionsListItemComponentsProps<T>;
 
 export interface RowActionsItemProps<T extends ElementType = "li">
-    extends Omit<RowActionsIconItemProps, "componentsProps">,
-        Omit<RowActionsListItemProps<T>, "componentsProps"> {
+    extends Omit<RowActionsIconItemProps, "componentsProps">, Omit<RowActionsListItemProps<T>, "componentsProps"> {
     componentsProps?: RowActionsItemPropsComponentsProps<T>;
     children?: ReactNode;
 }

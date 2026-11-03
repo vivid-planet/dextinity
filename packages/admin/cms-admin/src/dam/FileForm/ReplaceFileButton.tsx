@@ -11,7 +11,7 @@ import { replaceById } from "../../form/file/upload";
 import { useDamBasePath, useDamConfig } from "../config/damConfig";
 import { getDamFileCategory } from "../config/damFileCategory";
 import { useDamAcceptedMimeTypes } from "../config/useDamAcceptedMimeTypes";
-import { convertMimetypesToDropzoneAccept } from "../DataGrid/fileUpload/fileUpload.utils";
+import { convertMimetypesToDropzoneAccept, getFilesWithMimeTypeFromEvent } from "../DataGrid/fileUpload/fileUpload.utils";
 import type { DamFileDetails } from "./EditFile";
 
 interface ReplaceFileButtonProps {
@@ -42,6 +42,7 @@ export function ReplaceFileButton({ file }: ReplaceFileButtonProps) {
         maxSize: maxFileSizeInBytes,
         multiple: false,
         accept: convertMimetypesToDropzoneAccept(acceptedMimeTypesForReplacement),
+        getFilesFromEvent: getFilesWithMimeTypeFromEvent,
         onDrop: async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
             if (fileRejections.length > 0) {
                 errorDialog?.showError({

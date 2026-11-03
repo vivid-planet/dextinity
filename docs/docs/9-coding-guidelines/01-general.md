@@ -7,8 +7,6 @@ sidebar_position: -5
 
 The goal of names is to help developers understand the code without having to read the detailed implementation.
 
-Try to avoid comments as descriptions, as they may not always be up to date with the code.
-
 :::warning Bad
 
 ```ts
@@ -52,7 +50,7 @@ const hasError = true;
 
 :::note
 Prefix with is/has/should (see: [Tips on naming boolean variables - Cleaner Code](https://dev.to/michi/tips-on-naming-boolean-variables-cleaner-code-35ig)).  
-Not necessary for: loading, disabled ...
+Verb-phrase flags (showFoo, hideFoo, canFoo, allowFoo, enableFoo, disableFoo) and well-known adjectives (loading, disabled, open) are fine too.
 :::
 
 ### Affirmative Variables
@@ -75,6 +73,64 @@ if (!isNotComplete) {
 
 ```ts
 const isComplete = true;
+```
+
+:::
+
+## Comments
+
+Write a comment only for what the code can't show, for instance why a workaround is necessary or a hidden constraint.
+Never write a comment that repeats what the code does.
+Before you add a comment, try to make the code show it: rename a variable, extract a function, or replace a value with a named constant.
+A comment can go stale when the code changes, so prefer code that shows the fact.
+
+### Placement
+
+A comment sits on the most specific code it explains: at the end of its line for a short note, or directly above it for a longer one.
+A comment above a group of lines reads as an explanation of the whole group.
+
+:::warning Bad
+
+```ts
+const client = createClient({
+    baseUrl,
+    // <why the timeout is needed>
+    request: {
+        timeout: 60_000,
+        retries: 3,
+    },
+});
+```
+
+:::
+
+:::tip Good
+
+```ts
+const client = createClient({
+    baseUrl,
+    request: {
+        timeout: 60_000, // <why the timeout is needed>
+        retries: 3,
+    },
+});
+```
+
+:::
+
+When the comment explains a group as a whole, put it above the group:
+
+:::tip Good
+
+```ts
+const client = createClient({
+    baseUrl,
+    // <why these retry settings are needed>
+    retry: {
+        attempts: 5,
+        delay: 1_000,
+    },
+});
 ```
 
 :::

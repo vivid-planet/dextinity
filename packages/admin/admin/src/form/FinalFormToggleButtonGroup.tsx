@@ -8,12 +8,11 @@ import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBasePro
 
 export type FinalFormToggleButtonGroupClassKey = "root" | "button" | "label" | "selected" | "disabled";
 
-export interface FinalFormToggleButtonGroupProps<FieldValue>
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        button: typeof ButtonBase;
-        label: typeof Typography;
-    }> {
+export interface FinalFormToggleButtonGroupProps<FieldValue> extends ThemedComponentBaseProps<{
+    root: "div";
+    button: typeof ButtonBase;
+    label: typeof Typography;
+}> {
     options: Array<{ value: FieldValue; label: ReactNode; disabled?: boolean }>;
     optionsPerRow?: number;
     disabled?: boolean;
@@ -85,11 +84,13 @@ const Root = createComponentSlot("div")<FinalFormToggleButtonGroupClassKey, Root
         overflow: hidden;
         gap: 1px;
 
-        ${ownerState.optionsPerRow &&
-        css`
-            display: inline-grid;
-            grid-template-columns: repeat(${ownerState.optionsPerRow}, 1fr);
-        `}
+        ${
+            ownerState.optionsPerRow &&
+            css`
+                display: inline-grid;
+                grid-template-columns: repeat(${ownerState.optionsPerRow}, 1fr);
+            `
+        }
     `,
 );
 
@@ -109,30 +110,34 @@ const Button = createComponentSlot(ButtonBase)<FinalFormToggleButtonGroupClassKe
             background-color: ${theme.palette.grey[50]};
         }
 
-        ${ownerState.selected &&
-        css`
-            color: ${theme.palette.primary.main};
+        ${
+            ownerState.selected &&
+            css`
+                color: ${theme.palette.primary.main};
 
-            :before {
-                content: "";
-                position: absolute;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                height: 2px;
-                background-color: ${theme.palette.primary.main};
-            }
-        `}
+                :before {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    height: 2px;
+                    background-color: ${theme.palette.primary.main};
+                }
+            `
+        }
 
-        ${ownerState.disabled &&
-        css`
-            color: ${theme.palette.action.disabled};
-            background-color: ${theme.palette.grey[50]};
+        ${
+            ownerState.disabled &&
+            css`
+                color: ${theme.palette.action.disabled};
+                background-color: ${theme.palette.grey[50]};
 
-            :before {
-                background-color: ${theme.palette.action.disabled};
-            }
-        `}
+                :before {
+                    background-color: ${theme.palette.action.disabled};
+                }
+            `
+        }
     `,
 );
 

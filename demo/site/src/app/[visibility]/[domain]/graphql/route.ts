@@ -1,9 +1,10 @@
-import { persistedQueryRoute } from "@dextinity/site-nextjs/server";
+import { persistedQueryRoute, previewParams } from "@dextinity/site-nextjs/server";
 import { SYSTEM_USER_NAME } from "@src/auth/constants";
 
 export const dynamic = "force-dynamic";
 
 async function handler(request: Request) {
+    const preview = await previewParams();
     return persistedQueryRoute(request, {
         graphqlTarget: `${process.env.API_URL_INTERNAL}/graphql`,
         headers: {
@@ -11,6 +12,7 @@ async function handler(request: Request) {
         },
         persistedQueriesPath: ".next/persisted-queries.json",
         cacheMaxAge: 450, //Cache for 7.5 minutes (450 seconds) in CDNs and browsers
+        previewData: preview?.previewData,
     });
 }
 

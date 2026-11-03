@@ -58,8 +58,8 @@ services:
         image: mirror.gcr.io/axllent/mailpit
         pull_policy: weekly
         ports:
-            - "127.0.0.1:1025:1025" # SMTP server
-            - "127.0.0.1:8025:8025" # Web UI
+            - "127.0.0.1:${MAILER_PORT}:1025" # SMTP server
+            - "127.0.0.1:${MAILPIT_UI_PORT}:8025" # Web UI
 
 networks:
     postgres:

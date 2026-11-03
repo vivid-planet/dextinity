@@ -1,5 +1,117 @@
 # @comet/admin-generator
 
+## 10.12.0
+
+### Patch Changes
+
+- Updated dependencies [1b288ab]
+- Updated dependencies [2735896]
+- Updated dependencies [eb77fc2]
+- Updated dependencies [ffcbdd7]
+- Updated dependencies [3d1fb7c]
+    - @dextinity/cms-admin@10.12.0
+    - @dextinity/admin@10.12.0
+    - @dextinity/admin-icons@10.12.0
+
+## 10.11.0
+
+### Patch Changes
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- 48a9757: Update `commander` to v14
+
+    Commands now fail with "too many arguments" when they receive positional arguments they don't declare. Before, these arguments were ignored.
+    For example, an unquoted glob passed to `dextinity-admin-generator generate --file` is expanded by the shell into several arguments, and only the first file was generated. Quote the glob so the admin generator receives it as one pattern:
+
+    ```bash
+    dextinity-admin-generator generate --file 'src/products/**/*.dextinityGen.tsx'
+    ```
+
+- Updated dependencies [05ea45d]
+- Updated dependencies [3e0526b]
+- Updated dependencies [5bb4070]
+- Updated dependencies [75ebfd4]
+- Updated dependencies [a6f647b]
+- Updated dependencies [43ee19a]
+- Updated dependencies [8a645b7]
+- Updated dependencies [43ee19a]
+- Updated dependencies [96bf6f1]
+- Updated dependencies [c5f02ac]
+- Updated dependencies [f423240]
+    - @dextinity/cms-admin@10.11.0
+    - @dextinity/admin@10.11.0
+    - @dextinity/admin-icons@10.11.0
+
+## 10.10.0
+
+### Patch Changes
+
+- Updated dependencies [d44bdd0]
+- Updated dependencies [7f5eefe]
+- Updated dependencies [bfc162a]
+- Updated dependencies [c1ac227]
+- Updated dependencies [245faa3]
+- Updated dependencies [c6b573b]
+- Updated dependencies [98499dd]
+- Updated dependencies [43461dd]
+- Updated dependencies [4bd97fa]
+- Updated dependencies [8ca42f5]
+- Updated dependencies [6683f95]
+- Updated dependencies [a607533]
+- Updated dependencies [fdce21f]
+- Updated dependencies [7a121f1]
+- Updated dependencies [ad1ad05]
+    - @dextinity/cms-admin@10.10.0
+    - @dextinity/admin@10.10.0
+    - @dextinity/admin-icons@10.10.0
+
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/cms-admin@10.9.1
+- @dextinity/admin@10.9.1
+- @dextinity/admin-icons@10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- Updated dependencies [13838dc]
+- Updated dependencies [58aef82]
+- Updated dependencies [f899c6b]
+- Updated dependencies [f486058]
+- Updated dependencies [847b2a0]
+- Updated dependencies [fad8ab4]
+- Updated dependencies [013a03f]
+- Updated dependencies [be674a9]
+- Updated dependencies [e9067c3]
+- Updated dependencies [1c29104]
+- Updated dependencies [e84ba03]
+    - @dextinity/cms-admin@10.9.0
+    - @dextinity/admin@10.9.0
+    - @dextinity/admin-icons@10.9.0
+
+## 10.8.0
+
+### Patch Changes
+
+- Updated dependencies [f9ba8df]
+- Updated dependencies [350294d]
+- Updated dependencies [748dd34]
+- Updated dependencies [9109aa3]
+- Updated dependencies [f9ba8df]
+    - @dextinity/cms-admin@10.8.0
+    - @dextinity/admin@10.8.0
+    - @dextinity/admin-icons@10.8.0
+
 ## 10.7.0
 
 ### Patch Changes

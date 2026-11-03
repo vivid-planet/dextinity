@@ -8,12 +8,7 @@ import { createComponentSlot } from "../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
 export type FinalFormRangeInputClassKey =
-    | "root"
-    | "disableSlider"
-    | "inputsWrapper"
-    | "inputFieldsSeparatorContainer"
-    | "sliderWrapper"
-    | "inputFieldContainer";
+    "root" | "disableSlider" | "inputsWrapper" | "inputFieldsSeparatorContainer" | "sliderWrapper" | "inputFieldContainer";
 
 type OwnerState = {
     disableSlider: boolean;
@@ -34,10 +29,12 @@ const InputsWrapper = createComponentSlot("div")<FinalFormRangeInputClassKey, Ow
         align-items: center;
         display: flex;
 
-        ${!ownerState.disableSlider &&
-        css`
-            margin-bottom: ${theme.spacing(3)};
-        `}
+        ${
+            !ownerState.disableSlider &&
+            css`
+                margin-bottom: ${theme.spacing(3)};
+            `
+        }
     `,
 );
 
@@ -72,7 +69,8 @@ const InputFieldContainer = createComponentSlot("div")<FinalFormRangeInputClassK
 `);
 
 export interface FinalFormRangeInputProps
-    extends FieldRenderProps<{ min: number; max: number }, HTMLInputElement>,
+    extends
+        FieldRenderProps<{ min: number; max: number }, HTMLInputElement>,
         ThemedComponentBaseProps<{
             root: "div";
             inputsWrapper: "div";

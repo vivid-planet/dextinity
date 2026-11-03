@@ -1,5 +1,80 @@
 # @comet/site-nextjs
 
+## 10.12.0
+
+### Patch Changes
+
+- Updated dependencies [ea0ad37]
+    - @dextinity/site-react@10.12.0
+
+## 10.11.0
+
+### Patch Changes
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- Updated dependencies [85eecab]
+- Updated dependencies [a4cc3bb]
+- Updated dependencies [75ebfd4]
+    - @dextinity/site-react@10.11.0
+
+## 10.10.0
+
+### Patch Changes
+
+- Updated dependencies [9d65d08]
+- Updated dependencies [41b3249]
+- Updated dependencies [3ba43d6]
+    - @dextinity/site-react@10.10.0
+
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/site-react@10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- 6caa864: Stop forwarding preview headers from the client in `persistedQueryRoute`
+
+    Previously, `persistedQueryRoute` forwarded the `x-include-invisible-content` and `x-preview-dam-urls` headers of the incoming request to the API.
+    Since the route usually authenticates against the API with a system user, any visitor could request unpublished pages and invisible blocks.
+
+    The headers are now only set based on the new `previewData` option, which must come from a verified source such as the site preview cookie:
+
+    ```ts
+    import { persistedQueryRoute, previewParams } from "@dextinity/site-nextjs/server";
+
+    async function handler(request: Request) {
+        const preview = await previewParams();
+        return persistedQueryRoute(request, {
+            // ...
+            previewData: preview?.previewData,
+        });
+    }
+    ```
+
+    Responses for preview requests are sent with `Cache-Control: private, no-store`.
+
+- Updated dependencies [6caa864]
+    - @dextinity/site-react@10.9.0
+
+## 10.8.0
+
+### Patch Changes
+
+- Updated dependencies [ccffc10]
+- Updated dependencies [9109aa3]
+    - @dextinity/site-react@10.8.0
+
 ## 10.7.0
 
 ### Patch Changes

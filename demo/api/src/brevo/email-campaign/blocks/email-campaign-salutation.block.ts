@@ -8,8 +8,7 @@ class EmailCampaignSalutationBlockInput extends BlockInput {
     }
 }
 
-export const EmailCampaignSalutationBlock = createBlock(
-    EmailCampaignSalutationBlockData,
-    EmailCampaignSalutationBlockInput,
-    "EmailCampaignSalutation",
-);
+export const EmailCampaignSalutationBlock = createBlock(EmailCampaignSalutationBlockData, EmailCampaignSalutationBlockInput, {
+    name: "EmailCampaignSalutation",
+    description: "The salutation of an email campaign, filled with the name of the recipient.",
+});

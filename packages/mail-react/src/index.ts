@@ -10,6 +10,8 @@ export type { MjmlPixelImageBlockProps } from "./blocks/pixelImage/MjmlPixelImag
 export { MjmlPixelImageBlock } from "./blocks/pixelImage/MjmlPixelImageBlock.js";
 export type { CreateRichTextBlockOptions, RichTextBlockProps } from "./blocks/richText/draftJs/common.js";
 export { createRichTextBlock } from "./blocks/richText/draftJs/createRichTextBlock.js";
+export type { CreateTipTapRichTextBlockOptions, TipTapRichTextBlockProps } from "./blocks/richText/tipTap/common.js";
+export { createTipTapRichTextBlock } from "./blocks/richText/tipTap/createTipTapRichTextBlock.js";
 export type { HtmlButtonProps } from "./components/button/HtmlButton.js";
 export { HtmlButton } from "./components/button/HtmlButton.js";
 export type { MjmlButtonProps } from "./components/button/MjmlButton.js";
@@ -34,6 +36,8 @@ export { MjmlText } from "./components/text/MjmlText.js";
 export type { MjmlWrapperProps } from "./components/wrapper/MjmlWrapper.js";
 export { MjmlWrapper } from "./components/wrapper/MjmlWrapper.js";
 export { type Config, ConfigProvider, type PixelImageBlockConfig, useConfig } from "./config/ConfigProvider.js";
+export { useRefToRegisterMailBlocksForPreview } from "./preview/useRefToRegisterMailBlocksForPreview.js";
+export { withPreview } from "./preview/withPreview.js";
 export { registerStyles } from "./styles/registerStyles.js";
 export { createBreakpoint } from "./theme/createBreakpoint.js";
 export { createTheme } from "./theme/createTheme.js";

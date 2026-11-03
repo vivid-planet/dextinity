@@ -1,9 +1,20 @@
-import type { JSONContent } from "@tiptap/core";
-import { describe, expect, it } from "vitest";
+import { Editor, type JSONContent } from "@tiptap/core";
+import { describe, expect, it, vi } from "vitest";
 
+import { render, waitFor, within } from "../../testing/test-utils";
+import type { BlockContext } from "../context/BlockContext";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface } from "../types";
-import { createTipTapRichTextBlock, type TipTapRichTextBlockState, type TipTapTextBlock } from "./createTipTapRichTextBlock";
+import {
+    buildTipTapExtensions,
+    createTipTapRichTextBlock,
+    isTipTapRichTextEmpty,
+    resolveTipTapOptions,
+    type TipTapRichTextBlockFactoryOptions,
+    type TipTapRichTextBlockState,
+    type TipTapTextBlock,
+    type TipTapTextBlockElementProps,
+} from "./createTipTapRichTextBlock";
 
 describe("createTipTapRichTextBlock", () => {
     it("should throw for an unsupported text block tag instead of silently creating a broken node", () => {
@@ -23,6 +34,33 @@ describe("createTipTapRichTextBlock", () => {
                 ],
             }),
         ).toThrow();
+    });
+
+    it("should throw when a text block or a list offers the same style twice, because a style's name identifies it", () => {
+        const style = { name: "copy100", label: "Copy 100", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
+        expect(() =>
+            createTipTapRichTextBlock({ textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [style, style] }] }),
+        ).toThrow();
+        expect(() => createTipTapRichTextBlock({ orderedList: { styles: [style, style] } })).toThrow();
+    });
+
+    it("should throw when the defaultStyle is not one of the text block's styles", () => {
+        const style = { name: "copy100", label: "Copy 100", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
+        expect(() =>
+            createTipTapRichTextBlock({
+                textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [style], defaultStyle: "copy200" }],
+            }),
+        ).toThrow();
+    });
+
+    it("should start content with the default text block's default style", () => {
+        const style = { name: "copy100", label: "Copy 100", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
+        const block = createTipTapRichTextBlock({
+            textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [style], defaultStyle: "copy100" }],
+        });
+        expect(block.defaultValues()).toEqual({
+            tipTapContent: { type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "paragraph", textBlockStyle: "copy100" } }] },
+        });
     });
 
     it("should throw when the defaultTextBlock is not one of the text blocks", () => {
@@ -60,6 +98,442 @@ describe("createTipTapRichTextBlock", () => {
         });
         expect(block.defaultValues()).toEqual({
             tipTapContent: { type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "heading-3" } }] },
+        });
+    });
+
+    describe("editor", () => {
+        function createEditor(options: TipTapRichTextBlockFactoryOptions = {}) {
+            return new Editor({
+                extensions: buildTipTapExtensions({
+                    resolvedOptions: resolveTipTapOptions(options),
+                    inlineStyles: [],
+                    placeholders: [],
+                    linkBlock: options.link,
+                    childBlocks: options.childBlocks ?? {},
+                    maxTextBlocks: options.maxTextBlocks,
+                }),
+            });
+        }
+
+        const copyAndPasteAll = (editor: Editor) => {
+            const { dom } = editor.view.serializeForClipboard(editor.state.doc.slice(0, editor.state.doc.content.size));
+            editor.commands.setTextSelection(editor.state.doc.content.size - 1);
+            editor.view.pasteHTML(dom.innerHTML, new Event("paste") as ClipboardEvent);
+        };
+
+        const pressKey = (editor: Editor, key: string) =>
+            editor.view.someProp("handleKeyDown", (handleKeyDown) => handleKeyDown(editor.view, new KeyboardEvent("keydown", { key })));
+
+        const listItem = (text: string): JSONContent => ({
+            type: "listItem",
+            content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text }] }],
+        });
+
+        it("should use the text block as the schema's default block type, not a list", () => {
+            const editor = createEditor();
+            expect(editor.schema.topNodeType.contentMatch.defaultType?.name).toBe("textBlock");
+        });
+
+        it.each(["orderedList", "bulletList"])("should not add an empty text block after an %s at the end of the content", (listType) => {
+            const editor = createEditor();
+
+            editor.commands.setContent({ type: "doc", content: [{ type: listType, content: [listItem("item")] }] });
+
+            expect(editor.getJSON().content?.map((node) => node.type)).toEqual([listType]);
+        });
+
+        it.each(["orderedList", "bulletList"])(
+            "should delete an empty text block after an %s at the end of the content with Backspace",
+            (listType) => {
+                const editor = createEditor();
+                editor.commands.setContent({
+                    type: "doc",
+                    content: [
+                        { type: listType, content: [listItem("item")] },
+                        { type: "textBlock", attrs: { textBlock: "paragraph" } },
+                    ],
+                });
+                editor.commands.setTextSelection(editor.state.doc.content.size - 1);
+
+                pressKey(editor, "Backspace");
+
+                expect(editor.getJSON().content).toEqual([expect.objectContaining({ type: listType, content: [listItem("item")] })]);
+            },
+        );
+
+        it.each(["orderedList", "bulletList"])("should leave an %s at the end of the content with Enter in its empty last item", (listType) => {
+            const editor = createEditor();
+            editor.commands.setContent({ type: "doc", content: [{ type: listType, content: [listItem("item")] }] });
+            editor.commands.setTextSelection(editor.state.doc.content.size - 3);
+
+            pressKey(editor, "Enter");
+            pressKey(editor, "Enter");
+
+            expect(editor.getJSON().content?.map((node) => node.type)).toEqual([listType, "textBlock"]);
+        });
+
+        it("should leave a single empty default text block after deleting all content", () => {
+            const editor = createEditor();
+            editor.commands.setContent({ type: "doc", content: [{ type: "orderedList", content: [listItem("item")] }] });
+
+            editor.commands.selectAll();
+            editor.commands.deleteSelection();
+
+            expect(editor.getJSON()).toEqual({ type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "paragraph" } }] });
+        });
+
+        it.each([
+            ["insertSoftHyphen", "softHyphen"],
+            ["insertNonBreakingSpace", "nonBreakingSpace"],
+        ] as const)("should give the node inserted with %s the marks at the cursor", (command, nodeType) => {
+            const editor = createEditor();
+            const bold = [{ type: "bold" }];
+            editor.commands.setContent({
+                type: "doc",
+                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Wonderful", marks: bold }] }],
+            });
+            editor.commands.setTextSelection(7);
+
+            editor.commands[command]();
+
+            expect(editor.getJSON().content?.[0].content).toEqual([
+                { type: "text", text: "Wonder", marks: bold },
+                { type: nodeType, marks: bold },
+                { type: "text", text: "ful", marks: bold },
+            ]);
+        });
+
+        it("should insert a soft hyphen without marks into text without marks", () => {
+            const editor = createEditor();
+            editor.commands.setContent({
+                type: "doc",
+                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Wonderful" }] }],
+            });
+            editor.commands.setTextSelection(7);
+
+            editor.commands.insertSoftHyphen();
+
+            expect(editor.getJSON().content?.[0].content).toEqual([
+                { type: "text", text: "Wonder" },
+                { type: "softHyphen" },
+                { type: "text", text: "ful" },
+            ]);
+        });
+
+        it("should fill an emptied heading-only block with the default text block", () => {
+            const editor = createEditor({
+                textBlocks: [
+                    { name: "heading-1", label: "Heading 1", tag: "h1" },
+                    { name: "heading-2", label: "Heading 2", tag: "h2" },
+                ],
+                defaultTextBlock: "heading-2",
+            });
+            editor.commands.setContent({
+                type: "doc",
+                content: [{ type: "textBlock", attrs: { textBlock: "heading-1" }, content: [{ type: "text", text: "Title" }] }],
+            });
+
+            editor.commands.selectAll();
+            editor.commands.deleteSelection();
+
+            expect(editor.getJSON()).toEqual({ type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "heading-2" } }] });
+        });
+
+        it("should drop a style the new text block doesn't offer when no text block has a defaultStyle", () => {
+            const style = { name: "copy100", label: "Copy 100", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
+            const editor = createEditor({
+                textBlocks: [
+                    { name: "paragraph", label: "Paragraph", tag: "p", styles: [style] },
+                    { name: "heading-1", label: "Heading 1", tag: "h1" },
+                ],
+            });
+            editor.commands.setContent({
+                type: "doc",
+                content: [
+                    { type: "textBlock", attrs: { textBlock: "paragraph", textBlockStyle: "copy100" }, content: [{ type: "text", text: "Title" }] },
+                    { type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Copy" }] },
+                ],
+            });
+            editor.commands.setTextSelection(1);
+
+            editor.commands.updateAttributes("textBlock", { textBlock: "heading-1" });
+
+            expect(editor.getJSON().content?.map((node) => node.attrs)).toEqual([
+                { textBlock: "heading-1", textBlockStyle: null },
+                { textBlock: "paragraph", textBlockStyle: null },
+            ]);
+        });
+
+        const paragraph = (text: string): JSONContent => ({
+            type: "textBlock",
+            attrs: { textBlock: "paragraph" },
+            content: [{ type: "text", text }],
+        });
+
+        const childBlock: BlockInterface = {
+            ...createBlockSkeleton(),
+            name: "Child",
+            displayName: "Child",
+            category: BlockCategory.Other,
+            defaultValues: () => ({}),
+            AdminComponent: () => null,
+            previewContent: () => [],
+        };
+
+        const insertChildBlockAtEnd = (editor: Editor) => {
+            editor.commands.setTextSelection(editor.state.doc.content.size - 1);
+            editor.commands.insertCmsBlock({ blockType: "child", data: {} });
+        };
+
+        it("should not add an empty text block after a child block when it would exceed maxTextBlocks", () => {
+            const editor = createEditor({ maxTextBlocks: 2, childBlocks: { child: { block: childBlock, display: "block" } } });
+            editor.commands.setContent({ type: "doc", content: [paragraph("first")] });
+
+            insertChildBlockAtEnd(editor);
+
+            expect(editor.getJSON().content?.map((node) => node.type)).toEqual(["textBlock", "cmsBlock"]);
+        });
+
+        it("should add an empty text block after a child block below maxTextBlocks", () => {
+            const editor = createEditor({ maxTextBlocks: 3, childBlocks: { child: { block: childBlock, display: "block" } } });
+            editor.commands.setContent({ type: "doc", content: [paragraph("first")] });
+
+            insertChildBlockAtEnd(editor);
+
+            expect(editor.getJSON().content?.map((node) => node.type)).toEqual(["textBlock", "cmsBlock", "textBlock"]);
+        });
+
+        it("should keep a child block's data when copying and pasting it", () => {
+            const editor = createEditor({ childBlocks: { child: { block: childBlock, display: "block" } } });
+            const data = { nested: { value: "keep me" } };
+            editor.commands.setContent({
+                type: "doc",
+                content: [{ type: "cmsBlock", attrs: { blockType: "child", data } }, paragraph("after")],
+            });
+
+            copyAndPasteAll(editor);
+
+            const childBlockNodes = editor.getJSON().content?.filter((node) => node.type === "cmsBlock");
+            expect(childBlockNodes).toHaveLength(2);
+            expect(childBlockNodes?.map((node) => node.attrs?.data)).toEqual([data, data]);
+        });
+
+        const linkBlock: BlockInterface & LinkBlockInterface = {
+            ...createBlockSkeleton(),
+            name: "Link",
+            displayName: "Link",
+            category: BlockCategory.Other,
+            defaultValues: () => ({}),
+            AdminComponent: () => null,
+            previewContent: () => [],
+        };
+
+        const collectLinkData = (editor: Editor) => {
+            const linkData: unknown[] = [];
+            editor.state.doc.descendants((node) => {
+                const linkMark = node.marks.find((mark) => mark.type.name === "link");
+                if (linkMark) {
+                    linkData.push(linkMark.attrs.data);
+                }
+            });
+            return linkData;
+        };
+
+        it("should keep a link's data when copying and pasting it", () => {
+            const editor = createEditor({ link: linkBlock });
+            const data = { activeType: "internal", attachedBlocks: [{ type: "internal", props: { targetPage: { id: "page-1" } } }] };
+            editor.commands.setContent({
+                type: "doc",
+                content: [
+                    {
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph" },
+                        content: [{ type: "text", text: "a link", marks: [{ type: "link", attrs: { data } }] }],
+                    },
+                ],
+            });
+
+            copyAndPasteAll(editor);
+
+            expect(collectLinkData(editor)).toEqual([data, data]);
+        });
+
+        it("should paste a link with invalid data as plain text", () => {
+            const editor = createEditor({ link: linkBlock });
+
+            editor.view.pasteHTML('<p><a data-cms-link="invalid">pasted</a></p>', new Event("paste") as ClipboardEvent);
+
+            expect(editor.getText()).toBe("pasted");
+            expect(collectLinkData(editor)).toEqual([]);
+        });
+    });
+
+    describe("maxTextBlocks", () => {
+        const paragraph = (text: string): JSONContent => ({
+            type: "textBlock",
+            attrs: { textBlock: "paragraph" },
+            content: [{ type: "text", text }],
+        });
+
+        it("should cut off text blocks pasted over the limit and keep the state up to date", () => {
+            const block = createTipTapRichTextBlock({ maxTextBlocks: 2 });
+            const updateState = vi.fn();
+            const { container } = render(
+                <block.AdminComponent state={{ tipTapContent: { type: "doc", content: [paragraph("first")] } }} updateState={updateState} />,
+            );
+            const editor = (container.querySelector(".tiptap") as (HTMLElement & { editor?: Editor }) | null)?.editor;
+            if (!editor) {
+                throw new Error("Expected the editor to be rendered");
+            }
+
+            editor.commands.insertContentAt(editor.state.doc.content.size, [paragraph("second"), paragraph("third")]);
+
+            expect(editor.getJSON().content).toEqual([paragraph("first"), paragraph("second")]);
+            expect(updateState).toHaveBeenLastCalledWith({ tipTapContent: { type: "doc", content: [paragraph("first"), paragraph("second")] } });
+        });
+    });
+
+    describe("text block style select", () => {
+        const style = { name: "copy100", label: "Copy 100", element: (props: TipTapTextBlockElementProps) => <p {...props} /> };
+        const textBlocks: TipTapTextBlock[] = [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [style] }];
+        const listContent: JSONContent = {
+            type: "doc",
+            content: [
+                {
+                    type: "bulletList",
+                    content: [
+                        {
+                            type: "listItem",
+                            content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "item" }] }],
+                        },
+                    ],
+                },
+            ],
+        };
+
+        it("should keep the style select disabled in a list without styles", () => {
+            const block = createTipTapRichTextBlock({ textBlocks });
+            const { container } = render(<block.AdminComponent state={{ tipTapContent: listContent }} updateState={vi.fn()} />);
+
+            expect(within(container).queryByRole("combobox")?.getAttribute("aria-disabled")).toBe("true");
+        });
+
+        it("should not show a style select when nothing has styles", () => {
+            const block = createTipTapRichTextBlock({ textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }] });
+            const { container } = render(<block.AdminComponent state={{ tipTapContent: listContent }} updateState={vi.fn()} />);
+
+            expect(within(container).queryByRole("combobox")).toBeNull();
+        });
+    });
+
+    describe("list element", () => {
+        const paragraphStyle = {
+            name: "copy100",
+            label: "Copy 100",
+            element: (props: TipTapTextBlockElementProps) => <p data-paragraph-style {...props} />,
+        };
+        const listElement = (props: TipTapTextBlockElementProps) => <p data-list-element {...props} />;
+        const contentWithList = (textBlockStyle: string | null): JSONContent => ({
+            type: "doc",
+            content: [
+                { type: "textBlock", attrs: { textBlock: "paragraph", textBlockStyle }, content: [{ type: "text", text: "paragraph" }] },
+                {
+                    type: "bulletList",
+                    content: [
+                        {
+                            type: "listItem",
+                            content: [
+                                { type: "textBlock", attrs: { textBlock: "paragraph", textBlockStyle }, content: [{ type: "text", text: "item" }] },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        });
+
+        it("should render a list item through the list's element instead of the paragraph style it kept", async () => {
+            const block = createTipTapRichTextBlock({
+                textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [paragraphStyle] }],
+                unorderedList: { element: listElement },
+            });
+            const { container } = render(<block.AdminComponent state={{ tipTapContent: contentWithList("copy100") }} updateState={vi.fn()} />);
+
+            await waitFor(() => expect(container.querySelector("li [data-list-element]")?.textContent).toBe("item"));
+            expect(container.querySelector("li [data-paragraph-style]")).toBeNull();
+            expect(container.querySelector("[data-paragraph-style]")?.textContent).toBe("paragraph");
+        });
+
+        it("should render a list item without a style through the list's element", async () => {
+            const block = createTipTapRichTextBlock({
+                textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p", styles: [paragraphStyle] }],
+                unorderedList: { element: listElement },
+            });
+            const { container } = render(<block.AdminComponent state={{ tipTapContent: contentWithList(null) }} updateState={vi.fn()} />);
+
+            await waitFor(() => expect(container.querySelector("li [data-list-element]")?.textContent).toBe("item"));
+        });
+
+        it("should render a list item through the list's element when nothing else has an element or styles", async () => {
+            const block = createTipTapRichTextBlock({
+                textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }],
+                unorderedList: { element: listElement },
+            });
+            const { container } = render(<block.AdminComponent state={{ tipTapContent: contentWithList(null) }} updateState={vi.fn()} />);
+
+            await waitFor(() => expect(container.querySelector("li [data-list-element]")?.textContent).toBe("item"));
+            expect(container.querySelectorAll("[data-list-element]")).toHaveLength(1);
+        });
+    });
+
+    describe("previewContent", () => {
+        const block = createTipTapRichTextBlock({});
+        const previewContent = (content: JSONContent[]) => block.previewContent({ tipTapContent: { type: "doc", content } }, {} as BlockContext);
+        const textBlock = (content: JSONContent[]): JSONContent => ({ type: "textBlock", attrs: { textBlock: "paragraph" }, content });
+
+        it("should separate text blocks with a space instead of joining them directly", () => {
+            expect(previewContent([textBlock([{ type: "text", text: "First" }]), textBlock([{ type: "text", text: "Second" }])])).toEqual([
+                { type: "text", content: "First Second" },
+            ]);
+        });
+
+        it("should separate list items with a space", () => {
+            const listItem = (text: string): JSONContent => ({ type: "listItem", content: [textBlock([{ type: "text", text }])] });
+            expect(previewContent([{ type: "bulletList", content: [listItem("First"), listItem("Second")] }])).toEqual([
+                { type: "text", content: "First Second" },
+            ]);
+        });
+
+        it("should replace a hard break with a space", () => {
+            expect(previewContent([textBlock([{ type: "text", text: "First" }, { type: "hardBreak" }, { type: "text", text: "Second" }])])).toEqual([
+                { type: "text", content: "First Second" },
+            ]);
+        });
+
+        it("should keep the marked parts of a line together", () => {
+            expect(
+                previewContent([
+                    textBlock([
+                        { type: "text", text: "un" },
+                        { type: "text", marks: [{ type: "bold" }], text: "believ" },
+                        { type: "text", text: "able" },
+                    ]),
+                ]),
+            ).toEqual([{ type: "text", content: "unbelievable" }]);
+        });
+
+        it("should skip empty lines instead of adding extra spaces", () => {
+            expect(
+                previewContent([
+                    textBlock([{ type: "text", text: "First" }]),
+                    textBlock([]),
+                    textBlock([{ type: "text", text: "  " }]),
+                    textBlock([{ type: "text", text: "Second" }]),
+                ]),
+            ).toEqual([{ type: "text", content: "First Second" }]);
+        });
+
+        it("should return no preview for empty content", () => {
+            expect(previewContent([textBlock([])])).toEqual([]);
         });
     });
 
@@ -265,5 +739,34 @@ describe("createTipTapRichTextBlock", () => {
 
             await expect(translateBlockContent(block, state, corruptingTranslate)).rejects.toThrow(/placeholder id/);
         });
+    });
+});
+
+describe("isTipTapRichTextEmpty", () => {
+    const doc = (...content: JSONContent[]): JSONContent => ({ type: "doc", content });
+
+    it("should treat the default value of a block as empty", () => {
+        expect(isTipTapRichTextEmpty(createTipTapRichTextBlock().defaultValues().tipTapContent)).toBe(true);
+    });
+
+    it("should treat several text blocks without text as empty", () => {
+        expect(isTipTapRichTextEmpty(doc({ type: "textBlock", attrs: { textBlock: "heading-1" } }, { type: "textBlock" }))).toBe(true);
+    });
+
+    it("should not treat a document with text in a nested list item as empty", () => {
+        const listItem: JSONContent = { type: "listItem", content: [{ type: "textBlock", content: [{ type: "text", text: "item" }] }] };
+        expect(isTipTapRichTextEmpty(doc({ type: "textBlock" }, { type: "bulletList", content: [listItem] }))).toBe(false);
+    });
+
+    it("should not treat a document with only whitespace as empty, like isRichTextEmpty", () => {
+        expect(isTipTapRichTextEmpty(doc({ type: "textBlock", content: [{ type: "text", text: " " }] }))).toBe(false);
+    });
+
+    it.each(["nonBreakingSpace", "softHyphen"])("should not treat a document with only a %s as empty", (type) => {
+        expect(isTipTapRichTextEmpty(doc({ type: "textBlock", content: [{ type }] }))).toBe(false);
+    });
+
+    it("should not treat a document with only a child block as empty", () => {
+        expect(isTipTapRichTextEmpty(doc({ type: "cmsBlock", attrs: { blockType: "image", data: {} } }))).toBe(false);
     });
 });

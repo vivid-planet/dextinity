@@ -21,6 +21,7 @@ export const StandaloneRichTextBlock = createCompositeBlock(
                         { value: "right", label: <FormattedMessage id="standaloneRichText.textAlignment.right" defaultMessage="right" /> },
                         { value: "justify", label: <FormattedMessage id="standaloneRichText.textAlignment.justify" defaultMessage="justify" /> },
                     ],
+                    required: true,
                 }),
             },
         },

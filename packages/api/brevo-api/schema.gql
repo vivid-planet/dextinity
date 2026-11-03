@@ -3,6 +3,7 @@ type EntityInfo {
   entityName: String!
   name: String!
   secondaryInformation: String
+  visible: Boolean!
 }
 
 type Dependency {

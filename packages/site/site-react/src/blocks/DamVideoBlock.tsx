@@ -60,6 +60,7 @@ export const DamVideoBlock = withPreview(
         const [isPlaying, setIsPlaying] = useState(autoplay ?? false);
         const [isHandledManually, setIsHandledManually] = useState(false);
         const hasPreviewImage = Boolean(previewImage && previewImage.damFile);
+        const hasPreviewImageBeenHidden = hasPreviewImage && !showPreviewImage;
 
         const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(null);
 
@@ -69,11 +70,11 @@ export const DamVideoBlock = withPreview(
                 // The user gesture from clicking the preview image's play button does not extend to the
                 // freshly-mounted <video> element, so the browser blocks autoplay for unmuted videos.
                 // Call play() explicitly during the ref-callback to keep playback in the user gesture window.
-                if (element && hasPreviewImage && !showPreviewImage && element.paused) {
+                if (element && hasPreviewImageBeenHidden && element.paused) {
                     element.play();
                 }
             },
-            [hasPreviewImage, showPreviewImage],
+            [hasPreviewImageBeenHidden],
         );
 
         const handlePreviewPlay = () => {
@@ -129,7 +130,7 @@ export const DamVideoBlock = withPreview(
                             controls={showControls}
                             loop={loop}
                             playsInline
-                            muted={autoplay}
+                            muted={autoplay && !hasPreviewImageBeenHidden}
                             ref={videoRef}
                             aria-label={damFile.aiContentType ? ariaLabel : undefined}
                             className={clsx(styles.video, fill && styles.fill)}

@@ -22,6 +22,7 @@ export const CallToActionBlock = createCompositeBlock(
                         { value: "outlined", label: <FormattedMessage id="callToActionBlock.variant.outlined" defaultMessage="Outlined" /> },
                         { value: "text", label: <FormattedMessage id="callToActionBlock.variant.text" defaultMessage="Text" /> },
                     ],
+                    required: true,
                 }),
             },
         },

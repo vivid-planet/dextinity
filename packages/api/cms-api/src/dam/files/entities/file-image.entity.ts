@@ -1,7 +1,7 @@
 import { BaseEntity, Embedded, Entity, OneToOne, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
+import { randomUUID } from "crypto";
 import { GraphQLJSONObject } from "graphql-scalars";
-import { v4 as uuid } from "uuid";
 
 import { ImageCropArea } from "../../images/entities/image-crop-area.entity";
 import { FileInterface } from "./file.entity";
@@ -11,7 +11,7 @@ import { FileInterface } from "./file.entity";
 export class DamFileImage extends BaseEntity {
     @PrimaryKey({ columnType: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ columnType: "integer" })
     @Field(() => Int)

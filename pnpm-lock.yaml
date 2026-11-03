@@ -189,8 +189,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
       dotenv-cli:
-        specifier: ^11.0.0
-        version: 11.0.0
+        specifier: ^11.1.0
+        version: 11.1.0
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -391,8 +391,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       dotenv-cli:
-        specifier: ^11.0.0
-        version: 11.0.0
+        specifier: ^11.1.0
+        version: 11.1.0
       eslint:
         specifier: ^9.39.5
         version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
@@ -645,8 +645,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       dotenv-cli:
-        specifier: ^11.0.0
-        version: 11.0.0
+        specifier: ^11.1.0
+        version: 11.1.0
       eslint:
         specifier: ^9.39.5
         version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
@@ -871,7 +871,7 @@ importers:
   docs:
     dependencies:
       '@algolia/client-search':
-        specifier: ^5.60.0
+        specifier: ^5.61.0
         version: 5.61.0
       '@docusaurus/core':
         specifier: ^3.10.2
@@ -2129,7 +2129,7 @@ importers:
         specifier: ^1.12.1
         version: 1.12.1(@swc/core@1.16.21(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3)
       '@swc/core':
-        specifier: ^1.16.20
+        specifier: ^1.16.21
         version: 1.16.21(@swc/helpers@0.5.23)
       '@types/inquirer':
         specifier: ^8.2.13
@@ -2174,10 +2174,10 @@ importers:
   packages/api/cms-api:
     dependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.1160.0
+        specifier: ^3.1161.0
         version: 3.1161.0
       '@aws-sdk/lib-storage':
-        specifier: ^3.1160.0
+        specifier: ^3.1161.0
         version: 3.1161.0(@aws-sdk/client-s3@3.1161.0)
       '@azure-rest/ai-translation-text':
         specifier: ^1.0.2
@@ -2343,7 +2343,7 @@ importers:
         specifier: ^1.12.1
         version: 1.12.1(@swc/core@1.16.21(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3)
       '@swc/core':
-        specifier: ^1.16.20
+        specifier: ^1.16.21
         version: 1.16.21(@swc/helpers@0.5.23)
       '@types/draft-js':
         specifier: ^0.11.20
@@ -12101,8 +12101,8 @@ packages:
     resolution: {integrity: sha512-tE7ztYzXHIeyvc7N+hR3oi7FIbf/NIjVP9hmAt3yMXzrQ072/fpjGLx2GxNxGxUl5V73MEqYzioOMoVhGMJ5cA==}
     engines: {node: '>=10'}
 
-  dotenv-cli@11.0.0:
-    resolution: {integrity: sha512-r5pA8idbk7GFWuHEU7trSTflWcdBpQEK+Aw17UrSHjS6CReuhrrPcyC3zcQBPQvhArRHnBo/h6eLH1fkCvNlww==}
+  dotenv-cli@11.1.0:
+    resolution: {integrity: sha512-YUBODAS0puvSc9bGdu07o1GSouVn63xDazqZqvT99Hta4nPqZ1jTdBcz12dDdxSC9jYbVlpWlnu0IJaMR8TIEQ==}
     hasBin: true
 
   dotenv-expand@12.0.3:
@@ -29835,7 +29835,7 @@ snapshots:
     dependencies:
       is-obj: 2.0.0
 
-  dotenv-cli@11.0.0:
+  dotenv-cli@11.1.0:
     dependencies:
       cross-spawn: 7.0.6
       dotenv: 17.4.2

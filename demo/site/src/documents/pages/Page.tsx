@@ -1,6 +1,8 @@
 import { generateImageUrl, gql, JsonLd } from "@dextinity/site-nextjs";
+import { filterByFragment } from "@dextinity/site-nextjs/server";
 import { Breadcrumbs } from "@src/common/components/breadcrumbs/Breadcrumbs";
 import { breadcrumbsFragment } from "@src/common/components/breadcrumbs/Breadcrumbs.fragment";
+import type { GQLBreadcrumbsFragment } from "@src/common/components/breadcrumbs/Breadcrumbs.fragment.generated";
 import type { GQLPageTreeNodeScopeInput } from "@src/graphql.generated";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
@@ -159,7 +161,7 @@ export async function Page({ pageTreeNodeId, scope }: { pageTreeNodeId: string; 
     return (
         <>
             {structuredData && <JsonLd<Thing> data={structuredData} />}
-            <Breadcrumbs {...data.pageContent} scope={scope} />
+            <Breadcrumbs {...filterByFragment<GQLBreadcrumbsFragment>(breadcrumbsFragment, data.pageContent)} scope={scope} />
             {/* ID is used for skip link */}
             <main id="mainContent">
                 <StageBlock data={document.stage} />

@@ -306,11 +306,8 @@ importers:
         specifier: ^12.1.4
         version: 12.1.5(@types/react@19.3.0)(react@19.3.1)
       react-router:
-        specifier: ^5.3.4
-        version: 5.3.4(react@19.3.1)
-      react-router-dom:
-        specifier: ^5.3.4
-        version: 5.3.4(react@19.3.1)
+        specifier: ^8.5.1
+        version: 8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       use-debounce:
         specifier: ^10.1.1
         version: 10.1.1(react@19.3.1)
@@ -375,12 +372,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.3.0
         version: 19.3.0(@types/react@19.3.0)
-      '@types/react-router':
-        specifier: ^5.1.20
-        version: 5.1.20
-      '@types/react-router-dom':
-        specifier: ^5.3.3
-        version: 5.3.3
       '@vitejs/plugin-react-swc':
         specifier: ^4.3.3
         version: 4.3.3(@swc/helpers@0.5.23)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1))
@@ -1079,9 +1070,6 @@ importers:
       '@types/final-form-set-field-data':
         specifier: ^1.0.3
         version: 1.0.3
-      '@types/history':
-        specifier: ^4.7.11
-        version: 4.7.11
       '@types/lodash.debounce':
         specifier: ^4.0.9
         version: 4.0.9
@@ -1094,12 +1082,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.3.0
         version: 19.3.0(@types/react@19.3.0)
-      '@types/react-router':
-        specifier: ^5.1.20
-        version: 5.1.20
-      '@types/react-router-dom':
-        specifier: ^5.3.3
-        version: 5.3.3
       '@vitest/browser':
         specifier: 5.1.0
         version: 5.1.0(msw@3.0.5(@types/node@24.19.2)(graphql@16.15.0)(supports-color@8.1.1)(typescript@6.0.3)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1)))(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1))(vitest@5.1.0)
@@ -1118,9 +1100,6 @@ importers:
       graphql:
         specifier: ^16.15.0
         version: 16.15.0
-      history:
-        specifier: ^4.10.1
-        version: 4.10.1
       jsdom:
         specifier: ^31.0.0
         version: 31.0.0(@noble/hashes@1.8.0)
@@ -1152,11 +1131,8 @@ importers:
         specifier: ^12.1.4
         version: 12.1.5(@types/react@19.3.0)(react@19.3.1)
       react-router:
-        specifier: ^5.3.4
-        version: 5.3.4(react@19.3.1)
-      react-router-dom:
-        specifier: ^5.3.4
-        version: 5.3.4(react@19.3.1)
+        specifier: ^8.5.1
+        version: 8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       rimraf:
         specifier: ^6.1.4
         version: 6.1.4
@@ -1674,9 +1650,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.3.0
         version: 19.3.0(@types/react@19.3.0)
-      '@types/react-router':
-        specifier: ^5.1.20
-        version: 5.1.20
       chokidar-cli:
         specifier: ^3.0.0
         version: 3.0.0
@@ -1711,11 +1684,8 @@ importers:
         specifier: ^12.1.4
         version: 12.1.5(@types/react@19.3.0)(react@19.3.1)
       react-router:
-        specifier: ^5.3.4
-        version: 5.3.4(react@19.3.1)
-      react-router-dom:
-        specifier: ^5.3.4
-        version: 5.3.4(react@19.3.1)
+        specifier: ^8.5.1
+        version: 8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -1906,9 +1876,6 @@ importers:
       '@types/final-form-set-field-touched':
         specifier: ^1.0.3
         version: 1.0.3
-      '@types/history':
-        specifier: ^4.7.11
-        version: 4.7.11
       '@types/js-cookie':
         specifier: ^3.0.6
         version: 3.0.6
@@ -1927,12 +1894,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.3.0
         version: 19.3.0(@types/react@19.3.0)
-      '@types/react-router':
-        specifier: ^5.1.20
-        version: 5.1.20
-      '@types/react-router-dom':
-        specifier: ^5.3.3
-        version: 5.3.3
       '@vitest/browser':
         specifier: 5.1.0
         version: 5.1.0(msw@3.0.5(@types/node@24.19.2)(graphql@16.15.0)(supports-color@8.1.1)(typescript@6.0.3)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1)))(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1))(vitest@5.1.0)
@@ -1957,9 +1918,6 @@ importers:
       graphql:
         specifier: ^16.15.0
         version: 16.15.0
-      history:
-        specifier: ^4.10.1
-        version: 4.10.1
       jsdom:
         specifier: ^31.0.0
         version: 31.0.0(@noble/hashes@1.8.0)
@@ -1994,11 +1952,8 @@ importers:
         specifier: ^12.1.4
         version: 12.1.5(@types/react@19.3.0)(react@19.3.1)
       react-router:
-        specifier: ^5.3.4
-        version: 5.3.4(react@19.3.1)
-      react-router-dom:
-        specifier: ^5.3.4
-        version: 5.3.4(react@19.3.1)
+        specifier: ^8.5.1
+        version: 8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       storybook:
         specifier: ^10.6.6
         version: 10.6.7(@types/react@19.3.0)(prettier@3.9.10)(react@19.3.1)
@@ -3094,9 +3049,6 @@ importers:
       graphql:
         specifier: ^16.15.0
         version: 16.15.0
-      history:
-        specifier: ^4.10.1
-        version: 4.10.1
       react:
         specifier: ^19.3.1
         version: 19.3.1
@@ -3146,21 +3098,12 @@ importers:
       '@types/draft-js':
         specifier: ^0.11.20
         version: 0.11.20
-      '@types/history':
-        specifier: ^4.7.11
-        version: 4.7.11
       '@types/react':
         specifier: ^19.3.0
         version: 19.3.0
       '@types/react-dom':
         specifier: ^19.3.0
         version: 19.3.0(@types/react@19.3.0)
-      '@types/react-router':
-        specifier: ^5.1.20
-        version: 5.1.20
-      '@types/react-router-dom':
-        specifier: ^5.3.3
-        version: 5.3.3
       '@vitest/browser':
         specifier: 5.1.0
         version: 5.1.0(msw@3.0.5(@types/node@24.19.2)(graphql@16.15.0)(supports-color@8.1.1)(typescript@6.0.3)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1)))(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1))(vitest@5.1.0)
@@ -3207,11 +3150,8 @@ importers:
         specifier: ^16.0.1
         version: 16.0.1
       react-router:
-        specifier: ^5.3.4
-        version: 5.3.4(react@19.3.1)
-      react-router-dom:
-        specifier: ^5.3.4
-        version: 5.3.4(react@19.3.1)
+        specifier: ^8.5.1
+        version: 8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1(supports-color@8.1.1)
@@ -9098,6 +9038,9 @@ packages:
   '@react-dnd/shallowequal@4.0.2':
     resolution: {integrity: sha512-/RVXdLvJxLg4QKvMoM5WlwNR9ViO9z8B/qPcc+C0Sa/teJY7QG7kJ441DwzOjMYEY7GmU4dj5EcGHIkKZiQZCA==}
 
+  '@remix-run/route-pattern@0.22.1':
+    resolution: {integrity: sha512-czdGJWh09Lapvcqt7Vb09KlrU2PhRJ8xQaI+AItTuD9aDJ5MAgxnS38lnys6Ll+6RJEqPiaUqTwIQhVLwFvv+w==}
+
   '@repeaterjs/repeater@3.1.0':
     resolution: {integrity: sha512-TaoVksZRSx2KWYYpyLQtMQXXeS98VsgZImzW65xmiVgbYhXLk+aEsmzPLirqVuE4/XuUapH2iMtxUzaBNDzdSQ==}
 
@@ -12220,6 +12163,9 @@ packages:
 
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
+
+  cookie-es@3.1.1:
+    resolution: {integrity: sha512-UaXxwISYJPTr9hwQxMFYZ7kNhSXboMXP+Z3TRX6f1/NyaGPfuNUZOWP1pUEb75B2HjfklIYLVRfWiFZJyC6Npg==}
 
   cookie-parser@1.4.7:
     resolution: {integrity: sha512-nGUvgXnotP3BsjiLX2ypbQnWoGUPIIfHQNZkkC668ntrzGWEZVW70HDEB1qnNGMicPje6EttlIgzo51YSwNQGw==}
@@ -17636,6 +17582,22 @@ packages:
     resolution: {integrity: sha512-Ys9K+ppnJah3QuaRiLxk+jDWOR1MekYQrlytiXxC1RyfbdsZkS5pvKAzCCr031xHixZwpnsYNT5xysdFHQaYsA==}
     peerDependencies:
       react: '>=15'
+
+  react-router@8.5.1:
+    resolution: {integrity: sha512-5u1eQ46QjuXjNfEnLwzrnou1Bm5dquO3xjVYkkMYCudtkicD2AQHtx+fvXzPATtPJx8TW6DR1x1TDRqsfHyZBw==}
+    engines: {node: '>=22.22.0'}
+    peerDependencies:
+      '@types/react': '>=19.2.0'
+      '@types/react-dom': '>=19.2.0'
+      react: '>=19.2.7'
+      react-dom: '>=19.2.7'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+      react-dom:
+        optional: true
 
   react-split@2.0.14:
     resolution: {integrity: sha512-bKWydgMgaKTg/2JGQnaJPg51T6dmumTWZppFgEbbY0Fbme0F5TuatAScCLaqommbGQQf/ZT1zaejuPDriscISA==}
@@ -27228,6 +27190,8 @@ snapshots:
 
   '@react-dnd/shallowequal@4.0.2': {}
 
+  '@remix-run/route-pattern@0.22.1': {}
+
   '@repeaterjs/repeater@3.1.0': {}
 
   '@rolldown/binding-android-arm-eabi@1.2.16':
@@ -30566,6 +30530,8 @@ snapshots:
   convert-source-map@1.9.0: {}
 
   convert-source-map@2.0.0: {}
+
+  cookie-es@3.1.1: {}
 
   cookie-parser@1.4.7:
     dependencies:
@@ -37361,6 +37327,16 @@ snapshots:
       react-is: 16.13.1
       tiny-invariant: 1.3.3
       tiny-warning: 1.0.3
+
+  react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
+    dependencies:
+      '@remix-run/route-pattern': 0.22.1
+      cookie-es: 3.1.1
+      react: 19.3.1
+    optionalDependencies:
+      '@types/react': 19.3.0
+      '@types/react-dom': 19.3.0(@types/react@19.3.0)
+      react-dom: 19.3.1(react@19.3.1)
 
   react-split@2.0.14(react@19.3.1):
     dependencies:

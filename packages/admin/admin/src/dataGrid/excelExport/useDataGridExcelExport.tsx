@@ -1,4 +1,5 @@
-import { type DocumentNode, type OperationVariables, useApolloClient } from "@apollo/client";
+import type { DocumentNode, OperationVariables } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import type { GridValidRowModel } from "@mui/x-data-grid";
 import { useCallback, useState } from "react";
 import { useIntl } from "react-intl";
@@ -69,6 +70,10 @@ export function useDataGridExcelExport<Row extends GridValidRowModel, GQLQuery, 
                     },
                 });
                 offset += incrementAmount;
+
+                if (!pageData) {
+                    throw new Error("Excel export query returned no data");
+                }
 
                 data.push(...resolveQueryNodes(pageData));
             } while (hasPaging && data.length < totalCount);

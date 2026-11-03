@@ -120,9 +120,9 @@ Component that can be rendered as ContextMenu in a row that has some basic CRUD 
 
 - `url: string`: Shows a "Copy Url" Menu Item that copies the given Url into the clipboard
 - `copyData: () => Promise<CopyData> | CopyData;`: Shows a "Copy" Menu Item, should return JSON representation of the row
-- `onPaste: (options: { input: CopyData; client: ApolloClient<object> }) => Promise<void>;`: Shows as "Paste" Menu Item, implementation should insert a new row based on the passed `input` JSON. Attention: `input` is not validated.
-- `onDelete: (options: { client: ApolloClient<object> }) => Promise<void>;`: Shows a "Delete" Menu Item, implementation should delete the row.
-- `refetchQueries: RefetchQueriesOptions<any, unknown>["include"];`: called on apollo after executing delete or paste
+- `onPaste: (options: { input: CopyData; client: ApolloClient }) => Promise<void>;`: Shows as "Paste" Menu Item, implementation should insert a new row based on the passed `input` JSON. Attention: `input` is not validated.
+- `onDelete: (options: { client: ApolloClient }) => Promise<void>;`: Shows a "Delete" Menu Item, implementation should delete the row.
+- `refetchQueries: ApolloClient.RefetchQueriesOptions<any, unknown>["include"];`: called on apollo after executing delete or paste
 
 <Canvas of={DataGridStories._CrudContextMenu} />
 

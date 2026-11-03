@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { FinalForm } from "@dextinity/admin";
 
 import { useDamScope } from "../config/useDamScope";

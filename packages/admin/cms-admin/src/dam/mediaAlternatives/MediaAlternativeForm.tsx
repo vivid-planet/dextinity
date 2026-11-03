@@ -1,4 +1,5 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
 import { Field, FinalForm, FinalFormInput, type ISelectionApi, Loading } from "@dextinity/admin";
 import { FormattedMessage } from "react-intl";
 

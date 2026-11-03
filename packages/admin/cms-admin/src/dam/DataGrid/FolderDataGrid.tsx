@@ -1,4 +1,4 @@
-import { useApolloClient, useQuery } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     type BreadcrumbItem,
     DataGridToolbar,
@@ -529,6 +529,10 @@ const FolderDataGrid = ({
                     scope,
                 },
             });
+
+            if (!result.data) {
+                return;
+            }
 
             const position = result.data.damItemListPosition;
             const targetPage = Math.floor(position / dataGridProps.paginationModel.pageSize);

@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import { Field, FinalForm, FinalFormSelect, SaveButton, Tooltip } from "@dextinity/admin";
 import { Info, Newsletter } from "@dextinity/admin-icons";
 import { BlockAdminComponentPaper, BlockAdminComponentSectionGroup, useContentScope } from "@dextinity/cms-admin";
@@ -7,7 +8,11 @@ import { FormattedMessage } from "react-intl";
 
 import { useBrevoConfig } from "../../common/BrevoConfigProvider";
 import type { GQLEmailCampaignContentScopeInput } from "../../graphql.generated";
-import type { GQLBrevoTestContactsSelectListFragment } from "./TestEmailCampaignForm.generated";
+import type {
+    GQLBrevoTestContactsGridSelectQuery,
+    GQLBrevoTestContactsGridSelectQueryVariables,
+    GQLBrevoTestContactsSelectListFragment,
+} from "./TestEmailCampaignForm.generated";
 import { SendEmailCampaignToTestEmailsMutation } from "./TestEmailCampaignForm.gql";
 import type {
     GQLSendEmailCampaignToTestEmailsMutation,
@@ -59,9 +64,12 @@ export const TestEmailCampaignForm = ({ id, isSendable = false, isCampaignCreate
     );
 
     // Contact creation is limited to 100 at a time. Therefore, 100 contacts are queried without using pagination.
-    const { data, loading, error } = useQuery(brevoTestContactsSelectQuery, {
-        variables: { offset: 0, limit: 100, scope },
-    });
+    const { data, loading, error } = useQuery<GQLBrevoTestContactsGridSelectQuery, GQLBrevoTestContactsGridSelectQueryVariables>(
+        brevoTestContactsSelectQuery,
+        {
+            variables: { offset: 0, limit: 100, scope },
+        },
+    );
 
     async function submitTestEmails({ testEmails }: FormProps) {
         if (id) {

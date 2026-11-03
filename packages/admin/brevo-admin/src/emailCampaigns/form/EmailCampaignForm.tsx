@@ -1,4 +1,4 @@
-import { useApolloClient, useQuery } from "@apollo/client";
+import { skipToken, useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Field,
     Loading,
@@ -86,7 +86,7 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
 
     const { data, error, loading, refetch } = useQuery<GQLEmailCampaignFormQuery, GQLEmailCampaignFormQueryVariables>(
         emailCampaignFormQuery,
-        id ? { variables: { id } } : { skip: true },
+        id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
     );
 
     const { state, setState, hasChanges, output, query, updateReferenceContent } = useEditState<
@@ -129,7 +129,7 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
     const saveConflict = useFormSaveConflict({
         checkConflict: async () => {
             const updatedAt = await queryUpdatedAt(client, "brevoEmailCampaign", id);
-            return resolveHasSaveConflict(data?.brevoEmailCampaign.updatedAt, updatedAt);
+            return resolveHasSaveConflict(data?.brevoEmailCampaign?.updatedAt, updatedAt);
         },
         formApiRef,
         loadLatestVersion: async () => {

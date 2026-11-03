@@ -24,7 +24,7 @@ exports[`AsyncSelect rendered props > generates readonly async select 1`] = `
                             
                         
                     });
-                    return data.categories.nodes;
+                    return data?.categories.nodes ?? [];
                 }}
                 getOptionLabel={(option) => option.name}
                 

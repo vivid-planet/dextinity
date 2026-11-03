@@ -77,7 +77,7 @@ export class RedirectEntityFactory {
             @Field(() => RedirectGenerationType)
             generationType: RedirectGenerationType;
 
-            @Enum({ items: () => RedirectType, default: RedirectType.temporary })
+            @Enum(() => RedirectType)
             @Field(() => RedirectType)
             redirectType: RedirectType = RedirectType.temporary;
 

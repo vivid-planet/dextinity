@@ -6,7 +6,13 @@ vi.mock("../../context/useBlockContext", () => ({
 }));
 
 import { mockStates } from "../__mocks__/TableBlockData.mocks";
-import { clickButtonOfColumnAtIndex, clickButtonOfRowAtIndex, getCellsExcludingTheDragHandleAndActionsCells, renderTableBlock } from "./utils";
+import {
+    clickButtonOfColumnAtIndex,
+    clickButtonOfRowAtIndex,
+    getBodyRowgroup,
+    getCellsExcludingTheDragHandleAndActionsCells,
+    renderTableBlock,
+} from "./utils";
 
 afterEach(cleanup);
 
@@ -40,7 +46,7 @@ describe("TableBlock: Verify the table is always editable, regardless of the num
             clickButtonOfRowAtIndex(rendered, 0, /delete/i);
         });
 
-        const rowgroup = rendered.getByRole("rowgroup");
+        const rowgroup = getBodyRowgroup(rendered);
         const newRow = within(rowgroup).getByRole("row");
         const dataCells = getCellsExcludingTheDragHandleAndActionsCells(newRow);
 
@@ -59,7 +65,7 @@ describe("TableBlock: Verify the table is always editable, regardless of the num
             clickButtonOfColumnAtIndex(rendered, 0, /delete/i);
         });
 
-        const rowgroup = rendered.getByRole("rowgroup");
+        const rowgroup = getBodyRowgroup(rendered);
         const newRows = within(rowgroup).queryAllByRole("row");
         expect(newRows.length).toBeGreaterThan(0);
 

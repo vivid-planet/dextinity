@@ -70,7 +70,7 @@ export function RouterTabs(inProps: Props) {
     const {
         children,
         tabComponent: TabComponent = MuiTab,
-        tabsProps: { ScrollButtonComponent = TabScrollButton, ...tabsProps } = {},
+        tabsProps: { slots: tabsSlots, ...tabsProps } = {},
         slotProps,
         ...restProps
     } = useThemeProps({ props: inProps, name: "DextinityAdminRouterTabs" });
@@ -129,7 +129,7 @@ export function RouterTabs(inProps: Props) {
                             <StyledTabs
                                 value={value}
                                 onChange={handleChange}
-                                ScrollButtonComponent={ScrollButtonComponent}
+                                slots={{ scrollButtons: TabScrollButton, ...tabsSlots }}
                                 scrollButtons="auto"
                                 variant="scrollable"
                                 {...slotProps?.tabs}

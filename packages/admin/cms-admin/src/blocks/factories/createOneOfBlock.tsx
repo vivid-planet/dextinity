@@ -388,7 +388,11 @@ export const createOneOfBlock = <T extends boolean = boolean>(
             return (
                 <SelectPreviewComponent>
                     <HiddenInSubroute>
-                        <Box paddingBottom={isInPaper ? 0 : 3}>
+                        <Box
+                            sx={{
+                                paddingBottom: isInPaper ? 0 : 3,
+                            }}
+                        >
                             <BlocksFinalForm<{ blockType: string }>
                                 onSubmit={({ blockType }) => {
                                     handleBlockSelect(blockType);
@@ -399,7 +403,11 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                             >
                                 {variant === "select" && (
                                     <>
-                                        <Box padding={isInPaper ? 3 : 0}>
+                                        <Box
+                                            sx={{
+                                                padding: isInPaper ? 3 : 0,
+                                            }}
+                                        >
                                             <SelectField name="blockType" options={options} fullWidth required />
                                         </Box>
                                         {isInPaper && activeBlock.block && <Divider />}
@@ -407,7 +415,13 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                                 )}
                                 {variant === "radio" && (
                                     <>
-                                        <Box display="flex" flexDirection="column" padding={3}>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                padding: 3,
+                                            }}
+                                        >
                                             <RadioGroupField name="blockType" fullWidth options={options} />
                                         </Box>
                                         {activeBlock.block && <Divider />}
@@ -415,7 +429,11 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                                 )}
                                 {variant === "toggle" && (
                                     <>
-                                        <Box padding={isInPaper ? 3 : 0}>
+                                        <Box
+                                            sx={{
+                                                padding: isInPaper ? 3 : 0,
+                                            }}
+                                        >
                                             <Field name="blockType" fullWidth>
                                                 {({ input: { value, onChange } }) => (
                                                     <ToggleButtonGroup
@@ -443,7 +461,11 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                         </Box>
                     </HiddenInSubroute>
                     {activeBlock.block && activeBlock.state ? (
-                        <Box padding={isInPaper && !activeBlock.block.definesOwnPadding ? 3 : 0}>
+                        <Box
+                            sx={{
+                                padding: isInPaper && !activeBlock.block.definesOwnPadding ? 3 : 0,
+                            }}
+                        >
                             <HoverPreviewComponent key={activeBlock.type} componentSlug={`#${activeBlock.type}`}>
                                 <activeBlock.block.AdminComponent
                                     state={activeBlock.state.props}

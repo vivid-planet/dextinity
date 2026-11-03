@@ -566,8 +566,10 @@ const FolderDataGrid = ({
         <Snackbar
             anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
             autoHideDuration={5000}
-            TransitionComponent={(props: SlideProps) => <Slide {...props} direction="right" />}
             message={<FormattedMessage id="dextinity.dam.upload.noEmptyFolders" defaultMessage="Empty folders can't be uploaded" />}
+            slots={{
+                transition: (props: SlideProps) => <Slide {...props} direction="right" />,
+            }}
         />
     );
 

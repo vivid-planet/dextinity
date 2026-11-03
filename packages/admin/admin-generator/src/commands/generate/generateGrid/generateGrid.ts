@@ -1012,7 +1012,7 @@ export function generateGrid<T extends { __typename?: string }>(
                                         ? forwardRowAction
                                             ? `{rowAction && rowAction(params)}`
                                             : `
-                                        <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                                        <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                             <EditIcon />
                                         </IconButton>`
                                         : ""

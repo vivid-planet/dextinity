@@ -135,7 +135,7 @@ export function JobsGrid(props: JobsGridProps) {
                             headerName: "",
                             renderCell: ({ row }) => (
                                 <Tooltip title={<FormattedMessage id="dextinity.pages.jobs.showLogs" defaultMessage="Show logs" />}>
-                                    <IconButton component={StackLink} pageName="logs" payload={row.name}>
+                                    <IconButton component={StackLink} nativeButton={false} pageName="logs" payload={row.name}>
                                         <List color="primary" />
                                     </IconButton>
                                 </Tooltip>

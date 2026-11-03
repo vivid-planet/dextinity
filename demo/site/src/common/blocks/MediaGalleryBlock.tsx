@@ -8,7 +8,7 @@ import {
     CarouselSlide,
     CarouselStatus,
     CarouselViewport,
-} from "@src/common/components/Carousel";
+} from "@src/common/components/carousel/Carousel";
 import { Typography } from "@src/common/components/Typography";
 import { PageLayout } from "@src/layout/PageLayout";
 import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";

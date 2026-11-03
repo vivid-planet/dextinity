@@ -10,7 +10,7 @@ import {
     CarouselSlide,
     CarouselStatus,
     CarouselViewport,
-} from "@src/common/components/Carousel";
+} from "@src/common/components/carousel/Carousel";
 import { PageLayout } from "@src/layout/PageLayout";
 import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import { AnimateGroup } from "@src/util/animations/AnimateGroup";

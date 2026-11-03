@@ -632,6 +632,17 @@ If your project has to keep its own consumer, handle the new kind wherever you s
   }
 ```
 
+### Read `validationErrors` as a list of paths and messages
+
+The `ExceptionFilter` returns `validationErrors` of a `DextinityValidationException` as the list of `formatValidationErrors()` instead of the tree of class-validator errors. Only clients that read `validationErrors` are affected, for instance a custom client that shows the errors of a failed mutation.
+
+```diff
+- "validationErrors": [{ "property": "name", "value": 1, "constraints": { "isString": "name must be a string" }, "children": [] }]
++ "validationErrors": [{ "path": "name", "message": "name must be a string" }]
+```
+
+Read `path` and `message` instead of walking `property`, `constraints` and `children`. The path contains the whole way to the invalid value, for instance `content.blocks[3].props.height`.
+
 ### Verify the API still starts
 
 Type checks don't catch a broken NestJS module graph or entity metadata that fails discovery. Verify the AppModule still resolves and the generated artifacts are up to date:

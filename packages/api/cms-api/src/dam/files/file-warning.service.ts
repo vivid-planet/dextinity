@@ -6,6 +6,7 @@ import type { WarningData } from "../../warnings/dto/warning-data.js";
 import type { DamConfig } from "../dam.config.js";
 import { DAM_CONFIG } from "../dam.constants.js";
 import type { FileInterface } from "./entities/file.entity.js";
+import { LicenseType } from "./entities/license.embeddable.js";
 import { resolveFileEntity } from "./entities/resolve-dam-entity.js";
 
 @Injectable()
@@ -72,7 +73,7 @@ export class FileWarningService implements CreateWarningsServiceInterface<FileIn
             return warnings;
         } // license feature not enabled, no warnings
 
-        if (entity.license?.durationTo) {
+        if (entity.license?.durationTo && entity.license.type !== LicenseType.ROYALTY_FREE) {
             const soonToExpireDate = new Date();
             soonToExpireDate.setDate(soonToExpireDate.getDate() + 30);
 

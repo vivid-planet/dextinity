@@ -69,7 +69,12 @@ function resolveDeviceConfig(device: Device): DeviceConfig | null {
     return devicesConfig[device];
 }
 
-function calcScaleFactor(width: number, height: number, deviceConfig: DeviceConfig) {
+// react-cool-dimensions v3 returns null before the first measurement, although its return type claims number
+function calcScaleFactor(width: number | null, height: number | null, deviceConfig: DeviceConfig) {
+    if (width === null || height === null) {
+        return 0;
+    }
+
     if (width >= deviceConfig.outerFrame.width + 40 && height >= deviceConfig.outerFrame.height + 40) {
         return 1;
     }

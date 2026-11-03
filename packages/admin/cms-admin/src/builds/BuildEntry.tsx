@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { AppHeaderDropdown, LocalErrorScopeApolloContext, useFocusAwarePolling } from "@dextinity/admin";
 import { SsgRunning, SsgStandby } from "@dextinity/admin-icons";
 import { Box, List, ListItem, Typography } from "@mui/material";

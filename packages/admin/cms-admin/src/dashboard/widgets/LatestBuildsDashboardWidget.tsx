@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import type { GridColDef } from "@dextinity/admin";
 import { parseISO } from "date-fns";
 import { FormattedMessage, useIntl } from "react-intl";

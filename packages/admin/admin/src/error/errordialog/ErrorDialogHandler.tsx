@@ -1,4 +1,4 @@
-import { useReactiveVar } from "@apollo/client";
+import { useReactiveVar } from "@apollo/client/react";
 import { useEffect, useState } from "react";
 
 import { ErrorDialog, type ErrorDialogOptions } from "./ErrorDialog";

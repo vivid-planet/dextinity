@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Button, MainContent, StackLink, Toolbar, ToolbarActions, ToolbarBackButton, ToolbarFillSpace } from "@dextinity/admin";
 import { Add as AddIcon } from "@dextinity/admin-icons";
 import { ContentScopeIndicator, useContentScopeConfig } from "@dextinity/cms-admin";

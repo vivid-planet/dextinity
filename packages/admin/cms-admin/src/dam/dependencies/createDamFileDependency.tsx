@@ -28,7 +28,7 @@ function createDamFileDependency(basePath = "/assets"): DependencyInterface {
                 },
             });
 
-            if (error) {
+            if (error || !data) {
                 throw new Error(`DamFile.resolvePath: Could not find a DamFile with id ${id}`);
             }
 

@@ -1,4 +1,5 @@
-import { type ApolloError, gql, type TypedDocumentNode, useApolloClient, useQuery } from "@apollo/client";
+import { type ErrorLike, gql, type TypedDocumentNode } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import { messages, SaveButton } from "@dextinity/admin";
 import { deepEqual } from "fast-equals";
 import {
@@ -120,7 +121,7 @@ interface UsePageApi<PageState, RootBlocks extends RootBlocksInterface> {
     handleSavePage: () => Promise<void>;
     hasChanges?: boolean;
     loading: boolean;
-    error: ApolloError | undefined;
+    error: ErrorLike | undefined;
     saving: boolean;
     saveError: "invalid" | "conflict" | "error" | undefined;
     pageSaveButton: JSX.Element;
@@ -217,6 +218,7 @@ export const createUsePage: CreateUsePage =
                 variables: {
                     id: pageId,
                 } as GQLEditPageQueryVariables,
+                notifyOnNetworkStatusChange: false,
             });
 
             const resetPageStateToLatest = async () => {

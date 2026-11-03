@@ -1,4 +1,4 @@
-import type { ApolloError } from "@apollo/client";
+import type { ErrorLike } from "@apollo/client";
 import { type ComponentsOverrides, Paper } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
 import type { ReactNode } from "react";
@@ -73,7 +73,7 @@ export interface TableQueryProps extends ThemedComponentBaseProps<{
 }> {
     api: ITableQueryApi;
     loading: boolean;
-    error?: ApolloError;
+    error?: ErrorLike;
     children?: ReactNode;
 }
 

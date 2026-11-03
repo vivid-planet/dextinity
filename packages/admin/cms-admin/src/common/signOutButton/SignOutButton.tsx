@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { Logout, ThreeDotSaving } from "@dextinity/admin-icons";
 // eslint-disable-next-line no-restricted-imports
 import { Button, type ButtonProps as MuiButtonProps } from "@mui/material";

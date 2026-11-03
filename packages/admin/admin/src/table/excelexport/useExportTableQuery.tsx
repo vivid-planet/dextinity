@@ -1,4 +1,5 @@
-import { type OperationVariables, useApolloClient } from "@apollo/client";
+import type { OperationVariables } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { useState } from "react";
 
 import type { Table } from "../Table";

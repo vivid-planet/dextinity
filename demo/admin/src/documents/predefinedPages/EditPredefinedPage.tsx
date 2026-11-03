@@ -1,4 +1,4 @@
-import { useApolloClient, useQuery } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     FillSpace,
     FinalForm,
@@ -43,6 +43,7 @@ export const EditPredefinedPage = ({ id: pageTreeNodeId }: Props) => {
 
     const { data, error, loading, refetch } = useQuery<GQLPredefinedPageQuery, GQLPredefinedPageQueryVariables>(predefinedPageQuery, {
         variables: { pageTreeNodeId },
+        notifyOnNetworkStatusChange: false,
     });
 
     const initialValues = useMemo<Partial<FormValues>>(() => {

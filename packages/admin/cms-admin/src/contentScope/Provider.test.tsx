@@ -1,4 +1,4 @@
-import { MockedProvider } from "@apollo/client/testing";
+import { MockedProvider } from "@apollo/client/testing/react";
 import { createMemoryHistory } from "history";
 import type { ReactNode } from "react";
 import { Router } from "react-router";

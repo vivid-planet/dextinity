@@ -1,4 +1,4 @@
-import { useApolloClient, useQuery } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Field,
     FieldSet,
@@ -38,7 +38,10 @@ export const DamSettings = ({ contentScopeIndicator }: DamSettingsProps) => {
     const scope = useDamScope();
     const apolloClient = useApolloClient();
     const { filteredAcceptedMimeTypes } = useDamAcceptedMimeTypes();
-    const { data, error, loading } = useQuery<GQLDamSettingsQuery, GQLDamSettingsQueryVariables>(damSettingsQuery, { variables: { scope } });
+    const { data, error, loading } = useQuery<GQLDamSettingsQuery, GQLDamSettingsQueryVariables>(damSettingsQuery, {
+        variables: { scope },
+        notifyOnNetworkStatusChange: false,
+    });
 
     if (error) {
         throw error;

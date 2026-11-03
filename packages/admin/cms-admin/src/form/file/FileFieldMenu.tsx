@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { OpenNewTab } from "@dextinity/admin-icons";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import { type ComponentProps, isValidElement, type ReactElement, type ReactNode } from "react";

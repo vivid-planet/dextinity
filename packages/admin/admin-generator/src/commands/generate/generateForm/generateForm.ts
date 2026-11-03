@@ -77,8 +77,9 @@ export function generateForm(
 
     const imports: Imports = [
         { name: "FormattedMessage", importPath: "react-intl" },
-        { name: "useApolloClient", importPath: "@apollo/client" },
-        { name: "useQuery", importPath: "@apollo/client" },
+        { name: "useApolloClient", importPath: "@apollo/client/react" },
+        { name: "useQuery", importPath: "@apollo/client/react" },
+        { name: "skipToken", importPath: "@apollo/client/react" },
         { name: "gql", importPath: "@apollo/client" },
         { name: "CheckboxField", importPath: "@dextinity/admin" },
         { name: "Field", importPath: "@dextinity/admin" },
@@ -461,7 +462,11 @@ export function generateForm(
                 ? `
         const { data, error, loading, refetch } = useQuery<GQL${gqlType}Query, GQL${gqlType}QueryVariables>(
             ${instanceGqlType}Query,
-            ${mode == "edit" ? `{ variables: { id } }` : `id ? { variables: { id } } : { skip: true }`},
+            ${
+                mode == "edit"
+                    ? `{ variables: { id }, notifyOnNetworkStatusChange: false }`
+                    : `id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken`
+            },
         );
         `
                 : ""

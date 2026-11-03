@@ -41,7 +41,7 @@ export interface DamFileToCopy {
 }
 
 interface CopyDamFilesToScopeOptions {
-    client: ApolloClient<unknown>;
+    client: ApolloClient;
     files: DamFileToCopy[];
     targetDamScope: Record<string, unknown>;
     updateProgress?: (progressFromZeroToOne: number) => void;
@@ -81,7 +81,7 @@ export async function copyDamFilesToScope({
                     },
                 });
 
-                if (data.findCopiesOfFileInScope.length > 0) {
+                if (data && data.findCopiesOfFileInScope.length > 0) {
                     replacements.push({ type: "DamFile", originalId: file.id, replaceWithId: data.findCopiesOfFileInScope[0].id });
                 } else {
                     filesToCopy.push(file);

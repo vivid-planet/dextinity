@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { createContext, type PropsWithChildren, useCallback, useContext, useState } from "react";
 
 import type { GQLFilenameResponse } from "../../../graphql.generated";
@@ -47,6 +47,10 @@ export const ManualDuplicatedFilenamesHandlerContextProvider = ({ children }: Pr
                 },
                 fetchPolicy: "network-only",
             });
+
+            if (!data) {
+                throw new Error("Failed to check for duplicate filenames");
+            }
 
             return data.filenamesResponse;
         },

@@ -1,4 +1,5 @@
-import { gql, useApolloClient } from "@apollo/client";
+import { CombinedGraphQLErrors, gql } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { LocalErrorScopeApolloContext, useErrorDialog } from "@dextinity/admin";
 import { useCallback, useRef } from "react";
 import { FormattedMessage } from "react-intl";
@@ -26,14 +27,14 @@ export function useSeoTagGeneration() {
 
     const getSeoTags = useCallback(
         async (content: string): Promise<GQLGenerateSeoTagsMutation["generateSeoTags"]> => {
-            const { data, errors } = await apolloClient.mutate<GQLGenerateSeoTagsMutation, GQLGenerateSeoTagsMutationVariables>({
+            const { data, error } = await apolloClient.mutate<GQLGenerateSeoTagsMutation, GQLGenerateSeoTagsMutationVariables>({
                 mutation: generateSeoTagsMutation,
                 variables: { content, language },
                 context: LocalErrorScopeApolloContext,
                 errorPolicy: "all",
             });
 
-            if (errors || !data?.generateSeoTags) {
+            if (error || !data?.generateSeoTags) {
                 errorDialog?.showError({
                     title: (
                         <FormattedMessage
@@ -47,7 +48,7 @@ export function useSeoTagGeneration() {
                             defaultMessage="An error occurred while generating SEO tags. Please try again."
                         />
                     ),
-                    error: errors ? errors[0].message : "Failed to generate SEO tags",
+                    error: error ? (CombinedGraphQLErrors.is(error) ? error.errors[0].message : error.message) : "Failed to generate SEO tags",
                 });
                 throw new Error("Failed to generate SEO tags");
             }

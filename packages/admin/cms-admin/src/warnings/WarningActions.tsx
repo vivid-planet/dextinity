@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { messages, Tooltip } from "@dextinity/admin";
 import { ArrowRight, OpenNewTab } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";

@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import { Button, CancelButton, StackLink, Tooltip, useStackSwitchApi } from "@dextinity/admin";
 import { Play, Time } from "@dextinity/admin-icons";
 import {

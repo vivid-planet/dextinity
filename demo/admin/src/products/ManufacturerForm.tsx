@@ -1,4 +1,4 @@
-import { useApolloClient, useQuery } from "@apollo/client";
+import { skipToken, useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Field,
     FieldSet,
@@ -69,7 +69,7 @@ export function ManufacturerForm({ id }: FormProps) {
 
     const { data, error, loading, refetch } = useQuery<GQLManufacturerQuery, GQLManufacturerQueryVariables>(
         manufacturerQuery,
-        id ? { variables: { id } } : { skip: true },
+        id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
     );
 
     const initialValues = useMemo<Partial<FormValues>>(() => {

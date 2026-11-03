@@ -22,7 +22,7 @@
         "test:watch": "vitest --watch"
     },
     "dependencies": {
-        "@apollo/client": "^3.14.1",
+        "@apollo/client": "^4.3.5",
         "@dextinity/admin": "workspace:*",
         "@dextinity/admin-color-picker": "workspace:*",
         "@dextinity/admin-date-time": "workspace:*",

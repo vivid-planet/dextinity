@@ -47,7 +47,7 @@
         "react-dropzone": "^20.1.4"
     },
     "devDependencies": {
-        "@apollo/client": "^3.14.1",
+        "@apollo/client": "^4.3.5",
         "@babel/cli": "^7.29.7",
         "@babel/core": "^7.29.7",
         "@dextinity/admin-babel-preset": "workspace:*",
@@ -83,7 +83,7 @@
         "typescript": "^5.9.3"
     },
     "peerDependencies": {
-        "@apollo/client": "^3.7.0",
+        "@apollo/client": "^3.7.0 || ^4.0.0",
         "@emotion/react": "^11.5.0",
         "@emotion/styled": "^11.3.0",
         "@mui/material": "^7.0.0",

@@ -164,7 +164,7 @@ settings:
 
 overrides:
   '@apollo/server-plugin-landing-page-graphql-playground>@apollo/server': ^5.1.0
-  '@types/mjml-core': 4.15.2
+  '@types/mjml-core': 5.1.1
 
 importers:
 
@@ -9778,8 +9778,8 @@ packages:
   '@types/mjml-browser@4.15.0':
     resolution: {integrity: sha512-WNmr7LB4XfSM4pe+ES3zCcF4NY3hfPQxLNPn8v3GgNYc3u2rJbiQ56Ahswn/WF9kpO+M5jKd2jlq8u2ZAV0g6A==}
 
-  '@types/mjml-core@4.15.2':
-    resolution: {integrity: sha512-Q7SxFXgoX979HP57DEVsRI50TV8x1V4lfCA4Up9AvfINDM5oD/X9ARgfoyX1qS987JCnDLv85JjkqAjt3hZSiQ==}
+  '@types/mjml-core@5.1.1':
+    resolution: {integrity: sha512-H3ycAWAk7LCLUqX/uLVbrndU9zZ93tcjbfmrAoe2lsPw+lEpiLl0Gi6vYNXEcY7Ww/tv/oXm/9HkAGYWyY1TTw==}
 
   '@types/mjml@4.18.2':
     resolution: {integrity: sha512-lqV9xLRNB0D4u5gCKtBVZG+nbf2KuU41YOO3G/3+cFf7dDhD7k8UowXAk+9kaivfbL/9EFx68ryaVijZYzPwSw==}
@@ -27603,13 +27603,13 @@ snapshots:
 
   '@types/mjml-browser@4.15.0':
     dependencies:
-      '@types/mjml-core': 4.15.2
+      '@types/mjml-core': 5.1.1
 
-  '@types/mjml-core@4.15.2': {}
+  '@types/mjml-core@5.1.1': {}
 
   '@types/mjml@4.18.2':
     dependencies:
-      '@types/mjml-core': 4.15.2
+      '@types/mjml-core': 5.1.1
 
   '@types/ms@2.1.0': {}
 

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Redirect, Route, Switch } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 
 import { StackBackButton } from "../backbutton/StackBackButton";
 import { StackBreadcrumbs } from "../breadcrumbs/StackBreadcrumbs";
@@ -43,13 +43,9 @@ export default {
 
 export const _StackBackButton = () => {
     return (
-        <Switch>
-            <Route exact path="/">
-                <Redirect to="/foo" />
-            </Route>
-            <Route path="/foo">
-                <Story />
-            </Route>
-        </Switch>
+        <Routes>
+            <Route index element={<Navigate to="/foo" replace />} />
+            <Route path="/foo/*" element={<Story />} />
+        </Routes>
     );
 };

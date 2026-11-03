@@ -2,7 +2,9 @@ import type { DataGridProps, GridCallbackDetails, GridFilterModel, GridPaginatio
 import { deepEqual } from "fast-equals";
 import queryString from "query-string";
 import { useCallback, useRef, useState } from "react";
-import { useHistory, useLocation } from "react-router";
+import { useLocation } from "react-router";
+
+import { useStableNavigate } from "../router/internal/useStableNavigate";
 
 type UseDataGridUrlStateReturnValue = {
     filterModel: DataGridProps["filterModel"];
@@ -29,8 +31,19 @@ export function useDataGridUrlState({
     initialSort?: Array<{ field: string; sort: GridSortDirection }>;
     initialFilter?: GridFilterModel;
 } = {}): UseDataGridUrlStateReturnValue {
-    const history = useHistory();
+    const navigate = useStableNavigate();
     const location = useLocation();
+
+    const replaceSearch = useCallback(
+        (search: Parameters<typeof queryString.stringify>[0]) => {
+            const searchString = queryString.stringify(search);
+            navigate(
+                { pathname: location.pathname, search: searchString ? `?${searchString}` : "", hash: location.hash },
+                { replace: true, state: location.state },
+            );
+        },
+        [navigate, location],
+    );
 
     // fallback states are used when query param in the Url is lost (e.g. when the user open an EditDialog that creates a new sub route)
     const [fallbackSort, setFallbackSort] = useState<GridSortModel | undefined>(undefined);
@@ -51,14 +64,11 @@ export function useDataGridUrlState({
 
     const onPaginationModelChange = useCallback(
         (model: GridPaginationModel, details: GridCallbackDetails) => {
-            history.replace({
-                ...location,
-                search: queryString.stringify({ ...parsedSearch, [pageParamName]: model.page, [pageSizeParamName]: model.pageSize }),
-            });
+            replaceSearch({ ...parsedSearch, [pageParamName]: model.page, [pageSizeParamName]: model.pageSize });
             setFallbackPage(model.page);
             setFallbackPageSize(model.pageSize);
         },
-        [history, location, pageParamName, pageSizeParamName, parsedSearch],
+        [replaceSearch, pageParamName, pageSizeParamName, parsedSearch],
     );
 
     const sortModel = useDeepEqualMemo(
@@ -84,10 +94,10 @@ export function useDataGridUrlState({
     const handleSortModelChange = useCallback(
         (sortModel: GridSortModel) => {
             const sort = sortModel.length > 0 ? sortModel.map((i) => `${i.field}:${i.sort}`) : ["none"];
-            history.replace({ ...location, search: queryString.stringify({ ...parsedSearch, [sortParamName]: sort }) });
+            replaceSearch({ ...parsedSearch, [sortParamName]: sort });
             setFallbackSort(sortModel);
         },
-        [history, location, parsedSearch, sortParamName],
+        [replaceSearch, parsedSearch, sortParamName],
     );
 
     const filterModel = parsedSearch[filterParamName]
@@ -95,10 +105,10 @@ export function useDataGridUrlState({
         : (fallbackFilter ?? initialFilter ?? { items: [] });
     const handleFilterChange = useCallback(
         (filterModel: GridFilterModel) => {
-            history.replace({ ...location, search: queryString.stringify({ ...parsedSearch, [filterParamName]: JSON.stringify(filterModel) }) });
+            replaceSearch({ ...parsedSearch, [filterParamName]: JSON.stringify(filterModel) });
             setFallbackFilter(filterModel);
         },
-        [history, location, parsedSearch, filterParamName],
+        [replaceSearch, parsedSearch, filterParamName],
     );
 
     return {

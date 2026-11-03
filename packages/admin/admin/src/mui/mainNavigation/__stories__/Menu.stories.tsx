@@ -1,6 +1,6 @@
 import { Dashboard, DextinityIcon, DextinityLogo, Settings, Sort } from "@dextinity/admin-icons";
 import { Card, CardContent, Typography } from "@mui/material";
-import { Route, Switch } from "react-router";
+import { Route, Routes } from "react-router";
 
 import { AppHeader } from "../../../appHeader/AppHeader";
 import { AppHeaderMenuButton } from "../../../appHeader/menuButton/AppHeaderMenuButton";
@@ -79,17 +79,17 @@ export default {
 export const _Menu = {
     render: () => (
         <MasterLayout headerComponent={Header} menuComponent={AppMenu}>
-            <Switch>
-                <Route path="/" exact render={() => <Content>Root</Content>} />
-                <Route path="/dashboard" render={() => <Content>Dashboard</Content>} />
-                <Route path="/settings" render={() => <Content>Settings</Content>} />
-                <Route path="/foo1" render={() => <Content>Foo 1</Content>} />
-                <Route path="/foo2" render={() => <Content>Foo 2</Content>} />
-                <Route path="/foo3" render={() => <Content>Foo 3</Content>} />
-                <Route path="/foo4" render={() => <Content>Foo 4</Content>} />
-                <Route path="/foo5" render={() => <Content>Foo 5</Content>} />
-                <Route path="/foo6" render={() => <Content>Foo 6</Content>} />
-            </Switch>
+            <Routes>
+                <Route path="/" element={<Content>Root</Content>} />
+                <Route path="/dashboard/*" element={<Content>Dashboard</Content>} />
+                <Route path="/settings/*" element={<Content>Settings</Content>} />
+                <Route path="/foo1/*" element={<Content>Foo 1</Content>} />
+                <Route path="/foo2/*" element={<Content>Foo 2</Content>} />
+                <Route path="/foo3/*" element={<Content>Foo 3</Content>} />
+                <Route path="/foo4/*" element={<Content>Foo 4</Content>} />
+                <Route path="/foo5/*" element={<Content>Foo 5</Content>} />
+                <Route path="/foo6/*" element={<Content>Foo 6</Content>} />
+            </Routes>
         </MasterLayout>
     ),
 

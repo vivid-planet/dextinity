@@ -105,9 +105,10 @@ export class ActionLogsAclService {
         const { tableName } = this.entityManager.getMetadata(ActionLog);
         const rows = await this.entityManager
             .getConnection()
-            .execute<
-                Array<{ entityName: string; rowScope: ContentScope }>
-            >(`select distinct "entityName", "rowScope" from "${tableName}", jsonb_array_elements("scope") as "rowScope" where "entityName" in (?)`, [entityNames]);
+            .execute<Array<{ entityName: string; rowScope: ContentScope }>>(
+                `select distinct "entityName", "rowScope" from "${tableName}", jsonb_array_elements("scope") as "rowScope" where "entityName" in (?)`,
+                [entityNames],
+            );
 
         for (const { entityName, rowScope } of rows) {
             rowScopes.set(entityName, [...(rowScopes.get(entityName) ?? []), rowScope]);

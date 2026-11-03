@@ -8,5 +8,5 @@ A project that lists its MikroORM entities explicitly needs `DamSettings` in tha
 
 ```ts
 const settings = await entityManager.findOne(DamSettings, damSettingsByScope(file.scope));
-const hasInvalidLicense = file.license ? !isLicenseValid(file.license) : false;
+const hasInvalidLicense = damConfig.enableLicenseFeature && file.license ? !isLicenseValid(file.license) : false;
 ```

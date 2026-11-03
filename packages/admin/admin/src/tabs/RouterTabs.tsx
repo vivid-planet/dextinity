@@ -5,7 +5,7 @@ import { useLocation } from "react-router";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
-import { matchAbsolutePath, RouteMatchProvider, useCurrentRouteMatch } from "../router/internal/routeContext";
+import { RouteMatchProvider, useCurrentRouteMatch, useMatchAbsolutePath } from "../router/internal/routeContext";
 import { useStableNavigate } from "../router/internal/useStableNavigate";
 import { useSubRoutePrefix } from "../router/SubRoute";
 import { useIsActiveStackSwitch } from "../stack/useIsActiveStackSwitch";
@@ -79,6 +79,7 @@ export function RouterTabs(inProps: Props) {
 
     const navigate = useStableNavigate();
     const { pathname } = useLocation();
+    const matchAbsolutePath = useMatchAbsolutePath();
     const subRoutePrefix = useSubRoutePrefix();
     const routeMatch = useCurrentRouteMatch();
     const isActiveStackSwitch = useIsActiveStackSwitch();

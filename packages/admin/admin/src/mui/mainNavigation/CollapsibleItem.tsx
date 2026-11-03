@@ -4,7 +4,7 @@ import { Children, cloneElement, type MouseEvent, type ReactElement, type ReactN
 import { resolvePath, useLocation, useResolvedPath } from "react-router";
 
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
-import { matchAbsolutePath } from "../../router/internal/routeContext";
+import { matchAbsolutePath } from "../../router/internal/pathMatching";
 import {
     CollapsibleIndicator,
     CollapsibleItemMainNavigationItem,

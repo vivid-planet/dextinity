@@ -1,7 +1,5 @@
 import { type ContextType, createContext, type PropsWithChildren, useCallback, useContext, useId, useMemo } from "react";
 import {
-    matchPath,
-    type Params,
     type PathMatch,
     renderMatches,
     type RouteMatch,
@@ -11,6 +9,8 @@ import {
     UNSAFE_RouteContext,
     useLocation,
 } from "react-router";
+
+import { decodePathSegment, getPathnameBelowMatch, matchAbsolutePath, removeDuplicateSlashes } from "./pathMatching";
 
 // All usages of React Router's UNSAFE_ APIs are kept in this module, so that React Router updates only affect this file.
 
@@ -31,20 +31,8 @@ export interface CurrentRouteMatch {
     pattern: string;
 }
 
-function removeDuplicateSlashes(path: string) {
-    return path.replace(/\/{2,}/g, "/");
-}
-
 function trimSlashes(path: string) {
     return path.replace(/^\/+|\/+$/g, "");
-}
-
-function decodePathPart(value: string) {
-    try {
-        return decodeURIComponent(value);
-    } catch {
-        return value;
-    }
 }
 
 function toAbsolutePattern(pattern: string) {
@@ -67,23 +55,27 @@ function joinRoutePaths(matches: RouteMatch[]): string {
     return toAbsolutePattern(joinedPath) || "/";
 }
 
+type MatchAbsolutePathWithRouteEncoding = (pattern: string, pathname: string, options: { end: boolean }) => PathMatch | null;
+
 /**
- * Matches an absolute pattern against an absolute pathname. Matches non-exactly unless `end` is set. Params are decoded.
+ * Returns `matchAbsolutePath()`, encoding the matched URL like React Router encodes the URLs of routes, so that it can be published as a route.
  */
-export function matchAbsolutePath(pattern: string, pathname: string, { end }: { end: boolean }): PathMatch | null {
-    const match = matchPath({ path: removeDuplicateSlashes(pattern), end }, pathname);
-    if (!match) {
-        return null;
-    }
-    const params: Params = Object.fromEntries(
-        Object.entries(match.params).map(([key, value]) => [key, value === undefined ? undefined : decodePathPart(value)]),
+export function useMatchAbsolutePath(): MatchAbsolutePathWithRouteEncoding {
+    const encodeLocation = useContext(UNSAFE_NavigationContext)?.navigator.encodeLocation;
+    return useCallback(
+        (pattern, pathname, { end }) =>
+            matchAbsolutePath(pattern, pathname, { end, encodePathname: encodeLocation && ((path) => encodeLocation({ pathname: path }).pathname) }),
+        [encodeLocation],
     );
-    return { ...match, params };
 }
 
 export function useAbsolutePathMatch(pattern: string, { end }: { end: boolean }): PathMatch | null {
     const { pathname } = useLocation();
-    return useMemo(() => matchAbsolutePath(pattern, pathname, { end }), [pattern, pathname, end]);
+    const matchAbsolutePathWithRouteEncoding = useMatchAbsolutePath();
+    return useMemo(
+        () => matchAbsolutePathWithRouteEncoding(pattern, pathname, { end }),
+        [matchAbsolutePathWithRouteEncoding, pattern, pathname, end],
+    );
 }
 
 /**
@@ -126,7 +118,7 @@ export function RouteMatchProvider({ match, children }: PropsWithChildren<RouteM
     const url = match?.pathnameBase;
     const pattern = match ? toAbsolutePattern(match.pattern.path) : undefined;
     const serializedParams = match ? JSON.stringify(match.params) : undefined;
-    const splat = match ? decodePathPart(trimSlashes(pathname.slice(match.pathname.length))) : undefined;
+    const splat = match ? decodePathSegment(trimSlashes(getPathnameBelowMatch(pathname, match))) : undefined;
 
     const routeContext = useMemo<RouteContextValue>(() => {
         if (url === undefined || pattern === undefined || serializedParams === undefined) {

@@ -18,7 +18,7 @@ import { type PathMatch, useLocation } from "react-router";
 import { v4 as uuid } from "uuid";
 
 import { useForcePromptRoute } from "../router/ForcePromptRoute";
-import { matchAbsolutePath, RouteMatchProvider, useCurrentRouteMatch } from "../router/internal/routeContext";
+import { RouteMatchProvider, useCurrentRouteMatch, useMatchAbsolutePath } from "../router/internal/routeContext";
 import { useStableNavigate } from "../router/internal/useStableNavigate";
 import { SubRouteIndexRoute, useSubRoutePrefix } from "../router/SubRoute";
 import { StackBreadcrumb } from "./Breadcrumb";
@@ -114,6 +114,7 @@ const StackSwitchInner: ForwardRefRenderFunction<IStackSwitchApi, IProps & IHook
     const routeMatch = useCurrentRouteMatch();
     const subRoutePrefix = useSubRoutePrefix();
     const location = useLocation();
+    const matchAbsolutePath = useMatchAbsolutePath();
 
     let activePage: string | undefined;
 

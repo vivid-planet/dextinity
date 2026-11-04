@@ -55,9 +55,9 @@ jobs:
 
             - uses: ./.github/actions/setup
 
-            # The test app of @dextinity/site-vite-rsc runs the package's build
+            # The test apps of @dextinity/site-vite-rsc and @dextinity/site-react-router run the packages' builds
             - name: Build packages for the e2e tests
-              run: pnpm --filter '@dextinity/site-vite-rsc...' run build
+              run: pnpm --filter '@dextinity/site-vite-rsc...' --filter '@dextinity/site-react-router...' run build
 
             - name: Install Playwright Browsers
               run: pnpm --filter @dextinity/site-vite-rsc exec playwright install chromium-headless-shell
@@ -70,7 +70,7 @@ jobs:
               if: success() || failure()
               with:
                   name: test-results-e2e
-                  path: packages/site/site-vite-rsc/junit-e2e.xml
+                  path: packages/site/*/junit-e2e.xml
                   overwrite: true
 
     test-storybook:

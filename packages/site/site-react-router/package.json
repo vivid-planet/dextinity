@@ -38,15 +38,17 @@
         "generate-block-types": "dextinity generate-block-types",
         "lint": "pnpm run generate-block-types && run-p lint:prettier lint:eslint lint:tsc",
         "lint:ci": "pnpm run lint",
-        "lint:eslint": "eslint --max-warnings 0 src/ '**/*.json' --no-warn-ignored",
+        "lint:eslint": "eslint --max-warnings 0 src/ e2e/ playwright.config.ts '**/*.json' --no-warn-ignored",
         "lint:fix": "run-p lint:fix:eslint lint:fix:prettier",
         "lint:fix:eslint": "pnpm run lint:eslint --fix",
         "lint:fix:prettier": "pnpm run lint:prettier --write",
         "lint:prettier": "pnpm exec prettier --check '*.{ts,mts,js,json,md,yml,yaml}'",
-        "lint:tsc": "tsc --noEmit",
+        "lint:tsc": "tsc --noEmit && pnpm run typegen:e2e && tsc --noEmit --project e2e/fixture",
         "test": "pnpm run test:unit",
+        "test:e2e": "playwright test",
         "test:unit": "vitest --run",
-        "test:watch": "vitest --watch"
+        "test:watch": "vitest --watch",
+        "typegen:e2e": "cd e2e/fixture && react-router typegen"
     },
     "dependencies": {
         "@dextinity/site-react": "workspace:*",
@@ -60,6 +62,8 @@
     "devDependencies": {
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
+        "@playwright/test": "^1.64.1",
+        "@react-router/dev": "^7.18.5",
         "@react-router/node": "^7.18.5",
         "@types/node": "^24.19.2",
         "@types/react": "^19.3.0",

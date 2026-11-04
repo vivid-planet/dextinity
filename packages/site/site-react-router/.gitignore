@@ -1,3 +1,6 @@
 /test-results
 block-meta.json
 src/blocks.generated.ts
+/playwright-report
+/e2e/fixture/build
+/e2e/fixture/.react-router

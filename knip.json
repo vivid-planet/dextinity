@@ -94,8 +94,19 @@
             "ignore": ["./src/**/*.generated.ts"]
         },
         "packages/site/site-react-router": {
-            "entry": ["./src/index.ts", "./src/server.ts", "./src/node.ts", "./src/vite/index.ts"],
-            "project": ["./src/**/*.{ts,tsx}"],
+            "entry": [
+                "./src/index.ts",
+                "./src/server.ts",
+                "./src/node.ts",
+                "./src/vite/index.ts",
+                "./e2e/fixture/server.ts",
+                "./e2e/fixture/app/app.ts",
+                "./e2e/fixture/app/routes.ts",
+                "./e2e/fixture/app/root.tsx",
+                "./e2e/fixture/app/entry.server.tsx",
+                "./e2e/fixture/app/routes/**/*.{ts,tsx}"
+            ],
+            "project": ["./src/**/*.{ts,tsx}", "./e2e/**/*.{ts,tsx}"],
             "ignore": ["./src/**/*.generated.ts"]
         },
         "packages/mail-react": {

@@ -900,9 +900,6 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      csso:
-        specifier: ^5.0.5
-        version: 5.0.5
       embla-carousel:
         specifier: 9.0.0-rc04
         version: 9.0.0-rc04
@@ -921,9 +918,6 @@ importers:
       ioredis:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@8.1.1)
-      lru-cache:
-        specifier: ^11.5.3
-        version: 11.5.3
       mjml:
         specifier: ^4.18.0
         version: 4.18.0

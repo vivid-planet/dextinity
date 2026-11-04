@@ -10,12 +10,14 @@ export function notFound(): never {
 }
 
 /**
- * Redirects in a loader or a middleware. Only accepts http(s), `mailto:` and `tel:` URLs and relative paths, as targets also come
- * from the CMS, e.g. no `javascript:` URLs from redirect entries.
+ * Redirects in a loader or a middleware, temporarily by default. Only accepts http(s), `mailto:` and `tel:` URLs and relative paths,
+ * as targets also come from the CMS, e.g. no `javascript:` URLs from redirect entries.
+ *
+ * @param init The status or the init of the response like React Router's `redirect()`, e.g. with the `Cache-Control` of the page
  */
-export function redirect(location: string, status: 301 | 302 | 303 | 307 | 308 = 307): never {
+export function redirect(location: string, init: number | ResponseInit = 307): never {
     if (!isAllowedRedirectTarget(location)) {
         throw new Error(`Redirect to ${location} disallowed: only http(s), mailto and tel URLs and relative paths are allowed`);
     }
-    throw reactRouterRedirect(location, status);
+    throw reactRouterRedirect(location, typeof init === "number" ? init : { status: 307, ...init });
 }

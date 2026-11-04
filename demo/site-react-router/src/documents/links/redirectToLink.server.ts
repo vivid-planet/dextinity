@@ -20,7 +20,15 @@ const linkRedirectQuery = gql`
 /**
  * Redirects to the target of a link document
  */
-export async function redirectToLink({ pageTreeNodeId, graphQLFetch }: { pageTreeNodeId: string; graphQLFetch: GraphQLFetch }): Promise<never> {
+export async function redirectToLink({
+    pageTreeNodeId,
+    graphQLFetch,
+    pageHeaders,
+}: {
+    pageTreeNodeId: string;
+    graphQLFetch: GraphQLFetch;
+    pageHeaders: ResponseInit;
+}): Promise<never> {
     const { pageTreeNode } = await graphQLFetch<GQLLinkRedirectQuery, GQLLinkRedirectQueryVariables>(linkRedirectQuery, {
         id: pageTreeNodeId,
     });
@@ -31,21 +39,21 @@ export async function redirectToLink({ pageTreeNodeId, graphQLFetch }: { pageTre
         if (content.block?.type === "internal") {
             const link = (content.block.props as InternalLinkBlockData).targetPage?.path;
             if (link) {
-                redirect(link);
+                redirect(link, pageHeaders);
             }
         }
 
         if (content.block?.type === "external") {
             const link = (content.block.props as ExternalLinkBlockData).targetUrl;
             if (link) {
-                redirect(link);
+                redirect(link, pageHeaders);
             }
         }
 
         if (content.block?.type === "damFileDownload") {
             const link = (content.block.props as DamFileDownloadLinkBlockData).file?.fileUrl.replace("/download", "");
             if (link) {
-                redirect(link);
+                redirect(link, pageHeaders);
             }
         }
     }

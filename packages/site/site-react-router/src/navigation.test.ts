@@ -33,6 +33,13 @@ describe("redirect", () => {
         expect((getThrown(() => redirect("https://www.example.com/", 301)) as Response).status).toBe(301);
     });
 
+    it("throws a redirect with the given headers", () => {
+        const response = getThrown(() => redirect("/en/target", { headers: { "Cache-Control": "s-maxage=450" } })) as Response;
+
+        expect(response.status).toBe(307);
+        expect(response.headers.get("cache-control")).toBe("s-maxage=450");
+    });
+
     it("refuses targets the browser can't safely navigate to", () => {
         const thrown = getThrown(() => redirect("javascript:alert(1)"));
 

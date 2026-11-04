@@ -5,6 +5,7 @@ import { redirectToLink } from "@src/documents/links/redirectToLink.server";
 import { loadPage } from "@src/documents/pages/loadPage.server";
 import { Page } from "@src/documents/pages/Page";
 import type { GQLPageTreeNodeScope } from "@src/graphql.generated";
+import { defaultTitle } from "@src/layout/defaultTitle";
 import { getPredefinedPageRewrite } from "@src/middleware/predefinedPages.server";
 import { NewsArticleJsonLd } from "@src/news/NewsArticleJsonLd";
 import { NewsPage } from "@src/news/NewsPage";
@@ -64,8 +65,9 @@ async function fetchPageTreeNode({ domain, language, path: pathParam, graphQLFet
     );
 }
 
-async function loadDocument(params: Params & { graphQLFetch: GraphQLFetch }) {
-    const { domain, language, graphQLFetch } = params;
+// Redirects are cached like the page
+async function loadDocument(params: Params & { graphQLFetch: GraphQLFetch; pageHeaders: ResponseInit }) {
+    const { domain, language, graphQLFetch, pageHeaders } = params;
     const scope = { domain, language };
     const data = await fetchPageTreeNode(params);
 
@@ -97,7 +99,7 @@ async function loadDocument(params: Params & { graphQLFetch: GraphQLFetch }) {
                     }
                 }
                 if (destination) {
-                    redirect(destination);
+                    redirect(destination, pageHeaders);
                 }
             }
         }
@@ -109,7 +111,7 @@ async function loadDocument(params: Params & { graphQLFetch: GraphQLFetch }) {
         case "Page":
             return { type: "page" as const, ...(await loadPage({ pageTreeNodeId, scope, graphQLFetch })) };
         case "Link":
-            return redirectToLink({ pageTreeNodeId, graphQLFetch });
+            return redirectToLink({ pageTreeNodeId, graphQLFetch, pageHeaders });
         default:
             throw new Error(`Unknown document type ${data.pageTreeNodeByPath.documentType}`);
     }
@@ -131,7 +133,8 @@ async function loadPredefinedPage(codePath: string, { scope, graphQLFetch }: { s
 
 export const headers = cacheControlHeaders;
 
-export const meta: Route.MetaFunction = ({ loaderData }) => (loaderData && "metadata" in loaderData ? loaderData.metadata : []);
+export const meta: Route.MetaFunction = ({ loaderData }) =>
+    loaderData && "metadata" in loaderData ? loaderData.metadata : [{ title: defaultTitle }];
 
 /**
  * The pages of the page tree, e.g. `/en/about/team` for the path `/about/team`
@@ -148,7 +151,8 @@ export async function loader({ params, url, context }: Route.LoaderArgs) {
 
     // React Router has already decoded the path
     const path = (params["*"] ?? "").split("/").filter((segment) => segment !== "");
-    return data(await loadDocument({ ...scope, path, graphQLFetch }), getPageHeaders(context));
+    const pageHeaders = getPageHeaders(context);
+    return data(await loadDocument({ ...scope, path, graphQLFetch, pageHeaders }), pageHeaders);
 }
 
 export default function DocumentPage({ loaderData }: Route.ComponentProps) {

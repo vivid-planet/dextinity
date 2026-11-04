@@ -29,9 +29,7 @@ export const RouterMemoryRouter = ({ initialEntries, initialIndex, basename, chi
 
     return (
         <RouterContextIsolation>
-            <RouterChildrenProvider value={children}>
-                <RouterProvider router={router} />
-            </RouterChildrenProvider>
+            <RouterChildrenProvider value={children}>{router && <RouterProvider router={router} />}</RouterChildrenProvider>
         </RouterContextIsolation>
     );
 };
